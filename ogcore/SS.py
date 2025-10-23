@@ -1324,9 +1324,14 @@ def SS_initial_guesses(p, b_val=0.0055, n_val=0.4, r_tr_scalars=[1.0, 1.0]):
 
     Args:
         p (OG-Core Specifications object): model parameters
+        b_val (float): initial guess value for savings
+        n_val (float): initial guess value for labor supply
+        r_tr_scalars (list): scalars to adjust initial guesses for r and TR
 
     Returns:
         guesses (list): initial guesses for outer loop variables
+        b_guess (ndarray): initial guess for savings
+        n_guess (ndarray): initial guess for labor supply
     """
     r_p_guess = r_tr_scalars[0] * p.initial_guess_r_SS
     rguess = r_tr_scalars[0] * p.initial_guess_r_SS
@@ -1341,25 +1346,23 @@ def SS_initial_guesses(p, b_val=0.0055, n_val=0.4, r_tr_scalars=[1.0, 1.0]):
         b_guess = np.ones((p.S, p.J)) * b_val
         n_guess = np.ones((p.S, p.J)) * n_val * p.ltilde
         BQguess = 0.12231465279007188
-        guesses = (
-            [r_p_guess, rguess, wguess]
-            + list(p_m_guess)
-            + [Yguess, BQguess, TRguess]
-        )
     else:
-        b_guess = np.ones((p.S, p.J)) * 0.07  # TODO: remove hardcode here and next line
+        b_guess = (
+            np.ones((p.S, p.J)) * 0.07
+        )  # TODO: remove hardcode here and next line
         n_guess = np.ones((p.S, p.J)) * 0.35 * p.ltilde
         BQguess = aggr.get_BQ(rguess, b_guess, None, p, "SS", False)
-        guesses = (
-            [r_p_guess, rguess, wguess]
-            + list(p_m_guess)
-            + [Yguess]
-            + list(BQguess)
-            + [TRguess]
-        )
-        # append factor if baseline
-        if p.baseline:
-            guesses.append(p.initial_guess_factor_SS)
+        # append factor guess if baseline
+    BQ_items = [BQguess] if p.use_zeta else list(BQguess)
+    guesses = (
+        [r_p_guess, rguess, wguess]
+        + list(p_m_guess)
+        + [Yguess]
+        + BQ_items
+        + [TRguess]
+    )
+    if p.baseline:
+        guesses.append(p.initial_guess_factor_SS)
 
         return guesses, b_guess, n_guess
 
@@ -1379,30 +1382,11 @@ def run_SS(p, client=None):
     """
     # For initial guesses of w, r, TR, and factor, we use values that
     # are close to some steady state values.
-    if p.baseline:
-        # Loop over initial guesses of r and TR until find a solution or until have
-        # gone through all guesses. This should usually solve in the first guess
-        SS_solved = False
-        k = 0
-        while not SS_solved and k < len(DEV_FACTOR_LIST) - 1:
-            for k, v in enumerate(DEV_FACTOR_LIST):
-                logging.info(
-                    f"SS using initial guess factors for r and TR of "
-                    + f"{v[0]} and {v[1]} respectively."
-                )
-                guesses, b_guess, n_guess = SS_initial_guesses(
-                    p, r_tr_scalars=v
-                )
-                ss_params = (
-                    b_guess,
-                    n_guess,
-                    None,
-                    None,
-                    None,
-                    p,
-                    client,
-                )
-    else:
+    print(
+        "Using baseline solution as initial guess:",
+        p.reform_use_baseline_solution,
+    )
+    if p.baseline is False and p.reform_use_baseline_solution:
         # Use the baseline solution to get starting values for the reform
         baseline_ss_path = os.path.join(p.baseline_dir, "SS", "SS_vars.pkl")
         ss_solutions = utils.safe_read_pickle(baseline_ss_path)
@@ -1440,13 +1424,40 @@ def run_SS(p, client=None):
                         ss_solutions["factor"],
                     )
                     use_new_guesses = False
+                    if p.baseline_spending:
+                        TR_baseline = TRguess
+                        Ig_baseline = ss_solutions["I_g"]
+                    else:
+                        TR_baseline = None
+                        Ig_baseline = None
                     BQ_items = [BQguess] if p.use_zeta else list(BQguess)
+                    print("Baselines spending:", p.baseline_spending)
+                    print("Use zeta:", p.use_zeta)
                     guesses = (
                         [r_p_guess, rguess, wguess]
                         + list(p_m_guess)
                         + [Yguess]
                         + BQ_items
                         + [TRguess]
+                    )
+                    # Now solve for the steady state of the reform
+                    ss_params = (
+                        b_guess,
+                        n_guess,
+                        TR_baseline,
+                        Ig_baseline,
+                        factor_ss,
+                        p,
+                        client,
+                    )
+
+                    # Solve for steady state using root finder
+                    sol = opt.root(
+                        SS_fsolve,
+                        guesses,
+                        args=ss_params,
+                        method=p.SS_root_method,
+                        tol=p.mindist_SS,
                     )
                 else:
                     logging.warning(
@@ -1458,41 +1469,65 @@ def run_SS(p, client=None):
                     "KeyError: previous solutions for SS not found"
                 )
                 use_new_guesses = True
-        else:
-            logging.info("Using new guesses for SS")
-            use_new_guesses = True
-        if use_new_guesses:
-            # TODO: think about if add loop over dev factors here too
-            guesses, b_guess, n_guess = SS_initial_guesses(
-                    p
+    if (
+        p.baseline
+        or p.reform_use_baseline_solution is False
+        or use_new_guesses
+    ):
+        # Loop over initial guesses of r and TR until find a solution or until have
+        # gone through all guesses. This should usually solve in the first guess
+        SS_solved = False
+        k = 0
+        while not SS_solved and k < len(DEV_FACTOR_LIST) - 1:
+            for k, v in enumerate(DEV_FACTOR_LIST):
+                logging.info(
+                    f"SS using initial guess factors for r and TR of "
+                    + f"{v[0]} and {v[1]} respectively."
                 )
-            factor_ss = ss_solutions[
-                "factor"
-            ]  # don't guess factor, use baseline
-        if p.baseline_spending:
-            TR_baseline = ss_solutions["TR"]
-            Ig_baseline = ss_solutions["I_g"]
-        else:
-            TR_baseline = None
-            Ig_baseline = None
-        # Now solve for the steady state of the reform
-        ss_params = (
-            b_guess,
-            n_guess,
-            TR_baseline,
-            Ig_baseline,
-            factor_ss,
-            p,
-            client,
-        )
-    # Solve for steady state using root finder
-    sol = opt.root(
-        SS_fsolve,
-        guesses,
-        args=ss_params,
-        method=p.SS_root_method,
-        tol=p.mindist_SS,
-    )
+                guesses, b_guess, n_guess = SS_initial_guesses(
+                    p, r_tr_scalars=v
+                )
+                ss_params = (
+                    b_guess,
+                    n_guess,
+                    None,
+                    None,
+                    None,
+                    p,
+                    client,
+                )
+                if p.baseline:
+                    factor_ss = None
+                else:
+                    factor_ss = ss_solutions[
+                        "factor"
+                    ]  # don't guess factor, use baseline
+                if p.baseline_spending:
+                    TR_baseline = ss_solutions["TR"]
+                    Ig_baseline = ss_solutions["I_g"]
+                else:
+                    TR_baseline = None
+                    Ig_baseline = None
+                ss_params = (
+                    b_guess,
+                    n_guess,
+                    TR_baseline,
+                    Ig_baseline,
+                    factor_ss,
+                    p,
+                    client,
+                )
+                # Solve for steady state using root finder
+                sol = opt.root(
+                    SS_fsolve,
+                    guesses,
+                    args=ss_params,
+                    method=p.SS_root_method,
+                    tol=p.mindist_SS,
+                )
+                if sol.success:
+                    SS_solved = True
+                    break
     r_p_ss = sol.x[0]
     rss = sol.x[1]
     wss = sol.x[2]
@@ -1508,6 +1543,10 @@ def run_SS(p, client=None):
         Yss = sol.x[3 + p.M]
         BQss = sol.x[3 + p.M + 1 : -1]
         TR_ss = sol.x[-1]
+        if not p.baseline_spending:
+            Yss = TR_ss / p.alpha_T[-1]  # may not be right - if
+            # budget_balance = True, but that's ok - will be fixed in
+            # SS_solver
 
     if ENFORCE_SOLUTION_CHECKS and not sol.success:
         raise RuntimeError("Steady state equilibrium not found")
