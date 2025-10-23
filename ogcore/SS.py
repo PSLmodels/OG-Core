@@ -5,7 +5,7 @@ from dask import delayed, compute
 import dask.multiprocessing
 from ogcore import tax, pensions, household, firm, utils, fiscal
 from ogcore import aggregates as aggr
-from ogcore.constants import SHOW_RUNTIME
+from ogcore.constants import SHOW_RUNTIME, DEV_FACTOR_LIST
 from ogcore import config
 import os
 import warnings
@@ -1377,50 +1377,6 @@ def run_SS(p, client=None):
             results
 
     """
-    # TODO: move the list below to constants.py
-    # Create list of deviation factors for initial guesses of r and TR
-    dev_factor_list = [
-        [1.00, 1.0],
-        [0.95, 1.0],
-        [1.05, 1.0],
-        [0.90, 1.0],
-        [1.10, 1.0],
-        [0.85, 1.0],
-        [1.15, 1.0],
-        [0.80, 1.0],
-        [1.20, 1.0],
-        [0.75, 1.0],
-        [1.25, 1.0],
-        [0.70, 1.0],
-        [1.30, 1.0],
-        [1.00, 0.2],
-        [0.95, 0.2],
-        [1.05, 0.2],
-        [0.90, 0.2],
-        [1.10, 0.2],
-        [0.85, 0.2],
-        [1.15, 0.2],
-        [0.80, 0.2],
-        [1.20, 0.2],
-        [0.75, 0.2],
-        [1.25, 0.2],
-        [0.70, 0.2],
-        [1.30, 0.2],
-        [1.00, 0.6],
-        [0.95, 0.6],
-        [1.05, 0.6],
-        [0.90, 0.6],
-        [1.10, 0.6],
-        [0.85, 0.6],
-        [1.15, 0.6],
-        [0.80, 0.6],
-        [1.20, 0.6],
-        [0.75, 0.6],
-        [1.25, 0.6],
-        [0.70, 0.6],
-        [1.30, 0.6],
-    ]
-
     # For initial guesses of w, r, TR, and factor, we use values that
     # are close to some steady state values.
     if p.baseline:
@@ -1428,8 +1384,8 @@ def run_SS(p, client=None):
         # gone through all guesses. This should usually solve in the first guess
         SS_solved = False
         k = 0
-        while not SS_solved and k < len(dev_factor_list) - 1:
-            for k, v in enumerate(dev_factor_list):
+        while not SS_solved and k < len(DEV_FACTOR_LIST) - 1:
+            for k, v in enumerate(DEV_FACTOR_LIST):
                 logging.info(
                     f"SS using initial guess factors for r and TR of "
                     + f"{v[0]} and {v[1]} respectively."
