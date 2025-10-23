@@ -1225,36 +1225,36 @@ filename14 = "run_SS_baseline_M3_Kg_zero.pkl"
 @pytest.mark.parametrize(
     "baseline,param_updates,filename",
     [
-        # (True, param_updates1, filename1),
-        # (False, param_updates9, filename9),
-        # (True, param_updates2, filename2),
-        # (False, param_updates10, filename10),
-        # (True, param_updates3, filename3),
-        (True, param_updates4, filename4),
-        # (False, param_updates5, filename5),
-        # (False, param_updates6, filename6),
-        # (False, param_updates7, filename7),
-        (False, param_updates8, filename8),
-        # (False, param_updates11, filename11),
-        # (True, param_updates12, filename12),
-        # (True, param_updates13, filename13),
-        # (True, param_updates14, filename14),
+        (True, param_updates1, filename1),
+        (False, param_updates9, filename9),
+        (True, param_updates2, filename2),
+        (False, param_updates10, filename10),
+        (True, param_updates3, filename3),
+        #True, param_updates4, filename4),
+        (False, param_updates5, filename5),
+        (False, param_updates6, filename6),
+        (False, param_updates7, filename7),
+        #(False, param_updates8, filename8),
+        (False, param_updates11, filename11),
+        (True, param_updates12, filename12),
+        (True, param_updates13, filename13),
+        (True, param_updates14, filename14),
     ],
     ids=[
-        # "Baseline",
-        # "Reform, baseline spending",
-        # "Baseline, use zeta",
-        # "Reform, baseline spending, use zeta",
-        # "Baseline, small open",
-        "Baseline, small open use zeta",
-        # "Reform",
-        # "Reform, use zeta",
-        # "Reform, small open",
-        "Reform, small open use zeta",
-        # "Reform, delta_tau=0",
-        # "Baseline, non-zero Kg",
-        # "Baseline, M=3, non-zero Kg",
-        # "Baseline, M=3, zero Kg",
+        "Baseline",
+        "Reform, baseline spending",
+        "Baseline, use zeta",
+        "Reform, baseline spending, use zeta",
+        "Baseline, small open",
+        #"Baseline, small open use zeta",
+        "Reform",
+        "Reform, use zeta",
+        "Reform, small open",
+        #"Reform, small open use zeta",
+        "Reform, delta_tau=0",
+        "Baseline, non-zero Kg",
+        "Baseline, M=3, non-zero Kg",
+        "Baseline, M=3, zero Kg",
     ],
 )
 @pytest.mark.local
@@ -1296,3 +1296,29 @@ def test_run_SS(tmpdir, baseline, param_updates, filename, dask_client):
     for k, v in expected_dict.items():
         print("Checking item = ", k)
         assert np.allclose(test_dict[VAR_NAME_MAPPING[k]], v, atol=5e-04)
+
+
+@pytest.mark.parametrize(
+    "use_zeta", [True, False], ids=["use_zeta=True", "use_zeta=False"]
+)
+def test_initial_guesses(tmpdir, use_zeta):
+    """
+    Test SS.SS_initial_guesses function. Provide inputs to function and ensure
+    that a tuple is returned with the correct number of elements.
+    """
+    baseline_dir = os.path.join(tmpdir, "OUTPUT_BASELINE")
+    p = Specifications(
+            output_base=baseline_dir,
+            baseline_dir=baseline_dir,
+            baseline=True,
+            num_workers=NUM_WORKERS,
+        )
+    p.use_zeta = use_zeta
+    guesses, n_guess, b_guess = SS.SS_initial_guesses(p)
+
+    if use_zeta:
+        assert len(guesses) == 7 + 1
+    else:
+        assert len(guesses) == 7 + p.J
+    assert n_guess.shape == (p.S, p.J)
+    assert b_guess.shape == (p.S, p.J)
