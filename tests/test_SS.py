@@ -520,6 +520,31 @@ def test_SS_solver_extra(baseline, param_updates, filename, dask_client):
         )
 
 
+def test_solve_for_j():
+    """
+    Test SS.solve_for_j function. Provide inputs to function and ensure
+    that solution matches what is expected.
+    """
+    p = Specifications()
+    b_guess = np.ones((p.S)) * 0.07
+    n_guess = np.ones((p.S)) * 0.35 * p.ltilde
+    guesses = np.hstack((b_guess, n_guess))
+    r_p = 0.04
+    w = 1.2
+    p_tilde = 1.0
+    bq_j = 0.0002
+    rm_j = 0.005
+    tr_j = 0.1
+    ubi_j = 0.0
+    factor = 100000
+    j = 1
+    test_result = SS.solve_for_j(
+        guesses, r_p, w, p_tilde, bq_j, rm_j, tr_j, ubi_j, factor, j, p
+    )
+    expected_result = 0.15574086659957984
+    assert np.allclose(test_result.x[4], expected_result)
+
+
 param_updates1 = {"zeta_K": [1.0]}
 filename1 = "inner_loop_outputs_baseline_small_open.pkl"
 param_updates2 = {"budget_balance": True, "alpha_G": [0.0]}
@@ -1230,11 +1255,11 @@ filename14 = "run_SS_baseline_M3_Kg_zero.pkl"
         (True, param_updates2, filename2),
         (False, param_updates10, filename10),
         (True, param_updates3, filename3),
-        #True, param_updates4, filename4),
+        # True, param_updates4, filename4),
         (False, param_updates5, filename5),
         (False, param_updates6, filename6),
         (False, param_updates7, filename7),
-        #(False, param_updates8, filename8),
+        # (False, param_updates8, filename8),
         (False, param_updates11, filename11),
         (True, param_updates12, filename12),
         (True, param_updates13, filename13),
@@ -1246,11 +1271,11 @@ filename14 = "run_SS_baseline_M3_Kg_zero.pkl"
         "Baseline, use zeta",
         "Reform, baseline spending, use zeta",
         "Baseline, small open",
-        #"Baseline, small open use zeta",
+        # "Baseline, small open use zeta",
         "Reform",
         "Reform, use zeta",
         "Reform, small open",
-        #"Reform, small open use zeta",
+        # "Reform, small open use zeta",
         "Reform, delta_tau=0",
         "Baseline, non-zero Kg",
         "Baseline, M=3, non-zero Kg",
@@ -1308,11 +1333,11 @@ def test_initial_guesses(tmpdir, use_zeta):
     """
     baseline_dir = os.path.join(tmpdir, "OUTPUT_BASELINE")
     p = Specifications(
-            output_base=baseline_dir,
-            baseline_dir=baseline_dir,
-            baseline=True,
-            num_workers=NUM_WORKERS,
-        )
+        output_base=baseline_dir,
+        baseline_dir=baseline_dir,
+        baseline=True,
+        num_workers=NUM_WORKERS,
+    )
     p.use_zeta = use_zeta
     guesses, n_guess, b_guess = SS.SS_initial_guesses(p)
 
