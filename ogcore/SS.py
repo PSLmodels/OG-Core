@@ -1382,10 +1382,6 @@ def run_SS(p, client=None):
     """
     # For initial guesses of w, r, TR, and factor, we use values that
     # are close to some steady state values.
-    print(
-        "Using baseline solution as initial guess:",
-        p.reform_use_baseline_solution,
-    )
     if p.baseline is False and p.reform_use_baseline_solution:
         # Use the baseline solution to get starting values for the reform
         baseline_ss_path = os.path.join(p.baseline_dir, "SS", "SS_vars.pkl")
@@ -1431,8 +1427,6 @@ def run_SS(p, client=None):
                         TR_baseline = None
                         Ig_baseline = None
                     BQ_items = [BQguess] if p.use_zeta else list(BQguess)
-                    print("Baselines spending:", p.baseline_spending)
-                    print("Use zeta:", p.use_zeta)
                     guesses = (
                         [r_p_guess, rguess, wguess]
                         + list(p_m_guess)
