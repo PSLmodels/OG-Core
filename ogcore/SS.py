@@ -1095,7 +1095,7 @@ def SS_solver(
         )
 
     if ENFORCE_SOLUTION_CHECKS and (max(np.absolute(RC)) > p.RC_SS):
-        logging.warning("Resource Constraint Difference:", RC)
+        logging.warning(f"Resource Constraint Difference: {RC}")
         err = "Steady state aggregate resource constraint not satisfied"
         raise RuntimeError(err)
 
