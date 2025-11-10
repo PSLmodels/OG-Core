@@ -6,6 +6,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
+## [0.14.11] - 2025-11-07 12:00:00
+
+### Added
+
+- Adds Ethiopia demographic data mapping ((PR #1054)[https://github.com/PSLmodels/OG-Core/pull/1063])
+-
 ## [0.14.10] - 2025-09-11 12:00:00
 
 ### Added
@@ -453,6 +459,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Any earlier versions of OG-USA can be found in the [`OG-Core`](https://github.com/PSLmodels/OG-Core) repository [release history](https://github.com/PSLmodels/OG-Core/releases) from [v.0.6.4](https://github.com/PSLmodels/OG-Core/releases/tag/v0.6.4) (Jul. 20, 2021) or earlier.
 
 
+[0.14.11]: https://github.com/PSLmodels/OG-Core/compare/v0.14.10...v0.14.11
 [0.14.10]: https://github.com/PSLmodels/OG-Core/compare/v0.14.9...v0.14.10
 [0.14.9]: https://github.com/PSLmodels/OG-Core/compare/v0.14.8...v0.14.9
 [0.14.8]: https://github.com/PSLmodels/OG-Core/compare/v0.14.7...v0.14.8
