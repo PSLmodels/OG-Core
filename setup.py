@@ -38,8 +38,6 @@ setuptools.setup(
         "requests",
         "pip",
         "pygam",
-        "jupyter-book<2.0.0",
-        "jupyter",
     ],
     classifiers=[
         "Development Status :: 2 - Pre-Alpha",
