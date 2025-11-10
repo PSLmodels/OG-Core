@@ -897,6 +897,33 @@
 
     <span class="k">return</span> <span class="n">T_BQ</span></div>
 
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">cons_tax_liab</span><span class="p">(</span><span class="n">c</span><span class="p">,</span> <span class="n">p_i</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s2">&quot;SS&quot;</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Calculates consumption tax liability for each household.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        c (numpy.ndarray): Consumption array. Dimensions depend on the method:</span>
+<span class="sd">            - If method == &quot;SS&quot;: shape (I, S, J)</span>
+<span class="sd">            - If method != &quot;SS&quot;: shape (T, I, S, J)</span>
+<span class="sd">        p_i (numpy.ndarray): Array of consumption tax rates by good. Shape (I,) or (T, I).</span>
+<span class="sd">        p (OG-Core Specifications object): Model parameters, including tax rates and dimensions.</span>
+<span class="sd">        method (str, optional): Indicates whether calculation is for steady-state (&#39;SS&#39;) or transition path (&#39;TPI&#39;). Default is &#39;SS&#39;.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        c_tax (numpy.ndarray): Consumption tax liability for each household.</span>
+<span class="sd">            - If method == &quot;SS&quot;: shape (S, J)</span>
+<span class="sd">            - If method != &quot;SS&quot;: shape (T, S, J)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">method</span> <span class="o">==</span> <span class="s2">&quot;SS&quot;</span><span class="p">:</span>
+        <span class="n">c_tax</span> <span class="o">=</span> <span class="p">((</span><span class="n">p</span><span class="o">.</span><span class="n">tau_c</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="p">:]</span> <span class="o">*</span> <span class="n">p_i</span><span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">I</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="n">c</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">c_tax</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">tau_c</span><span class="p">[:</span> <span class="n">p</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="p">:]</span> <span class="o">*</span> <span class="n">p_i</span><span class="p">[:</span> <span class="n">p</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="p">:])</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="n">p</span><span class="o">.</span><span class="n">I</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="n">c</span>
+        <span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">c_tax</span>
 </pre></div>
 
                 </article>
