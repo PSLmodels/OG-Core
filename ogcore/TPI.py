@@ -777,7 +777,38 @@ def run_TPI(p, client=None):
                     scattered_p_future,
                 )
                 futures.append(f)
-            results = client.gather(futures)
+            try:
+                # Wait for futures with timeout, then gather results
+                from distributed import wait
+
+                done, not_done = wait(futures, timeout=600)
+                if not_done:
+                    # Some futures didn't complete in time
+                    raise TimeoutError(
+                        f"{len(not_done)} futures did not complete within 600 seconds"
+                    )
+                results = client.gather(futures)
+            except Exception as e:
+                # Cancel remaining futures and fall back to serial computation
+                logging.warning(
+                    f"Dask computation failed with error: {e}. "
+                    "Falling back to serial computation for this iteration."
+                )
+                for future in futures:
+                    future.cancel()
+                results = []
+                for j in range(p.J):
+                    guesses = (guesses_b[:, :, j], guesses_n[:, :, j])
+                    res = inner_loop(
+                        guesses,
+                        outer_loop_vars,
+                        initial_values,
+                        ubi,
+                        j,
+                        ind,
+                        p,
+                    )
+                    results.append(res)
         else:
             # Serial fallback (no dask client)
             for j in range(p.J):

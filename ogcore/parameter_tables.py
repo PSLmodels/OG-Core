@@ -192,7 +192,7 @@ def param_table(p, table_format="tex", path=None):
         table["Symbol"].append(v[1])
         table["Description"].append(v[0])
         value = getattr(p, k)
-        if hasattr(value, "__len__") & ~isinstance(value, str):
+        if hasattr(value, "__len__") and not isinstance(value, str):
             if value.ndim > 1:
                 report = (
                     "Too large to report here, see default parameters JSON"

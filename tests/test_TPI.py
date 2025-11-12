@@ -169,10 +169,10 @@ def dask_client():
     cluster = LocalCluster(
         n_workers=NUM_WORKERS,
         threads_per_worker=2,
-        memory_limit="2GB",
-        timeout="300s",
-        heartbeat_interval="10s",
-        death_timeout="60s",
+        memory_limit="3GB",
+        timeout="900s",
+        heartbeat_interval="30s",
+        death_timeout="120s",
     )
     client = Client(cluster)
     yield client
