@@ -1065,7 +1065,7 @@ def get_pop_objs(
     initial_pop_counter[1:] = (
          pre_pop_EpS[:-1] * (1 - mort_rates[0, :-1])
          + pre_pop_EpS[1:] * imm_rates_orig[0, 1:]
-     )
+    )
 
     max_diff = np.abs(pop_2D[0, :] - initial_pop_counter).max()
     print(
