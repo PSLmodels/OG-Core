@@ -990,61 +990,97 @@ def get_pop_objs(
     # assert np.allclose(pop_counter_2D, pop_dist)
     assert np.allclose(pop_counter_2D, pop_2D)
 
-    """"
-    CHANGE - in OG-Core, we are implicitLy assuming pre-TP rates of mortality,
-    fertility, and immigration are the same as the period 0 rates.
+    # """"
+    # CHANGE - in OG-Core, we are implicitLy assuming pre-TP rates of mortality,
+    # fertility, and immigration are the same as the period 0 rates.
 
-    So let's just infer the pre-pop_dist from those.
+    # So let's just infer the pre-pop_dist from those.
+    # """
+    # pop1 = pop_2D[0, :]
+    # fert0 = fert_rates[0, :]
+    # mort0 = mort_rates[0, :]
+    # infmort0 = infmort_rates[0]
+    # imm0 = imm_rates_orig[0, :]
+    # pre_pop_guess = pop1.copy()
+
+    # # I can't solve this analytically, so set up a system of equation
+    # # to solve
+    # def pre_pop_solve(pre_pop_guess, pop1, fert0, mort0, infmort0, imm0):
+    #     pre_pop = pre_pop_guess
+    #     errors = np.zeros(E + S)
+    #     errors[0] = pop1[0] - (
+    #         (1 - infmort0) * (fert0 * pre_pop).sum() + imm0[0] * pre_pop[0]
+    #     )
+    #     errors[1:] = pop1[1:] - (
+    #         pre_pop[:-1] * (1 - mort0[:-1]) + pre_pop[1:] * imm0[1:]
+    #     )
+    #     # print("Max error = ", np.abs(errors).max())
+    #     return errors
+
+    # opt_res = opt.root(
+    #     pre_pop_solve,
+    #     pre_pop_guess,
+    #     args=(pop1, fert0, mort0, infmort0, imm0),
+    #     method="lm",
+    # )
+    # pre_pop = opt_res.x
+    # print(
+    #     "Success? ",
+    #     opt_res.success,
+    #     ", Max diff = ",
+    #     np.abs(opt_res.fun).max(),
+    # )
+    # pre_pop_EpS = pop_rebin(pre_pop, E + S)
+
+    # # Check result
+    # initial_pop_counter = np.zeros(E + S)
+    # newborns = (fert_rates[0, :] * pre_pop[:]).sum()
+    # initial_pop_counter[0] = (
+    #     1 - infmort_rates[0]
+    # ) * newborns + imm_rates_orig[0, 0] * pre_pop[0]
+    # initial_pop_counter[1:] = (
+    #     pre_pop[:-1] * (1 - mort_rates[0, :-1])
+    #     + pre_pop[1:] * imm_rates_orig[0, 1:]
+    # )
+    # # Test that using pre pop get to pop in period 1
+    # print("Max diff = ", np.abs(pop_2D[0, :] - initial_pop_counter).max())
+    # # assert np.allclose(initial_pop_counter, pop_2D[0, :])
+
+
     """
-    pop1 = pop_2D[0, :]
-    fert0 = fert_rates[0, :]
-    mort0 = mort_rates[0, :]
-    infmort0 = infmort_rates[0]
-    imm0 = imm_rates_orig[0, :]
-    pre_pop_guess = pop1.copy()
-
-    # I can't solve this analytically, so set up a system of equation
-    # to solve
-    def pre_pop_solve(pre_pop_guess, pop1, fert0, mort0, infmort0, imm0):
-        pre_pop = pre_pop_guess
-        errors = np.zeros(E + S)
-        errors[0] = pop1[0] - (
-            (1 - infmort0) * (fert0 * pre_pop).sum() + imm0[0] * pre_pop[0]
-        )
-        errors[1:] = pop1[1:] - (
-            pre_pop[:-1] * (1 - mort0[:-1]) + pre_pop[1:] * imm0[1:]
-        )
-        # print("Max error = ", np.abs(errors).max())
-        return errors
-
-    opt_res = opt.root(
-        pre_pop_solve,
-        pre_pop_guess,
-        args=(pop1, fert0, mort0, infmort0, imm0),
-        method="lm",
-    )
-    pre_pop = opt_res.x
-    print(
-        "Success? ",
-        opt_res.success,
-        ", Max diff = ",
-        np.abs(opt_res.fun).max(),
-    )
+    NEW CODE - use the actual UN historical data instead of solving backwards
+    """
+    # Get percentage distribution for S periods for pre-TP period
+    # Use the actual UN historical data instead of solving backwards
     pre_pop_EpS = pop_rebin(pre_pop, E + S)
 
     # Check result
+    # Verify that the UN pre-period data is reasonably consistent
+    # with the period 0 population using the demographic transition equations
     initial_pop_counter = np.zeros(E + S)
-    newborns = (fert_rates[0, :] * pre_pop[:]).sum()
+    newborns = (fert_rates[0, :] * pre_pop_EpS[:]).sum()
     initial_pop_counter[0] = (
-        1 - infmort_rates[0]
-    ) * newborns + imm_rates_orig[0, 0] * pre_pop[0]
+         1 - infmort_rates[0]
+     ) * newborns + imm_rates_orig[0, 0] * pre_pop_EpS[0]
     initial_pop_counter[1:] = (
-        pre_pop[:-1] * (1 - mort_rates[0, :-1])
-        + pre_pop[1:] * imm_rates_orig[0, 1:]
-    )
-    # Test that using pre pop get to pop in period 1
-    print("Max diff = ", np.abs(pop_2D[0, :] - initial_pop_counter).max())
-    # assert np.allclose(initial_pop_counter, pop_2D[0, :])
+         pre_pop_EpS[:-1] * (1 - mort_rates[0, :-1])
+         + pre_pop_EpS[1:] * imm_rates_orig[0, 1:]
+     )
+
+    max_diff = np.abs(pop_2D[0, :] - initial_pop_counter).max()
+    print(
+         "Pre-period population verification: Max diff = ",
+         max_diff
+     )
+
+    if max_diff > 100_000:
+        print(
+             "WARNING: Large difference between UN pre-period population "
+             + "and period 0 population ({:.2f}). ".format(max_diff)
+             + "This may indicate inconsistencies in the data or "
+             + "immigration rate calculations, but using UN historical "
+             + "data as it is more reliable than backward-solved estimates."
+         )
 
     # Create the transition matrix for the population distribution
     # from T0 going forward (i.e., past when we have data on forecasts)
