@@ -307,7 +307,7 @@ def inner_loop(outer_loop_vars, p, client):
             futures.append(f)
 
         try:
-            results = client.gather(futures, timeout=300)
+            results = client.gather(futures)
         except Exception as e:
             # Cancel remaining futures and fall back to serial computation
             print(
