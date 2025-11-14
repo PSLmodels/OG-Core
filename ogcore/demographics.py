@@ -1052,7 +1052,8 @@ def get_pop_objs(
     """
     # Get percentage distribution for S periods for pre-TP period
     # Use the actual UN historical data instead of solving backwards
-    pre_pop_EpS = pop_rebin(pre_pop, E + S)
+    # pre_pop_EpS = pop_rebin(pre_pop, E + S) -- this assignment is
+    # above on line 924, but keep for clarity
 
     # Check result
     # Verify that the UN pre-period data is reasonably consistent
