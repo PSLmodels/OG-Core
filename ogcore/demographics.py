@@ -1061,7 +1061,7 @@ def get_pop_objs(
     newborns = (fert_rates[0, :] * pre_pop_EpS[:]).sum()
     initial_pop_counter[0] = (
          1 - infmort_rates[0]
-     ) * newborns + imm_rates_orig[0, 0] * pre_pop_EpS[0]
+    ) * newborns + imm_rates_orig[0, 0] * pre_pop_EpS[0]
     initial_pop_counter[1:] = (
          pre_pop_EpS[:-1] * (1 - mort_rates[0, :-1])
          + pre_pop_EpS[1:] * imm_rates_orig[0, 1:]
