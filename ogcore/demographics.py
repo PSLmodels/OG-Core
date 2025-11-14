@@ -1046,7 +1046,6 @@ def get_pop_objs(
     # print("Max diff = ", np.abs(pop_2D[0, :] - initial_pop_counter).max())
     # # assert np.allclose(initial_pop_counter, pop_2D[0, :])
 
-
     """
     NEW CODE - use the actual UN historical data instead of solving backwards
     """
@@ -1061,26 +1060,23 @@ def get_pop_objs(
     initial_pop_counter = np.zeros(E + S)
     newborns = (fert_rates[0, :] * pre_pop_EpS[:]).sum()
     initial_pop_counter[0] = (
-         1 - infmort_rates[0]
+        1 - infmort_rates[0]
     ) * newborns + imm_rates_orig[0, 0] * pre_pop_EpS[0]
     initial_pop_counter[1:] = (
-         pre_pop_EpS[:-1] * (1 - mort_rates[0, :-1])
-         + pre_pop_EpS[1:] * imm_rates_orig[0, 1:]
+        pre_pop_EpS[:-1] * (1 - mort_rates[0, :-1])
+        + pre_pop_EpS[1:] * imm_rates_orig[0, 1:]
     )
 
     max_diff = np.abs(pop_2D[0, :] - initial_pop_counter).max()
-    print(
-         "Pre-period population verification: Max diff = ",
-         max_diff
-    )
+    print("Pre-period population verification: Max diff = ", max_diff)
 
     if max_diff > 100_000:
         print(
-             "WARNING: Large difference between UN pre-period population "
-             + "and period 0 population ({:.2f}). ".format(max_diff)
-             + "This may indicate inconsistencies in the data or "
-             + "immigration rate calculations, but using UN historical "
-             + "data as it is more reliable than backward-solved estimates."
+            "WARNING: Large difference between UN pre-period population "
+            + "and period 0 population ({:.2f}). ".format(max_diff)
+            + "This may indicate inconsistencies in the data or "
+            + "immigration rate calculations, but using UN historical "
+            + "data as it is more reliable than backward-solved estimates."
         )
 
     # Create the transition matrix for the population distribution
