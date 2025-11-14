@@ -1382,61 +1382,94 @@
     <span class="c1"># assert np.allclose(pop_counter_2D, pop_dist)</span>
     <span class="k">assert</span> <span class="n">np</span><span class="o">.</span><span class="n">allclose</span><span class="p">(</span><span class="n">pop_counter_2D</span><span class="p">,</span> <span class="n">pop_2D</span><span class="p">)</span>
 
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;&quot;</span>
-<span class="sd">    CHANGE - in OG-Core, we are implicitLy assuming pre-TP rates of mortality,</span>
-<span class="sd">    fertility, and immigration are the same as the period 0 rates.</span>
+    <span class="c1"># &quot;&quot;&quot;&quot;</span>
+    <span class="c1"># CHANGE - in OG-Core, we are implicitly assuming pre-TP rates of mortality,</span>
+    <span class="c1"># fertility, and immigration are the same as the period 0 rates.</span>
 
-<span class="sd">    So let&#39;s just infer the pre-pop_dist from those.</span>
+    <span class="c1"># So let&#39;s just infer the pre-pop_dist from those.</span>
+    <span class="c1"># &quot;&quot;&quot;</span>
+    <span class="c1"># pop1 = pop_2D[0, :]</span>
+    <span class="c1"># fert0 = fert_rates[0, :]</span>
+    <span class="c1"># mort0 = mort_rates[0, :]</span>
+    <span class="c1"># infmort0 = infmort_rates[0]</span>
+    <span class="c1"># imm0 = imm_rates_orig[0, :]</span>
+    <span class="c1"># pre_pop_guess = pop1.copy()</span>
+
+    <span class="c1"># # I can&#39;t solve this analytically, so set up a system of equation</span>
+    <span class="c1"># # to solve</span>
+    <span class="c1"># def pre_pop_solve(pre_pop_guess, pop1, fert0, mort0, infmort0, imm0):</span>
+    <span class="c1">#     pre_pop = pre_pop_guess</span>
+    <span class="c1">#     errors = np.zeros(E + S)</span>
+    <span class="c1">#     errors[0] = pop1[0] - (</span>
+    <span class="c1">#         (1 - infmort0) * (fert0 * pre_pop).sum() + imm0[0] * pre_pop[0]</span>
+    <span class="c1">#     )</span>
+    <span class="c1">#     errors[1:] = pop1[1:] - (</span>
+    <span class="c1">#         pre_pop[:-1] * (1 - mort0[:-1]) + pre_pop[1:] * imm0[1:]</span>
+    <span class="c1">#     )</span>
+    <span class="c1">#     # print(&quot;Max error = &quot;, np.abs(errors).max())</span>
+    <span class="c1">#     return errors</span>
+
+    <span class="c1"># opt_res = opt.root(</span>
+    <span class="c1">#     pre_pop_solve,</span>
+    <span class="c1">#     pre_pop_guess,</span>
+    <span class="c1">#     args=(pop1, fert0, mort0, infmort0, imm0),</span>
+    <span class="c1">#     method=&quot;lm&quot;,</span>
+    <span class="c1"># )</span>
+    <span class="c1"># pre_pop = opt_res.x</span>
+    <span class="c1"># print(</span>
+    <span class="c1">#     &quot;Success? &quot;,</span>
+    <span class="c1">#     opt_res.success,</span>
+    <span class="c1">#     &quot;, Max diff = &quot;,</span>
+    <span class="c1">#     np.abs(opt_res.fun).max(),</span>
+    <span class="c1"># )</span>
+    <span class="c1"># pre_pop_EpS = pop_rebin(pre_pop, E + S)</span>
+
+    <span class="c1"># # Check result</span>
+    <span class="c1"># initial_pop_counter = np.zeros(E + S)</span>
+    <span class="c1"># newborns = (fert_rates[0, :] * pre_pop[:]).sum()</span>
+    <span class="c1"># initial_pop_counter[0] = (</span>
+    <span class="c1">#     1 - infmort_rates[0]</span>
+    <span class="c1"># ) * newborns + imm_rates_orig[0, 0] * pre_pop[0]</span>
+    <span class="c1"># initial_pop_counter[1:] = (</span>
+    <span class="c1">#     pre_pop[:-1] * (1 - mort_rates[0, :-1])</span>
+    <span class="c1">#     + pre_pop[1:] * imm_rates_orig[0, 1:]</span>
+    <span class="c1"># )</span>
+    <span class="c1"># # Test that using pre pop get to pop in period 1</span>
+    <span class="c1"># print(&quot;Max diff = &quot;, np.abs(pop_2D[0, :] - initial_pop_counter).max())</span>
+    <span class="c1"># # assert np.allclose(initial_pop_counter, pop_2D[0, :])</span>
+
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    NEW CODE - use the actual UN historical data instead of solving backwards</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">pop1</span> <span class="o">=</span> <span class="n">pop_2D</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="p">:]</span>
-    <span class="n">fert0</span> <span class="o">=</span> <span class="n">fert_rates</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="p">:]</span>
-    <span class="n">mort0</span> <span class="o">=</span> <span class="n">mort_rates</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="p">:]</span>
-    <span class="n">infmort0</span> <span class="o">=</span> <span class="n">infmort_rates</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-    <span class="n">imm0</span> <span class="o">=</span> <span class="n">imm_rates_orig</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="p">:]</span>
-    <span class="n">pre_pop_guess</span> <span class="o">=</span> <span class="n">pop1</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
-
-    <span class="c1"># I can&#39;t solve this analytically, so set up a system of equation</span>
-    <span class="c1"># to solve</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">pre_pop_solve</span><span class="p">(</span><span class="n">pre_pop_guess</span><span class="p">,</span> <span class="n">pop1</span><span class="p">,</span> <span class="n">fert0</span><span class="p">,</span> <span class="n">mort0</span><span class="p">,</span> <span class="n">infmort0</span><span class="p">,</span> <span class="n">imm0</span><span class="p">):</span>
-        <span class="n">pre_pop</span> <span class="o">=</span> <span class="n">pre_pop_guess</span>
-        <span class="n">errors</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">E</span> <span class="o">+</span> <span class="n">S</span><span class="p">)</span>
-        <span class="n">errors</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">pop1</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="p">(</span>
-            <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">infmort0</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="n">fert0</span> <span class="o">*</span> <span class="n">pre_pop</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span> <span class="o">+</span> <span class="n">imm0</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="n">pre_pop</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-        <span class="p">)</span>
-        <span class="n">errors</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span> <span class="o">=</span> <span class="n">pop1</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span> <span class="o">-</span> <span class="p">(</span>
-            <span class="n">pre_pop</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">mort0</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span> <span class="o">+</span> <span class="n">pre_pop</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span> <span class="o">*</span> <span class="n">imm0</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span>
-        <span class="p">)</span>
-        <span class="c1"># print(&quot;Max error = &quot;, np.abs(errors).max())</span>
-        <span class="k">return</span> <span class="n">errors</span>
-
-    <span class="n">opt_res</span> <span class="o">=</span> <span class="n">opt</span><span class="o">.</span><span class="n">root</span><span class="p">(</span>
-        <span class="n">pre_pop_solve</span><span class="p">,</span>
-        <span class="n">pre_pop_guess</span><span class="p">,</span>
-        <span class="n">args</span><span class="o">=</span><span class="p">(</span><span class="n">pop1</span><span class="p">,</span> <span class="n">fert0</span><span class="p">,</span> <span class="n">mort0</span><span class="p">,</span> <span class="n">infmort0</span><span class="p">,</span> <span class="n">imm0</span><span class="p">),</span>
-        <span class="n">method</span><span class="o">=</span><span class="s2">&quot;lm&quot;</span><span class="p">,</span>
-    <span class="p">)</span>
-    <span class="n">pre_pop</span> <span class="o">=</span> <span class="n">opt_res</span><span class="o">.</span><span class="n">x</span>
-    <span class="nb">print</span><span class="p">(</span>
-        <span class="s2">&quot;Success? &quot;</span><span class="p">,</span>
-        <span class="n">opt_res</span><span class="o">.</span><span class="n">success</span><span class="p">,</span>
-        <span class="s2">&quot;, Max diff = &quot;</span><span class="p">,</span>
-        <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">opt_res</span><span class="o">.</span><span class="n">fun</span><span class="p">)</span><span class="o">.</span><span class="n">max</span><span class="p">(),</span>
-    <span class="p">)</span>
-    <span class="n">pre_pop_EpS</span> <span class="o">=</span> <span class="n">pop_rebin</span><span class="p">(</span><span class="n">pre_pop</span><span class="p">,</span> <span class="n">E</span> <span class="o">+</span> <span class="n">S</span><span class="p">)</span>
+    <span class="c1"># Get percentage distribution for S periods for pre-TP period</span>
+    <span class="c1"># Use the actual UN historical data instead of solving backwards</span>
+    <span class="c1"># pre_pop_EpS = pop_rebin(pre_pop, E + S) -- this assignment is</span>
+    <span class="c1"># above on line 924, but keep for clarity</span>
 
     <span class="c1"># Check result</span>
+    <span class="c1"># Verify that the UN pre-period data is reasonably consistent</span>
+    <span class="c1"># with the period 0 population using the demographic transition equations</span>
     <span class="n">initial_pop_counter</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">E</span> <span class="o">+</span> <span class="n">S</span><span class="p">)</span>
-    <span class="n">newborns</span> <span class="o">=</span> <span class="p">(</span><span class="n">fert_rates</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="p">:]</span> <span class="o">*</span> <span class="n">pre_pop</span><span class="p">[:])</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+    <span class="n">newborns</span> <span class="o">=</span> <span class="p">(</span><span class="n">fert_rates</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="p">:]</span> <span class="o">*</span> <span class="n">pre_pop_EpS</span><span class="p">[:])</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
     <span class="n">initial_pop_counter</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
         <span class="mi">1</span> <span class="o">-</span> <span class="n">infmort_rates</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-    <span class="p">)</span> <span class="o">*</span> <span class="n">newborns</span> <span class="o">+</span> <span class="n">imm_rates_orig</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="n">pre_pop</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="p">)</span> <span class="o">*</span> <span class="n">newborns</span> <span class="o">+</span> <span class="n">imm_rates_orig</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="n">pre_pop_EpS</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
     <span class="n">initial_pop_counter</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span> <span class="o">=</span> <span class="p">(</span>
-        <span class="n">pre_pop</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">mort_rates</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
-        <span class="o">+</span> <span class="n">pre_pop</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span> <span class="o">*</span> <span class="n">imm_rates_orig</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">:]</span>
+        <span class="n">pre_pop_EpS</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">mort_rates</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+        <span class="o">+</span> <span class="n">pre_pop_EpS</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span> <span class="o">*</span> <span class="n">imm_rates_orig</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">:]</span>
     <span class="p">)</span>
-    <span class="c1"># Test that using pre pop get to pop in period 1</span>
-    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Max diff = &quot;</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">pop_2D</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="p">:]</span> <span class="o">-</span> <span class="n">initial_pop_counter</span><span class="p">)</span><span class="o">.</span><span class="n">max</span><span class="p">())</span>
-    <span class="c1"># assert np.allclose(initial_pop_counter, pop_2D[0, :])</span>
+
+    <span class="n">max_diff</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">pop_2D</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="p">:]</span> <span class="o">-</span> <span class="n">initial_pop_counter</span><span class="p">)</span><span class="o">.</span><span class="n">max</span><span class="p">()</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Pre-period population verification: Max diff = &quot;</span><span class="p">,</span> <span class="n">max_diff</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">max_diff</span> <span class="o">&gt;</span> <span class="mi">100_000</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span>
+            <span class="s2">&quot;WARNING: Large difference between UN pre-period population &quot;</span>
+            <span class="o">+</span> <span class="s2">&quot;and period 0 population (</span><span class="si">{:.2f}</span><span class="s2">). &quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">max_diff</span><span class="p">)</span>
+            <span class="o">+</span> <span class="s2">&quot;This may indicate inconsistencies in the data or &quot;</span>
+            <span class="o">+</span> <span class="s2">&quot;immigration rate calculations, but using UN historical &quot;</span>
+            <span class="o">+</span> <span class="s2">&quot;data as it is more reliable than backward-solved estimates.&quot;</span>
+        <span class="p">)</span>
 
     <span class="c1"># Create the transition matrix for the population distribution</span>
     <span class="c1"># from T0 going forward (i.e., past when we have data on forecasts)</span>
