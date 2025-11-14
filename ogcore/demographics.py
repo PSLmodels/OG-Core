@@ -1080,7 +1080,7 @@ def get_pop_objs(
              + "This may indicate inconsistencies in the data or "
              + "immigration rate calculations, but using UN historical "
              + "data as it is more reliable than backward-solved estimates."
-         )
+        )
 
     # Create the transition matrix for the population distribution
     # from T0 going forward (i.e., past when we have data on forecasts)
