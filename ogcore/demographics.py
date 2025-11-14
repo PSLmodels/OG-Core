@@ -991,7 +991,7 @@ def get_pop_objs(
     assert np.allclose(pop_counter_2D, pop_2D)
 
     # """"
-    # CHANGE - in OG-Core, we are implicitLy assuming pre-TP rates of mortality,
+    # CHANGE - in OG-Core, we are implicitly assuming pre-TP rates of mortality,
     # fertility, and immigration are the same as the period 0 rates.
 
     # So let's just infer the pre-pop_dist from those.
