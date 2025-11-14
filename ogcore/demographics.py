@@ -1071,7 +1071,7 @@ def get_pop_objs(
     print(
          "Pre-period population verification: Max diff = ",
          max_diff
-     )
+    )
 
     if max_diff > 100_000:
         print(
