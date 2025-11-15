@@ -10,7 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Bug Fix
 
-- Use data for pre-time path population distribution (rather than inferring it) ((PR #1071)[https://github.com/PSLmodels/OG-Core/pull/1071])
+- Use data for pre-time path population distribution (rather than inferring it) ([PR #1071](https://github.com/PSLmodels/OG-Core/pull/1071))
 
 ## [0.14.11] - 2025-11-07 12:00:00
 
