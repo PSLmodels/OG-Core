@@ -133,8 +133,10 @@ def get_B(b, p, method, preTP):
         if preTP:
             part1 = b * np.transpose(p.omega_S_preTP * p.lambdas)
             omega_extended = np.append(p.omega_S_preTP[1:], [0.0])
-            imm_extended = np.append(p.imm_rates[0, 1:], [0.0])
-            pop_growth_rate = p.g_n[0]
+            imm_extended = np.append(
+                p.imm_rates_pre_TP[1:], [0.0]
+            )
+            pop_growth_rate = p.g_n_pretP
         else:
             part1 = b * np.transpose(p.omega_SS * p.lambdas)
             omega_extended = np.append(p.omega_SS[1:], [0.0])
@@ -189,8 +191,8 @@ def get_BQ(r, b_splus1, j, p, method, preTP):
     if method == "SS":
         if preTP:
             omega = p.omega_S_preTP
-            pop_growth_rate = p.g_n[0]
-            rho = p.rho[0, :]
+            pop_growth_rate = p.g_n_preTP
+            rho = p.rho_preTP
         else:
             omega = p.omega_SS
             pop_growth_rate = p.g_n_ss
@@ -206,7 +208,7 @@ def get_BQ(r, b_splus1, j, p, method, preTP):
             p.omega_S_preTP.reshape(1, p.S), p.omega[: p.T - 1, :], axis=0
         )
         rho = np.append(
-            p.rho[0, :].reshape(1, p.S), p.rho[: p.T - 1, :], axis=0
+            p.rho_preTP.reshape(1, p.S), p.rho[: p.T - 1, :], axis=0
         )
 
         if j is not None:
