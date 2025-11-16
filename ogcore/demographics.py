@@ -776,6 +776,7 @@ def get_pop_objs(
 
     """
     start_data_year = initial_data_year - 1  # grab data from one year
+    T = T + 1  # add one period to T to account for period -1 pop
     # before initial so have pre-start year population distribution
     # TODO: this function does not generalize with T.
     # It assumes one model period is equal to one calendar year in the
