@@ -775,9 +775,11 @@ def get_pop_objs(
                 path, length T + S
 
     """
+    start_data_year = initial_data_year - 1  # grab data from one year
+    # before initial so have pre-start year population distribution
     # TODO: this function does not generalize with T.
     # It assumes one model period is equal to one calendar year in the
-    # time dimesion (it does adjust for S, however)
+    # time dimension (it does adjust for S, however)
     T0 = (
         final_data_year - initial_data_year + 1
     )  # number of periods until constant fertility and mortality rates
@@ -788,8 +790,8 @@ def get_pop_objs(
         final_data_year,
     )
     assert E + S <= max_age - min_age + 1
-    assert initial_data_year >= 2011 and initial_data_year <= 2100 - 1
-    assert final_data_year >= 2011 and final_data_year <= 2100 - 1
+    assert initial_data_year >= 2012 and initial_data_year <= 2100 - 1
+    assert final_data_year >= 2012 and final_data_year <= 2100 - 1
     # Ensure that the last year of data used is before SS transition assumed
     # Really, it will need to be well before this
     assert final_data_year > initial_data_year
@@ -810,7 +812,7 @@ def get_pop_objs(
             min_age,
             max_age,
             country_id,
-            initial_data_year,
+            start_data_year,
             final_data_year,
             download_path=download_path,
         )
@@ -839,7 +841,7 @@ def get_pop_objs(
             min_age,
             max_age,
             country_id,
-            initial_data_year,
+            start_data_year,
             final_data_year,
             download_path=download_path,
         )
@@ -890,7 +892,7 @@ def get_pop_objs(
                 initial_pop,
                 pre_pop_dist,
                 country_id,
-                initial_data_year,
+                start_data_year,
                 final_data_year,
                 download_path=download_path,
             )
@@ -901,7 +903,7 @@ def get_pop_objs(
                 min_age,
                 max_age,
                 country_id=country_id,
-                start_year=initial_data_year,
+                start_year=start_data_year,
                 end_year=final_data_year,
                 download_path=download_path,
             )
@@ -933,7 +935,7 @@ def get_pop_objs(
             infmort_rates,
             pop_2D,
             country_id,
-            initial_data_year,
+            start_data_year,
             final_data_year,
             download_path=download_path,
         )
@@ -1145,7 +1147,6 @@ def get_pop_objs(
         omega_path_lev[0, -S:].sum() - pre_pop_EpS[-S:].sum()
     ) / pre_pop_EpS[-S:].sum()
     g_n_path[fixper + 1 :] = g_n_SS
-    omega_S_preTP = pre_pop_EpS[-S:] / pre_pop_EpS[-S:].sum()
     imm_rates_mat = np.concatenate(
         (
             imm_rates_orig[:fixper, E:],
@@ -1156,6 +1157,10 @@ def get_pop_objs(
         ),
         axis=0,
     )
+    # compute pop objects for the year before the model start year
+    # population distribution
+    # TODO: can delete this and proobalby any "pre_pop" calculations above
+    omega_S_preTP = pre_pop_EpS[-S:] / pre_pop_EpS[-S:].sum()
 
     if GraphDiag:
         # Check whether original SS population distribution is close to
@@ -1304,13 +1309,16 @@ def get_pop_objs(
 
     # Return objects in a dictionary
     pop_dict = {
-        "omega": omega_path_S,
+        "omega": omega_path_S[1:, :],
         "g_n_ss": g_n_SS,
         "omega_SS": omega_SSfx[-S:] / omega_SSfx[-S:].sum(),
-        "rho": mort_rates_S,
-        "g_n": g_n_path,
-        "imm_rates": imm_rates_mat,
-        "omega_S_preTP": omega_S_preTP,
+        "rho": mort_rates_S[1:, :],
+        "g_n": g_n_path[1:],
+        "imm_rates": imm_rates_mat[1:, :],
+        "omega_S_preTP": omega_path_S[0, :],
+        "imm_rates_preTP": imm_rates_mat[0, :],
+        "rho_preTP": mort_rates_S[0, :],
+        "g_m_preTP": g_n_path[0],
     }
 
     return pop_dict
