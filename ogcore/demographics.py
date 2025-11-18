@@ -388,8 +388,8 @@ def get_pop(
             pre_pop_data = get_un_data(
                 "47",
                 country_id=country_id,
-                start_year=start_year - 1,
-                end_year=start_year - 1,
+                start_year=start_year,
+                end_year=start_year,
             )
             if download_path:
                 pre_pop_data.to_csv(
@@ -893,7 +893,7 @@ def get_pop_objs(
                 initial_pop,
                 pre_pop_dist,
                 country_id,
-                start_data_year,
+                initial_data_year,  # TODO: should this be start_data_year?
                 final_data_year,
                 download_path=download_path,
             )
@@ -1319,7 +1319,7 @@ def get_pop_objs(
         "omega_S_preTP": omega_path_S[0, :],
         "imm_rates_preTP": imm_rates_mat[0, :],
         "rho_preTP": mort_rates_S[0, :],
-        "g_m_preTP": g_n_path[0],
+        "g_n_preTP": g_n_path[0],
     }
 
     return pop_dict

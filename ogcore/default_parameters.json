@@ -4586,7 +4586,7 @@
             }
         }
     },
-    "imm_rates_pre_TP": {
+    "imm_rates_preTP": {
         "title": "Immigration rates in period before model start year",
         "description": "Immigration rates in period before model start year.",
         "section_1": "Demographic Parameters",

@@ -563,14 +563,17 @@ def test_data_download(tmpdir):
         infmort_rates=infmort_rates[1:],
         imm_rates=imm_rates[1:, :],
         infer_pop=True,
-        pop_dist=pop_dist[0, :].reshape(1, E + S),
-        pre_pop_dist=pre_pop_dist,
+        pop_dist=pop_dist[1, :].reshape(1, E + S),
+        pre_pop_dist=pop_dist[0, :],  # pre_pop_dist,
         initial_data_year=start_year,
         final_data_year=start_year + 1,
         GraphDiag=False,
     )
 
     # Assert that the two pop_dicts are the same
+    for key in pop_dict:
+        print(key)
+        print("Diff =", np.abs(pop_dict[key] - pop_dict2[key]).max())
     for key in pop_dict:
         print(key)
         assert np.allclose(pop_dict[key], pop_dict2[key])
