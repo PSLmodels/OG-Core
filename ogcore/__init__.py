@@ -20,4 +20,4 @@ from ogcore.tax import *
 from ogcore.txfunc import *
 from ogcore.utils import *
 
-__version__ = "0.14.12"
+__version__ = "0.14.13"
