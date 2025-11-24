@@ -307,15 +307,6 @@ def inner_loop(outer_loop_vars, p, client):
             futures.append(f)
 
         try:
-            # Wait for futures with timeout, then gather results
-            from distributed import wait
-
-            done, not_done = wait(futures, timeout=600)
-            if not_done:
-                # Some futures didn't complete in time
-                raise TimeoutError(
-                    f"{len(not_done)} futures did not complete within 600 seconds"
-                )
             results = client.gather(futures)
         except Exception as e:
             # Cancel remaining futures and fall back to serial computation
@@ -990,7 +981,15 @@ def SS_solver(
         np.squeeze(p.e[-1, :, :]),
         p,
     )
-    sales_tax_ss = tax.cons_tax_liab(cssmat, p_i_ss, p, "SS")
+    c_i = household.get_ci(
+        cssmat,
+        p_i_ss,
+        p_tilde_ss,
+        p.tau_c[-1, :],
+        p.alpha_c,
+        "SS",
+    )
+    sales_tax_ss = tax.cons_tax_liab(c_i, p_i_ss, p, "SS")
     yss_before_tax_mat = household.get_y(
         r_p_ss, wss, bssmat_s, nssmat, p, "SS"
     )
