@@ -329,6 +329,8 @@ class Specifications(paramtools.Parameters):
                 np.reshape(self.omega_SS, (1, self.S)), (self.T + self.S, 1)
             )
             self.omega_S_preTP = self.omega_SS
+            self.imm_rates_preTP = np.zeros(self.S)
+            self.rho_preTP = self.rho[0, :]
 
         # Create time series of stationarized UBI transfers
         self.ubi_nom_array = self.get_ubi_nom_objs()
