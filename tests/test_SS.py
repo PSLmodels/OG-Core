@@ -70,7 +70,7 @@ VAR_NAME_MAPPING = {
     "trssmat": "tr",
     "ubissmat": "ubi",
     "yss_before_tax_mat": "before_tax_income",
-    "total_taxes_ss": "hh_taxes",
+    "total_taxes_ss": "hh_net_taxes",
     "etr_ss": "etr",
     "mtrx_ss": "mtrx",
     "mtry_ss": "mtry",
@@ -518,6 +518,31 @@ def test_SS_solver_extra(baseline, param_updates, filename, dask_client):
         assert np.allclose(
             test_dict[VAR_NAME_MAPPING[k]], v, atol=1e-05, equal_nan=True
         )
+
+
+def test_solve_for_j():
+    """
+    Test SS.solve_for_j function. Provide inputs to function and ensure
+    that solution matches what is expected.
+    """
+    p = Specifications()
+    b_guess = np.ones((p.S)) * 0.07
+    n_guess = np.ones((p.S)) * 0.35 * p.ltilde
+    guesses = np.hstack((b_guess, n_guess))
+    r_p = 0.04
+    w = 1.2
+    p_tilde = 1.0
+    bq_j = 0.0002
+    rm_j = 0.005
+    tr_j = 0.1
+    ubi_j = 0.0
+    factor = 100000
+    j = 1
+    test_result = SS.solve_for_j(
+        guesses, r_p, w, p_tilde, bq_j, rm_j, tr_j, ubi_j, factor, j, p
+    )
+    expected_result = 0.15574086659957984
+    assert np.allclose(test_result.x[4], expected_result)
 
 
 param_updates1 = {"zeta_K": [1.0]}
@@ -1135,11 +1160,10 @@ param_updates4 = {
     "initial_guess_TR_SS": 0.04,
     # "initial_guess_r_SS": 0.033092316727737416,
     # "initial_guess_TR_SS": 0.06323878350496814,
-    # "initial_guess_w_SS": 1.3320748594894016,
     "initial_guess_factor_SS": 111267.90426318572,
 }
 filename4 = "run_SS_baseline_small_open_use_zeta.pkl"
-param_updates5 = {"initial_guess_r_SS": 0.035}
+param_updates5 = {"initial_guess_r_SS": 0.04}
 filename5 = "run_SS_reform.pkl"
 param_updates6 = {
     "use_zeta": True,
@@ -1231,7 +1255,7 @@ filename14 = "run_SS_baseline_M3_Kg_zero.pkl"
         (True, param_updates2, filename2),
         (False, param_updates10, filename10),
         (True, param_updates3, filename3),
-        # (True, param_updates4, filename4),
+        # True, param_updates4, filename4),
         (False, param_updates5, filename5),
         (False, param_updates6, filename6),
         (False, param_updates7, filename7),
@@ -1297,3 +1321,29 @@ def test_run_SS(tmpdir, baseline, param_updates, filename, dask_client):
     for k, v in expected_dict.items():
         print("Checking item = ", k)
         assert np.allclose(test_dict[VAR_NAME_MAPPING[k]], v, atol=5e-04)
+
+
+@pytest.mark.parametrize(
+    "use_zeta", [True, False], ids=["use_zeta=True", "use_zeta=False"]
+)
+def test_initial_guesses(tmpdir, use_zeta):
+    """
+    Test SS.SS_initial_guesses function. Provide inputs to function and ensure
+    that a tuple is returned with the correct number of elements.
+    """
+    baseline_dir = os.path.join(tmpdir, "OUTPUT_BASELINE")
+    p = Specifications(
+        output_base=baseline_dir,
+        baseline_dir=baseline_dir,
+        baseline=True,
+        num_workers=NUM_WORKERS,
+    )
+    p.use_zeta = use_zeta
+    guesses, n_guess, b_guess = SS.SS_initial_guesses(p)
+
+    if use_zeta:
+        assert len(guesses) == 7 + 1
+    else:
+        assert len(guesses) == 7 + p.J
+    assert n_guess.shape == (p.S, p.J)
+    assert b_guess.shape == (p.S, p.J)

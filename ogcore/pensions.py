@@ -148,10 +148,14 @@ def SS_amount(w, n, theta, t, j, shift, method, e, p):
         # entry for retirement will change (it shifts back one).
         # The shift boolean makes sure we start replacement rates
         # at the correct age.
-        if shift is False:
-            pension[p.retire[-1] :] = theta * w
+        if j is None:
+            replace_rate_adjust = p.replacement_rate_adjust[-1, :]
         else:
-            pension[p.retire[-1] - 1 :] = theta * w
+            replace_rate_adjust = p.replacement_rate_adjust[-1, j]
+        if shift is False:
+            pension[p.retire[-1] :] = replace_rate_adjust * theta * w
+        else:
+            pension[p.retire[-1] - 1 :] = replace_rate_adjust * theta * w
     elif method == "TPI":
         length = w.shape[0]
         if not shift:
@@ -168,24 +172,24 @@ def SS_amount(w, n, theta, t, j, shift, method, e, p):
             else:
                 retireTPI = p.retire[t] - 1 - p.S
             pension[retireTPI:] = (
-                theta[j] * p.replacement_rate_adjust[t] * w[retireTPI:]
+                theta[j] * p.replacement_rate_adjust[t, j] * w[retireTPI:]
             )
         elif len(n.shape) == 2:
             for tt in range(pension.shape[0]):
                 pension[tt, retireTPI[tt] :] = (
-                    theta * p.replacement_rate_adjust[t + tt] * w[tt]
+                    theta * p.replacement_rate_adjust[t + tt, j] * w[tt]
                 )
         else:
             for tt in range(pension.shape[0]):
                 pension[tt, retireTPI[tt] :, :] = (
                     theta.reshape(1, p.J)
-                    * p.replacement_rate_adjust[t + tt]
+                    * p.replacement_rate_adjust[t + tt, :].reshape(1, p.J)
                     * w[tt]
                 )
     elif method == "TPI_scalar":
         # The above methods won't work if scalars are used.  This option
         # is only called by the SS_TPI_firstdoughnutring function in TPI.
-        pension = theta * p.replacement_rate_adjust[0] * w
+        pension = theta * p.replacement_rate_adjust[0, j] * w
 
     return pension
 
@@ -734,8 +738,8 @@ def deriv_DB_loop(
             another unit of labor supply
     """
     d_theta = np.zeros(per_rmn)
-    print("Year contribution: ", yr_contr)
-    print("Average earnings years: ", avg_earn_num_years)
+    # print("Year contribution: ", yr_contr)
+    # print("Average earnings years: ", avg_earn_num_years)
     num_per_retire = S - S_ret
     for s in range(per_rmn):
         d_theta[s] = w[s] * e[s] * alpha_db * (yr_contr / avg_earn_num_years)

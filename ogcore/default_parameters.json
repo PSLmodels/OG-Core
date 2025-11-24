@@ -4093,16 +4093,16 @@
     },
     "replacement_rate_adjust": {
         "title": "Adjustment to the Social Security retirement benefits replacement rate",
-        "description": "Adjustment to the Social Security retirement benefits replacement rate. Set value for base year, click '+' to add value for next year.  All future years not specified are set to last value entered.",
+        "description": "Adjustment to the Social Security retirement benefits replacement rate for year t and household type j. Set value for base year, click '+' to add value for next year.  All future years not specified are set to last value entered.",
         "section_1": "Fiscal Policy Parameters",
         "section_2": "Government Pension Parameters",
         "notes": "This parameter willy only vary along the time path.  It is assumed to be one in the steady state.  The steady state retirement rate can be adjusted by changing the parameters of the retirement benefits function.",
         "type": "float",
-        "number_dims": 1,
+        "number_dims": 2,
         "value": [
             {
                 "value": [
-                    1.0
+                    [1.0]
                 ]
             }
         ],
@@ -4451,27 +4451,9 @@
             }
         }
     },
-    "initial_guess_w_SS": {
-        "title": "Initial guess of w for the SS solution",
-        "description": "Initial guess of w for the SS solution.",
-        "section_1": "Model Solution Parameters",
-        "notes": "",
-        "type": "float",
-        "value": [
-            {
-                "value": 1.1617041226785383
-            }
-        ],
-        "validators": {
-            "range": {
-                "min": 0.01,
-                "max": 5.15
-            }
-        }
-    },
     "initial_guess_TR_SS": {
         "title": "Initial guess of TR for the SS solution",
-        "description": "Initial guess of TR for the SS solution.",
+        "description": "Initial guess of TR for the SS solution. This value is in model units and can therefore be any large positive number. We may have to adjust the maximum for this parameter from time to time.",
         "section_1": "Model Solution Parameters",
         "notes": "",
         "type": "float",
@@ -4483,7 +4465,7 @@
         "validators": {
             "range": {
                 "min": 0.0,
-                "max": 0.2
+                "max": 2.5
             }
         }
     },

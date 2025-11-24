@@ -16,6 +16,7 @@ new_param_values = {
     "chi_n": np.ones(2),
     "labor_income_tax_noncompliance_rate": [[0.0]],
     "capital_income_tax_noncompliance_rate": [[0.0]],
+    "replacement_rate_adjust": [[1.0]],
     "eta": (np.ones((40, 2)) / (40 * 2)),
     "lambdas": [0.6, 0.4],
     "omega": np.ones((160, 40)) / 40,
@@ -30,7 +31,10 @@ for t in range(p.T):
     for i in range(p.S):
         for k in range(p.J):
             L_loop[t, i, k] *= (
-                p.omega[t, i] * p.lambdas[k] * n[t, i, k] * p.e[t, i, k]
+                p.omega[t, i].item()
+                * p.lambdas[k].item()
+                * n[t, i, k].item()
+                * p.e[t, i, k].item()
             )
 expected1 = L_loop[-1, :, :].sum()
 expected2 = L_loop.sum(1).sum(1)
@@ -58,6 +62,7 @@ new_param_values = {
     "e": np.ones((40, 2)),
     "labor_income_tax_noncompliance_rate": [[0.0]],
     "capital_income_tax_noncompliance_rate": [[0.0]],
+    "replacement_rate_adjust": [[1.0]],
     "eta": (np.ones((40, 2)) / (40 * 2)),
     "lambdas": [0.6, 0.4],
     "omega": np.ones((160, 40)) / 40,
@@ -140,6 +145,7 @@ new_param_values = {
     "e": np.ones((40, 2)),
     "labor_income_tax_noncompliance_rate": [[0.0]],
     "capital_income_tax_noncompliance_rate": [[0.0]],
+    "replacement_rate_adjust": [[1.0]],
     "eta": (np.ones((40, 2)) / (40 * 2)),
     "lambdas": [0.6, 0.4],
     "omega": np.ones((160, 40)) / 40,
@@ -198,6 +204,7 @@ new_param_values = {
     "e": np.ones((40, 2)),
     "labor_income_tax_noncompliance_rate": [[0.0]],
     "capital_income_tax_noncompliance_rate": [[0.0]],
+    "replacement_rate_adjust": [[1.0]],
     "eta": (np.ones((40, 2)) / (40 * 2)),
     "lambdas": [0.6, 0.4],
     "omega": np.ones((160, 40)) / 40,
@@ -1128,6 +1135,7 @@ new_param_values = {
     "M": 3,
     "labor_income_tax_noncompliance_rate": [[0.0]],
     "capital_income_tax_noncompliance_rate": [[0.0]],
+    "replacement_rate_adjust": [[1.0]],
     "eta": (np.ones((40, 2)) / (40 * 2)),
     "lambdas": [0.6, 0.4],
     "omega": np.ones((160, 40)) / 40,
@@ -1178,6 +1186,7 @@ new_param_values = {
     "e": np.ones((20, 2)),
     "labor_income_tax_noncompliance_rate": [[0.0]],
     "capital_income_tax_noncompliance_rate": [[0.0]],
+    "replacement_rate_adjust": [[1.0]],
     "eta": (np.ones((20, 2)) / (20 * 2)),
     "lambdas": [0.6, 0.4],
     "tau_bq": [0.17],
@@ -1245,7 +1254,13 @@ new_param_values3 = {
     "m_wealth": [1.0],
     "cit_rate": [[0.2]],
     "inv_tax_credit": [[0.02]],
-    "replacement_rate_adjust": [1.5, 1.5, 1.5, 1.6, 1.0],
+    "replacement_rate_adjust": [
+        [1.5, 1.5],
+        [1.5, 1.5],
+        [1.5, 1.5],
+        [1.6, 1.6],
+        [1.0, 1.0],
+    ],
     "delta_tau_annual": [
         [float(1 - ((1 - 0.0975) ** (20 / (p3.ending_age - p3.starting_age))))]
     ],
@@ -1272,6 +1287,7 @@ new_param_values_ubi = {
     "e": np.ones((20, 2)),
     "labor_income_tax_noncompliance_rate": [[0.0]],
     "capital_income_tax_noncompliance_rate": [[0.0]],
+    "replacement_rate_adjust": [[1.0]],
     "eta": (np.ones((20, 2)) / (20 * 2)),
     "lambdas": [0.6, 0.4],
     "tau_bq": [0.17],
