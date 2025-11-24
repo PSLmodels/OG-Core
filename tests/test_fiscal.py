@@ -297,7 +297,9 @@ p_tpi.update_specifications(
     }
 )
 r_tpi = np.ones(320) * r
-r_gov_tpi = np.ones(320) * r * p_tpi.r_gov_scale[:320] - p_tpi.r_gov_shift[:320]
+r_gov_tpi = (
+    np.ones(320) * r * p_tpi.r_gov_scale[:320] - p_tpi.r_gov_shift[:320]
+)
 DY_tpi = np.ones(320) * 0.01
 p4 = Specifications()
 p4.update_specifications(

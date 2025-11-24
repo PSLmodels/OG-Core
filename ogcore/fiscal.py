@@ -398,10 +398,10 @@ def get_r_gov(r, DY_ratio, p, method, t=0):
         )
     else:
         r_gov = np.maximum(
-            p.r_gov_scale[:p.T] * r[:p.T]
-            - p.r_gov_shift[:p.T]
-            + p.r_gov_DY * DY_ratio[:p.T]
-            + p.r_gov_DY2 * DY_ratio[:p.T]**2,
+            p.r_gov_scale[: p.T] * r[: p.T]
+            - p.r_gov_shift[: p.T]
+            + p.r_gov_DY * DY_ratio[: p.T]
+            + p.r_gov_DY2 * DY_ratio[: p.T] ** 2,
             0.00,
         )
 
