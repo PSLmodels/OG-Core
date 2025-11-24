@@ -17,7 +17,7 @@ import numpy as np
 """
 
 
-def D_G_path(r_gov, dg_fixed_values, p):
+def D_G_path(r, dg_fixed_values, p):
     r"""
     Calculate the time paths of debt and government spending
 
@@ -87,11 +87,14 @@ def D_G_path(r_gov, dg_fixed_values, p):
         G = p.alpha_G[: p.T] * Y[: p.T]
         D_f = np.zeros(p.T)
         D_d = np.zeros(p.T)
+        r_gov = get_r_gov(r[: p.T], np.zeros(p.T), p, method="TPI")
         new_borrowing = np.zeros(p.T)
         debt_service = np.zeros(p.T)
         new_borrowing_f = np.zeros(p.T)
     else:
         t = 1
+        r_gov = np.zeros_like(r)
+        r_gov[0] = get_r_gov(r[0], D[0] / Y[0], p, method="scalar", t=0)
         while t < p.T - 1:
             D[t] = (1 / growth[t]) * (
                 (1 + r_gov[t - 1]) * D[t - 1]
@@ -102,6 +105,7 @@ def D_G_path(r_gov, dg_fixed_values, p):
                 + agg_pension_outlays[t - 1]
                 - total_tax_revenue[t - 1]
             )
+            r_gov[t] = get_r_gov(r[t], D[t] / Y[t], p, method="scalar", t=t)
             if (t >= p.tG1) and (t < p.tG2):
                 G[t] = (
                     growth[t + 1]
@@ -137,6 +141,7 @@ def D_G_path(r_gov, dg_fixed_values, p):
             + agg_pension_outlays[t - 1]
             - total_tax_revenue[t - 1]
         )
+        r_gov[t] = get_r_gov(r[t], D[t] / Y[t], p, method="scalar", t=t)
         G[t] = (
             growth[t] * (p.debt_ratio_ss * Y[t])
             - (1 + r_gov[t]) * D[t]
@@ -155,6 +160,10 @@ def D_G_path(r_gov, dg_fixed_values, p):
             + agg_pension_outlays[t]
             - total_tax_revenue[t]
         )
+        # find r_gov for the period
+        # r_gov[t + 1] = get_r_gov(
+        #     r[t + 1], D[t + 1] / Y[t + 1], p, method="scalar", t=t + 1
+        # )
         D_ratio_max = np.amax(D[: p.T] / Y[: p.T])
         print("Maximum debt ratio: ", D_ratio_max)
 
@@ -182,6 +191,7 @@ def D_G_path(r_gov, dg_fixed_values, p):
         G,
         D_d,
         D_f[: p.T],
+        r_gov[: p.T],
         new_borrowing,
         debt_service,
         new_borrowing_f,
@@ -350,17 +360,20 @@ def get_TR(
     return new_TR
 
 
-def get_r_gov(r, p, method):
+def get_r_gov(r, DY_ratio, p, method, t=0):
     r"""
     Determine the interest rate on government debt
 
     .. math::
-        r_{gov,t} = \max\{(1-\tau_{d,t}r_{t} - \mu_d, 0.0\}
+        r_{gov,t} = \max\{(1-\tau_{d,t}r_{t} - \mu_d + \beta_1 \frac{D_t}{Y_t} + \beta_2 \left(\frac{D_t}{Y_t}\right)^2, 0.0\}
 
     Args:
         r (array_like): interest rate on private capital debt over the
             time path or in the steady state
+        DY_ratio (array_like): ratio of government debt to GDP
         p (OG-Core Specifications object): model parameters
+        method (str): either 'SS' for steady-state or 'TPI' for
+        t (int): time period index, used only if method is 'scalar'
 
     Returns:
         r_gov (array_like): interest rate on government debt over the
@@ -368,9 +381,29 @@ def get_r_gov(r, p, method):
 
     """
     if method == "SS":
-        r_gov = np.maximum(p.r_gov_scale[-1] * r - p.r_gov_shift[-1], 0.00)
+        r_gov = np.maximum(
+            p.r_gov_scale[-1] * r
+            - p.r_gov_shift[-1]
+            + p.r_gov_DY * DY_ratio
+            + p.r_gov_DY2 * DY_ratio**2,
+            0.00,
+        )
+    elif method == "scalar":
+        r_gov = np.maximum(
+            p.r_gov_scale[t] * r
+            - p.r_gov_shift[t]
+            + p.r_gov_DY * DY_ratio
+            + p.r_gov_DY2 * DY_ratio**2,
+            0.00,
+        )
     else:
-        r_gov = np.maximum(p.r_gov_scale * r - p.r_gov_shift, 0.00)
+        r_gov = np.maximum(
+            p.r_gov_scale[: p.T] * r[: p.T]
+            - p.r_gov_shift[: p.T]
+            + p.r_gov_DY * DY_ratio[: p.T]
+            + p.r_gov_DY2 * DY_ratio[: p.T] ** 2,
+            0.00,
+        )
 
     return r_gov
 
