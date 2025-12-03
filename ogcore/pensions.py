@@ -64,6 +64,9 @@ def replacement_rate_vals(nssmat, wss, factor_ss, j, p):
     if p.PIA_minpayment != 0.0:
         PIA[PIA < p.PIA_minpayment] = p.PIA_minpayment
     theta = (PIA * (12.0 * p.S / 80.0)) / (factor_ss * wss)
+    if not p.baseline and p.baseline_theta:
+        # use theta from the baseline solution
+        theta = p.SS_theta
     return theta
 
 
