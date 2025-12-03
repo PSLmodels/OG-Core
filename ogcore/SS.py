@@ -1418,6 +1418,8 @@ def run_SS(p, client=None):
                         float(ss_solutions["Y"]),
                         ss_solutions["factor"],
                     )
+                    # set new attribute of parameters for SS theta
+                    p.SS_theta = ss_solutions["theta"]
                     use_new_guesses = False
                     if p.baseline_spending:
                         TR_baseline = TRguess
@@ -1495,6 +1497,8 @@ def run_SS(p, client=None):
                     factor_ss = ss_solutions[
                         "factor"
                     ]  # don't guess factor, use baseline
+                    # set new attribute of parameters for SS theta
+                    p.SS_theta = ss_solutions["theta"]
                 if p.baseline_spending:
                     TR_baseline = ss_solutions["TR"]
                     Ig_baseline = ss_solutions["I_g"]
