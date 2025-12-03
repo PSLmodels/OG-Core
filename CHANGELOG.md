@@ -5,6 +5,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+
+## [0.15.0] - 2025-11-24 12:00:00
+
+### Added
+
+- Allows the government interest rate on debt to be a function of the debt-to-GDP ratio ((PR #1037)[https://github.com/PSLmodels/OG-Core/pull/1037])
+
 ## [0.14.14] - 2025-11-24 12:00:00
 
 ### Added
@@ -481,6 +488,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Any earlier versions of OG-USA can be found in the [`OG-Core`](https://github.com/PSLmodels/OG-Core) repository [release history](https://github.com/PSLmodels/OG-Core/releases) from [v.0.6.4](https://github.com/PSLmodels/OG-Core/releases/tag/v0.6.4) (Jul. 20, 2021) or earlier.
 
 
+[0.15.0]: https://github.com/PSLmodels/OG-Core/compare/v0.14.14...v0.15.0
 [0.14.14]: https://github.com/PSLmodels/OG-Core/compare/v0.14.13...v0.14.14
 [0.14.13]: https://github.com/PSLmodels/OG-Core/compare/v0.14.12...v0.14.13
 [0.14.12]: https://github.com/PSLmodels/OG-Core/compare/v0.14.11...v0.14.12
