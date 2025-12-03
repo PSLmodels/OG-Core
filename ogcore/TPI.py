@@ -1077,7 +1077,8 @@ def run_TPI(p, client=None):
             new_borrowing,
             debt_service,
             new_borrowing_f,
-        ) = fiscal.D_G_path(r, dg_fixed_values, p)
+        ) = fiscal.D_G_path(rnew, dg_fixed_values, p)
+
         K[: p.T], K_d[: p.T], K_f[: p.T] = aggr.get_K_splits(
             B[: p.T], K_demand_open_vec.sum(-1), D_d[: p.T], p.zeta_K[: p.T]
         )
