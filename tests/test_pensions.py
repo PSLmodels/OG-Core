@@ -45,6 +45,9 @@ expected2 = np.array([0.042012, 0.03842772])
 expected3 = np.array([0.1145304, 0.0969304])
 expected4 = np.array([0.1755, 0.126])
 expected5 = np.array([0.1755, 0.126 * 1.1904761904761905])
+p6 = copy.deepcopy(p5)
+p6.baseline_theta = True
+p6.SS_theta = expected5
 
 test_data = [
     (n1, wss, factor1, 0, p1, expected1),
@@ -52,13 +55,14 @@ test_data = [
     (n3, wss, factor3, None, p3, expected3),
     (n3, wss, factor4, None, p3, expected4),
     (n3, wss, factor4, None, p5, expected5),
+    (n3, wss, factor4, None, p6, expected5),
 ]
 
 
 @pytest.mark.parametrize(
     "n,w,factor,j,p_in,expected",
     test_data,
-    ids=["1D e", "2D e", "AIME case 2", "AIME case 3", "Min PIA case"],
+    ids=["1D e", "2D e", "AIME case 2", "AIME case 3", "Min PIA case", "use_baseline_theta"],
 )
 def test_replacement_rate_vals(n, w, factor, j, p_in, expected):
     # Test replacement rate function, making sure to trigger all three
