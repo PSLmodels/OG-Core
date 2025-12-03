@@ -62,7 +62,14 @@ test_data = [
 @pytest.mark.parametrize(
     "n,w,factor,j,p_in,expected",
     test_data,
-    ids=["1D e", "2D e", "AIME case 2", "AIME case 3", "Min PIA case", "use_baseline_theta"],
+    ids=[
+        "1D e",
+        "2D e",
+        "AIME case 2",
+        "AIME case 3",
+        "Min PIA case",
+        "use_baseline_theta",
+    ],
 )
 def test_replacement_rate_vals(n, w, factor, j, p_in, expected):
     # Test replacement rate function, making sure to trigger all three
