@@ -66,7 +66,10 @@ def replacement_rate_vals(nssmat, wss, factor_ss, j, p):
     theta = (PIA * (12.0 * p.S / 80.0)) / (factor_ss * wss)
     if not p.baseline and p.baseline_theta:
         # use theta from the baseline solution
-        theta = p.SS_theta
+        if j is not None:
+            theta = p.SS_theta[j]
+        else:
+            theta = p.SS_theta
     return theta
 
 
