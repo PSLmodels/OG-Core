@@ -1381,10 +1381,11 @@ def run_SS(p, client=None):
     """
     # For initial guesses of w, r, TR, and factor, we use values that
     # are close to some steady state values.
-    if p.baseline is False and p.reform_use_baseline_solution:
-        # Use the baseline solution to get starting values for the reform
+    # Use the baseline solution to get starting values for the reform
+    if p.baseline is False:
         baseline_ss_path = os.path.join(p.baseline_dir, "SS", "SS_vars.pkl")
         ss_solutions = utils.safe_read_pickle(baseline_ss_path)
+    if p.baseline is False and p.reform_use_baseline_solution:
         if p.reform_use_baseline_solution:
             # use baseline solution as starting values if dimensions match
             try:
