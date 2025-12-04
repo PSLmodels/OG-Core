@@ -1363,7 +1363,7 @@ def SS_initial_guesses(p, b_val=0.0055, n_val=0.4, r_tr_scalars=[1.0, 1.0]):
     if p.baseline:
         guesses.append(p.initial_guess_factor_SS)
 
-        return guesses, b_guess, n_guess
+    return guesses, b_guess, n_guess
 
 
 def run_SS(p, client=None):
