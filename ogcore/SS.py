@@ -283,8 +283,26 @@ def inner_loop(outer_loop_vars, p, client):
     # from dask.base import dask_sizeof
 
     if client:
-        # Scatter p only once and only if client not equal None
+
+        # Before scattering, temporarily remove unpicklable schema objects
+        schema_backup = {}
+        for attr in ['_defaults_schema', '_validator_schema', 'sel']:
+            if hasattr(p, attr):
+                schema_backup[attr] = getattr(p, attr)
+                try:
+                    delattr(p, attr)
+                except:
+                    pass
+
+        # Scatter the parameters
         scattered_p_future = client.scatter(p, broadcast=True)
+
+        # Restore the schema objects (they're not needed by workers anyway)
+        for attr, value in schema_backup.items():
+            try:
+                setattr(p, attr, value)
+            except:
+                pass
 
         # Launch in parallel with submit (or map)
         futures = []
