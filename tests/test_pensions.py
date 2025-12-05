@@ -46,8 +46,13 @@ expected3 = np.array([0.1145304, 0.0969304])
 expected4 = np.array([0.1755, 0.126])
 expected5 = np.array([0.1755, 0.126 * 1.1904761904761905])
 p6 = copy.deepcopy(p5)
+p6.baseline = False
 p6.baseline_theta = True
 p6.SS_theta = expected5
+p7 = copy.deepcopy(p1)
+p7.baseline = False
+p7.baseline_theta = True
+p7.SS_theta = expected1
 
 test_data = [
     (n1, wss, factor1, 0, p1, expected1),
@@ -56,6 +61,7 @@ test_data = [
     (n3, wss, factor4, None, p3, expected4),
     (n3, wss, factor4, None, p5, expected5),
     (n3, wss, factor4, None, p6, expected5),
+    (n1, wss, factor1, 0, p7, expected1),
 ]
 
 
@@ -69,6 +75,7 @@ test_data = [
         "AIME case 3",
         "Min PIA case",
         "use_baseline_theta",
+        "use_baseline_theta, j not None"
     ],
 )
 def test_replacement_rate_vals(n, w, factor, j, p_in, expected):
