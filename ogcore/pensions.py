@@ -46,24 +46,30 @@ def replacement_rate_vals(nssmat, wss, factor_ss, j, p):
     AIME = highest_earn.sum(0) / ((12.0 * (p.S / 80.0)) * equiv_periods)
     PIA = np.zeros(dim2)
     # Compute level of replacement using AIME brackets and PIA rates
-    for j in range(dim2):
-        if AIME[j] < p.AIME_bkt_1:
-            PIA[j] = p.PIA_rate_bkt_1 * AIME[j]
-        elif AIME[j] < p.AIME_bkt_2:
-            PIA[j] = p.PIA_rate_bkt_1 * p.AIME_bkt_1 + p.PIA_rate_bkt_2 * (
-                AIME[j] - p.AIME_bkt_1
+    for jj in range(dim2):
+        if AIME[jj] < p.AIME_bkt_1:
+            PIA[jj] = p.PIA_rate_bkt_1 * AIME[jj]
+        elif AIME[jj] < p.AIME_bkt_2:
+            PIA[jj] = p.PIA_rate_bkt_1 * p.AIME_bkt_1 + p.PIA_rate_bkt_2 * (
+                AIME[jj] - p.AIME_bkt_1
             )
         else:
-            PIA[j] = (
+            PIA[jj] = (
                 p.PIA_rate_bkt_1 * p.AIME_bkt_1
                 + p.PIA_rate_bkt_2 * (p.AIME_bkt_2 - p.AIME_bkt_1)
-                + p.PIA_rate_bkt_3 * (AIME[j] - p.AIME_bkt_2)
+                + p.PIA_rate_bkt_3 * (AIME[jj] - p.AIME_bkt_2)
             )
     # Set the maximum monthly replacement rate from SS benefits tables
     PIA[PIA > p.PIA_maxpayment] = p.PIA_maxpayment
     if p.PIA_minpayment != 0.0:
         PIA[PIA < p.PIA_minpayment] = p.PIA_minpayment
     theta = (PIA * (12.0 * p.S / 80.0)) / (factor_ss * wss)
+    if not p.baseline and p.baseline_theta:
+        # use theta from the baseline solution
+        if j is not None:
+            theta = p.SS_theta[j]
+        else:
+            theta = p.SS_theta
     return theta
 
 

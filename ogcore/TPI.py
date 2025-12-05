@@ -744,9 +744,25 @@ def run_TPI(p, client=None):
     euler_errors = np.zeros((p.T, 2 * p.S, p.J))
     TPIdist_vec = np.zeros(p.maxiter)
 
-    # scatter parameters to workers
-    if client:
-        scattered_p_future = client.scatter(p, broadcast=True)
+    # Before scattering, temporarily remove unpicklable schema objects
+    schema_backup = {}
+    for attr in ["_defaults_schema", "_validator_schema", "sel"]:
+        if hasattr(p, attr):
+            schema_backup[attr] = getattr(p, attr)
+            try:
+                delattr(p, attr)
+            except:
+                pass
+
+    # Scatter the parameters
+    scattered_p_future = client.scatter(p, broadcast=True)
+
+    # Restore the schema objects (they're not needed by workers anyway)
+    for attr, value in schema_backup.items():
+        try:
+            setattr(p, attr, value)
+        except:
+            pass
 
     # TPI loop
     while (TPIiter < p.maxiter) and (TPIdist >= p.mindist_TPI):
