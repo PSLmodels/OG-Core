@@ -75,7 +75,7 @@ test_data = [
         "AIME case 3",
         "Min PIA case",
         "use_baseline_theta",
-        "use_baseline_theta, j not None"
+        "use_baseline_theta, j not None",
     ],
 )
 def test_replacement_rate_vals(n, w, factor, j, p_in, expected):
