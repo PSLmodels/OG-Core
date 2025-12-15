@@ -497,6 +497,7 @@
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#pia-maxpayment"><code class="docutils literal notranslate"><span class="pre">PIA_maxpayment</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#pia-minpayment"><code class="docutils literal notranslate"><span class="pre">PIA_minpayment</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#replacement-rate-adjust"><code class="docutils literal notranslate"><span class="pre">replacement_rate_adjust</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#baseline-theta"><code class="docutils literal notranslate"><span class="pre">baseline_theta</span></code></a></li>
 </ul>
 </li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#spending">Spending</a><ul class="nav section-nav flex-column">
@@ -713,7 +714,8 @@ organization of the theory in the <code class="docutils literal notranslate"><sp
 <section id="use-zeta">
 <h4><code class="docutils literal notranslate"><span class="pre">use_zeta</span></code><a class="headerlink" href="#use-zeta" title="Link to this heading">#</a></h4>
 <p><em>Description:</em> Indicator variable for whether or not to use the zeta matrix to distribute bequests.<br />
-<em>Value Type:</em> bool</p>
+<em>Value Type:</em> bool<br />
+<em>Valid Choices:</em>[True, False]</p>
 </section>
 </section>
 <section id="model-dimensions">
@@ -1003,6 +1005,12 @@ organization of the theory in the <code class="docutils literal notranslate"><sp
 <em>Valid Range:</em> min = 0.0 and max = 10.0<br />
 <em>Out-of-Range Action:</em> error</p>
 </section>
+<section id="baseline-theta">
+<h4><code class="docutils literal notranslate"><span class="pre">baseline_theta</span></code><a class="headerlink" href="#baseline-theta" title="Link to this heading">#</a></h4>
+<p><em>Description:</em> Flag for use in reform simulations to keep Social Security system replacement rate constant between baseline and reform runs.<br />
+<em>Value Type:</em> bool<br />
+<em>Valid Choices:</em>[True, False]</p>
+</section>
 </section>
 <section id="spending">
 <h3>Spending<a class="headerlink" href="#spending" title="Link to this heading">#</a></h3>
@@ -1196,22 +1204,26 @@ organization of the theory in the <code class="docutils literal notranslate"><sp
 <section id="constant-rates">
 <h4><code class="docutils literal notranslate"><span class="pre">constant_rates</span></code><a class="headerlink" href="#constant-rates" title="Link to this heading">#</a></h4>
 <p><em>Description:</em> Flag to use linear tax functions.<br />
-<em>Value Type:</em> bool</p>
+<em>Value Type:</em> bool<br />
+<em>Valid Choices:</em>[True, False]</p>
 </section>
 <section id="zero-taxes">
 <h4><code class="docutils literal notranslate"><span class="pre">zero_taxes</span></code><a class="headerlink" href="#zero-taxes" title="Link to this heading">#</a></h4>
 <p><em>Description:</em> Flag to run model without any individual income taxes.<br />
-<em>Value Type:</em> bool</p>
+<em>Value Type:</em> bool<br />
+<em>Valid Choices:</em>[True, False]</p>
 </section>
 <section id="analytical-mtrs">
 <h4><code class="docutils literal notranslate"><span class="pre">analytical_mtrs</span></code><a class="headerlink" href="#analytical-mtrs" title="Link to this heading">#</a></h4>
 <p><em>Description:</em> Flag to use analytically derived marginal tax rates in tax functions.<br />
-<em>Value Type:</em> bool</p>
+<em>Value Type:</em> bool<br />
+<em>Valid Choices:</em>[True, False]</p>
 </section>
 <section id="age-specific">
 <h4><code class="docutils literal notranslate"><span class="pre">age_specific</span></code><a class="headerlink" href="#age-specific" title="Link to this heading">#</a></h4>
 <p><em>Description:</em> Flag to use analytically derived marginal tax rates in tax functions.<br />
-<em>Value Type:</em> bool</p>
+<em>Value Type:</em> bool<br />
+<em>Valid Choices:</em>[True, False]</p>
 </section>
 <section id="tax-func-type">
 <h4><code class="docutils literal notranslate"><span class="pre">tax_func_type</span></code><a class="headerlink" href="#tax-func-type" title="Link to this heading">#</a></h4>
@@ -1344,7 +1356,8 @@ organization of the theory in the <code class="docutils literal notranslate"><sp
 <h3><code class="docutils literal notranslate"><span class="pre">constant_demographics</span></code><a class="headerlink" href="#constant-demographics" title="Link to this heading">#</a></h3>
 <p><em>Description:</em> Use constant demographics.<br />
 <em>Notes:</em> This boolean allows one to use empirical mortality rates, but keep the population distribution constant across periods.  Note that immigration is shut off when this is true.<br />
-<em>Value Type:</em> bool</p>
+<em>Value Type:</em> bool<br />
+<em>Valid Choices:</em>[True, False]</p>
 </section>
 <section id="omega">
 <h3><code class="docutils literal notranslate"><span class="pre">omega</span></code><a class="headerlink" href="#omega" title="Link to this heading">#</a></h3>
@@ -1457,7 +1470,8 @@ organization of the theory in the <code class="docutils literal notranslate"><sp
 <section id="reform-use-baseline-solution">
 <h3><code class="docutils literal notranslate"><span class="pre">reform_use_baseline_solution</span></code><a class="headerlink" href="#reform-use-baseline-solution" title="Link to this heading">#</a></h3>
 <p><em>Description:</em> Whether or not the baseline SS solution is used for starting values when solving the reform.<br />
-<em>Value Type:</em> bool</p>
+<em>Value Type:</em> bool<br />
+<em>Valid Choices:</em>[True, False]</p>
 </section>
 <section id="initial-guess-r-ss">
 <h3><code class="docutils literal notranslate"><span class="pre">initial_guess_r_SS</span></code><a class="headerlink" href="#initial-guess-r-ss" title="Link to this heading">#</a></h3>
@@ -1648,6 +1662,7 @@ organization of the theory in the <code class="docutils literal notranslate"><sp
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#pia-maxpayment"><code class="docutils literal notranslate"><span class="pre">PIA_maxpayment</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#pia-minpayment"><code class="docutils literal notranslate"><span class="pre">PIA_minpayment</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#replacement-rate-adjust"><code class="docutils literal notranslate"><span class="pre">replacement_rate_adjust</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#baseline-theta"><code class="docutils literal notranslate"><span class="pre">baseline_theta</span></code></a></li>
 </ul>
 </li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#spending">Spending</a><ul class="nav section-nav flex-column">
