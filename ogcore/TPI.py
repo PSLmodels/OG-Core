@@ -744,9 +744,25 @@ def run_TPI(p, client=None):
     euler_errors = np.zeros((p.T, 2 * p.S, p.J))
     TPIdist_vec = np.zeros(p.maxiter)
 
-    # scatter parameters to workers
-    if client:
-        scattered_p_future = client.scatter(p, broadcast=True)
+    # Before scattering, temporarily remove unpicklable schema objects
+    schema_backup = {}
+    for attr in ["_defaults_schema", "_validator_schema", "sel"]:
+        if hasattr(p, attr):
+            schema_backup[attr] = getattr(p, attr)
+            try:
+                delattr(p, attr)
+            except:
+                pass
+
+    # Scatter the parameters
+    scattered_p_future = client.scatter(p, broadcast=True)
+
+    # Restore the schema objects (they're not needed by workers anyway)
+    for attr, value in schema_backup.items():
+        try:
+            setattr(p, attr, value)
+        except:
+            pass
 
     # TPI loop
     while (TPIiter < p.maxiter) and (TPIdist >= p.mindist_TPI):
@@ -777,7 +793,38 @@ def run_TPI(p, client=None):
                     scattered_p_future,
                 )
                 futures.append(f)
-            results = client.gather(futures)
+            try:
+                # Wait for futures with timeout, then gather results
+                from distributed import wait
+
+                done, not_done = wait(futures, timeout=600)
+                if not_done:
+                    # Some futures didn't complete in time
+                    raise TimeoutError(
+                        f"{len(not_done)} futures did not complete within 600 seconds"
+                    )
+                results = client.gather(futures)
+            except Exception as e:
+                # Cancel remaining futures and fall back to serial computation
+                logging.warning(
+                    f"Dask computation failed with error: {e}. "
+                    "Falling back to serial computation for this iteration."
+                )
+                for future in futures:
+                    future.cancel()
+                results = []
+                for j in range(p.J):
+                    guesses = (guesses_b[:, :, j], guesses_n[:, :, j])
+                    res = inner_loop(
+                        guesses,
+                        outer_loop_vars,
+                        initial_values,
+                        ubi,
+                        j,
+                        ind,
+                        p,
+                    )
+                    results.append(res)
         else:
             # Serial fallback (no dask client)
             for j in range(p.J):
@@ -883,7 +930,15 @@ def run_TPI(p, client=None):
             p.e,
             p,
         )
-        sales_tax_mat = tax.cons_tax_liab(c_mat, p_i, p, "TPI")
+        c_i = household.get_ci(
+            c_mat[: p.T, :, :],
+            p_i[: p.T, :],
+            p_tilde[: p.T],
+            p.tau_c[: p.T, :],
+            p.alpha_c,
+            "TPI",
+        )
+        sales_tax_mat = tax.cons_tax_liab(c_i, p_i, p, "TPI")
         C = aggr.get_C(c_mat, p, "TPI")
 
         c_i = household.get_ci(
