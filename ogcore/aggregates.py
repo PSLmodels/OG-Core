@@ -133,9 +133,7 @@ def get_B(b, p, method, preTP):
         if preTP:
             part1 = b * np.transpose(p.omega_S_preTP * p.lambdas)
             omega_extended = np.append(p.omega_S_preTP[1:], [0.0])
-            imm_extended = np.append(
-                p.imm_rates_preTP[1:], [0.0]
-            )
+            imm_extended = np.append(p.imm_rates_preTP[1:], [0.0])
             pop_growth_rate = p.g_n_preTP
         else:
             part1 = b * np.transpose(p.omega_SS * p.lambdas)
