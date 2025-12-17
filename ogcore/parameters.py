@@ -317,6 +317,7 @@ class Specifications(paramtools.Parameters):
         # for constant demographics
         if self.constant_demographics:
             self.g_n_ss = 0.0
+            self.g_n_preTP = 0.0
             self.g_n = np.zeros(self.T + self.S)
             surv_rate = np.ones_like(self.rho) - self.rho
             surv_rate1 = np.ones((self.S,))  # prob start at age S
