@@ -10,11 +10,54 @@ from ogcore import tax, utils
 import logging
 from ogcore import config
 
+# Try to import Numba for JIT compilation (optional speedup)
+try:
+    from numba import njit, prange
+    HAS_NUMBA = True
+except ImportError:
+    HAS_NUMBA = False
+    # Fallback: decorator that does nothing
+    def njit(*args, **kwargs):
+        def decorator(func):
+            return func
+        return decorator
+    prange = range
+
 """
 ------------------------------------------------------------------------
     Functions
 ------------------------------------------------------------------------
 """
+
+
+# Numba-optimized core computation for marginal utility of consumption
+@njit(cache=True)
+def _marg_ut_cons_numba(c_flat, sigma, epsilon=0.003):
+    """
+    Numba-optimized core computation for marginal utility of consumption.
+
+    Args:
+        c_flat (1D array): flattened consumption array
+        sigma (float): coefficient of relative risk aversion
+        epsilon (float): threshold for constraint handling
+
+    Returns:
+        MU_c (1D array): marginal utility values
+    """
+    n = c_flat.shape[0]
+    MU_c = np.zeros(n)
+    b2 = (-sigma * (epsilon ** (-sigma - 1))) / 2
+    b1 = (epsilon ** (-sigma)) - 2 * b2 * epsilon
+
+    for i in prange(n):
+        if c_flat[i] < epsilon:
+            # Quadratic extrapolation for constrained values
+            MU_c[i] = 2 * b2 * c_flat[i] + b1
+        else:
+            # Normal marginal utility
+            MU_c[i] = c_flat[i] ** (-sigma)
+
+    return MU_c
 
 
 def marg_ut_cons(c, sigma):
@@ -34,17 +77,106 @@ def marg_ut_cons(c, sigma):
     """
     if np.ndim(c) == 0:
         c = np.array([c])
-    epsilon = 0.003
-    cvec_cnstr = c < epsilon
-    MU_c = np.zeros(c.shape)
-    MU_c[~cvec_cnstr] = c[~cvec_cnstr] ** (-sigma)
-    b2 = (-sigma * (epsilon ** (-sigma - 1))) / 2
-    b1 = (epsilon ** (-sigma)) - 2 * b2 * epsilon
-    MU_c[cvec_cnstr] = 2 * b2 * c[cvec_cnstr] + b1
-    output = MU_c
+
+    original_shape = c.shape
+    c_flat = c.ravel()
+
+    # Use Numba-optimized function
+    MU_c_flat = _marg_ut_cons_numba(c_flat, sigma)
+
+    # Reshape back to original shape
+    output = MU_c_flat.reshape(original_shape)
     output = np.squeeze(output)
 
     return output
+
+
+# Numba-optimized core computation for marginal disutility of labor
+@njit(cache=True)
+def _marg_ut_labor_numba(nvec_flat, b_ellipse, ltilde, upsilon):
+    """
+    Numba-optimized core computation for marginal disutility of labor.
+
+    Args:
+        nvec_flat (1D array): flattened labor supply array
+        b_ellipse (float): ellipse parameter
+        ltilde (float): time endowment
+        upsilon (float): Frisch elasticity parameter
+
+    Returns:
+        MDU_n (1D array): marginal disutility values
+    """
+    n = nvec_flat.shape[0]
+    MDU_n = np.zeros(n)
+    eps_low = 0.000001
+    eps_high = ltilde - 0.000001
+
+    # Pre-compute coefficients for low constraint
+    b2 = (
+        0.5
+        * b_ellipse
+        * (ltilde ** (-upsilon))
+        * (upsilon - 1)
+        * (eps_low ** (upsilon - 2))
+        * (
+            (1 - ((eps_low / ltilde) ** upsilon))
+            ** ((1 - upsilon) / upsilon)
+        )
+        * (
+            1
+            + ((eps_low / ltilde) ** upsilon)
+            * ((1 - ((eps_low / ltilde) ** upsilon)) ** (-1))
+        )
+    )
+    b1 = (b_ellipse / ltilde) * (
+        (eps_low / ltilde) ** (upsilon - 1)
+    ) * (
+        (1 - ((eps_low / ltilde) ** upsilon))
+        ** ((1 - upsilon) / upsilon)
+    ) - (2 * b2 * eps_low)
+
+    # Pre-compute coefficients for high constraint
+    d2 = (
+        0.5
+        * b_ellipse
+        * (ltilde ** (-upsilon))
+        * (upsilon - 1)
+        * (eps_high ** (upsilon - 2))
+        * (
+            (1 - ((eps_high / ltilde) ** upsilon))
+            ** ((1 - upsilon) / upsilon)
+        )
+        * (
+            1
+            + ((eps_high / ltilde) ** upsilon)
+            * ((1 - ((eps_high / ltilde) ** upsilon)) ** (-1))
+        )
+    )
+    d1 = (b_ellipse / ltilde) * (
+        (eps_high / ltilde) ** (upsilon - 1)
+    ) * (
+        (1 - ((eps_high / ltilde) ** upsilon))
+        ** ((1 - upsilon) / upsilon)
+    ) - (2 * d2 * eps_high)
+
+    for i in prange(n):
+        nval = nvec_flat[i]
+        if nval < eps_low:
+            MDU_n[i] = 2 * b2 * nval + b1
+        elif nval > eps_high:
+            MDU_n[i] = 2 * d2 * nval + d1
+        else:
+            # Unconstrained case
+            MDU_n[i] = (
+                (b_ellipse / ltilde)
+                * ((nval / ltilde) ** (upsilon - 1))
+                * (
+                    (1 - ((nval / ltilde) ** upsilon))
+                    ** ((1 - upsilon) / upsilon)
+                )
+            )
+
+    return MDU_n
 
 
 def marg_ut_labor(n, chi_n, p):
@@ -69,70 +201,17 @@ def marg_ut_labor(n, chi_n, p):
     nvec = n
     if np.ndim(nvec) == 0:
         nvec = np.array([nvec])
-    eps_low = 0.000001
-    eps_high = p.ltilde - 0.000001
-    nvec_low = nvec < eps_low
-    nvec_high = nvec > eps_high
-    nvec_uncstr = np.logical_and(~nvec_low, ~nvec_high)
-    MDU_n = np.zeros(nvec.shape)
-    MDU_n[nvec_uncstr] = (
-        (p.b_ellipse / p.ltilde)
-        * ((nvec[nvec_uncstr] / p.ltilde) ** (p.upsilon - 1))
-        * (
-            (1 - ((nvec[nvec_uncstr] / p.ltilde) ** p.upsilon))
-            ** ((1 - p.upsilon) / p.upsilon)
-        )
+
+    original_shape = nvec.shape
+    nvec_flat = nvec.ravel()
+
+    # Use Numba-optimized function
+    MDU_n_flat = _marg_ut_labor_numba(
+        nvec_flat, p.b_ellipse, p.ltilde, p.upsilon
     )
-    b2 = (
-        0.5
-        * p.b_ellipse
-        * (p.ltilde ** (-p.upsilon))
-        * (p.upsilon - 1)
-        * (eps_low ** (p.upsilon - 2))
-        * (
-            (1 - ((eps_low / p.ltilde) ** p.upsilon))
-            ** ((1 - p.upsilon) / p.upsilon)
-        )
-        * (
-            1
-            + ((eps_low / p.ltilde) ** p.upsilon)
-            * ((1 - ((eps_low / p.ltilde) ** p.upsilon)) ** (-1))
-        )
-    )
-    b1 = (p.b_ellipse / p.ltilde) * (
-        (eps_low / p.ltilde) ** (p.upsilon - 1)
-    ) * (
-        (1 - ((eps_low / p.ltilde) ** p.upsilon))
-        ** ((1 - p.upsilon) / p.upsilon)
-    ) - (
-        2 * b2 * eps_low
-    )
-    MDU_n[nvec_low] = 2 * b2 * nvec[nvec_low] + b1
-    d2 = (
-        0.5
-        * p.b_ellipse
-        * (p.ltilde ** (-p.upsilon))
-        * (p.upsilon - 1)
-        * (eps_high ** (p.upsilon - 2))
-        * (
-            (1 - ((eps_high / p.ltilde) ** p.upsilon))
-            ** ((1 - p.upsilon) / p.upsilon)
-        )
-        * (
-            1
-            + ((eps_high / p.ltilde) ** p.upsilon)
-            * ((1 - ((eps_high / p.ltilde) ** p.upsilon)) ** (-1))
-        )
-    )
-    d1 = (p.b_ellipse / p.ltilde) * (
-        (eps_high / p.ltilde) ** (p.upsilon - 1)
-    ) * (
-        (1 - ((eps_high / p.ltilde) ** p.upsilon))
-        ** ((1 - p.upsilon) / p.upsilon)
-    ) - (
-        2 * d2 * eps_high
-    )
-    MDU_n[nvec_high] = 2 * d2 * nvec[nvec_high] + d1
+
+    # Reshape and apply chi_n weights
+    MDU_n = MDU_n_flat.reshape(original_shape)
     output = MDU_n * np.squeeze(chi_n)
     output = np.squeeze(output)
     return output
