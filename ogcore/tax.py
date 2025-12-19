@@ -9,6 +9,42 @@ import numpy as np
 from ogcore import utils, pensions
 from ogcore.txfunc import get_tax_rates
 
+# Try to import Numba for JIT compilation
+try:
+    from numba import njit, vectorize, float64
+    HAS_NUMBA = True
+except ImportError:
+    HAS_NUMBA = False
+    # Create dummy decorators if Numba not available
+    def njit(*args, **kwargs):
+        def decorator(func):
+            return func
+        if len(args) == 1 and callable(args[0]):
+            return args[0]
+        return decorator
+    def vectorize(*args, **kwargs):
+        def decorator(func):
+            return np.vectorize(func)
+        return decorator
+    float64 = None
+
+
+# Numba-optimized wealth tax functions
+if HAS_NUMBA:
+    @vectorize([float64(float64, float64, float64, float64)], nopython=True, cache=True)
+    def _etr_wealth_numba(b, h_wealth, m_wealth, p_wealth):
+        """Numba-optimized effective tax rate on wealth (scalar)."""
+        return (p_wealth * h_wealth * b) / (h_wealth * b + m_wealth)
+
+    @vectorize([float64(float64, float64, float64, float64)], nopython=True, cache=True)
+    def _mtr_wealth_numba(b, h_wealth, m_wealth, p_wealth):
+        """Numba-optimized marginal tax rate on wealth (scalar)."""
+        etr = (p_wealth * h_wealth * b) / (h_wealth * b + m_wealth)
+        return etr * 2 - ((h_wealth**2 * p_wealth * b**2) / ((b * h_wealth + m_wealth) ** 2))
+else:
+    _etr_wealth_numba = None
+    _mtr_wealth_numba = None
+
 """
 ------------------------------------------------------------------------
     Functions
@@ -34,7 +70,15 @@ def ETR_wealth(b, h_wealth, m_wealth, p_wealth):
         tau_w (Numpy array): effective tax rate on wealth, size = SxJ
 
     """
-    tau_w = (p_wealth * h_wealth * b) / (h_wealth * b + m_wealth)
+    if HAS_NUMBA and _etr_wealth_numba is not None:
+        # Ensure arrays are float64 for Numba
+        b_arr = np.asarray(b, dtype=np.float64)
+        h_arr = np.float64(h_wealth) if np.isscalar(h_wealth) else np.asarray(h_wealth, dtype=np.float64)
+        m_arr = np.float64(m_wealth) if np.isscalar(m_wealth) else np.asarray(m_wealth, dtype=np.float64)
+        p_arr = np.float64(p_wealth) if np.isscalar(p_wealth) else np.asarray(p_wealth, dtype=np.float64)
+        tau_w = _etr_wealth_numba(b_arr, h_arr, m_arr, p_arr)
+    else:
+        tau_w = (p_wealth * h_wealth * b) / (h_wealth * b + m_wealth)
 
     return tau_w
 
@@ -57,9 +101,17 @@ def MTR_wealth(b, h_wealth, m_wealth, p_wealth):
         tau_prime (Numpy array): marginal tax rate on wealth, size = SxJ
 
     """
-    tau_prime = ETR_wealth(b, h_wealth, m_wealth, p_wealth) * 2 - (
-        (h_wealth**2 * p_wealth * b**2) / ((b * h_wealth + m_wealth) ** 2)
-    )
+    if HAS_NUMBA and _mtr_wealth_numba is not None:
+        # Ensure arrays are float64 for Numba
+        b_arr = np.asarray(b, dtype=np.float64)
+        h_arr = np.float64(h_wealth) if np.isscalar(h_wealth) else np.asarray(h_wealth, dtype=np.float64)
+        m_arr = np.float64(m_wealth) if np.isscalar(m_wealth) else np.asarray(m_wealth, dtype=np.float64)
+        p_arr = np.float64(p_wealth) if np.isscalar(p_wealth) else np.asarray(p_wealth, dtype=np.float64)
+        tau_prime = _mtr_wealth_numba(b_arr, h_arr, m_arr, p_arr)
+    else:
+        tau_prime = ETR_wealth(b, h_wealth, m_wealth, p_wealth) * 2 - (
+            (h_wealth**2 * p_wealth * b**2) / ((b * h_wealth + m_wealth) ** 2)
+        )
 
     return tau_prime
 

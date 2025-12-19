@@ -28,6 +28,119 @@ from pygam import LinearGAM, s, te
 from matplotlib import cm
 import random
 
+# Try to import Numba for JIT compilation
+try:
+    from numba import njit, prange
+    HAS_NUMBA = True
+except ImportError:
+    HAS_NUMBA = False
+    def njit(*args, **kwargs):
+        def decorator(func):
+            return func
+        if len(args) == 1 and callable(args[0]):
+            return args[0]
+        return decorator
+    prange = range
+
+
+# Numba-optimized DEP tax rate calculation (for model runs, not estimation)
+@njit(cache=True, parallel=True)
+def _get_tax_rates_dep_numba(X, Y, A, B, C, D, max_x, max_y, share,
+                              min_x, min_y, shift_x, shift_y, shift):
+    """
+    Numba-optimized DEP tax rate calculation for model runs.
+
+    This computes the effective tax rate using the DEP functional form
+    when for_estimation=False and analytical_mtrs=False.
+    """
+    X2 = X * X
+    Y2 = Y * Y
+
+    # tau_x = (max_x - min_x) * (A * X2 + B * X) / (A * X2 + B * X + 1) + min_x
+    # tau_y = (max_y - min_y) * (C * Y2 + D * Y) / (C * Y2 + D * Y + 1) + min_y
+
+    n = X.shape[0]
+    txrates = np.empty(n, dtype=np.float64)
+
+    for i in prange(n):
+        ax2_bx = A * X2[i] + B * X[i]
+        cy2_dy = C * Y2[i] + D * Y[i]
+
+        tau_x = (max_x - min_x) * ax2_bx / (ax2_bx + 1.0) + min_x
+        tau_y = (max_y - min_y) * cy2_dy / (cy2_dy + 1.0) + min_y
+
+        txrates[i] = ((tau_x + shift_x) ** share) * ((tau_y + shift_y) ** (1.0 - share)) + shift
+
+    return txrates
+
+
+@njit(cache=True, parallel=True)
+def _get_tax_rates_dep_mtr_labor_numba(X, Y, A, B, C, D, max_x, max_y, share,
+                                        min_x, min_y, shift_x, shift_y, shift):
+    """
+    Numba-optimized DEP marginal tax rate on labor income calculation.
+
+    This computes the analytical MTR on labor when for_estimation=False.
+    """
+    X2 = X * X
+    Y2 = Y * Y
+    income = X + Y
+
+    n = X.shape[0]
+    txrates = np.empty(n, dtype=np.float64)
+
+    for i in prange(n):
+        ax2_bx = A * X2[i] + B * X[i]
+        cy2_dy = C * Y2[i] + D * Y[i]
+
+        tau_x = (max_x - min_x) * ax2_bx / (ax2_bx + 1.0) + min_x
+        tau_y = (max_y - min_y) * cy2_dy / (cy2_dy + 1.0) + min_y
+
+        etr = ((tau_x + shift_x) ** share) * ((tau_y + shift_y) ** (1.0 - share)) + shift
+
+        # d_etr for labor income (not capital)
+        d_etr = (share * ((tau_x + shift_x) ** (share - 1.0)) *
+                 (max_x - min_x) * ((2.0 * A * X[i] + B) / ((ax2_bx + 1.0) ** 2)) *
+                 ((tau_y + shift_y) ** (1.0 - share)))
+
+        txrates[i] = d_etr * income[i] + etr
+
+    return txrates
+
+
+@njit(cache=True, parallel=True)
+def _get_tax_rates_dep_mtr_capital_numba(X, Y, A, B, C, D, max_x, max_y, share,
+                                          min_x, min_y, shift_x, shift_y, shift):
+    """
+    Numba-optimized DEP marginal tax rate on capital income calculation.
+
+    This computes the analytical MTR on capital when for_estimation=False.
+    """
+    X2 = X * X
+    Y2 = Y * Y
+    income = X + Y
+
+    n = X.shape[0]
+    txrates = np.empty(n, dtype=np.float64)
+
+    for i in prange(n):
+        ax2_bx = A * X2[i] + B * X[i]
+        cy2_dy = C * Y2[i] + D * Y[i]
+
+        tau_x = (max_x - min_x) * ax2_bx / (ax2_bx + 1.0) + min_x
+        tau_y = (max_y - min_y) * cy2_dy / (cy2_dy + 1.0) + min_y
+
+        etr = ((tau_x + shift_x) ** share) * ((tau_y + shift_y) ** (1.0 - share)) + shift
+
+        # d_etr for capital income
+        d_etr = ((1.0 - share) * ((tau_y + shift_y) ** (-share)) *
+                 (max_y - min_y) * ((2.0 * C * Y[i] + D) / ((cy2_dy + 1.0) ** 2)) *
+                 ((tau_x + shift_x) ** share))
+
+        txrates[i] = d_etr * income[i] + etr
+
+    return txrates
+
 
 if not SHOW_RUNTIME:
     warnings.simplefilter("ignore", RuntimeWarning)
@@ -171,46 +284,89 @@ def get_tax_rates(
                 * ((tau_y + shift_y) ** (1 - share))
             ) + shift
         else:
+            # Check if we can use Numba optimization (1D arrays with scalar params)
+            use_numba = (HAS_NUMBA and
+                         np.ndim(X) == 1 and
+                         np.ndim(A) == 0 and
+                         X.size >= 10)  # Only use Numba for larger arrays
+
             if analytical_mtrs:
-                tau_x = (max_x - min_x) * (A * X2 + B * X) / (
-                    A * X2 + B * X + 1
-                ) + min_x
-                tau_y = (max_y - min_y) * (C * Y2 + D * Y) / (
-                    C * Y2 + D * Y + 1
-                ) + min_y
-                etr = (
-                    ((tau_x + shift_x) ** share)
-                    * ((tau_y + shift_y) ** (1 - share))
-                ) + shift
-                if mtr_capital:
-                    d_etr = (
-                        (1 - share)
-                        * ((tau_y + shift_y) ** (-share))
-                        * (max_y - min_y)
-                        * ((2 * C * Y + D) / ((C * Y2 + D * Y + 1) ** 2))
-                        * ((tau_x + shift_x) ** share)
-                    )
-                    txrates = d_etr * income + etr
+                if use_numba:
+                    # Use Numba-optimized version
+                    X_flat = np.ascontiguousarray(X.ravel(), dtype=np.float64)
+                    Y_flat = np.ascontiguousarray(Y.ravel(), dtype=np.float64)
+                    if mtr_capital:
+                        txrates = _get_tax_rates_dep_mtr_capital_numba(
+                            X_flat, Y_flat,
+                            float(A), float(B), float(C), float(D),
+                            float(max_x), float(max_y), float(share),
+                            float(min_x), float(min_y),
+                            float(shift_x), float(shift_y), float(shift)
+                        )
+                    else:
+                        txrates = _get_tax_rates_dep_mtr_labor_numba(
+                            X_flat, Y_flat,
+                            float(A), float(B), float(C), float(D),
+                            float(max_x), float(max_y), float(share),
+                            float(min_x), float(min_y),
+                            float(shift_x), float(shift_y), float(shift)
+                        )
+                    txrates = txrates.reshape(X.shape)
                 else:
-                    d_etr = (
-                        share
-                        * ((tau_x + shift_x) ** (share - 1))
-                        * (max_x - min_x)
-                        * ((2 * A * X + B) / ((A * X2 + B * X + 1) ** 2))
+                    # Original numpy version
+                    tau_x = (max_x - min_x) * (A * X2 + B * X) / (
+                        A * X2 + B * X + 1
+                    ) + min_x
+                    tau_y = (max_y - min_y) * (C * Y2 + D * Y) / (
+                        C * Y2 + D * Y + 1
+                    ) + min_y
+                    etr = (
+                        ((tau_x + shift_x) ** share)
                         * ((tau_y + shift_y) ** (1 - share))
-                    )
-                    txrates = d_etr * income + etr
+                    ) + shift
+                    if mtr_capital:
+                        d_etr = (
+                            (1 - share)
+                            * ((tau_y + shift_y) ** (-share))
+                            * (max_y - min_y)
+                            * ((2 * C * Y + D) / ((C * Y2 + D * Y + 1) ** 2))
+                            * ((tau_x + shift_x) ** share)
+                        )
+                        txrates = d_etr * income + etr
+                    else:
+                        d_etr = (
+                            share
+                            * ((tau_x + shift_x) ** (share - 1))
+                            * (max_x - min_x)
+                            * ((2 * A * X + B) / ((A * X2 + B * X + 1) ** 2))
+                            * ((tau_y + shift_y) ** (1 - share))
+                        )
+                        txrates = d_etr * income + etr
             else:
-                tau_x = (
-                    (max_x - min_x) * (A * X2 + B * X) / (A * X2 + B * X + 1)
-                ) + min_x
-                tau_y = (
-                    (max_y - min_y) * (C * Y2 + D * Y) / (C * Y2 + D * Y + 1)
-                ) + min_y
-                txrates = (
-                    ((tau_x + shift_x) ** share)
-                    * ((tau_y + shift_y) ** (1 - share))
-                ) + shift
+                if use_numba:
+                    # Use Numba-optimized version for ETR
+                    X_flat = np.ascontiguousarray(X.ravel(), dtype=np.float64)
+                    Y_flat = np.ascontiguousarray(Y.ravel(), dtype=np.float64)
+                    txrates = _get_tax_rates_dep_numba(
+                        X_flat, Y_flat,
+                        float(A), float(B), float(C), float(D),
+                        float(max_x), float(max_y), float(share),
+                        float(min_x), float(min_y),
+                        float(shift_x), float(shift_y), float(shift)
+                    )
+                    txrates = txrates.reshape(X.shape)
+                else:
+                    # Original numpy version
+                    tau_x = (
+                        (max_x - min_x) * (A * X2 + B * X) / (A * X2 + B * X + 1)
+                    ) + min_x
+                    tau_y = (
+                        (max_y - min_y) * (C * Y2 + D * Y) / (C * Y2 + D * Y + 1)
+                    ) + min_y
+                    txrates = (
+                        ((tau_x + shift_x) ** share)
+                        * ((tau_y + shift_y) ** (1 - share))
+                    ) + shift
     elif tax_func_type == "DEP_totalinc":
         A, B, max_income, min_income, shift_income, shift = (
             np.squeeze(params[..., 0]),

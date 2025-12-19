@@ -4348,13 +4348,13 @@
         "type": "float",
         "value": [
             {
-                "value": 1e-09
+                "value": 1e-03
             }
         ],
         "validators": {
             "range": {
                 "min": 1e-13,
-                "max": 0.001
+                "max": 0.1
             }
         }
     },
@@ -4384,13 +4384,13 @@
         "type": "float",
         "value": [
             {
-                "value": 1e-08
+                "value": 1e-04
             }
         ],
         "validators": {
             "range": {
                 "min": 1e-13,
-                "max": 0.001
+                "max": 0.1
             }
         }
     },
