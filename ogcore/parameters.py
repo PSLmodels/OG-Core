@@ -1,5 +1,6 @@
 import os
 import numpy as np
+import marshmallow as ma
 import scipy.interpolate as si
 import paramtools
 import ogcore
@@ -13,6 +14,48 @@ from ogcore.constants import BASELINE_DIR
 
 CURRENT_PATH = os.path.abspath(os.path.dirname(__file__))
 
+
+
+
+class Int16(ma.fields.Field):
+    """
+    A custom type for np.int16.
+    https://numpy.org/devdocs/reference/arrays.dtypes.html
+    """
+    # minor detail that makes this play nice with array_first
+    np_type = np.int16
+
+    def _serialize(self, value, *args, **kwargs):
+        """Convert np.int16 to basic, serializable Python int."""
+        return value.tolist()
+
+    def _deserialize(self, value, *args, **kwargs):
+        """Cast value from JSON to NumPy Int16."""
+        converted = np.int16(value)
+        return converted
+
+
+class Float32(ma.fields.Field):
+    """
+    A custom type for np.float32.
+    https://numpy.org/devdocs/reference/arrays.dtypes.html
+    """
+    # minor detail that makes this play nice with array_first
+    np_type = np.float32
+    def _serialize(self, value, *args, **kwargs):
+        """Convert np.float32 to basic, serializable Python float."""
+        return value.tolist()
+
+    def _deserialize(self, value, *args, **kwargs):
+        """Cast value from JSON to NumPy Float32."""
+        converted = np.float32(value)
+        return converted
+
+
+# add int32 type to the paramtools type registry
+paramtools.register_custom_type("int16", Int16())
+# add float32 type to the paramtools type registry
+paramtools.register_custom_type("float32", Float32())
 
 class Specifications(paramtools.Parameters):
     """
