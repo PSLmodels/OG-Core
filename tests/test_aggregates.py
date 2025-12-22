@@ -151,6 +151,10 @@ new_param_values = {
     "omega": np.ones((160, 40)) / 40,
     "omega_SS": np.ones(40) / 40,
     "imm_rates": np.zeros((160, 40)),
+    "omega_S_preTP": np.ones(40) / 40,
+    "imm_rates_preTP": np.zeros(40),
+    "rho_preTP": rho_vec[0, :],
+    "g_n_preTP": 0.01,
 }
 # update parameters instance with new values for test
 p.update_specifications(new_param_values)
@@ -173,7 +177,7 @@ expected1 = B_test[-1, :, :].sum() / (1.0 + p.g_n_ss)
 expected2 = B_test.sum(1).sum(1) / (
     1.0 + np.hstack((p.g_n[1 : p.T], p.g_n_ss))
 )
-expected3 = B_test[0, :, :].sum() / (1.0 + p.g_n[0])
+expected3 = B_test[0, :, :].sum() / (1.0 + p.g_n_preTP)
 test_data = [
     (b[-1, :, :], p, "SS", False, expected1),
     (b, p, "TPI", False, expected2),
@@ -210,7 +214,10 @@ new_param_values = {
     "omega": np.ones((160, 40)) / 40,
     "omega_SS": np.ones(40) / 40,
     "imm_rates": np.zeros((160, 40)),
-    "rho": rho_vec.tolist(),
+    "omega_S_preTP": np.ones(40) / 40,
+    "imm_rates_preTP": np.zeros(40),
+    "rho_preTP": rho_vec[0, :],
+    "g_n_preTP": 0.01,
 }
 # update parameters instance with new values for test
 p.update_specifications(new_param_values)
@@ -223,6 +230,7 @@ BQ_presum = (b_splus1 * np.squeeze(p.lambdas)) * np.tile(
     np.reshape(p.rho[0, :] * pop, (p.T, p.S, 1)), (1, 1, p.J)
 )
 growth_adj = (1.0 + r) / (1.0 + p.g_n[: p.T])
+growth_adj_preTP = (1.0 + r[0]) / (1.0 + p.g_n_preTP)
 
 expected1 = BQ_presum[-1, :, :].sum(0) * growth_adj[-1]
 expected2 = BQ_presum[-1, :, 1].sum(0) * growth_adj[-1]
@@ -230,8 +238,8 @@ expected3 = BQ_presum.sum(1) * np.tile(
     np.reshape(growth_adj, (p.T, 1)), (1, p.J)
 )
 expected4 = BQ_presum[:, :, 1].sum(1) * growth_adj
-expected5 = BQ_presum[0, :, :].sum(0) * growth_adj[0]
-expected6 = BQ_presum[0, :, 1].sum(0) * growth_adj[0]
+expected5 = BQ_presum[0, :, :].sum(0) * growth_adj_preTP
+expected6 = BQ_presum[0, :, 1].sum(0) * growth_adj_preTP
 
 p2 = copy.deepcopy(p)
 p2.use_zeta = True
