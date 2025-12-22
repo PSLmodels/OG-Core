@@ -842,7 +842,7 @@ def get_pop_objs(
                 imm_rates,
                 initial_pop,
                 country_id,
-                initial_data_year,
+                start_data_year,
                 final_data_year,
                 download_path=download_path,
             )
