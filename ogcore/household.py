@@ -526,6 +526,7 @@ def FOC_savings(
                 mtry_params,
                 tax_noncompliance,
                 p,
+                j,
             )
         )
         - tax.MTR_wealth(b, h_wealth, m_wealth, p_wealth)
@@ -715,6 +716,7 @@ def FOC_labor(
             mtrx_params,
             tax_noncompliance,
             p,
+            j,
         )
     )
     FOC_error = marg_ut_cons(cons, p.sigma) * (

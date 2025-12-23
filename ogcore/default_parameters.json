@@ -4248,6 +4248,34 @@
             }
         }
     },
+    "tax_filer": {
+        "title": "Income tax filer indicator",
+        "description": "Binary indicator for whether lifetime income type j is subject to income taxes. Non-filers (tax_filer[j]=0) are not subject to income taxes but still pay payroll taxes.",
+        "section_1": "Fiscal Policy Parameters",
+        "section_2": "Taxes",
+        "notes": "Specified by lifetime income group J. Defaults to 1.0 (all groups file). Can be set to values between 0 and 1 to represent the share of group j that files.",
+        "type": "float",
+        "number_dims": 1,
+        "value": [
+            {
+                "value": [
+                    1.0,
+                    1.0,
+                    1.0,
+                    1.0,
+                    1.0,
+                    1.0,
+                    1.0
+                ]
+            }
+        ],
+        "validators": {
+            "range": {
+                "min": 0.0,
+                "max": 1.0
+            }
+        }
+    },
     "nu": {
         "title": "Parameter for convergence rate of functional iteration",
         "description": "Parameter for convergence rate of functional iteration.",

@@ -122,6 +122,7 @@ def MTR_income(
     mtr_params,
     noncompliance_rate,
     p,
+    j=None,
 ):
     r"""
     Generates the marginal tax rate on labor income for households.
@@ -142,9 +143,14 @@ def MTR_income(
             parameters or nonparametric function
         noncompliance_rate (Numpy array): income tax noncompliance rate
         p (OG-Core Specifications object): model parameters
+        j (int): index of lifetime income group (optional)
 
     Returns:
         tau (Numpy array): marginal tax rate on income source
+
+    Notes:
+        Marginal tax rate is scaled by p.tax_filer[j]. Non-filers
+        (tax_filer[j]=0) have zero marginal tax rate.
 
     """
     X = (w * e * n) * factor
@@ -175,7 +181,13 @@ def MTR_income(
             for_estimation=False,
         )
 
-    return tau * (1 - noncompliance_rate)
+    tau = tau * (1 - noncompliance_rate)
+
+    # Apply tax filer status - non-filers have zero marginal tax rate
+    if j is not None:
+        tau = tau * p.tax_filer[j]
+
+    return tau
 
 
 def get_biz_tax(w, Y, L, K, p_m, p, m, method):
@@ -316,6 +328,11 @@ def income_tax_liab(r, w, b, n, factor, t, j, method, e, etr_params, p):
         T_I (Numpy array): total income and payroll taxes paid for each
             household
 
+    Notes:
+        Income tax liability is scaled by p.tax_filer[j]. Non-filers
+        (tax_filer[j]=0) have zero income tax liability but still pay
+        payroll taxes.
+
     """
     if j is not None:
         if method == "TPI":
@@ -369,6 +386,27 @@ def income_tax_liab(r, w, b, n, factor, t, j, method, e, etr_params, p):
         )
         * income
     )
+
+    # Apply tax filer status - non-filers have zero income tax liability
+    if j is not None:
+        # Scalar j case: scale income tax by filing status
+        T_I = T_I * p.tax_filer[j]
+    else:
+        # Vector j case: scale each j separately
+        if T_I.ndim == 1:
+            # Shape (S,) - no j dimension, shouldn't happen but handle safely
+            pass
+        elif T_I.ndim == 2:
+            # Shape (S, J) - apply tax_filer along J dimension
+            # Determine J from the last dimension
+            J_used = T_I.shape[-1]
+            T_I = T_I * p.tax_filer[:J_used]
+        else:
+            # Shape (T, S, J) or other - apply tax_filer along last dimension
+            # Determine J from the last dimension
+            J_used = T_I.shape[-1]
+            T_I = T_I * p.tax_filer[:J_used]
+
     if method == "SS":
         T_P = p.tau_payroll[-1] * labor_income
     elif method == "TPI":
