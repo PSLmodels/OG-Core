@@ -56,7 +56,7 @@ def main():
         "cit_rate": [[0.21]],
         "debt_ratio_ss": 0.4,
         "S": 80,  # 80 age periods
-        "J": 7,   # 7 lifetime income groups
+        "J": 7,  # 7 lifetime income groups
     }
 
     print("\n" + "-" * 70)
@@ -68,13 +68,15 @@ def main():
 
     # Baseline specification: j=0 are non-filers
     baseline_spec = common_spec.copy()
-    baseline_spec.update({
-        # tax_filer is a J-length vector:
-        #   0.0 = non-filer (no income tax, zero MTRs)
-        #   1.0 = filer (normal income tax treatment)
-        #   Values between 0-1 represent partial filing (e.g., 0.5 = 50% file)
-        "tax_filer": [0.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0],
-    })
+    baseline_spec.update(
+        {
+            # tax_filer is a J-length vector:
+            #   0.0 = non-filer (no income tax, zero MTRs)
+            #   1.0 = filer (normal income tax treatment)
+            #   Values between 0-1 represent partial filing (e.g., 0.5 = 50% file)
+            "tax_filer": [0.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0],
+        }
+    )
 
     p_baseline = Specifications(
         baseline=True,
@@ -95,7 +97,9 @@ def main():
 
     # Load baseline results
     baseline_ss = safe_read_pickle(os.path.join(base_dir, "SS", "SS_vars.pkl"))
-    baseline_params = safe_read_pickle(os.path.join(base_dir, "model_params.pkl"))
+    baseline_params = safe_read_pickle(
+        os.path.join(base_dir, "model_params.pkl")
+    )
 
     print("\n" + "-" * 70)
     print("REFORM: ALL income groups are FILERS")
@@ -105,9 +109,11 @@ def main():
 
     # Reform specification: all groups are filers
     reform_spec = common_spec.copy()
-    reform_spec.update({
-        "tax_filer": [1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0],
-    })
+    reform_spec.update(
+        {
+            "tax_filer": [1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0],
+        }
+    )
 
     p_reform = Specifications(
         baseline=False,
@@ -127,7 +133,9 @@ def main():
 
     # Load reform results
     reform_ss = safe_read_pickle(os.path.join(reform_dir, "SS", "SS_vars.pkl"))
-    reform_params = safe_read_pickle(os.path.join(reform_dir, "model_params.pkl"))
+    reform_params = safe_read_pickle(
+        os.path.join(reform_dir, "model_params.pkl")
+    )
 
     print("\n" + "=" * 70)
     print("RESULTS: ECONOMIC EFFECTS OF REQUIRING j=0 TO FILE")
@@ -154,9 +162,15 @@ def main():
     base_revenue = baseline_ss["total_tax_revenue"]
     reform_revenue = reform_ss["total_tax_revenue"]
     if isinstance(base_revenue, np.ndarray):
-        base_revenue = base_revenue.item() if base_revenue.size == 1 else base_revenue[-1]
+        base_revenue = (
+            base_revenue.item() if base_revenue.size == 1 else base_revenue[-1]
+        )
     if isinstance(reform_revenue, np.ndarray):
-        reform_revenue = reform_revenue.item() if reform_revenue.size == 1 else reform_revenue[-1]
+        reform_revenue = (
+            reform_revenue.item()
+            if reform_revenue.size == 1
+            else reform_revenue[-1]
+        )
 
     revenue_pct_change = ((reform_revenue - base_revenue) / base_revenue) * 100
     print(f"\nTotal Tax Revenue: {revenue_pct_change:+.2f}%")
@@ -192,7 +206,9 @@ def main():
         # Average savings for j=0
         base_savings = np.mean(baseline_ss["bssmat"][:, 0])
         reform_savings = np.mean(reform_ss["bssmat"][:, 0])
-        savings_pct_change = ((reform_savings - base_savings) / base_savings) * 100
+        savings_pct_change = (
+            (reform_savings - base_savings) / base_savings
+        ) * 100
 
         print(f"\nAverage savings (j=0):")
         print(f"  Baseline (non-filer): {base_savings:.4f}")
@@ -202,7 +218,8 @@ def main():
     print("\n" + "=" * 70)
     print("INTERPRETATION")
     print("=" * 70)
-    print("""
+    print(
+        """
 When the lowest income group transitions from non-filer to filer status:
 
 1. TAX REVENUE INCREASES: The government collects income taxes from j=0,
@@ -223,7 +240,8 @@ When the lowest income group transitions from non-filer to filer status:
 This demonstrates that filing thresholds (which create non-filer groups)
 can have significant efficiency effects by reducing tax distortions for
 low-income households.
-""")
+"""
+    )
 
     print("=" * 70)
     print(f"Total run time: {time.time() - run_start_time:.1f} seconds")
@@ -231,10 +249,10 @@ low-income households.
     print("=" * 70)
 
     # Save macro results to CSV
-    macro_results.to_csv(
-        os.path.join(save_dir, "nonfiler_macro_results.csv")
+    macro_results.to_csv(os.path.join(save_dir, "nonfiler_macro_results.csv"))
+    print(
+        f"\nMacro results: {os.path.join(save_dir, 'nonfiler_macro_results.csv')}"
     )
-    print(f"\nMacro results: {os.path.join(save_dir, 'nonfiler_macro_results.csv')}")
 
     client.close()
 
