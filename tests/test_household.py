@@ -330,6 +330,10 @@ net_tax3 = np.array([[0.1, 1.1], [0.4, 0.44], [0.6, 1.7]])
 j3 = None
 
 p4 = Specifications()
+p4.T = 4
+p4.S = 3
+p4.J = 2
+p4.I = 5
 p4.e = np.array([[1.0, 2.1], [0.4, 0.5], [1.6, 0.9]])
 p4.lambdas = np.array([0.7, 0.3])
 p4.g_y = 0.05
@@ -369,14 +373,18 @@ BQ4 = np.tile(
 )
 bq4 = BQ4 / p4.lambdas.reshape(1, 1, 2)
 rm4 = np.zeros_like(bq4)
-tau_c4 = np.array(
+tau_c2D = np.array(
     [
-        np.array([[0.02, 0.03], [0.04, 0.05], [0.055, 0.066]]),
-        np.array([[0.07, 0.08], [0.02, 0.01], [0.0, 0.04]]),
-        np.array([[0.01, 0.02], [0.14, 0.15], [0.05, 0.06]]),
-        np.array([[0.04, 0.06], [0.099, 0.044], [0.035, 0.065]]),
+        [0.04, 0.06, 0.055, 0.066, 0.10],
+        [0.04, 0.06, 0.055, 0.066, 0.10],
+        [0.04, 0.06, 0.055, 0.066, 0.10],
+        [0.04, 0.06, 0.055, 0.066, 0.10],
     ]
 )
+c_min4 = np.array([0.001, 0.002, 0.003, 0.0, 0.004])
+p4.c_min = c_min4
+min_c_expend = ((1 + tau_c2D) * c_min4.reshape(1, p4.I)).sum(axis=1)
+p4.tau_c = tau_c2D
 net_tax4 = np.array(
     [
         np.array([[0.01, 0.02], [0.4, 0.5], [0.05, 0.06]]),
@@ -389,15 +397,15 @@ j4 = None
 
 test_data = [
     (
-        (r1, w1, b1, b_splus1_1, n1, bq1, rm1, net_tax1, p1),
+        (r1, w1, b1, b_splus1_1, n1, bq1, rm1, net_tax1, p1, "SS"),
         1.288650006,
     ),
     (
-        (r2, w2, b2, b_splus1_2, n2, bq2, rm2, net_tax2, p2),
+        (r2, w2, b2, b_splus1_2, n2, bq2, rm2, net_tax2, p2, "SS"),
         np.array([1.288650006, 13.76350909, 5.188181864]),
     ),
     (
-        (r3, w3, b3, b_splus1_3, n3, bq3, rm3, net_tax3, p3),
+        (r3, w3, b3, b_splus1_3, n3, bq3, rm3, net_tax3, p3, "SS"),
         np.array(
             [
                 [4.042579933, 0.3584699],
@@ -407,7 +415,7 @@ test_data = [
         ),
     ),
     (
-        (r4, w4, b4, b_splus1_4, n4, bq4, rm4, net_tax4, p4),
+        (r4, w4, b4, b_splus1_4, n4, bq4, rm4, net_tax4, p4, "TPI"),
         np.array(
             [
                 np.array(
@@ -439,7 +447,8 @@ test_data = [
                     ]
                 ),
             ]
-        ),
+        )
+        - np.reshape(min_c_expend, (4, 1, 1)),
     ),
 ]
 
@@ -451,11 +460,11 @@ test_data = [
 )
 def test_get_cons(model_args, expected):
     # Test consumption calculation
-    r, w, b, b_splus1, n, bq, rm, net_tax, p = model_args
+    r, w, b, b_splus1, n, bq, rm, net_tax, p, method = model_args
     p_tilde = np.ones_like(w)
     p_i = np.ones((p.T, p.I))
     test_value = household.get_cons(
-        r, w, p_tilde, p_i, b, b_splus1, n, bq, rm, net_tax, p.e, p
+        r, w, p_tilde, p_i, b, b_splus1, n, bq, rm, net_tax, p.e, p, method
     )
 
     assert np.allclose(test_value, expected)
