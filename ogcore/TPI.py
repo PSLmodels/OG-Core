@@ -936,6 +936,7 @@ def run_TPI(p, client=None):
             p_tilde[: p.T],
             p.tau_c[: p.T, :],
             p.alpha_c,
+            p.c_min,
             "TPI",
         )
         sales_tax_mat = tax.cons_tax_liab(c_i, p_i, p, "TPI")
@@ -947,6 +948,7 @@ def run_TPI(p, client=None):
             p_tilde[: p.T],
             p.tau_c[: p.T, :],
             p.alpha_c,
+            p.c_min,
             "TPI",
         )
         y_before_tax_mat = household.get_y(

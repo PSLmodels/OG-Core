@@ -425,7 +425,9 @@ def inner_loop(outer_loop_vars, p, client):
         np.squeeze(p.e[-1, :, :]),
         p,
     )
-    c_i = household.get_ci(c_s, p_i, p_tilde, p.tau_c[-1, :], p.alpha_c)
+    c_i = household.get_ci(
+        c_s, p_i, p_tilde, p.tau_c[-1, :], p.alpha_c, p.c_min
+    )
     L = aggr.get_L(nssmat, p, "SS")
     B = aggr.get_B(bssmat, p, "SS", False)
 
@@ -1005,6 +1007,7 @@ def SS_solver(
         p_tilde_ss,
         p.tau_c[-1, :],
         p.alpha_c,
+        p.c_min,
         "SS",
     )
     sales_tax_ss = tax.cons_tax_liab(c_i, p_i_ss, p, "SS")
@@ -1013,7 +1016,7 @@ def SS_solver(
     )
     Css = aggr.get_C(cssmat, p, "SS")
     c_i_ss_mat = household.get_ci(
-        cssmat, p_i_ss, p_tilde_ss, p.tau_c[-1, :], p.alpha_c
+        cssmat, p_i_ss, p_tilde_ss, p.tau_c[-1, :], p.alpha_c, p.c_min
     )
     C_vec_ss = np.zeros(p.I)
     for i_ind in range(
