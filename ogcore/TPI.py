@@ -952,6 +952,7 @@ def run_TPI(p, client=None):
             tax_mat,
             p.e,
             p,
+            method="TPI",
         )
         c_i = household.get_ci(
             c_mat[: p.T, :, :],
