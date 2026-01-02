@@ -327,7 +327,7 @@ def get_cons(r_p, w, p_tilde, b, b_splus1, n, bq, rm, net_tax, e, p):
     return cons
 
 
-def get_ci(c_s, p_i, p_tilde, tau_c, alpha_c, method="SS"):
+def get_ci(c_s, p_i, p_tilde, tau_c, alpha_c, c_min, method="SS"):
     r"""
     Compute consumption of good i given amount of composite consumption
     and prices.
@@ -341,6 +341,7 @@ def get_ci(c_s, p_i, p_tilde, tau_c, alpha_c, method="SS"):
         p_tilde (array_like): composite good price
         tau_c (array_like): consumption tax rate
         alpha_c (array_like): consumption share parameters
+        c_min (array_like): minimum consumption levels for each good i
         method (str): adjusts calculation dimensions based on 'SS' or 'TPI'
 
     Returns:
@@ -352,10 +353,11 @@ def get_ci(c_s, p_i, p_tilde, tau_c, alpha_c, method="SS"):
         J = c_s.shape[1]
         tau_c = tau_c.reshape(I, 1, 1)
         alpha_c = alpha_c.reshape(I, 1, 1)
+        c_min = c_min.reshape(I, 1, 1)
         p_tilde.reshape(1, 1, 1)
         p_i = p_i.reshape(I, 1, 1)
         c_s = c_s.reshape(1, S, J)
-        c_si = alpha_c * (((1 + tau_c) * p_i) / p_tilde) ** (-1) * c_s
+        c_si = alpha_c * (((1 + tau_c) * p_i) / p_tilde) ** (-1) * c_s + c_min
     else:  # Time path case
         I = alpha_c.shape[0]
         T = p_i.shape[0]
@@ -363,10 +365,11 @@ def get_ci(c_s, p_i, p_tilde, tau_c, alpha_c, method="SS"):
         J = c_s.shape[2]
         tau_c = tau_c.reshape(T, I, 1, 1)
         alpha_c = alpha_c.reshape(1, I, 1, 1)
+        c_min = c_min.reshape(1, I, 1, 1)
         p_tilde = p_tilde.reshape(T, 1, 1, 1)
         p_i = p_i.reshape(T, I, 1, 1)
         c_s = c_s.reshape(T, 1, S, J)
-        c_si = alpha_c * (((1 + tau_c) * p_i) / p_tilde) ** (-1) * c_s
+        c_si = alpha_c * (((1 + tau_c) * p_i) / p_tilde) ** (-1) * c_s + c_min
     return c_si
 
 
