@@ -453,8 +453,9 @@ def test_get_cons(model_args, expected):
     # Test consumption calculation
     r, w, b, b_splus1, n, bq, rm, net_tax, p = model_args
     p_tilde = np.ones_like(w)
+    p_i = np.ones((p.T, p.I))
     test_value = household.get_cons(
-        r, w, p_tilde, b, b_splus1, n, bq, rm, net_tax, p.e, p
+        r, w, p_tilde, p_i, b, b_splus1, n, bq, rm, net_tax, p.e, p
     )
 
     assert np.allclose(test_value, expected)
@@ -723,13 +724,16 @@ def test_FOC_savings(model_vars, in_params, expected):
     )
     if method == "TPI":
         p_tilde = np.ones_like(w)
+        p_i = np.ones((params.T, params.I))
     else:
         p_tilde = np.array([1.0])
+        p_i = np.array([1.0])
     if j is not None:
         test_value = household.FOC_savings(
             r,
             w,
             p_tilde,
+            p_i,
             b,
             b_splus1,
             n,
@@ -752,6 +756,7 @@ def test_FOC_savings(model_vars, in_params, expected):
             r,
             w,
             p_tilde,
+            p_i,
             b,
             b_splus1,
             n,
@@ -1015,12 +1020,15 @@ def test_FOC_labor(model_vars, params, expected):
     )
     if method == "TPI":
         p_tilde = np.ones_like(w)
+        p_i = np.ones((params.T, params.I))
     else:
         p_tilde = np.array([1.0])
+        p_i = np.array([1.0])
     test_value = household.FOC_labor(
         r,
         w,
         p_tilde,
+        p_i,
         b,
         b_splus1,
         n,

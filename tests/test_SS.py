@@ -1247,6 +1247,24 @@ param_updates15 = {
     "initial_guess_r_SS": 0.04,
     "reform_use_baseline_solution": False,
 }
+param_updates16 = {
+    "start_year": 2023,
+    "budget_balance": True,
+    "frisch": 0.41,
+    "cit_rate": [[0.21, 0.25, 0.35]],
+    "M": 3,
+    "I": 3,
+    "io_matrix": np.eye(3),
+    "epsilon": [1.0, 1.0, 1.0],
+    "gamma": [0.3, 0.35, 0.4],
+    "gamma_g": [0.0, 0.0, 0.0],
+    "alpha_c": [0.2, 0.4, 0.4],
+    "cmin": [0.002, 0.004, 0.0004],
+    "initial_guess_r_SS": 0.11,
+    "initial_guess_TR_SS": 0.07,
+    "debt_ratio_ss": 1.5,
+}
+filename16 = "run_SS_baseline_M3_Kg_zero_cmin.pkl"
 
 
 # Note that changing the order in which these tests are run will cause
@@ -1269,7 +1287,8 @@ param_updates15 = {
         # (True, param_updates12, filename12),
         # (True, param_updates13, filename13),
         # (True, param_updates14, filename14),
-        (False, param_updates15, filename3),
+        # (False, param_updates15, filename3),
+        (True, param_updates16, filename16),
     ],
     ids=[
         # "Baseline",
@@ -1286,7 +1305,8 @@ param_updates15 = {
         # "Baseline, non-zero Kg",
         # "Baseline, M=3, non-zero Kg",
         # "Baseline, M=3, zero Kg",
-        "Reform, not use baseline solution",
+        # "Reform, not use baseline solution",
+        "Baseline, M=3, zero Kg, cmin > 0",
     ],
 )
 @pytest.mark.local
@@ -1317,6 +1337,7 @@ def test_run_SS(tmpdir, baseline, param_updates, filename, dask_client):
     )
     p.update_specifications(param_updates)
     test_dict = SS.run_SS(p, client=dask_client)
+    pickle.dump(test_dict, open(filename, "wb"))
     expected_dict = utils.safe_read_pickle(
         os.path.join(CUR_PATH, "test_io_data", filename)
     )

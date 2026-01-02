@@ -129,7 +129,20 @@ def get_initial_SS_values(p):
 
 
 def firstdoughnutring(
-    guesses, r, w, p_tilde, bq, rm, tr, theta, factor, ubi, j, initial_b, p
+    guesses,
+    r,
+    w,
+    p_tilde,
+    p_i,
+    bq,
+    rm,
+    tr,
+    theta,
+    factor,
+    ubi,
+    j,
+    initial_b,
+    p,
 ):
     """
     Solves the first entries of the upper triangle of the twist doughnut. This
@@ -141,6 +154,7 @@ def firstdoughnutring(
         r (scalar): real interest rate
         w (scalar): real wage rate
         p_tilde (scalar): composite good price
+        p_i (Numpy array): output goods prices
         bq (scalar): bequest amounts by age
         rm (scalar): remittance amounts by age
         tr (scalar): government transfer amount
@@ -166,6 +180,7 @@ def firstdoughnutring(
         np.array([r]),
         np.array([w]),
         np.array([p_tilde]),
+        np.array([p_i]),
         b_s,
         np.array([b_splus1]),
         np.array([n]),
@@ -188,6 +203,7 @@ def firstdoughnutring(
         np.array([r]),
         np.array([w]),
         np.array([p_tilde]),
+        np.array([p_i]),
         b_s,
         b_splus1,
         np.array([n]),
@@ -219,6 +235,7 @@ def twist_doughnut(
     r,
     w,
     p_tilde,
+    p_i,
     bq,
     rm,
     tr,
@@ -244,6 +261,7 @@ def twist_doughnut(
         r (Numpy array): real interest rate
         w (Numpy array): real wage rate
         p_tilde (Numpy array): composite good price
+        p_i (Numpy array): output goods prices
         bq (Numpy array): bequest amounts by age, length s
         rm (Numpy array): remittance amounts by age, length s
         tr (Numpy array): government transfer amount
@@ -281,6 +299,7 @@ def twist_doughnut(
     w_s = w[t : t + length]
     r_s = r[t : t + length]
     p_tilde_s = p_tilde[t : t + length]
+    p_i_s = p_i[t : t + length, :]
     n_s = n_guess
     chi_n_s = np.diag(p.chi_n[t : t + p.S, :], max(p.S - length, 0))
     rho_s = np.diag(p.rho[t : t + p.S, :], max(p.S - length, 0))
@@ -289,6 +308,7 @@ def twist_doughnut(
         r_s,
         w_s,
         p_tilde_s,
+        p_i_s,
         b_s,
         b_splus1,
         n_s,
@@ -311,6 +331,7 @@ def twist_doughnut(
         r_s,
         w_s,
         p_tilde_s,
+        p_i_s,
         b_s,
         b_splus1,
         n_s,
@@ -916,11 +937,13 @@ def run_TPI(p, client=None):
         )
         r_p_path = utils.to_timepath_shape(r_p)
         p_tilde_path = utils.to_timepath_shape(p_tilde)
+
         wpath = utils.to_timepath_shape(w)
         c_mat = household.get_cons(
             r_p_path[: p.T, :, :],
             wpath[: p.T, :, :],
             p_tilde_path[: p.T, :, :],
+            p_i[: p.T, :],
             bmat_s,
             bmat_splus1,
             n_mat[: p.T, :, :],

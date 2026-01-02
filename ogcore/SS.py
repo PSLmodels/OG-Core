@@ -39,7 +39,7 @@ def euler_equation_solver(guesses, *args):
 
     Args:
         guesses (Numpy array): initial guesses for b and n, length 2S
-        args (tuple): tuple of arguments (r, w, p_tilde, bq, TR, factor, j, p)
+        args (tuple): tuple of arguments (r, w, p_tilde, p_i, bq, TR, factor, j, p)
         r (scalar): real interest rate
         w (scalar): real wage rate
         p_tilde (scalar): composite good price
@@ -54,7 +54,7 @@ def euler_equation_solver(guesses, *args):
         errros (Numpy array): errors from FOCs, length 2S
 
     """
-    (r, w, p_tilde, bq, rm, tr, ubi, factor, j, p) = args
+    (r, w, p_tilde, p_i, bq, rm, tr, ubi, factor, j, p) = args
 
     b_guess = np.array(guesses[: p.S])
     n_guess = np.array(guesses[p.S :])
@@ -67,6 +67,7 @@ def euler_equation_solver(guesses, *args):
         r,
         w,
         p_tilde,
+        p_i,
         b_s,
         b_splus1,
         n_guess,
@@ -88,6 +89,7 @@ def euler_equation_solver(guesses, *args):
         r,
         w,
         p_tilde,
+        p_i,
         b_s,
         b_splus1,
         n_guess,
@@ -164,6 +166,7 @@ def solve_for_j(
     r_p,
     w,
     p_tilde,
+    p_i,
     bq_j,
     rm_j,
     tr_j,
@@ -180,6 +183,7 @@ def solve_for_j(
         r_p (scalar): return on household investment portfolio
         w (scalar): real wage rate
         p_tilde (scalar): composite good price
+        p_i (Numpy array): prices for consumption good i
         bq_j (Numpy array): bequest amounts by age, length S
         rm_j (Numpy array): remittance amounts by age, length S
         tr_j (Numpy array): government transfer amount by age, length S
@@ -200,6 +204,7 @@ def solve_for_j(
             r_p,
             w,
             p_tilde,
+            p_i,
             bq_j,
             rm_j,
             tr_j,
@@ -314,6 +319,7 @@ def inner_loop(outer_loop_vars, p, client):
                 r_p,
                 w,
                 p_tilde,
+                p_i,
                 bq[:, j],
                 rm[:, j],
                 tr[:, j],
@@ -346,6 +352,7 @@ def inner_loop(outer_loop_vars, p, client):
                     r_p,
                     w,
                     p_tilde,
+                    p_i,
                     bq[:, j],
                     rm[:, j],
                     tr[:, j],
@@ -365,6 +372,7 @@ def inner_loop(outer_loop_vars, p, client):
                 r_p,
                 w,
                 p_tilde,
+                p_i,
                 bq[:, j],
                 rm[:, j],
                 tr[:, j],
