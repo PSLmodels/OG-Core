@@ -409,7 +409,7 @@
         "description": "Minimum consumption levels for each good in the composite consumption good.",
         "section_1": "Household Parameters",
         "section_2": "Behavioral Assumptions",
-        "notes": "",
+        "notes": "Enter this value in model units.",
         "type": "float",
         "number_dims": 1,
         "value": [
