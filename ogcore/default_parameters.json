@@ -404,6 +404,26 @@
             }
         }
     },
+    "c_min": {
+        "title": "Minimum consumption levels for each good in the composite consumption good",
+        "description": "Minimum consumption levels for each good in the composite consumption good.",
+        "section_1": "Household Parameters",
+        "section_2": "Behavioral Assumptions",
+        "notes": "",
+        "type": "float",
+        "number_dims": 1,
+        "value": [
+            {
+                "value": [0.0]
+            }
+        ],
+        "validators": {
+            "range": {
+                "min": 0.0,
+                "max": 100.0
+            }
+        }
+    },
     "gamma": {
         "title": "Capital's share of output in firm production function",
         "description": "Capital's share of output in firm production function.",
