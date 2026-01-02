@@ -331,8 +331,16 @@ def get_cons(
         length = r_p.shape[0]
         tau_c = p.tau_c[0:length, :]
         min_cons_expenditure = np.sum(
-            (1 + tau_c) * p_i * p.c_min.reshape((1, -1)), axis=1
+            (1 + tau_c) * p_i * p.c_min.reshape((1, p.I)), axis=1
         )
+        # reshape if needed for broadcasting
+        n_dims = np.ndim(bq)
+        if n_dims == 1:
+            min_cons_expenditure = min_cons_expenditure.reshape((length,))
+        elif n_dims == 2:
+            min_cons_expenditure = min_cons_expenditure.reshape((length, 1))
+        else:
+            min_cons_expenditure = min_cons_expenditure.reshape((length, 1, 1))
     cons = (
         (1 + r_p) * b
         + w * e * n
