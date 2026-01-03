@@ -560,6 +560,7 @@ param_updates7 = {
     "I": 4,
     "io_matrix": np.eye(4),
     "alpha_c": [0.1, 0.5, 0.3, 0.1],
+    "c_min": [0.0, 0.0, 0.0, 0.0],
     "epsilon": [1.0, 1.0, 1.0, 1.0],
     "gamma": [0.3, 0.4, 0.35, 0.45],
     "gamma_g": [0.0, 0.0, 0.0, 0.0],
@@ -578,6 +579,7 @@ param_updates8 = {
         ]
     ),
     "alpha_c": [0.1, 0.4, 0.3, 0.1, 0.1],
+    "c_min": [0.0, 0.0, 0.0, 0.0, 0.0],
     "epsilon": [1.0, 1.0, 1.0, 1.0],
     "gamma": [0.3, 0.4, 0.35, 0.45],
     "gamma_g": [0.0, 0.0, 0.0, 0.0],
@@ -1136,7 +1138,7 @@ def test_euler_equation_solver(input_tuple, ubi_j, p, expected):
     # Test SS.inner_loop function.  Provide inputs to function and
     # ensure that output returned matches what it has been before.
     guesses, r, w, bq, rm, tr, _, factor, j = input_tuple
-    args = (r, w, 1.0, bq, rm, tr, ubi_j, factor, j, p)
+    args = (r, w, 1.0, 1.0, bq, rm, tr, ubi_j, factor, j, p)
     test_list = SS.euler_equation_solver(guesses, *args)
     print(repr(test_list))
 
