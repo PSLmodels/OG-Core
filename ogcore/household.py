@@ -285,7 +285,20 @@ def get_rm(RM, j, p, method):
 
 
 def get_cons(
-    r_p, w, p_tilde, p_i, b, b_splus1, n, bq, rm, net_tax, e, p, method="SS"
+    r_p,
+    w,
+    p_tilde,
+    p_i,
+    b,
+    b_splus1,
+    n,
+    bq,
+    rm,
+    net_tax,
+    e,
+    tau_c,
+    p,
+    method="SS",
 ):
     r"""
     Calculate household composite consumption.
@@ -312,6 +325,7 @@ def get_cons(
         rm (Numpy array): household remittances received
         net_tax (Numpy array): household net taxes paid
         e (Numpy array): effective labor units
+        tau_c (Numpy array): consumption tax rates
         p (OG-Core Specifications object): model parameters
         method (str): adjusts calculation dimensions based on 'SS' or 'TPI'
 
@@ -320,19 +334,14 @@ def get_cons(
 
     """
     if method == "SS":
-        min_cons_expenditure = np.sum(
-            (1 + p.tau_c[-1, :]) * p_i * p.c_min, axis=0
-        )
+        min_cons_expenditure = np.sum((1 + tau_c) * p_i * p.c_min)
     elif method == "TPI_scalar":
-        min_cons_expenditure = np.sum(
-            (1 + p.tau_c[0, :]) * p_i * p.c_min, axis=0
-        )
+        min_cons_expenditure = np.sum((1 + tau_c) * p_i * p.c_min)
     else:  # TPI case
-        length = r_p.shape[0]
-        tau_c = p.tau_c[0:length, :]
         min_cons_expenditure = np.sum(
             (1 + tau_c) * p_i * p.c_min.reshape((1, p.I)), axis=1
         )
+        length = r_p.shape[0]
         # reshape if needed for broadcasting
         n_dims = np.ndim(bq)
         if n_dims == 1:
@@ -341,6 +350,7 @@ def get_cons(
             min_cons_expenditure = min_cons_expenditure.reshape((length, 1))
         else:
             min_cons_expenditure = min_cons_expenditure.reshape((length, 1, 1))
+
     cons = (
         (1 + r_p) * b
         + w * e * n
@@ -515,14 +525,17 @@ def FOC_savings(
         m_wealth = p.m_wealth[-1]
         p_wealth = p.p_wealth[-1]
         p_tilde = np.ones_like(p.rho[-1, :]) * p_tilde
+        tau_c = p.tau_c[-1, :]
     elif method == "TPI_scalar":
         h_wealth = p.h_wealth[0]
         m_wealth = p.m_wealth[0]
         p_wealth = p.p_wealth[0]
+        tau_c = p.tau_c[0, :]
     else:
-        h_wealth = p.h_wealth[t]
-        m_wealth = p.m_wealth[t]
-        p_wealth = p.p_wealth[t]
+        h_wealth = p.h_wealth[t : t + length]
+        m_wealth = p.m_wealth[t : t + length]
+        p_wealth = p.p_wealth[t : t + length]
+        tau_c = p.tau_c[t : t + length, :]
     taxes = tax.net_taxes(
         r,
         w,
@@ -542,7 +555,7 @@ def FOC_savings(
         p,
     )
     cons = get_cons(
-        r, w, p_tilde, p_i, b, b_splus1, n, bq, rm, taxes, e, p, method
+        r, w, p_tilde, p_i, b, b_splus1, n, bq, rm, taxes, e, tau_c, p, method
     )
     deriv = (
         (1 + r)
@@ -661,11 +674,14 @@ def FOC_labor(
     """
     if method == "SS":
         tau_payroll = p.tau_payroll[-1]
+        tau_c = p.tau_c[-1, :]
     elif method == "TPI_scalar":  # for 1st donut ring only
         tau_payroll = p.tau_payroll[0]
+        tau_c = p.tau_c[0, :]
     else:
         length = r.shape[0]
         tau_payroll = p.tau_payroll[t : t + length]
+        tau_c = p.tau_c[t : t + length, :]
     if j is not None:
         if method == "SS":
             tax_noncompliance = p.labor_income_tax_noncompliance_rate[-1, j]
@@ -704,13 +720,6 @@ def FOC_labor(
                 axis=0,
             )
             e = np.diag(e_long[t : t + p.S, :, j], max(p.S - length, 0))
-    if method == "SS":
-        tau_payroll = p.tau_payroll[-1]
-    elif method == "TPI_scalar":  # for 1st donut ring only
-        tau_payroll = p.tau_payroll[0]
-    else:
-        length = r.shape[0]
-        tau_payroll = p.tau_payroll[t : t + length]
     if method == "TPI":
         if b.ndim == 2:
             r = r.reshape(r.shape[0], 1)
@@ -736,7 +745,7 @@ def FOC_labor(
         p,
     )
     cons = get_cons(
-        r, w, p_tilde, p_i, b, b_splus1, n, bq, rm, taxes, e, p, method
+        r, w, p_tilde, p_i, b, b_splus1, n, bq, rm, taxes, e, tau_c, p, method
     )
     deriv = (
         1

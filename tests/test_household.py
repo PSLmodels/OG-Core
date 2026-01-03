@@ -463,8 +463,25 @@ def test_get_cons(model_args, expected):
     r, w, b, b_splus1, n, bq, rm, net_tax, p, method = model_args
     p_tilde = np.ones_like(w)
     p_i = np.ones((p.T, p.I))
+    if method == "SS":
+        tau_c = p.tau_c[-1, :]
+    else:
+        tau_c = p.tau_c
     test_value = household.get_cons(
-        r, w, p_tilde, p_i, b, b_splus1, n, bq, rm, net_tax, p.e, p, method
+        r,
+        w,
+        p_tilde,
+        p_i,
+        b,
+        b_splus1,
+        n,
+        bq,
+        rm,
+        net_tax,
+        p.e,
+        tau_c,
+        p,
+        method,
     )
 
     assert np.allclose(test_value, expected)

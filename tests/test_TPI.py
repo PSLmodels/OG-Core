@@ -266,9 +266,23 @@ def test_firstdoughnutring():
     )
     guesses, r, w, bq, rm, tr, theta, factor, ubi, j, initial_b = input_tuple
     p_tilde = 1.0  # needed for multi-industry version
+    p_i = 1.0  # needed for multi-industry version
     p = Specifications()
     test_list = TPI.firstdoughnutring(
-        guesses, r, w, p_tilde, bq, rm, tr, theta, factor, ubi, j, initial_b, p
+        guesses,
+        r,
+        w,
+        p_tilde,
+        p_i,
+        bq,
+        rm,
+        tr,
+        theta,
+        factor,
+        ubi,
+        j,
+        initial_b,
+        p,
     )
 
     expected_list = utils.safe_read_pickle(
@@ -323,12 +337,14 @@ def test_twist_doughnut(file_inputs, file_outputs):
         initial_b,
     ) = input_tuple
     p_tilde = np.ones_like(r)  # needed for multi-industry version
+    p_i = np.ones((r.shape[0], 1))  # needed for multi-industry version
     p = Specifications()
     input_tuple2 = (
         guesses,
         r,
         w,
         p_tilde,
+        p_i,
         bq,
         rm,
         tr,
@@ -536,31 +552,31 @@ filename12 = os.path.join(
 @pytest.mark.parametrize(
     "baseline,param_updates,filename",
     [
-        # (True, param_updates2, filename2),
-        # (True, {"initial_guess_r_SS": 0.035}, filename1),
-        # (False, {}, filename3),
-        # (False, param_updates4, filename4),
-        # (True, param_updates5, filename5),
-        # (True, param_updates6, filename6),
-        # (True, param_updates7, filename7),
-        # (True, param_updates8, filename8),
-        # (True, param_updates9, filename9),
-        # (True, param_updates10, filename10),
-        # (True, param_updates11, filename11),
+        (True, param_updates2, filename2),
+        (True, {"initial_guess_r_SS": 0.035}, filename1),
+        (False, {}, filename3),
+        (False, param_updates4, filename4),
+        (True, param_updates5, filename5),
+        (True, param_updates6, filename6),
+        (True, param_updates7, filename7),
+        (True, param_updates8, filename8),
+        (True, param_updates9, filename9),
+        (True, param_updates10, filename10),
+        (True, param_updates11, filename11),
         (True, param_updates12, filename12),
     ],
     ids=[
-        # "Baseline, balanced budget",
-        # "Baseline",
-        # "Reform",
-        # "Reform, baseline spending",
-        # "Baseline, small open",
-        # "Baseline, small open some periods",
-        # "Baseline, delta_tau = 0",
-        # "Baseline, Kg > 0",
-        # "Baseline, M=3 non-zero Kg",
-        # "Baseline, M=3 zero Kg",
-        # "Baseline, M!=I",
+        "Baseline, balanced budget",
+        "Baseline",
+        "Reform",
+        "Reform, baseline spending",
+        "Baseline, small open",
+        "Baseline, small open some periods",
+        "Baseline, delta_tau = 0",
+        "Baseline, Kg > 0",
+        "Baseline, M=3 non-zero Kg",
+        "Baseline, M=3 zero Kg",
+        "Baseline, M!=I",
         "Baseline, M!=I, cmin>0",
     ],
 )
@@ -625,7 +641,6 @@ def test_run_TPI_full_run(
             pickle.dump(ss_outputs, f)
 
     test_dict = TPI.run_TPI(p, client=dask_client)
-    pickle.dump(test_dict, open(filename, "wb"))
     expected_dict = utils.safe_read_pickle(filename)
     try:
         expected_dict["r_p"] = expected_dict.pop("r_hh")
@@ -638,20 +653,23 @@ def test_run_TPI_full_run(
     except KeyError:
         pass
 
+    # if old variable names, update keys with VAR_NAME_MAPPING
+    if "r_hh" in expected_dict.keys():
+        expected_dict_updated = {}
+        for k, v in expected_dict.items():
+            expected_dict_updated[VAR_NAME_MAPPING[k]] = v
+        expected_dict = expected_dict_updated
     for k, v in expected_dict.items():
         print("Testing, ", k)
         try:
             print(
                 "Diff = ",
-                np.abs(test_dict[VAR_NAME_MAPPING[k]][: p.T] - v[: p.T]).max(),
+                np.abs(test_dict[k][: p.T] - v[: p.T]).max(),
             )
         except ValueError:
             print(
                 "Diff = ",
-                np.abs(
-                    test_dict[VAR_NAME_MAPPING[k]][: p.T, :, :]
-                    - v[: p.T, :, :]
-                ).max(),
+                np.abs(test_dict[k][: p.T, :, :] - v[: p.T, :, :]).max(),
             )
 
     for k, v in expected_dict.items():
@@ -659,10 +677,10 @@ def test_run_TPI_full_run(
         try:
             print(
                 "Diff = ",
-                np.abs(test_dict[VAR_NAME_MAPPING[k]][: p.T] - v[: p.T]).max(),
+                np.abs(test_dict[k][: p.T] - v[: p.T]).max(),
             )
             assert np.allclose(
-                test_dict[VAR_NAME_MAPPING[k]][: p.T],
+                test_dict[k][: p.T],
                 v[: p.T],
                 rtol=1e-04,
                 atol=1e-04,
@@ -670,13 +688,10 @@ def test_run_TPI_full_run(
         except ValueError:
             print(
                 "Diff = ",
-                np.abs(
-                    test_dict[VAR_NAME_MAPPING[k]][: p.T, :, :]
-                    - v[: p.T, :, :]
-                ).max(),
+                np.abs(test_dict[k][: p.T, :, :] - v[: p.T, :, :]).max(),
             )
             assert np.allclose(
-                test_dict[VAR_NAME_MAPPING[k]][: p.T, :, :],
+                test_dict[k][: p.T, :, :],
                 v[: p.T, :, :],
                 rtol=1e-04,
                 atol=1e-04,

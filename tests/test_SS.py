@@ -1259,7 +1259,7 @@ param_updates16 = {
     "gamma": [0.3, 0.35, 0.4],
     "gamma_g": [0.0, 0.0, 0.0],
     "alpha_c": [0.2, 0.4, 0.4],
-    "cmin": [0.002, 0.004, 0.0004],
+    "c_min": [0.002, 0.004, 0.0004],
     "initial_guess_r_SS": 0.11,
     "initial_guess_TR_SS": 0.07,
     "debt_ratio_ss": 1.5,
@@ -1273,39 +1273,39 @@ filename16 = "run_SS_baseline_M3_Kg_zero_cmin.pkl"
 @pytest.mark.parametrize(
     "baseline,param_updates,filename",
     [
-        # (True, param_updates1, filename1),
-        # (False, param_updates9, filename9),
-        # (True, param_updates2, filename2),
-        # (False, param_updates10, filename10),
-        # (True, param_updates3, filename3),
-        # # True, param_updates4, filename4),
-        # (False, param_updates5, filename5),
-        # (False, param_updates6, filename6),
-        # (False, param_updates7, filename7),
-        # # (False, param_updates8, filename8),
-        # (False, param_updates11, filename11),
-        # (True, param_updates12, filename12),
-        # (True, param_updates13, filename13),
-        # (True, param_updates14, filename14),
-        # (False, param_updates15, filename3),
+        (True, param_updates1, filename1),
+        (False, param_updates9, filename9),
+        (True, param_updates2, filename2),
+        (False, param_updates10, filename10),
+        (True, param_updates3, filename3),
+        (True, param_updates4, filename4),  # WAS COMMENTED OUT
+        (False, param_updates5, filename5),
+        (False, param_updates6, filename6),
+        (False, param_updates7, filename7),
+        (False, param_updates8, filename8),  # WAS COMMENTED OUT
+        (False, param_updates11, filename11),
+        (True, param_updates12, filename12),
+        (True, param_updates13, filename13),
+        (True, param_updates14, filename14),
+        (False, param_updates15, filename3),
         (True, param_updates16, filename16),
     ],
     ids=[
-        # "Baseline",
-        # "Reform, baseline spending",
-        # "Baseline, use zeta",
-        # "Reform, baseline spending, use zeta",
-        # "Baseline, small open",
-        # # "Baseline, small open use zeta",
-        # "Reform",
-        # "Reform, use zeta",
-        # "Reform, small open",
-        # # "Reform, small open use zeta",
-        # "Reform, delta_tau=0",
-        # "Baseline, non-zero Kg",
-        # "Baseline, M=3, non-zero Kg",
-        # "Baseline, M=3, zero Kg",
-        # "Reform, not use baseline solution",
+        "Baseline",
+        "Reform, baseline spending",
+        "Baseline, use zeta",
+        "Reform, baseline spending, use zeta",
+        "Baseline, small open",
+        "Baseline, small open use zeta",  # WAS COMMENTED OUT
+        "Reform",
+        "Reform, use zeta",
+        "Reform, small open",
+        "Reform, small open use zeta",  # WAS COMMENTED OUT
+        "Reform, delta_tau=0",
+        "Baseline, non-zero Kg",
+        "Baseline, M=3, non-zero Kg",
+        "Baseline, M=3, zero Kg",
+        "Reform, not use baseline solution",
         "Baseline, M=3, zero Kg, cmin > 0",
     ],
 )
@@ -1337,7 +1337,6 @@ def test_run_SS(tmpdir, baseline, param_updates, filename, dask_client):
     )
     p.update_specifications(param_updates)
     test_dict = SS.run_SS(p, client=dask_client)
-    pickle.dump(test_dict, open(filename, "wb"))
     expected_dict = utils.safe_read_pickle(
         os.path.join(CUR_PATH, "test_io_data", filename)
     )
@@ -1348,7 +1347,11 @@ def test_run_SS(tmpdir, baseline, param_updates, filename, dask_client):
         pass
     for k, v in expected_dict.items():
         print("Checking item = ", k)
-        assert np.allclose(test_dict[VAR_NAME_MAPPING[k]], v, atol=5e-04)
+        try:
+            assert np.allclose(test_dict[VAR_NAME_MAPPING[k]], v, atol=5e-04)
+        except KeyError:
+            print(f"Assertion failed for variable {k}")
+            assert np.allclose(test_dict[k], v, atol=5e-04)
 
 
 @pytest.mark.parametrize(

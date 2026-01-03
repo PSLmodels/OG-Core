@@ -145,6 +145,7 @@ def euler_equation_solver(guesses, *args):
         r,
         w,
         p_tilde,
+        p_i,
         b_s,
         b_splus1,
         n_guess,
@@ -152,6 +153,7 @@ def euler_equation_solver(guesses, *args):
         rm,
         taxes,
         p.e[-1, :, j],
+        p.tau_c[-1, :],
         p,
     )
     mask6 = cons < 0
@@ -424,6 +426,7 @@ def inner_loop(outer_loop_vars, p, client):
         r_p,
         w,
         p_tilde,
+        p_i,
         b_s,
         b_splus1,
         nssmat,
@@ -431,6 +434,7 @@ def inner_loop(outer_loop_vars, p, client):
         rm,
         net_tax,
         np.squeeze(p.e[-1, :, :]),
+        p.tau_c[-1, :],
         p,
     )
     c_i = household.get_ci(
@@ -561,6 +565,7 @@ def inner_loop(outer_loop_vars, p, client):
         new_r_p,
         new_w,
         new_p_tilde,
+        new_p_i,
         b_s,
         bssmat,
         nssmat,
@@ -568,6 +573,7 @@ def inner_loop(outer_loop_vars, p, client):
         new_rm,
         taxss,
         np.squeeze(p.e[-1, :, :]),
+        p.tau_c[-1, :],
         p,
     )
     (
@@ -1000,6 +1006,7 @@ def SS_solver(
         r_p_ss,
         wss,
         p_tilde_ss,
+        p_i_ss,
         bssmat_s,
         bssmat_splus1,
         nssmat,
@@ -1007,6 +1014,7 @@ def SS_solver(
         rmssmat,
         taxss,
         np.squeeze(p.e[-1, :, :]),
+        p.tau_c[-1, :],
         p,
     )
     c_i = household.get_ci(
