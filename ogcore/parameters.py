@@ -15,22 +15,22 @@ from ogcore.constants import BASELINE_DIR
 CURRENT_PATH = os.path.abspath(os.path.dirname(__file__))
 
 
-class Int16(ma.fields.Field):
+class Int32(ma.fields.Field):
     """
-    A custom type for np.int16.
+    A custom type for np.int32.
     https://numpy.org/devdocs/reference/arrays.dtypes.html
     """
 
     # minor detail that makes this play nice with array_first
-    np_type = np.int16
+    np_type = np.int32
 
     def _serialize(self, value, *args, **kwargs):
-        """Convert np.int16 to basic, serializable Python int."""
+        """Convert np.int32 to basic, serializable Python int."""
         return value.tolist()
 
     def _deserialize(self, value, *args, **kwargs):
-        """Cast value from JSON to NumPy Int16."""
-        converted = np.int16(value)
+        """Cast value from JSON to NumPy Int32."""
+        converted = np.int32(value)
         return converted
 
 
@@ -54,7 +54,7 @@ class Float32(ma.fields.Field):
 
 
 # add int32 type to the paramtools type registry
-paramtools.register_custom_type("int16", Int16())
+paramtools.register_custom_type("int32", Int32())
 # add float32 type to the paramtools type registry
 paramtools.register_custom_type("float32", Float32())
 

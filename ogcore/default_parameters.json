@@ -50,7 +50,7 @@
         "section_1": "Household Parameters",
         "section_2": "Model Dimensions",
         "notes": "",
-        "type": "int16",
+        "type": "int32",
         "value": [
             {
                 "value": 80
@@ -69,7 +69,7 @@
         "section_1": "Household Parameters",
         "section_2": "Model Dimensions",
         "notes": "",
-        "type": "int16",
+        "type": "int32",
         "value": [
             {
                 "value": 7
@@ -88,7 +88,7 @@
         "section_1": "Household Parameters",
         "section_2": "Model Dimensions",
         "notes": "",
-        "type": "int16",
+        "type": "int32",
         "value": [
             {
                 "value": 320
@@ -107,7 +107,7 @@
         "section_1": "Firm Parameters",
         "section_2": "Model Dimensions",
         "notes": "",
-        "type": "int16",
+        "type": "int32",
         "value": [
             {
                 "value": 1
@@ -126,7 +126,7 @@
         "section_1": "Household Parameters",
         "section_2": "Model Dimensions",
         "notes": "",
-        "type": "int16",
+        "type": "int32",
         "value": [
             {
                 "value": 1
@@ -289,7 +289,7 @@
         "section_1": "Household Parameters",
         "section_2": "Model Dimensions",
         "notes": "",
-        "type": "int16",
+        "type": "int32",
         "value": [
             {
                 "value": 20
@@ -308,7 +308,7 @@
         "section_1": "Household Parameters",
         "section_2": "Model Dimensions",
         "notes": "",
-        "type": "int16",
+        "type": "int32",
         "value": [
             {
                 "value": 100
@@ -654,7 +654,7 @@
         "section_1": "Fiscal Policy Parameters",
         "section_2": "Fiscal Closure Rules",
         "notes": "It may make sense for this tG1 to exceed the length of the budget window one is looking at.  But it must also not be too late into the time path that a steady-state won't be reached by time T.",
-        "type": "int16",
+        "type": "int32",
         "value": [
             {
                 "value": 20
@@ -673,7 +673,7 @@
         "section_1": "Fiscal Policy Parameters",
         "section_2": "Fiscal Closure Rules",
         "notes": "The number of periods until the closure rule ends must not exceed T, the time at which the model is assumed to reach the steady-state.",
-        "type": "int16",
+        "type": "int32",
         "value": [
             {
                 "value": 256
@@ -3762,7 +3762,7 @@
         "section_1": "Fiscal Policy Parameters",
         "section_2": "Government Pension Parameters",
         "notes": "",
-        "type": "int16",
+        "type": "int32",
         "number_dims": 1,
         "value": [
             {
@@ -3902,7 +3902,7 @@
         "section_1": "Fiscal Policy Parameters",
         "section_2": "Government Pension Parameters",
         "notes": "Since there is not exit from the labor force in the model, the number of years of contributions is set exogenously.",
-        "type": "int16",
+        "type": "int32",
         "value": [
             {
                 "value": 40
@@ -3921,7 +3921,7 @@
         "section_1": "Fiscal Policy Parameters",
         "section_2": "Government Pension Parameters",
         "notes": "US-styel Social Security AIME is computed using average earnings from the highest earnings years for the number of years specified here.",
-        "type": "int16",
+        "type": "int32",
         "value": [
             {
                 "value": 35
@@ -4153,7 +4153,7 @@
         "section_1": "Other Parameters",
         "section_2": "",
         "notes": "Calendar year for initial model period",
-        "type": "int16",
+        "type": "int32",
         "value": [
             {
                 "value": 2025
@@ -4327,7 +4327,7 @@
         "description": "Max iterations for time path iteration.",
         "section_1": "Model Solution Parameters",
         "notes": "",
-        "type": "int16",
+        "type": "int32",
         "value": [
             {
                 "value": 250
