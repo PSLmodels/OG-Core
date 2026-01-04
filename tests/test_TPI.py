@@ -450,6 +450,7 @@ param_updates9 = {
     "gamma": [0.3, 0.35, 0.4],
     "gamma_g": [0.1, 0.05, 0.15],
     "alpha_c": [0.2, 0.4, 0.4],
+    "c_min": [0.0, 0.0, 0.0],
     "initial_guess_r_SS": 0.11,
     "initial_guess_TR_SS": 0.07,
     "alpha_I": [0.01],
@@ -480,6 +481,7 @@ param_updates10 = {
     "gamma": [0.3, 0.35, 0.4],
     "gamma_g": [0.0, 0.0, 0.0],
     "alpha_c": [0.2, 0.4, 0.4],
+    "c_min": [0.0, 0.0, 0.0],
     "initial_guess_r_SS": 0.11,
     "initial_guess_TR_SS": 0.07,
     "debt_ratio_ss": 1.5,
@@ -508,6 +510,7 @@ param_updates11 = {
     "gamma": [0.3, 0.35, 0.4],
     "gamma_g": [0.0, 0.0, 0.0],
     "alpha_c": [0.2, 0.4, 0.3, 0.1],
+    "c_min": [0.0, 0.0, 0.0, 0.0],
     "initial_guess_r_SS": 0.11,
     "initial_guess_TR_SS": 0.07,
     "debt_ratio_ss": 1.5,
@@ -654,7 +657,7 @@ def test_run_TPI_full_run(
         pass
 
     # if old variable names, update keys with VAR_NAME_MAPPING
-    if "r_hh" in expected_dict.keys():
+    if "r_hh" or "Y_vec" in expected_dict.keys():
         expected_dict_updated = {}
         for k, v in expected_dict.items():
             expected_dict_updated[VAR_NAME_MAPPING[k]] = v
