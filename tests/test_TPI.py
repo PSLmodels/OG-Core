@@ -657,7 +657,7 @@ def test_run_TPI_full_run(
         pass
 
     # if old variable names, update keys with VAR_NAME_MAPPING
-    if "r_hh" or "Y_vec" in expected_dict.keys():
+    if "Y_vec" in expected_dict.keys():
         expected_dict_updated = {}
         for k, v in expected_dict.items():
             expected_dict_updated[VAR_NAME_MAPPING[k]] = v
