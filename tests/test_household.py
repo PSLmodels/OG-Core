@@ -1127,39 +1127,65 @@ def test_constraint_checker_TPI(bssmat, nssmat, cssmat, ltilde):
     assert True
 
 
-def test_ci():
+c_s = np.array([2.0, 3.0, 5.0, 7.0]).reshape(4, 1)
+p_i = np.array([1.1, 0.8, 1.0])
+p_tilde = np.array([2.3])
+tau_c = np.array([0.2, 0.3, 0.5])
+alpha_c = np.array([0.5, 0.3, 0.2])
+c_min = np.array([0.01, 0.02, 0.0])
+expected_ci = np.array(
+    [
+        [
+            1.742424242 + 0.01,
+            2.613636364 + 0.01,
+            4.356060606 + 0.01,
+            6.098484848 + 0.01,
+        ],
+        [
+            1.326923077 + 0.02,
+            1.990384615 + 0.02,
+            3.317307692 + 0.02,
+            4.644230769 + 0.02,
+        ],
+        [
+            0.613333333 + 0.0,
+            0.92 + 0.0,
+            1.533333333 + 0.0,
+            2.146666667 + 0.0,
+        ],
+    ]
+).reshape(3, 4, 1)
+
+c_s_tpi = np.tile(c_s.reshape(1, 4, 1), (3, 1, 1))
+p_i_tpi = np.tile(p_i.reshape(1, 3), (3, 1))
+p_tilde_tpi = np.array([2.3, 2.3, 2.3])
+tau_c_tpi = np.tile(tau_c.reshape(1, 3), (3, 1))
+expected_ci_tpi = np.tile(expected_ci.reshape(1, 4, 3), (3, 1, 1))
+
+
+@pytest.mark.parametrize(
+    "c_s,p_i,p_tilde,tau_c,alpha_c,c_min,method,expected",
+    [
+        (c_s, p_i, p_tilde, tau_c, alpha_c, c_min, "SS", expected_ci),
+        (
+            c_s_tpi,
+            p_i_tpi,
+            p_tilde_tpi,
+            tau_c_tpi,
+            alpha_c,
+            c_min,
+            "TPI",
+            expected_ci_tpi,
+        ),
+    ],
+    ids=["SS", "TPI"],
+)
+def test_ci(c_s, p_i, p_tilde, tau_c, alpha_c, c_min, method, expected):
     """
     Test of the get_ci function
     """
-    c_s = np.array([2.0, 3.0, 5.0, 7.0]).reshape(4, 1)
-    p_i = np.array([1.1, 0.8, 1.0])
-    p_tilde = np.array([2.3])
-    tau_c = np.array([0.2, 0.3, 0.5])
-    alpha_c = np.array([0.5, 0.3, 0.2])
-    c_min = np.array([0.01, 0.02, 0.0])
-    expected_ci = np.array(
-        [
-            [
-                1.742424242 + 0.01,
-                2.613636364 + 0.01,
-                4.356060606 + 0.01,
-                6.098484848 + 0.01,
-            ],
-            [
-                1.326923077 + 0.02,
-                1.990384615 + 0.02,
-                3.317307692 + 0.02,
-                4.644230769 + 0.02,
-            ],
-            [
-                0.613333333 + 0.0,
-                0.92 + 0.0,
-                1.533333333 + 0.0,
-                2.146666667 + 0.0,
-            ],
-        ]
-    ).reshape(3, 4, 1)
-
-    test_ci = household.get_ci(c_s, p_i, p_tilde, tau_c, alpha_c, c_min)
+    test_ci = household.get_ci(
+        c_s, p_i, p_tilde, tau_c, alpha_c, c_min, method=method
+    )
 
     assert np.allclose(test_ci, expected_ci)
