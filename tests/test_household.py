@@ -1180,7 +1180,7 @@ expected_ci_tpi = np.tile(expected_ci.reshape(1, 4, 3), (3, 1, 1))
     ],
     ids=["SS", "TPI"],
 )
-def test_ci(c_s, p_i, p_tilde, tau_c, alpha_c, c_min, method, expected):
+def test_get_ci(c_s, p_i, p_tilde, tau_c, alpha_c, c_min, method, expected):
     """
     Test of the get_ci function
     """
