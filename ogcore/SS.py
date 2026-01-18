@@ -54,7 +54,7 @@ def euler_equation_solver(guesses, *args):
         errros (Numpy array): errors from FOCs, length 2S
 
     """
-    (r, w, p_tilde, bq, rm, tr, ubi, factor, j, p) = args
+    r, w, p_tilde, bq, rm, tr, ubi, factor, j, p = args
 
     b_guess = np.array(guesses[: p.S])
     n_guess = np.array(guesses[p.S :])
@@ -1235,7 +1235,7 @@ def SS_fsolve(guesses, *args):
             implied outer loop variables
 
     """
-    (bssmat, nssmat, TR_ss, Ig_baseline, factor_ss, p, client) = args
+    bssmat, nssmat, TR_ss, Ig_baseline, factor_ss, p, client = args
 
     # Rename the inputs
     r_p = guesses[0]

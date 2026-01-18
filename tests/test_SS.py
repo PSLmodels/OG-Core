@@ -95,7 +95,7 @@ def dask_client():
 input_tuple = utils.safe_read_pickle(
     os.path.join(CUR_PATH, "test_io_data", "SS_fsolve_inputs.pkl")
 )
-(bssmat, nssmat, TR_ss, factor_ss) = input_tuple
+bssmat, nssmat, TR_ss, factor_ss = input_tuple
 # Parameterize the baseline, closed econ case
 p1 = Specifications(baseline=True)
 p1.update_specifications({"zeta_D": [0.0], "zeta_K": [0.0]})
@@ -313,7 +313,7 @@ def test_SS_fsolve(tmpdir, guesses, args, expected):
     ensure that output returned matches what it has been before.
     """
     # args =
-    (bssmat, nssmat, TR_ss, Ig_baseline, factor_ss, p, client) = args
+    bssmat, nssmat, TR_ss, Ig_baseline, factor_ss, p, client = args
     p.baseline_dir = tmpdir
     p.output_base = tmpdir
 

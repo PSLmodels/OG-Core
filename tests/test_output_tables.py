@@ -10,7 +10,6 @@ import numpy as np
 from ogcore import utils, output_tables
 from ogcore.parameters import Specifications
 
-
 # Load in test results and parameters
 CUR_PATH = os.path.abspath(os.path.dirname(__file__))
 base_ss = utils.safe_read_pickle(
