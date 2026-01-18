@@ -23,7 +23,6 @@ import os
 import warnings
 import logging
 
-
 if not SHOW_RUNTIME:
     warnings.simplefilter("ignore", RuntimeWarning)
 
@@ -129,7 +128,20 @@ def get_initial_SS_values(p):
 
 
 def firstdoughnutring(
-    guesses, r, w, p_tilde, bq, rm, tr, theta, factor, ubi, j, initial_b, p
+    guesses,
+    r,
+    w,
+    p_tilde,
+    p_i,
+    bq,
+    rm,
+    tr,
+    theta,
+    factor,
+    ubi,
+    j,
+    initial_b,
+    p,
 ):
     """
     Solves the first entries of the upper triangle of the twist doughnut. This
@@ -141,6 +153,7 @@ def firstdoughnutring(
         r (scalar): real interest rate
         w (scalar): real wage rate
         p_tilde (scalar): composite good price
+        p_i (Numpy array): output goods prices
         bq (scalar): bequest amounts by age
         rm (scalar): remittance amounts by age
         tr (scalar): government transfer amount
@@ -166,6 +179,7 @@ def firstdoughnutring(
         np.array([r]),
         np.array([w]),
         np.array([p_tilde]),
+        np.array([p_i]),
         b_s,
         np.array([b_splus1]),
         np.array([n]),
@@ -188,6 +202,7 @@ def firstdoughnutring(
         np.array([r]),
         np.array([w]),
         np.array([p_tilde]),
+        np.array([p_i]),
         b_s,
         b_splus1,
         np.array([n]),
@@ -219,6 +234,7 @@ def twist_doughnut(
     r,
     w,
     p_tilde,
+    p_i,
     bq,
     rm,
     tr,
@@ -244,6 +260,7 @@ def twist_doughnut(
         r (Numpy array): real interest rate
         w (Numpy array): real wage rate
         p_tilde (Numpy array): composite good price
+        p_i (Numpy array): output goods prices
         bq (Numpy array): bequest amounts by age, length s
         rm (Numpy array): remittance amounts by age, length s
         tr (Numpy array): government transfer amount
@@ -281,6 +298,7 @@ def twist_doughnut(
     w_s = w[t : t + length]
     r_s = r[t : t + length]
     p_tilde_s = p_tilde[t : t + length]
+    p_i_s = p_i[t : t + length, :]
     n_s = n_guess
     chi_n_s = np.diag(p.chi_n[t : t + p.S, :], max(p.S - length, 0))
     rho_s = np.diag(p.rho[t : t + p.S, :], max(p.S - length, 0))
@@ -289,6 +307,7 @@ def twist_doughnut(
         r_s,
         w_s,
         p_tilde_s,
+        p_i_s,
         b_s,
         b_splus1,
         n_s,
@@ -311,6 +330,7 @@ def twist_doughnut(
         r_s,
         w_s,
         p_tilde_s,
+        p_i_s,
         b_s,
         b_splus1,
         n_s,
@@ -379,7 +399,7 @@ def inner_loop(guesses, outer_loop_vars, initial_values, ubi, j, ind, p):
             * n_mat (Numpy array): labor supply amounts, size = TxS
 
     """
-    (K0, b_sinit, b_splus1init, factor, initial_b, initial_n) = initial_values
+    K0, b_sinit, b_splus1init, factor, initial_b, initial_n = initial_values
     guesses_b, guesses_n = guesses
     r_p, r, w, p_m, BQ, RM, TR, theta = outer_loop_vars
 
@@ -408,6 +428,7 @@ def inner_loop(guesses, outer_loop_vars, initial_values, ubi, j, ind, p):
             r_p[0],
             w[0],
             p_tilde[0],
+            p_i[0, :],
             bq[0, -1, j],
             rm[0, -1, j],
             tr[0, -1, j],
@@ -463,6 +484,7 @@ def inner_loop(guesses, outer_loop_vars, initial_values, ubi, j, ind, p):
                 r_p,
                 w,
                 p_tilde,
+                p_i,
                 bq_to_use,
                 rm_to_use,
                 tr_to_use,
@@ -518,6 +540,7 @@ def inner_loop(guesses, outer_loop_vars, initial_values, ubi, j, ind, p):
                 r_p,
                 w,
                 p_tilde,
+                p_i,
                 bq_to_use,
                 rm_to_use,
                 tr_to_use,
@@ -561,7 +584,7 @@ def run_TPI(p, client=None):
     """
     # unpack tuples of parameters
     initial_values, ss_vars, theta, baseline_values = get_initial_SS_values(p)
-    (B0, b_sinit, b_splus1init, factor, initial_b, initial_n) = initial_values
+    B0, b_sinit, b_splus1init, factor, initial_b, initial_n = initial_values
     (
         Ybaseline,
         TRbaseline,
@@ -916,11 +939,13 @@ def run_TPI(p, client=None):
         )
         r_p_path = utils.to_timepath_shape(r_p)
         p_tilde_path = utils.to_timepath_shape(p_tilde)
+
         wpath = utils.to_timepath_shape(w)
         c_mat = household.get_cons(
             r_p_path[: p.T, :, :],
             wpath[: p.T, :, :],
             p_tilde_path[: p.T, :, :],
+            p_i[: p.T, :],
             bmat_s,
             bmat_splus1,
             n_mat[: p.T, :, :],
@@ -928,7 +953,9 @@ def run_TPI(p, client=None):
             rmmat[: p.T, :, :],
             tax_mat,
             p.e,
+            p.tau_c[: p.T, :],
             p,
+            method="TPI",
         )
         c_i = household.get_ci(
             c_mat[: p.T, :, :],
@@ -936,6 +963,7 @@ def run_TPI(p, client=None):
             p_tilde[: p.T],
             p.tau_c[: p.T, :],
             p.alpha_c,
+            p.c_min,
             "TPI",
         )
         sales_tax_mat = tax.cons_tax_liab(c_i, p_i, p, "TPI")
@@ -947,6 +975,7 @@ def run_TPI(p, client=None):
             p_tilde[: p.T],
             p.tau_c[: p.T, :],
             p.alpha_c,
+            p.c_min,
             "TPI",
         )
         y_before_tax_mat = household.get_y(

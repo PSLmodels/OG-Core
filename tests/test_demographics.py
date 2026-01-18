@@ -3,7 +3,6 @@ import pytest
 import os
 from ogcore import demographics
 
-
 # Read in some test population data to use in select tests below
 # Tests that ping the UN data portal are marked with the "local" mark
 data_dir = os.path.join(

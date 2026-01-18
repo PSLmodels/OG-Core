@@ -5,7 +5,6 @@ import ogcore
 import os
 import sys
 
-
 CURDIR_PATH = os.path.abspath(os.path.dirname(__file__))
 OGCORE_PATH = os.path.join(CURDIR_PATH, "..", "ogcore")
 TEMPLATE_PATH = os.path.join(CURDIR_PATH, "templates")

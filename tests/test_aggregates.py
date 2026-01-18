@@ -4,7 +4,6 @@ import copy
 from ogcore import aggregates as aggr
 from ogcore.parameters import Specifications
 
-
 p = Specifications()
 rho_vec = np.zeros((1, 40))
 rho_vec[0, -1] = 1.0
