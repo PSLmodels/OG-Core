@@ -333,7 +333,9 @@
                 "value": false
             }
         ],
-        "validators": {}
+        "validators": {
+           "choice": {"choices": [true, false]}
+            }
     },
     "beta_annual": {
         "title": "Annual rate of time preference for households",
@@ -3722,7 +3724,9 @@
                 "value": false
             }
         ],
-        "validators": {}
+        "validators": {
+           "choice": {"choices": [true, false]}
+            }
     },
     "constant_rates": {
         "title": "Flag to use linear tax functions",
@@ -3736,7 +3740,9 @@
                 "value": false
             }
         ],
-        "validators": {}
+        "validators": {
+           "choice": {"choices": [true, false]}
+            }
     },
     "zero_taxes": {
         "title": "Flag to run model without any individual income taxes",
@@ -3750,7 +3756,9 @@
                 "value": false
             }
         ],
-        "validators": {}
+        "validators": {
+           "choice": {"choices": [true, false]}
+            }
     },
     "analytical_mtrs": {
         "title": "Flag to use analytically derived marginal tax rates in tax functions",
@@ -3764,7 +3772,9 @@
                 "value": false
             }
         ],
-        "validators": {}
+        "validators": {
+           "choice": {"choices": [true, false]}
+            }
     },
     "age_specific": {
         "title": "Flag to use analytically derived marginal tax rates in tax functions",
@@ -3778,7 +3788,9 @@
                 "value": true
             }
         ],
-        "validators": {}
+        "validators": {
+           "choice": {"choices": [true, false]}
+            }
     },
     "retirement_age": {
         "title": "Age at which agents can collect Social Security benefits",
@@ -4155,6 +4167,22 @@
             }
         }
     },
+    "baseline_theta": {
+        "title": "Flag for use in reform simulations to keep Social Security system replacement rate constant between baseline and reform runs",
+        "description": "Flag for use in reform simulations to keep Social Security system replacement rate constant between baseline and reform runs.",
+        "section_1": "Fiscal Policy Parameters",
+        "section_2": "Government Pension Parameters",
+        "notes": "",
+        "type": "bool",
+        "value": [
+            {
+                "value": false
+            }
+        ],
+        "validators": {
+           "choice": {"choices": [true, false]}
+            }
+    },
     "start_year": {
         "title": "Calendar year in which to start model analysis",
         "description": "Calendar year in which to start model analysis.",
@@ -4431,7 +4459,9 @@
                 "value": true
             }
         ],
-        "validators": {}
+        "validators": {
+           "choice": {"choices": [true, false]}
+            }
     },
     "initial_guess_r_SS": {
         "title": "Initial guess of r for the SS solution",

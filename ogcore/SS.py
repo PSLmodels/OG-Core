@@ -283,8 +283,26 @@ def inner_loop(outer_loop_vars, p, client):
     # from dask.base import dask_sizeof
 
     if client:
-        # Scatter p only once and only if client not equal None
+
+        # Before scattering, temporarily remove unpicklable schema objects
+        schema_backup = {}
+        for attr in ["_defaults_schema", "_validator_schema", "sel"]:
+            if hasattr(p, attr):
+                schema_backup[attr] = getattr(p, attr)
+                try:
+                    delattr(p, attr)
+                except:
+                    pass
+
+        # Scatter the parameters
         scattered_p_future = client.scatter(p, broadcast=True)
+
+        # Restore the schema objects (they're not needed by workers anyway)
+        for attr, value in schema_backup.items():
+            try:
+                setattr(p, attr, value)
+            except:
+                pass
 
         # Launch in parallel with submit (or map)
         futures = []
@@ -1363,7 +1381,7 @@ def SS_initial_guesses(p, b_val=0.0055, n_val=0.4, r_tr_scalars=[1.0, 1.0]):
     if p.baseline:
         guesses.append(p.initial_guess_factor_SS)
 
-        return guesses, b_guess, n_guess
+    return guesses, b_guess, n_guess
 
 
 def run_SS(p, client=None):
@@ -1381,92 +1399,90 @@ def run_SS(p, client=None):
     """
     # For initial guesses of w, r, TR, and factor, we use values that
     # are close to some steady state values.
-    if p.baseline is False and p.reform_use_baseline_solution:
-        # Use the baseline solution to get starting values for the reform
+    # Use the baseline solution to get starting values for the reform
+    use_new_guesses = False  # initialize this flag, switches to true
+    # if baseline solution not work for reform
+    if p.baseline is False:
         baseline_ss_path = os.path.join(p.baseline_dir, "SS", "SS_vars.pkl")
         ss_solutions = utils.safe_read_pickle(baseline_ss_path)
-        if p.reform_use_baseline_solution:
-            # use baseline solution as starting values if dimensions match
-            try:
-                if ss_solutions["b_sp1"].shape == (
-                    p.S,
-                    p.J,
-                ) and np.squeeze(
-                    ss_solutions["Y_m"].shape
-                ) == (p.M):
-                    logging.info("Using previous solutions for SS")
-                    (
-                        b_guess,
-                        n_guess,
-                        r_p_guess,
-                        rguess,
-                        wguess,
-                        p_m_guess,
-                        BQguess,
-                        TRguess,
-                        Yguess,
-                        factor_ss,
-                    ) = (
-                        ss_solutions["b_sp1"],
-                        ss_solutions["n"],
-                        float(ss_solutions["r_p"]),
-                        float(ss_solutions["r"]),
-                        float(ss_solutions["w"]),
-                        ss_solutions["p_m"],
-                        ss_solutions["BQ"],
-                        float(ss_solutions["TR"]),
-                        float(ss_solutions["Y"]),
-                        ss_solutions["factor"],
-                    )
-                    use_new_guesses = False
-                    if p.baseline_spending:
-                        TR_baseline = TRguess
-                        Ig_baseline = ss_solutions["I_g"]
-                    else:
-                        TR_baseline = None
-                        Ig_baseline = None
-                    BQ_items = [BQguess] if p.use_zeta else list(BQguess)
-                    guesses = (
-                        [r_p_guess, rguess, wguess]
-                        + list(p_m_guess)
-                        + [Yguess]
-                        + BQ_items
-                        + [TRguess]
-                    )
-                    # Now solve for the steady state of the reform
-                    ss_params = (
-                        b_guess,
-                        n_guess,
-                        TR_baseline,
-                        Ig_baseline,
-                        factor_ss,
-                        p,
-                        client,
-                    )
-
-                    # Solve for steady state using root finder
-                    sol = opt.root(
-                        SS_fsolve,
-                        guesses,
-                        args=ss_params,
-                        method=p.SS_root_method,
-                        tol=p.mindist_SS,
-                    )
+    if p.baseline is False and p.reform_use_baseline_solution:
+        # use baseline solution as starting values if dimensions match
+        try:
+            if ss_solutions["b_sp1"].shape == (
+                p.S,
+                p.J,
+            ) and np.squeeze(
+                ss_solutions["Y_m"].shape
+            ) == (p.M):
+                logging.info("Using previous solutions for SS")
+                (
+                    b_guess,
+                    n_guess,
+                    r_p_guess,
+                    rguess,
+                    wguess,
+                    p_m_guess,
+                    BQguess,
+                    TRguess,
+                    Yguess,
+                    factor_ss,
+                ) = (
+                    ss_solutions["b_sp1"],
+                    ss_solutions["n"],
+                    float(ss_solutions["r_p"]),
+                    float(ss_solutions["r"]),
+                    float(ss_solutions["w"]),
+                    ss_solutions["p_m"],
+                    ss_solutions["BQ"],
+                    float(ss_solutions["TR"]),
+                    float(ss_solutions["Y"]),
+                    ss_solutions["factor"],
+                )
+                # set new attribute of parameters for SS theta
+                p.SS_theta = ss_solutions["theta"]
+                use_new_guesses = False
+                if p.baseline_spending:
+                    TR_baseline = TRguess
+                    Ig_baseline = ss_solutions["I_g"]
                 else:
-                    logging.warning(
-                        "Dimensions of previous solutions for SS do not match"
-                    )
-                    use_new_guesses = True
-            except KeyError:
+                    TR_baseline = None
+                    Ig_baseline = None
+                BQ_items = [BQguess] if p.use_zeta else list(BQguess)
+                guesses = (
+                    [r_p_guess, rguess, wguess]
+                    + list(p_m_guess)
+                    + [Yguess]
+                    + BQ_items
+                    + [TRguess]
+                )
+                # Now solve for the steady state of the reform
+                ss_params = (
+                    b_guess,
+                    n_guess,
+                    TR_baseline,
+                    Ig_baseline,
+                    factor_ss,
+                    p,
+                    client,
+                )
+
+                # Solve for steady state using root finder
+                sol = opt.root(
+                    SS_fsolve,
+                    guesses,
+                    args=ss_params,
+                    method=p.SS_root_method,
+                    tol=p.mindist_SS,
+                )
+            else:
                 logging.warning(
-                    "KeyError: previous solutions for SS not found"
+                    "Dimensions of previous solutions for SS do not match"
                 )
                 use_new_guesses = True
-    if (
-        p.baseline
-        or p.reform_use_baseline_solution is False
-        or use_new_guesses
-    ):
+        except KeyError:
+            logging.warning("KeyError: previous solutions for SS not found")
+            use_new_guesses = True
+    if p.baseline or not p.reform_use_baseline_solution or use_new_guesses:
         # Loop over initial guesses of r and TR until find a solution or until have
         # gone through all guesses. This should usually solve in the first guess
         SS_solved = False
@@ -1495,6 +1511,8 @@ def run_SS(p, client=None):
                     factor_ss = ss_solutions[
                         "factor"
                     ]  # don't guess factor, use baseline
+                    # set new attribute of parameters for SS theta
+                    p.SS_theta = ss_solutions["theta"]
                 if p.baseline_spending:
                     TR_baseline = ss_solutions["TR"]
                     Ig_baseline = ss_solutions["I_g"]

@@ -5,12 +5,18 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-
-## [0.15.0] - 2025-11-24 12:00:00
+## [0.15.2] - 2025-01-20 12:00:00
 
 ### Added
 
-- Allows the government interest rate on debt to be a function of the debt-to-GDP ratio ((PR #1037)[https://github.com/PSLmodels/OG-Core/pull/1037])
+- A new parameters, `r_gov_DY` and `r_gov_DY2`, that allow the government interest rate to be a function of the debt-to-GDP ratio.  See PR [#1037](https://github.com/PSLmodels/OG-Core/pull/1037)
+
+
+## [0.15.0] - 2025-12-03 12:00:00
+
+### Added
+
+- A new parameter `baseline_theta` to the `Parameters` class that allows the user to specify whether to use the steady-state replacement rate parameters from the baseline solution in a reform run.  See PR [#1077](https://github.com/PSLmodels/OG-Core/pull/1077)
 
 ## [0.14.14] - 2025-11-24 12:00:00
 
