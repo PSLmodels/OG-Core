@@ -266,9 +266,23 @@ def test_firstdoughnutring():
     )
     guesses, r, w, bq, rm, tr, theta, factor, ubi, j, initial_b = input_tuple
     p_tilde = 1.0  # needed for multi-industry version
+    p_i = 1.0  # needed for multi-industry version
     p = Specifications()
     test_list = TPI.firstdoughnutring(
-        guesses, r, w, p_tilde, bq, rm, tr, theta, factor, ubi, j, initial_b, p
+        guesses,
+        r,
+        w,
+        p_tilde,
+        p_i,
+        bq,
+        rm,
+        tr,
+        theta,
+        factor,
+        ubi,
+        j,
+        initial_b,
+        p,
     )
 
     expected_list = utils.safe_read_pickle(
@@ -323,12 +337,14 @@ def test_twist_doughnut(file_inputs, file_outputs):
         initial_b,
     ) = input_tuple
     p_tilde = np.ones_like(r)  # needed for multi-industry version
+    p_i = np.ones((r.shape[0], 1))  # needed for multi-industry version
     p = Specifications()
     input_tuple2 = (
         guesses,
         r,
         w,
         p_tilde,
+        p_i,
         bq,
         rm,
         tr,
@@ -434,6 +450,7 @@ param_updates9 = {
     "gamma": [0.3, 0.35, 0.4],
     "gamma_g": [0.1, 0.05, 0.15],
     "alpha_c": [0.2, 0.4, 0.4],
+    "c_min": [0.0, 0.0, 0.0],
     "initial_guess_r_SS": 0.11,
     "initial_guess_TR_SS": 0.07,
     "alpha_I": [0.01],
@@ -464,6 +481,7 @@ param_updates10 = {
     "gamma": [0.3, 0.35, 0.4],
     "gamma_g": [0.0, 0.0, 0.0],
     "alpha_c": [0.2, 0.4, 0.4],
+    "c_min": [0.0, 0.0, 0.0],
     "initial_guess_r_SS": 0.11,
     "initial_guess_TR_SS": 0.07,
     "debt_ratio_ss": 1.5,
@@ -492,6 +510,7 @@ param_updates11 = {
     "gamma": [0.3, 0.35, 0.4],
     "gamma_g": [0.0, 0.0, 0.0],
     "alpha_c": [0.2, 0.4, 0.3, 0.1],
+    "c_min": [0.0, 0.0, 0.0, 0.0],
     "initial_guess_r_SS": 0.11,
     "initial_guess_TR_SS": 0.07,
     "debt_ratio_ss": 1.5,
@@ -500,6 +519,35 @@ param_updates11 = {
 }
 filename11 = os.path.join(
     CUR_PATH, "test_io_data", "run_TPI_baseline_MneI.pkl"
+)
+param_updates12 = {
+    "start_year": 2023,
+    "budget_balance": True,
+    "frisch": 0.41,
+    "cit_rate": [[0.21, 0.25, 0.35]],
+    "M": 3,
+    "I": 4,
+    "io_matrix": np.array(
+        [
+            [0.3, 0.3, 0.4],
+            [0.6, 0.1, 0.3],
+            [0.25, 0.5, 0.25],
+            [0.0, 1.0, 0.0],
+        ]
+    ),
+    "epsilon": [1.0, 1.0, 1.0],
+    "gamma": [0.3, 0.35, 0.4],
+    "gamma_g": [0.0, 0.0, 0.0],
+    "alpha_c": [0.2, 0.4, 0.3, 0.1],
+    "c_min": [0.001, 0.0002, 0.0, 0.0003],
+    "initial_guess_r_SS": 0.11,
+    "initial_guess_TR_SS": 0.07,
+    "debt_ratio_ss": 1.5,
+    "alpha_T": alpha_T.tolist(),
+    "alpha_G": alpha_G.tolist(),
+}
+filename12 = os.path.join(
+    CUR_PATH, "test_io_data", "run_TPI_baseline_MneI_cmin.pkl"
 )
 
 
@@ -518,6 +566,7 @@ filename11 = os.path.join(
         # (True, param_updates9, filename9),
         # (True, param_updates10, filename10),
         # (True, param_updates11, filename11),
+        # (True, param_updates12, filename12),
     ],
     ids=[
         # "Baseline, balanced budget",
@@ -531,6 +580,7 @@ filename11 = os.path.join(
         # "Baseline, M=3 non-zero Kg",
         # "Baseline, M=3 zero Kg",
         # "Baseline, M!=I",
+        # "Baseline, M!=I, cmin>0",
     ],
 )
 def test_run_TPI_full_run(
@@ -607,20 +657,23 @@ def test_run_TPI_full_run(
     except KeyError:
         pass
 
+    # if old variable names, update keys with VAR_NAME_MAPPING
+    if "Y_vec" in expected_dict.keys():
+        expected_dict_updated = {}
+        for k, v in expected_dict.items():
+            expected_dict_updated[VAR_NAME_MAPPING[k]] = v
+        expected_dict = expected_dict_updated
     for k, v in expected_dict.items():
         print("Testing, ", k)
         try:
             print(
                 "Diff = ",
-                np.abs(test_dict[VAR_NAME_MAPPING[k]][: p.T] - v[: p.T]).max(),
+                np.abs(test_dict[k][: p.T] - v[: p.T]).max(),
             )
         except ValueError:
             print(
                 "Diff = ",
-                np.abs(
-                    test_dict[VAR_NAME_MAPPING[k]][: p.T, :, :]
-                    - v[: p.T, :, :]
-                ).max(),
+                np.abs(test_dict[k][: p.T, :, :] - v[: p.T, :, :]).max(),
             )
 
     for k, v in expected_dict.items():
@@ -628,7 +681,7 @@ def test_run_TPI_full_run(
         try:
             print(
                 "Diff = ",
-                np.abs(test_dict[VAR_NAME_MAPPING[k]][: p.T] - v[: p.T]).max(),
+                np.abs(test_dict[k][: p.T] - v[: p.T]).max(),
             )
             if (
                 np.abs(test_dict[VAR_NAME_MAPPING[k]][: p.T] - v[: p.T]).max()
@@ -641,7 +694,7 @@ def test_run_TPI_full_run(
                 )
                 print("Indices with large difference:", indices)
             assert np.allclose(
-                test_dict[VAR_NAME_MAPPING[k]][: p.T],
+                test_dict[k][: p.T],
                 v[: p.T],
                 rtol=1e-04,
                 atol=1e-04,
@@ -649,10 +702,7 @@ def test_run_TPI_full_run(
         except ValueError:
             print(
                 "Diff = ",
-                np.abs(
-                    test_dict[VAR_NAME_MAPPING[k]][: p.T, :, :]
-                    - v[: p.T, :, :]
-                ).max(),
+                np.abs(test_dict[k][: p.T, :, :] - v[: p.T, :, :]).max(),
             )
             if (
                 np.abs(
@@ -671,7 +721,7 @@ def test_run_TPI_full_run(
                 )
                 print("Indices with large difference:", indices)
             assert np.allclose(
-                test_dict[VAR_NAME_MAPPING[k]][: p.T, :, :],
+                test_dict[k][: p.T, :, :],
                 v[: p.T, :, :],
                 rtol=1e-04,
                 atol=1e-04,

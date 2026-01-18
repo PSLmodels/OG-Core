@@ -39,7 +39,7 @@ def euler_equation_solver(guesses, *args):
 
     Args:
         guesses (Numpy array): initial guesses for b and n, length 2S
-        args (tuple): tuple of arguments (r, w, p_tilde, bq, TR, factor, j, p)
+        args (tuple): tuple of arguments (r, w, p_tilde, p_i, bq, TR, factor, j, p)
         r (scalar): real interest rate
         w (scalar): real wage rate
         p_tilde (scalar): composite good price
@@ -54,7 +54,7 @@ def euler_equation_solver(guesses, *args):
         errros (Numpy array): errors from FOCs, length 2S
 
     """
-    r, w, p_tilde, bq, rm, tr, ubi, factor, j, p = args
+    r, w, p_tilde, p_i, bq, rm, tr, ubi, factor, j, p = args
 
     b_guess = np.array(guesses[: p.S])
     n_guess = np.array(guesses[p.S :])
@@ -67,6 +67,7 @@ def euler_equation_solver(guesses, *args):
         r,
         w,
         p_tilde,
+        p_i,
         b_s,
         b_splus1,
         n_guess,
@@ -88,6 +89,7 @@ def euler_equation_solver(guesses, *args):
         r,
         w,
         p_tilde,
+        p_i,
         b_s,
         b_splus1,
         n_guess,
@@ -143,6 +145,7 @@ def euler_equation_solver(guesses, *args):
         r,
         w,
         p_tilde,
+        p_i,
         b_s,
         b_splus1,
         n_guess,
@@ -150,6 +153,7 @@ def euler_equation_solver(guesses, *args):
         rm,
         taxes,
         p.e[-1, :, j],
+        p.tau_c[-1, :],
         p,
     )
     mask6 = cons < 0
@@ -164,6 +168,7 @@ def solve_for_j(
     r_p,
     w,
     p_tilde,
+    p_i,
     bq_j,
     rm_j,
     tr_j,
@@ -180,6 +185,7 @@ def solve_for_j(
         r_p (scalar): return on household investment portfolio
         w (scalar): real wage rate
         p_tilde (scalar): composite good price
+        p_i (Numpy array): prices for consumption good i
         bq_j (Numpy array): bequest amounts by age, length S
         rm_j (Numpy array): remittance amounts by age, length S
         tr_j (Numpy array): government transfer amount by age, length S
@@ -200,6 +206,7 @@ def solve_for_j(
             r_p,
             w,
             p_tilde,
+            p_i,
             bq_j,
             rm_j,
             tr_j,
@@ -314,6 +321,7 @@ def inner_loop(outer_loop_vars, p, client):
                 r_p,
                 w,
                 p_tilde,
+                p_i,
                 bq[:, j],
                 rm[:, j],
                 tr[:, j],
@@ -346,6 +354,7 @@ def inner_loop(outer_loop_vars, p, client):
                     r_p,
                     w,
                     p_tilde,
+                    p_i,
                     bq[:, j],
                     rm[:, j],
                     tr[:, j],
@@ -365,6 +374,7 @@ def inner_loop(outer_loop_vars, p, client):
                 r_p,
                 w,
                 p_tilde,
+                p_i,
                 bq[:, j],
                 rm[:, j],
                 tr[:, j],
@@ -416,6 +426,7 @@ def inner_loop(outer_loop_vars, p, client):
         r_p,
         w,
         p_tilde,
+        p_i,
         b_s,
         b_splus1,
         nssmat,
@@ -423,9 +434,12 @@ def inner_loop(outer_loop_vars, p, client):
         rm,
         net_tax,
         np.squeeze(p.e[-1, :, :]),
+        p.tau_c[-1, :],
         p,
     )
-    c_i = household.get_ci(c_s, p_i, p_tilde, p.tau_c[-1, :], p.alpha_c)
+    c_i = household.get_ci(
+        c_s, p_i, p_tilde, p.tau_c[-1, :], p.alpha_c, p.c_min
+    )
     L = aggr.get_L(nssmat, p, "SS")
     B = aggr.get_B(bssmat, p, "SS", False)
 
@@ -551,6 +565,7 @@ def inner_loop(outer_loop_vars, p, client):
         new_r_p,
         new_w,
         new_p_tilde,
+        new_p_i,
         b_s,
         bssmat,
         nssmat,
@@ -558,6 +573,7 @@ def inner_loop(outer_loop_vars, p, client):
         new_rm,
         taxss,
         np.squeeze(p.e[-1, :, :]),
+        p.tau_c[-1, :],
         p,
     )
     (
@@ -990,6 +1006,7 @@ def SS_solver(
         r_p_ss,
         wss,
         p_tilde_ss,
+        p_i_ss,
         bssmat_s,
         bssmat_splus1,
         nssmat,
@@ -997,6 +1014,7 @@ def SS_solver(
         rmssmat,
         taxss,
         np.squeeze(p.e[-1, :, :]),
+        p.tau_c[-1, :],
         p,
     )
     c_i = household.get_ci(
@@ -1005,6 +1023,7 @@ def SS_solver(
         p_tilde_ss,
         p.tau_c[-1, :],
         p.alpha_c,
+        p.c_min,
         "SS",
     )
     sales_tax_ss = tax.cons_tax_liab(c_i, p_i_ss, p, "SS")
@@ -1013,7 +1032,7 @@ def SS_solver(
     )
     Css = aggr.get_C(cssmat, p, "SS")
     c_i_ss_mat = household.get_ci(
-        cssmat, p_i_ss, p_tilde_ss, p.tau_c[-1, :], p.alpha_c
+        cssmat, p_i_ss, p_tilde_ss, p.tau_c[-1, :], p.alpha_c, p.c_min
     )
     C_vec_ss = np.zeros(p.I)
     for i_ind in range(

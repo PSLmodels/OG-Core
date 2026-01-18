@@ -1689,7 +1689,7 @@ def tax_func_estimate(
         futures = client.compute(lazy_values)
         results = client.gather(futures)
     else:
-        results = results = compute(
+        results = compute(
             *lazy_values,
             scheduler=dask.multiprocessing.get,
             num_workers=num_workers,

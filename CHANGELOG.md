@@ -11,6 +11,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - A new parameters, `r_gov_DY` and `r_gov_DY2`, that allow the government interest rate to be a function of the debt-to-GDP ratio.  See PR [#1037](https://github.com/PSLmodels/OG-Core/pull/1037)
 
+## [0.15.1] - 2026-01-19 12:00:00
+
+### Added
+
+- A new parameter `c_min` to the `Parameters` class that allows the user to specify minium consumption amounts by consumption good.  See PR [#1085](https://github.com/PSLmodels/OG-Core/pull/1085)
 
 ## [0.15.0] - 2025-12-03 12:00:00
 
