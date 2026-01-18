@@ -160,10 +160,6 @@ def D_G_path(r, dg_fixed_values, p):
             + agg_pension_outlays[t]
             - total_tax_revenue[t]
         )
-        # find r_gov for the period
-        # r_gov[t + 1] = get_r_gov(
-        #     r[t + 1], D[t + 1] / Y[t + 1], p, method="scalar", t=t + 1
-        # )
         D_ratio_max = np.amax(D[: p.T] / Y[: p.T])
         print("Maximum debt ratio: ", D_ratio_max)
 
