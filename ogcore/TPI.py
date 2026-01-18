@@ -23,7 +23,6 @@ import os
 import warnings
 import logging
 
-
 if not SHOW_RUNTIME:
     warnings.simplefilter("ignore", RuntimeWarning)
 
@@ -400,7 +399,7 @@ def inner_loop(guesses, outer_loop_vars, initial_values, ubi, j, ind, p):
             * n_mat (Numpy array): labor supply amounts, size = TxS
 
     """
-    (K0, b_sinit, b_splus1init, factor, initial_b, initial_n) = initial_values
+    K0, b_sinit, b_splus1init, factor, initial_b, initial_n = initial_values
     guesses_b, guesses_n = guesses
     r_p, r, w, p_m, BQ, RM, TR, theta = outer_loop_vars
 
@@ -585,7 +584,7 @@ def run_TPI(p, client=None):
     """
     # unpack tuples of parameters
     initial_values, ss_vars, theta, baseline_values = get_initial_SS_values(p)
-    (B0, b_sinit, b_splus1init, factor, initial_b, initial_n) = initial_values
+    B0, b_sinit, b_splus1init, factor, initial_b, initial_n = initial_values
     (
         Ybaseline,
         TRbaseline,

@@ -28,7 +28,6 @@ from pygam import LinearGAM, s, te
 from matplotlib import cm
 import random
 
-
 if not SHOW_RUNTIME:
     warnings.simplefilter("ignore", RuntimeWarning)
 

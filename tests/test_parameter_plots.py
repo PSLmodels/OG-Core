@@ -11,7 +11,6 @@ import scipy.interpolate as si
 import matplotlib.image as mpimg
 from ogcore import utils, parameter_plots, Specifications
 
-
 # Load in test results and parameters
 CUR_PATH = os.path.abspath(os.path.dirname(__file__))
 if sys.version_info[1] == 11:
