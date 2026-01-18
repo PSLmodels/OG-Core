@@ -670,7 +670,22 @@
 
 <div class="viewcode-block" id="get_cons">
 <a class="viewcode-back" href="../../content/api/household.html#ogcore.household.get_cons">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">get_cons</span><span class="p">(</span><span class="n">r_p</span><span class="p">,</span> <span class="n">w</span><span class="p">,</span> <span class="n">p_tilde</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">b_splus1</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">bq</span><span class="p">,</span> <span class="n">rm</span><span class="p">,</span> <span class="n">net_tax</span><span class="p">,</span> <span class="n">e</span><span class="p">,</span> <span class="n">p</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">get_cons</span><span class="p">(</span>
+    <span class="n">r_p</span><span class="p">,</span>
+    <span class="n">w</span><span class="p">,</span>
+    <span class="n">p_tilde</span><span class="p">,</span>
+    <span class="n">p_i</span><span class="p">,</span>
+    <span class="n">b</span><span class="p">,</span>
+    <span class="n">b_splus1</span><span class="p">,</span>
+    <span class="n">n</span><span class="p">,</span>
+    <span class="n">bq</span><span class="p">,</span>
+    <span class="n">rm</span><span class="p">,</span>
+    <span class="n">net_tax</span><span class="p">,</span>
+    <span class="n">e</span><span class="p">,</span>
+    <span class="n">tau_c</span><span class="p">,</span>
+    <span class="n">p</span><span class="p">,</span>
+    <span class="n">method</span><span class="o">=</span><span class="s2">&quot;SS&quot;</span><span class="p">,</span>
+<span class="p">):</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Calculate household composite consumption.</span>
 
@@ -688,6 +703,7 @@
 <span class="sd">        r_p (array_like): the real interest rate</span>
 <span class="sd">        w (array_like): the real wage rate</span>
 <span class="sd">        p_tilde (array_like): the ratio of real GDP to nominal GDP</span>
+<span class="sd">        p_i (Numpy array): prices for consumption good i</span>
 <span class="sd">        b (Numpy array): household savings</span>
 <span class="sd">        b_splus1 (Numpy array): household savings one period ahead</span>
 <span class="sd">        n (Numpy array): household labor supply</span>
@@ -695,12 +711,32 @@
 <span class="sd">        rm (Numpy array): household remittances received</span>
 <span class="sd">        net_tax (Numpy array): household net taxes paid</span>
 <span class="sd">        e (Numpy array): effective labor units</span>
+<span class="sd">        tau_c (Numpy array): consumption tax rates</span>
 <span class="sd">        p (OG-Core Specifications object): model parameters</span>
+<span class="sd">        method (str): adjusts calculation dimensions based on &#39;SS&#39; or &#39;TPI&#39;</span>
 
 <span class="sd">    Returns:</span>
 <span class="sd">        cons (Numpy array): household consumption</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">method</span> <span class="o">==</span> <span class="s2">&quot;SS&quot;</span><span class="p">:</span>
+        <span class="n">min_cons_expenditure</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">((</span><span class="mi">1</span> <span class="o">+</span> <span class="n">tau_c</span><span class="p">)</span> <span class="o">*</span> <span class="n">p_i</span> <span class="o">*</span> <span class="n">p</span><span class="o">.</span><span class="n">c_min</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">method</span> <span class="o">==</span> <span class="s2">&quot;TPI_scalar&quot;</span><span class="p">:</span>
+        <span class="n">min_cons_expenditure</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">((</span><span class="mi">1</span> <span class="o">+</span> <span class="n">tau_c</span><span class="p">)</span> <span class="o">*</span> <span class="n">p_i</span> <span class="o">*</span> <span class="n">p</span><span class="o">.</span><span class="n">c_min</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>  <span class="c1"># TPI case</span>
+        <span class="n">min_cons_expenditure</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span>
+            <span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="n">tau_c</span><span class="p">)</span> <span class="o">*</span> <span class="n">p_i</span> <span class="o">*</span> <span class="n">p</span><span class="o">.</span><span class="n">c_min</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="mi">1</span><span class="p">,</span> <span class="n">p</span><span class="o">.</span><span class="n">I</span><span class="p">)),</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span>
+        <span class="p">)</span>
+        <span class="n">length</span> <span class="o">=</span> <span class="n">r_p</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="c1"># reshape if needed for broadcasting</span>
+        <span class="n">n_dims</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ndim</span><span class="p">(</span><span class="n">bq</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">n_dims</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="n">min_cons_expenditure</span> <span class="o">=</span> <span class="n">min_cons_expenditure</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="n">length</span><span class="p">,))</span>
+        <span class="k">elif</span> <span class="n">n_dims</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+            <span class="n">min_cons_expenditure</span> <span class="o">=</span> <span class="n">min_cons_expenditure</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="n">length</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">min_cons_expenditure</span> <span class="o">=</span> <span class="n">min_cons_expenditure</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="n">length</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
+
     <span class="n">cons</span> <span class="o">=</span> <span class="p">(</span>
         <span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="n">r_p</span><span class="p">)</span> <span class="o">*</span> <span class="n">b</span>
         <span class="o">+</span> <span class="n">w</span> <span class="o">*</span> <span class="n">e</span> <span class="o">*</span> <span class="n">n</span>
@@ -708,6 +744,7 @@
         <span class="o">+</span> <span class="n">rm</span>
         <span class="o">-</span> <span class="n">net_tax</span>
         <span class="o">-</span> <span class="n">b_splus1</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">g_y</span><span class="p">)</span>
+        <span class="o">-</span> <span class="n">min_cons_expenditure</span>
     <span class="p">)</span> <span class="o">/</span> <span class="n">p_tilde</span>
 
     <span class="k">return</span> <span class="n">cons</span></div>
@@ -716,7 +753,7 @@
 
 <div class="viewcode-block" id="get_ci">
 <a class="viewcode-back" href="../../content/api/household.html#ogcore.household.get_ci">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">get_ci</span><span class="p">(</span><span class="n">c_s</span><span class="p">,</span> <span class="n">p_i</span><span class="p">,</span> <span class="n">p_tilde</span><span class="p">,</span> <span class="n">tau_c</span><span class="p">,</span> <span class="n">alpha_c</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s2">&quot;SS&quot;</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">get_ci</span><span class="p">(</span><span class="n">c_s</span><span class="p">,</span> <span class="n">p_i</span><span class="p">,</span> <span class="n">p_tilde</span><span class="p">,</span> <span class="n">tau_c</span><span class="p">,</span> <span class="n">alpha_c</span><span class="p">,</span> <span class="n">c_min</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s2">&quot;SS&quot;</span><span class="p">):</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Compute consumption of good i given amount of composite consumption</span>
 <span class="sd">    and prices.</span>
@@ -730,6 +767,7 @@
 <span class="sd">        p_tilde (array_like): composite good price</span>
 <span class="sd">        tau_c (array_like): consumption tax rate</span>
 <span class="sd">        alpha_c (array_like): consumption share parameters</span>
+<span class="sd">        c_min (array_like): minimum consumption levels for each good i</span>
 <span class="sd">        method (str): adjusts calculation dimensions based on &#39;SS&#39; or &#39;TPI&#39;</span>
 
 <span class="sd">    Returns:</span>
@@ -741,10 +779,11 @@
         <span class="n">J</span> <span class="o">=</span> <span class="n">c_s</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
         <span class="n">tau_c</span> <span class="o">=</span> <span class="n">tau_c</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">I</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
         <span class="n">alpha_c</span> <span class="o">=</span> <span class="n">alpha_c</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">I</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="n">c_min</span> <span class="o">=</span> <span class="n">c_min</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">I</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
         <span class="n">p_tilde</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
         <span class="n">p_i</span> <span class="o">=</span> <span class="n">p_i</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">I</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
         <span class="n">c_s</span> <span class="o">=</span> <span class="n">c_s</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">S</span><span class="p">,</span> <span class="n">J</span><span class="p">)</span>
-        <span class="n">c_si</span> <span class="o">=</span> <span class="n">alpha_c</span> <span class="o">*</span> <span class="p">(((</span><span class="mi">1</span> <span class="o">+</span> <span class="n">tau_c</span><span class="p">)</span> <span class="o">*</span> <span class="n">p_i</span><span class="p">)</span> <span class="o">/</span> <span class="n">p_tilde</span><span class="p">)</span> <span class="o">**</span> <span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="n">c_s</span>
+        <span class="n">c_si</span> <span class="o">=</span> <span class="n">alpha_c</span> <span class="o">*</span> <span class="p">(((</span><span class="mi">1</span> <span class="o">+</span> <span class="n">tau_c</span><span class="p">)</span> <span class="o">*</span> <span class="n">p_i</span><span class="p">)</span> <span class="o">/</span> <span class="n">p_tilde</span><span class="p">)</span> <span class="o">**</span> <span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="n">c_s</span> <span class="o">+</span> <span class="n">c_min</span>
     <span class="k">else</span><span class="p">:</span>  <span class="c1"># Time path case</span>
         <span class="n">I</span> <span class="o">=</span> <span class="n">alpha_c</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
         <span class="n">T</span> <span class="o">=</span> <span class="n">p_i</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
@@ -752,10 +791,11 @@
         <span class="n">J</span> <span class="o">=</span> <span class="n">c_s</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
         <span class="n">tau_c</span> <span class="o">=</span> <span class="n">tau_c</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">T</span><span class="p">,</span> <span class="n">I</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
         <span class="n">alpha_c</span> <span class="o">=</span> <span class="n">alpha_c</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">I</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="n">c_min</span> <span class="o">=</span> <span class="n">c_min</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">I</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
         <span class="n">p_tilde</span> <span class="o">=</span> <span class="n">p_tilde</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">T</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
         <span class="n">p_i</span> <span class="o">=</span> <span class="n">p_i</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">T</span><span class="p">,</span> <span class="n">I</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
         <span class="n">c_s</span> <span class="o">=</span> <span class="n">c_s</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">T</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">S</span><span class="p">,</span> <span class="n">J</span><span class="p">)</span>
-        <span class="n">c_si</span> <span class="o">=</span> <span class="n">alpha_c</span> <span class="o">*</span> <span class="p">(((</span><span class="mi">1</span> <span class="o">+</span> <span class="n">tau_c</span><span class="p">)</span> <span class="o">*</span> <span class="n">p_i</span><span class="p">)</span> <span class="o">/</span> <span class="n">p_tilde</span><span class="p">)</span> <span class="o">**</span> <span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="n">c_s</span>
+        <span class="n">c_si</span> <span class="o">=</span> <span class="n">alpha_c</span> <span class="o">*</span> <span class="p">(((</span><span class="mi">1</span> <span class="o">+</span> <span class="n">tau_c</span><span class="p">)</span> <span class="o">*</span> <span class="n">p_i</span><span class="p">)</span> <span class="o">/</span> <span class="n">p_tilde</span><span class="p">)</span> <span class="o">**</span> <span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="n">c_s</span> <span class="o">+</span> <span class="n">c_min</span>
     <span class="k">return</span> <span class="n">c_si</span></div>
 
 
@@ -766,6 +806,7 @@
     <span class="n">r</span><span class="p">,</span>
     <span class="n">w</span><span class="p">,</span>
     <span class="n">p_tilde</span><span class="p">,</span>
+    <span class="n">p_i</span><span class="p">,</span>
     <span class="n">b</span><span class="p">,</span>
     <span class="n">b_splus1</span><span class="p">,</span>
     <span class="n">n</span><span class="p">,</span>
@@ -799,6 +840,7 @@
 <span class="sd">        r (array_like): the real interest rate</span>
 <span class="sd">        w (array_like): the real wage rate</span>
 <span class="sd">        p_tilde (array_like): composite good price</span>
+<span class="sd">        p_i (Numpy array): prices for consumption good i</span>
 <span class="sd">        b (Numpy array): household savings</span>
 <span class="sd">        b_splus1 (Numpy array): household savings one period ahead</span>
 <span class="sd">        b_splus2 (Numpy array): household savings two periods ahead</span>
@@ -875,14 +917,17 @@
         <span class="n">m_wealth</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">m_wealth</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
         <span class="n">p_wealth</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">p_wealth</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
         <span class="n">p_tilde</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones_like</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">rho</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="p">:])</span> <span class="o">*</span> <span class="n">p_tilde</span>
+        <span class="n">tau_c</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">tau_c</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="p">:]</span>
     <span class="k">elif</span> <span class="n">method</span> <span class="o">==</span> <span class="s2">&quot;TPI_scalar&quot;</span><span class="p">:</span>
         <span class="n">h_wealth</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">h_wealth</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
         <span class="n">m_wealth</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">m_wealth</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
         <span class="n">p_wealth</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">p_wealth</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">tau_c</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">tau_c</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="p">:]</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="n">h_wealth</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">h_wealth</span><span class="p">[</span><span class="n">t</span><span class="p">]</span>
-        <span class="n">m_wealth</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">m_wealth</span><span class="p">[</span><span class="n">t</span><span class="p">]</span>
-        <span class="n">p_wealth</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">p_wealth</span><span class="p">[</span><span class="n">t</span><span class="p">]</span>
+        <span class="n">h_wealth</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">h_wealth</span><span class="p">[</span><span class="n">t</span> <span class="p">:</span> <span class="n">t</span> <span class="o">+</span> <span class="n">length</span><span class="p">]</span>
+        <span class="n">m_wealth</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">m_wealth</span><span class="p">[</span><span class="n">t</span> <span class="p">:</span> <span class="n">t</span> <span class="o">+</span> <span class="n">length</span><span class="p">]</span>
+        <span class="n">p_wealth</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">p_wealth</span><span class="p">[</span><span class="n">t</span> <span class="p">:</span> <span class="n">t</span> <span class="o">+</span> <span class="n">length</span><span class="p">]</span>
+        <span class="n">tau_c</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">tau_c</span><span class="p">[</span><span class="n">t</span> <span class="p">:</span> <span class="n">t</span> <span class="o">+</span> <span class="n">length</span><span class="p">,</span> <span class="p">:]</span>
     <span class="n">taxes</span> <span class="o">=</span> <span class="n">tax</span><span class="o">.</span><span class="n">net_taxes</span><span class="p">(</span>
         <span class="n">r</span><span class="p">,</span>
         <span class="n">w</span><span class="p">,</span>
@@ -901,7 +946,9 @@
         <span class="n">etr_params</span><span class="p">,</span>
         <span class="n">p</span><span class="p">,</span>
     <span class="p">)</span>
-    <span class="n">cons</span> <span class="o">=</span> <span class="n">get_cons</span><span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="n">w</span><span class="p">,</span> <span class="n">p_tilde</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">b_splus1</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">bq</span><span class="p">,</span> <span class="n">rm</span><span class="p">,</span> <span class="n">taxes</span><span class="p">,</span> <span class="n">e</span><span class="p">,</span> <span class="n">p</span><span class="p">)</span>
+    <span class="n">cons</span> <span class="o">=</span> <span class="n">get_cons</span><span class="p">(</span>
+        <span class="n">r</span><span class="p">,</span> <span class="n">w</span><span class="p">,</span> <span class="n">p_tilde</span><span class="p">,</span> <span class="n">p_i</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">b_splus1</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">bq</span><span class="p">,</span> <span class="n">rm</span><span class="p">,</span> <span class="n">taxes</span><span class="p">,</span> <span class="n">e</span><span class="p">,</span> <span class="n">tau_c</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">method</span>
+    <span class="p">)</span>
     <span class="n">deriv</span> <span class="o">=</span> <span class="p">(</span>
         <span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="n">r</span><span class="p">)</span>
         <span class="o">-</span> <span class="p">(</span>
@@ -957,6 +1004,7 @@
     <span class="n">r</span><span class="p">,</span>
     <span class="n">w</span><span class="p">,</span>
     <span class="n">p_tilde</span><span class="p">,</span>
+    <span class="n">p_i</span><span class="p">,</span>
     <span class="n">b</span><span class="p">,</span>
     <span class="n">b_splus1</span><span class="p">,</span>
     <span class="n">n</span><span class="p">,</span>
@@ -991,6 +1039,7 @@
 <span class="sd">        r (array_like): the real interest rate</span>
 <span class="sd">        w (array_like): the real wage rate</span>
 <span class="sd">        p_tilde (array_like): composite good price</span>
+<span class="sd">        p_i (Numpy array): prices for consumption good i</span>
 <span class="sd">        b (Numpy array): household savings</span>
 <span class="sd">        b_splus1 (Numpy array): household savings one period ahead</span>
 <span class="sd">        n (Numpy array): household labor supply</span>
@@ -1020,11 +1069,14 @@
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="n">method</span> <span class="o">==</span> <span class="s2">&quot;SS&quot;</span><span class="p">:</span>
         <span class="n">tau_payroll</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">tau_payroll</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+        <span class="n">tau_c</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">tau_c</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="p">:]</span>
     <span class="k">elif</span> <span class="n">method</span> <span class="o">==</span> <span class="s2">&quot;TPI_scalar&quot;</span><span class="p">:</span>  <span class="c1"># for 1st donut ring only</span>
         <span class="n">tau_payroll</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">tau_payroll</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">tau_c</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">tau_c</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="p">:]</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="n">length</span> <span class="o">=</span> <span class="n">r</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
         <span class="n">tau_payroll</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">tau_payroll</span><span class="p">[</span><span class="n">t</span> <span class="p">:</span> <span class="n">t</span> <span class="o">+</span> <span class="n">length</span><span class="p">]</span>
+        <span class="n">tau_c</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">tau_c</span><span class="p">[</span><span class="n">t</span> <span class="p">:</span> <span class="n">t</span> <span class="o">+</span> <span class="n">length</span><span class="p">,</span> <span class="p">:]</span>
     <span class="k">if</span> <span class="n">j</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
         <span class="k">if</span> <span class="n">method</span> <span class="o">==</span> <span class="s2">&quot;SS&quot;</span><span class="p">:</span>
             <span class="n">tax_noncompliance</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">labor_income_tax_noncompliance_rate</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span>
@@ -1063,13 +1115,6 @@
                 <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
             <span class="p">)</span>
             <span class="n">e</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">diag</span><span class="p">(</span><span class="n">e_long</span><span class="p">[</span><span class="n">t</span> <span class="p">:</span> <span class="n">t</span> <span class="o">+</span> <span class="n">p</span><span class="o">.</span><span class="n">S</span><span class="p">,</span> <span class="p">:,</span> <span class="n">j</span><span class="p">],</span> <span class="nb">max</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">S</span> <span class="o">-</span> <span class="n">length</span><span class="p">,</span> <span class="mi">0</span><span class="p">))</span>
-    <span class="k">if</span> <span class="n">method</span> <span class="o">==</span> <span class="s2">&quot;SS&quot;</span><span class="p">:</span>
-        <span class="n">tau_payroll</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">tau_payroll</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
-    <span class="k">elif</span> <span class="n">method</span> <span class="o">==</span> <span class="s2">&quot;TPI_scalar&quot;</span><span class="p">:</span>  <span class="c1"># for 1st donut ring only</span>
-        <span class="n">tau_payroll</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">tau_payroll</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-    <span class="k">else</span><span class="p">:</span>
-        <span class="n">length</span> <span class="o">=</span> <span class="n">r</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-        <span class="n">tau_payroll</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">tau_payroll</span><span class="p">[</span><span class="n">t</span> <span class="p">:</span> <span class="n">t</span> <span class="o">+</span> <span class="n">length</span><span class="p">]</span>
     <span class="k">if</span> <span class="n">method</span> <span class="o">==</span> <span class="s2">&quot;TPI&quot;</span><span class="p">:</span>
         <span class="k">if</span> <span class="n">b</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
             <span class="n">r</span> <span class="o">=</span> <span class="n">r</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">r</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="mi">1</span><span class="p">)</span>
@@ -1094,7 +1139,9 @@
         <span class="n">etr_params</span><span class="p">,</span>
         <span class="n">p</span><span class="p">,</span>
     <span class="p">)</span>
-    <span class="n">cons</span> <span class="o">=</span> <span class="n">get_cons</span><span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="n">w</span><span class="p">,</span> <span class="n">p_tilde</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">b_splus1</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">bq</span><span class="p">,</span> <span class="n">rm</span><span class="p">,</span> <span class="n">taxes</span><span class="p">,</span> <span class="n">e</span><span class="p">,</span> <span class="n">p</span><span class="p">)</span>
+    <span class="n">cons</span> <span class="o">=</span> <span class="n">get_cons</span><span class="p">(</span>
+        <span class="n">r</span><span class="p">,</span> <span class="n">w</span><span class="p">,</span> <span class="n">p_tilde</span><span class="p">,</span> <span class="n">p_i</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">b_splus1</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">bq</span><span class="p">,</span> <span class="n">rm</span><span class="p">,</span> <span class="n">taxes</span><span class="p">,</span> <span class="n">e</span><span class="p">,</span> <span class="n">tau_c</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">method</span>
+    <span class="p">)</span>
     <span class="n">deriv</span> <span class="o">=</span> <span class="p">(</span>
         <span class="mi">1</span>
         <span class="o">-</span> <span class="n">tau_payroll</span>

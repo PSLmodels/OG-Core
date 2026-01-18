@@ -43,6 +43,14 @@ _Valid Range:_ min = 0.0 and max = 1.0
 _Out-of-Range Action:_ error  
 
 
+####  `c_min`  
+_Description:_ Minimum consumption levels for each good in the composite consumption good.  
+_Notes:_ Enter this value in model units.  
+_Value Type:_ float  
+_Valid Range:_ min = 0.0 and max = 100.0  
+_Out-of-Range Action:_ error  
+
+
 ####  `chi_b`  
 _Description:_ Household utility weight on bequests.  
 _Value Type:_ float  
