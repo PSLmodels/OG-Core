@@ -384,6 +384,7 @@ def income_tax_liab(r, w, b, n, factor, t, j, method, e, etr_params, p):
             etr_params,
             labor_income_tax_compliance_rate,
             capital_income_tax_compliance_rate,
+            p,
             tax_filer,
         )
         * income
