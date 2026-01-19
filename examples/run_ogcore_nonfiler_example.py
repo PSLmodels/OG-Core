@@ -218,8 +218,7 @@ def main():
     print("\n" + "=" * 70)
     print("INTERPRETATION")
     print("=" * 70)
-    print(
-        """
+    print("""
 When the lowest income group transitions from non-filer to filer status:
 
 1. TAX REVENUE INCREASES: The government collects income taxes from j=0,
@@ -240,8 +239,7 @@ When the lowest income group transitions from non-filer to filer status:
 This demonstrates that filing thresholds (which create non-filer groups)
 can have significant efficiency effects by reducing tax distortions for
 low-income households.
-"""
-    )
+""")
 
     print("=" * 70)
     print(f"Total run time: {time.time() - run_start_time:.1f} seconds")
