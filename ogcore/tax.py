@@ -116,12 +116,9 @@ def ETR_income(
         etr_params, X, Y, None, p.tax_func_type, "etr", for_estimation=False
     )
 
-    tau = tau * (1 - noncompliance_rate)
+    tau = tau * (1 - noncompliance_rate) * tax_filer
 
-    tau = tau * tax_filer
-    # TODO: figure out how to handle non-filers in TPI when j is None
-
-    return tau * (1 - noncompliance_rate)
+    return tau
 
 
 def MTR_income(
@@ -191,10 +188,7 @@ def MTR_income(
             for_estimation=False,
         )
 
-    tau = tau * (1 - noncompliance_rate)
-
-    tau = tau * tax_filer
-    # TODO: figure out how to handle non-filers in TPI when j is None
+    tau = tau * (1 - noncompliance_rate) * tax_filer
 
     return tau
 

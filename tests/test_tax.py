@@ -22,6 +22,7 @@ new_param_values = {
     "m_wealth": [4],
     "labor_income_tax_noncompliance_rate": [[0.0]],
     "capital_income_tax_noncompliance_rate": [[0.0]],
+    "tax_filer": np.ones((3, 1)),
     "replacement_rate_adjust": [[1.0]],
 }
 p1.update_specifications(new_param_values)
@@ -41,6 +42,7 @@ new_param_values2 = {
     "m_wealth": [3, 4, 3],
     "labor_income_tax_noncompliance_rate": [[0.0]],
     "capital_income_tax_noncompliance_rate": [[0.0]],
+    "tax_filer": np.ones((3, 1)),
     "replacement_rate_adjust": [[1.0]],
 }
 p2.update_specifications(new_param_values2)
@@ -55,7 +57,7 @@ test_data = [(b1, p1, expected1), (b1, p2, expected2)]
 def test_ETR_wealth(b, p, expected):
     # Test wealth tax computation
     tau_w = tax.ETR_wealth(
-        b, p.h_wealth[: p.T], p.m_wealth[: p.T], p.p_wealth[: p.T]
+        b, p.h_wealth[: p.T], p.m_wealth[: p.T], p.p_wealth[: p.T], p.tax_filer_data[: p.T, :]
     )
 
     assert np.allclose(tau_w, expected)
@@ -77,6 +79,7 @@ new_param_values = {
     "m_wealth": [5],
     "labor_income_tax_noncompliance_rate": [[0.0]],
     "capital_income_tax_noncompliance_rate": [[0.0]],
+    "tax_filer": np.ones((3, 1)),
     "replacement_rate_adjust": [[1.0]],
 }
 p1.update_specifications(new_param_values)
@@ -97,6 +100,7 @@ new_param_values2 = {
     "m_wealth": [3, 4, 3],
     "labor_income_tax_noncompliance_rate": [[0.0]],
     "capital_income_tax_noncompliance_rate": [[0.0]],
+    "tax_filer": np.ones((3, 1)),
     "replacement_rate_adjust": [[1.0]],
 }
 p2.update_specifications(new_param_values2)
@@ -111,7 +115,7 @@ test_data = [(b1, p1, expected1), (b2, p2, expected2)]
 def test_MTR_wealth(b, p, expected):
     # Test marginal tax rate on wealth
     tau_w_prime = tax.MTR_wealth(
-        b, p.h_wealth[: p.T], p.m_wealth[: p.T], p.p_wealth[: p.T]
+        b, p.h_wealth[: p.T], p.m_wealth[: p.T], p.p_wealth[: p.T], p.tax_filer_data[: p.T, :]
     )
 
     assert np.allclose(tau_w_prime, expected)
@@ -122,6 +126,7 @@ p1.S = 2
 p1.J = 1
 p1.labor_income_tax_noncompliance_rate = np.zeros((p1.T, p1.S, p1.J))
 p1.capital_income_tax_noncompliance_rate = np.zeros((p1.T, p1.S, p1.J))
+p1.tax_filer = np.ones((p1.T, p1.S, p1.J))
 p1.e = np.array([0.5, 0.45])
 p1.tax_func_type = "DEP"
 etr_params1 = np.reshape(
@@ -165,6 +170,7 @@ p2.S = 2
 p2.J = 1
 p2.labor_income_tax_noncompliance_rate = np.zeros((p2.T, p2.S, p2.J))
 p2.capital_income_tax_noncompliance_rate = np.zeros((p2.T, p2.S, p2.J))
+p2.tax_filer = np.ones((p2.T, p2.S, p2.J))
 p2.e = np.array([0.5, 0.45])
 p2.tax_func_type = "GS"
 etr_params2 = np.reshape(
@@ -182,6 +188,7 @@ p3.S = 2
 p3.J = 1
 p3.labor_income_tax_noncompliance_rate = np.zeros((p3.T, p3.S, p3.J))
 p3.capital_income_tax_noncompliance_rate = np.zeros((p3.T, p3.S, p3.J))
+p3.tax_filer = np.ones((p3.T, p3.S, p3.J))
 p3.e = np.array([0.5, 0.45])
 p3.tax_func_type = "DEP_totalinc"
 etr_params3 = np.reshape(
@@ -199,6 +206,7 @@ p4.S = 3
 p4.J = 1
 p4.labor_income_tax_noncompliance_rate = np.zeros((p4.T, p4.S, p4.J))
 p4.capital_income_tax_noncompliance_rate = np.zeros((p4.T, p4.S, p4.J))
+p4.tax_filer = np.ones((p4.T, p4.S, p4.J))
 p4.e = np.array([0.5, 0.45, 0.3])
 p4.tax_func_type = "DEP"
 etr_params4 = np.reshape(
@@ -253,6 +261,7 @@ etr_params4 = np.reshape(
 p5 = copy.deepcopy(p1)
 p5.labor_income_tax_noncompliance_rate = np.ones((p5.T, p5.S, p5.J)) * 0.05
 p5.capital_income_tax_noncompliance_rate = np.ones((p5.T, p5.S, p5.J)) * 0.05
+p5.tax_filer = np.ones((p5.T, p5.S, p5.J))
 
 
 @pytest.mark.parametrize(
@@ -312,6 +321,7 @@ def test_ETR_income(b, n, etr_params, params, expected):
         params.labor_income_tax_noncompliance_rate,
         params.capital_income_tax_noncompliance_rate,
         params,
+        params.tax_filer
     )
     assert np.allclose(test_ETR_income, expected)
 
@@ -322,6 +332,7 @@ p1.S = 3
 p1.J = 1
 p1.labor_income_tax_noncompliance_rate = np.zeros((p1.T, p1.S, p1.J))
 p1.capital_income_tax_noncompliance_rate = np.zeros((p1.T, p1.S, p1.J))
+p1.tax_filer = np.ones((p1.T, p1.S, p1.J))
 p1.tax_func_type = "DEP"
 p1.analytical_mtrs = True
 etr_params1 = np.reshape(
@@ -428,6 +439,7 @@ p2.S = 3
 p2.J = 1
 p2.labor_income_tax_noncompliance_rate = np.zeros((p2.T, p2.S, p2.J))
 p2.capital_income_tax_noncompliance_rate = np.zeros((p2.T, p2.S, p2.J))
+p2.tax_filer = np.ones((p2.T, p2.S, p2.J))
 p2.tax_func_type = "DEP"
 p2.analytical_mtrs = True
 etr_params2 = np.reshape(
@@ -534,6 +546,7 @@ p3.S = 3
 p3.J = 1
 p3.labor_income_tax_noncompliance_rate = np.zeros((p3.T, p3.S, p3.J))
 p3.capital_income_tax_noncompliance_rate = np.zeros((p3.T, p3.S, p3.J))
+p3.tax_filer = np.ones((p3.T, p3.S, p3.J))
 p3.tax_func_type = "DEP"
 p3.analytical_mtrs = False
 etr_params3 = np.reshape(
@@ -641,6 +654,7 @@ p4.S = 3
 p4.J = 1
 p4.labor_income_tax_noncompliance_rate = np.zeros((p4.T, p4.S, p4.J))
 p4.capital_income_tax_noncompliance_rate = np.zeros((p4.T, p4.S, p4.J))
+p4.tax_filer = np.ones((p4.T, p4.S,p4.J))
 p4.tax_func_type = "GS"
 p4.analytical_mtrs = False
 etr_params4 = np.reshape(
@@ -670,6 +684,7 @@ p5.S = 3
 p5.J = 1
 p5.labor_income_tax_noncompliance_rate = np.zeros((p5.T, p5.S, p5.J))
 p5.capital_income_tax_noncompliance_rate = np.zeros((p5.T, p5.S, p5.J))
+p5.tax_filer = np.ones((p5.T, p5.S, p5.J))
 p5.tax_func_type = "DEP_totalinc"
 p5.analytical_mtrs = True
 etr_params5 = np.reshape(
@@ -699,6 +714,7 @@ p6.S = 3
 p6.J = 1
 p6.labor_income_tax_noncompliance_rate = np.zeros((p6.T, p6.S, p6.J))
 p6.capital_income_tax_noncompliance_rate = np.zeros((p6.T, p6.S, p6.J))
+p6.tax_filer = np.ones((p6.T, p6.S, p6.J))
 p6.tax_func_type = "DEP_totalinc"
 p6.analytical_mtrs = False
 etr_params6 = np.reshape(
@@ -724,6 +740,7 @@ mtrx_params6 = np.reshape(
 p7 = copy.deepcopy(p4)
 p7.labor_income_tax_noncompliance_rate = np.ones((p7.T, p7.S, p7.J)) * 0.05
 p7.capital_income_tax_noncompliance_rate = np.ones((p7.T, p7.S, p7.J)) * 0.05
+p7.tax_filer = np.ones((p7.T, p7.S, p7.J))
 
 
 @pytest.mark.parametrize(
@@ -815,6 +832,7 @@ def test_MTR_income(etr_params, mtr_params, params, mtr_capital, expected):
         mtr_params,
         noncompliance_rate,
         params,
+        params.tax_filer
     )
     assert np.allclose(test_mtr, expected)
 
@@ -1169,6 +1187,7 @@ new_param_values_ubi = {
     "ubi_nom_65p": 500,
     "labor_income_tax_noncompliance_rate": [[0.0]],
     "capital_income_tax_noncompliance_rate": [[0.0]],
+    "tax_filer": [[1.0]],
     "replacement_rate_adjust": [[1.0]],
 }
 p_u.update_specifications(new_param_values_ubi)

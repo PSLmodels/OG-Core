@@ -1354,7 +1354,7 @@ def run_TPI(p, client=None):
         capital_noncompliance_rate_3D,
         p,
         tax_filer_3D
-
+    )
     # Note that implicitly in this computation is that immigrants'
     # wealth is all in the form of private capital
     I_d = aggr.get_I(

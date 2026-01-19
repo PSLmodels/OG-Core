@@ -944,7 +944,8 @@ def SS_solver(
         mtrx_params_3D,
         labor_noncompliance_rate_2D,
         p,
-        tax_filer_2D,
+        tax_filer_2D
+    )
     etr_ss = tax.ETR_income(
         r_p_ss,
         wss,
