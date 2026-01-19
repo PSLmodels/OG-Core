@@ -321,12 +321,12 @@ r_gov4 = (
 
 
 @pytest.mark.parametrize(
-    "r,p,DY_ratio,method,r_gov_expected",
+    "r,p,DY_ratio,method,t,r_gov_expected",
     [
         (r, p1, 0, "scalar", -1, r_gov1),
         (r, p2, 0, "scalar", -1, r_gov2),
         (r, p3, 0, "scalar", -1, r_gov3),
-        (r_tpi, p_tpi, DY_tpi, "TPI", r_gov_tpi),
+        (r_tpi, p_tpi, DY_tpi, "TPI", None, r_gov_tpi),
         (r, p3, 0, "scalar", 0, r_gov3),
         (r, p4, 0.5, "scalar", 0, r_gov4),
     ],
