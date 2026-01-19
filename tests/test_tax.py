@@ -57,7 +57,11 @@ test_data = [(b1, p1, expected1), (b1, p2, expected2)]
 def test_ETR_wealth(b, p, expected):
     # Test wealth tax computation
     tau_w = tax.ETR_wealth(
-        b, p.h_wealth[: p.T], p.m_wealth[: p.T], p.p_wealth[: p.T], p.tax_filer_data[: p.T, :]
+        b,
+        p.h_wealth[: p.T],
+        p.m_wealth[: p.T],
+        p.p_wealth[: p.T],
+        p.tax_filer[: p.T, :],
     )
 
     assert np.allclose(tau_w, expected)
@@ -115,7 +119,11 @@ test_data = [(b1, p1, expected1), (b2, p2, expected2)]
 def test_MTR_wealth(b, p, expected):
     # Test marginal tax rate on wealth
     tau_w_prime = tax.MTR_wealth(
-        b, p.h_wealth[: p.T], p.m_wealth[: p.T], p.p_wealth[: p.T], p.tax_filer_data[: p.T, :]
+        b,
+        p.h_wealth[: p.T],
+        p.m_wealth[: p.T],
+        p.p_wealth[: p.T],
+        p.tax_filer[: p.T, :],
     )
 
     assert np.allclose(tau_w_prime, expected)
@@ -321,7 +329,7 @@ def test_ETR_income(b, n, etr_params, params, expected):
         params.labor_income_tax_noncompliance_rate,
         params.capital_income_tax_noncompliance_rate,
         params,
-        params.tax_filer
+        params.tax_filer,
     )
     assert np.allclose(test_ETR_income, expected)
 
@@ -654,7 +662,7 @@ p4.S = 3
 p4.J = 1
 p4.labor_income_tax_noncompliance_rate = np.zeros((p4.T, p4.S, p4.J))
 p4.capital_income_tax_noncompliance_rate = np.zeros((p4.T, p4.S, p4.J))
-p4.tax_filer = np.ones((p4.T, p4.S,p4.J))
+p4.tax_filer = np.ones((p4.T, p4.S, p4.J))
 p4.tax_func_type = "GS"
 p4.analytical_mtrs = False
 etr_params4 = np.reshape(
@@ -832,7 +840,7 @@ def test_MTR_income(etr_params, mtr_params, params, mtr_capital, expected):
         mtr_params,
         noncompliance_rate,
         params,
-        params.tax_filer
+        params.tax_filer,
     )
     assert np.allclose(test_mtr, expected)
 

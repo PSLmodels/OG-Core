@@ -62,7 +62,7 @@ def MTR_wealth(b, h_wealth, m_wealth, p_wealth, tax_filer):
         tau_prime (Numpy array): marginal tax rate on wealth, size = SxJ
 
     """
-    tau_prime = ETR_wealth(b, h_wealth, m_wealth, p_wealth) * 2 - (
+    tau_prime = ETR_wealth(b, h_wealth, m_wealth, p_wealth, tax_filer) * 2 - (
         (h_wealth**2 * p_wealth * b**2) / ((b * h_wealth + m_wealth) ** 2)
     )
     tau_prime = tau_prime * tax_filer
@@ -446,7 +446,12 @@ def wealth_tax_liab(r, b, t, j, method, p):
             tax_filer = p.tax_filer[-1, :]
 
     if method == "SS":
-        T_W = ETR_wealth(b, p.h_wealth[-1], p.m_wealth[-1], p.p_wealth[-1], tax_filer) * b
+        T_W = (
+            ETR_wealth(
+                b, p.h_wealth[-1], p.m_wealth[-1], p.p_wealth[-1], tax_filer
+            )
+            * b
+        )
     elif method == "TPI":
         length = r.shape[0]
         if len(b.shape) == 1:
@@ -456,7 +461,7 @@ def wealth_tax_liab(r, b, t, j, method, p):
                     p.h_wealth[t : t + length],
                     p.m_wealth[t : t + length],
                     p.p_wealth[t : t + length],
-                    tax_filer[t : t + length]
+                    tax_filer[t : t + length],
                 )
                 * b
             )
@@ -467,7 +472,7 @@ def wealth_tax_liab(r, b, t, j, method, p):
                     p.h_wealth[t : t + length],
                     p.m_wealth[t : t + length],
                     p.p_wealth[t : t + length],
-                    tax_filer[t : t + length, :]
+                    tax_filer[t : t + length, :],
                 )
                 * b
             )
@@ -478,12 +483,17 @@ def wealth_tax_liab(r, b, t, j, method, p):
                     p.h_wealth[t : t + length].reshape(length, 1, 1),
                     p.m_wealth[t : t + length].reshape(length, 1, 1),
                     p.p_wealth[t : t + length].reshape(length, 1, 1),
-                    tax_filer[t : t + length, :, :].reshape(length, 1, 1)
+                    tax_filer[t : t + length, :, :].reshape(length, 1, 1),
                 )
                 * b
             )
     elif method == "TPI_scalar":
-        T_W = ETR_wealth(b, p.h_wealth[0], p.m_wealth[0], p.p_wealth[0], tax_filer) * b
+        T_W = (
+            ETR_wealth(
+                b, p.h_wealth[0], p.m_wealth[0], p.p_wealth[0], tax_filer
+            )
+            * b
+        )
 
     return T_W
 
