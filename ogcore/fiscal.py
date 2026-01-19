@@ -368,7 +368,7 @@ def get_r_gov(r, DY_ratio, p, method, t=0):
             time path or in the steady state
         DY_ratio (array_like): ratio of government debt to GDP
         p (OG-Core Specifications object): model parameters
-        method (str): either 'SS' for steady-state or 'TPI' for
+        method (str): either 'scalar' for one period or 'TPI' for transition path
         t (int): time period index, used only if method is 'scalar'
 
     Returns:
@@ -376,15 +376,7 @@ def get_r_gov(r, DY_ratio, p, method, t=0):
             time path or in the steady-state
 
     """
-    if method == "SS":
-        r_gov = np.maximum(
-            p.r_gov_scale[-1] * r
-            - p.r_gov_shift[-1]
-            + p.r_gov_DY * DY_ratio
-            + p.r_gov_DY2 * DY_ratio**2,
-            0.00,
-        )
-    elif method == "scalar":
+    if method == "scalar":
         r_gov = np.maximum(
             p.r_gov_scale[t] * r
             - p.r_gov_shift[t]

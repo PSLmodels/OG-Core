@@ -323,12 +323,12 @@ r_gov4 = (
 @pytest.mark.parametrize(
     "r,p,DY_ratio,method,r_gov_expected",
     [
-        (r, p1, 0, "SS", r_gov1),
-        (r, p2, 0, "SS", r_gov2),
-        (r, p3, 0, "SS", r_gov3),
+        (r, p1, 0, "scalar", -1, r_gov1),
+        (r, p2, 0, "scalar", -1, r_gov2),
+        (r, p3, 0, "scalar", -1, r_gov3),
         (r_tpi, p_tpi, DY_tpi, "TPI", r_gov_tpi),
-        (r, p3, 0, "scalar", r_gov3),
-        (r, p4, 0.5, "scalar", r_gov4),
+        (r, p3, 0, "scalar", 0, r_gov3),
+        (r, p4, 0.5, "scalar", 0, r_gov4),
     ],
     ids=[
         "Scale only",
@@ -339,8 +339,8 @@ r_gov4 = (
         "DY params",
     ],
 )
-def test_get_r_gov(r, p, DY_ratio, method, r_gov_expected):
-    r_gov = fiscal.get_r_gov(r, DY_ratio, p, method, t=0)
+def test_get_r_gov(r, p, DY_ratio, method, t, r_gov_expected):
+    r_gov = fiscal.get_r_gov(r, DY_ratio, p, method, t=t)
     assert np.allclose(r_gov, r_gov_expected)
 
 
