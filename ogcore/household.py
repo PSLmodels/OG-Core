@@ -284,7 +284,22 @@ def get_rm(RM, j, p, method):
     return rm
 
 
-def get_cons(r_p, w, p_tilde, b, b_splus1, n, bq, rm, net_tax, e, p):
+def get_cons(
+    r_p,
+    w,
+    p_tilde,
+    p_i,
+    b,
+    b_splus1,
+    n,
+    bq,
+    rm,
+    net_tax,
+    e,
+    tau_c,
+    p,
+    method="SS",
+):
     r"""
     Calculate household composite consumption.
 
@@ -302,6 +317,7 @@ def get_cons(r_p, w, p_tilde, b, b_splus1, n, bq, rm, net_tax, e, p):
         r_p (array_like): the real interest rate
         w (array_like): the real wage rate
         p_tilde (array_like): the ratio of real GDP to nominal GDP
+        p_i (Numpy array): prices for consumption good i
         b (Numpy array): household savings
         b_splus1 (Numpy array): household savings one period ahead
         n (Numpy array): household labor supply
@@ -309,12 +325,32 @@ def get_cons(r_p, w, p_tilde, b, b_splus1, n, bq, rm, net_tax, e, p):
         rm (Numpy array): household remittances received
         net_tax (Numpy array): household net taxes paid
         e (Numpy array): effective labor units
+        tau_c (Numpy array): consumption tax rates
         p (OG-Core Specifications object): model parameters
+        method (str): adjusts calculation dimensions based on 'SS' or 'TPI'
 
     Returns:
         cons (Numpy array): household consumption
 
     """
+    if method == "SS":
+        min_cons_expenditure = np.sum((1 + tau_c) * p_i * p.c_min)
+    elif method == "TPI_scalar":
+        min_cons_expenditure = np.sum((1 + tau_c) * p_i * p.c_min)
+    else:  # TPI case
+        min_cons_expenditure = np.sum(
+            (1 + tau_c) * p_i * p.c_min.reshape((1, p.I)), axis=1
+        )
+        length = r_p.shape[0]
+        # reshape if needed for broadcasting
+        n_dims = np.ndim(bq)
+        if n_dims == 1:
+            min_cons_expenditure = min_cons_expenditure.reshape((length,))
+        elif n_dims == 2:
+            min_cons_expenditure = min_cons_expenditure.reshape((length, 1))
+        else:
+            min_cons_expenditure = min_cons_expenditure.reshape((length, 1, 1))
+
     cons = (
         (1 + r_p) * b
         + w * e * n
@@ -322,12 +358,13 @@ def get_cons(r_p, w, p_tilde, b, b_splus1, n, bq, rm, net_tax, e, p):
         + rm
         - net_tax
         - b_splus1 * np.exp(p.g_y)
+        - min_cons_expenditure
     ) / p_tilde
 
     return cons
 
 
-def get_ci(c_s, p_i, p_tilde, tau_c, alpha_c, method="SS"):
+def get_ci(c_s, p_i, p_tilde, tau_c, alpha_c, c_min, method="SS"):
     r"""
     Compute consumption of good i given amount of composite consumption
     and prices.
@@ -341,6 +378,7 @@ def get_ci(c_s, p_i, p_tilde, tau_c, alpha_c, method="SS"):
         p_tilde (array_like): composite good price
         tau_c (array_like): consumption tax rate
         alpha_c (array_like): consumption share parameters
+        c_min (array_like): minimum consumption levels for each good i
         method (str): adjusts calculation dimensions based on 'SS' or 'TPI'
 
     Returns:
@@ -352,10 +390,11 @@ def get_ci(c_s, p_i, p_tilde, tau_c, alpha_c, method="SS"):
         J = c_s.shape[1]
         tau_c = tau_c.reshape(I, 1, 1)
         alpha_c = alpha_c.reshape(I, 1, 1)
+        c_min = c_min.reshape(I, 1, 1)
         p_tilde.reshape(1, 1, 1)
         p_i = p_i.reshape(I, 1, 1)
         c_s = c_s.reshape(1, S, J)
-        c_si = alpha_c * (((1 + tau_c) * p_i) / p_tilde) ** (-1) * c_s
+        c_si = alpha_c * (((1 + tau_c) * p_i) / p_tilde) ** (-1) * c_s + c_min
     else:  # Time path case
         I = alpha_c.shape[0]
         T = p_i.shape[0]
@@ -363,10 +402,11 @@ def get_ci(c_s, p_i, p_tilde, tau_c, alpha_c, method="SS"):
         J = c_s.shape[2]
         tau_c = tau_c.reshape(T, I, 1, 1)
         alpha_c = alpha_c.reshape(1, I, 1, 1)
+        c_min = c_min.reshape(1, I, 1, 1)
         p_tilde = p_tilde.reshape(T, 1, 1, 1)
         p_i = p_i.reshape(T, I, 1, 1)
         c_s = c_s.reshape(T, 1, S, J)
-        c_si = alpha_c * (((1 + tau_c) * p_i) / p_tilde) ** (-1) * c_s
+        c_si = alpha_c * (((1 + tau_c) * p_i) / p_tilde) ** (-1) * c_s + c_min
     return c_si
 
 
@@ -374,6 +414,7 @@ def FOC_savings(
     r,
     w,
     p_tilde,
+    p_i,
     b,
     b_splus1,
     n,
@@ -407,6 +448,7 @@ def FOC_savings(
         r (array_like): the real interest rate
         w (array_like): the real wage rate
         p_tilde (array_like): composite good price
+        p_i (Numpy array): prices for consumption good i
         b (Numpy array): household savings
         b_splus1 (Numpy array): household savings one period ahead
         b_splus2 (Numpy array): household savings two periods ahead
@@ -483,14 +525,17 @@ def FOC_savings(
         m_wealth = p.m_wealth[-1]
         p_wealth = p.p_wealth[-1]
         p_tilde = np.ones_like(p.rho[-1, :]) * p_tilde
+        tau_c = p.tau_c[-1, :]
     elif method == "TPI_scalar":
         h_wealth = p.h_wealth[0]
         m_wealth = p.m_wealth[0]
         p_wealth = p.p_wealth[0]
+        tau_c = p.tau_c[0, :]
     else:
-        h_wealth = p.h_wealth[t]
-        m_wealth = p.m_wealth[t]
-        p_wealth = p.p_wealth[t]
+        h_wealth = p.h_wealth[t : t + length]
+        m_wealth = p.m_wealth[t : t + length]
+        p_wealth = p.p_wealth[t : t + length]
+        tau_c = p.tau_c[t : t + length, :]
     taxes = tax.net_taxes(
         r,
         w,
@@ -509,7 +554,9 @@ def FOC_savings(
         etr_params,
         p,
     )
-    cons = get_cons(r, w, p_tilde, b, b_splus1, n, bq, rm, taxes, e, p)
+    cons = get_cons(
+        r, w, p_tilde, p_i, b, b_splus1, n, bq, rm, taxes, e, tau_c, p, method
+    )
     deriv = (
         (1 + r)
         - (
@@ -563,6 +610,7 @@ def FOC_labor(
     r,
     w,
     p_tilde,
+    p_i,
     b,
     b_splus1,
     n,
@@ -597,6 +645,7 @@ def FOC_labor(
         r (array_like): the real interest rate
         w (array_like): the real wage rate
         p_tilde (array_like): composite good price
+        p_i (Numpy array): prices for consumption good i
         b (Numpy array): household savings
         b_splus1 (Numpy array): household savings one period ahead
         n (Numpy array): household labor supply
@@ -626,11 +675,14 @@ def FOC_labor(
     """
     if method == "SS":
         tau_payroll = p.tau_payroll[-1]
+        tau_c = p.tau_c[-1, :]
     elif method == "TPI_scalar":  # for 1st donut ring only
         tau_payroll = p.tau_payroll[0]
+        tau_c = p.tau_c[0, :]
     else:
         length = r.shape[0]
         tau_payroll = p.tau_payroll[t : t + length]
+        tau_c = p.tau_c[t : t + length, :]
     if j is not None:
         if method == "SS":
             tax_noncompliance = p.labor_income_tax_noncompliance_rate[-1, j]
@@ -669,13 +721,6 @@ def FOC_labor(
                 axis=0,
             )
             e = np.diag(e_long[t : t + p.S, :, j], max(p.S - length, 0))
-    if method == "SS":
-        tau_payroll = p.tau_payroll[-1]
-    elif method == "TPI_scalar":  # for 1st donut ring only
-        tau_payroll = p.tau_payroll[0]
-    else:
-        length = r.shape[0]
-        tau_payroll = p.tau_payroll[t : t + length]
     if method == "TPI":
         if b.ndim == 2:
             r = r.reshape(r.shape[0], 1)
@@ -700,7 +745,9 @@ def FOC_labor(
         etr_params,
         p,
     )
-    cons = get_cons(r, w, p_tilde, b, b_splus1, n, bq, rm, taxes, e, p)
+    cons = get_cons(
+        r, w, p_tilde, p_i, b, b_splus1, n, bq, rm, taxes, e, tau_c, p, method
+    )
     deriv = (
         1
         - tau_payroll

@@ -4,7 +4,6 @@ import pytest
 from ogcore import pensions
 from ogcore.parameters import Specifications
 
-
 p = Specifications()
 rho_vec = np.zeros((1, 4))
 rho_vec[0, -1] = 1.0
@@ -203,7 +202,7 @@ def test_deriv_DB_loop(args, deriv_DB_loop_expected):
     """
     Test of the pensions.deriv_DB_loop() function.
     """
-    (w, e, S, retire, per_rmn, last_career_yrs, rep_rate_py, yr_contrib) = args
+    w, e, S, retire, per_rmn, last_career_yrs, rep_rate_py, yr_contrib = args
     deriv_DB_loop = pensions.deriv_DB_loop(
         w, e, S, retire, per_rmn, last_career_yrs, rep_rate_py, yr_contrib
     )
@@ -235,7 +234,7 @@ def test_deriv_PS_loop(args, deriv_PS_loop_expected):
     """
     Test of the pensions.deriv_PS_loop() function.
     """
-    (w, e, S, retire, per_rmn, d_theta_empty, vpoint, factor) = args
+    w, e, S, retire, per_rmn, d_theta_empty, vpoint, factor = args
 
     deriv_PS_loop = pensions.deriv_PS_loop(
         w, e, S, retire, per_rmn, d_theta_empty, vpoint, factor
@@ -288,7 +287,7 @@ def test_deriv_DB(args, deriv_DB_expected):
     """
     Test of the pensions.deriv_DB() function.
     """
-    (w, e, per_rmn, p) = args
+    w, e, per_rmn, p = args
     deriv_DB = pensions.deriv_DB(w, e, per_rmn, p)
 
     assert np.allclose(deriv_DB, deriv_DB_expected)
@@ -335,7 +334,7 @@ def test_deriv_S(args, deriv_PS_expected):
     """
     Test of the pensions.deriv_PS() function.
     """
-    (w, e, per_rmn, factor, p) = args
+    w, e, per_rmn, factor, p = args
 
     deriv_PS = pensions.deriv_PS(w, e, per_rmn, factor, p)
 
@@ -560,7 +559,7 @@ def test_deriv_NDC_loop(args, deriv_NDC_loop_expected):
     """
     Test of the pensions.deriv_NDC_loop() function.
     """
-    (w, e, per_rmn, g_ndc_value, delta_ret_value, d_theta, p) = args
+    w, e, per_rmn, g_ndc_value, delta_ret_value, d_theta, p = args
 
     print("TESTING", p.tau_p, delta_ret_value, g_ndc_value)
     deriv_NDC_loop = pensions.deriv_NDC_loop(
@@ -602,7 +601,7 @@ def test_delta_ret_loop(args, dir_delta_ret_expected):
     """
     Test of the pensions.delta_ret_loop() function.
     """
-    (surv_rates, g_ndc_value, dir_delta_s_empty, p) = args
+    surv_rates, g_ndc_value, dir_delta_s_empty, p = args
     dir_delta = pensions.delta_ret_loop(
         p.S, p.retire, surv_rates, g_ndc_value, dir_delta_s_empty
     )
@@ -848,7 +847,7 @@ def test_PS_1dim_loop(args, PS_loop_expected):
     """
     Test of the pensions.PS_1dim_loop() function.
     """
-    (w, e, n, S_ret, S, g_y, vpoint, factor, L_inc_avg_s, PS) = args
+    w, e, n, S_ret, S, g_y, vpoint, factor, L_inc_avg_s, PS = args
     PS_loop = pensions.PS_1dim_loop(
         w, e, n, S_ret, S, g_y, vpoint, factor, L_inc_avg_s, PS
     )

@@ -4,7 +4,6 @@ import pytest
 from ogcore import tax
 from ogcore.parameters import Specifications
 
-
 b1 = np.array([0.1, 0.5, 0.9])
 p1 = Specifications()
 rho_vec = np.zeros((1, 3))

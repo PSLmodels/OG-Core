@@ -95,7 +95,7 @@ def dask_client():
 input_tuple = utils.safe_read_pickle(
     os.path.join(CUR_PATH, "test_io_data", "SS_fsolve_inputs.pkl")
 )
-(bssmat, nssmat, TR_ss, factor_ss) = input_tuple
+bssmat, nssmat, TR_ss, factor_ss = input_tuple
 # Parameterize the baseline, closed econ case
 p1 = Specifications(baseline=True)
 p1.update_specifications({"zeta_D": [0.0], "zeta_K": [0.0]})
@@ -254,6 +254,7 @@ p7.update_specifications(
         "I": 4,
         "io_matrix": np.eye(4),
         "alpha_c": [0.1, 0.5, 0.3, 0.1],
+        "c_min": [0.0, 0.0, 0.0, 0.0],
         "epsilon": [1.0, 1.0, 1.0, 1.0],
         "gamma": [0.3, 0.4, 0.35, 0.45],
         "gamma_g": [0.0, 0.0, 0.0, 0.0],
@@ -313,7 +314,7 @@ def test_SS_fsolve(tmpdir, guesses, args, expected):
     ensure that output returned matches what it has been before.
     """
     # args =
-    (bssmat, nssmat, TR_ss, Ig_baseline, factor_ss, p, client) = args
+    bssmat, nssmat, TR_ss, Ig_baseline, factor_ss, p, client = args
     p.baseline_dir = tmpdir
     p.output_base = tmpdir
 
@@ -532,6 +533,7 @@ def test_solve_for_j():
     r_p = 0.04
     w = 1.2
     p_tilde = 1.0
+    p_i = 1.0
     bq_j = 0.0002
     rm_j = 0.005
     tr_j = 0.1
@@ -539,7 +541,7 @@ def test_solve_for_j():
     factor = 100000
     j = 1
     test_result = SS.solve_for_j(
-        guesses, r_p, w, p_tilde, bq_j, rm_j, tr_j, ubi_j, factor, j, p
+        guesses, r_p, w, p_tilde, p_i, bq_j, rm_j, tr_j, ubi_j, factor, j, p
     )
     expected_result = 0.15574086659957984
     assert np.allclose(test_result.x[4], expected_result)
@@ -560,6 +562,7 @@ param_updates7 = {
     "I": 4,
     "io_matrix": np.eye(4),
     "alpha_c": [0.1, 0.5, 0.3, 0.1],
+    "c_min": [0.0, 0.0, 0.0, 0.0],
     "epsilon": [1.0, 1.0, 1.0, 1.0],
     "gamma": [0.3, 0.4, 0.35, 0.45],
     "gamma_g": [0.0, 0.0, 0.0, 0.0],
@@ -578,6 +581,7 @@ param_updates8 = {
         ]
     ),
     "alpha_c": [0.1, 0.4, 0.3, 0.1, 0.1],
+    "c_min": [0.0, 0.0, 0.0, 0.0, 0.0],
     "epsilon": [1.0, 1.0, 1.0, 1.0],
     "gamma": [0.3, 0.4, 0.35, 0.45],
     "gamma_g": [0.0, 0.0, 0.0, 0.0],
@@ -1136,7 +1140,7 @@ def test_euler_equation_solver(input_tuple, ubi_j, p, expected):
     # Test SS.inner_loop function.  Provide inputs to function and
     # ensure that output returned matches what it has been before.
     guesses, r, w, bq, rm, tr, _, factor, j = input_tuple
-    args = (r, w, 1.0, bq, rm, tr, ubi_j, factor, j, p)
+    args = (r, w, 1.0, 1.0, bq, rm, tr, ubi_j, factor, j, p)
     test_list = SS.euler_equation_solver(guesses, *args)
     print(repr(test_list))
 
@@ -1218,6 +1222,7 @@ param_updates13 = {
     "gamma": [0.3, 0.35, 0.4],
     "gamma_g": [0.1, 0.05, 0.15],
     "alpha_c": [0.2, 0.4, 0.4],
+    "c_min": [0.0, 0.0, 0.0],
     "initial_guess_r_SS": 0.11,
     "initial_guess_TR_SS": 0.07,
     "alpha_I": [0.01],
@@ -1237,6 +1242,7 @@ param_updates14 = {
     "gamma": [0.3, 0.35, 0.4],
     "gamma_g": [0.0, 0.0, 0.0],
     "alpha_c": [0.2, 0.4, 0.4],
+    "c_min": [0.0, 0.0, 0.0],
     "initial_guess_r_SS": 0.11,
     "initial_guess_TR_SS": 0.07,
     "debt_ratio_ss": 1.5,
@@ -1247,6 +1253,24 @@ param_updates15 = {
     "initial_guess_r_SS": 0.04,
     "reform_use_baseline_solution": False,
 }
+param_updates16 = {
+    "start_year": 2023,
+    "budget_balance": True,
+    "frisch": 0.41,
+    "cit_rate": [[0.21, 0.25, 0.35]],
+    "M": 3,
+    "I": 3,
+    "io_matrix": np.eye(3),
+    "epsilon": [1.0, 1.0, 1.0],
+    "gamma": [0.3, 0.35, 0.4],
+    "gamma_g": [0.0, 0.0, 0.0],
+    "alpha_c": [0.2, 0.4, 0.4],
+    "c_min": [0.002, 0.004, 0.0004],
+    "initial_guess_r_SS": 0.11,
+    "initial_guess_TR_SS": 0.07,
+    "debt_ratio_ss": 1.5,
+}
+filename16 = "run_SS_baseline_M3_Kg_zero_cmin.pkl"
 
 
 # Note that changing the order in which these tests are run will cause
@@ -1255,38 +1279,40 @@ param_updates15 = {
 @pytest.mark.parametrize(
     "baseline,param_updates,filename",
     [
-        # (True, param_updates1, filename1),
-        # (False, param_updates9, filename9),
-        # (True, param_updates2, filename2),
-        # (False, param_updates10, filename10),
-        # (True, param_updates3, filename3),
-        # # True, param_updates4, filename4),
-        # (False, param_updates5, filename5),
-        # (False, param_updates6, filename6),
-        # (False, param_updates7, filename7),
-        # # (False, param_updates8, filename8),
-        # (False, param_updates11, filename11),
-        # (True, param_updates12, filename12),
-        # (True, param_updates13, filename13),
-        # (True, param_updates14, filename14),
+        (True, param_updates1, filename1),
+        (False, param_updates9, filename9),
+        (True, param_updates2, filename2),
+        (False, param_updates10, filename10),
+        (True, param_updates3, filename3),
+        # (True, param_updates4, filename4),
+        (False, param_updates5, filename5),
+        (False, param_updates6, filename6),
+        (False, param_updates7, filename7),
+        (False, param_updates8, filename8),
+        (False, param_updates11, filename11),
+        (True, param_updates12, filename12),
+        (True, param_updates13, filename13),
+        (True, param_updates14, filename14),
         (False, param_updates15, filename3),
+        (True, param_updates16, filename16),
     ],
     ids=[
-        # "Baseline",
-        # "Reform, baseline spending",
-        # "Baseline, use zeta",
-        # "Reform, baseline spending, use zeta",
-        # "Baseline, small open",
-        # # "Baseline, small open use zeta",
-        # "Reform",
-        # "Reform, use zeta",
-        # "Reform, small open",
-        # # "Reform, small open use zeta",
-        # "Reform, delta_tau=0",
-        # "Baseline, non-zero Kg",
-        # "Baseline, M=3, non-zero Kg",
-        # "Baseline, M=3, zero Kg",
+        "Baseline",
+        "Reform, baseline spending",
+        "Baseline, use zeta",
+        "Reform, baseline spending, use zeta",
+        "Baseline, small open",
+        # "Baseline, small open use zeta",
+        "Reform",
+        "Reform, use zeta",
+        "Reform, small open",
+        "Reform, small open use zeta",
+        "Reform, delta_tau=0",
+        "Baseline, non-zero Kg",
+        "Baseline, M=3, non-zero Kg",
+        "Baseline, M=3, zero Kg",
         "Reform, not use baseline solution",
+        "Baseline, M=3, zero Kg, cmin > 0",
     ],
 )
 @pytest.mark.local
@@ -1327,7 +1353,11 @@ def test_run_SS(tmpdir, baseline, param_updates, filename, dask_client):
         pass
     for k, v in expected_dict.items():
         print("Checking item = ", k)
-        assert np.allclose(test_dict[VAR_NAME_MAPPING[k]], v, atol=5e-04)
+        try:
+            assert np.allclose(test_dict[VAR_NAME_MAPPING[k]], v, atol=5e-04)
+        except KeyError:
+            print(f"Assertion failed for variable {k}")
+            assert np.allclose(test_dict[k], v, atol=5e-04)
 
 
 @pytest.mark.parametrize(
