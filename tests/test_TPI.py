@@ -663,6 +663,7 @@ def test_run_TPI_full_run(
         for k, v in expected_dict.items():
             expected_dict_updated[VAR_NAME_MAPPING[k]] = v
         expected_dict = expected_dict_updated
+
     for k, v in expected_dict.items():
         print("Testing, ", k)
         try:
@@ -684,12 +685,12 @@ def test_run_TPI_full_run(
                 np.abs(test_dict[k][: p.T] - v[: p.T]).max(),
             )
             if (
-                np.abs(test_dict[VAR_NAME_MAPPING[k]][: p.T] - v[: p.T]).max()
+                np.abs(test_dict[k][: p.T] - v[: p.T]).max()
                 > 1e-5
             ):
                 # print the indices where the difference is large
                 indices = np.where(
-                    np.abs(test_dict[VAR_NAME_MAPPING[k]][: p.T] - v[: p.T])
+                    np.abs(test_dict[k][: p.T] - v[: p.T])
                     > 1e-5
                 )
                 print("Indices with large difference:", indices)
@@ -706,7 +707,7 @@ def test_run_TPI_full_run(
             )
             if (
                 np.abs(
-                    test_dict[VAR_NAME_MAPPING[k]][: p.T, :, :]
+                    test_dict[k][: p.T, :, :]
                     - v[: p.T, :, :]
                 ).max()
                 > 1e-5
@@ -714,7 +715,7 @@ def test_run_TPI_full_run(
                 # print the indices where the difference is large
                 indices = np.where(
                     np.abs(
-                        test_dict[VAR_NAME_MAPPING[k]][: p.T, :, :]
+                        test_dict[k][: p.T, :, :]
                         - v[: p.T, :, :]
                     )
                     > 1e-5
