@@ -208,6 +208,7 @@ class Specifications(paramtools.Parameters):
             "labor_income_tax_noncompliance_rate",
             "capital_income_tax_noncompliance_rate",
             "replacement_rate_adjust",
+            "tax_filer",
         ]
         for item in tp_param_list3:
             param_in = getattr(self, item)

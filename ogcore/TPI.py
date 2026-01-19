@@ -1309,6 +1309,10 @@ def run_TPI(p, client=None):
         ),
         (1, p.S, 1),
     )
+    tax_filer_3D = np.tile(
+        np.reshape(p.tax_filer_status[: p.T, :], (p.T, 1, p.J)),
+        (1, p.S, 1),
+    )
     e_3D = p.e
     mtry_path = tax.MTR_income(
         r_p_path[: p.T],
@@ -1322,6 +1326,7 @@ def run_TPI(p, client=None):
         mtry_params_4D,
         capital_noncompliance_rate_3D,
         p,
+        tax_filer_3D
     )
     mtrx_path = tax.MTR_income(
         r_p_path[: p.T],
@@ -1335,6 +1340,7 @@ def run_TPI(p, client=None):
         mtrx_params_4D,
         labor_noncompliance_rate_3D,
         p,
+        tax_filer_3D
     )
     etr_path = tax.ETR_income(
         r_p_path[: p.T],
@@ -1347,7 +1353,7 @@ def run_TPI(p, client=None):
         labor_noncompliance_rate_3D,
         capital_noncompliance_rate_3D,
         p,
-    )
+        tax_filer_3D
 
     # Note that implicitly in this computation is that immigrants'
     # wealth is all in the form of private capital

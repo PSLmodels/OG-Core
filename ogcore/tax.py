@@ -16,7 +16,7 @@ from ogcore.txfunc import get_tax_rates
 """
 
 
-def ETR_wealth(b, h_wealth, m_wealth, p_wealth):
+def ETR_wealth(b, h_wealth, m_wealth, p_wealth, tax_filer):
     r"""
     Calculates the effective tax rate on wealth.
 
@@ -29,6 +29,7 @@ def ETR_wealth(b, h_wealth, m_wealth, p_wealth):
         h_wealth (scalar): parameter of wealth tax function
         p_wealth (scalar): parameter of wealth tax function
         m_wealth (scalar): parameter of wealth tax function
+        tax_filer (Numpy array): array indicating tax filer status
 
     Returns:
         tau_w (Numpy array): effective tax rate on wealth, size = SxJ
@@ -36,10 +37,13 @@ def ETR_wealth(b, h_wealth, m_wealth, p_wealth):
     """
     tau_w = (p_wealth * h_wealth * b) / (h_wealth * b + m_wealth)
 
+    tau_w = tau_w * tax_filer
+    # TODO: figure out how to handle non-filers wih diff j and over time path
+
     return tau_w
 
 
-def MTR_wealth(b, h_wealth, m_wealth, p_wealth):
+def MTR_wealth(b, h_wealth, m_wealth, p_wealth, tax_filer):
     r"""
     Calculates the marginal tax rate on wealth from the wealth tax.
 
@@ -52,6 +56,7 @@ def MTR_wealth(b, h_wealth, m_wealth, p_wealth):
         h_wealth (scalar): parameter of wealth tax function
         p_wealth (scalar): parameter of wealth tax function
         m_wealth (scalar): parameter of wealth tax function
+        tax_filer (Numpy array): array indicating tax filer status
 
     Returns:
         tau_prime (Numpy array): marginal tax rate on wealth, size = SxJ
@@ -60,6 +65,8 @@ def MTR_wealth(b, h_wealth, m_wealth, p_wealth):
     tau_prime = ETR_wealth(b, h_wealth, m_wealth, p_wealth) * 2 - (
         (h_wealth**2 * p_wealth * b**2) / ((b * h_wealth + m_wealth) ** 2)
     )
+    tau_prime = tau_prime * tax_filer
+    # TODO: figure out how to handle non-filers in TPI when j is None
 
     return tau_prime
 
@@ -75,6 +82,7 @@ def ETR_income(
     labor_noncompliance_rate,
     capital_noncompliance_rate,
     p,
+    tax_filer,
 ):
     """
     Calculates effective personal income tax rate.
@@ -92,6 +100,7 @@ def ETR_income(
         labor_noncompliance_rate (Numpy array): income tax noncompliance rate for labor income
         capital_noncompliance_rate (Numpy array): income tax noncompliance rate for capital income
         p (OG-Core Specifications object): model parameters
+        tax_filer (Numpy array): array indicating tax filer status
 
     Returns:
         tau (Numpy array): effective tax rate on total income
@@ -106,6 +115,11 @@ def ETR_income(
     tau = get_tax_rates(
         etr_params, X, Y, None, p.tax_func_type, "etr", for_estimation=False
     )
+
+    tau = tau * (1 - noncompliance_rate)
+
+    tau = tau * tax_filer
+    # TODO: figure out how to handle non-filers in TPI when j is None
 
     return tau * (1 - noncompliance_rate)
 
@@ -122,7 +136,7 @@ def MTR_income(
     mtr_params,
     noncompliance_rate,
     p,
-    j=None,
+    tax_filer,
 ):
     r"""
     Generates the marginal tax rate on labor income for households.
@@ -143,14 +157,10 @@ def MTR_income(
             parameters or nonparametric function
         noncompliance_rate (Numpy array): income tax noncompliance rate
         p (OG-Core Specifications object): model parameters
-        j (int): index of lifetime income group (optional)
+        tax_filer (Numpy array): array indicating tax filer status
 
     Returns:
         tau (Numpy array): marginal tax rate on income source
-
-    Notes:
-        Marginal tax rate is scaled by p.tax_filer[j]. Non-filers
-        (tax_filer[j]=0) have zero marginal tax rate.
 
     """
     X = (w * e * n) * factor
@@ -183,9 +193,8 @@ def MTR_income(
 
     tau = tau * (1 - noncompliance_rate)
 
-    # Apply tax filer status - non-filers have zero marginal tax rate
-    if j is not None:
-        tau = tau * p.tax_filer[j]
+    tau = tau * tax_filer
+    # TODO: figure out how to handle non-filers in TPI when j is None
 
     return tau
 
@@ -328,11 +337,6 @@ def income_tax_liab(r, w, b, n, factor, t, j, method, e, etr_params, p):
         T_I (Numpy array): total income and payroll taxes paid for each
             household
 
-    Notes:
-        Income tax liability is scaled by p.tax_filer[j]. Non-filers
-        (tax_filer[j]=0) have zero income tax liability but still pay
-        payroll taxes.
-
     """
     if j is not None:
         if method == "TPI":
@@ -345,6 +349,7 @@ def income_tax_liab(r, w, b, n, factor, t, j, method, e, etr_params, p):
             capital_income_tax_compliance_rate = (
                 p.capital_income_tax_noncompliance_rate[t, j]
             )
+            tax_filer = p.tax_filer[t, j]
         else:
             labor_income_tax_compliance_rate = (
                 p.labor_income_tax_noncompliance_rate[-1, j]
@@ -352,6 +357,7 @@ def income_tax_liab(r, w, b, n, factor, t, j, method, e, etr_params, p):
             capital_income_tax_compliance_rate = (
                 p.capital_income_tax_noncompliance_rate[-1, j]
             )
+            tax_filer = p.tax_filer[-1, j]
     else:
         if method == "TPI":
             r = utils.to_timepath_shape(r)
@@ -362,6 +368,7 @@ def income_tax_liab(r, w, b, n, factor, t, j, method, e, etr_params, p):
             capital_income_tax_compliance_rate = (
                 p.capital_income_tax_noncompliance_rate[t, :]
             )
+            tax_filer = p.tax_filer[t, :]
         else:
             labor_income_tax_compliance_rate = (
                 p.labor_income_tax_noncompliance_rate[-1, :]
@@ -369,6 +376,7 @@ def income_tax_liab(r, w, b, n, factor, t, j, method, e, etr_params, p):
             capital_income_tax_compliance_rate = (
                 p.capital_income_tax_noncompliance_rate[-1, :]
             )
+            tax_filer = p.tax_filer[-1, :]
     income = r * b + w * e * n
     labor_income = w * e * n
     T_I = (
@@ -382,30 +390,10 @@ def income_tax_liab(r, w, b, n, factor, t, j, method, e, etr_params, p):
             etr_params,
             labor_income_tax_compliance_rate,
             capital_income_tax_compliance_rate,
-            p,
+            tax_filer,
         )
         * income
     )
-
-    # Apply tax filer status - non-filers have zero income tax liability
-    if j is not None:
-        # Scalar j case: scale income tax by filing status
-        T_I = T_I * p.tax_filer[j]
-    else:
-        # Vector j case: scale each j separately
-        if T_I.ndim == 1:
-            # Shape (S,) - no j dimension, shouldn't happen but handle safely
-            pass
-        elif T_I.ndim == 2:
-            # Shape (S, J) - apply tax_filer along J dimension
-            # Determine J from the last dimension
-            J_used = T_I.shape[-1]
-            T_I = T_I * p.tax_filer[:J_used]
-        else:
-            # Shape (T, S, J) or other - apply tax_filer along last dimension
-            # Determine J from the last dimension
-            J_used = T_I.shape[-1]
-            T_I = T_I * p.tax_filer[:J_used]
 
     if method == "SS":
         T_P = p.tau_payroll[-1] * labor_income
@@ -451,12 +439,20 @@ def wealth_tax_liab(r, b, t, j, method, p):
         if method == "TPI":
             if b.ndim == 2:
                 r = r.reshape(r.shape[0], 1)
+            tax_filer = p.tax_filer[:, j]  # TODO check this
+        else:
+            tax_filer = p.tax_filer[-1, j]
     else:
         if method == "TPI":
             r = utils.to_timepath_shape(r)
+            tax_filer = p.tax_filer[:, :]
+        elif method == "TPI_scalar":
+            tax_filer = p.tax_filer[t, :]
+        elif method == "SS":
+            tax_filer = p.tax_filer[-1, :]
 
     if method == "SS":
-        T_W = ETR_wealth(b, p.h_wealth[-1], p.m_wealth[-1], p.p_wealth[-1]) * b
+        T_W = ETR_wealth(b, p.h_wealth[-1], p.m_wealth[-1], p.p_wealth[-1], tax_filer) * b
     elif method == "TPI":
         length = r.shape[0]
         if len(b.shape) == 1:
@@ -466,6 +462,7 @@ def wealth_tax_liab(r, b, t, j, method, p):
                     p.h_wealth[t : t + length],
                     p.m_wealth[t : t + length],
                     p.p_wealth[t : t + length],
+                    tax_filer[t : t + length]
                 )
                 * b
             )
@@ -476,6 +473,7 @@ def wealth_tax_liab(r, b, t, j, method, p):
                     p.h_wealth[t : t + length],
                     p.m_wealth[t : t + length],
                     p.p_wealth[t : t + length],
+                    tax_filer[t : t + length, :]
                 )
                 * b
             )
@@ -486,11 +484,12 @@ def wealth_tax_liab(r, b, t, j, method, p):
                     p.h_wealth[t : t + length].reshape(length, 1, 1),
                     p.m_wealth[t : t + length].reshape(length, 1, 1),
                     p.p_wealth[t : t + length].reshape(length, 1, 1),
+                    tax_filer[t : t + length, :, :].reshape(length, 1, 1)
                 )
                 * b
             )
     elif method == "TPI_scalar":
-        T_W = ETR_wealth(b, p.h_wealth[0], p.m_wealth[0], p.p_wealth[0]) * b
+        T_W = ETR_wealth(b, p.h_wealth[0], p.m_wealth[0], p.p_wealth[0], tax_filer) * b
 
     return T_W
 
