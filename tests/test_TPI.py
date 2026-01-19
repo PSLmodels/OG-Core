@@ -684,14 +684,10 @@ def test_run_TPI_full_run(
                 "Diff = ",
                 np.abs(test_dict[k][: p.T] - v[: p.T]).max(),
             )
-            if (
-                np.abs(test_dict[k][: p.T] - v[: p.T]).max()
-                > 1e-5
-            ):
+            if np.abs(test_dict[k][: p.T] - v[: p.T]).max() > 1e-5:
                 # print the indices where the difference is large
                 indices = np.where(
-                    np.abs(test_dict[k][: p.T] - v[: p.T])
-                    > 1e-5
+                    np.abs(test_dict[k][: p.T] - v[: p.T]) > 1e-5
                 )
                 print("Indices with large difference:", indices)
             assert np.allclose(
@@ -705,20 +701,10 @@ def test_run_TPI_full_run(
                 "Diff = ",
                 np.abs(test_dict[k][: p.T, :, :] - v[: p.T, :, :]).max(),
             )
-            if (
-                np.abs(
-                    test_dict[k][: p.T, :, :]
-                    - v[: p.T, :, :]
-                ).max()
-                > 1e-5
-            ):
+            if np.abs(test_dict[k][: p.T, :, :] - v[: p.T, :, :]).max() > 1e-5:
                 # print the indices where the difference is large
                 indices = np.where(
-                    np.abs(
-                        test_dict[k][: p.T, :, :]
-                        - v[: p.T, :, :]
-                    )
-                    > 1e-5
+                    np.abs(test_dict[k][: p.T, :, :] - v[: p.T, :, :]) > 1e-5
                 )
                 print("Indices with large difference:", indices)
             assert np.allclose(

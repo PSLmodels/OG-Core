@@ -1128,7 +1128,9 @@ def run_TPI(p, client=None):
         K[: p.T], K_d[: p.T], K_f[: p.T] = aggr.get_K_splits(
             B[: p.T], K_demand_open_vec.sum(-1), D_d[: p.T], p.zeta_K[: p.T]
         )
-        r_gov_new = fiscal.get_r_gov(rnew[: p.T], Dnew[: p.T] / Y[: p.T], p, "TPI")
+        r_gov_new = fiscal.get_r_gov(
+            rnew[: p.T], Dnew[: p.T] / Y[: p.T], p, "TPI"
+        )
         r_p_new = aggr.get_r_p(
             rnew[: p.T],
             r_gov_new[: p.T],
