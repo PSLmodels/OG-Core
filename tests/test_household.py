@@ -507,6 +507,8 @@ p1.S = 3
 p1.T = 3
 p1.labor_income_tax_noncompliance_rate = np.zeros((p1.T + p1.S, p1.J))
 p1.capital_income_tax_noncompliance_rate = np.zeros((p1.T + p1.S, p1.J))
+p1.income_tax_filer = np.ones((p1.T, p1.J))
+p1.wealth_tax_filer = np.ones((p1.T, p1.J))
 p1.analytical_mtrs = False
 etr_params = np.array(
     [
@@ -826,6 +828,8 @@ p1.S = 3
 p1.T = 3
 p1.labor_income_tax_noncompliance_rate = np.zeros((p1.T + p1.S, p1.J))
 p1.capital_income_tax_noncompliance_rate = np.zeros((p1.T + p1.S, p1.J))
+p1.income_tax_filer = np.ones((p1.T, p1.J))
+p1.wealth_tax_filer = np.ones((p1.T, p1.J))
 p1.analytical_mtrs = False
 etr_params = np.array(
     [

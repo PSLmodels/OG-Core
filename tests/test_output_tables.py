@@ -165,12 +165,16 @@ def test_dynamic_revenue_decomposition(include_business_tax, full_break_out):
     base_params.capital_income_tax_noncompliance_rate = np.zeros(
         (base_params.T, base_params.J)
     )
+    base_params.income_tax_filer = np.ones((base_params.T, base_params.J))
+    base_params.wealth_tax_filer = np.ones((base_params.T, base_params.J))
     reform_params.labor_income_tax_noncompliance_rate = np.zeros(
         (reform_params.T, reform_params.J)
     )
     reform_params.capital_income_tax_noncompliance_rate = np.zeros(
         (reform_params.T, reform_params.J)
     )
+    reform_params.income_tax_filer = np.ones((reform_params.T, reform_params.J))
+    reform_params.wealth_tax_filer = np.ones((reform_params.T, reform_params.J))
     base_params.tax_filer = np.ones(base_params.J)
     reform_params.tax_filer = np.ones(reform_params.J)
     # check if tax parameters are a numpy array
