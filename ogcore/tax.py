@@ -343,7 +343,7 @@ def income_tax_liab(r, w, b, n, factor, t, j, method, e, etr_params, p):
             capital_income_tax_compliance_rate = (
                 p.capital_income_tax_noncompliance_rate[t, j]
             )
-            tax_filer = p.tax_filer[t, j]
+            tax_filer = p.income_tax_filer[t, j]
         else:
             labor_income_tax_compliance_rate = (
                 p.labor_income_tax_noncompliance_rate[-1, j]
@@ -351,7 +351,7 @@ def income_tax_liab(r, w, b, n, factor, t, j, method, e, etr_params, p):
             capital_income_tax_compliance_rate = (
                 p.capital_income_tax_noncompliance_rate[-1, j]
             )
-            tax_filer = p.tax_filer[-1, j]
+            tax_filer = p.income_tax_filer[-1, j]
     else:
         if method == "TPI":
             r = utils.to_timepath_shape(r)
@@ -362,7 +362,7 @@ def income_tax_liab(r, w, b, n, factor, t, j, method, e, etr_params, p):
             capital_income_tax_compliance_rate = (
                 p.capital_income_tax_noncompliance_rate[t, :]
             )
-            tax_filer = p.tax_filer[t, :]
+            tax_filer = p.income_tax_filer[t, :]
         else:
             labor_income_tax_compliance_rate = (
                 p.labor_income_tax_noncompliance_rate[-1, :]
@@ -370,7 +370,7 @@ def income_tax_liab(r, w, b, n, factor, t, j, method, e, etr_params, p):
             capital_income_tax_compliance_rate = (
                 p.capital_income_tax_noncompliance_rate[-1, :]
             )
-            tax_filer = p.tax_filer[-1, :]
+            tax_filer = p.income_tax_filer[-1, :]
     income = r * b + w * e * n
     labor_income = w * e * n
     T_I = (
@@ -434,17 +434,17 @@ def wealth_tax_liab(r, b, t, j, method, p):
         if method == "TPI":
             if b.ndim == 2:
                 r = r.reshape(r.shape[0], 1)
-            tax_filer = p.tax_filer[:, j]  # TODO check this
+            tax_filer = p.wealth_tax_filer[:, j]  # TODO check this
         else:
-            tax_filer = p.tax_filer[-1, j]
+            tax_filer = p.wealth_tax_filer[-1, j]
     else:
         if method == "TPI":
             r = utils.to_timepath_shape(r)
-            tax_filer = p.tax_filer[:, :]
+            tax_filer = p.wealth_tax_filer[:, :]
         elif method == "TPI_scalar":
             tax_filer = p.tax_filer[t, :]
         elif method == "SS":
-            tax_filer = p.tax_filer[-1, :]
+            tax_filer = p.wealth_tax_filer[-1, :]
 
     if method == "SS":
         T_W = (
@@ -473,7 +473,7 @@ def wealth_tax_liab(r, b, t, j, method, p):
                     p.h_wealth[t : t + length],
                     p.m_wealth[t : t + length],
                     p.p_wealth[t : t + length],
-                    tax_filer[t : t + length, :],
+                    tax_filer[t : t + length],
                 )
                 * b
             )
@@ -484,7 +484,7 @@ def wealth_tax_liab(r, b, t, j, method, p):
                     p.h_wealth[t : t + length].reshape(length, 1, 1),
                     p.m_wealth[t : t + length].reshape(length, 1, 1),
                     p.p_wealth[t : t + length].reshape(length, 1, 1),
-                    tax_filer[t : t + length, :, :].reshape(length, 1, 1),
+                    tax_filer[t : t + length, :].reshape(length, 1, p.J),
                 )
                 * b
             )
