@@ -915,7 +915,7 @@ def SS_solver(
         (p.S, 1),
     )
     income_tax_filer_2D = np.tile(
-        np.reshape(p.tax_filer[-1, :], (1, p.J)),
+        np.reshape(p.income_tax_filer[-1, :], (1, p.J)),
         (p.S, 1),
     )
     mtry_ss = tax.MTR_income(
