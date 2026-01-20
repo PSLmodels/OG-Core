@@ -929,8 +929,8 @@ def SS_solver(
         etr_params_3D,
         mtry_params_3D,
         capital_noncompliance_rate_2D,
-        p,
         income_tax_filer_2D,
+        p,
     )
     mtrx_ss = tax.MTR_income(
         r_p_ss,
@@ -943,8 +943,8 @@ def SS_solver(
         etr_params_3D,
         mtrx_params_3D,
         labor_noncompliance_rate_2D,
-        p,
         income_tax_filer_2D,
+        p,
     )
     etr_ss = tax.ETR_income(
         r_p_ss,
@@ -956,8 +956,8 @@ def SS_solver(
         etr_params_3D,
         labor_noncompliance_rate_2D,
         capital_noncompliance_rate_2D,
-        p,
         income_tax_filer_2D,
+        p,
     )
 
     taxss = tax.net_taxes(
