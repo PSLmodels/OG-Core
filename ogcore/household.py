@@ -584,8 +584,8 @@ def FOC_savings(
                 etr_params,
                 mtry_params,
                 tax_noncompliance,
-                p,
                 income_tax_filer,
+                p,
             )
         )
         - tax.MTR_wealth(b, h_wealth, m_wealth, p_wealth, wealth_tax_filer)
@@ -702,13 +702,13 @@ def FOC_labor(
             e = np.squeeze(p.e[-1, :, j])
         elif method == "TPI_scalar":
             tax_noncompliance = p.labor_income_tax_noncompliance_rate[0, j]
-            income_tax_filer = p.tax_filer[0, j]
+            income_tax_filer = p.income_tax_filer[0, j]
             e = np.squeeze(p.e[0, -1, j])
         else:
             tax_noncompliance = p.labor_income_tax_noncompliance_rate[
                 t : t + length, j
             ]
-            income_tax_filer = p.tax_filer[t : t + length, j]
+            income_tax_filer = p.income_tax_filer[t : t + length, j]
             e_long = np.concatenate(
                 (
                     p.e,
@@ -780,8 +780,8 @@ def FOC_labor(
             etr_params,
             mtrx_params,
             tax_noncompliance,
-            p,
             income_tax_filer,
+            p,
         )
     )
     FOC_error = marg_ut_cons(cons, p.sigma) * (
