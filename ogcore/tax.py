@@ -81,8 +81,8 @@ def ETR_income(
     etr_params,
     labor_noncompliance_rate,
     capital_noncompliance_rate,
-    p,
     tax_filer,
+    p,
 ):
     """
     Calculates effective personal income tax rate.
@@ -99,8 +99,8 @@ def ETR_income(
             parameters or nonparametric function
         labor_noncompliance_rate (Numpy array): income tax noncompliance rate for labor income
         capital_noncompliance_rate (Numpy array): income tax noncompliance rate for capital income
-        p (OG-Core Specifications object): model parameters
         tax_filer (Numpy array): array indicating tax filer status
+        p (OG-Core Specifications object): model parameters
 
     Returns:
         tau (Numpy array): effective tax rate on total income
@@ -132,8 +132,8 @@ def MTR_income(
     etr_params,
     mtr_params,
     noncompliance_rate,
-    p,
     tax_filer,
+    p,
 ):
     r"""
     Generates the marginal tax rate on labor income for households.
@@ -153,8 +153,8 @@ def MTR_income(
         mtr_params (list): list of marginal tax rate function
             parameters or nonparametric function
         noncompliance_rate (Numpy array): income tax noncompliance rate
-        p (OG-Core Specifications object): model parameters
         tax_filer (Numpy array): array indicating tax filer status
+        p (OG-Core Specifications object): model parameters
 
     Returns:
         tau (Numpy array): marginal tax rate on income source
@@ -384,8 +384,8 @@ def income_tax_liab(r, w, b, n, factor, t, j, method, e, etr_params, p):
             etr_params,
             labor_income_tax_compliance_rate,
             capital_income_tax_compliance_rate,
-            p,
             tax_filer,
+            p,
         )
         * income
     )

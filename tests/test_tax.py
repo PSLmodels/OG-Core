@@ -332,8 +332,8 @@ def test_ETR_income(b, n, etr_params, params, expected):
         etr_params,
         params.labor_income_tax_noncompliance_rate,
         params.capital_income_tax_noncompliance_rate,
-        params,
         params.income_tax_filer,
+        params,
     )
     assert np.allclose(test_ETR_income, expected)
 
@@ -844,8 +844,8 @@ def test_MTR_income(etr_params, mtr_params, params, mtr_capital, expected):
         etr_params,
         mtr_params,
         noncompliance_rate,
-        params,
         params.income_tax_filer,
+        params,
     )
     assert np.allclose(test_mtr, expected)
 
