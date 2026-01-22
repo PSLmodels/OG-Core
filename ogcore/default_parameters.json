@@ -1010,6 +1010,42 @@
             }
         }
     },
+    "r_gov_DY": {
+        "title": "Linear effect of debt to GDP ratio on government interest rate",
+        "section_1": "Fiscal Policy Parameters",
+        "description": "Parameter summarizing the linear effect of the debt to GDP ratio on the government interest rate.",
+        "notes": "",
+        "type": "float",
+        "value": [
+            {
+                "value": 0.0
+            }
+        ],
+        "validators": {
+            "range": {
+                "min": -0.3,
+                "max": 0.3
+            }
+        }
+    },
+    "r_gov_DY2": {
+        "title": "Quadratic effect of debt to GDP ratio on government interest rate",
+        "section_1": "Fiscal Policy Parameters",
+        "description": "Parameter summarizing the quadratic effect of the debt to GDP ratio on the government interest rate.",
+        "notes": "",
+        "type": "float",
+        "value": [
+            {
+                "value": 0.0
+            }
+        ],
+        "validators": {
+            "range": {
+                "min": -0.3,
+                "max": 0.3
+            }
+        }
+    },
     "cit_rate": {
         "title": "Corporate income tax rate",
         "description": "Corporate income tax rate.  Set value for base year, click '+' to add value for next year.  All future years not specified are set to last value entered.",

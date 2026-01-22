@@ -13,25 +13,43 @@ from ogcore import utils, parameter_plots, Specifications
 
 # Load in test results and parameters
 CUR_PATH = os.path.abspath(os.path.dirname(__file__))
-if sys.version_info[1] == 11:
-    base_params = utils.safe_read_pickle(
-        os.path.join(
-            CUR_PATH, "test_io_data", "model_params_baseline_v311.pkl"
-        )
-    )
-elif sys.version_info[1] == 12:
-    base_params = utils.safe_read_pickle(
-        os.path.join(
-            CUR_PATH, "test_io_data", "model_params_baseline_v312.pkl"
-        )
-    )
-elif sys.version_info[1] == 13:
-    base_params = utils.safe_read_pickle(
-        os.path.join(CUR_PATH, "test_io_data", "model_params_baseline.pkl")
-    )
-else:
-    # Raise assertion error
-    assert False, "Unsupported Python version"
+base_ss = utils.safe_read_pickle(
+    os.path.join(CUR_PATH, "test_io_data", "SS_vars_baseline.pkl")
+)
+base_tpi = utils.safe_read_pickle(
+    os.path.join(CUR_PATH, "test_io_data", "TPI_vars_baseline.pkl")
+)
+
+reform_ss = utils.safe_read_pickle(
+    os.path.join(CUR_PATH, "test_io_data", "SS_vars_reform.pkl")
+)
+reform_tpi = utils.safe_read_pickle(
+    os.path.join(CUR_PATH, "test_io_data", "TPI_vars_reform.pkl")
+)
+base_params = Specifications()
+base_params.update_specifications(
+    {
+        "M": 3,
+        "gamma": [0.5, 0.5, 0.5],
+        "gamma_g": [0.0, 0.0, 0.0],
+        "epsilon": [0.5, 0.5, 0.5],
+        "I": 3,
+        "alpha_c": [0.3, 0.4, 0.3],
+        "io_matrix": np.eye(3),
+    }
+)
+reform_params = Specifications()
+reform_params.update_specifications(
+    {
+        "M": 3,
+        "gamma": [0.5, 0.5, 0.5],
+        "gamma_g": [0.0, 0.0, 0.0],
+        "epsilon": [0.5, 0.5, 0.5],
+        "I": 3,
+        "alpha_c": [0.3, 0.4, 0.3],
+        "io_matrix": np.eye(3),
+    }
+)
 
 base_taxfunctions = utils.safe_read_pickle(
     os.path.join(CUR_PATH, "test_io_data", "TxFuncEst_baseline.pkl")
