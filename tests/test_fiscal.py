@@ -11,44 +11,44 @@ CUR_PATH = os.path.abspath(os.path.dirname(__file__))
 df = pd.read_csv(
     os.path.join(CUR_PATH, "test_io_data", "get_D_G_path_data.csv")
 )
-Y = df["Y"].values
-TR = df["TR"].values
-Revenue = df["Revenue"].values
-Gbaseline = df["Gbaseline"].values
-D1 = df["D1"].values
-D2 = df["D2"].values
-D3 = df["D3"].values
-D4 = df["D4"].values
-G1 = df["G1"].values
-G2 = df["G2"].values
-G3 = df["G3"].values
-G4 = df["G4"].values
-D_d1 = df["D_d1"].values
-D_d2 = df["D_d2"].values
-D_d3 = df["D_d3"].values
-D_d4 = df["D_d4"].values
-D_f1 = df["D_f1"].values
-D_f2 = df["D_f2"].values
-D_f3 = df["D_f3"].values
-D_f4 = df["D_f4"].values
+Y = df["Y"].values.copy()
+TR = df["TR"].values.copy()
+Revenue = df["Revenue"].values.copy()
+Gbaseline = df["Gbaseline"].values.copy()
+D1 = df["D1"].values.copy()
+D2 = df["D2"].values.copy()
+D3 = df["D3"].values.copy()
+D4 = df["D4"].values.copy()
+G1 = df["G1"].values.copy()
+G2 = df["G2"].values.copy()
+G3 = df["G3"].values.copy()
+G4 = df["G4"].values.copy()
+D_d1 = df["D_d1"].values.copy()
+D_d2 = df["D_d2"].values.copy()
+D_d3 = df["D_d3"].values.copy()
+D_d4 = df["D_d4"].values.copy()
+D_f1 = df["D_f1"].values.copy()
+D_f2 = df["D_f2"].values.copy()
+D_f3 = df["D_f3"].values.copy()
+D_f4 = df["D_f4"].values.copy()
 r_gov1 = (
-    np.ones_like(df["D1"].values) * 0.05 - 0.02
+    np.ones_like(D1) * 0.05 - 0.02
 )  # 0.02 is the default r_gov_shift parameter and the default scale parameter is 1.0, meaning r_gov1 = 0.05 - 0.02 = 0.03
 r_gov2 = r_gov1
 r_gov3 = r_gov1
-r_gov4 = df["r_gov4"].values
-nb1 = df["new_borrow1"].values
-nb2 = df["new_borrow2"].values
-nb3 = df["new_borrow3"].values
-nb4 = df["new_borrow4"].values
-ds1 = df["debt_service1"].values
-ds2 = df["debt_service2"].values
-ds3 = df["debt_service3"].values
-ds4 = df["debt_service4"].values
-nbf1 = df["new_borrow_f1"].values
-nbf2 = df["new_borrow_f2"].values
-nbf3 = df["new_borrow_f3"].values
-nbf4 = df["new_borrow_f4"].values
+r_gov4 = df["r_gov4"].values.copy()
+nb1 = df["new_borrow1"].values.copy()
+nb2 = df["new_borrow2"].values.copy()
+nb3 = df["new_borrow3"].values.copy()
+nb4 = df["new_borrow4"].values.copy()
+ds1 = df["debt_service1"].values.copy()
+ds2 = df["debt_service2"].values.copy()
+ds3 = df["debt_service3"].values.copy()
+ds4 = df["debt_service4"].values.copy()
+nbf1 = df["new_borrow_f1"].values.copy()
+nbf2 = df["new_borrow_f2"].values.copy()
+nbf3 = df["new_borrow_f3"].values.copy()
+nbf4 = df["new_borrow_f4"].values.copy()
 expected_tuple1 = (D1, G1, D_d1, D_f1, r_gov1, nb1, ds1, nbf1)
 expected_tuple2 = (D2, G2, D_d2, D_f2, r_gov2, nb2, ds2, nbf2)
 expected_tuple3 = (D3, G3, D_d3, D_f3, r_gov3, nb3, ds3, nbf3)
@@ -113,11 +113,6 @@ def test_D_G_path(
     r = np.ones(p.T + p.S) * 0.05
     p.g_n = np.ones(p.T + p.S) * 0.02
     D0_baseline = 0.59
-
-    print(f"Gbaseline type: {type(Gbaseline)}")
-    print(f"Gbaseline flags: {Gbaseline.flags}")
-    print(f"Gbaseline writeable: {Gbaseline.flags.writeable}")
-
     Gbaseline[0] = 0.05
     I_g = np.zeros_like(TR)
     net_revenue = Revenue
