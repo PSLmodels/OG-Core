@@ -113,6 +113,11 @@ def test_D_G_path(
     r = np.ones(p.T + p.S) * 0.05
     p.g_n = np.ones(p.T + p.S) * 0.02
     D0_baseline = 0.59
+
+    print(f"Gbaseline type: {type(Gbaseline)}")
+    print(f"Gbaseline flags: {Gbaseline.flags}")
+    print(f"Gbaseline writeable: {Gbaseline.flags.writeable}")
+
     Gbaseline[0] = 0.05
     I_g = np.zeros_like(TR)
     net_revenue = Revenue
