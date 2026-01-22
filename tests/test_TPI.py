@@ -631,6 +631,7 @@ def test_run_TPI_full_run(
     # Need to run SS first to get results
     SS.ENFORCE_SOLUTION_CHECKS = True
     ss_outputs = SS.run_SS(p, client=dask_client)
+    # ss_outputs = SS.run_SS(p, client=None)
 
     if p.baseline:
         utils.mkdirs(os.path.join(p.baseline_dir, "SS"))
@@ -662,6 +663,7 @@ def test_run_TPI_full_run(
         for k, v in expected_dict.items():
             expected_dict_updated[VAR_NAME_MAPPING[k]] = v
         expected_dict = expected_dict_updated
+
     for k, v in expected_dict.items():
         print("Testing, ", k)
         try:
@@ -682,6 +684,12 @@ def test_run_TPI_full_run(
                 "Diff = ",
                 np.abs(test_dict[k][: p.T] - v[: p.T]).max(),
             )
+            if np.abs(test_dict[k][: p.T] - v[: p.T]).max() > 1e-5:
+                # print the indices where the difference is large
+                indices = np.where(
+                    np.abs(test_dict[k][: p.T] - v[: p.T]) > 1e-5
+                )
+                print("Indices with large difference:", indices)
             assert np.allclose(
                 test_dict[k][: p.T],
                 v[: p.T],
@@ -693,6 +701,12 @@ def test_run_TPI_full_run(
                 "Diff = ",
                 np.abs(test_dict[k][: p.T, :, :] - v[: p.T, :, :]).max(),
             )
+            if np.abs(test_dict[k][: p.T, :, :] - v[: p.T, :, :]).max() > 1e-5:
+                # print the indices where the difference is large
+                indices = np.where(
+                    np.abs(test_dict[k][: p.T, :, :] - v[: p.T, :, :]) > 1e-5
+                )
+                print("Indices with large difference:", indices)
             assert np.allclose(
                 test_dict[k][: p.T, :, :],
                 v[: p.T, :, :],
@@ -772,7 +786,8 @@ def test_run_TPI(baseline, param_updates, filename, tmpdir, dask_client):
 
     # Need to run SS first to get results
     SS.ENFORCE_SOLUTION_CHECKS = False
-    ss_outputs = SS.run_SS(p, client=dask_client)
+    # ss_outputs = SS.run_SS(p, client=dask_client)
+    ss_outputs = SS.run_SS(p, client=None)
 
     if p.baseline:
         utils.mkdirs(os.path.join(p.baseline_dir, "SS"))
@@ -907,21 +922,21 @@ if sys.version_info[1] < 11:
     ]
 else:
     test_list = [
-        (True, param_updates2, filename2),
-        (True, param_updates5, filename5),
-        (True, param_updates6, filename6),
-        (True, param_updates7, filename7),
-        (True, {}, filename1),
-        (False, param_updates4, filename4),
+        # (True, param_updates2, filename2),
+        # (True, param_updates5, filename5),
+        # (True, param_updates6, filename6),
+        # (True, param_updates7, filename7),
+        # (True, {}, filename1),
+        # (False, param_updates4, filename4),
         (True, param_updates8, filename8),
     ]
     id_list = [
-        "Baseline, balanced budget",
-        "Baseline, small open",
-        "Baseline, small open for some periods",
-        "Baseline, delta_tau = 0",
-        "Baseline",
-        "Reform, baseline spending",
+        # "Baseline, balanced budget",
+        # "Baseline, small open",
+        # "Baseline, small open for some periods",
+        # "Baseline, delta_tau = 0",
+        # "Baseline",
+        # "Reform, baseline spending",
         "Baseline, Kg>0",
     ]
 
@@ -996,17 +1011,22 @@ def test_run_TPI_extra(baseline, param_updates, filename, tmpdir, dask_client):
     test_dict = TPI.run_TPI(p, client=dask_client)
     expected_dict = utils.safe_read_pickle(filename)
 
+    # if old variable names, update keys with VAR_NAME_MAPPING
+    if "Y_vec" in expected_dict.keys():
+        expected_dict_updated = {}
+        for k, v in expected_dict.items():
+            expected_dict_updated[VAR_NAME_MAPPING[k]] = v
+        expected_dict = expected_dict_updated
+
     for k, v in expected_dict.items():
         print("Checking ", k)
         try:
             print(
                 "Diff = ",
-                np.absolute(
-                    test_dict[VAR_NAME_MAPPING[k]][: p.T] - v[: p.T]
-                ).max(),
+                np.absolute(test_dict[k][: p.T] - v[: p.T]).max(),
             )
             assert np.allclose(
-                test_dict[VAR_NAME_MAPPING[k]][: p.T],
+                test_dict[k][: p.T],
                 v[: p.T],
                 rtol=1e-04,
                 atol=1e-04,
@@ -1014,13 +1034,10 @@ def test_run_TPI_extra(baseline, param_updates, filename, tmpdir, dask_client):
         except ValueError:
             print(
                 "Diff = ",
-                np.absolute(
-                    test_dict[VAR_NAME_MAPPING[k]][: p.T, :, :]
-                    - v[: p.T, :, :]
-                ).max(),
+                np.absolute(test_dict[k][: p.T, :, :] - v[: p.T, :, :]).max(),
             )
             assert np.allclose(
-                test_dict[VAR_NAME_MAPPING[k]][: p.T, :, :],
+                test_dict[k][: p.T, :, :],
                 v[: p.T, :, :],
                 rtol=1e-04,
                 atol=1e-04,

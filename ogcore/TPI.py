@@ -715,7 +715,8 @@ def run_TPI(p, client=None):
     total_tax_revenue = np.ones(p.T + p.S) * ss_vars["total_tax_revenue"]
 
     # Compute other interest rates
-    r_gov = fiscal.get_r_gov(r, p, "TPI")
+    r_gov = np.ones_like(r) * ss_vars["r_gov"]
+    r_gov[: p.T] = fiscal.get_r_gov(r[: p.T], D[: p.T] / Y[: p.T], p, "TPI")
     r_p = np.ones_like(r) * ss_vars["r_p"]
     MPKg = np.zeros((p.T, p.M))
     for m in range(p.M):
@@ -1082,6 +1083,11 @@ def run_TPI(p, client=None):
             "TPI",
         )
         total_tax_revenue[: p.T] = total_tax_rev
+        if not p.baseline_spending:
+            I_g = fiscal.get_I_g(Y[: p.T], None, p, "TPI")
+        if p.baseline:
+            K_g0 = p.initial_Kg_ratio * Y[0]
+        K_g = fiscal.get_K_g(K_g0, I_g, p, "TPI")
         dg_fixed_values = (
             Y,
             total_tax_revenue,
@@ -1097,18 +1103,12 @@ def run_TPI(p, client=None):
             G[: p.T],
             D_d[: p.T],
             D_f[: p.T],
+            r_gov_new,
             new_borrowing,
             debt_service,
             new_borrowing_f,
-        ) = fiscal.D_G_path(r_gov, dg_fixed_values, p)
-        K[: p.T], K_d[: p.T], K_f[: p.T] = aggr.get_K_splits(
-            B[: p.T], K_demand_open_vec.sum(-1), D_d[: p.T], p.zeta_K[: p.T]
-        )
-        if not p.baseline_spending:
-            I_g = fiscal.get_I_g(Y[: p.T], None, p, "TPI")
-        if p.baseline:
-            K_g0 = p.initial_Kg_ratio * Y[0]
-        K_g = fiscal.get_K_g(K_g0, I_g, p, "TPI")
+        ) = fiscal.D_G_path(r, dg_fixed_values, p)
+
         rnew = r.copy()
         rnew[: p.T] = np.squeeze(
             firm.get_r(
@@ -1117,7 +1117,6 @@ def run_TPI(p, client=None):
         )
         # For case where economy is small open econ
         rnew[p.zeta_K == 1] = p.world_int_rate[p.zeta_K == 1]
-        r_gov_new = fiscal.get_r_gov(rnew, p, "TPI")
         MPKg_vec = np.zeros((p.T, p.M))
         for m in range(p.M):
             MPKg_vec[:, m] = np.squeeze(
@@ -1125,6 +1124,13 @@ def run_TPI(p, client=None):
                     Y_vec[: p.T, m], K_g[: p.T], p.gamma_g[m], p, "TPI", m
                 )
             )
+
+        K[: p.T], K_d[: p.T], K_f[: p.T] = aggr.get_K_splits(
+            B[: p.T], K_demand_open_vec.sum(-1), D_d[: p.T], p.zeta_K[: p.T]
+        )
+        r_gov_new = fiscal.get_r_gov(
+            rnew[: p.T], Dnew[: p.T] / Y[: p.T], p, "TPI"
+        )
         r_p_new = aggr.get_r_p(
             rnew[: p.T],
             r_gov_new[: p.T],

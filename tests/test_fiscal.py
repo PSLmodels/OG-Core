@@ -11,47 +11,75 @@ CUR_PATH = os.path.abspath(os.path.dirname(__file__))
 df = pd.read_csv(
     os.path.join(CUR_PATH, "test_io_data", "get_D_G_path_data.csv")
 )
-Y = df["Y"].values
-TR = df["TR"].values
-Revenue = df["Revenue"].values
-Gbaseline = df["Gbaseline"].values
-D1 = df["D1"].values
-D2 = df["D2"].values
-D3 = df["D3"].values
-G1 = df["G1"].values
-G2 = df["G2"].values
-G3 = df["G3"].values
-D_d1 = df["D_d1"].values
-D_d2 = df["D_d2"].values
-D_d3 = df["D_d3"].values
-D_f1 = df["D_f1"].values
-D_f2 = df["D_f2"].values
-D_f3 = df["D_f3"].values
-nb1 = df["new_borrow1"].values
-nb2 = df["new_borrow2"].values
-nb3 = df["new_borrow3"].values
-ds1 = df["debt_service1"].values
-ds2 = df["debt_service2"].values
-ds3 = df["debt_service3"].values
-nbf1 = df["new_borrow_f1"].values
-nbf2 = df["new_borrow_f2"].values
-nbf3 = df["new_borrow_f3"].values
-expected_tuple1 = (D1, G1, D_d1, D_f1, nb1, ds1, nbf1)
-expected_tuple2 = (D2, G2, D_d2, D_f2, nb2, ds2, nbf2)
-expected_tuple3 = (D3, G3, D_d3, D_f3, nb3, ds3, nbf3)
+Y = df["Y"].values.copy()
+TR = df["TR"].values.copy()
+Revenue = df["Revenue"].values.copy()
+Gbaseline = df["Gbaseline"].values.copy()
+D1 = df["D1"].values.copy()
+D2 = df["D2"].values.copy()
+D3 = df["D3"].values.copy()
+D4 = df["D4"].values.copy()
+G1 = df["G1"].values.copy()
+G2 = df["G2"].values.copy()
+G3 = df["G3"].values.copy()
+G4 = df["G4"].values.copy()
+D_d1 = df["D_d1"].values.copy()
+D_d2 = df["D_d2"].values.copy()
+D_d3 = df["D_d3"].values.copy()
+D_d4 = df["D_d4"].values.copy()
+D_f1 = df["D_f1"].values.copy()
+D_f2 = df["D_f2"].values.copy()
+D_f3 = df["D_f3"].values.copy()
+D_f4 = df["D_f4"].values.copy()
+r_gov1 = (
+    np.ones_like(D1) * 0.05 - 0.02
+)  # 0.02 is the default r_gov_shift parameter and the default scale parameter is 1.0, meaning r_gov1 = 0.05 - 0.02 = 0.03
+r_gov2 = r_gov1
+r_gov3 = r_gov1
+r_gov4 = df["r_gov4"].values.copy()
+nb1 = df["new_borrow1"].values.copy()
+nb2 = df["new_borrow2"].values.copy()
+nb3 = df["new_borrow3"].values.copy()
+nb4 = df["new_borrow4"].values.copy()
+ds1 = df["debt_service1"].values.copy()
+ds2 = df["debt_service2"].values.copy()
+ds3 = df["debt_service3"].values.copy()
+ds4 = df["debt_service4"].values.copy()
+nbf1 = df["new_borrow_f1"].values.copy()
+nbf2 = df["new_borrow_f2"].values.copy()
+nbf3 = df["new_borrow_f3"].values.copy()
+nbf4 = df["new_borrow_f4"].values.copy()
+expected_tuple1 = (D1, G1, D_d1, D_f1, r_gov1, nb1, ds1, nbf1)
+expected_tuple2 = (D2, G2, D_d2, D_f2, r_gov2, nb2, ds2, nbf2)
+expected_tuple3 = (D3, G3, D_d3, D_f3, r_gov3, nb3, ds3, nbf3)
+expected_tuple4 = (D4, G4, D_d4, D_f4, r_gov4, nb4, ds4, nbf4)
 
 
 @pytest.mark.parametrize(
-    ("baseline_spending,Y,TR,Revenue,Gbaseline,budget_balance,expected_tuple"),
+    (
+        "baseline_spending,Y,TR,Revenue,Gbaseline,budget_balance,r_gov_DY,r_gov_DY2,expected_tuple"
+    ),
     [
-        (False, Y, TR, Revenue, Gbaseline, False, expected_tuple1),
-        (True, Y, TR, Revenue, Gbaseline, False, expected_tuple2),
-        (False, Y, TR, Revenue, Gbaseline, True, expected_tuple3),
+        (False, Y, TR, Revenue, Gbaseline, False, 0.0, 0.0, expected_tuple1),
+        (True, Y, TR, Revenue, Gbaseline, False, 0.0, 0.0, expected_tuple2),
+        (False, Y, TR, Revenue, Gbaseline, True, 0.0, 0.0, expected_tuple3),
+        (
+            False,
+            Y,
+            TR,
+            Revenue,
+            Gbaseline,
+            False,
+            0.01,
+            0.001,
+            expected_tuple4,
+        ),
     ],
     ids=[
         "baseline_spending = False",
         "baseline_spending = True",
         "balanced_budget = True",
+        "r_gov function of D/Y",
     ],
 )
 def test_D_G_path(
@@ -61,6 +89,8 @@ def test_D_G_path(
     Revenue,
     Gbaseline,
     budget_balance,
+    r_gov_DY,
+    r_gov_DY2,
     expected_tuple,
 ):
     p = Specifications()
@@ -76,9 +106,11 @@ def test_D_G_path(
         "g_y_annual": 0.03,
         "baseline_spending": baseline_spending,
         "budget_balance": budget_balance,
+        "r_gov_DY": r_gov_DY,
+        "r_gov_DY2": r_gov_DY2,
     }
     p.update_specifications(new_param_values, raise_errors=False)
-    r_gov = np.ones(p.T + p.S) * 0.03
+    r = np.ones(p.T + p.S) * 0.05
     p.g_n = np.ones(p.T + p.S) * 0.02
     D0_baseline = 0.59
     Gbaseline[0] = 0.05
@@ -96,7 +128,8 @@ def test_D_G_path(
         Gbaseline,
         D0_baseline,
     )
-    test_tuple = fiscal.D_G_path(r_gov, dg_fixed_values, p)
+    test_tuple = fiscal.D_G_path(r, dg_fixed_values, p)
+
     for i, v in enumerate(test_tuple):
         assert np.allclose(v[: p.T], expected_tuple[i][: p.T])
 
@@ -125,7 +158,7 @@ expected_tuple2 = (0.0, 0.0, 0.0, 0.0, 0.0, 0.0)
 )
 def test_get_D_ss(budget_balance, expected_tuple):
     """
-    Test of the fiscla.get_D_ss() function.
+    Test of the fiscal.get_D_ss() function.
     """
     r_gov = 0.03
     Y = 1.176255339
@@ -256,23 +289,58 @@ r = 0.04
 r_gov1 = 0.02
 r_gov2 = 0.01
 r_gov3 = 0.0
+p_tpi = Specifications()
+p_tpi.update_specifications(
+    {
+        "r_gov_scale": [1.5],
+        "r_gov_shift": [0.01],
+    }
+)
 r_tpi = np.ones(320) * r
-r_gov_tpi = np.ones(320) * r_gov3
-p4 = p3.update_specifications({"r_gov_scale": [0.5], "r_gov_shift": [0.03]})
+r_gov_tpi = (
+    np.ones(320) * r * p_tpi.r_gov_scale[:320] - p_tpi.r_gov_shift[:320]
+)
+DY_tpi = np.ones(320) * 0.01
+p4 = Specifications()
+p4.update_specifications(
+    {
+        "r_gov_scale": [1.5],
+        "r_gov_shift": [0.01],
+        "r_gov_DY": 0.01,
+        "r_gov_DY2": 0.001,
+    }
+)
+p4.r_gov_scale = [1.5]
+p4.r_gov_shift = [0.01]
+r_gov4 = (
+    r * p4.r_gov_scale[0]
+    - p4.r_gov_shift[0]
+    + p4.r_gov_DY * 0.5
+    + p4.r_gov_DY2 * 0.25
+)
 
 
 @pytest.mark.parametrize(
-    "r,p,method,r_gov_expected",
+    "r,p,DY_ratio,method,t,r_gov_expected",
     [
-        (r, p1, "SS", r_gov1),
-        (r, p2, "SS", r_gov2),
-        (r, p3, "SS", r_gov3),
-        (r, p3, "TPI", r_gov3),
+        (r, p1, 0, "scalar", -1, r_gov1),
+        (r, p2, 0, "scalar", -1, r_gov2),
+        (r, p3, 0, "scalar", -1, r_gov3),
+        (r_tpi, p_tpi, DY_tpi, "TPI", None, r_gov_tpi),
+        (r, p3, 0, "scalar", 0, r_gov3),
+        (r, p4, 0.5, "scalar", 0, r_gov4),
     ],
-    ids=["Scale only", "Scale and shift", "r_gov < 0", "TPI"],
+    ids=[
+        "Scale only",
+        "Scale and shift",
+        "r_gov < 0",
+        "TPI",
+        "scalar",
+        "DY params",
+    ],
 )
-def test_get_r_gov(r, p, method, r_gov_expected):
-    r_gov = fiscal.get_r_gov(r, p, method)
+def test_get_r_gov(r, p, DY_ratio, method, t, r_gov_expected):
+    r_gov = fiscal.get_r_gov(r, DY_ratio, p, method, t=t)
     assert np.allclose(r_gov, r_gov_expected)
 
 
