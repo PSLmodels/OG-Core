@@ -448,7 +448,7 @@ functions require time-path calculation.</p>
 <hr class="docutils" />
 <dl class="py function">
 <dt class="sig sig-object py" id="ogcore.fiscal.D_G_path">
-<span class="sig-prename descclassname"><span class="pre">ogcore.fiscal.</span></span><span class="sig-name descname"><span class="pre">D_G_path</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">r_gov</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dg_fixed_values</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogcore/fiscal.html#D_G_path"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogcore.fiscal.D_G_path" title="Link to this definition">#</a></dt>
+<span class="sig-prename descclassname"><span class="pre">ogcore.fiscal.</span></span><span class="sig-name descname"><span class="pre">D_G_path</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">r</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dg_fixed_values</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogcore/fiscal.html#D_G_path"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogcore.fiscal.D_G_path" title="Link to this definition">#</a></dt>
 <dd><p>Calculate the time paths of debt and government spending</p>
 <div class="math notranslate nohighlight">
 \[\begin{split}\begin{split}
@@ -678,16 +678,19 @@ outlays</p></li>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="ogcore.fiscal.get_r_gov">
-<span class="sig-prename descclassname"><span class="pre">ogcore.fiscal.</span></span><span class="sig-name descname"><span class="pre">get_r_gov</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">r</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">method</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogcore/fiscal.html#get_r_gov"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogcore.fiscal.get_r_gov" title="Link to this definition">#</a></dt>
+<span class="sig-prename descclassname"><span class="pre">ogcore.fiscal.</span></span><span class="sig-name descname"><span class="pre">get_r_gov</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">r</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">DY_ratio</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">method</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">t</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogcore/fiscal.html#get_r_gov"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogcore.fiscal.get_r_gov" title="Link to this definition">#</a></dt>
 <dd><p>Determine the interest rate on government debt</p>
 <div class="math notranslate nohighlight">
-\[r_{gov,t} = \max\{(1-\tau_{d,t}r_{t} - \mu_d, 0.0\}\]</div>
+\[r_{gov,t} = \max\{(1-\tau_{d,t}r_{t} - \mu_d + \beta_1 \frac{D_t}{Y_t} + \beta_2 \left(\frac{D_t}{Y_t}\right)^2, 0.0\}\]</div>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>r</strong> (<em>array_like</em>) – interest rate on private capital debt over the
 time path or in the steady state</p></li>
+<li><p><strong>DY_ratio</strong> (<em>array_like</em>) – ratio of government debt to GDP</p></li>
 <li><p><strong>p</strong> (<em>OG-Core Specifications object</em>) – model parameters</p></li>
+<li><p><strong>method</strong> (<em>str</em>) – either ‘scalar’ for one period or ‘TPI’ for transition path</p></li>
+<li><p><strong>t</strong> (<em>int</em>) – time period index, used only if method is ‘scalar’</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>

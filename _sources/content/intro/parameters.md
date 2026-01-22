@@ -702,6 +702,20 @@ _Valid Range:_ min = -0.3 and max = 0.3
 _Out-of-Range Action:_ error  
 
 
+####  `r_gov_DY`  
+_Description:_ Parameter summarizing the linear effect of the debt to GDP ratio on the government interest rate.  
+_Value Type:_ float  
+_Valid Range:_ min = -0.3 and max = 0.3  
+_Out-of-Range Action:_ error  
+
+
+####  `r_gov_DY2`  
+_Description:_ Parameter summarizing the quadratic effect of the debt to GDP ratio on the government interest rate.  
+_Value Type:_ float  
+_Valid Range:_ min = -0.3 and max = 0.3  
+_Out-of-Range Action:_ error  
+
+
 ## Open Economy Parameters
 
 ####  `world_int_rate_annual`  

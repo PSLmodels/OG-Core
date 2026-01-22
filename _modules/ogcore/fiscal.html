@@ -388,7 +388,7 @@
 
 <div class="viewcode-block" id="D_G_path">
 <a class="viewcode-back" href="../../content/api/fiscal.html#ogcore.fiscal.D_G_path">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">D_G_path</span><span class="p">(</span><span class="n">r_gov</span><span class="p">,</span> <span class="n">dg_fixed_values</span><span class="p">,</span> <span class="n">p</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">D_G_path</span><span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="n">dg_fixed_values</span><span class="p">,</span> <span class="n">p</span><span class="p">):</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Calculate the time paths of debt and government spending</span>
 
@@ -458,11 +458,14 @@
         <span class="n">G</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">alpha_G</span><span class="p">[:</span> <span class="n">p</span><span class="o">.</span><span class="n">T</span><span class="p">]</span> <span class="o">*</span> <span class="n">Y</span><span class="p">[:</span> <span class="n">p</span><span class="o">.</span><span class="n">T</span><span class="p">]</span>
         <span class="n">D_f</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">T</span><span class="p">)</span>
         <span class="n">D_d</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">T</span><span class="p">)</span>
+        <span class="n">r_gov</span> <span class="o">=</span> <span class="n">get_r_gov</span><span class="p">(</span><span class="n">r</span><span class="p">[:</span> <span class="n">p</span><span class="o">.</span><span class="n">T</span><span class="p">],</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">T</span><span class="p">),</span> <span class="n">p</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s2">&quot;TPI&quot;</span><span class="p">)</span>
         <span class="n">new_borrowing</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">T</span><span class="p">)</span>
         <span class="n">debt_service</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">T</span><span class="p">)</span>
         <span class="n">new_borrowing_f</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">T</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="n">t</span> <span class="o">=</span> <span class="mi">1</span>
+        <span class="n">r_gov</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">r</span><span class="p">)</span>
+        <span class="n">r_gov</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">get_r_gov</span><span class="p">(</span><span class="n">r</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">D</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">/</span> <span class="n">Y</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">p</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s2">&quot;scalar&quot;</span><span class="p">,</span> <span class="n">t</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
         <span class="k">while</span> <span class="n">t</span> <span class="o">&lt;</span> <span class="n">p</span><span class="o">.</span><span class="n">T</span> <span class="o">-</span> <span class="mi">1</span><span class="p">:</span>
             <span class="n">D</span><span class="p">[</span><span class="n">t</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="mi">1</span> <span class="o">/</span> <span class="n">growth</span><span class="p">[</span><span class="n">t</span><span class="p">])</span> <span class="o">*</span> <span class="p">(</span>
                 <span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="n">r_gov</span><span class="p">[</span><span class="n">t</span> <span class="o">-</span> <span class="mi">1</span><span class="p">])</span> <span class="o">*</span> <span class="n">D</span><span class="p">[</span><span class="n">t</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span>
@@ -473,6 +476,7 @@
                 <span class="o">+</span> <span class="n">agg_pension_outlays</span><span class="p">[</span><span class="n">t</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span>
                 <span class="o">-</span> <span class="n">total_tax_revenue</span><span class="p">[</span><span class="n">t</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span>
             <span class="p">)</span>
+            <span class="n">r_gov</span><span class="p">[</span><span class="n">t</span><span class="p">]</span> <span class="o">=</span> <span class="n">get_r_gov</span><span class="p">(</span><span class="n">r</span><span class="p">[</span><span class="n">t</span><span class="p">],</span> <span class="n">D</span><span class="p">[</span><span class="n">t</span><span class="p">]</span> <span class="o">/</span> <span class="n">Y</span><span class="p">[</span><span class="n">t</span><span class="p">],</span> <span class="n">p</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s2">&quot;scalar&quot;</span><span class="p">,</span> <span class="n">t</span><span class="o">=</span><span class="n">t</span><span class="p">)</span>
             <span class="k">if</span> <span class="p">(</span><span class="n">t</span> <span class="o">&gt;=</span> <span class="n">p</span><span class="o">.</span><span class="n">tG1</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="n">t</span> <span class="o">&lt;</span> <span class="n">p</span><span class="o">.</span><span class="n">tG2</span><span class="p">):</span>
                 <span class="n">G</span><span class="p">[</span><span class="n">t</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
                     <span class="n">growth</span><span class="p">[</span><span class="n">t</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span>
@@ -508,6 +512,7 @@
             <span class="o">+</span> <span class="n">agg_pension_outlays</span><span class="p">[</span><span class="n">t</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span>
             <span class="o">-</span> <span class="n">total_tax_revenue</span><span class="p">[</span><span class="n">t</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span>
         <span class="p">)</span>
+        <span class="n">r_gov</span><span class="p">[</span><span class="n">t</span><span class="p">]</span> <span class="o">=</span> <span class="n">get_r_gov</span><span class="p">(</span><span class="n">r</span><span class="p">[</span><span class="n">t</span><span class="p">],</span> <span class="n">D</span><span class="p">[</span><span class="n">t</span><span class="p">]</span> <span class="o">/</span> <span class="n">Y</span><span class="p">[</span><span class="n">t</span><span class="p">],</span> <span class="n">p</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s2">&quot;scalar&quot;</span><span class="p">,</span> <span class="n">t</span><span class="o">=</span><span class="n">t</span><span class="p">)</span>
         <span class="n">G</span><span class="p">[</span><span class="n">t</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
             <span class="n">growth</span><span class="p">[</span><span class="n">t</span><span class="p">]</span> <span class="o">*</span> <span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">debt_ratio_ss</span> <span class="o">*</span> <span class="n">Y</span><span class="p">[</span><span class="n">t</span><span class="p">])</span>
             <span class="o">-</span> <span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="n">r_gov</span><span class="p">[</span><span class="n">t</span><span class="p">])</span> <span class="o">*</span> <span class="n">D</span><span class="p">[</span><span class="n">t</span><span class="p">]</span>
@@ -553,6 +558,7 @@
         <span class="n">G</span><span class="p">,</span>
         <span class="n">D_d</span><span class="p">,</span>
         <span class="n">D_f</span><span class="p">[:</span> <span class="n">p</span><span class="o">.</span><span class="n">T</span><span class="p">],</span>
+        <span class="n">r_gov</span><span class="p">[:</span> <span class="n">p</span><span class="o">.</span><span class="n">T</span><span class="p">],</span>
         <span class="n">new_borrowing</span><span class="p">,</span>
         <span class="n">debt_service</span><span class="p">,</span>
         <span class="n">new_borrowing_f</span><span class="p">,</span>
@@ -736,27 +742,42 @@
 
 <div class="viewcode-block" id="get_r_gov">
 <a class="viewcode-back" href="../../content/api/fiscal.html#ogcore.fiscal.get_r_gov">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">get_r_gov</span><span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">method</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">get_r_gov</span><span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="n">DY_ratio</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">method</span><span class="p">,</span> <span class="n">t</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Determine the interest rate on government debt</span>
 
 <span class="sd">    .. math::</span>
-<span class="sd">        r_{gov,t} = \max\{(1-\tau_{d,t}r_{t} - \mu_d, 0.0\}</span>
+<span class="sd">        r_{gov,t} = \max\{(1-\tau_{d,t}r_{t} - \mu_d + \beta_1 \frac{D_t}{Y_t} + \beta_2 \left(\frac{D_t}{Y_t}\right)^2, 0.0\}</span>
 
 <span class="sd">    Args:</span>
 <span class="sd">        r (array_like): interest rate on private capital debt over the</span>
 <span class="sd">            time path or in the steady state</span>
+<span class="sd">        DY_ratio (array_like): ratio of government debt to GDP</span>
 <span class="sd">        p (OG-Core Specifications object): model parameters</span>
+<span class="sd">        method (str): either &#39;scalar&#39; for one period or &#39;TPI&#39; for transition path</span>
+<span class="sd">        t (int): time period index, used only if method is &#39;scalar&#39;</span>
 
 <span class="sd">    Returns:</span>
 <span class="sd">        r_gov (array_like): interest rate on government debt over the</span>
 <span class="sd">            time path or in the steady-state</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">if</span> <span class="n">method</span> <span class="o">==</span> <span class="s2">&quot;SS&quot;</span><span class="p">:</span>
-        <span class="n">r_gov</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">maximum</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">r_gov_scale</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="n">r</span> <span class="o">-</span> <span class="n">p</span><span class="o">.</span><span class="n">r_gov_shift</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="mf">0.00</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">method</span> <span class="o">==</span> <span class="s2">&quot;scalar&quot;</span><span class="p">:</span>
+        <span class="n">r_gov</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">maximum</span><span class="p">(</span>
+            <span class="n">p</span><span class="o">.</span><span class="n">r_gov_scale</span><span class="p">[</span><span class="n">t</span><span class="p">]</span> <span class="o">*</span> <span class="n">r</span>
+            <span class="o">-</span> <span class="n">p</span><span class="o">.</span><span class="n">r_gov_shift</span><span class="p">[</span><span class="n">t</span><span class="p">]</span>
+            <span class="o">+</span> <span class="n">p</span><span class="o">.</span><span class="n">r_gov_DY</span> <span class="o">*</span> <span class="n">DY_ratio</span>
+            <span class="o">+</span> <span class="n">p</span><span class="o">.</span><span class="n">r_gov_DY2</span> <span class="o">*</span> <span class="n">DY_ratio</span><span class="o">**</span><span class="mi">2</span><span class="p">,</span>
+            <span class="mf">0.00</span><span class="p">,</span>
+        <span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="n">r_gov</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">maximum</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">r_gov_scale</span> <span class="o">*</span> <span class="n">r</span> <span class="o">-</span> <span class="n">p</span><span class="o">.</span><span class="n">r_gov_shift</span><span class="p">,</span> <span class="mf">0.00</span><span class="p">)</span>
+        <span class="n">r_gov</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">maximum</span><span class="p">(</span>
+            <span class="n">p</span><span class="o">.</span><span class="n">r_gov_scale</span><span class="p">[:</span> <span class="n">p</span><span class="o">.</span><span class="n">T</span><span class="p">]</span> <span class="o">*</span> <span class="n">r</span><span class="p">[:</span> <span class="n">p</span><span class="o">.</span><span class="n">T</span><span class="p">]</span>
+            <span class="o">-</span> <span class="n">p</span><span class="o">.</span><span class="n">r_gov_shift</span><span class="p">[:</span> <span class="n">p</span><span class="o">.</span><span class="n">T</span><span class="p">]</span>
+            <span class="o">+</span> <span class="n">p</span><span class="o">.</span><span class="n">r_gov_DY</span> <span class="o">*</span> <span class="n">DY_ratio</span><span class="p">[:</span> <span class="n">p</span><span class="o">.</span><span class="n">T</span><span class="p">]</span>
+            <span class="o">+</span> <span class="n">p</span><span class="o">.</span><span class="n">r_gov_DY2</span> <span class="o">*</span> <span class="n">DY_ratio</span><span class="p">[:</span> <span class="n">p</span><span class="o">.</span><span class="n">T</span><span class="p">]</span> <span class="o">**</span> <span class="mi">2</span><span class="p">,</span>
+            <span class="mf">0.00</span><span class="p">,</span>
+        <span class="p">)</span>
 
     <span class="k">return</span> <span class="n">r_gov</span></div>
 
