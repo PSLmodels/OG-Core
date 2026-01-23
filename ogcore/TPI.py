@@ -1316,7 +1316,7 @@ def run_TPI(p, client=None):
         (1, p.S, 1),
     )
     income_tax_filer_3D = np.tile(
-        np.reshape(p.tax_filer_status[: p.T, :], (p.T, 1, p.J)),
+        np.reshape(p.income_tax_filer[: p.T, :], (p.T, 1, p.J)),
         (1, p.S, 1),
     )
     e_3D = p.e
