@@ -22,6 +22,7 @@ from ogcore import config
 import os
 import warnings
 import logging
+from distributed import wait
 
 if not SHOW_RUNTIME:
     warnings.simplefilter("ignore", RuntimeWarning)
@@ -819,8 +820,6 @@ def run_TPI(p, client=None):
                 futures.append(f)
             try:
                 # Wait for futures with timeout, then gather results
-                from distributed import wait
-
                 done, not_done = wait(futures, timeout=600)
                 if not_done:
                     # Some futures didn't complete in time
@@ -1315,6 +1314,10 @@ def run_TPI(p, client=None):
         ),
         (1, p.S, 1),
     )
+    income_tax_filer_3D = np.tile(
+        np.reshape(p.income_tax_filer[: p.T, :], (p.T, 1, p.J)),
+        (1, p.S, 1),
+    )
     e_3D = p.e
     mtry_path = tax.MTR_income(
         r_p_path[: p.T],
@@ -1327,6 +1330,7 @@ def run_TPI(p, client=None):
         etr_params_4D,
         mtry_params_4D,
         capital_noncompliance_rate_3D,
+        income_tax_filer_3D,
         p,
     )
     mtrx_path = tax.MTR_income(
@@ -1340,6 +1344,7 @@ def run_TPI(p, client=None):
         etr_params_4D,
         mtrx_params_4D,
         labor_noncompliance_rate_3D,
+        income_tax_filer_3D,
         p,
     )
     etr_path = tax.ETR_income(
@@ -1352,9 +1357,9 @@ def run_TPI(p, client=None):
         etr_params_4D,
         labor_noncompliance_rate_3D,
         capital_noncompliance_rate_3D,
+        income_tax_filer_3D,
         p,
     )
-
     # Note that implicitly in this computation is that immigrants'
     # wealth is all in the form of private capital
     I_d = aggr.get_I(

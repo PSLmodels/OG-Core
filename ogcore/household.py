@@ -480,15 +480,21 @@ def FOC_savings(
         beta = p.beta[j]
         if method == "SS":
             tax_noncompliance = p.capital_income_tax_noncompliance_rate[-1, j]
+            income_tax_filer = p.income_tax_filer[-1, j]
+            wealth_tax_filer = p.wealth_tax_filer[-1, j]
             e = np.squeeze(p.e[-1, :, j])
         elif method == "TPI_scalar":
             tax_noncompliance = p.capital_income_tax_noncompliance_rate[0, j]
+            income_tax_filer = p.income_tax_filer[0, j]
+            wealth_tax_filer = p.wealth_tax_filer[0, j]
             e = np.squeeze(p.e[0, :, j])
         else:
             length = r.shape[0]
             tax_noncompliance = p.capital_income_tax_noncompliance_rate[
                 t : t + length, j
             ]
+            income_tax_filer = p.income_tax_filer[t : t + length, j]
+            wealth_tax_filer = p.wealth_tax_filer[t : t + length, j]
             e_long = np.concatenate(
                 (
                     p.e,
@@ -502,15 +508,21 @@ def FOC_savings(
         beta = p.beta
         if method == "SS":
             tax_noncompliance = p.capital_income_tax_noncompliance_rate[-1, :]
+            income_tax_filer = p.income_tax_filer[-1, :]
+            wealth_tax_filer = p.wealth_tax_filer[-1, :]
             e = np.squeeze(p.e[-1, :, :])
         elif method == "TPI_scalar":
             tax_noncompliance = p.capital_income_tax_noncompliance_rate[0, :]
+            income_tax_filer = p.income_tax_filer[0, :]
+            wealth_tax_filer = p.wealth_tax_filer[0, :]
             e = np.squeeze(p.e[0, :, :])
         else:
             length = r.shape[0]
             tax_noncompliance = p.capital_income_tax_noncompliance_rate[
                 t : t + length, :
             ]
+            income_tax_filer = p.income_tax_filer[t : t + length, :]
+            wealth_tax_filer = p.wealth_tax_filer[t : t + length, :]
             e_long = np.concatenate(
                 (
                     p.e,
@@ -572,10 +584,11 @@ def FOC_savings(
                 etr_params,
                 mtry_params,
                 tax_noncompliance,
+                income_tax_filer,
                 p,
             )
         )
-        - tax.MTR_wealth(b, h_wealth, m_wealth, p_wealth)
+        - tax.MTR_wealth(b, h_wealth, m_wealth, p_wealth, wealth_tax_filer)
     )
     savings_ut = (
         rho * np.exp(-p.sigma * p.g_y) * chi_b * b_splus1 ** (-p.sigma)
@@ -685,14 +698,17 @@ def FOC_labor(
     if j is not None:
         if method == "SS":
             tax_noncompliance = p.labor_income_tax_noncompliance_rate[-1, j]
+            income_tax_filer = p.income_tax_filer[-1, j]
             e = np.squeeze(p.e[-1, :, j])
         elif method == "TPI_scalar":
             tax_noncompliance = p.labor_income_tax_noncompliance_rate[0, j]
+            income_tax_filer = p.income_tax_filer[0, j]
             e = np.squeeze(p.e[0, -1, j])
         else:
             tax_noncompliance = p.labor_income_tax_noncompliance_rate[
                 t : t + length, j
             ]
+            income_tax_filer = p.income_tax_filer[t : t + length, j]
             e_long = np.concatenate(
                 (
                     p.e,
@@ -704,14 +720,17 @@ def FOC_labor(
     else:
         if method == "SS":
             tax_noncompliance = p.labor_income_tax_noncompliance_rate[-1, :]
+            income_tax_filer = p.income_tax_filer[-1, :]
             e = np.squeeze(p.e[-1, :, :])
         elif method == "TPI_scalar":
             tax_noncompliance = p.labor_income_tax_noncompliance_rate[0, :]
+            income_tax_filer = p.income_tax_filer[0, :]
             e = np.squeeze(p.e[0, -1, :])
         else:
             tax_noncompliance = p.labor_income_tax_noncompliance_rate[
                 t : t + length, :
             ]
+            income_tax_filer = p.income_tax_filer[t : t + length, :]
             e_long = np.concatenate(
                 (
                     p.e,
@@ -761,6 +780,7 @@ def FOC_labor(
             etr_params,
             mtrx_params,
             tax_noncompliance,
+            income_tax_filer,
             p,
         )
     )

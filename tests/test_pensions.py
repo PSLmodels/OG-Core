@@ -13,6 +13,8 @@ new_param_values = {
     "lambdas": [1.0],
     "labor_income_tax_noncompliance_rate": [[0.0]],
     "capital_income_tax_noncompliance_rate": [[0.0]],
+    "income_tax_filer": [[1]],
+    "wealth_tax_filer": [[1]],
     "replacement_rate_adjust": [[1.0]],
     "J": 1,
     "T": 4,
