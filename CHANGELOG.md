@@ -5,7 +5,59 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.15.3] - 2025-01-24 12:00:00
 
+### Added
+
+- Two new parameters, `income_tax_filer` and `wealth_tax_filer`, that determine whether certain types `j` pay income or wealth taxes, respectively.  See PR [#1084](https://github.com/PSLmodels/OG-Core/pull/1084)
+
+## [0.15.2] - 2025-01-22 12:00:00
+
+### Added
+
+- Two new parameters, `r_gov_DY` and `r_gov_DY2`, that allow the government interest rate to be a function of the debt-to-GDP ratio.  See PR [#1037](https://github.com/PSLmodels/OG-Core/pull/1037)
+
+## [0.15.1] - 2026-01-19 12:00:00
+
+### Added
+
+- A new parameter `c_min` to the `Parameters` class that allows the user to specify minium consumption amounts by consumption good.  See PR [#1085](https://github.com/PSLmodels/OG-Core/pull/1085)
+
+## [0.15.0] - 2025-12-03 12:00:00
+
+### Added
+
+- A new parameter `baseline_theta` to the `Parameters` class that allows the user to specify whether to use the steady-state replacement rate parameters from the baseline solution in a reform run.  See PR [#1077](https://github.com/PSLmodels/OG-Core/pull/1077)
+
+## [0.14.14] - 2025-11-24 12:00:00
+
+### Added
+
+- Create `SS.SS_initial_guesses` function to allow more flexible initial guesses for steady state solution ((PR #1061)[https://github.com/PSLmodels/OG-Core/pull/1061])
+- Robust steady-state solution used for reform solution ((PR #1061)[https://github.com/PSLmodels/OG-Core/pull/1061])
+- Test of `SS.solve_for_j` function ((PR #1061)[https://github.com/PSLmodels/OG-Core/pull/1061])
+
+### Bug Fix
+- Fixes to deprecated API calls avoid many warnings during testing ((PR #1061)[https://github.com/PSLmodels/OG-Core/pull/1061])
+
+## [0.14.13] - 2025-11-21 12:00:00
+
+### Bug Fix
+
+- Fix calculation of consumption tax revenue with differentiated goods ((PR #1074)[https://github.com/PSLmodels/OG-Core/pull/1074])
+
+## [0.14.12] - 2025-11-07 12:00:00
+
+### Bug Fix
+
+- Use data for pre-time path population distribution (rather than inferring it) ([PR #1071](https://github.com/PSLmodels/OG-Core/pull/1071))
+
+## [0.14.11] - 2025-11-07 12:00:00
+
+### Added
+
+- Adds Ethiopia demographic data mapping ((PR #1063)[https://github.com/PSLmodels/OG-Core/pull/1063])
+-
 ## [0.14.10] - 2025-09-11 12:00:00
 
 ### Added
@@ -453,6 +505,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Any earlier versions of OG-USA can be found in the [`OG-Core`](https://github.com/PSLmodels/OG-Core) repository [release history](https://github.com/PSLmodels/OG-Core/releases) from [v.0.6.4](https://github.com/PSLmodels/OG-Core/releases/tag/v0.6.4) (Jul. 20, 2021) or earlier.
 
 
+[0.15.3]: https://github.com/PSLmodels/OG-Core/compare/v0.15.2...v0.15.3
+[0.15.2]: https://github.com/PSLmodels/OG-Core/compare/v0.15.1...v0.15.2
+[0.15.1]: https://github.com/PSLmodels/OG-Core/compare/v0.15.0...v0.15.1
+[0.15.0]: https://github.com/PSLmodels/OG-Core/compare/v0.14.14...v0.15.0
+[0.14.14]: https://github.com/PSLmodels/OG-Core/compare/v0.14.13...v0.14.14
+[0.14.13]: https://github.com/PSLmodels/OG-Core/compare/v0.14.12...v0.14.13
+[0.14.12]: https://github.com/PSLmodels/OG-Core/compare/v0.14.11...v0.14.12
+[0.14.11]: https://github.com/PSLmodels/OG-Core/compare/v0.14.10...v0.14.11
 [0.14.10]: https://github.com/PSLmodels/OG-Core/compare/v0.14.9...v0.14.10
 [0.14.9]: https://github.com/PSLmodels/OG-Core/compare/v0.14.8...v0.14.9
 [0.14.8]: https://github.com/PSLmodels/OG-Core/compare/v0.14.7...v0.14.8

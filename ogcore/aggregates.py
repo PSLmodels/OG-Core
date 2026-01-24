@@ -409,8 +409,7 @@ def revenue(
         wealth_tax_revenue = (w_tax_liab * pop_weights).sum()
         bequest_tax_revenue = (bq_tax_liab * pop_weights).sum()
         cons_tax_revenue = (
-            ((p.tau_c[-1, :] * p_i).reshape(p.I, 1, 1) * c).sum(axis=0)
-            * pop_weights
+            tax.cons_tax_liab(c, p_i, p, method) * pop_weights
         ).sum()
         payroll_tax_revenue = p.frac_tax_payroll[-1] * iit_payroll_tax_revenue
     elif method == "TPI":
@@ -429,14 +428,7 @@ def revenue(
         wealth_tax_revenue = (w_tax_liab * pop_weights).sum(1).sum(1)
         bequest_tax_revenue = (bq_tax_liab * pop_weights).sum(1).sum(1)
         cons_tax_revenue = (
-            (
-                ((p.tau_c[: p.T, :] * p_i).reshape(p.T, p.I, 1, 1) * c).sum(
-                    axis=1
-                )
-                * pop_weights
-            )
-            .sum(1)
-            .sum(1)
+            (tax.cons_tax_liab(c, p_i, p, method) * pop_weights).sum(1).sum(1)
         )
         payroll_tax_revenue = (
             p.frac_tax_payroll[: p.T] * iit_payroll_tax_revenue

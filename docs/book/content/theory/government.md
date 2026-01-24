@@ -542,7 +542,7 @@ Total pension spending is the sum of the pension payments to each household in t
 (SecUBI_NonGrowthAdj)=
 ###### UBI specification not adjusted for economic growth
 
-  A non-growth adjusted UBI (`ubi_growthadj = False`) is one in which the initial nonstationary nominal-valued $t=0$ UBI matrix $ubi^{\$}_{j,s,t=0}$ does not grow, while the economy's long-run growth rate is $g_y$ for the most common parameterization is positive ($g_y>0$).
+  A non-growth adjusted UBI (`ubi_growthadj = False`) is one in which the initial nonstationary nominal-valued $t=0$ UBI matrix $ubi^{nom}_{j,s,t=0}$ does not grow, while the economy's long-run growth rate is $g_y$ for the most common parameterization is positive ($g_y>0$).
 
   ```{math}
   :label: EqUBIubi_nom_NonGrwAdj_jst
@@ -667,14 +667,14 @@ Note that the budget closure rule (described in Section ref{`SecUnbalGBCcloseRul
 (SecRateWedge)=
 ## Interest Rate on Government Debt and Household Savings
 
-  Despite the model having no aggregate risk, it may be helpful to build in an interest rate differential between the rate of return on private capital and the interest rate on government debt. Doing so helps to add realism by including a risk premium. `OG-Core` allows users to set an exogenous wedge between these two rates. The interest rate on government debt,
+  Despite the model having no aggregate risk, it may be helpful to build in an interest rate differential between the rate of return on private capital and the interest rate on government debt. Doing so helps to add realism by including a risk premium. `OG-Core` allows users to set an exogenous wedge between these two rates. `OG-Core` also allows for the risk premium on debt to be a quadratic function of the debt-to-GDP ratio. The interest rate on government debt is given by:
 
   ```{math}
     :label: EqUnbalGBC_rate_wedge
-    r_{gov, t} = (1 - \tau_{d, t})r_{t} - \mu_{d}
+    r_{gov, t} = (1 - \tau_{d, t})r_{t} - \mu_{d} + \beta_{1}\frac{D_t}{Y_t} + \beta_{2}\left(\frac{D_t}{Y_t}\right)^2
   ```
 
-  where $r_t$ is the marginal product of capital faced by firms. The two parameters, $\tau_{d,t}$ and $\mu_{d,t}$ can be used to allow for a government interest rate that is a percentage hair cut from the market rate or a government interest rate with a constant risk premium.
+  where $r_t$ is the marginal product of capital faced by firms. The two parameters, $\tau_{d,t}$ and $\mu_{d,t}$ can be used to allow for a government interest rate that is a percentage hair cut from the market rate or a government interest rate with a constant risk premium.  The parameters $\beta_1$ and $\beta_2$ can be used to allow for a quadratic risk premium on government debt that is a function of the debt-to-GDP ratio.
 
 
 (SecUnbalGBCcloseRule)=

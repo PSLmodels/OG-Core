@@ -333,7 +333,9 @@
                 "value": false
             }
         ],
-        "validators": {}
+        "validators": {
+           "choice": {"choices": [true, false]}
+            }
     },
     "beta_annual": {
         "title": "Annual rate of time preference for households",
@@ -399,6 +401,26 @@
             "range": {
                 "min": 0.0,
                 "max": 1.0
+            }
+        }
+    },
+    "c_min": {
+        "title": "Minimum consumption levels for each good in the composite consumption good",
+        "description": "Minimum consumption levels for each good in the composite consumption good.",
+        "section_1": "Household Parameters",
+        "section_2": "Behavioral Assumptions",
+        "notes": "Enter this value in model units.",
+        "type": "float",
+        "number_dims": 1,
+        "value": [
+            {
+                "value": [0.0]
+            }
+        ],
+        "validators": {
+            "range": {
+                "min": 0.0,
+                "max": 100.0
             }
         }
     },
@@ -979,6 +1001,42 @@
         "value": [
             {
                 "value": [0.02]
+            }
+        ],
+        "validators": {
+            "range": {
+                "min": -0.3,
+                "max": 0.3
+            }
+        }
+    },
+    "r_gov_DY": {
+        "title": "Linear effect of debt to GDP ratio on government interest rate",
+        "section_1": "Fiscal Policy Parameters",
+        "description": "Parameter summarizing the linear effect of the debt to GDP ratio on the government interest rate.",
+        "notes": "",
+        "type": "float",
+        "value": [
+            {
+                "value": 0.0
+            }
+        ],
+        "validators": {
+            "range": {
+                "min": -0.3,
+                "max": 0.3
+            }
+        }
+    },
+    "r_gov_DY2": {
+        "title": "Quadratic effect of debt to GDP ratio on government interest rate",
+        "section_1": "Fiscal Policy Parameters",
+        "description": "Parameter summarizing the quadratic effect of the debt to GDP ratio on the government interest rate.",
+        "notes": "",
+        "type": "float",
+        "value": [
+            {
+                "value": 0.0
             }
         ],
         "validators": {
@@ -3686,7 +3744,9 @@
                 "value": false
             }
         ],
-        "validators": {}
+        "validators": {
+           "choice": {"choices": [true, false]}
+            }
     },
     "constant_rates": {
         "title": "Flag to use linear tax functions",
@@ -3700,7 +3760,9 @@
                 "value": false
             }
         ],
-        "validators": {}
+        "validators": {
+           "choice": {"choices": [true, false]}
+            }
     },
     "zero_taxes": {
         "title": "Flag to run model without any individual income taxes",
@@ -3714,7 +3776,9 @@
                 "value": false
             }
         ],
-        "validators": {}
+        "validators": {
+           "choice": {"choices": [true, false]}
+            }
     },
     "analytical_mtrs": {
         "title": "Flag to use analytically derived marginal tax rates in tax functions",
@@ -3728,7 +3792,9 @@
                 "value": false
             }
         ],
-        "validators": {}
+        "validators": {
+           "choice": {"choices": [true, false]}
+            }
     },
     "age_specific": {
         "title": "Flag to use analytically derived marginal tax rates in tax functions",
@@ -3742,7 +3808,9 @@
                 "value": true
             }
         ],
-        "validators": {}
+        "validators": {
+           "choice": {"choices": [true, false]}
+            }
     },
     "retirement_age": {
         "title": "Age at which agents can collect Social Security benefits",
@@ -4119,6 +4187,22 @@
             }
         }
     },
+    "baseline_theta": {
+        "title": "Flag for use in reform simulations to keep Social Security system replacement rate constant between baseline and reform runs",
+        "description": "Flag for use in reform simulations to keep Social Security system replacement rate constant between baseline and reform runs.",
+        "section_1": "Fiscal Policy Parameters",
+        "section_2": "Government Pension Parameters",
+        "notes": "",
+        "type": "bool",
+        "value": [
+            {
+                "value": false
+            }
+        ],
+        "validators": {
+           "choice": {"choices": [true, false]}
+            }
+    },
     "start_year": {
         "title": "Calendar year in which to start model analysis",
         "description": "Calendar year in which to start model analysis.",
@@ -4210,6 +4294,62 @@
                     0.0,
                     0.0,
                     0.0
+                ]]
+            }
+        ],
+        "validators": {
+            "range": {
+                "min": 0.0,
+                "max": 1.0
+            }
+        }
+    },
+    "income_tax_filer": {
+        "title": "Income tax filer indicator",
+        "description": "Binary indicator for whether lifetime income type j is subject to income taxes. Non-filers (tax_filer[j]=0) are not subject to income taxes but still pay payroll taxes.",
+        "section_1": "Fiscal Policy Parameters",
+        "section_2": "Taxes",
+        "notes": "Specified by time T and lifetime income group J. Defaults to 1.0 (all groups file). Can be set to values between 0 and 1 to represent the share of group j that files.",
+        "type": "float",
+        "number_dims": 2,
+        "value": [
+            {
+                "value": [[
+                    1.0,
+                    1.0,
+                    1.0,
+                    1.0,
+                    1.0,
+                    1.0,
+                    1.0
+                ]]
+            }
+        ],
+        "validators": {
+            "range": {
+                "min": 0.0,
+                "max": 1.0
+            }
+        }
+    },
+        "wealth_tax_filer": {
+        "title": "Wealth tax filer indicator",
+        "description": "Binary indicator for whether lifetime income type j is subject to wealth taxes. Non-filers (wealth_tax_filer[j]=0) are not subject to wealth taxes but still pay payroll taxes.",
+        "section_1": "Fiscal Policy Parameters",
+        "section_2": "Taxes",
+        "notes": "Specified by time T and lifetime income group J. Defaults to 1.0 (all groups file). Can be set to values between 0 and 1 to represent the share of group j that files.",
+        "type": "float",
+        "number_dims": 2,
+        "value": [
+            {
+                "value": [[
+                    1.0,
+                    1.0,
+                    1.0,
+                    1.0,
+                    1.0,
+                    1.0,
+                    1.0
                 ]]
             }
         ],
@@ -4395,7 +4535,9 @@
                 "value": true
             }
         ],
-        "validators": {}
+        "validators": {
+           "choice": {"choices": [true, false]}
+            }
     },
     "initial_guess_r_SS": {
         "title": "Initial guess of r for the SS solution",

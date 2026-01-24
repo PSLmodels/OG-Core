@@ -188,6 +188,6 @@ def estimation(frisch, l_tilde):
         bounds=bnds_MU,
         tol=1e-15,
     )
-    (b_MU_til, upsilon_MU_til) = ellipse_MU_params_til.x
+    b_MU_til, upsilon_MU_til = ellipse_MU_params_til.x
 
     return b_MU_til, upsilon_MU_til

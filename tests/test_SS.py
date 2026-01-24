@@ -95,7 +95,7 @@ def dask_client():
 input_tuple = utils.safe_read_pickle(
     os.path.join(CUR_PATH, "test_io_data", "SS_fsolve_inputs.pkl")
 )
-(bssmat, nssmat, TR_ss, factor_ss) = input_tuple
+bssmat, nssmat, TR_ss, factor_ss = input_tuple
 # Parameterize the baseline, closed econ case
 p1 = Specifications(baseline=True)
 p1.update_specifications({"zeta_D": [0.0], "zeta_K": [0.0]})
@@ -254,6 +254,7 @@ p7.update_specifications(
         "I": 4,
         "io_matrix": np.eye(4),
         "alpha_c": [0.1, 0.5, 0.3, 0.1],
+        "c_min": [0.0, 0.0, 0.0, 0.0],
         "epsilon": [1.0, 1.0, 1.0, 1.0],
         "gamma": [0.3, 0.4, 0.35, 0.45],
         "gamma_g": [0.0, 0.0, 0.0, 0.0],
@@ -313,7 +314,7 @@ def test_SS_fsolve(tmpdir, guesses, args, expected):
     ensure that output returned matches what it has been before.
     """
     # args =
-    (bssmat, nssmat, TR_ss, Ig_baseline, factor_ss, p, client) = args
+    bssmat, nssmat, TR_ss, Ig_baseline, factor_ss, p, client = args
     p.baseline_dir = tmpdir
     p.output_base = tmpdir
 
@@ -520,6 +521,32 @@ def test_SS_solver_extra(baseline, param_updates, filename, dask_client):
         )
 
 
+def test_solve_for_j():
+    """
+    Test SS.solve_for_j function. Provide inputs to function and ensure
+    that solution matches what is expected.
+    """
+    p = Specifications()
+    b_guess = np.ones((p.S)) * 0.07
+    n_guess = np.ones((p.S)) * 0.35 * p.ltilde
+    guesses = np.hstack((b_guess, n_guess))
+    r_p = 0.04
+    w = 1.2
+    p_tilde = 1.0
+    p_i = 1.0
+    bq_j = 0.0002
+    rm_j = 0.005
+    tr_j = 0.1
+    ubi_j = 0.0
+    factor = 100000
+    j = 1
+    test_result = SS.solve_for_j(
+        guesses, r_p, w, p_tilde, p_i, bq_j, rm_j, tr_j, ubi_j, factor, j, p
+    )
+    expected_result = 0.15574086659957984
+    assert np.allclose(test_result.x[4], expected_result)
+
+
 param_updates1 = {"zeta_K": [1.0]}
 filename1 = "inner_loop_outputs_baseline_small_open.pkl"
 param_updates2 = {"budget_balance": True, "alpha_G": [0.0]}
@@ -535,6 +562,7 @@ param_updates7 = {
     "I": 4,
     "io_matrix": np.eye(4),
     "alpha_c": [0.1, 0.5, 0.3, 0.1],
+    "c_min": [0.0, 0.0, 0.0, 0.0],
     "epsilon": [1.0, 1.0, 1.0, 1.0],
     "gamma": [0.3, 0.4, 0.35, 0.45],
     "gamma_g": [0.0, 0.0, 0.0, 0.0],
@@ -553,6 +581,7 @@ param_updates8 = {
         ]
     ),
     "alpha_c": [0.1, 0.4, 0.3, 0.1, 0.1],
+    "c_min": [0.0, 0.0, 0.0, 0.0, 0.0],
     "epsilon": [1.0, 1.0, 1.0, 1.0],
     "gamma": [0.3, 0.4, 0.35, 0.45],
     "gamma_g": [0.0, 0.0, 0.0, 0.0],
@@ -1127,7 +1156,7 @@ def test_euler_equation_solver(input_tuple, ubi_j, p, expected):
     # Test SS.inner_loop function.  Provide inputs to function and
     # ensure that output returned matches what it has been before.
     guesses, r, w, bq, rm, tr, _, factor, j = input_tuple
-    args = (r, w, 1.0, bq, rm, tr, ubi_j, factor, j, p)
+    args = (r, w, 1.0, 1.0, bq, rm, tr, ubi_j, factor, j, p)
     test_list = SS.euler_equation_solver(guesses, *args)
     print(repr(test_list))
 
@@ -1154,7 +1183,7 @@ param_updates4 = {
     "initial_guess_factor_SS": 111267.90426318572,
 }
 filename4 = "run_SS_baseline_small_open_use_zeta.pkl"
-param_updates5 = {"initial_guess_r_SS": 0.035}
+param_updates5 = {"initial_guess_r_SS": 0.04}
 filename5 = "run_SS_reform.pkl"
 param_updates6 = {
     "use_zeta": True,
@@ -1209,6 +1238,7 @@ param_updates13 = {
     "gamma": [0.3, 0.35, 0.4],
     "gamma_g": [0.1, 0.05, 0.15],
     "alpha_c": [0.2, 0.4, 0.4],
+    "c_min": [0.0, 0.0, 0.0],
     "initial_guess_r_SS": 0.11,
     "initial_guess_TR_SS": 0.07,
     "alpha_I": [0.01],
@@ -1228,11 +1258,35 @@ param_updates14 = {
     "gamma": [0.3, 0.35, 0.4],
     "gamma_g": [0.0, 0.0, 0.0],
     "alpha_c": [0.2, 0.4, 0.4],
+    "c_min": [0.0, 0.0, 0.0],
     "initial_guess_r_SS": 0.11,
     "initial_guess_TR_SS": 0.07,
     "debt_ratio_ss": 1.5,
 }
 filename14 = "run_SS_baseline_M3_Kg_zero.pkl"
+param_updates15 = {
+    "zeta_K": [1.0],
+    "initial_guess_r_SS": 0.04,
+    "reform_use_baseline_solution": False,
+}
+param_updates16 = {
+    "start_year": 2023,
+    "budget_balance": True,
+    "frisch": 0.41,
+    "cit_rate": [[0.21, 0.25, 0.35]],
+    "M": 3,
+    "I": 3,
+    "io_matrix": np.eye(3),
+    "epsilon": [1.0, 1.0, 1.0],
+    "gamma": [0.3, 0.35, 0.4],
+    "gamma_g": [0.0, 0.0, 0.0],
+    "alpha_c": [0.2, 0.4, 0.4],
+    "c_min": [0.002, 0.004, 0.0004],
+    "initial_guess_r_SS": 0.11,
+    "initial_guess_TR_SS": 0.07,
+    "debt_ratio_ss": 1.5,
+}
+filename16 = "run_SS_baseline_M3_Kg_zero_cmin.pkl"
 
 
 # Note that changing the order in which these tests are run will cause
@@ -1250,11 +1304,13 @@ filename14 = "run_SS_baseline_M3_Kg_zero.pkl"
         (False, param_updates5, filename5),
         (False, param_updates6, filename6),
         (False, param_updates7, filename7),
-        # (False, param_updates8, filename8),
+        (False, param_updates8, filename8),
         (False, param_updates11, filename11),
         (True, param_updates12, filename12),
         (True, param_updates13, filename13),
         (True, param_updates14, filename14),
+        (False, param_updates15, filename3),
+        (True, param_updates16, filename16),
     ],
     ids=[
         "Baseline",
@@ -1266,11 +1322,13 @@ filename14 = "run_SS_baseline_M3_Kg_zero.pkl"
         "Reform",
         "Reform, use zeta",
         "Reform, small open",
-        # "Reform, small open use zeta",
+        "Reform, small open use zeta",
         "Reform, delta_tau=0",
         "Baseline, non-zero Kg",
         "Baseline, M=3, non-zero Kg",
         "Baseline, M=3, zero Kg",
+        "Reform, not use baseline solution",
+        "Baseline, M=3, zero Kg, cmin > 0",
     ],
 )
 @pytest.mark.local
@@ -1311,4 +1369,34 @@ def test_run_SS(tmpdir, baseline, param_updates, filename, dask_client):
         pass
     for k, v in expected_dict.items():
         print("Checking item = ", k)
-        assert np.allclose(test_dict[VAR_NAME_MAPPING[k]], v, atol=5e-04)
+        try:
+            assert np.allclose(test_dict[VAR_NAME_MAPPING[k]], v, atol=5e-04)
+        except KeyError:
+            print(f"Assertion failed for variable {k}")
+            assert np.allclose(test_dict[k], v, atol=5e-04)
+
+
+@pytest.mark.parametrize(
+    "use_zeta", [True, False], ids=["use_zeta=True", "use_zeta=False"]
+)
+def test_initial_guesses(tmpdir, use_zeta):
+    """
+    Test SS.SS_initial_guesses function. Provide inputs to function and ensure
+    that a tuple is returned with the correct number of elements.
+    """
+    baseline_dir = os.path.join(tmpdir, "OUTPUT_BASELINE")
+    p = Specifications(
+        output_base=baseline_dir,
+        baseline_dir=baseline_dir,
+        baseline=True,
+        num_workers=NUM_WORKERS,
+    )
+    p.use_zeta = use_zeta
+    guesses, n_guess, b_guess = SS.SS_initial_guesses(p)
+
+    if use_zeta:
+        assert len(guesses) == 7 + 1
+    else:
+        assert len(guesses) == 7 + p.J
+    assert n_guess.shape == (p.S, p.J)
+    assert b_guess.shape == (p.S, p.J)

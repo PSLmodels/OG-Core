@@ -5,7 +5,7 @@ from dask import delayed, compute
 import dask.multiprocessing
 from ogcore import tax, pensions, household, firm, utils, fiscal
 from ogcore import aggregates as aggr
-from ogcore.constants import SHOW_RUNTIME
+from ogcore.constants import SHOW_RUNTIME, DEV_FACTOR_LIST
 from ogcore import config
 import os
 import warnings
@@ -39,7 +39,7 @@ def euler_equation_solver(guesses, *args):
 
     Args:
         guesses (Numpy array): initial guesses for b and n, length 2S
-        args (tuple): tuple of arguments (r, w, p_tilde, bq, TR, factor, j, p)
+        args (tuple): tuple of arguments (r, w, p_tilde, p_i, bq, TR, factor, j, p)
         r (scalar): real interest rate
         w (scalar): real wage rate
         p_tilde (scalar): composite good price
@@ -54,7 +54,7 @@ def euler_equation_solver(guesses, *args):
         errros (Numpy array): errors from FOCs, length 2S
 
     """
-    (r, w, p_tilde, bq, rm, tr, ubi, factor, j, p) = args
+    r, w, p_tilde, p_i, bq, rm, tr, ubi, factor, j, p = args
 
     b_guess = np.array(guesses[: p.S])
     n_guess = np.array(guesses[p.S :])
@@ -67,6 +67,7 @@ def euler_equation_solver(guesses, *args):
         r,
         w,
         p_tilde,
+        p_i,
         b_s,
         b_splus1,
         n_guess,
@@ -88,6 +89,7 @@ def euler_equation_solver(guesses, *args):
         r,
         w,
         p_tilde,
+        p_i,
         b_s,
         b_splus1,
         n_guess,
@@ -143,6 +145,7 @@ def euler_equation_solver(guesses, *args):
         r,
         w,
         p_tilde,
+        p_i,
         b_s,
         b_splus1,
         n_guess,
@@ -150,6 +153,7 @@ def euler_equation_solver(guesses, *args):
         rm,
         taxes,
         p.e[-1, :, j],
+        p.tau_c[-1, :],
         p,
     )
     mask6 = cons < 0
@@ -164,6 +168,7 @@ def solve_for_j(
     r_p,
     w,
     p_tilde,
+    p_i,
     bq_j,
     rm_j,
     tr_j,
@@ -180,6 +185,7 @@ def solve_for_j(
         r_p (scalar): return on household investment portfolio
         w (scalar): real wage rate
         p_tilde (scalar): composite good price
+        p_i (Numpy array): prices for consumption good i
         bq_j (Numpy array): bequest amounts by age, length S
         rm_j (Numpy array): remittance amounts by age, length S
         tr_j (Numpy array): government transfer amount by age, length S
@@ -200,6 +206,7 @@ def solve_for_j(
             r_p,
             w,
             p_tilde,
+            p_i,
             bq_j,
             rm_j,
             tr_j,
@@ -283,8 +290,26 @@ def inner_loop(outer_loop_vars, p, client):
     # from dask.base import dask_sizeof
 
     if client:
-        # Scatter p only once and only if client not equal None
+
+        # Before scattering, temporarily remove unpicklable schema objects
+        schema_backup = {}
+        for attr in ["_defaults_schema", "_validator_schema", "sel"]:
+            if hasattr(p, attr):
+                schema_backup[attr] = getattr(p, attr)
+                try:
+                    delattr(p, attr)
+                except:
+                    pass
+
+        # Scatter the parameters
         scattered_p_future = client.scatter(p, broadcast=True)
+
+        # Restore the schema objects (they're not needed by workers anyway)
+        for attr, value in schema_backup.items():
+            try:
+                setattr(p, attr, value)
+            except:
+                pass
 
         # Launch in parallel with submit (or map)
         futures = []
@@ -296,6 +321,7 @@ def inner_loop(outer_loop_vars, p, client):
                 r_p,
                 w,
                 p_tilde,
+                p_i,
                 bq[:, j],
                 rm[:, j],
                 tr[:, j],
@@ -306,7 +332,38 @@ def inner_loop(outer_loop_vars, p, client):
             )
             futures.append(f)
 
-        results = client.gather(futures)
+        try:
+            results = client.gather(futures)
+        except Exception as e:
+            # Cancel remaining futures and fall back to serial computation
+            import logging
+
+            logging.warning(
+                f"Dask computation failed with error: {e}. "
+                "Falling back to serial computation."
+            )
+            for f in futures:
+                f.cancel()
+
+            # Re-run serially
+            results = []
+            for j in range(p.J):
+                guesses = np.append(bssmat[:, j], nssmat[:, j])
+                res = solve_for_j(
+                    guesses,
+                    r_p,
+                    w,
+                    p_tilde,
+                    p_i,
+                    bq[:, j],
+                    rm[:, j],
+                    tr[:, j],
+                    ubi[:, j],
+                    factor,
+                    j,
+                    p,  # pass the raw object directly
+                )
+                results.append(res)
 
     else:
         # Serial fallback (no dask client)
@@ -317,6 +374,7 @@ def inner_loop(outer_loop_vars, p, client):
                 r_p,
                 w,
                 p_tilde,
+                p_i,
                 bq[:, j],
                 rm[:, j],
                 tr[:, j],
@@ -368,6 +426,7 @@ def inner_loop(outer_loop_vars, p, client):
         r_p,
         w,
         p_tilde,
+        p_i,
         b_s,
         b_splus1,
         nssmat,
@@ -375,14 +434,17 @@ def inner_loop(outer_loop_vars, p, client):
         rm,
         net_tax,
         np.squeeze(p.e[-1, :, :]).reshape((p.S, p.J)),
+        p.tau_c[-1, :],
         p,
     )
-    c_i = household.get_ci(c_s, p_i, p_tilde, p.tau_c[-1, :], p.alpha_c)
+    c_i = household.get_ci(
+        c_s, p_i, p_tilde, p.tau_c[-1, :], p.alpha_c, p.c_min
+    )
     L = aggr.get_L(nssmat, p, "SS")
     B = aggr.get_B(bssmat, p, "SS", False)
 
     # Find gov't debt
-    r_gov = fiscal.get_r_gov(r, p, "SS")
+    r_gov = fiscal.get_r_gov(r, p.debt_ratio_ss, p, "scalar", t=-1)
     D, D_d, D_f, new_borrowing, _, new_borrowing_f = fiscal.get_D_ss(
         r_gov, Y, p
     )
@@ -400,7 +462,7 @@ def inner_loop(outer_loop_vars, p, client):
     C_vec = np.zeros(p.I)
     K_demand_open_vec = np.zeros(p.M)
     for i_ind in range(p.I):
-        C_vec[i_ind] = aggr.get_C(c_i[i_ind, :, :], p, "SS")
+        C_vec[i_ind] = aggr.get_C(c_i[i_ind, :, :], p, "SS").item()
     Y_vec = np.dot(p.io_matrix.T, C_vec)
     for m_ind in range(p.M - 1):
         KYrat_m = firm.get_KY_ratio(r, p_m, p, "SS", m_ind)
@@ -433,7 +495,7 @@ def inner_loop(outer_loop_vars, p, client):
         new_r = firm.get_r(Y_vec[-1], K_vec[-1], p_m, p, "SS", -1)
     new_w = firm.get_w(Y_vec[-1], L_vec[-1], p_m, p, "SS")
 
-    new_r_gov = fiscal.get_r_gov(new_r, p, "SS")
+    new_r_gov = fiscal.get_r_gov(new_r, p.debt_ratio_ss, p, "scalar", t=-1)
     # now get accurate measure of debt service cost
     (
         D,
@@ -503,6 +565,7 @@ def inner_loop(outer_loop_vars, p, client):
         new_r_p,
         new_w,
         new_p_tilde,
+        new_p_i,
         b_s,
         bssmat,
         nssmat,
@@ -510,6 +573,7 @@ def inner_loop(outer_loop_vars, p, client):
         new_rm,
         taxss,
         np.squeeze(p.e[-1, :, :]).reshape((p.S, p.J)),
+        p.tau_c[-1, :],
         p,
     )
     (
@@ -765,7 +829,7 @@ def SS_solver(
     K_vec_ss = new_K_vec
     L_vec_ss = new_L_vec
     Y_vec_ss = new_Y_vec
-    r_gov_ss = fiscal.get_r_gov(rss, p, "SS")
+    r_gov_ss = fiscal.get_r_gov(rss, p.debt_ratio_ss, p, "scalar", t=-1)
     p_m_ss = new_p_m
     p_i_ss = np.dot(p.io_matrix, p_m_ss)
     p_tilde_ss = aggr.get_ptilde(p_i_ss, p.tau_c[-1, :], p.alpha_c)
@@ -850,6 +914,10 @@ def SS_solver(
         np.reshape(p.labor_income_tax_noncompliance_rate[-1, :], (1, p.J)),
         (p.S, 1),
     )
+    income_tax_filer_2D = np.tile(
+        np.reshape(p.income_tax_filer[-1, :], (1, p.J)),
+        (p.S, 1),
+    )
     mtry_ss = tax.MTR_income(
         r_p_ss,
         wss,
@@ -861,6 +929,7 @@ def SS_solver(
         etr_params_3D,
         mtry_params_3D,
         capital_noncompliance_rate_2D,
+        income_tax_filer_2D,
         p,
     )
     mtrx_ss = tax.MTR_income(
@@ -874,6 +943,7 @@ def SS_solver(
         etr_params_3D,
         mtrx_params_3D,
         labor_noncompliance_rate_2D,
+        income_tax_filer_2D,
         p,
     )
     etr_ss = tax.ETR_income(
@@ -886,6 +956,7 @@ def SS_solver(
         etr_params_3D,
         labor_noncompliance_rate_2D,
         capital_noncompliance_rate_2D,
+        income_tax_filer_2D,
         p,
     )
 
@@ -942,6 +1013,7 @@ def SS_solver(
         r_p_ss,
         wss,
         p_tilde_ss,
+        p_i_ss,
         bssmat_s,
         bssmat_splus1,
         nssmat,
@@ -949,15 +1021,25 @@ def SS_solver(
         rmssmat,
         taxss,
         np.squeeze(p.e[-1, :, :]).reshape((p.S, p.J)),
+        p.tau_c[-1, :],
         p,
     )
-    sales_tax_ss = (p.tau_c[-1, :] * p_i_ss).reshape(p.I, 1, 1) * cssmat
+    c_i = household.get_ci(
+        cssmat,
+        p_i_ss,
+        p_tilde_ss,
+        p.tau_c[-1, :],
+        p.alpha_c,
+        p.c_min,
+        "SS",
+    )
+    sales_tax_ss = tax.cons_tax_liab(c_i, p_i_ss, p, "SS")
     yss_before_tax_mat = household.get_y(
         r_p_ss, wss, bssmat_s, nssmat, p, "SS"
     )
     Css = aggr.get_C(cssmat, p, "SS")
     c_i_ss_mat = household.get_ci(
-        cssmat, p_i_ss, p_tilde_ss, p.tau_c[-1, :], p.alpha_c
+        cssmat, p_i_ss, p_tilde_ss, p.tau_c[-1, :], p.alpha_c, p.c_min
     )
     C_vec_ss = np.zeros(p.I)
     for i_ind in range(
@@ -967,7 +1049,7 @@ def SS_solver(
             c_i_ss_mat[i_ind, :, :],
             p,
             "SS",
-        )
+        ).item()
 
     (
         total_tax_revenue,
@@ -1056,7 +1138,7 @@ def SS_solver(
         )
 
     if ENFORCE_SOLUTION_CHECKS and (max(np.absolute(RC)) > p.RC_SS):
-        logging.warning("Resource Constraint Difference:", RC)
+        logging.warning(f"Resource Constraint Difference: {RC}")
         err = "Steady state aggregate resource constraint not satisfied"
         raise RuntimeError(err)
 
@@ -1179,7 +1261,7 @@ def SS_fsolve(guesses, *args):
             implied outer loop variables
 
     """
-    (bssmat, nssmat, TR_ss, Ig_baseline, factor_ss, p, client) = args
+    bssmat, nssmat, TR_ss, Ig_baseline, factor_ss, p, client = args
 
     # Rename the inputs
     r_p = guesses[0]
@@ -1278,6 +1360,56 @@ def SS_fsolve(guesses, *args):
     return errors
 
 
+def SS_initial_guesses(p, b_val=0.0055, n_val=0.4, r_tr_scalars=[1.0, 1.0]):
+    """
+    Finds the initial guesses for b, n and for the steady state outer
+    loop variables.
+
+    Args:
+        p (OG-Core Specifications object): model parameters
+        b_val (float): initial guess value for savings
+        n_val (float): initial guess value for labor supply
+        r_tr_scalars (list): scalars to adjust initial guesses for r and TR
+
+    Returns:
+        guesses (list): initial guesses for outer loop variables
+        b_guess (ndarray): initial guess for savings
+        n_guess (ndarray): initial guess for labor supply
+    """
+    r_p_guess = r_tr_scalars[0] * p.initial_guess_r_SS
+    rguess = r_tr_scalars[0] * p.initial_guess_r_SS
+    wguess = firm.get_w_from_r(rguess, p, "SS")
+    p_m_guess = np.ones(p.M)
+    TRguess = r_tr_scalars[1] * p.initial_guess_TR_SS
+    Yguess = TRguess / p.alpha_T[-1]
+
+    # create guesses list
+    # Note that BQ is an vector of lenght J if use_zeta=False
+    if p.use_zeta:
+        b_guess = np.ones((p.S, p.J)) * b_val
+        n_guess = np.ones((p.S, p.J)) * n_val * p.ltilde
+        BQguess = 0.12231465279007188
+    else:
+        b_guess = (
+            np.ones((p.S, p.J)) * 0.07
+        )  # TODO: remove hardcode here and next line
+        n_guess = np.ones((p.S, p.J)) * 0.35 * p.ltilde
+        BQguess = aggr.get_BQ(rguess, b_guess, None, p, "SS", False)
+        # append factor guess if baseline
+    BQ_items = [BQguess] if p.use_zeta else list(BQguess)
+    guesses = (
+        [r_p_guess, rguess, wguess]
+        + list(p_m_guess)
+        + [Yguess]
+        + BQ_items
+        + [TRguess]
+    )
+    if p.baseline:
+        guesses.append(p.initial_guess_factor_SS)
+
+    return guesses, b_guess, n_guess
+
+
 def run_SS(p, client=None):
     """
     Solve for steady-state equilibrium of OG-Core.
@@ -1291,77 +1423,106 @@ def run_SS(p, client=None):
             results
 
     """
-    # Create list of deviation factors for initial guesses of r and TR
-    dev_factor_list = [
-        [1.00, 1.0],
-        [0.95, 1.0],
-        [1.05, 1.0],
-        [0.90, 1.0],
-        [1.10, 1.0],
-        [0.85, 1.0],
-        [1.15, 1.0],
-        [0.80, 1.0],
-        [1.20, 1.0],
-        [0.75, 1.0],
-        [1.25, 1.0],
-        [0.70, 1.0],
-        [1.30, 1.0],
-        [1.00, 0.2],
-        [0.95, 0.2],
-        [1.05, 0.2],
-        [0.90, 0.2],
-        [1.10, 0.2],
-        [0.85, 0.2],
-        [1.15, 0.2],
-        [0.80, 0.2],
-        [1.20, 0.2],
-        [0.75, 0.2],
-        [1.25, 0.2],
-        [0.70, 0.2],
-        [1.30, 0.2],
-        [1.00, 0.6],
-        [0.95, 0.6],
-        [1.05, 0.6],
-        [0.90, 0.6],
-        [1.10, 0.6],
-        [0.85, 0.6],
-        [1.15, 0.6],
-        [0.80, 0.6],
-        [1.20, 0.6],
-        [0.75, 0.6],
-        [1.25, 0.6],
-        [0.70, 0.6],
-        [1.30, 0.6],
-    ]
-
     # For initial guesses of w, r, TR, and factor, we use values that
     # are close to some steady state values.
-    if p.baseline:
+    # Use the baseline solution to get starting values for the reform
+    use_new_guesses = False  # initialize this flag, switches to true
+    # if baseline solution not work for reform
+    if p.baseline is False:
+        baseline_ss_path = os.path.join(p.baseline_dir, "SS", "SS_vars.pkl")
+        ss_solutions = utils.safe_read_pickle(baseline_ss_path)
+    if p.baseline is False and p.reform_use_baseline_solution:
+        # use baseline solution as starting values if dimensions match
+        try:
+            if ss_solutions["b_sp1"].shape == (
+                p.S,
+                p.J,
+            ) and np.squeeze(
+                ss_solutions["Y_m"].shape
+            ) == (p.M):
+                logging.info("Using previous solutions for SS")
+                (
+                    b_guess,
+                    n_guess,
+                    r_p_guess,
+                    rguess,
+                    wguess,
+                    p_m_guess,
+                    BQguess,
+                    TRguess,
+                    Yguess,
+                    factor_ss,
+                ) = (
+                    ss_solutions["b_sp1"],
+                    ss_solutions["n"],
+                    float(ss_solutions["r_p"]),
+                    float(ss_solutions["r"]),
+                    float(ss_solutions["w"]),
+                    ss_solutions["p_m"],
+                    ss_solutions["BQ"],
+                    float(ss_solutions["TR"]),
+                    float(ss_solutions["Y"]),
+                    ss_solutions["factor"],
+                )
+                # set new attribute of parameters for SS theta
+                p.SS_theta = ss_solutions["theta"]
+                use_new_guesses = False
+                if p.baseline_spending:
+                    TR_baseline = TRguess
+                    Ig_baseline = ss_solutions["I_g"]
+                else:
+                    TR_baseline = None
+                    Ig_baseline = None
+                BQ_items = [BQguess] if p.use_zeta else list(BQguess)
+                guesses = (
+                    [r_p_guess, rguess, wguess]
+                    + list(p_m_guess)
+                    + [Yguess]
+                    + BQ_items
+                    + [TRguess]
+                )
+                # Now solve for the steady state of the reform
+                ss_params = (
+                    b_guess,
+                    n_guess,
+                    TR_baseline,
+                    Ig_baseline,
+                    factor_ss,
+                    p,
+                    client,
+                )
+
+                # Solve for steady state using root finder
+                sol = opt.root(
+                    SS_fsolve,
+                    guesses,
+                    args=ss_params,
+                    method=p.SS_root_method,
+                    tol=p.mindist_SS,
+                )
+            else:
+                logging.warning(
+                    "Dimensions of previous solutions for SS do not match"
+                )
+                use_new_guesses = True
+        except KeyError:
+            logging.warning("KeyError: previous solutions for SS not found")
+            use_new_guesses = True
+    if p.baseline or not p.reform_use_baseline_solution or use_new_guesses:
         # Loop over initial guesses of r and TR until find a solution or until have
         # gone through all guesses. This should usually solve in the first guess
         SS_solved = False
         k = 0
-        while not SS_solved and k < len(dev_factor_list) - 1:
-            for k, v in enumerate(dev_factor_list):
+        while not SS_solved and k < len(DEV_FACTOR_LIST) - 1:
+            for k, v in enumerate(DEV_FACTOR_LIST):
                 logging.info(
                     f"SS using initial guess factors for r and TR of "
                     + f"{v[0]} and {v[1]} respectively."
                 )
-                r_p_guess = v[0] * p.initial_guess_r_SS
-                rguess = v[0] * p.initial_guess_r_SS
-                if p.use_zeta:
-                    b_guess = np.ones((p.S, p.J)) * 0.0055
-                    n_guess = np.ones((p.S, p.J)) * 0.4 * p.ltilde
-                else:
-                    b_guess = np.ones((p.S, p.J)) * 0.07
-                    n_guess = np.ones((p.S, p.J)) * 0.35 * p.ltilde
-                wguess = firm.get_w_from_r(rguess, p, "SS")
-                p_m_guess = np.ones(p.M)
-                TRguess = v[1] * p.initial_guess_TR_SS
-                Yguess = TRguess / p.alpha_T[-1]
-                factorguess = p.initial_guess_factor_SS
-                BQguess = aggr.get_BQ(rguess, b_guess, None, p, "SS", False)
-                ss_params_baseline = (
+                guesses, b_guess, n_guess = SS_initial_guesses(
+                    p, r_tr_scalars=v
+                )
+                ss_params = (
                     b_guess,
                     n_guess,
                     None,
@@ -1370,244 +1531,90 @@ def run_SS(p, client=None):
                     p,
                     client,
                 )
-                if p.use_zeta:
-                    BQguess = 0.12231465279007188
-                    guesses = (
-                        [r_p_guess, rguess, wguess]
-                        + list(p_m_guess)
-                        + [Yguess, BQguess, TRguess, factorguess]
-                    )
+                if p.baseline:
+                    factor_ss = None
                 else:
-                    guesses = (
-                        [r_p_guess, rguess, wguess]
-                        + list(p_m_guess)
-                        + [Yguess]
-                        + list(BQguess)
-                        + [TRguess, factorguess]
-                    )
+                    factor_ss = ss_solutions[
+                        "factor"
+                    ]  # don't guess factor, use baseline
+                    # set new attribute of parameters for SS theta
+                    p.SS_theta = ss_solutions["theta"]
+                if p.baseline_spending:
+                    TR_baseline = ss_solutions["TR"]
+                    Ig_baseline = ss_solutions["I_g"]
+                else:
+                    TR_baseline = None
+                    Ig_baseline = None
+                ss_params = (
+                    b_guess,
+                    n_guess,
+                    TR_baseline,
+                    Ig_baseline,
+                    factor_ss,
+                    p,
+                    client,
+                )
+                # Solve for steady state using root finder
                 sol = opt.root(
                     SS_fsolve,
                     guesses,
-                    args=ss_params_baseline,
+                    args=ss_params,
                     method=p.SS_root_method,
                     tol=p.mindist_SS,
                 )
                 if sol.success:
                     SS_solved = True
                     break
-        if ENFORCE_SOLUTION_CHECKS and not sol.success:
-            raise RuntimeError("Steady state equilibrium not found")
-        r_p_ss = sol.x[0]
-        rss = sol.x[1]
-        wss = sol.x[2]
-        p_m_ss = sol.x[3 : 3 + p.M]
-        Yss = sol.x[3 + p.M]
+    r_p_ss = sol.x[0]
+    rss = sol.x[1]
+    wss = sol.x[2]
+    p_m_ss = sol.x[3 : 3 + p.M]
+    if p.baseline:
         BQss = sol.x[3 + p.M + 1 : -2]
         TR_ss = sol.x[-2]
         factor_ss = sol.x[-1]
-        Yss = TR_ss / p.alpha_T[-1]  # may not be right - if budget_balance
-        # # = True, but that's ok - will be fixed in SS_solver
-        fsolve_flag = True
-        output = SS_solver(
-            b_guess,
-            n_guess,
-            r_p_ss,
-            rss,
-            wss,
-            p_m_ss,
-            Yss,
-            BQss,
-            TR_ss,
-            None,
-            factor_ss,
-            p,
-            client,
-            fsolve_flag,
-        )
+        Yss = TR_ss / p.alpha_T[-1]  # may not be right - if
+        # budget_balance = True, but that's ok - will be fixed in
+        # SS_solver
     else:
-        # Use the baseline solution to get starting values for the reform
-        baseline_ss_path = os.path.join(p.baseline_dir, "SS", "SS_vars.pkl")
-        ss_solutions = utils.safe_read_pickle(baseline_ss_path)
-        if p.reform_use_baseline_solution:
-            # use baseline solution as starting values if dimensions match
-            try:
-                if ss_solutions["b_sp1"].shape == (
-                    p.S,
-                    p.J,
-                ) and np.squeeze(
-                    ss_solutions["Y_m"].shape
-                ) == (p.M):
-                    logging.info("Using previous solutions for SS")
-                    (
-                        b_guess,
-                        n_guess,
-                        r_p_guess,
-                        rguess,
-                        wguess,
-                        p_m_guess,
-                        BQguess,
-                        TRguess,
-                        Yguess,
-                        factor,
-                    ) = (
-                        ss_solutions["b_sp1"],
-                        ss_solutions["n"],
-                        float(ss_solutions["r_p"]),
-                        float(ss_solutions["r"]),
-                        float(ss_solutions["w"]),
-                        ss_solutions[
-                            "p_m"
-                        ],  # Not sure why need to index p_m,but otherwise its shape is off..
-                        ss_solutions["BQ"],
-                        float(ss_solutions["TR"]),
-                        float(ss_solutions["Y"]),
-                        ss_solutions["factor"],
-                    )
-                    use_new_guesses = False
-                else:
-                    logging.warning(
-                        "Dimensions of previous solutions for SS do not match"
-                    )
-                    use_new_guesses = True
-            except KeyError:
-                logging.warning(
-                    "KeyError: previous solutions for SS not found"
-                )
-                use_new_guesses = True
-        else:
-            logging.info("Using new guesses for SS")
-            use_new_guesses = True
-        if use_new_guesses:
-            if p.use_zeta:
-                b_guess = np.ones((p.S, p.J)) * 0.0055
-                n_guess = np.ones((p.S, p.J)) * 0.4 * p.ltilde
-            else:
-                b_guess = np.ones((p.S, p.J)) * 0.07
-                n_guess = np.ones((p.S, p.J)) * 0.35 * p.ltilde
-            r_p_guess = p.initial_guess_r_SS
-            rguess = p.initial_guess_r_SS
-            wguess = firm.get_w_from_r(rguess, p, "SS")
-            p_m_guess = np.ones(p.M)
-            TRguess = p.initial_guess_TR_SS
-            Yguess = TRguess / p.alpha_T[-1]
-            factor = p.initial_guess_factor_SS
-            BQguess = aggr.get_BQ(rguess, b_guess, None, p, "SS", False)
-            if p.use_zeta:
-                BQguess = 0.12231465279007188
-        if p.baseline_spending:
-            TR_baseline = TRguess
-            Ig_baseline = ss_solutions["I_g"]
-            ss_params_reform = (
-                b_guess,
-                n_guess,
-                TR_baseline,
-                Ig_baseline,
-                factor,
-                p,
-                client,
-            )
-            if p.use_zeta:
-                guesses = (
-                    [r_p_guess, rguess, wguess]
-                    + list(p_m_guess)
-                    + [Yguess, BQguess, TR_baseline]
-                )
-            else:
-                guesses = (
-                    [r_p_guess, rguess, wguess]
-                    + list(p_m_guess)
-                    + [Yguess]
-                    + list(BQguess)
-                    + [TR_baseline]
-                )
-            sol = opt.root(
-                SS_fsolve,
-                guesses,
-                args=ss_params_reform,
-                method=p.SS_root_method,
-                tol=p.mindist_SS,
-            )
-            r_p_ss = sol.x[0]
-            rss = sol.x[1]
-            wss = sol.x[2]
-            p_m_ss = sol.x[3 : 3 + p.M]
-            Yss = sol.x[3 + p.M]
-            BQss = sol.x[3 + p.M + 1 : -1]
-            TR_ss = sol.x[-1]
-        else:
-            ss_params_reform = (
-                b_guess,
-                n_guess,
-                None,
-                None,
-                factor,
-                p,
-                client,
-            )
-            if p.use_zeta:
-                guesses = (
-                    [r_p_guess, rguess, wguess]
-                    + list(p_m_guess)
-                    + [Yguess, BQguess, TRguess]
-                )
-            else:
-                guesses = (
-                    [r_p_guess, rguess, wguess]
-                    + list(p_m_guess)
-                    + [Yguess]
-                    + list(BQguess)
-                    + [TRguess]
-                )
-            sol = opt.root(
-                SS_fsolve,
-                guesses,
-                args=ss_params_reform,
-                method=p.SS_root_method,
-                tol=p.mindist_SS,
-            )
-            r_p_ss = sol.x[0]
-            rss = sol.x[1]
-            wss = sol.x[2]
-            p_m_ss = sol.x[3 : 3 + p.M]
-            Yss = sol.x[3 + p.M]
-            BQss = sol.x[3 + p.M + 1 : -1]
-            TR_ss = sol.x[-1]
+        Yss = sol.x[3 + p.M]
+        BQss = sol.x[3 + p.M + 1 : -1]
+        TR_ss = sol.x[-1]
+        if not p.baseline_spending:
             Yss = TR_ss / p.alpha_T[-1]  # may not be right - if
             # budget_balance = True, but that's ok - will be fixed in
             # SS_solver
-        if (
-            (ENFORCE_SOLUTION_CHECKS)
-            and not (sol.success == 1)
-            and (np.absolute(np.array(sol.fun)).max() > p.mindist_SS)
-        ):
-            raise RuntimeError("Steady state equilibrium not found")
-        # Return SS values of variables
-        fsolve_flag = True
-        # Return SS values of variables
-        if not p.baseline_spending:
-            Ig_baseline = None
-        output = SS_solver(
-            b_guess,
-            n_guess,
-            r_p_ss,
-            rss,
-            wss,
-            p_m_ss,
-            Yss,
-            BQss,
-            TR_ss,
-            Ig_baseline,
-            factor,
-            p,
-            client,
-            fsolve_flag,
+
+    if ENFORCE_SOLUTION_CHECKS and not sol.success:
+        raise RuntimeError("Steady state equilibrium not found")
+    # Trigger flag that model has been solved
+    fsolve_flag = True
+    # Return SS values of variables
+    if p.baseline or not p.baseline_spending:
+        Ig_baseline = None
+    output = SS_solver(
+        b_guess,
+        n_guess,
+        r_p_ss,
+        rss,
+        wss,
+        p_m_ss,
+        Yss,
+        BQss,
+        TR_ss,
+        Ig_baseline,
+        factor_ss,
+        p,
+        client,
+        fsolve_flag,
+    )
+    if output["G"] < 0.0:
+        warnings.warn(
+            "Warning: The combination of the tax policy "
+            + "you specified and your target debt-to-GDP "
+            + "ratio results in an infeasible amount of "
+            + "government spending in order to close the "
+            + "budget (i.e., G < 0)"
         )
-        if output["G"] < 0.0:
-            warnings.warn(
-                "Warning: The combination of the tax policy "
-                + "you specified and your target debt-to-GDP "
-                + "ratio results in an infeasible amount of "
-                + "government spending in order to close the "
-                + "budget (i.e., G < 0)"
-            )
+
     return output

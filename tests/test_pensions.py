@@ -4,7 +4,6 @@ import pytest
 from ogcore import pensions
 from ogcore.parameters import Specifications
 
-
 p = Specifications()
 rho_vec = np.zeros((1, 4))
 rho_vec[0, -1] = 1.0
@@ -14,6 +13,8 @@ new_param_values = {
     "lambdas": [1.0],
     "labor_income_tax_noncompliance_rate": [[0.0]],
     "capital_income_tax_noncompliance_rate": [[0.0]],
+    "income_tax_filer": [[1]],
+    "wealth_tax_filer": [[1]],
     "replacement_rate_adjust": [[1.0]],
     "J": 1,
     "T": 4,
@@ -61,6 +62,14 @@ expected2 = np.array([0.042012, 0.03842772])
 expected3 = np.array([0.1145304, 0.0969304])
 expected4 = np.array([0.1755, 0.126])
 expected5 = np.array([0.1755, 0.126 * 1.1904761904761905])
+p6 = copy.deepcopy(p5)
+p6.baseline = False
+p6.baseline_theta = True
+p6.SS_theta = expected5
+p7 = copy.deepcopy(p1)
+p7.baseline = False
+p7.baseline_theta = True
+p7.SS_theta = expected1
 
 test_data = [
     (n1, wss, factor1, 0, p1, expected1),
@@ -68,13 +77,23 @@ test_data = [
     (n3, wss, factor3, None, p3, expected3),
     (n3, wss, factor4, None, p3, expected4),
     (n3, wss, factor4, None, p5, expected5),
+    (n3, wss, factor4, None, p6, expected5),
+    (n1, wss, factor1, 0, p7, expected1),
 ]
 
 
 @pytest.mark.parametrize(
     "n,w,factor,j,p_in,expected",
     test_data,
-    ids=["1D e", "2D e", "AIME case 2", "AIME case 3", "Min PIA case"],
+    ids=[
+        "1D e",
+        "2D e",
+        "AIME case 2",
+        "AIME case 3",
+        "Min PIA case",
+        "use_baseline_theta",
+        "use_baseline_theta, j not None",
+    ],
 )
 def test_replacement_rate_vals(n, w, factor, j, p_in, expected):
     # Test replacement rate function, making sure to trigger all three
@@ -201,7 +220,7 @@ def test_deriv_DB_loop(args, deriv_DB_loop_expected):
     """
     Test of the pensions.deriv_DB_loop() function.
     """
-    (w, e, S, retire, per_rmn, last_career_yrs, rep_rate_py, yr_contrib) = args
+    w, e, S, retire, per_rmn, last_career_yrs, rep_rate_py, yr_contrib = args
     deriv_DB_loop = pensions.deriv_DB_loop(
         w, e, S, retire, per_rmn, last_career_yrs, rep_rate_py, yr_contrib
     )
@@ -233,7 +252,7 @@ def test_deriv_PS_loop(args, deriv_PS_loop_expected):
     """
     Test of the pensions.deriv_PS_loop() function.
     """
-    (w, e, S, retire, per_rmn, d_theta_empty, vpoint, factor) = args
+    w, e, S, retire, per_rmn, d_theta_empty, vpoint, factor = args
 
     deriv_PS_loop = pensions.deriv_PS_loop(
         w, e, S, retire, per_rmn, d_theta_empty, vpoint, factor
@@ -286,7 +305,7 @@ def test_deriv_DB(args, deriv_DB_expected):
     """
     Test of the pensions.deriv_DB() function.
     """
-    (w, e, per_rmn, p) = args
+    w, e, per_rmn, p = args
     deriv_DB = pensions.deriv_DB(w, e, per_rmn, p)
 
     assert np.allclose(deriv_DB, deriv_DB_expected)
@@ -333,7 +352,7 @@ def test_deriv_S(args, deriv_PS_expected):
     """
     Test of the pensions.deriv_PS() function.
     """
-    (w, e, per_rmn, factor, p) = args
+    w, e, per_rmn, factor, p = args
 
     deriv_PS = pensions.deriv_PS(w, e, per_rmn, factor, p)
 
@@ -558,7 +577,7 @@ def test_deriv_NDC_loop(args, deriv_NDC_loop_expected):
     """
     Test of the pensions.deriv_NDC_loop() function.
     """
-    (w, e, per_rmn, g_ndc_value, delta_ret_value, d_theta, p) = args
+    w, e, per_rmn, g_ndc_value, delta_ret_value, d_theta, p = args
 
     print("TESTING", p.tau_p, delta_ret_value, g_ndc_value)
     deriv_NDC_loop = pensions.deriv_NDC_loop(
@@ -600,7 +619,7 @@ def test_delta_ret_loop(args, dir_delta_ret_expected):
     """
     Test of the pensions.delta_ret_loop() function.
     """
-    (surv_rates, g_ndc_value, dir_delta_s_empty, p) = args
+    surv_rates, g_ndc_value, dir_delta_s_empty, p = args
     dir_delta = pensions.delta_ret_loop(
         p.S, p.retire, surv_rates, g_ndc_value, dir_delta_s_empty
     )
@@ -846,7 +865,7 @@ def test_PS_1dim_loop(args, PS_loop_expected):
     """
     Test of the pensions.PS_1dim_loop() function.
     """
-    (w, e, n, S_ret, S, g_y, vpoint, factor, L_inc_avg_s, PS) = args
+    w, e, n, S_ret, S, g_y, vpoint, factor, L_inc_avg_s, PS = args
     PS_loop = pensions.PS_1dim_loop(
         w, e, n, S_ret, S, g_y, vpoint, factor, L_inc_avg_s, PS
     )
