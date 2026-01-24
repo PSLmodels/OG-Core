@@ -22,6 +22,7 @@ from ogcore import config
 import os
 import warnings
 import logging
+from distributed import wait
 
 if not SHOW_RUNTIME:
     warnings.simplefilter("ignore", RuntimeWarning)
@@ -819,8 +820,6 @@ def run_TPI(p, client=None):
                 futures.append(f)
             try:
                 # Wait for futures with timeout, then gather results
-                from distributed import wait
-
                 done, not_done = wait(futures, timeout=600)
                 if not_done:
                     # Some futures didn't complete in time
