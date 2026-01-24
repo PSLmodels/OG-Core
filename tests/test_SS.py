@@ -595,6 +595,8 @@ param_updates9 = {
     "chi_b": [80],
     "labor_income_tax_noncompliance_rate": [[0.0]],
     "capital_income_tax_noncompliance_rate": [[0.0]],
+    "income_tax_filer": [[1]],
+    "wealth_tax_filer": [[1]],
     "eta": np.ones((80, 1)) * (1 / 80),
     "eta_RM": np.ones((80, 1)) * (1 / 80),
     "replacement_rate_adjust": [[1.0]],
