@@ -449,7 +449,7 @@
 </section>
 <dl class="py function">
 <dt class="sig sig-object py" id="ogcore.tax.ETR_income">
-<span class="sig-prename descclassname"><span class="pre">ogcore.tax.</span></span><span class="sig-name descname"><span class="pre">ETR_income</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">r</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">w</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">b</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">factor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">e</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">etr_params</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">labor_noncompliance_rate</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">capital_noncompliance_rate</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogcore/tax.html#ETR_income"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogcore.tax.ETR_income" title="Link to this definition">#</a></dt>
+<span class="sig-prename descclassname"><span class="pre">ogcore.tax.</span></span><span class="sig-name descname"><span class="pre">ETR_income</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">r</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">w</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">b</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">factor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">e</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">etr_params</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">labor_noncompliance_rate</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">capital_noncompliance_rate</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tax_filer</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogcore/tax.html#ETR_income"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogcore.tax.ETR_income" title="Link to this definition">#</a></dt>
 <dd><p>Calculates effective personal income tax rate.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -465,6 +465,7 @@ dollars</p></li>
 parameters or nonparametric function</p></li>
 <li><p><strong>labor_noncompliance_rate</strong> (<em>Numpy array</em>) – income tax noncompliance rate for labor income</p></li>
 <li><p><strong>capital_noncompliance_rate</strong> (<em>Numpy array</em>) – income tax noncompliance rate for capital income</p></li>
+<li><p><strong>tax_filer</strong> (<em>Numpy array</em>) – array indicating tax filer status</p></li>
 <li><p><strong>p</strong> (<em>OG-Core Specifications object</em>) – model parameters</p></li>
 </ul>
 </dd>
@@ -479,7 +480,7 @@ parameters or nonparametric function</p></li>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="ogcore.tax.ETR_wealth">
-<span class="sig-prename descclassname"><span class="pre">ogcore.tax.</span></span><span class="sig-name descname"><span class="pre">ETR_wealth</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">b</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">h_wealth</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">m_wealth</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_wealth</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogcore/tax.html#ETR_wealth"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogcore.tax.ETR_wealth" title="Link to this definition">#</a></dt>
+<span class="sig-prename descclassname"><span class="pre">ogcore.tax.</span></span><span class="sig-name descname"><span class="pre">ETR_wealth</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">b</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">h_wealth</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">m_wealth</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_wealth</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tax_filer</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogcore/tax.html#ETR_wealth"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogcore.tax.ETR_wealth" title="Link to this definition">#</a></dt>
 <dd><p>Calculates the effective tax rate on wealth.</p>
 <div class="math notranslate nohighlight">
 \[\tau_{t}^{etr,w} =
@@ -491,6 +492,7 @@ p^{w}\left(\frac{h^{w}b_{j,s,t}}{h^{w}b_{j,s,t} + m^{w}}\right)\]</div>
 <li><p><strong>h_wealth</strong> (<em>scalar</em>) – parameter of wealth tax function</p></li>
 <li><p><strong>p_wealth</strong> (<em>scalar</em>) – parameter of wealth tax function</p></li>
 <li><p><strong>m_wealth</strong> (<em>scalar</em>) – parameter of wealth tax function</p></li>
+<li><p><strong>tax_filer</strong> (<em>Numpy array</em>) – array indicating tax filer status</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -504,7 +506,7 @@ p^{w}\left(\frac{h^{w}b_{j,s,t}}{h^{w}b_{j,s,t} + m^{w}}\right)\]</div>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="ogcore.tax.MTR_income">
-<span class="sig-prename descclassname"><span class="pre">ogcore.tax.</span></span><span class="sig-name descname"><span class="pre">MTR_income</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">r</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">w</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">b</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">factor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mtr_capital</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">e</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">etr_params</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mtr_params</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">noncompliance_rate</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogcore/tax.html#MTR_income"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogcore.tax.MTR_income" title="Link to this definition">#</a></dt>
+<span class="sig-prename descclassname"><span class="pre">ogcore.tax.</span></span><span class="sig-name descname"><span class="pre">MTR_income</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">r</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">w</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">b</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">factor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mtr_capital</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">e</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">etr_params</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mtr_params</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">noncompliance_rate</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tax_filer</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogcore/tax.html#MTR_income"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogcore.tax.MTR_income" title="Link to this definition">#</a></dt>
 <dd><p>Generates the marginal tax rate on labor income for households.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -523,6 +525,7 @@ parameters or nonparametric function</p></li>
 <li><p><strong>mtr_params</strong> (<em>list</em>) – list of marginal tax rate function
 parameters or nonparametric function</p></li>
 <li><p><strong>noncompliance_rate</strong> (<em>Numpy array</em>) – income tax noncompliance rate</p></li>
+<li><p><strong>tax_filer</strong> (<em>Numpy array</em>) – array indicating tax filer status</p></li>
 <li><p><strong>p</strong> (<em>OG-Core Specifications object</em>) – model parameters</p></li>
 </ul>
 </dd>
@@ -537,7 +540,7 @@ parameters or nonparametric function</p></li>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="ogcore.tax.MTR_wealth">
-<span class="sig-prename descclassname"><span class="pre">ogcore.tax.</span></span><span class="sig-name descname"><span class="pre">MTR_wealth</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">b</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">h_wealth</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">m_wealth</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_wealth</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogcore/tax.html#MTR_wealth"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogcore.tax.MTR_wealth" title="Link to this definition">#</a></dt>
+<span class="sig-prename descclassname"><span class="pre">ogcore.tax.</span></span><span class="sig-name descname"><span class="pre">MTR_wealth</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">b</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">h_wealth</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">m_wealth</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_wealth</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tax_filer</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogcore/tax.html#MTR_wealth"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogcore.tax.MTR_wealth" title="Link to this definition">#</a></dt>
 <dd><p>Calculates the marginal tax rate on wealth from the wealth tax.</p>
 <div class="math notranslate nohighlight">
 \[\tau^{mtrw}_{t} = \tau^{etr,w}_{t}
@@ -549,6 +552,7 @@ parameters or nonparametric function</p></li>
 <li><p><strong>h_wealth</strong> (<em>scalar</em>) – parameter of wealth tax function</p></li>
 <li><p><strong>p_wealth</strong> (<em>scalar</em>) – parameter of wealth tax function</p></li>
 <li><p><strong>m_wealth</strong> (<em>scalar</em>) – parameter of wealth tax function</p></li>
+<li><p><strong>tax_filer</strong> (<em>Numpy array</em>) – array indicating tax filer status</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>

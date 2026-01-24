@@ -537,6 +537,8 @@
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#tax-func-type"><code class="docutils literal notranslate"><span class="pre">tax_func_type</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#labor-income-tax-noncompliance-rate"><code class="docutils literal notranslate"><span class="pre">labor_income_tax_noncompliance_rate</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#capital-income-tax-noncompliance-rate"><code class="docutils literal notranslate"><span class="pre">capital_income_tax_noncompliance_rate</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#income-tax-filer"><code class="docutils literal notranslate"><span class="pre">income_tax_filer</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#wealth-tax-filer"><code class="docutils literal notranslate"><span class="pre">wealth_tax_filer</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#etr-params"><code class="docutils literal notranslate"><span class="pre">etr_params</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#mtrx-params"><code class="docutils literal notranslate"><span class="pre">mtrx_params</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#mtry-params"><code class="docutils literal notranslate"><span class="pre">mtry_params</span></code></a></li>
@@ -1258,6 +1260,22 @@ organization of the theory in the <code class="docutils literal notranslate"><sp
 <em>Valid Range:</em> min = 0.0 and max = 1.0<br />
 <em>Out-of-Range Action:</em> error</p>
 </section>
+<section id="income-tax-filer">
+<h4><code class="docutils literal notranslate"><span class="pre">income_tax_filer</span></code><a class="headerlink" href="#income-tax-filer" title="Link to this heading">#</a></h4>
+<p><em>Description:</em> Binary indicator for whether lifetime income type j is subject to income taxes. Non-filers (tax_filer[j]=0) are not subject to income taxes but still pay payroll taxes.<br />
+<em>Notes:</em> Specified by time T and lifetime income group J. Defaults to 1.0 (all groups file). Can be set to values between 0 and 1 to represent the share of group j that files.<br />
+<em>Value Type:</em> float<br />
+<em>Valid Range:</em> min = 0.0 and max = 1.0<br />
+<em>Out-of-Range Action:</em> error</p>
+</section>
+<section id="wealth-tax-filer">
+<h4><code class="docutils literal notranslate"><span class="pre">wealth_tax_filer</span></code><a class="headerlink" href="#wealth-tax-filer" title="Link to this heading">#</a></h4>
+<p><em>Description:</em> Binary indicator for whether lifetime income type j is subject to wealth taxes. Non-filers (wealth_tax_filer[j]=0) are not subject to wealth taxes but still pay payroll taxes.<br />
+<em>Notes:</em> Specified by time T and lifetime income group J. Defaults to 1.0 (all groups file). Can be set to values between 0 and 1 to represent the share of group j that files.<br />
+<em>Value Type:</em> float<br />
+<em>Valid Range:</em> min = 0.0 and max = 1.0<br />
+<em>Out-of-Range Action:</em> error</p>
+</section>
 <section id="etr-params">
 <h4><code class="docutils literal notranslate"><span class="pre">etr_params</span></code><a class="headerlink" href="#etr-params" title="Link to this heading">#</a></h4>
 <p><em>Description:</em> Effective tax rate function parameters.<br />
@@ -1727,6 +1745,8 @@ organization of the theory in the <code class="docutils literal notranslate"><sp
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#tax-func-type"><code class="docutils literal notranslate"><span class="pre">tax_func_type</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#labor-income-tax-noncompliance-rate"><code class="docutils literal notranslate"><span class="pre">labor_income_tax_noncompliance_rate</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#capital-income-tax-noncompliance-rate"><code class="docutils literal notranslate"><span class="pre">capital_income_tax_noncompliance_rate</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#income-tax-filer"><code class="docutils literal notranslate"><span class="pre">income_tax_filer</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#wealth-tax-filer"><code class="docutils literal notranslate"><span class="pre">wealth_tax_filer</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#etr-params"><code class="docutils literal notranslate"><span class="pre">etr_params</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#mtrx-params"><code class="docutils literal notranslate"><span class="pre">mtrx_params</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#mtry-params"><code class="docutils literal notranslate"><span class="pre">mtry_params</span></code></a></li>

@@ -644,6 +644,22 @@ _Valid Range:_ min = 0.0 and max = 1.0
 _Out-of-Range Action:_ error  
 
 
+####  `income_tax_filer`  
+_Description:_ Binary indicator for whether lifetime income type j is subject to income taxes. Non-filers (tax_filer[j]=0) are not subject to income taxes but still pay payroll taxes.  
+_Notes:_ Specified by time T and lifetime income group J. Defaults to 1.0 (all groups file). Can be set to values between 0 and 1 to represent the share of group j that files.  
+_Value Type:_ float  
+_Valid Range:_ min = 0.0 and max = 1.0  
+_Out-of-Range Action:_ error  
+
+
+####  `wealth_tax_filer`  
+_Description:_ Binary indicator for whether lifetime income type j is subject to wealth taxes. Non-filers (wealth_tax_filer[j]=0) are not subject to wealth taxes but still pay payroll taxes.  
+_Notes:_ Specified by time T and lifetime income group J. Defaults to 1.0 (all groups file). Can be set to values between 0 and 1 to represent the share of group j that files.  
+_Value Type:_ float  
+_Valid Range:_ min = 0.0 and max = 1.0  
+_Out-of-Range Action:_ error  
+
+
 ####  `etr_params`  
 _Description:_ Effective tax rate function parameters.  
 _Value Type:_ float  

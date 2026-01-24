@@ -387,7 +387,7 @@
 
 <div class="viewcode-block" id="ETR_wealth">
 <a class="viewcode-back" href="../../content/api/tax.html#ogcore.tax.ETR_wealth">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">ETR_wealth</span><span class="p">(</span><span class="n">b</span><span class="p">,</span> <span class="n">h_wealth</span><span class="p">,</span> <span class="n">m_wealth</span><span class="p">,</span> <span class="n">p_wealth</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">ETR_wealth</span><span class="p">(</span><span class="n">b</span><span class="p">,</span> <span class="n">h_wealth</span><span class="p">,</span> <span class="n">m_wealth</span><span class="p">,</span> <span class="n">p_wealth</span><span class="p">,</span> <span class="n">tax_filer</span><span class="p">):</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Calculates the effective tax rate on wealth.</span>
 
@@ -400,6 +400,7 @@
 <span class="sd">        h_wealth (scalar): parameter of wealth tax function</span>
 <span class="sd">        p_wealth (scalar): parameter of wealth tax function</span>
 <span class="sd">        m_wealth (scalar): parameter of wealth tax function</span>
+<span class="sd">        tax_filer (Numpy array): array indicating tax filer status</span>
 
 <span class="sd">    Returns:</span>
 <span class="sd">        tau_w (Numpy array): effective tax rate on wealth, size = SxJ</span>
@@ -407,13 +408,16 @@
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">tau_w</span> <span class="o">=</span> <span class="p">(</span><span class="n">p_wealth</span> <span class="o">*</span> <span class="n">h_wealth</span> <span class="o">*</span> <span class="n">b</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="n">h_wealth</span> <span class="o">*</span> <span class="n">b</span> <span class="o">+</span> <span class="n">m_wealth</span><span class="p">)</span>
 
+    <span class="n">tau_w</span> <span class="o">=</span> <span class="n">tau_w</span> <span class="o">*</span> <span class="n">tax_filer</span>
+    <span class="c1"># TODO: figure out how to handle non-filers wih diff j and over time path</span>
+
     <span class="k">return</span> <span class="n">tau_w</span></div>
 
 
 
 <div class="viewcode-block" id="MTR_wealth">
 <a class="viewcode-back" href="../../content/api/tax.html#ogcore.tax.MTR_wealth">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">MTR_wealth</span><span class="p">(</span><span class="n">b</span><span class="p">,</span> <span class="n">h_wealth</span><span class="p">,</span> <span class="n">m_wealth</span><span class="p">,</span> <span class="n">p_wealth</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">MTR_wealth</span><span class="p">(</span><span class="n">b</span><span class="p">,</span> <span class="n">h_wealth</span><span class="p">,</span> <span class="n">m_wealth</span><span class="p">,</span> <span class="n">p_wealth</span><span class="p">,</span> <span class="n">tax_filer</span><span class="p">):</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Calculates the marginal tax rate on wealth from the wealth tax.</span>
 
@@ -426,14 +430,17 @@
 <span class="sd">        h_wealth (scalar): parameter of wealth tax function</span>
 <span class="sd">        p_wealth (scalar): parameter of wealth tax function</span>
 <span class="sd">        m_wealth (scalar): parameter of wealth tax function</span>
+<span class="sd">        tax_filer (Numpy array): array indicating tax filer status</span>
 
 <span class="sd">    Returns:</span>
 <span class="sd">        tau_prime (Numpy array): marginal tax rate on wealth, size = SxJ</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">tau_prime</span> <span class="o">=</span> <span class="n">ETR_wealth</span><span class="p">(</span><span class="n">b</span><span class="p">,</span> <span class="n">h_wealth</span><span class="p">,</span> <span class="n">m_wealth</span><span class="p">,</span> <span class="n">p_wealth</span><span class="p">)</span> <span class="o">*</span> <span class="mi">2</span> <span class="o">-</span> <span class="p">(</span>
+    <span class="n">tau_prime</span> <span class="o">=</span> <span class="n">ETR_wealth</span><span class="p">(</span><span class="n">b</span><span class="p">,</span> <span class="n">h_wealth</span><span class="p">,</span> <span class="n">m_wealth</span><span class="p">,</span> <span class="n">p_wealth</span><span class="p">,</span> <span class="n">tax_filer</span><span class="p">)</span> <span class="o">*</span> <span class="mi">2</span> <span class="o">-</span> <span class="p">(</span>
         <span class="p">(</span><span class="n">h_wealth</span><span class="o">**</span><span class="mi">2</span> <span class="o">*</span> <span class="n">p_wealth</span> <span class="o">*</span> <span class="n">b</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span> <span class="o">/</span> <span class="p">((</span><span class="n">b</span> <span class="o">*</span> <span class="n">h_wealth</span> <span class="o">+</span> <span class="n">m_wealth</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span>
     <span class="p">)</span>
+    <span class="n">tau_prime</span> <span class="o">=</span> <span class="n">tau_prime</span> <span class="o">*</span> <span class="n">tax_filer</span>
+    <span class="c1"># TODO: figure out how to handle non-filers in TPI when j is None</span>
 
     <span class="k">return</span> <span class="n">tau_prime</span></div>
 
@@ -451,6 +458,7 @@
     <span class="n">etr_params</span><span class="p">,</span>
     <span class="n">labor_noncompliance_rate</span><span class="p">,</span>
     <span class="n">capital_noncompliance_rate</span><span class="p">,</span>
+    <span class="n">tax_filer</span><span class="p">,</span>
     <span class="n">p</span><span class="p">,</span>
 <span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
@@ -468,6 +476,7 @@
 <span class="sd">            parameters or nonparametric function</span>
 <span class="sd">        labor_noncompliance_rate (Numpy array): income tax noncompliance rate for labor income</span>
 <span class="sd">        capital_noncompliance_rate (Numpy array): income tax noncompliance rate for capital income</span>
+<span class="sd">        tax_filer (Numpy array): array indicating tax filer status</span>
 <span class="sd">        p (OG-Core Specifications object): model parameters</span>
 
 <span class="sd">    Returns:</span>
@@ -484,7 +493,9 @@
         <span class="n">etr_params</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">Y</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="n">p</span><span class="o">.</span><span class="n">tax_func_type</span><span class="p">,</span> <span class="s2">&quot;etr&quot;</span><span class="p">,</span> <span class="n">for_estimation</span><span class="o">=</span><span class="kc">False</span>
     <span class="p">)</span>
 
-    <span class="k">return</span> <span class="n">tau</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">noncompliance_rate</span><span class="p">)</span></div>
+    <span class="n">tau</span> <span class="o">=</span> <span class="n">tau</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">noncompliance_rate</span><span class="p">)</span> <span class="o">*</span> <span class="n">tax_filer</span>
+
+    <span class="k">return</span> <span class="n">tau</span></div>
 
 
 
@@ -501,6 +512,7 @@
     <span class="n">etr_params</span><span class="p">,</span>
     <span class="n">mtr_params</span><span class="p">,</span>
     <span class="n">noncompliance_rate</span><span class="p">,</span>
+    <span class="n">tax_filer</span><span class="p">,</span>
     <span class="n">p</span><span class="p">,</span>
 <span class="p">):</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
@@ -521,6 +533,7 @@
 <span class="sd">        mtr_params (list): list of marginal tax rate function</span>
 <span class="sd">            parameters or nonparametric function</span>
 <span class="sd">        noncompliance_rate (Numpy array): income tax noncompliance rate</span>
+<span class="sd">        tax_filer (Numpy array): array indicating tax filer status</span>
 <span class="sd">        p (OG-Core Specifications object): model parameters</span>
 
 <span class="sd">    Returns:</span>
@@ -555,7 +568,9 @@
             <span class="n">for_estimation</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
         <span class="p">)</span>
 
-    <span class="k">return</span> <span class="n">tau</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">noncompliance_rate</span><span class="p">)</span></div>
+    <span class="n">tau</span> <span class="o">=</span> <span class="n">tau</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">noncompliance_rate</span><span class="p">)</span> <span class="o">*</span> <span class="n">tax_filer</span>
+
+    <span class="k">return</span> <span class="n">tau</span></div>
 
 
 
@@ -717,6 +732,7 @@
             <span class="n">capital_income_tax_compliance_rate</span> <span class="o">=</span> <span class="p">(</span>
                 <span class="n">p</span><span class="o">.</span><span class="n">capital_income_tax_noncompliance_rate</span><span class="p">[</span><span class="n">t</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span>
             <span class="p">)</span>
+            <span class="n">tax_filer</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">income_tax_filer</span><span class="p">[</span><span class="n">t</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">labor_income_tax_compliance_rate</span> <span class="o">=</span> <span class="p">(</span>
                 <span class="n">p</span><span class="o">.</span><span class="n">labor_income_tax_noncompliance_rate</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span>
@@ -724,6 +740,7 @@
             <span class="n">capital_income_tax_compliance_rate</span> <span class="o">=</span> <span class="p">(</span>
                 <span class="n">p</span><span class="o">.</span><span class="n">capital_income_tax_noncompliance_rate</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span>
             <span class="p">)</span>
+            <span class="n">tax_filer</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">income_tax_filer</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="k">if</span> <span class="n">method</span> <span class="o">==</span> <span class="s2">&quot;TPI&quot;</span><span class="p">:</span>
             <span class="n">r</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">to_timepath_shape</span><span class="p">(</span><span class="n">r</span><span class="p">)</span>
@@ -734,6 +751,7 @@
             <span class="n">capital_income_tax_compliance_rate</span> <span class="o">=</span> <span class="p">(</span>
                 <span class="n">p</span><span class="o">.</span><span class="n">capital_income_tax_noncompliance_rate</span><span class="p">[</span><span class="n">t</span><span class="p">,</span> <span class="p">:]</span>
             <span class="p">)</span>
+            <span class="n">tax_filer</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">income_tax_filer</span><span class="p">[</span><span class="n">t</span><span class="p">,</span> <span class="p">:]</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">labor_income_tax_compliance_rate</span> <span class="o">=</span> <span class="p">(</span>
                 <span class="n">p</span><span class="o">.</span><span class="n">labor_income_tax_noncompliance_rate</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="p">:]</span>
@@ -741,6 +759,7 @@
             <span class="n">capital_income_tax_compliance_rate</span> <span class="o">=</span> <span class="p">(</span>
                 <span class="n">p</span><span class="o">.</span><span class="n">capital_income_tax_noncompliance_rate</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="p">:]</span>
             <span class="p">)</span>
+            <span class="n">tax_filer</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">income_tax_filer</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="p">:]</span>
     <span class="n">income</span> <span class="o">=</span> <span class="n">r</span> <span class="o">*</span> <span class="n">b</span> <span class="o">+</span> <span class="n">w</span> <span class="o">*</span> <span class="n">e</span> <span class="o">*</span> <span class="n">n</span>
     <span class="n">labor_income</span> <span class="o">=</span> <span class="n">w</span> <span class="o">*</span> <span class="n">e</span> <span class="o">*</span> <span class="n">n</span>
     <span class="n">T_I</span> <span class="o">=</span> <span class="p">(</span>
@@ -754,10 +773,12 @@
             <span class="n">etr_params</span><span class="p">,</span>
             <span class="n">labor_income_tax_compliance_rate</span><span class="p">,</span>
             <span class="n">capital_income_tax_compliance_rate</span><span class="p">,</span>
+            <span class="n">tax_filer</span><span class="p">,</span>
             <span class="n">p</span><span class="p">,</span>
         <span class="p">)</span>
         <span class="o">*</span> <span class="n">income</span>
     <span class="p">)</span>
+
     <span class="k">if</span> <span class="n">method</span> <span class="o">==</span> <span class="s2">&quot;SS&quot;</span><span class="p">:</span>
         <span class="n">T_P</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">tau_payroll</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="n">labor_income</span>
     <span class="k">elif</span> <span class="n">method</span> <span class="o">==</span> <span class="s2">&quot;TPI&quot;</span><span class="p">:</span>
@@ -805,12 +826,25 @@
         <span class="k">if</span> <span class="n">method</span> <span class="o">==</span> <span class="s2">&quot;TPI&quot;</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">b</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
                 <span class="n">r</span> <span class="o">=</span> <span class="n">r</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">r</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="mi">1</span><span class="p">)</span>
+            <span class="n">tax_filer</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">wealth_tax_filer</span><span class="p">[:,</span> <span class="n">j</span><span class="p">]</span>  <span class="c1"># TODO check this</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">tax_filer</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">wealth_tax_filer</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="k">if</span> <span class="n">method</span> <span class="o">==</span> <span class="s2">&quot;TPI&quot;</span><span class="p">:</span>
             <span class="n">r</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">to_timepath_shape</span><span class="p">(</span><span class="n">r</span><span class="p">)</span>
+            <span class="n">tax_filer</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">wealth_tax_filer</span><span class="p">[:,</span> <span class="p">:]</span>
+        <span class="k">elif</span> <span class="n">method</span> <span class="o">==</span> <span class="s2">&quot;TPI_scalar&quot;</span><span class="p">:</span>
+            <span class="n">tax_filer</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">tax_filer</span><span class="p">[</span><span class="n">t</span><span class="p">,</span> <span class="p">:]</span>
+        <span class="k">elif</span> <span class="n">method</span> <span class="o">==</span> <span class="s2">&quot;SS&quot;</span><span class="p">:</span>
+            <span class="n">tax_filer</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">wealth_tax_filer</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="p">:]</span>
 
     <span class="k">if</span> <span class="n">method</span> <span class="o">==</span> <span class="s2">&quot;SS&quot;</span><span class="p">:</span>
-        <span class="n">T_W</span> <span class="o">=</span> <span class="n">ETR_wealth</span><span class="p">(</span><span class="n">b</span><span class="p">,</span> <span class="n">p</span><span class="o">.</span><span class="n">h_wealth</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">p</span><span class="o">.</span><span class="n">m_wealth</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">p</span><span class="o">.</span><span class="n">p_wealth</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span> <span class="o">*</span> <span class="n">b</span>
+        <span class="n">T_W</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="n">ETR_wealth</span><span class="p">(</span>
+                <span class="n">b</span><span class="p">,</span> <span class="n">p</span><span class="o">.</span><span class="n">h_wealth</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">p</span><span class="o">.</span><span class="n">m_wealth</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">p</span><span class="o">.</span><span class="n">p_wealth</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">tax_filer</span>
+            <span class="p">)</span>
+            <span class="o">*</span> <span class="n">b</span>
+        <span class="p">)</span>
     <span class="k">elif</span> <span class="n">method</span> <span class="o">==</span> <span class="s2">&quot;TPI&quot;</span><span class="p">:</span>
         <span class="n">length</span> <span class="o">=</span> <span class="n">r</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">b</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
@@ -820,6 +854,7 @@
                     <span class="n">p</span><span class="o">.</span><span class="n">h_wealth</span><span class="p">[</span><span class="n">t</span> <span class="p">:</span> <span class="n">t</span> <span class="o">+</span> <span class="n">length</span><span class="p">],</span>
                     <span class="n">p</span><span class="o">.</span><span class="n">m_wealth</span><span class="p">[</span><span class="n">t</span> <span class="p">:</span> <span class="n">t</span> <span class="o">+</span> <span class="n">length</span><span class="p">],</span>
                     <span class="n">p</span><span class="o">.</span><span class="n">p_wealth</span><span class="p">[</span><span class="n">t</span> <span class="p">:</span> <span class="n">t</span> <span class="o">+</span> <span class="n">length</span><span class="p">],</span>
+                    <span class="n">tax_filer</span><span class="p">[</span><span class="n">t</span> <span class="p">:</span> <span class="n">t</span> <span class="o">+</span> <span class="n">length</span><span class="p">],</span>
                 <span class="p">)</span>
                 <span class="o">*</span> <span class="n">b</span>
             <span class="p">)</span>
@@ -830,6 +865,7 @@
                     <span class="n">p</span><span class="o">.</span><span class="n">h_wealth</span><span class="p">[</span><span class="n">t</span> <span class="p">:</span> <span class="n">t</span> <span class="o">+</span> <span class="n">length</span><span class="p">],</span>
                     <span class="n">p</span><span class="o">.</span><span class="n">m_wealth</span><span class="p">[</span><span class="n">t</span> <span class="p">:</span> <span class="n">t</span> <span class="o">+</span> <span class="n">length</span><span class="p">],</span>
                     <span class="n">p</span><span class="o">.</span><span class="n">p_wealth</span><span class="p">[</span><span class="n">t</span> <span class="p">:</span> <span class="n">t</span> <span class="o">+</span> <span class="n">length</span><span class="p">],</span>
+                    <span class="n">tax_filer</span><span class="p">[</span><span class="n">t</span> <span class="p">:</span> <span class="n">t</span> <span class="o">+</span> <span class="n">length</span><span class="p">],</span>
                 <span class="p">)</span>
                 <span class="o">*</span> <span class="n">b</span>
             <span class="p">)</span>
@@ -840,11 +876,17 @@
                     <span class="n">p</span><span class="o">.</span><span class="n">h_wealth</span><span class="p">[</span><span class="n">t</span> <span class="p">:</span> <span class="n">t</span> <span class="o">+</span> <span class="n">length</span><span class="p">]</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">length</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span>
                     <span class="n">p</span><span class="o">.</span><span class="n">m_wealth</span><span class="p">[</span><span class="n">t</span> <span class="p">:</span> <span class="n">t</span> <span class="o">+</span> <span class="n">length</span><span class="p">]</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">length</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span>
                     <span class="n">p</span><span class="o">.</span><span class="n">p_wealth</span><span class="p">[</span><span class="n">t</span> <span class="p">:</span> <span class="n">t</span> <span class="o">+</span> <span class="n">length</span><span class="p">]</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">length</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span>
+                    <span class="n">tax_filer</span><span class="p">[</span><span class="n">t</span> <span class="p">:</span> <span class="n">t</span> <span class="o">+</span> <span class="n">length</span><span class="p">,</span> <span class="p">:]</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">length</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">p</span><span class="o">.</span><span class="n">J</span><span class="p">),</span>
                 <span class="p">)</span>
                 <span class="o">*</span> <span class="n">b</span>
             <span class="p">)</span>
     <span class="k">elif</span> <span class="n">method</span> <span class="o">==</span> <span class="s2">&quot;TPI_scalar&quot;</span><span class="p">:</span>
-        <span class="n">T_W</span> <span class="o">=</span> <span class="n">ETR_wealth</span><span class="p">(</span><span class="n">b</span><span class="p">,</span> <span class="n">p</span><span class="o">.</span><span class="n">h_wealth</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">p</span><span class="o">.</span><span class="n">m_wealth</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">p</span><span class="o">.</span><span class="n">p_wealth</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">*</span> <span class="n">b</span>
+        <span class="n">T_W</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="n">ETR_wealth</span><span class="p">(</span>
+                <span class="n">b</span><span class="p">,</span> <span class="n">p</span><span class="o">.</span><span class="n">h_wealth</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">p</span><span class="o">.</span><span class="n">m_wealth</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">p</span><span class="o">.</span><span class="n">p_wealth</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">tax_filer</span>
+            <span class="p">)</span>
+            <span class="o">*</span> <span class="n">b</span>
+        <span class="p">)</span>
 
     <span class="k">return</span> <span class="n">T_W</span></div>
 
