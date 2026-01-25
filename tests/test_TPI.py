@@ -878,6 +878,8 @@ param_updates10 = {
     "chi_b": [80],
     "labor_income_tax_noncompliance_rate": [[0.0]],
     "capital_income_tax_noncompliance_rate": [[0.0]],
+    "income_tax_filer": [[1]],
+    "wealth_tax_filer": [[1]],
     "eta": np.ones((40, 1)) * (1 / 40),
     "eta_RM": np.ones((40, 1)) * (1 / 40),
     "replacement_rate_adjust": [[1.0]],
@@ -953,7 +955,7 @@ else:
         "Baseline",
         "Reform, baseline spending",
         "Baseline, Kg>0",
-        "J=1"
+        "J=1",
     ]
 
 
@@ -1036,10 +1038,6 @@ def test_run_TPI_extra(baseline, param_updates, filename, tmpdir, dask_client):
 
     for k, v in expected_dict.items():
         print("Checking ", k)
-        try:
-            test_value = test_dict[VAR_NAME_MAPPING[k]]
-        except KeyError:
-            test_value = test_dict[k]
         try:
             print(
                 "Diff = ",
