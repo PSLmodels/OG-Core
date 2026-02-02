@@ -28,7 +28,6 @@ from pygam import LinearGAM, s, te
 from matplotlib import cm
 import random
 
-
 if not SHOW_RUNTIME:
     warnings.simplefilter("ignore", RuntimeWarning)
 
@@ -264,7 +263,10 @@ def get_tax_rates(
                 txrates = tau_income + shift_income + shift
     elif tax_func_type == "linear":
         rate = np.squeeze(params[..., 0])
-        txrates = rate * np.ones_like(income)
+        try:
+            txrates = rate * np.ones_like(income)
+        except ValueError:
+            txrates = rate.reshape(income.shape) * np.ones_like(income)
     elif tax_func_type == "mono":
         if for_estimation:
             mono_interp = params[0]
@@ -368,7 +370,7 @@ def get_tax_rates(
                     ]
                     for t in range(income.shape[0])
                 ]
-        txrates = np.squeeze(np.array(txrates))
+        txrates = np.squeeze(np.array(txrates)).reshape(X.shape)
 
     return txrates
 
@@ -1690,7 +1692,7 @@ def tax_func_estimate(
         futures = client.compute(lazy_values)
         results = client.gather(futures)
     else:
-        results = results = compute(
+        results = compute(
             *lazy_values,
             scheduler=dask.multiprocessing.get,
             num_workers=num_workers,

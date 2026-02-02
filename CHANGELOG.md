@@ -5,6 +5,30 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.15.4] - 2025-01-27 12:00:00
+
+### Added
+
+- Ability to simulate the model with a single type of household (`J=1`).  See PR [#1062](https://github.com/PSLmodels/OG-Core/pull/1062)
+
+## [0.15.3] - 2025-01-24 12:00:00
+
+### Added
+
+- Two new parameters, `income_tax_filer` and `wealth_tax_filer`, that determine whether certain types `j` pay income or wealth taxes, respectively.  See PR [#1084](https://github.com/PSLmodels/OG-Core/pull/1084)
+
+## [0.15.2] - 2025-01-22 12:00:00
+
+### Added
+
+- Two new parameters, `r_gov_DY` and `r_gov_DY2`, that allow the government interest rate to be a function of the debt-to-GDP ratio.  See PR [#1037](https://github.com/PSLmodels/OG-Core/pull/1037)
+
+## [0.15.1] - 2026-01-19 12:00:00
+
+### Added
+
+- A new parameter `c_min` to the `Parameters` class that allows the user to specify minium consumption amounts by consumption good.  See PR [#1085](https://github.com/PSLmodels/OG-Core/pull/1085)
+
 ## [0.15.0] - 2025-12-03 12:00:00
 
 ### Added
@@ -487,6 +511,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Any earlier versions of OG-USA can be found in the [`OG-Core`](https://github.com/PSLmodels/OG-Core) repository [release history](https://github.com/PSLmodels/OG-Core/releases) from [v.0.6.4](https://github.com/PSLmodels/OG-Core/releases/tag/v0.6.4) (Jul. 20, 2021) or earlier.
 
 
+[0.15.4]: https://github.com/PSLmodels/OG-Core/compare/v0.15.3...v0.15.4
+[0.15.3]: https://github.com/PSLmodels/OG-Core/compare/v0.15.2...v0.15.3
+[0.15.2]: https://github.com/PSLmodels/OG-Core/compare/v0.15.1...v0.15.2
+[0.15.1]: https://github.com/PSLmodels/OG-Core/compare/v0.15.0...v0.15.1
 [0.15.0]: https://github.com/PSLmodels/OG-Core/compare/v0.14.14...v0.15.0
 [0.14.14]: https://github.com/PSLmodels/OG-Core/compare/v0.14.13...v0.14.14
 [0.14.13]: https://github.com/PSLmodels/OG-Core/compare/v0.14.12...v0.14.13
