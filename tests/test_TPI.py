@@ -177,8 +177,8 @@ def dask_client():
     client = Client(cluster)
     yield client
     # teardown
-    client.close()
-    cluster.close()
+    # client.close()
+    # cluster.close()
 
 
 filename1 = "intial_SS_values_baseline.pkl"
@@ -870,6 +870,21 @@ param_updates8 = {
 filename8 = os.path.join(
     CUR_PATH, "test_io_data", "run_TPI_outputs_baseline_Kg_nonzero_2.pkl"
 )
+param_updates10 = {
+    "J": 1,
+    "lambdas": np.array([1.0]),
+    "e": np.ones((40, 1)),
+    "beta_annual": [0.96],
+    "chi_b": [80],
+    "labor_income_tax_noncompliance_rate": [[0.0]],
+    "capital_income_tax_noncompliance_rate": [[0.0]],
+    "income_tax_filer": [[1]],
+    "wealth_tax_filer": [[1]],
+    "eta": np.ones((40, 1)) * (1 / 40),
+    "eta_RM": np.ones((40, 1)) * (1 / 40),
+    "replacement_rate_adjust": [[1.0]],
+}
+filename10 = os.path.join(CUR_PATH, "test_io_data", "run_TPI_outputs_J1.pkl")
 # read in mono tax funcs (not age specific)
 if sys.version_info[1] < 11:
     dict_params = utils.safe_read_pickle(
@@ -899,6 +914,7 @@ if sys.version_info[1] < 11:
         CUR_PATH, "test_io_data", "run_TPI_outputs_mono_2.pkl"
     )
 
+
 if sys.version_info[1] < 11:
     test_list = [
         (True, param_updates2, filename2),
@@ -922,22 +938,24 @@ if sys.version_info[1] < 11:
     ]
 else:
     test_list = [
-        # (True, param_updates2, filename2),
-        # (True, param_updates5, filename5),
-        # (True, param_updates6, filename6),
-        # (True, param_updates7, filename7),
-        # (True, {}, filename1),
-        # (False, param_updates4, filename4),
+        (True, param_updates2, filename2),
+        (True, param_updates5, filename5),
+        (True, param_updates6, filename6),
+        (True, param_updates7, filename7),
+        (True, {}, filename1),
+        (False, param_updates4, filename4),
         (True, param_updates8, filename8),
+        (True, param_updates10, filename10),
     ]
     id_list = [
-        # "Baseline, balanced budget",
-        # "Baseline, small open",
-        # "Baseline, small open for some periods",
-        # "Baseline, delta_tau = 0",
-        # "Baseline",
-        # "Reform, baseline spending",
+        "Baseline, balanced budget",
+        "Baseline, small open",
+        "Baseline, small open for some periods",
+        "Baseline, delta_tau = 0",
+        "Baseline",
+        "Reform, baseline spending",
         "Baseline, Kg>0",
+        "J=1",
     ]
 
 

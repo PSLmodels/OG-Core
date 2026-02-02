@@ -302,7 +302,7 @@ def net_taxes(
     )
     T_BQ = bequest_tax_liab(r, b, bq, t, j, method, p)
     T_W = wealth_tax_liab(r, b, t, j, method, p)
-
+    # print("Net taxes shapes = ", T_I.shape, pension.shape, T_BQ.shape, T_W.shape)
     net_tax = T_I - pension + T_BQ + T_W - tr - ubi
 
     return net_tax
@@ -373,6 +373,7 @@ def income_tax_liab(r, w, b, n, factor, t, j, method, e, etr_params, p):
             tax_filer = p.income_tax_filer[-1, :]
     income = r * b + w * e * n
     labor_income = w * e * n
+
     T_I = (
         ETR_income(
             r,

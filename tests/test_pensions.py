@@ -24,9 +24,27 @@ new_param_values = {
 }
 p.update_specifications(new_param_values)
 p.retire = [3, 3, 3, 3, 3, 3, 3, 3]
-p1 = copy.deepcopy(p)
-p2 = copy.deepcopy(p)
-p3 = copy.deepcopy(p)
+p1 = Specifications()
+p1.update_specifications(
+    {
+        "S": 4,
+        "rho": rho_vec.tolist(),
+        "lambdas": [0.5, 0.5],
+        "labor_income_tax_noncompliance_rate": [[0.0]],
+        "capital_income_tax_noncompliance_rate": [[0.0]],
+        "income_tax_filer": [[1]],
+        "wealth_tax_filer": [[1]],
+        "replacement_rate_adjust": [[1.0]],
+        "J": 2,
+        "T": 4,
+        "chi_n": np.ones(4),
+        "eta": (np.ones((4, 2)) / (4 * 2)),
+        "e": np.ones((4, 2)),
+    }
+)
+p1.retire = [3, 3, 3, 3, 3, 3, 3, 3]
+p2 = copy.deepcopy(p1)
+p3 = copy.deepcopy(p1)
 # Use just a column of e
 p1.e = np.transpose(np.array([[0.1, 0.3, 0.5, 0.2], [0.1, 0.3, 0.5, 0.2]]))
 # e has two dimensions
