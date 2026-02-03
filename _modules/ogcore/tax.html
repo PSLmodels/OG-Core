@@ -688,7 +688,7 @@
     <span class="p">)</span>
     <span class="n">T_BQ</span> <span class="o">=</span> <span class="n">bequest_tax_liab</span><span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">bq</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="n">j</span><span class="p">,</span> <span class="n">method</span><span class="p">,</span> <span class="n">p</span><span class="p">)</span>
     <span class="n">T_W</span> <span class="o">=</span> <span class="n">wealth_tax_liab</span><span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="n">j</span><span class="p">,</span> <span class="n">method</span><span class="p">,</span> <span class="n">p</span><span class="p">)</span>
-
+    <span class="c1"># print(&quot;Net taxes shapes = &quot;, T_I.shape, pension.shape, T_BQ.shape, T_W.shape)</span>
     <span class="n">net_tax</span> <span class="o">=</span> <span class="n">T_I</span> <span class="o">-</span> <span class="n">pension</span> <span class="o">+</span> <span class="n">T_BQ</span> <span class="o">+</span> <span class="n">T_W</span> <span class="o">-</span> <span class="n">tr</span> <span class="o">-</span> <span class="n">ubi</span>
 
     <span class="k">return</span> <span class="n">net_tax</span></div>
@@ -762,6 +762,7 @@
             <span class="n">tax_filer</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">income_tax_filer</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="p">:]</span>
     <span class="n">income</span> <span class="o">=</span> <span class="n">r</span> <span class="o">*</span> <span class="n">b</span> <span class="o">+</span> <span class="n">w</span> <span class="o">*</span> <span class="n">e</span> <span class="o">*</span> <span class="n">n</span>
     <span class="n">labor_income</span> <span class="o">=</span> <span class="n">w</span> <span class="o">*</span> <span class="n">e</span> <span class="o">*</span> <span class="n">n</span>
+
     <span class="n">T_I</span> <span class="o">=</span> <span class="p">(</span>
         <span class="n">ETR_income</span><span class="p">(</span>
             <span class="n">r</span><span class="p">,</span>
