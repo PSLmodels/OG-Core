@@ -13,7 +13,7 @@
         "section_1": "Household Parameters",
         "section_2": "Behavioral Assumptions",
         "notes": "See Altonji (JPE, 1986) and Peterman (Econ Inquiry, 2016) for estimates of the Frisch elasticity.",
-        "type": "float",
+        "type": "float32",
         "value": [
             {
                 "value": 0.4
@@ -31,7 +31,7 @@
         "description": "Growth rate of labor augmenting technological change.",
         "section_1": "Economic Assumptions",
         "notes": "",
-        "type": "float",
+        "type": "float32",
         "value": [
             {
                 "value": 0.03
@@ -50,7 +50,7 @@
         "section_1": "Household Parameters",
         "section_2": "Model Dimensions",
         "notes": "",
-        "type": "int",
+        "type": "int32",
         "value": [
             {
                 "value": 80
@@ -69,7 +69,7 @@
         "section_1": "Household Parameters",
         "section_2": "Model Dimensions",
         "notes": "",
-        "type": "int",
+        "type": "int32",
         "value": [
             {
                 "value": 7
@@ -88,7 +88,7 @@
         "section_1": "Household Parameters",
         "section_2": "Model Dimensions",
         "notes": "",
-        "type": "int",
+        "type": "int32",
         "value": [
             {
                 "value": 320
@@ -107,7 +107,7 @@
         "section_1": "Firm Parameters",
         "section_2": "Model Dimensions",
         "notes": "",
-        "type": "int",
+        "type": "int32",
         "value": [
             {
                 "value": 1
@@ -126,7 +126,7 @@
         "section_1": "Household Parameters",
         "section_2": "Model Dimensions",
         "notes": "",
-        "type": "int",
+        "type": "int32",
         "value": [
             {
                 "value": 1
@@ -145,7 +145,7 @@
         "section_1": "Household Parameters",
         "section_2": "Model Dimensions",
         "notes": "",
-        "type": "float",
+        "type": "float32",
         "number_dims": 1,
         "value": [
             {
@@ -173,7 +173,7 @@
         "section_1": "Household Parameters",
         "section_2": "Endowments",
         "notes": "",
-        "type": "float",
+        "type": "float32",
         "number_dims": 2,
         "value": [
             {
@@ -289,7 +289,7 @@
         "section_1": "Household Parameters",
         "section_2": "Model Dimensions",
         "notes": "",
-        "type": "int",
+        "type": "int32",
         "value": [
             {
                 "value": 20
@@ -308,7 +308,7 @@
         "section_1": "Household Parameters",
         "section_2": "Model Dimensions",
         "notes": "",
-        "type": "int",
+        "type": "int32",
         "value": [
             {
                 "value": 100
@@ -343,7 +343,7 @@
         "section_1": "Household Parameters",
         "section_2": "Behavioral Assumptions",
         "notes": "Default value from Carroll (JME, 2009).  Allows for each type to have a different value.",
-        "type": "float",
+        "type": "float32",
         "number_dims": 1,
         "value": [
             {
@@ -371,7 +371,7 @@
         "section_1": "Household Parameters",
         "section_2": "Behavioral Assumptions",
         "notes": "Default value from Attanasio, Banks, Meghir and Weber (JEBS, 1999).",
-        "type": "float",
+        "type": "float32",
         "value": [
             {
                 "value": 1.5
@@ -390,7 +390,7 @@
         "section_1": "Household Parameters",
         "section_2": "Behavioral Assumptions",
         "notes": "",
-        "type": "float",
+        "type": "float32",
         "number_dims": 1,
         "value": [
             {
@@ -430,7 +430,7 @@
         "section_1": "Firm Parameters",
         "section_2": "Production Function",
         "notes": "Historical value in U.S. is about 0.33, but Elsby, Hobijn, and Sahin (BPEA, 2013) find capital's share is increasing, so default value is above this.",
-        "type": "float",
+        "type": "float32",
         "number_dims": 1,
         "value": [
             {
@@ -450,7 +450,7 @@
         "section_1": "Firm Parameters",
         "section_2": "Production Function",
         "notes": "",
-        "type": "float",
+        "type": "float32",
         "number_dims": 1,
         "value": [
             {
@@ -472,7 +472,7 @@
         "section_1": "Firm Parameters",
         "section_2": "Production Function",
         "notes": "If epsilon=1, then production function is Cobb-Douglas.  If epsilon=0, then production function is perfect substitutes.",
-        "type": "float",
+        "type": "float32",
         "number_dims": 1,
         "value": [
             {
@@ -492,7 +492,7 @@
         "section_1": "Firm Parameters",
         "section_2": "Production Function",
         "notes": "",
-        "type": "float",
+        "type": "float32",
         "number_dims": 2,
         "value": [
             {
@@ -514,7 +514,7 @@
         "section_1": "Firm Parameters",
         "section_2": "Production Function",
         "notes": "",
-        "type": "float",
+        "type": "float32",
         "number_dims": 2,
         "value": [
             {
@@ -536,7 +536,7 @@
         "section_1": "Firm Parameters",
         "section_2": "Capital Accumulation",
         "notes": "Approximately the value from Kehoe calibration exercise: http://www.econ.umn.edu/~tkehoe/classes/calibration-04.pdf.",
-        "type": "float",
+        "type": "float32",
         "value": [
             {
                 "value": 0.05
@@ -555,7 +555,7 @@
         "section_1": "Government Parameters",
         "section_2": "",
         "notes": "",
-        "type": "float",
+        "type": "float32",
         "value": [
             {
                 "value": 0.02
@@ -574,7 +574,7 @@
         "section_1": "Household Parameters",
         "section_2": "Endowments",
         "notes": "Can be normalized to 1.0 without loss of generality.",
-        "type": "float",
+        "type": "float32",
         "value": [
             {
                 "value": 1.0
@@ -592,7 +592,7 @@
         "description": "Exogenous annual world interest rate to be used when modeling a small open economy. Set value for base year, click '+' to add value for next year.  All future years not specified are set to last value entered.",
         "section_1": "Open Economy Parameters",
         "notes": "",
-        "type": "float",
+        "type": "float32",
         "number_dims": 1,
         "value": [
             {
@@ -613,7 +613,7 @@
         "description": "Share of government debt held by foreigners in model start year.",
         "section_1": "Open Economy Parameters",
         "notes": "",
-        "type": "float",
+        "type": "float32",
         "value": [
             {
                 "value": 0.4
@@ -631,7 +631,7 @@
         "description": "Share of new debt issues from government that are purchased by foreigners. Set value for base year, click '+' to add value for next year.  All future years not specified are set to last value entered.",
         "section_1": "Open Economy Parameters",
         "notes": "This value is about 0.4 historically for the U.S., set to zero to have closed econ as default.",
-        "type": "float",
+        "type": "float32",
         "number_dims": 1,
         "value": [
             {
@@ -652,7 +652,7 @@
         "description": "Share of excess demand for capital that is supplied by foreigners. Set value for base year, click '+' to add value for next year.  All future years not specified are set to last value entered.",
         "section_1": "Open Economy Parameters",
         "notes": "Set to 0.1 when running large-open verion of US economy, but hard to find data to pin this down.",
-        "type": "float",
+        "type": "float32",
         "number_dims": 1,
         "value": [
             {
@@ -674,7 +674,7 @@
         "section_1": "Fiscal Policy Parameters",
         "section_2": "Fiscal Closure Rules",
         "notes": "It may make sense for this tG1 to exceed the length of the budget window one is looking at.  But it must also not be too late into the time path that a steady-state won't be reached by time T.",
-        "type": "int",
+        "type": "int32",
         "value": [
             {
                 "value": 20
@@ -693,7 +693,7 @@
         "section_1": "Fiscal Policy Parameters",
         "section_2": "Fiscal Closure Rules",
         "notes": "The number of periods until the closure rule ends must not exceed T, the time at which the model is assumed to reach the steady-state.",
-        "type": "int",
+        "type": "int32",
         "value": [
             {
                 "value": 256
@@ -712,7 +712,7 @@
         "section_1": "Fiscal Policy Parameters",
         "section_2": "Spending",
         "notes": "",
-        "type": "float",
+        "type": "float32",
         "number_dims": 1,
         "value": [
             {
@@ -734,7 +734,7 @@
         "section_1": "Fiscal Policy Parameters",
         "section_2": "Spending",
         "notes": "",
-        "type": "float",
+        "type": "float32",
         "number_dims": 1,
         "value": [
             {
@@ -756,7 +756,7 @@
         "section_1": "Fiscal Policy Parameters",
         "section_2": "Spending",
         "notes": "",
-        "type": "float",
+        "type": "float32",
         "number_dims": 1,
         "value": [
             {
@@ -778,7 +778,7 @@
         "section_1": "Fiscal Policy Parameters",
         "section_2": "Spending",
         "notes": "",
-        "type": "float",
+        "type": "float32",
         "number_dims": 1,
         "value": [
             {
@@ -800,7 +800,7 @@
         "section_1": "Fiscal Policy Parameters",
         "section_2": "Spending",
         "notes": "",
-        "type": "float",
+        "type": "float32",
         "number_dims": 1,
         "value": [
             {
@@ -822,7 +822,7 @@
         "section_1": "Fiscal Policy Parameters",
         "section_2": "Spending",
         "notes": "",
-        "type": "float",
+        "type": "float32",
         "number_dims": 1,
         "value": [
             {
@@ -844,7 +844,7 @@
         "section_1": "Fiscal Policy Parameters",
         "section_2": "Fiscal Closure Rules",
         "notes": "Lower rho_G => slower convergence.",
-        "type": "float",
+        "type": "float32",
         "value": [
             {
                 "value": 0.1
@@ -863,7 +863,7 @@
         "section_1": "Household Parameters",
         "section_2": "Endowments",
         "notes": "",
-        "type": "float",
+        "type": "float32",
         "value": [
             {
                 "value": 0.0
@@ -882,7 +882,7 @@
         "section_1": "Household Parameters",
         "section_2": "Endowments",
         "notes": "",
-        "type": "float",
+        "type": "float32",
         "value": [
             {
                 "value": 0.0
@@ -901,7 +901,7 @@
         "section_1": "Household Parameters",
         "section_2": "Endowments",
         "notes": "",
-        "type": "float",
+        "type": "float32",
         "number_dims": 1,
         "value": [
             {
@@ -923,7 +923,7 @@
         "section_1": "Fiscal Policy Parameters",
         "section_2": "Fiscal Closure Rules",
         "notes": "Note that depending upon the tax policy parameters, some debt to GDP ratios may not be achievable with positive government spending.",
-        "type": "float",
+        "type": "float32",
         "value": [
             {
                 "value": 2.0
@@ -941,7 +941,7 @@
         "description": "Debt to GDP ratio in the initial period.",
         "section_1": "Fiscal Policy Parameters",
         "notes": "Should be calibrated based on government debt held by the public to GDP in the model start year.",
-        "type": "float",
+        "type": "float32",
         "value": [
             {
                 "value": 0.78
@@ -959,7 +959,7 @@
         "description": "Government capital (aka infrastructure) to GDP ratio in the initial period.",
         "section_1": "Fiscal Policy Parameters",
         "notes": "Should be calibrated based on the value of public infrastructure to GDP in the model start year.",
-        "type": "float",
+        "type": "float32",
         "value": [
             {
                 "value": 0.0
@@ -977,7 +977,7 @@
         "description": "Parameter to scale the market interest rate to find interest rate on government debt.",
         "section_1": "Fiscal Policy Parameters",
         "notes": "",
-        "type": "float",
+        "type": "float32",
         "number_dims": 1,
         "value": [
             {
@@ -996,7 +996,7 @@
         "section_1": "Fiscal Policy Parameters",
         "description": "Parameter to shift the market interest rate to find interest rate on government debt.",
         "notes": "",
-        "type": "float",
+        "type": "float32",
         "number_dims": 1,
         "value": [
             {
@@ -1052,7 +1052,7 @@
         "section_1": "Fiscal Policy Parameters",
         "section_2": "Taxes",
         "notes": "This is the top marginal corporate income tax rate.",
-        "type": "float",
+        "type": "float32",
         "number_dims": 2,
         "value": [
             {
@@ -1074,7 +1074,7 @@
         "section_1": "Fiscal Policy Parameters",
         "section_2": "Taxes",
         "notes": "This affects the effective corporate income tax rate on the representative firm in the model",
-        "type": "float",
+        "type": "float32",
         "value": [
             {
                 "value": 0.55
@@ -1093,7 +1093,7 @@
         "section_1": "Fiscal Policy Parameters",
         "section_2": "Taxes",
         "notes": "This adjustment is necessary to match corporate income tax receipts found in the data.  It is computed as the ratio of the CIT/GDP from US data to CIT/GDP in the model (with this parameter =1)",
-        "type": "float",
+        "type": "float32",
         "number_dims": 1,
         "value": [
             {
@@ -1113,7 +1113,7 @@
         "section_1": "Fiscal Policy Parameters",
         "section_2": "Taxes",
         "notes": "This credit reduced the cost of new investment by the specified rate",
-        "type": "float",
+        "type": "float32",
         "number_dims": 2,
         "value": [
             {
@@ -1135,7 +1135,7 @@
         "section_1": "Fiscal Policy Parameters",
         "section_2": "Taxes",
         "notes": "This policy parameter represents the effective consumption tax rate from sales taxes, VATs, and excise taxes by consumption good. Tax rates cab vary over time. It is thus a TxI array.",
-        "type": "float",
+        "type": "float32",
         "number_dims": 2,
         "value": [
             {
@@ -1157,7 +1157,7 @@
         "section_1": "Fiscal Policy Parameters",
         "section_2": "Taxes",
         "notes": "Cost-of-Capital-Calculator can help to calibrate this parameter.",
-        "type": "float",
+        "type": "float32",
         "number_dims": 2,
         "value": [
             {
@@ -1179,7 +1179,7 @@
         "section_1": "Fiscal Policy Parameters",
         "section_2": "Taxes",
         "notes": "",
-        "type": "float",
+        "type": "float32",
         "number_dims": 1,
         "value": [
             {
@@ -1201,7 +1201,7 @@
         "section_1": "Fiscal Policy Parameters",
         "section_2": "Taxes",
         "notes": "Must be positive to avoid division by zero when computing ETR and MTR for wealth tax",
-        "type": "float",
+        "type": "float32",
         "number_dims": 1,
         "value": [
             {
@@ -1223,7 +1223,7 @@
         "section_1": "Fiscal Policy Parameters",
         "section_2": "Taxes",
         "notes": "Set to 0 to have no wealth tax.",
-        "type": "float",
+        "type": "float32",
         "number_dims": 1,
         "value": [
             {
@@ -1245,7 +1245,7 @@
         "section_1": "Fiscal Policy Parameters",
         "section_2": "Taxes",
         "notes": "",
-        "type": "float",
+        "type": "float32",
         "number_dims": 1,
         "value": [
             {
@@ -1267,7 +1267,7 @@
         "section_1": "Fiscal Policy Parameters",
         "section_2": "Taxes",
         "notes": "Set to zero as default since tax functions include income and payroll taxes.",
-        "type": "float",
+        "type": "float32",
         "number_dims": 1,
         "value": [
             {
@@ -1289,7 +1289,7 @@
         "section_1": "Household Parameters",
         "section_2": "Behavioral Assumptions",
         "notes": "",
-        "type": "float",
+        "type": "float32",
         "number_dims": 1,
         "value": [
             {
@@ -1317,7 +1317,7 @@
         "section_1": "Household Parameters",
         "section_2": "Behavioral Assumptions",
         "notes": "",
-        "type": "float",
+        "type": "float32",
         "number_dims": 1,
         "value": [
             {
@@ -1439,7 +1439,7 @@
         "section_1": "Fiscal Policy Parameters",
         "section_2": "Spending",
         "notes": "The universal basic income (UBI) per child ages 0 through 17 can take positive or negative values (e.g., a negative value may be used to implement a head tax).",
-        "type": "float",
+        "type": "float32",
         "value": [
             {
                 "value": 0.0
@@ -1458,7 +1458,7 @@
         "section_1": "Fiscal Policy Parameters",
         "section_2": "Spending",
         "notes": "The universal basic income (UBI) per adult age 18 through 64 can take positive or negative values (e.g., a negative value may be used to implement a head tax).",
-        "type": "float",
+        "type": "float32",
         "value": [
             {
                 "value": 0.0
@@ -1477,7 +1477,7 @@
         "section_1": "Fiscal Policy Parameters",
         "section_2": "Spending",
         "notes": "The universal basic income (UBI) per adult age 65 can take positive or negative values (e.g., a negative value may be used to implement a head tax).",
-        "type": "float",
+        "type": "float32",
         "value": [
             {
                 "value": 0.0
@@ -1496,7 +1496,7 @@
         "section_1": "Fiscal Policy Parameters",
         "section_2": "Spending",
         "notes": "The maximum dollar (nominal) amount of universal basic income (UBI) per household can range from $0 per year to $40,000 per year ($3,333 per month).",
-        "type": "float",
+        "type": "float32",
         "value": [
             {
                 "value": 40000.0
@@ -1515,7 +1515,7 @@
         "section_1": "Fiscal Policy Parameters",
         "section_2": "Spending",
         "notes": "This SxJ matrix gives the fraction of total aggregate transfers going to each age s and ability type j.",
-        "type": "float",
+        "type": "float32",
         "number_dims": 2,
         "value": [
             {
@@ -2256,7 +2256,7 @@
         "section_1": "Household Parameters",
         "section_2": "Endowments",
         "notes": "This SxJ matrix gives the fraction of total aggregate remittances going to each age s and ability type j.",
-        "type": "float",
+        "type": "float32",
         "number_dims": 2,
         "value": [
             {
@@ -2997,7 +2997,7 @@
         "section_1": "Household Parameters",
         "section_2": "Endowments",
         "notes": "This SxJ matrix gives the fraction of total aggregate bequests going to each age s and ability type j.",
-        "type": "float",
+        "type": "float32",
         "number_dims": 2,
         "value": [
             {
@@ -3818,7 +3818,7 @@
         "section_1": "Fiscal Policy Parameters",
         "section_2": "Government Pension Parameters",
         "notes": "",
-        "type": "int",
+        "type": "int32",
         "number_dims": 1,
         "value": [
             {
@@ -3863,7 +3863,7 @@
         "section_1": "Fiscal Policy Parameters",
         "section_2": "Government Pension Parameters",
         "notes": "",
-        "type": "float",
+        "type": "float32",
         "value": [
             {
                 "value": 0.0
@@ -3882,7 +3882,7 @@
         "section_1": "Fiscal Policy Parameters",
         "section_2": "Government Pension Parameters",
         "notes": "indR = 0.0 for no survivor benefits, indR = 0.5 for survivor benefits",
-        "type": "float",
+        "type": "float32",
         "value": [
             {
                 "value": 0.0
@@ -3901,7 +3901,7 @@
         "section_1": "Fiscal Policy Parameters",
         "section_2": "Government Pension Parameters",
         "notes": "k = 0.5 - (6/13n), where n is the number of payments per year",
-        "type": "float",
+        "type": "float32",
         "value": [
             {
                 "value": 0.0
@@ -3920,7 +3920,7 @@
         "section_1": "Fiscal Policy Parameters",
         "section_2": "Government Pension Parameters",
         "notes": "",
-        "type": "float",
+        "type": "float32",
         "value": [
             {
                 "value": 0.0
@@ -3939,7 +3939,7 @@
         "section_1": "Fiscal Policy Parameters",
         "section_2": "Government Pension Parameters",
         "notes": "",
-        "type": "float",
+        "type": "float32",
         "value": [
             {
                 "value": 0.0
@@ -3958,7 +3958,7 @@
         "section_1": "Fiscal Policy Parameters",
         "section_2": "Government Pension Parameters",
         "notes": "Since there is not exit from the labor force in the model, the number of years of contributions is set exogenously.",
-        "type": "int",
+        "type": "int32",
         "value": [
             {
                 "value": 40
@@ -3977,7 +3977,7 @@
         "section_1": "Fiscal Policy Parameters",
         "section_2": "Government Pension Parameters",
         "notes": "US-styel Social Security AIME is computed using average earnings from the highest earnings years for the number of years specified here.",
-        "type": "int",
+        "type": "int32",
         "value": [
             {
                 "value": 35
@@ -3996,7 +3996,7 @@
         "section_1": "Fiscal Policy Parameters",
         "section_2": "Government Pension Parameters",
         "notes": "",
-        "type": "float",
+        "type": "float32",
         "value": [
             {
                 "value": 749.0
@@ -4015,7 +4015,7 @@
         "section_1": "Fiscal Policy Parameters",
         "section_2": "Government Pension Parameters",
         "notes": "",
-        "type": "float",
+        "type": "float32",
         "value": [
             {
                 "value": 4517.0
@@ -4034,7 +4034,7 @@
         "section_1": "Fiscal Policy Parameters",
         "section_2": "Government Pension Parameters",
         "notes": "",
-        "type": "float",
+        "type": "float32",
         "value": [
             {
                 "value": 0.9
@@ -4053,7 +4053,7 @@
         "section_1": "Fiscal Policy Parameters",
         "section_2": "Government Pension Parameters",
         "notes": "",
-        "type": "float",
+        "type": "float32",
         "value": [
             {
                 "value": 0.32
@@ -4072,7 +4072,7 @@
         "section_1": "Fiscal Policy Parameters",
         "section_2": "Government Pension Parameters",
         "notes": "",
-        "type": "float",
+        "type": "float32",
         "value": [
             {
                 "value": 0.15
@@ -4091,7 +4091,7 @@
         "section_1": "Fiscal Policy Parameters",
         "section_2": "Government Pension Parameters",
         "notes": "",
-        "type": "float",
+        "type": "float32",
         "value": [
             {
                 "value": 3501.0
@@ -4110,7 +4110,7 @@
         "section_1": "Fiscal Policy Parameters",
         "section_2": "Government Pension Parameters",
         "notes": "",
-        "type": "float",
+        "type": "float32",
         "value": [
             {
                 "value": 0.0
@@ -4129,7 +4129,7 @@
         "section_1": "Fiscal Policy Parameters",
         "section_2": "Government Pension Parameters",
         "notes": "This parameter willy only vary along the time path.  It is assumed to be one in the steady state.  The steady state retirement rate can be adjusted by changing the parameters of the retirement benefits function.",
-        "type": "float",
+        "type": "float32",
         "number_dims": 2,
         "value": [
             {
@@ -4209,7 +4209,7 @@
         "section_1": "Other Parameters",
         "section_2": "",
         "notes": "Calendar year for initial model period",
-        "type": "int",
+        "type": "int32",
         "value": [
             {
                 "value": 2025
@@ -4254,7 +4254,7 @@
         "section_1": "Fiscal Policy Parameters",
         "section_2": "Taxes",
         "notes": "Can be specified to vary by type J and over year T",
-        "type": "float",
+        "type": "float32",
         "number_dims": 2,
         "value": [
             {
@@ -4282,7 +4282,7 @@
         "section_1": "Fiscal Policy Parameters",
         "section_2": "Taxes",
         "notes": "Can be specified to vary by type J and over year T",
-        "type": "float",
+        "type": "float32",
         "number_dims": 2,
         "value": [
             {
@@ -4365,7 +4365,7 @@
         "description": "Parameter for convergence rate of functional iteration.",
         "section_1": "Model Solution Parameters",
         "notes": "",
-        "type": "float",
+        "type": "float32",
         "value": [
             {
                 "value": 0.4
@@ -4439,7 +4439,7 @@
         "description": "Max iterations for time path iteration.",
         "section_1": "Model Solution Parameters",
         "notes": "",
-        "type": "int",
+        "type": "int32",
         "value": [
             {
                 "value": 250
@@ -4457,7 +4457,7 @@
         "description": "Tolerance for convergence of steady state solution.",
         "section_1": "Model Solution Parameters",
         "notes": "",
-        "type": "float",
+        "type": "float32",
         "value": [
             {
                 "value": 1e-09
@@ -4475,7 +4475,7 @@
         "description": "Tolerance for convergence of time path solution.",
         "section_1": "Model Solution Parameters",
         "notes": "",
-        "type": "float",
+        "type": "float32",
         "value": [
             {
                 "value": 1e-05
@@ -4493,10 +4493,10 @@
         "description": "Tolerance for the resource constraint in the steady state solution.",
         "section_1": "Model Solution Parameters",
         "notes": "",
-        "type": "float",
+        "type": "float32",
         "value": [
             {
-                "value": 1e-08
+                "value": 1e-07
             }
         ],
         "validators": {
@@ -4511,7 +4511,7 @@
         "description": "Tolerance for the resource constraint in the time path solution.",
         "section_1": "Model Solution Parameters",
         "notes": "",
-        "type": "float",
+        "type": "float32",
         "value": [
             {
                 "value": 1e-04
@@ -4544,7 +4544,7 @@
         "description": "Initial guess of r for the SS solution.",
         "section_1": "Model Solution Parameters",
         "notes": "",
-        "type": "float",
+        "type": "float32",
         "value": [
             {
                 "value": 0.0648
@@ -4562,7 +4562,7 @@
         "description": "Initial guess of TR for the SS solution. This value is in model units and can therefore be any large positive number. We may have to adjust the maximum for this parameter from time to time.",
         "section_1": "Model Solution Parameters",
         "notes": "",
-        "type": "float",
+        "type": "float32",
         "value": [
             {
                 "value": 0.057
@@ -4580,7 +4580,7 @@
         "description": "Initial guess of factor for the SS solution.",
         "section_1": "Model Solution Parameters",
         "notes": "",
-        "type": "float",
+        "type": "float32",
         "value": [
             {
                 "value": 139355.154
@@ -4598,7 +4598,7 @@
         "description": "Population distribution (fraction at each age) over the time path.",
         "section_1": "Demographic Parameters",
         "notes": "",
-        "type": "float",
+        "type": "float32",
         "number_dims": 2,
         "value": [
             {
@@ -4619,7 +4619,7 @@
         "description": "Population distribution (fraction at each age) in the steady-state.",
         "section_1": "Demographic Parameters",
         "notes": "",
-        "type": "float",
+        "type": "float32",
         "number_dims": 1,
         "value": [
             {
@@ -4638,7 +4638,7 @@
         "description": "Population distribution (fraction at each age) in the period before the transition path begins.",
         "section_1": "Demographic Parameters",
         "notes": "",
-        "type": "float",
+        "type": "float32",
         "number_dims": 1,
         "value": [
             {
@@ -4657,7 +4657,7 @@
         "description": "Population growth rate over the time path.",
         "section_1": "Demographic Parameters",
         "notes": "",
-        "type": "float",
+        "type": "float32",
         "number_dims": 1,
         "value": [
             {
@@ -4676,7 +4676,7 @@
         "description": "Population growth rate in the steady-state.",
         "section_1": "Demographic Parameters",
         "notes": "",
-        "type": "float",
+        "type": "float32",
         "value": [
             {
                 "value": 0.0012907765315350872
@@ -4694,7 +4694,7 @@
         "description": "Immigration rates over the time path.",
         "section_1": "Demographic Parameters",
         "notes": "",
-        "type": "float",
+        "type": "float32",
         "number_dims": 2,
         "value": [
             {
@@ -4715,7 +4715,7 @@
         "description": "Age-specific mortality rates.",
         "section_1": "Demographic Parameters",
         "notes": "",
-        "type": "float",
+        "type": "float32",
         "number_dims": 2,
         "value": [
             {
@@ -4735,7 +4735,7 @@
         "section_1": "Fiscal Policy Parameters",
         "section_2": "Taxes",
         "notes": "",
-        "type": "float",
+        "type": "float32",
         "number_dims": 3,
         "array_first": false,
         "value": [
@@ -4758,7 +4758,7 @@
         "section_1": "Fiscal Policy Parameters",
         "section_2": "Taxes",
         "notes": "",
-        "type": "float",
+        "type": "float32",
         "number_dims": 3,
         "array_first": false,
         "value": [
@@ -4781,7 +4781,7 @@
         "section_1": "Fiscal Policy Parameters",
         "section_2": "Taxes",
         "notes": "",
-        "type": "float",
+        "type": "float32",
         "number_dims": 3,
         "array_first": false,
         "value": [
@@ -4804,7 +4804,7 @@
         "section_1": "Other Parameters",
         "section_2": "",
         "notes": "",
-        "type": "float",
+        "type": "float32",
         "value": [
             {
                 "value": 58644.924039576625
@@ -4823,7 +4823,7 @@
         "section_1": "Fiscal Policy Parameters",
         "section_2": "Taxes",
         "notes": "",
-        "type": "float",
+        "type": "float32",
         "number_dims": 1,
         "value": [
             {
