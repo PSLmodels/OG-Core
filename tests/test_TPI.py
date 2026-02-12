@@ -177,8 +177,8 @@ def dask_client():
     client = Client(cluster)
     yield client
     # teardown
-    client.close()
-    cluster.close()
+    # client.close()
+    # cluster.close()
 
 
 filename1 = "intial_SS_values_baseline.pkl"
@@ -266,9 +266,23 @@ def test_firstdoughnutring():
     )
     guesses, r, w, bq, rm, tr, theta, factor, ubi, j, initial_b = input_tuple
     p_tilde = 1.0  # needed for multi-industry version
+    p_i = 1.0  # needed for multi-industry version
     p = Specifications()
     test_list = TPI.firstdoughnutring(
-        guesses, r, w, p_tilde, bq, rm, tr, theta, factor, ubi, j, initial_b, p
+        guesses,
+        r,
+        w,
+        p_tilde,
+        p_i,
+        bq,
+        rm,
+        tr,
+        theta,
+        factor,
+        ubi,
+        j,
+        initial_b,
+        p,
     )
 
     expected_list = utils.safe_read_pickle(
@@ -323,12 +337,14 @@ def test_twist_doughnut(file_inputs, file_outputs):
         initial_b,
     ) = input_tuple
     p_tilde = np.ones_like(r)  # needed for multi-industry version
+    p_i = np.ones((r.shape[0], 1))  # needed for multi-industry version
     p = Specifications()
     input_tuple2 = (
         guesses,
         r,
         w,
         p_tilde,
+        p_i,
         bq,
         rm,
         tr,
@@ -434,6 +450,7 @@ param_updates9 = {
     "gamma": [0.3, 0.35, 0.4],
     "gamma_g": [0.1, 0.05, 0.15],
     "alpha_c": [0.2, 0.4, 0.4],
+    "c_min": [0.0, 0.0, 0.0],
     "initial_guess_r_SS": 0.11,
     "initial_guess_TR_SS": 0.07,
     "alpha_I": [0.01],
@@ -464,6 +481,7 @@ param_updates10 = {
     "gamma": [0.3, 0.35, 0.4],
     "gamma_g": [0.0, 0.0, 0.0],
     "alpha_c": [0.2, 0.4, 0.4],
+    "c_min": [0.0, 0.0, 0.0],
     "initial_guess_r_SS": 0.11,
     "initial_guess_TR_SS": 0.07,
     "debt_ratio_ss": 1.5,
@@ -492,6 +510,7 @@ param_updates11 = {
     "gamma": [0.3, 0.35, 0.4],
     "gamma_g": [0.0, 0.0, 0.0],
     "alpha_c": [0.2, 0.4, 0.3, 0.1],
+    "c_min": [0.0, 0.0, 0.0, 0.0],
     "initial_guess_r_SS": 0.11,
     "initial_guess_TR_SS": 0.07,
     "debt_ratio_ss": 1.5,
@@ -500,6 +519,35 @@ param_updates11 = {
 }
 filename11 = os.path.join(
     CUR_PATH, "test_io_data", "run_TPI_baseline_MneI.pkl"
+)
+param_updates12 = {
+    "start_year": 2023,
+    "budget_balance": True,
+    "frisch": 0.41,
+    "cit_rate": [[0.21, 0.25, 0.35]],
+    "M": 3,
+    "I": 4,
+    "io_matrix": np.array(
+        [
+            [0.3, 0.3, 0.4],
+            [0.6, 0.1, 0.3],
+            [0.25, 0.5, 0.25],
+            [0.0, 1.0, 0.0],
+        ]
+    ),
+    "epsilon": [1.0, 1.0, 1.0],
+    "gamma": [0.3, 0.35, 0.4],
+    "gamma_g": [0.0, 0.0, 0.0],
+    "alpha_c": [0.2, 0.4, 0.3, 0.1],
+    "c_min": [0.001, 0.0002, 0.0, 0.0003],
+    "initial_guess_r_SS": 0.11,
+    "initial_guess_TR_SS": 0.07,
+    "debt_ratio_ss": 1.5,
+    "alpha_T": alpha_T.tolist(),
+    "alpha_G": alpha_G.tolist(),
+}
+filename12 = os.path.join(
+    CUR_PATH, "test_io_data", "run_TPI_baseline_MneI_cmin.pkl"
 )
 
 
@@ -518,6 +566,7 @@ filename11 = os.path.join(
         (True, param_updates9, filename9),
         (True, param_updates10, filename10),
         (True, param_updates11, filename11),
+        (True, param_updates12, filename12),
     ],
     ids=[
         "Baseline, balanced budget",
@@ -531,6 +580,7 @@ filename11 = os.path.join(
         "Baseline, M=3 non-zero Kg",
         "Baseline, M=3 zero Kg",
         "Baseline, M!=I",
+        "Baseline, M!=I, cmin>0",
     ],
 )
 def test_run_TPI_full_run(
@@ -581,6 +631,7 @@ def test_run_TPI_full_run(
     # Need to run SS first to get results
     SS.ENFORCE_SOLUTION_CHECKS = True
     ss_outputs = SS.run_SS(p, client=dask_client)
+    # ss_outputs = SS.run_SS(p, client=None)
 
     if p.baseline:
         utils.mkdirs(os.path.join(p.baseline_dir, "SS"))
@@ -606,20 +657,24 @@ def test_run_TPI_full_run(
     except KeyError:
         pass
 
+    # if old variable names, update keys with VAR_NAME_MAPPING
+    if "Y_vec" in expected_dict.keys():
+        expected_dict_updated = {}
+        for k, v in expected_dict.items():
+            expected_dict_updated[VAR_NAME_MAPPING[k]] = v
+        expected_dict = expected_dict_updated
+
     for k, v in expected_dict.items():
         print("Testing, ", k)
         try:
             print(
                 "Diff = ",
-                np.abs(test_dict[VAR_NAME_MAPPING[k]][: p.T] - v[: p.T]).max(),
+                np.abs(test_dict[k][: p.T] - v[: p.T]).max(),
             )
         except ValueError:
             print(
                 "Diff = ",
-                np.abs(
-                    test_dict[VAR_NAME_MAPPING[k]][: p.T, :, :]
-                    - v[: p.T, :, :]
-                ).max(),
+                np.abs(test_dict[k][: p.T, :, :] - v[: p.T, :, :]).max(),
             )
 
     for k, v in expected_dict.items():
@@ -627,10 +682,16 @@ def test_run_TPI_full_run(
         try:
             print(
                 "Diff = ",
-                np.abs(test_dict[VAR_NAME_MAPPING[k]][: p.T] - v[: p.T]).max(),
+                np.abs(test_dict[k][: p.T] - v[: p.T]).max(),
             )
+            if np.abs(test_dict[k][: p.T] - v[: p.T]).max() > 1e-5:
+                # print the indices where the difference is large
+                indices = np.where(
+                    np.abs(test_dict[k][: p.T] - v[: p.T]) > 1e-5
+                )
+                print("Indices with large difference:", indices)
             assert np.allclose(
-                test_dict[VAR_NAME_MAPPING[k]][: p.T],
+                test_dict[k][: p.T],
                 v[: p.T],
                 rtol=1e-04,
                 atol=1e-04,
@@ -638,13 +699,16 @@ def test_run_TPI_full_run(
         except ValueError:
             print(
                 "Diff = ",
-                np.abs(
-                    test_dict[VAR_NAME_MAPPING[k]][: p.T, :, :]
-                    - v[: p.T, :, :]
-                ).max(),
+                np.abs(test_dict[k][: p.T, :, :] - v[: p.T, :, :]).max(),
             )
+            if np.abs(test_dict[k][: p.T, :, :] - v[: p.T, :, :]).max() > 1e-5:
+                # print the indices where the difference is large
+                indices = np.where(
+                    np.abs(test_dict[k][: p.T, :, :] - v[: p.T, :, :]) > 1e-5
+                )
+                print("Indices with large difference:", indices)
             assert np.allclose(
-                test_dict[VAR_NAME_MAPPING[k]][: p.T, :, :],
+                test_dict[k][: p.T, :, :],
                 v[: p.T, :, :],
                 rtol=1e-04,
                 atol=1e-04,
@@ -722,7 +786,8 @@ def test_run_TPI(baseline, param_updates, filename, tmpdir, dask_client):
 
     # Need to run SS first to get results
     SS.ENFORCE_SOLUTION_CHECKS = False
-    ss_outputs = SS.run_SS(p, client=dask_client)
+    # ss_outputs = SS.run_SS(p, client=dask_client)
+    ss_outputs = SS.run_SS(p, client=None)
 
     if p.baseline:
         utils.mkdirs(os.path.join(p.baseline_dir, "SS"))
@@ -805,6 +870,21 @@ param_updates8 = {
 filename8 = os.path.join(
     CUR_PATH, "test_io_data", "run_TPI_outputs_baseline_Kg_nonzero_2.pkl"
 )
+param_updates10 = {
+    "J": 1,
+    "lambdas": np.array([1.0]),
+    "e": np.ones((40, 1)),
+    "beta_annual": [0.96],
+    "chi_b": [80],
+    "labor_income_tax_noncompliance_rate": [[0.0]],
+    "capital_income_tax_noncompliance_rate": [[0.0]],
+    "income_tax_filer": [[1]],
+    "wealth_tax_filer": [[1]],
+    "eta": np.ones((40, 1)) * (1 / 40),
+    "eta_RM": np.ones((40, 1)) * (1 / 40),
+    "replacement_rate_adjust": [[1.0]],
+}
+filename10 = os.path.join(CUR_PATH, "test_io_data", "run_TPI_outputs_J1.pkl")
 # read in mono tax funcs (not age specific)
 if sys.version_info[1] < 11:
     dict_params = utils.safe_read_pickle(
@@ -833,6 +913,7 @@ if sys.version_info[1] < 11:
     filename9 = os.path.join(
         CUR_PATH, "test_io_data", "run_TPI_outputs_mono_2.pkl"
     )
+
 
 if sys.version_info[1] < 11:
     test_list = [
@@ -864,6 +945,7 @@ else:
         (True, {}, filename1),
         (False, param_updates4, filename4),
         (True, param_updates8, filename8),
+        (True, param_updates10, filename10),
     ]
     id_list = [
         "Baseline, balanced budget",
@@ -873,6 +955,7 @@ else:
         "Baseline",
         "Reform, baseline spending",
         "Baseline, Kg>0",
+        "J=1",
     ]
 
 
@@ -946,17 +1029,22 @@ def test_run_TPI_extra(baseline, param_updates, filename, tmpdir, dask_client):
     test_dict = TPI.run_TPI(p, client=dask_client)
     expected_dict = utils.safe_read_pickle(filename)
 
+    # if old variable names, update keys with VAR_NAME_MAPPING
+    if "Y_vec" in expected_dict.keys():
+        expected_dict_updated = {}
+        for k, v in expected_dict.items():
+            expected_dict_updated[VAR_NAME_MAPPING[k]] = v
+        expected_dict = expected_dict_updated
+
     for k, v in expected_dict.items():
         print("Checking ", k)
         try:
             print(
                 "Diff = ",
-                np.absolute(
-                    test_dict[VAR_NAME_MAPPING[k]][: p.T] - v[: p.T]
-                ).max(),
+                np.absolute(test_dict[k][: p.T] - v[: p.T]).max(),
             )
             assert np.allclose(
-                test_dict[VAR_NAME_MAPPING[k]][: p.T],
+                test_dict[k][: p.T],
                 v[: p.T],
                 rtol=1e-04,
                 atol=1e-04,
@@ -964,13 +1052,10 @@ def test_run_TPI_extra(baseline, param_updates, filename, tmpdir, dask_client):
         except ValueError:
             print(
                 "Diff = ",
-                np.absolute(
-                    test_dict[VAR_NAME_MAPPING[k]][: p.T, :, :]
-                    - v[: p.T, :, :]
-                ).max(),
+                np.absolute(test_dict[k][: p.T, :, :] - v[: p.T, :, :]).max(),
             )
             assert np.allclose(
-                test_dict[VAR_NAME_MAPPING[k]][: p.T, :, :],
+                test_dict[k][: p.T, :, :],
                 v[: p.T, :, :],
                 rtol=1e-04,
                 atol=1e-04,

@@ -16,7 +16,7 @@ from ogcore.txfunc import get_tax_rates
 """
 
 
-def ETR_wealth(b, h_wealth, m_wealth, p_wealth):
+def ETR_wealth(b, h_wealth, m_wealth, p_wealth, tax_filer):
     r"""
     Calculates the effective tax rate on wealth.
 
@@ -29,6 +29,7 @@ def ETR_wealth(b, h_wealth, m_wealth, p_wealth):
         h_wealth (scalar): parameter of wealth tax function
         p_wealth (scalar): parameter of wealth tax function
         m_wealth (scalar): parameter of wealth tax function
+        tax_filer (Numpy array): array indicating tax filer status
 
     Returns:
         tau_w (Numpy array): effective tax rate on wealth, size = SxJ
@@ -36,10 +37,13 @@ def ETR_wealth(b, h_wealth, m_wealth, p_wealth):
     """
     tau_w = (p_wealth * h_wealth * b) / (h_wealth * b + m_wealth)
 
+    tau_w = tau_w * tax_filer
+    # TODO: figure out how to handle non-filers wih diff j and over time path
+
     return tau_w
 
 
-def MTR_wealth(b, h_wealth, m_wealth, p_wealth):
+def MTR_wealth(b, h_wealth, m_wealth, p_wealth, tax_filer):
     r"""
     Calculates the marginal tax rate on wealth from the wealth tax.
 
@@ -52,14 +56,17 @@ def MTR_wealth(b, h_wealth, m_wealth, p_wealth):
         h_wealth (scalar): parameter of wealth tax function
         p_wealth (scalar): parameter of wealth tax function
         m_wealth (scalar): parameter of wealth tax function
+        tax_filer (Numpy array): array indicating tax filer status
 
     Returns:
         tau_prime (Numpy array): marginal tax rate on wealth, size = SxJ
 
     """
-    tau_prime = ETR_wealth(b, h_wealth, m_wealth, p_wealth) * 2 - (
+    tau_prime = ETR_wealth(b, h_wealth, m_wealth, p_wealth, tax_filer) * 2 - (
         (h_wealth**2 * p_wealth * b**2) / ((b * h_wealth + m_wealth) ** 2)
     )
+    tau_prime = tau_prime * tax_filer
+    # TODO: figure out how to handle non-filers in TPI when j is None
 
     return tau_prime
 
@@ -74,6 +81,7 @@ def ETR_income(
     etr_params,
     labor_noncompliance_rate,
     capital_noncompliance_rate,
+    tax_filer,
     p,
 ):
     """
@@ -91,6 +99,7 @@ def ETR_income(
             parameters or nonparametric function
         labor_noncompliance_rate (Numpy array): income tax noncompliance rate for labor income
         capital_noncompliance_rate (Numpy array): income tax noncompliance rate for capital income
+        tax_filer (Numpy array): array indicating tax filer status
         p (OG-Core Specifications object): model parameters
 
     Returns:
@@ -107,7 +116,9 @@ def ETR_income(
         etr_params, X, Y, None, p.tax_func_type, "etr", for_estimation=False
     )
 
-    return tau * (1 - noncompliance_rate)
+    tau = tau * (1 - noncompliance_rate) * tax_filer
+
+    return tau
 
 
 def MTR_income(
@@ -121,6 +132,7 @@ def MTR_income(
     etr_params,
     mtr_params,
     noncompliance_rate,
+    tax_filer,
     p,
 ):
     r"""
@@ -141,6 +153,7 @@ def MTR_income(
         mtr_params (list): list of marginal tax rate function
             parameters or nonparametric function
         noncompliance_rate (Numpy array): income tax noncompliance rate
+        tax_filer (Numpy array): array indicating tax filer status
         p (OG-Core Specifications object): model parameters
 
     Returns:
@@ -175,7 +188,9 @@ def MTR_income(
             for_estimation=False,
         )
 
-    return tau * (1 - noncompliance_rate)
+    tau = tau * (1 - noncompliance_rate) * tax_filer
+
+    return tau
 
 
 def get_biz_tax(w, Y, L, K, p_m, p, m, method):
@@ -287,7 +302,7 @@ def net_taxes(
     )
     T_BQ = bequest_tax_liab(r, b, bq, t, j, method, p)
     T_W = wealth_tax_liab(r, b, t, j, method, p)
-
+    # print("Net taxes shapes = ", T_I.shape, pension.shape, T_BQ.shape, T_W.shape)
     net_tax = T_I - pension + T_BQ + T_W - tr - ubi
 
     return net_tax
@@ -328,6 +343,7 @@ def income_tax_liab(r, w, b, n, factor, t, j, method, e, etr_params, p):
             capital_income_tax_compliance_rate = (
                 p.capital_income_tax_noncompliance_rate[t, j]
             )
+            tax_filer = p.income_tax_filer[t, j]
         else:
             labor_income_tax_compliance_rate = (
                 p.labor_income_tax_noncompliance_rate[-1, j]
@@ -335,6 +351,7 @@ def income_tax_liab(r, w, b, n, factor, t, j, method, e, etr_params, p):
             capital_income_tax_compliance_rate = (
                 p.capital_income_tax_noncompliance_rate[-1, j]
             )
+            tax_filer = p.income_tax_filer[-1, j]
     else:
         if method == "TPI":
             r = utils.to_timepath_shape(r)
@@ -345,6 +362,7 @@ def income_tax_liab(r, w, b, n, factor, t, j, method, e, etr_params, p):
             capital_income_tax_compliance_rate = (
                 p.capital_income_tax_noncompliance_rate[t, :]
             )
+            tax_filer = p.income_tax_filer[t, :]
         else:
             labor_income_tax_compliance_rate = (
                 p.labor_income_tax_noncompliance_rate[-1, :]
@@ -352,8 +370,10 @@ def income_tax_liab(r, w, b, n, factor, t, j, method, e, etr_params, p):
             capital_income_tax_compliance_rate = (
                 p.capital_income_tax_noncompliance_rate[-1, :]
             )
+            tax_filer = p.income_tax_filer[-1, :]
     income = r * b + w * e * n
     labor_income = w * e * n
+
     T_I = (
         ETR_income(
             r,
@@ -365,10 +385,12 @@ def income_tax_liab(r, w, b, n, factor, t, j, method, e, etr_params, p):
             etr_params,
             labor_income_tax_compliance_rate,
             capital_income_tax_compliance_rate,
+            tax_filer,
             p,
         )
         * income
     )
+
     if method == "SS":
         T_P = p.tau_payroll[-1] * labor_income
     elif method == "TPI":
@@ -413,12 +435,25 @@ def wealth_tax_liab(r, b, t, j, method, p):
         if method == "TPI":
             if b.ndim == 2:
                 r = r.reshape(r.shape[0], 1)
+            tax_filer = p.wealth_tax_filer[:, j]  # TODO check this
+        else:
+            tax_filer = p.wealth_tax_filer[-1, j]
     else:
         if method == "TPI":
             r = utils.to_timepath_shape(r)
+            tax_filer = p.wealth_tax_filer[:, :]
+        elif method == "TPI_scalar":
+            tax_filer = p.tax_filer[t, :]
+        elif method == "SS":
+            tax_filer = p.wealth_tax_filer[-1, :]
 
     if method == "SS":
-        T_W = ETR_wealth(b, p.h_wealth[-1], p.m_wealth[-1], p.p_wealth[-1]) * b
+        T_W = (
+            ETR_wealth(
+                b, p.h_wealth[-1], p.m_wealth[-1], p.p_wealth[-1], tax_filer
+            )
+            * b
+        )
     elif method == "TPI":
         length = r.shape[0]
         if len(b.shape) == 1:
@@ -428,6 +463,7 @@ def wealth_tax_liab(r, b, t, j, method, p):
                     p.h_wealth[t : t + length],
                     p.m_wealth[t : t + length],
                     p.p_wealth[t : t + length],
+                    tax_filer[t : t + length],
                 )
                 * b
             )
@@ -438,6 +474,7 @@ def wealth_tax_liab(r, b, t, j, method, p):
                     p.h_wealth[t : t + length],
                     p.m_wealth[t : t + length],
                     p.p_wealth[t : t + length],
+                    tax_filer[t : t + length],
                 )
                 * b
             )
@@ -448,11 +485,17 @@ def wealth_tax_liab(r, b, t, j, method, p):
                     p.h_wealth[t : t + length].reshape(length, 1, 1),
                     p.m_wealth[t : t + length].reshape(length, 1, 1),
                     p.p_wealth[t : t + length].reshape(length, 1, 1),
+                    tax_filer[t : t + length, :].reshape(length, 1, p.J),
                 )
                 * b
             )
     elif method == "TPI_scalar":
-        T_W = ETR_wealth(b, p.h_wealth[0], p.m_wealth[0], p.p_wealth[0]) * b
+        T_W = (
+            ETR_wealth(
+                b, p.h_wealth[0], p.m_wealth[0], p.p_wealth[0], tax_filer
+            )
+            * b
+        )
 
     return T_W
 
