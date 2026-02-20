@@ -330,6 +330,10 @@ net_tax3 = np.array([[0.1, 1.1], [0.4, 0.44], [0.6, 1.7]])
 j3 = None
 
 p4 = Specifications()
+p4.T = 4
+p4.S = 3
+p4.J = 2
+p4.I = 5
 p4.e = np.array([[1.0, 2.1], [0.4, 0.5], [1.6, 0.9]])
 p4.lambdas = np.array([0.7, 0.3])
 p4.g_y = 0.05
@@ -369,14 +373,18 @@ BQ4 = np.tile(
 )
 bq4 = BQ4 / p4.lambdas.reshape(1, 1, 2)
 rm4 = np.zeros_like(bq4)
-tau_c4 = np.array(
+tau_c2D = np.array(
     [
-        np.array([[0.02, 0.03], [0.04, 0.05], [0.055, 0.066]]),
-        np.array([[0.07, 0.08], [0.02, 0.01], [0.0, 0.04]]),
-        np.array([[0.01, 0.02], [0.14, 0.15], [0.05, 0.06]]),
-        np.array([[0.04, 0.06], [0.099, 0.044], [0.035, 0.065]]),
+        [0.04, 0.06, 0.055, 0.066, 0.10],
+        [0.04, 0.06, 0.055, 0.066, 0.10],
+        [0.04, 0.06, 0.055, 0.066, 0.10],
+        [0.04, 0.06, 0.055, 0.066, 0.10],
     ]
 )
+c_min4 = np.array([0.001, 0.002, 0.003, 0.0, 0.004])
+p4.c_min = c_min4
+min_c_expend = ((1 + tau_c2D) * c_min4.reshape(1, p4.I)).sum(axis=1)
+p4.tau_c = tau_c2D
 net_tax4 = np.array(
     [
         np.array([[0.01, 0.02], [0.4, 0.5], [0.05, 0.06]]),
@@ -389,15 +397,15 @@ j4 = None
 
 test_data = [
     (
-        (r1, w1, b1, b_splus1_1, n1, bq1, rm1, net_tax1, p1),
+        (r1, w1, b1, b_splus1_1, n1, bq1, rm1, net_tax1, p1, "SS"),
         1.288650006,
     ),
     (
-        (r2, w2, b2, b_splus1_2, n2, bq2, rm2, net_tax2, p2),
+        (r2, w2, b2, b_splus1_2, n2, bq2, rm2, net_tax2, p2, "SS"),
         np.array([1.288650006, 13.76350909, 5.188181864]),
     ),
     (
-        (r3, w3, b3, b_splus1_3, n3, bq3, rm3, net_tax3, p3),
+        (r3, w3, b3, b_splus1_3, n3, bq3, rm3, net_tax3, p3, "SS"),
         np.array(
             [
                 [4.042579933, 0.3584699],
@@ -407,7 +415,7 @@ test_data = [
         ),
     ),
     (
-        (r4, w4, b4, b_splus1_4, n4, bq4, rm4, net_tax4, p4),
+        (r4, w4, b4, b_splus1_4, n4, bq4, rm4, net_tax4, p4, "TPI"),
         np.array(
             [
                 np.array(
@@ -439,7 +447,8 @@ test_data = [
                     ]
                 ),
             ]
-        ),
+        )
+        - np.reshape(min_c_expend, (4, 1, 1)),
     ),
 ]
 
@@ -451,10 +460,28 @@ test_data = [
 )
 def test_get_cons(model_args, expected):
     # Test consumption calculation
-    r, w, b, b_splus1, n, bq, rm, net_tax, p = model_args
+    r, w, b, b_splus1, n, bq, rm, net_tax, p, method = model_args
     p_tilde = np.ones_like(w)
+    p_i = np.ones((p.T, p.I))
+    if method == "SS":
+        tau_c = p.tau_c[-1, :]
+    else:
+        tau_c = p.tau_c
     test_value = household.get_cons(
-        r, w, p_tilde, b, b_splus1, n, bq, rm, net_tax, p.e, p
+        r,
+        w,
+        p_tilde,
+        p_i,
+        b,
+        b_splus1,
+        n,
+        bq,
+        rm,
+        net_tax,
+        p.e,
+        tau_c,
+        p,
+        method,
     )
 
     assert np.allclose(test_value, expected)
@@ -480,6 +507,8 @@ p1.S = 3
 p1.T = 3
 p1.labor_income_tax_noncompliance_rate = np.zeros((p1.T + p1.S, p1.J))
 p1.capital_income_tax_noncompliance_rate = np.zeros((p1.T + p1.S, p1.J))
+p1.income_tax_filer = np.ones((p1.T, p1.J))
+p1.wealth_tax_filer = np.ones((p1.T, p1.J))
 p1.analytical_mtrs = False
 etr_params = np.array(
     [
@@ -723,13 +752,16 @@ def test_FOC_savings(model_vars, in_params, expected):
     )
     if method == "TPI":
         p_tilde = np.ones_like(w)
+        p_i = np.ones((params.T, params.I))
     else:
         p_tilde = np.array([1.0])
+        p_i = np.array([1.0])
     if j is not None:
         test_value = household.FOC_savings(
             r,
             w,
             p_tilde,
+            p_i,
             b,
             b_splus1,
             n,
@@ -752,6 +784,7 @@ def test_FOC_savings(model_vars, in_params, expected):
             r,
             w,
             p_tilde,
+            p_i,
             b,
             b_splus1,
             n,
@@ -795,6 +828,8 @@ p1.S = 3
 p1.T = 3
 p1.labor_income_tax_noncompliance_rate = np.zeros((p1.T + p1.S, p1.J))
 p1.capital_income_tax_noncompliance_rate = np.zeros((p1.T + p1.S, p1.J))
+p1.income_tax_filer = np.ones((p1.T, p1.J))
+p1.wealth_tax_filer = np.ones((p1.T, p1.J))
 p1.analytical_mtrs = False
 etr_params = np.array(
     [
@@ -1015,12 +1050,15 @@ def test_FOC_labor(model_vars, params, expected):
     )
     if method == "TPI":
         p_tilde = np.ones_like(w)
+        p_i = np.ones((params.T, params.I))
     else:
         p_tilde = np.array([1.0])
+        p_i = np.array([1.0])
     test_value = household.FOC_labor(
         r,
         w,
         p_tilde,
+        p_i,
         b,
         b_splus1,
         n,
@@ -1093,23 +1131,65 @@ def test_constraint_checker_TPI(bssmat, nssmat, cssmat, ltilde):
     assert True
 
 
-def test_ci():
+c_s = np.array([2.0, 3.0, 5.0, 7.0]).reshape(4, 1)
+p_i = np.array([1.1, 0.8, 1.0])
+p_tilde = np.array([2.3])
+tau_c = np.array([0.2, 0.3, 0.5])
+alpha_c = np.array([0.5, 0.3, 0.2])
+c_min = np.array([0.01, 0.02, 0.0])
+expected_ci = np.array(
+    [
+        [
+            1.742424242 + 0.01,
+            2.613636364 + 0.01,
+            4.356060606 + 0.01,
+            6.098484848 + 0.01,
+        ],
+        [
+            1.326923077 + 0.02,
+            1.990384615 + 0.02,
+            3.317307692 + 0.02,
+            4.644230769 + 0.02,
+        ],
+        [
+            0.613333333 + 0.0,
+            0.92 + 0.0,
+            1.533333333 + 0.0,
+            2.146666667 + 0.0,
+        ],
+    ]
+).reshape(3, 4, 1)
+
+c_s_tpi = np.tile(c_s.reshape(1, 4, 1), (3, 1, 1))
+p_i_tpi = np.tile(p_i.reshape(1, 3), (3, 1))
+p_tilde_tpi = np.array([2.3, 2.3, 2.3])
+tau_c_tpi = np.tile(tau_c.reshape(1, 3), (3, 1))
+expected_ci_tpi = np.tile(expected_ci.reshape(1, 4, 3), (3, 1, 1))
+
+
+@pytest.mark.parametrize(
+    "c_s,p_i,p_tilde,tau_c,alpha_c,c_min,method,expected",
+    [
+        (c_s, p_i, p_tilde, tau_c, alpha_c, c_min, "SS", expected_ci),
+        (
+            c_s_tpi,
+            p_i_tpi,
+            p_tilde_tpi,
+            tau_c_tpi,
+            alpha_c,
+            c_min,
+            "TPI",
+            expected_ci_tpi,
+        ),
+    ],
+    ids=["SS", "TPI"],
+)
+def test_get_ci(c_s, p_i, p_tilde, tau_c, alpha_c, c_min, method, expected):
     """
     Test of the get_ci function
     """
-    c_s = np.array([2.0, 3.0, 5.0, 7.0]).reshape(4, 1)
-    p_i = np.array([1.1, 0.8, 1.0])
-    p_tilde = np.array([2.3])
-    tau_c = np.array([0.2, 0.3, 0.5])
-    alpha_c = np.array([0.5, 0.3, 0.2])
-    expected_ci = np.array(
-        [
-            [1.742424242, 2.613636364, 4.356060606, 6.098484848],
-            [1.326923077, 1.990384615, 3.317307692, 4.644230769],
-            [0.613333333, 0.92, 1.533333333, 2.146666667],
-        ]
-    ).reshape(3, 4, 1)
-
-    test_ci = household.get_ci(c_s, p_i, p_tilde, tau_c, alpha_c)
+    test_ci = household.get_ci(
+        c_s, p_i, p_tilde, tau_c, alpha_c, c_min, method=method
+    )
 
     assert np.allclose(test_ci, expected_ci)

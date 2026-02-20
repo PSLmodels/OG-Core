@@ -8,7 +8,7 @@ import sys
 import pandas as pd
 import numpy as np
 from ogcore import utils, output_tables
-
+from ogcore.parameters import Specifications
 
 # Load in test results and parameters
 CUR_PATH = os.path.abspath(os.path.dirname(__file__))
@@ -18,46 +18,37 @@ base_ss = utils.safe_read_pickle(
 base_tpi = utils.safe_read_pickle(
     os.path.join(CUR_PATH, "test_io_data", "TPI_vars_baseline.pkl")
 )
-if sys.version_info[1] == 11:
-    base_params = utils.safe_read_pickle(
-        os.path.join(
-            CUR_PATH, "test_io_data", "model_params_baseline_v311.pkl"
-        )
-    )
-elif sys.version_info[1] == 12:
-    base_params = utils.safe_read_pickle(
-        os.path.join(
-            CUR_PATH, "test_io_data", "model_params_baseline_v312.pkl"
-        )
-    )
-elif sys.version_info[1] == 13:
-    base_params = utils.safe_read_pickle(
-        os.path.join(CUR_PATH, "test_io_data", "model_params_baseline.pkl")
-    )
-else:
-    # Raise assertion error
-    assert False, "Unsupported Python version"
+
 reform_ss = utils.safe_read_pickle(
     os.path.join(CUR_PATH, "test_io_data", "SS_vars_reform.pkl")
 )
 reform_tpi = utils.safe_read_pickle(
     os.path.join(CUR_PATH, "test_io_data", "TPI_vars_reform.pkl")
 )
-if sys.version_info[1] == 11:
-    reform_params = utils.safe_read_pickle(
-        os.path.join(CUR_PATH, "test_io_data", "model_params_reform_v311.pkl")
-    )
-elif sys.version_info[1] == 12:
-    reform_params = utils.safe_read_pickle(
-        os.path.join(CUR_PATH, "test_io_data", "model_params_reform_v312.pkl")
-    )
-elif sys.version_info[1] == 13:
-    reform_params = utils.safe_read_pickle(
-        os.path.join(CUR_PATH, "test_io_data", "model_params_reform.pkl")
-    )
-else:
-    # Raise assertion error
-    assert False, "Unsupported Python version"
+base_params = Specifications()
+base_params.update_specifications(
+    {
+        "M": 3,
+        "gamma": [0.5, 0.5, 0.5],
+        "gamma_g": [0.0, 0.0, 0.0],
+        "epsilon": [0.5, 0.5, 0.5],
+        "I": 3,
+        "alpha_c": [0.3, 0.4, 0.3],
+        "io_matrix": np.eye(3),
+    }
+)
+reform_params = Specifications()
+reform_params.update_specifications(
+    {
+        "M": 3,
+        "gamma": [0.5, 0.5, 0.5],
+        "gamma_g": [0.0, 0.0, 0.0],
+        "epsilon": [0.5, 0.5, 0.5],
+        "I": 3,
+        "alpha_c": [0.3, 0.4, 0.3],
+        "io_matrix": np.eye(3),
+    }
+)
 # add investment tax credit parameter that not in cached parameters
 base_params.inv_tax_credit = np.zeros(
     (base_params.T + base_params.S, base_params.M)
@@ -166,12 +157,22 @@ def test_dynamic_revenue_decomposition(include_business_tax, full_break_out):
     base_params.capital_income_tax_noncompliance_rate = np.zeros(
         (base_params.T, base_params.J)
     )
+    base_params.income_tax_filer = np.ones((base_params.T, base_params.J))
+    base_params.wealth_tax_filer = np.ones((base_params.T, base_params.J))
     reform_params.labor_income_tax_noncompliance_rate = np.zeros(
         (reform_params.T, reform_params.J)
     )
     reform_params.capital_income_tax_noncompliance_rate = np.zeros(
         (reform_params.T, reform_params.J)
     )
+    reform_params.income_tax_filer = np.ones(
+        (reform_params.T, reform_params.J)
+    )
+    reform_params.wealth_tax_filer = np.ones(
+        (reform_params.T, reform_params.J)
+    )
+    base_params.tax_filer = np.ones(base_params.J)
+    reform_params.tax_filer = np.ones(reform_params.J)
     # check if tax parameters are a numpy array
     # this is relevant for cached parameter arrays saved before
     # tax params were put in lists

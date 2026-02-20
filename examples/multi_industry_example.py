@@ -19,7 +19,6 @@ from ogcore.utils import safe_read_pickle
 import matplotlib.pyplot as plt
 import ogcore
 
-
 ogcore.TPI.ENFORCE_SOLUTION_CHECKS = False
 
 # Use a custom matplotlib style file for plots

@@ -56,9 +56,6 @@ def _get_tax_rates_dep_numba(X, Y, A, B, C, D, max_x, max_y, share,
     X2 = X * X
     Y2 = Y * Y
 
-    # tau_x = (max_x - min_x) * (A * X2 + B * X) / (A * X2 + B * X + 1) + min_x
-    # tau_y = (max_y - min_y) * (C * Y2 + D * Y) / (C * Y2 + D * Y + 1) + min_y
-
     n = X.shape[0]
     txrates = np.empty(n, dtype=np.float64)
 
@@ -98,7 +95,6 @@ def _get_tax_rates_dep_mtr_labor_numba(X, Y, A, B, C, D, max_x, max_y, share,
 
         etr = ((tau_x + shift_x) ** share) * ((tau_y + shift_y) ** (1.0 - share)) + shift
 
-        # d_etr for labor income (not capital)
         d_etr = (share * ((tau_x + shift_x) ** (share - 1.0)) *
                  (max_x - min_x) * ((2.0 * A * X[i] + B) / ((ax2_bx + 1.0) ** 2)) *
                  ((tau_y + shift_y) ** (1.0 - share)))
@@ -132,7 +128,6 @@ def _get_tax_rates_dep_mtr_capital_numba(X, Y, A, B, C, D, max_x, max_y, share,
 
         etr = ((tau_x + shift_x) ** share) * ((tau_y + shift_y) ** (1.0 - share)) + shift
 
-        # d_etr for capital income
         d_etr = ((1.0 - share) * ((tau_y + shift_y) ** (-share)) *
                  (max_y - min_y) * ((2.0 * C * Y[i] + D) / ((cy2_dy + 1.0) ** 2)) *
                  ((tau_x + shift_x) ** share))
@@ -140,6 +135,7 @@ def _get_tax_rates_dep_mtr_capital_numba(X, Y, A, B, C, D, max_x, max_y, share,
         txrates[i] = d_etr * income[i] + etr
 
     return txrates
+
 
 
 if not SHOW_RUNTIME:
@@ -420,7 +416,10 @@ def get_tax_rates(
                 txrates = tau_income + shift_income + shift
     elif tax_func_type == "linear":
         rate = np.squeeze(params[..., 0])
-        txrates = rate * np.ones_like(income)
+        try:
+            txrates = rate * np.ones_like(income)
+        except ValueError:
+            txrates = rate.reshape(income.shape) * np.ones_like(income)
     elif tax_func_type == "mono":
         if for_estimation:
             mono_interp = params[0]
@@ -524,7 +523,7 @@ def get_tax_rates(
                     ]
                     for t in range(income.shape[0])
                 ]
-        txrates = np.squeeze(np.array(txrates))
+        txrates = np.squeeze(np.array(txrates)).reshape(X.shape)
 
     return txrates
 
@@ -1846,7 +1845,7 @@ def tax_func_estimate(
         futures = client.compute(lazy_values)
         results = client.gather(futures)
     else:
-        results = results = compute(
+        results = compute(
             *lazy_values,
             scheduler=dask.multiprocessing.get,
             num_workers=num_workers,

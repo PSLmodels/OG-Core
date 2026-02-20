@@ -43,6 +43,14 @@ _Valid Range:_ min = 0.0 and max = 1.0
 _Out-of-Range Action:_ error  
 
 
+####  `c_min`  
+_Description:_ Minimum consumption levels for each good in the composite consumption good.  
+_Notes:_ Enter this value in model units.  
+_Value Type:_ float  
+_Valid Range:_ min = 0.0 and max = 100.0  
+_Out-of-Range Action:_ error  
+
+
 ####  `chi_b`  
 _Description:_ Household utility weight on bequests.  
 _Value Type:_ float  
@@ -114,6 +122,7 @@ _Out-of-Range Action:_ error
 ####  `use_zeta`  
 _Description:_ Indicator variable for whether or not to use the zeta matrix to distribute bequests.  
 _Value Type:_ bool  
+_Valid Choices:_[True, False]  
 
 
 ### Model Dimensions
@@ -395,6 +404,12 @@ _Valid Range:_ min = 0.0 and max = 10.0
 _Out-of-Range Action:_ error  
 
 
+####  `baseline_theta`  
+_Description:_ Flag for use in reform simulations to keep Social Security system replacement rate constant between baseline and reform runs.  
+_Value Type:_ bool  
+_Valid Choices:_[True, False]  
+
+
 ### Spending
 
 ####  `alpha_T`  
@@ -586,21 +601,25 @@ _Out-of-Range Action:_ error
 ####  `constant_rates`  
 _Description:_ Flag to use linear tax functions.  
 _Value Type:_ bool  
+_Valid Choices:_[True, False]  
 
 
 ####  `zero_taxes`  
 _Description:_ Flag to run model without any individual income taxes.  
 _Value Type:_ bool  
+_Valid Choices:_[True, False]  
 
 
 ####  `analytical_mtrs`  
 _Description:_ Flag to use analytically derived marginal tax rates in tax functions.  
 _Value Type:_ bool  
+_Valid Choices:_[True, False]  
 
 
 ####  `age_specific`  
 _Description:_ Flag to use analytically derived marginal tax rates in tax functions.  
 _Value Type:_ bool  
+_Valid Choices:_[True, False]  
 
 
 ####  `tax_func_type`  
@@ -730,6 +749,7 @@ _Out-of-Range Action:_ error
 _Description:_ Use constant demographics.  
 _Notes:_ This boolean allows one to use empirical mortality rates, but keep the population distribution constant across periods.  Note that immigration is shut off when this is true.  
 _Value Type:_ bool  
+_Valid Choices:_[True, False]  
 
 
 ####  `omega`  
@@ -842,6 +862,7 @@ _Out-of-Range Action:_ error
 ####  `reform_use_baseline_solution`  
 _Description:_ Whether or not the baseline SS solution is used for starting values when solving the reform.  
 _Value Type:_ bool  
+_Valid Choices:_[True, False]  
 
 
 ####  `initial_guess_r_SS`  

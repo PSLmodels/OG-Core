@@ -4,7 +4,6 @@ import copy
 from ogcore import aggregates as aggr
 from ogcore.parameters import Specifications
 
-
 p = Specifications()
 rho_vec = np.zeros((1, 40))
 rho_vec[0, -1] = 1.0
@@ -16,6 +15,8 @@ new_param_values = {
     "chi_n": np.ones(2),
     "labor_income_tax_noncompliance_rate": [[0.0]],
     "capital_income_tax_noncompliance_rate": [[0.0]],
+    "income_tax_filer": [[1.0]],
+    "wealth_tax_filer": [[1.0]],
     "replacement_rate_adjust": [[1.0]],
     "eta": (np.ones((40, 2)) / (40 * 2)),
     "lambdas": [0.6, 0.4],
@@ -62,6 +63,8 @@ new_param_values = {
     "e": np.ones((40, 2)),
     "labor_income_tax_noncompliance_rate": [[0.0]],
     "capital_income_tax_noncompliance_rate": [[0.0]],
+    "income_tax_filer": [[1.0]],
+    "wealth_tax_filer": [[1.0]],
     "replacement_rate_adjust": [[1.0]],
     "eta": (np.ones((40, 2)) / (40 * 2)),
     "lambdas": [0.6, 0.4],
@@ -145,6 +148,8 @@ new_param_values = {
     "e": np.ones((40, 2)),
     "labor_income_tax_noncompliance_rate": [[0.0]],
     "capital_income_tax_noncompliance_rate": [[0.0]],
+    "income_tax_filer": [[1.0]],
+    "wealth_tax_filer": [[1.0]],
     "replacement_rate_adjust": [[1.0]],
     "eta": (np.ones((40, 2)) / (40 * 2)),
     "lambdas": [0.6, 0.4],
@@ -204,6 +209,8 @@ new_param_values = {
     "e": np.ones((40, 2)),
     "labor_income_tax_noncompliance_rate": [[0.0]],
     "capital_income_tax_noncompliance_rate": [[0.0]],
+    "income_tax_filer": [[1.0]],
+    "wealth_tax_filer": [[1.0]],
     "replacement_rate_adjust": [[1.0]],
     "eta": (np.ones((40, 2)) / (40 * 2)),
     "lambdas": [0.6, 0.4],
@@ -1135,6 +1142,8 @@ new_param_values = {
     "M": 3,
     "labor_income_tax_noncompliance_rate": [[0.0]],
     "capital_income_tax_noncompliance_rate": [[0.0]],
+    "income_tax_filer": [[1.0]],
+    "wealth_tax_filer": [[1.0]],
     "replacement_rate_adjust": [[1.0]],
     "eta": (np.ones((40, 2)) / (40 * 2)),
     "lambdas": [0.6, 0.4],
@@ -1186,6 +1195,8 @@ new_param_values = {
     "e": np.ones((20, 2)),
     "labor_income_tax_noncompliance_rate": [[0.0]],
     "capital_income_tax_noncompliance_rate": [[0.0]],
+    "income_tax_filer": [[1.0]],
+    "wealth_tax_filer": [[1.0]],
     "replacement_rate_adjust": [[1.0]],
     "eta": (np.ones((20, 2)) / (20 * 2)),
     "lambdas": [0.6, 0.4],
@@ -1245,6 +1256,8 @@ new_param_values3 = {
     "e": np.ones((20, 2)),
     "labor_income_tax_noncompliance_rate": [[0.0]],
     "capital_income_tax_noncompliance_rate": [[0.0]],
+    "income_tax_filer": [[1.0]],
+    "wealth_tax_filer": [[1.0]],
     "eta": (np.ones((20, 2)) / (20 * 2)),
     "lambdas": [0.6, 0.4],
     "tau_bq": [0.17],
@@ -1287,6 +1300,8 @@ new_param_values_ubi = {
     "e": np.ones((20, 2)),
     "labor_income_tax_noncompliance_rate": [[0.0]],
     "capital_income_tax_noncompliance_rate": [[0.0]],
+    "income_tax_filer": [[1.0]],
+    "wealth_tax_filer": [[1.0]],
     "replacement_rate_adjust": [[1.0]],
     "eta": (np.ones((20, 2)) / (20 * 2)),
     "lambdas": [0.6, 0.4],

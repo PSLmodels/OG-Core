@@ -4,7 +4,6 @@ from ogcore import firm
 import numpy as np
 from ogcore.parameters import Specifications
 
-
 p1 = Specifications()
 new_param_values = {"Z": [[2.0]], "gamma": [0.5], "epsilon": [1.0]}
 # update parameters instance with new values for test
