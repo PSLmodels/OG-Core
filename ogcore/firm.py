@@ -10,6 +10,34 @@ path
 
 """
 ------------------------------------------------------------------------
+    Helper
+------------------------------------------------------------------------
+"""
+
+
+def _resolve_industry_index(m, M):
+    """
+    Normalize an industry index ``m`` so that it is always non-negative.
+
+    Several firm functions use ``m = -1`` as a shorthand for the **last
+    industry** (standard Python negative indexing).  ``get_MPx``, however,
+    interprets ``m = -1`` as a flag that activates its vectorized
+    all-industries code path.  To avoid this ambiguity every function that
+    delegates to ``get_MPx`` must convert ``-1`` to an explicit index before
+    the call.
+
+    Args:
+        m (int): raw industry index (may be negative).
+        M (int): total number of industries.
+
+    Returns:
+        int: non-negative industry index in ``[0, M - 1]``.
+    """
+    return m if m >= 0 else M + m
+
+
+"""
+------------------------------------------------------------------------
     Functions
 ------------------------------------------------------------------------
 """
@@ -182,9 +210,9 @@ def get_r(Y, K, p_m, p, method, m=-1):
         r (array_like): the real interest rate
 
     """
-    # Normalise m=-1 ("last industry") to an explicit non-negative index so
-    # that get_MPx does not interpret it as the vectorized all-industries flag.
-    m_idx = m if m >= 0 else p.M - 1
+    # Resolve m=-1 ("last industry") to an explicit non-negative index so
+    # that get_MPx does not enter its vectorized all-industries code path.
+    m_idx = _resolve_industry_index(m, p.M)
     if method == "SS":
         delta_tau = p.delta_tau[-1, m]
         tau_b = p.tau_b[-1, m]
@@ -228,9 +256,9 @@ def get_w(Y, L, p_m, p, method, m=-1):
         w (array_like): the real wage rate
 
     """
-    # Normalise m=-1 ("last industry") to an explicit non-negative index so
-    # that get_MPx does not interpret it as the vectorized all-industries flag.
-    m_idx = m if m >= 0 else p.M - 1
+    # Resolve m=-1 ("last industry") to an explicit non-negative index so
+    # that get_MPx does not enter its vectorized all-industries code path.
+    m_idx = _resolve_industry_index(m, p.M)
     if method == "SS":
         p_mm = p_m[m]
     else:

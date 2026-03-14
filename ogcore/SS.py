@@ -298,7 +298,7 @@ def inner_loop(outer_loop_vars, p, client):
                 schema_backup[attr] = getattr(p, attr)
                 try:
                     delattr(p, attr)
-                except:
+                except AttributeError:
                     pass
 
         # Scatter the parameters
@@ -308,7 +308,7 @@ def inner_loop(outer_loop_vars, p, client):
         for attr, value in schema_backup.items():
             try:
                 setattr(p, attr, value)
-            except:
+            except AttributeError:
                 pass
 
         # Launch in parallel with submit (or map)
