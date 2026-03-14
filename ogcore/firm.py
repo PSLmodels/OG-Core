@@ -182,6 +182,9 @@ def get_r(Y, K, p_m, p, method, m=-1):
         r (array_like): the real interest rate
 
     """
+    # Normalise m=-1 ("last industry") to an explicit non-negative index so
+    # that get_MPx does not interpret it as the vectorized all-industries flag.
+    m_idx = m if m >= 0 else p.M - 1
     if method == "SS":
         delta_tau = p.delta_tau[-1, m]
         tau_b = p.tau_b[-1, m]
@@ -192,7 +195,7 @@ def get_r(Y, K, p_m, p, method, m=-1):
         tau_b = p.tau_b[: p.T, m].reshape(p.T, 1)
         tau_inv = p.inv_tax_credit[: p.T, m].reshape(p.T, 1)
         p_mm = p_m[:, m].reshape(p.T, 1)
-    MPK = get_MPx(Y, K, p.gamma[m], p, method, m)
+    MPK = get_MPx(Y, K, p.gamma[m_idx], p, method, m_idx)
     r = (
         (1 - tau_b) * p_mm * MPK
         - p.delta
@@ -225,11 +228,14 @@ def get_w(Y, L, p_m, p, method, m=-1):
         w (array_like): the real wage rate
 
     """
+    # Normalise m=-1 ("last industry") to an explicit non-negative index so
+    # that get_MPx does not interpret it as the vectorized all-industries flag.
+    m_idx = m if m >= 0 else p.M - 1
     if method == "SS":
         p_mm = p_m[m]
     else:
         p_mm = p_m[:, m].reshape(p.T, 1)
-    w = p_mm * get_MPx(Y, L, 1 - p.gamma[m] - p.gamma_g[m], p, method, m)
+    w = p_mm * get_MPx(Y, L, 1 - p.gamma[m_idx] - p.gamma_g[m_idx], p, method, m_idx)
 
     return w
 

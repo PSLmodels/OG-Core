@@ -631,7 +631,7 @@ def inner_loop(outer_loop_vars, p, client):
     )
 
     G_vec = np.zeros(p.M)
-    G_vec[-1] = G
+    G_vec[-1] = float(G)
     C_m_vec = np.dot(p.io_matrix.T, C_vec)
     I_d_vec = np.zeros(p.M)
     I_d = aggr.get_I(b_splus1, K_d, K_d, p, "SS")
