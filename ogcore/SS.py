@@ -529,7 +529,7 @@ def inner_loop(outer_loop_vars, p, client):
     theta = pensions.replacement_rate_vals(nssmat, new_w, new_factor, None, p)
 
     # Find updated goods prices
-    new_p_m = firm.get_pm(new_w, Y_vec, L_vec, p, "SS")
+    new_p_m = firm.get_pm(new_w, Y_vec, L_vec, p, "SS", vectorized=True)
     new_p_m = new_p_m / new_p_m[-1]  # normalize prices by industry M
     new_p_i = np.dot(p.io_matrix, new_p_m)
     new_p_tilde = aggr.get_ptilde(new_p_i, p.tau_c[-1, :], p.alpha_c)

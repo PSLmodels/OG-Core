@@ -555,7 +555,7 @@ def get_cost_of_capital(r, p, method, m=-1):
     return cost_of_capital
 
 
-def get_pm(w, Y_vec, L_vec, p, method, m=-1):
+def get_pm(w, Y_vec, L_vec, p, method, m=0, *, vectorized=False):
     r"""
     Find prices for outputs from each industry.
 
@@ -565,7 +565,7 @@ def get_pm(w, Y_vec, L_vec, p, method, m=-1):
 
     This function now accepts an optional industry index ``m``.  If ``m`` is
     specified, a single industry's price path is returned (shape ``T`` or
-    scalar in ``SS``).  When ``m==-1`` (the default) prices for all industries
+    scalar in ``SS``).  When ``vectorized=True`` prices for all industries
     are computed using vectorized operations rather than a Python loop.
 
     Args:
@@ -574,11 +574,12 @@ def get_pm(w, Y_vec, L_vec, p, method, m=-1):
         L_vec (array_like): labor demand for each industry
         p (OG-Core Specifications object): model parameters
         method (str): adjusts calculation dimensions based on 'SS' or 'TPI'
-        m (int): industry index (default ``-1`` for all industries)
+        m (int): industry index (default 0).
+        vectorized (bool): if True, computes prices for all industries at once.
 
     Returns:
         p_m (array_like): output prices for each industry (or a single industry
-            if ``m`` is not ``-1``)
+            if not vectorized)
     """
     # reshape inputs according to method
     if method == "SS":
@@ -590,12 +591,12 @@ def get_pm(w, Y_vec, L_vec, p, method, m=-1):
         L = L_vec.reshape((p.T, p.M))
         T = p.T
 
-    if m >= 0:
+    if not vectorized:
         # compute price for specific industry using existing logic
         share = 1 - p.gamma[m] - p.gamma_g[m]
-        MPL = get_MPx(Y[:, m], L[:, m], share, p, method, m).reshape(T)
+        MPL = get_MPx(Y[:, m], L[:, m], share, p, method, m=m, vectorized=False).reshape(T)
         pmout = w / MPL
-        return pmout[0] if method == "SS" else pmout
+        return float(pmout[0]) if method == "SS" else pmout
 
     # vectorized calculation for all industries
     # create share vector of length M
