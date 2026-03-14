@@ -601,7 +601,9 @@ def get_pm(w, Y_vec, L_vec, p, method, m=-1):
     # create share vector of length M
     shares = (1 - p.gamma - p.gamma_g).reshape(1, p.M)
     # get marginal products of labor for every industry at once
-    MPL = get_MPx(Y, L, shares, p, method, vectorized=True)  # returns shape (T, M)
+    MPL = get_MPx(
+        Y, L, shares, p, method, vectorized=True
+    )  # returns shape (T, M)
     pmout = w.reshape(T, 1) / MPL
     if method == "SS":
         pmout = pmout.reshape(p.M)
