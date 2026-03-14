@@ -10,34 +10,6 @@ path
 
 """
 ------------------------------------------------------------------------
-    Helper
-------------------------------------------------------------------------
-"""
-
-
-def _resolve_industry_index(m, M):
-    """
-    Normalize an industry index ``m`` so that it is always non-negative.
-
-    Several firm functions use ``m = -1`` as a shorthand for the **last
-    industry** (standard Python negative indexing).  ``get_MPx``, however,
-    interprets ``m = -1`` as a flag that activates its vectorized
-    all-industries code path.  To avoid this ambiguity every function that
-    delegates to ``get_MPx`` must convert ``-1`` to an explicit index before
-    the call.
-
-    Args:
-        m (int): raw industry index (may be negative).
-        M (int): total number of industries.
-
-    Returns:
-        int: non-negative industry index in ``[0, M - 1]``.
-    """
-    return m if m >= 0 else M + m
-
-
-"""
-------------------------------------------------------------------------
     Functions
 ------------------------------------------------------------------------
 """
@@ -210,9 +182,6 @@ def get_r(Y, K, p_m, p, method, m=-1):
         r (array_like): the real interest rate
 
     """
-    # Resolve m=-1 ("last industry") to an explicit non-negative index so
-    # that get_MPx does not enter its vectorized all-industries code path.
-    m_idx = _resolve_industry_index(m, p.M)
     if method == "SS":
         delta_tau = p.delta_tau[-1, m]
         tau_b = p.tau_b[-1, m]
@@ -223,7 +192,7 @@ def get_r(Y, K, p_m, p, method, m=-1):
         tau_b = p.tau_b[: p.T, m].reshape(p.T, 1)
         tau_inv = p.inv_tax_credit[: p.T, m].reshape(p.T, 1)
         p_mm = p_m[:, m].reshape(p.T, 1)
-    MPK = get_MPx(Y, K, p.gamma[m_idx], p, method, m_idx)
+    MPK = get_MPx(Y, K, p.gamma[m], p, method, m)
     r = (
         (1 - tau_b) * p_mm * MPK
         - p.delta
@@ -256,14 +225,11 @@ def get_w(Y, L, p_m, p, method, m=-1):
         w (array_like): the real wage rate
 
     """
-    # Resolve m=-1 ("last industry") to an explicit non-negative index so
-    # that get_MPx does not enter its vectorized all-industries code path.
-    m_idx = _resolve_industry_index(m, p.M)
     if method == "SS":
         p_mm = p_m[m]
     else:
         p_mm = p_m[:, m].reshape(p.T, 1)
-    w = p_mm * get_MPx(Y, L, 1 - p.gamma[m_idx] - p.gamma_g[m_idx], p, method, m_idx)
+    w = p_mm * get_MPx(Y, L, 1 - p.gamma[m] - p.gamma_g[m], p, method, m)
 
     return w
 
@@ -345,7 +311,7 @@ def get_KLratio(r, w, p, method, m=-1):
     return KLratio
 
 
-def get_MPx(Y, x, share, p, method, m=-1):
+def get_MPx(Y, x, share, p, method, m=0, *, vectorized=False):
     r"""
     Compute the marginal product of x (where x is K, L, or K_g).
 
@@ -365,22 +331,22 @@ def get_MPx(Y, x, share, p, method, m=-1):
         p (OG-Core Specifications object): model parameters
         method (str): adjusts calculation dimensions based on ``'SS'`` or
             ``'TPI'``
-        m (int): production industry index; when ``m>=0`` the function behaves
-            as before, returning a (T,) vector or scalar.  The default ``-1``
-            triggers the vectorized behavior.
+        m (int): production industry index; when ``m=-1`` the function computes it for the last industry.
+            When ``vectorized=True``, it triggers the vectorized behavior across all industries.
+        vectorized (bool): if True, computes marginal products for all industries across a vectorized array.
 
     Returns:
         MPx (array_like): the marginal product of x.  Shape matches ``Y``.
     """
     # reshape inputs according to method
     if method == "SS":
-        if m >= 0:
+        if not vectorized:
             Z = p.Z[-1, m]
         else:
             # vector of Z for all industries
             Z = p.Z[-1, :].reshape(1, p.M)
     else:
-        if m >= 0:
+        if not vectorized:
             Z = p.Z[: p.T, m].reshape(p.T, 1)
             Y = Y[: p.T].reshape(p.T, 1)
             x = x[: p.T].reshape(p.T, 1)
@@ -393,7 +359,7 @@ def get_MPx(Y, x, share, p, method, m=-1):
     if np.any(x == 0):
         MPx = np.zeros_like(Y)
     else:
-        if m >= 0:
+        if not vectorized:
             eps = p.epsilon[m]
             sh = share
         else:
@@ -635,7 +601,7 @@ def get_pm(w, Y_vec, L_vec, p, method, m=-1):
     # create share vector of length M
     shares = (1 - p.gamma - p.gamma_g).reshape(1, p.M)
     # get marginal products of labor for every industry at once
-    MPL = get_MPx(Y, L, shares, p, method)  # returns shape (T, M)
+    MPL = get_MPx(Y, L, shares, p, method, vectorized=True)  # returns shape (T, M)
     pmout = w.reshape(T, 1) / MPL
     if method == "SS":
         pmout = pmout.reshape(p.M)

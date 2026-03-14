@@ -776,7 +776,7 @@ def run_TPI(p, client=None):
             schema_backup[attr] = getattr(p, attr)
             try:
                 delattr(p, attr)
-            except:
+            except AttributeError:
                 pass
 
     # Scatter the parameters
@@ -786,7 +786,7 @@ def run_TPI(p, client=None):
     for attr, value in schema_backup.items():
         try:
             setattr(p, attr, value)
-        except:
+        except AttributeError:
             pass
 
     # TPI loop
