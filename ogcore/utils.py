@@ -646,9 +646,11 @@ def print_progress(
         else:
             sys.stdout.write("Accessing " + source_name + " data files...\n")
 
-    sys.stdout.write(
-        "\r%s |%s| %s%s %s" % (prefix, bar, percents, "%", suffix)
-    ),
+    (
+        sys.stdout.write(
+            "\r%s |%s| %s%s %s" % (prefix, bar, percents, "%", suffix)
+        ),
+    )
 
     if iteration == total:
         sys.stdout.write("\n")
@@ -1054,9 +1056,9 @@ def extrapolate_nested_list(list_in, dims=(400, 80, 1)):
     # for now, just have this work for 3 deep lists since
     # the only OG-Core use case is for tax function parameters
     assert depth(list_in) == 3, "please give a list that is three lists deep"
-    assert depth(list_in) == len(
-        dims
-    ), "please make sure the depth of nested list is equal to the length of dims to extrapolate"
+    assert depth(list_in) == len(dims), (
+        "please make sure the depth of nested list is equal to the length of dims to extrapolate"
+    )
     # Extrapolate along the first dimension
     if len(list_in) > T + S:
         list_in = list_in[: T + S]
@@ -1331,9 +1333,7 @@ def params_to_json(p, path=None):
     ]
     for v in annual_list:
         val = getattr(p, v.replace("_annual", ""))
-        annual_value = (1 + val) ** (
-            p.S / ((p.ending_age - p.starting_age))
-        ) - 1
+        annual_value = (1 + val) ** (p.S / (p.ending_age - p.starting_age)) - 1
         if isinstance(annual_value, np.ndarray):
             converted_data[v] = annual_value.tolist()
         else:

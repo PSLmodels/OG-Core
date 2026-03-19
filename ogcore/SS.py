@@ -290,7 +290,6 @@ def inner_loop(outer_loop_vars, p, client):
     # from dask.base import dask_sizeof
 
     if client:
-
         # Before scattering, temporarily remove unpicklable schema objects
         schema_backup = {}
         for attr in ["_defaults_schema", "_validator_schema", "sel"]:
@@ -1437,9 +1436,7 @@ def run_SS(p, client=None):
             if ss_solutions["b_sp1"].shape == (
                 p.S,
                 p.J,
-            ) and np.squeeze(
-                ss_solutions["Y_m"].shape
-            ) == (p.M):
+            ) and np.squeeze(ss_solutions["Y_m"].shape) == (p.M):
                 logging.info("Using previous solutions for SS")
                 (
                     b_guess,

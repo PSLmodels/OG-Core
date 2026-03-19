@@ -83,9 +83,9 @@ def plot_aggregates(
                     v, reform_tpi, reform_params
                 )
     for i, v in enumerate(var_list):
-        assert (
-            v in VAR_LABELS.keys()
-        ), "{} is not in the list of variable labels".format(v)
+        assert v in VAR_LABELS.keys(), (
+            "{} is not in the list of variable labels".format(v)
+        )
         if plot_type == "pct_diff":
             if v in ["r_gov", "r", "r_p"]:
                 # Compute just percentage point changes for rates
@@ -248,9 +248,9 @@ def plot_industry_aggregates(
         assert reform_tpi is not None
     fig1, ax1 = plt.subplots()
     for i, v in enumerate(var_list):
-        assert (
-            v in VAR_LABELS.keys()
-        ), "{} is not in the list of variable labels".format(v)
+        assert v in VAR_LABELS.keys(), (
+            "{} is not in the list of variable labels".format(v)
+        )
         if len(var_list) == 1:
             var_label = ""
         else:
@@ -463,9 +463,9 @@ def plot_gdp_ratio(
     start_index = start_year - base_params.start_year
     fig1, ax1 = plt.subplots()
     for i, v in enumerate(var_list):
-        assert (
-            v in ToGDP_LABELS.keys()
-        ), "{} is not in the list of variable labels".format(v)
+        assert v in ToGDP_LABELS.keys(), (
+            "{} is not in the list of variable labels".format(v)
+        )
         if plot_type == "levels":
             plot_var_base = (
                 base_tpi[v][: base_params.T] / base_tpi["Y"][: base_params.T]

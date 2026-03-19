@@ -108,42 +108,33 @@ def tax_rate_table(
         len_rates = len(base_etr_rates[start_index : start_index + num_years])
         table = {
             "Year": years[:len_rates],
-            "Baseline "
-            + VAR_LABELS["etr"]: base_etr_rates[
+            "Baseline " + VAR_LABELS["etr"]: base_etr_rates[
                 start_index : start_index + num_years
             ],
-            "Reform "
-            + VAR_LABELS["etr"]: reform_etr_rates[
+            "Reform " + VAR_LABELS["etr"]: reform_etr_rates[
                 start_index : start_index + num_years
             ],
-            "Differences in "
-            + VAR_LABELS["etr"]: reform_etr_rates[
+            "Differences in " + VAR_LABELS["etr"]: reform_etr_rates[
                 start_index : start_index + num_years
             ]
             - base_etr_rates[start_index : start_index + num_years],
-            "Baseline "
-            + VAR_LABELS["mtrx"]: base_mtrx_rates[
+            "Baseline " + VAR_LABELS["mtrx"]: base_mtrx_rates[
                 start_index : start_index + num_years
             ],
-            "Reform "
-            + VAR_LABELS["mtrx"]: reform_mtrx_rates[
+            "Reform " + VAR_LABELS["mtrx"]: reform_mtrx_rates[
                 start_index : start_index + num_years
             ],
-            "Differences in "
-            + VAR_LABELS["mtrx"]: reform_mtrx_rates[
+            "Differences in " + VAR_LABELS["mtrx"]: reform_mtrx_rates[
                 start_index : start_index + num_years
             ]
             - base_mtrx_rates[start_index : start_index + num_years],
-            "Baseline "
-            + VAR_LABELS["mtry"]: base_mtry_rates[
+            "Baseline " + VAR_LABELS["mtry"]: base_mtry_rates[
                 start_index : start_index + num_years
             ],
-            "Reform "
-            + VAR_LABELS["mtry"]: reform_mtry_rates[
+            "Reform " + VAR_LABELS["mtry"]: reform_mtry_rates[
                 start_index : start_index + num_years
             ],
-            "Differences in "
-            + VAR_LABELS["mtry"]: reform_mtry_rates[
+            "Differences in " + VAR_LABELS["mtry"]: reform_mtry_rates[
                 start_index : start_index + num_years
             ]
             - base_mtry_rates[start_index : start_index + num_years],
@@ -152,12 +143,10 @@ def tax_rate_table(
         len_rates = len(base_rates[start_index : start_index + num_years])
         table = {
             "Year": years[:len_rates],
-            "Baseline "
-            + VAR_LABELS[rate_type.lower()]: base_rates[
+            "Baseline " + VAR_LABELS[rate_type.lower()]: base_rates[
                 start_index : start_index + num_years
             ],
-            "Reform "
-            + VAR_LABELS[rate_type.lower()]: reform_rates[
+            "Reform " + VAR_LABELS[rate_type.lower()]: reform_rates[
                 start_index : start_index + num_years
             ],
             "Difference": reform_rates[start_index : start_index + num_years]
