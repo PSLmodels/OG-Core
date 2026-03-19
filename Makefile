@@ -71,10 +71,9 @@ build-docs:
 	@cd ./docs ; python make_params.py; python make_vars.py; jb build ./book
 
 format:
-	black . -l 79
+	ruff format .
+	ruff check . --fix
 	linecheck . --fix
 
 pip-package:
-	pip install wheel
-	pip install setuptools
-	python setup.py sdist bdist_wheel
+	uv build

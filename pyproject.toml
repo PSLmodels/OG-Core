@@ -2,14 +2,99 @@
 requires = ["setuptools>=61.0"]
 build-backend = "setuptools.build_meta"
 
-# Configuration for Black.
+[project]
+name = "ogcore"
+version = "0.15.4"
+authors = [
+    {name = "Jason DeBacker and Richard W. Evans"},
+]
+description = "A general equilibrium overlapping generations model for fiscal policy analysis"
+readme = "README.md"
+license = {text = "CC0 1.0 Universal (CC0 1.0) Public Domain Dedication"}
+requires-python = ">=3.11, <3.14"
+classifiers = [
+    "Development Status :: 2 - Pre-Alpha",
+    "Intended Audience :: Developers",
+    "Natural Language :: English",
+    "License :: CC0 1.0 Universal (CC0 1.0) Public Domain Dedication",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+]
+dependencies = [
+    "numpy",
+    "scipy>=1.7.1",
+    "pandas>=1.2.5",
+    "numba",
+    "matplotlib",
+    "dask>=2.30.0",
+    "distributed>=2.30.1",
+    "paramtools>=0.20.0",
+    "requests",
+    "pygam",
+]
 
-# NOTE: you have to use single-quoted strings in TOML for regular expressions.
-# It's the equivalent of r-strings in Python.  Multiline strings are treated as
-# verbose regular expressions by Black.  Use [ ] to denote a significant space
-# character.
+[project.urls]
+Homepage = "https://github.com/PSLmodels/OG-Core/"
+"Issue Tracker" = "https://github.com/PSLmodels/OG-Core/issues"
 
-[tool.black]
+[project.optional-dependencies]
+dev = [
+    "pytest>=6.0",
+    "pytest-cov",
+    "pytest-xdist",
+    "coverage",
+    "ruff",
+    "openpyxl>=3.1.2",
+    "linecheck",
+]
+docs = [
+    "jupyter-book<2.0.0",
+    "jupyter",
+    "ipykernel",
+    "sphinx>=3.5.4",
+    "sphinx-argparse",
+    "sphinxcontrib-bibtex>=2.0.0",
+    "sphinx-math-dollar",
+    "pydata-sphinx-theme",
+]
+
+[tool.setuptools.packages.find]
+include = ["ogcore*"]
+
+[tool.setuptools.package-data]
+ogcore = [
+    "default_parameters.json",
+    "model_variables.json",
+    "OGcorePlots.mplstyle",
+]
+
+[tool.ruff]
 line-length = 79
-target-version = ["py312", "py313"]
-include = '\.pyi?$'
+target-version = "py312"
+
+[tool.ruff.lint]
+select = ["E", "F", "W"]
+
+[tool.pytest.ini_options]
+minversion = "6.0"
+testpaths = ["tests"]
+filterwarnings = [
+    "ignore::RuntimeWarning:.*invalid value encountered.*",
+    "ignore::RuntimeWarning:.*divide by zero encountered in divide.*",
+    "ignore::RuntimeWarning:.*invalid value encountered in power.*",
+]
+markers = [
+    "local: marks tests that run locally and not on GH Actions (mostly due to run time)",
+    "benchmark: marks tests that measure performance and memory usage",
+    "distributed: marks tests that use distributed Dask clients",
+    "memory: marks tests focused on memory usage measurement",
+    "performance: marks tests focused on compute time measurement",
+    "slow: marks tests that take longer to run",
+    "real: marks tests using real OG-Core tax function code",
+    "platform: marks tests for platform-specific optimization",
+]

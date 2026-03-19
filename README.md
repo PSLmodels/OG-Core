@@ -3,8 +3,8 @@
 | | |
 | --- | --- |
 | Org | [![PSL cataloged](https://img.shields.io/badge/PSL-cataloged-a0a0a0.svg)](https://www.PSLmodels.org) [![OS License: CCO-1.0](https://img.shields.io/badge/OS%20License-CCO%201.0-yellow)](https://github.com/PSLmodels/OG-Core/blob/master/LICENSE) [![Jupyter Book Badge](https://raw.githubusercontent.com/jupyter-book/jupyter-book/next/docs/media/images/badge.svg)](https://pslmodels.github.io/OG-Core/) |
-| Package | [![Python 3.12](https://img.shields.io/badge/python-3.12-blue.svg)](https://www.python.org/downloads/release/python-3129/) [![Python 3.13](https://img.shields.io/badge/python-3.13-blue.svg)](https://www.python.org/downloads/release/python-3137/)  [![PyPI Latest Release](https://img.shields.io/pypi/v/ogcore.svg)](https://pypi.org/project/ogcore/) [![PyPI Downloads](https://img.shields.io/pypi/dm/ogcore.svg?label=PyPI%20downloads)](https://pypi.org/project/ogcore/) [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black) |
-| Testing | ![example event parameter](https://github.com/PSLmodels/OG-Core/actions/workflows/build_and_test.yml/badge.svg?branch=master) ![example event parameter](https://github.com/PSLmodels/OG-Core/actions/workflows/deploy_docs.yml/badge.svg?branch=master) ![example event parameter](https://github.com/PSLmodels/OG-Core/actions/workflows/check_black.yml/badge.svg?branch=master) [![Codecov](https://codecov.io/gh/PSLmodels/OG-Core/branch/master/graph/badge.svg)](https://codecov.io/gh/PSLmodels/OG-Core) |
+| Package | [![Python 3.12](https://img.shields.io/badge/python-3.12-blue.svg)](https://www.python.org/downloads/release/python-3129/) [![Python 3.13](https://img.shields.io/badge/python-3.13-blue.svg)](https://www.python.org/downloads/release/python-3137/)  [![PyPI Latest Release](https://img.shields.io/pypi/v/ogcore.svg)](https://pypi.org/project/ogcore/) [![PyPI Downloads](https://img.shields.io/pypi/dm/ogcore.svg?label=PyPI%20downloads)](https://pypi.org/project/ogcore/) [![Ruff](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ruff/main/assets/badge/v2.json)](https://github.com/astral-sh/ruff) |
+| Testing | ![example event parameter](https://github.com/PSLmodels/OG-Core/actions/workflows/build_and_test.yml/badge.svg?branch=master) ![example event parameter](https://github.com/PSLmodels/OG-Core/actions/workflows/deploy_docs.yml/badge.svg?branch=master) ![example event parameter](https://github.com/PSLmodels/OG-Core/actions/workflows/check_ruff.yml/badge.svg?branch=master) [![Codecov](https://codecov.io/gh/PSLmodels/OG-Core/branch/master/graph/badge.svg)](https://codecov.io/gh/PSLmodels/OG-Core) |
 
 
 OG-Core is an overlapping-generations (OG) model core theory, logic, and solution method algorithms that allow for dynamic general equilibrium analysis of fiscal policy. OG-Core provides a general framework and is a dependency of several country-specific OG model caliibrations, as listed in the table belowsuch as [OG-USA](https://github.com/PSLmodels/OG-USA) and [OG-UK](https://github.com/PSLmodels/OG-UK). The model output includes changes in macroeconomic aggregates (GDP, investment, consumption), wages, interest rates, and the stream of tax revenues over time. Regularly updated documentation of the model theory--its output, and solution method--and the Python API is available [here](https://pslmodels.github.io/OG-Core).
@@ -24,13 +24,12 @@ The model is constantly under development, and model components could change sig
 
 ## Using/contributing to OG-Core
 
-There are two primary methods for installing and running OG-Core on your computer locally. The first and simplest method is to download the most recent `ogcore` Python package from the Python Package Index ([PyPI.org]()). A second option is to fork and clone the most recent version of OG-Core from its GitHub repository and create the conda environment for the `ogcore` package. We detail both of these methods below.
+There are two primary methods for installing and running OG-Core on your computer locally. The first and simplest method is to download the most recent `ogcore` Python package from the Python Package Index ([PyPI.org](https://pypi.org/project/ogcore/)). A second option is to fork and clone the most recent version of OG-Core from its GitHub repository and install the `ogcore` package with its development dependencies using `uv`. We detail both of these methods below.
 
 
 ### Installing and Running OG-Core from Python Package Index (PyPI.org)
 
-* Open your terminal (or Conda command prompt), and make sure you have the most recent version of `pip` (the Python Index Package manager) by typing on a Unix/macOS machine `python3 -m pip install --upgrade pip` or on a Windows machine `py -m pip install --upgrade pip`.
-* Install the [`ogcore`](https://pypi.org/project/ogcore/) package from the Python Package Index by typing `pip install ogcore`.
+* Open your terminal and install the [`ogcore`](https://pypi.org/project/ogcore/) package from the Python Package Index by typing `pip install ogcore`.
 * Navigate to a folder `./YourFolderName/` where you want to save scripts to run OG-Core and output from the simulations in those scripts.
 * Save the python script [`run_ogcore_example.py`](https://github.com/PSLmodels/OG-Core/blob/master/run_examples/run_ogcore_example.py) from the OG-Core GitHub repository in the folder where you are working on your local machine `./YourFolderName/run_ogcore_example.py`.
 * Run the model with an example reform from terminal/command prompt by typing `python run_ogcore_example.py`
@@ -60,11 +59,9 @@ The CSV output file `./ogcore_example_output.csv` can be compared to the [`./run
 
 ### Installing and Running OG-Core from GitHub repository
 
-* Install the [Anaconda distribution](https://www.anaconda.com/distribution/) of Python
+* Install [`uv`](https://docs.astral.sh/uv/) by following the [installation instructions](https://docs.astral.sh/uv/getting-started/installation/) for your platform (or simply run `pip install uv`)
 * Clone this repository to a directory on your computer
-* From the terminal (or Conda command prompt), navigate to the directory to which you cloned this repository and run `conda env create -f environment.yml`
-* Then, `conda activate ogcore-dev`
-* Then install by `pip install -e .`
+* From the terminal, navigate to the directory to which you cloned this repository and run `uv pip install -e ".[dev]"` to install the package and all development dependencies
 * Navigate to `./run_examples`
 * Run the model with an example reform from terminal/command prompt by typing `python run_ogcore_example.py`
 * You can adjust the `./run_examples/run_ogcore_example.py` script by modifying model parameters specified in the `og_spec` dictionary.

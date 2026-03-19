@@ -19,18 +19,15 @@ jobs:
         with:
           persist-credentials: false
 
-      - name: Setup Miniconda
-        uses: conda-incubator/setup-miniconda@v3
+      - name: Install uv
+        uses: astral-sh/setup-uv@v4
         with:
-          miniconda-version: "latest"
-          activate-environment: ogcore-dev
-          environment-file: environment.yml
           python-version: "3.13"
-          auto-activate-base: false
+
+      - name: Install package and dependencies
+        run: uv pip install -e ".[dev,docs]" --system
 
       - name: Build # Build Jupyter Book
-        shell: bash -l {0}
         run: |
-          pip install -e .
           python -m ipykernel install --user --name=ogcore-dev
           make build-docs

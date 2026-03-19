@@ -1,0 +1,14 @@
+name: Check Ruff formatting and linting
+
+on: [push, pull_request]
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v4
+      - name: Check formatting with Ruff
+        run: uvx ruff format --check .
+      - name: Check linting with Ruff
+        run: uvx ruff check .
