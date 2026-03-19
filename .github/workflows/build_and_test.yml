@@ -36,9 +36,9 @@ jobs:
         with:
           python-version: ${{ matrix.python-version }}
       - name: Install package and dependencies
-        run: uv pip install -e ".[dev]" --system
+        run: uv sync --extra dev
       - name: Test
-        run: python -m pytest -m "not local and not benchmark" --cov=./ --cov-report=xml
+        run: uv run python -m pytest -m "not local and not benchmark" --cov=./ --cov-report=xml
       - name: Upload coverage to Codecov
         if: matrix.os == 'ubuntu-latest' && contains(github.repository, 'PSLmodels/OG-Core')
         uses: codecov/codecov-action@v4
