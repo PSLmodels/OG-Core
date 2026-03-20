@@ -79,6 +79,10 @@ target-version = "py311"
 
 [tool.ruff.lint]
 select = ["E", "F", "W"]
+ignore = ["F841"]
+
+[tool.ruff.lint.pycodestyle]
+max-doc-length = 120
 
 [tool.pytest.ini_options]
 minversion = "6.0"
