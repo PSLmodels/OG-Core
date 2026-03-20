@@ -26,7 +26,7 @@ classifiers = [
     "Topic :: Software Development :: Libraries :: Python Modules",
 ]
 dependencies = [
-    "numpy",
+    "numpy>=1.26,<2.4",
     "scipy>=1.7.1",
     "pandas>=1.2.5",
     "numba",
