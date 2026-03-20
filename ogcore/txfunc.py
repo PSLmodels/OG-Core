@@ -2034,7 +2034,7 @@ def monotone_spline(
     if method == "pygam":
         if len(x.shape) == 1:
             x = np.expand_dims(x, axis=1)
-        if splines != None and len(splines) != x.shape[1]:
+        if splines is not None and len(splines) != x.shape[1]:
             err_msg = (
                 " pygam method requires splines to be None or "
                 + " same length as # of columns in x, "
@@ -2045,7 +2045,7 @@ def monotone_spline(
             raise ValueError(err_msg)
 
         # bin data
-        if bins == None:
+        if bins is None:
             x_binned, y_binned, weights_binned = x, y, weights
         else:
             x_binned, y_binned, weights_binned = avg_by_bin_multd(
@@ -2056,7 +2056,7 @@ def monotone_spline(
         # terms which are interactions between two variables. 't' terms also need monotonic constraints
         # to satisfy previous constraints, they actually impose stronger restriction
 
-        if splines == None:
+        if splines is None:
             tempCstr = s(0, constraints="monotonic_inc")
             for i in range(1, x_binned.shape[1]):
                 tempCstr += s(i, constraints="monotonic_inc")
