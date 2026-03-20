@@ -3,7 +3,6 @@ import tempfile
 import pytest
 import numpy as np
 from ogcore.parameters import Specifications, revision_warnings_errors
-from ogcore import utils
 
 # get path to puf if puf.csv in ogcore/ directory
 CUR_PATH = os.path.abspath(os.path.dirname(__file__))

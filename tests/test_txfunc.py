@@ -1,4 +1,3 @@
-import sys
 
 from ogcore import txfunc
 from distributed import Client, LocalCluster

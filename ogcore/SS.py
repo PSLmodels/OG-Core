@@ -1,12 +1,9 @@
 # imports
 import numpy as np
 import scipy.optimize as opt
-from dask import delayed, compute
-import dask.multiprocessing
 from ogcore import tax, pensions, household, firm, utils, fiscal
 from ogcore import aggregates as aggr
 from ogcore.constants import SHOW_RUNTIME, DEV_FACTOR_LIST
-from ogcore import config
 import os
 import warnings
 import logging
@@ -1513,7 +1510,7 @@ def run_SS(p, client=None):
         while not SS_solved and k < len(DEV_FACTOR_LIST) - 1:
             for k, v in enumerate(DEV_FACTOR_LIST):
                 logging.info(
-                    f"SS using initial guess factors for r and TR of "
+                    "SS using initial guess factors for r and TR of "
                     + f"{v[0]} and {v[1]} respectively."
                 )
                 guesses, b_guess, n_guess = SS_initial_guesses(

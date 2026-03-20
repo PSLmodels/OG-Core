@@ -8,7 +8,6 @@ Household functions.
 import numpy as np
 from ogcore import tax, utils
 import logging
-from ogcore import config
 
 """
 ------------------------------------------------------------------------

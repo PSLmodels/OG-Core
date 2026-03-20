@@ -5,7 +5,6 @@ import pandas as pd
 import numpy as np
 import tempfile
 import os
-import io
 import pickle
 from ogcore.parameters import Specifications
 

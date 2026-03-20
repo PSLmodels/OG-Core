@@ -13,12 +13,9 @@ This module contains the following functions:
 import numpy as np
 import pickle
 import scipy.optimize as opt
-from dask import delayed, compute
-import dask.multiprocessing
 from ogcore import tax, utils, household, firm, fiscal, pensions
 from ogcore import aggregates as aggr
 from ogcore.constants import SHOW_RUNTIME
-from ogcore import config
 import os
 import warnings
 import logging

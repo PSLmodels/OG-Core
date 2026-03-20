@@ -103,7 +103,7 @@ def get_un_data(
     else:
         # Read from UN GH Repo:
         print(
-            f"Failed to retrieve population data from UN. Reading "
+            "Failed to retrieve population data from UN. Reading "
             + " from https://github.com/EAPD-DRB/Population-Data "
             + "instead of UN WPP API"
         )

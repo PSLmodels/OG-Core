@@ -24,9 +24,7 @@ import ogcore.parameter_plots as pp
 from ogcore.constants import DEFAULT_START_YEAR, SHOW_RUNTIME
 from ogcore import utils
 import warnings
-from pygam import LinearGAM, s, te
-from matplotlib import cm
-import random
+from pygam import LinearGAM, s
 
 if not SHOW_RUNTIME:
     warnings.simplefilter("ignore", RuntimeWarning)
