@@ -76,6 +76,13 @@ ogcore = [
 [tool.ruff]
 line-length = 79
 target-version = "py311"
+exclude = [
+    "**/*.ipynb",
+    "benchmark_root_methods*.py",
+    "tests/do_not_test_*.py",
+    "tests/run_benchmarks.py",
+    "examples/run_ogcore_example_corp_tax_cut_*.py",
+]
 
 [tool.ruff.lint]
 select = ["E", "F", "W"]

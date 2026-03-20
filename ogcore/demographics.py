@@ -71,7 +71,8 @@ def get_un_data(
     else:  # if file not exist, prompt user for token
         try:
             UN_TOKEN = input(
-                "Please enter your UN API token (press return if you do not have one): "
+                "Please enter your UN API token "
+                "(press return if you do not have one): "
             )
             # write the UN_TOKEN to a file to find in the future
             with open(os.path.join("un_api_token.txt"), "w") as file:
@@ -138,7 +139,8 @@ def get_un_data(
 
         # Do we still want to keep the status code for failures?
         # print(
-        #     f"Failed to retrieve population data. HTTP status code: {response.status_code}"
+        #     "Failed to retrieve population data. HTTP status code: "
+        #     f"{response.status_code}"
         # )
         # assert False
 
@@ -445,8 +447,9 @@ def get_pop(
             "47",
             country_id=country_id,
             start_year=start_year,
-            end_year=end_year
-            + 2,  # note go to + 2 because needed to infer immigration for end_year
+            # note go to + 2 because needed to infer immigration
+            # for end_year
+            end_year=end_year + 2,
         )
         # CLean and rebin data
         for y in range(start_year, end_year + 2):
@@ -991,7 +994,8 @@ def get_pop_objs(
     assert np.allclose(pop_counter_2D, pop_2D)
 
     # """"
-    # CHANGE - in OG-Core, we are implicitly assuming pre-TP rates of mortality,
+    # CHANGE - in OG-Core, we are implicitly assuming pre-TP rates of
+    # mortality,
     # fertility, and immigration are the same as the period 0 rates.
 
     # So let's just infer the pre-pop_dist from those.

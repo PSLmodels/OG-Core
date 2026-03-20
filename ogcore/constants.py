@@ -170,7 +170,8 @@ PARAM_LABELS = {
         r"$\mu_{d,t}$",
     ],
     "avg_earn_num_years": [
-        "Number of years over which compute average earnings for pension benefit",
+        "Number of years over which compute average earnings for"
+        " pension benefit",
         r"$\texttt{avg\_earn\_num\_years}$",
     ],
     "AIME_bkt_1": ["First AIME bracket threshold", r"$\texttt{AIME\_bkt\_1}$"],

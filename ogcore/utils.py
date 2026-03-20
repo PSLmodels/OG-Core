@@ -255,7 +255,7 @@ def dict_compare(
     else:
         unequal_items = []
         for k, v in dict1.items():
-            if type(v) == np.ndarray:
+            if isinstance(v, np.ndarray):
                 check &= comp_array(
                     k,
                     v,
@@ -1057,7 +1057,8 @@ def extrapolate_nested_list(list_in, dims=(400, 80, 1)):
     # the only OG-Core use case is for tax function parameters
     assert depth(list_in) == 3, "please give a list that is three lists deep"
     assert depth(list_in) == len(dims), (
-        "please make sure the depth of nested list is equal to the length of dims to extrapolate"
+        "please make sure the depth of nested list is equal to the"
+        " length of dims to extrapolate"
     )
     # Extrapolate along the first dimension
     if len(list_in) > T + S:
@@ -1078,8 +1079,12 @@ def extrapolate_nested_list(list_in, dims=(400, 80, 1)):
 
 class CustomHttpAdapter(requests.adapters.HTTPAdapter):
     """
-    The UN Data Portal server doesn't support "RFC 5746 secure renegotiation". This causes and error when the client is using OpenSSL 3, which enforces that standard by default.
-    The fix is to create a custom SSL context that allows for legacy connections. This defines a function get_legacy_session() that should be used instead of requests().
+    The UN Data Portal server doesn't support "RFC 5746 secure
+    renegotiation". This causes and error when the client is using
+    OpenSSL 3, which enforces that standard by default.
+    The fix is to create a custom SSL context that allows for legacy
+    connections. This defines a function get_legacy_session() that
+    should be used instead of requests().
     """
 
     # "Transport adapter" that allows us to use custom ssl_context.
@@ -1098,7 +1103,9 @@ class CustomHttpAdapter(requests.adapters.HTTPAdapter):
 
 def get_legacy_session():
     ctx = ssl.create_default_context(ssl.Purpose.SERVER_AUTH)
-    ctx.options |= 0x4  # OP_LEGACY_SERVER_CONNECT  #in Python 3.12 you will be able to switch from 0x4 to ssl.OP_LEGACY_SERVER_CONNECT.
+    # OP_LEGACY_SERVER_CONNECT; in Python 3.12 you will be able to
+    # switch from 0x4 to ssl.OP_LEGACY_SERVER_CONNECT.
+    ctx.options |= 0x4
     session = requests.session()
     session.mount("https://", CustomHttpAdapter(ctx))
     return session

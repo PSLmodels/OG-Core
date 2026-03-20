@@ -22,9 +22,14 @@ def get_Y(K, K_g, L, p, method, m=-1):
 
     .. math::
         \hat{Y}_t &= F(\hat{K}_t, \hat{K}_{g,t}, \hat{L}_t) \\
-        &\equiv Z_t\biggl[(\gamma)^\frac{1}{\varepsilon}(\hat{K}_t)^\frac{\varepsilon-1}{\varepsilon} +
-          (\gamma_{g})^\frac{1}{\varepsilon}(\hat{K}_{g,t})^\frac{\varepsilon-1}{\varepsilon} +
-          (1-\gamma-\gamma_{g})^\frac{1}{\varepsilon}(\hat{L}_t)^\frac{\varepsilon-1}{\varepsilon}\biggr]^\frac{\varepsilon}{\varepsilon-1}
+        &\equiv Z_t\biggl[
+          (\gamma)^\frac{1}{\varepsilon}
+          (\hat{K}_t)^\frac{\varepsilon-1}{\varepsilon} +
+          (\gamma_{g})^\frac{1}{\varepsilon}
+          (\hat{K}_{g,t})^\frac{\varepsilon-1}{\varepsilon} +
+          (1-\gamma-\gamma_{g})^\frac{1}{\varepsilon}
+          (\hat{L}_t)^\frac{\varepsilon-1}{\varepsilon}
+          \biggr]^\frac{\varepsilon}{\varepsilon-1}
           \quad\forall t
 
     Args:
@@ -43,7 +48,8 @@ def get_Y(K, K_g, L, p, method, m=-1):
 
     if method == "SS":
         if m is not None:
-            # Set gamma_g to 0 when K_g=0 and eps=1 to remove K_g from prod func
+            # Set gamma_g to 0 when K_g=0 and eps=1 to remove K_g
+            # from prod func
             if K_g == 0 and p.epsilon[m] <= 1:
                 gamma_g = 0
                 K_g = 1
@@ -75,7 +81,8 @@ def get_Y(K, K_g, L, p, method, m=-1):
                     )
                 ) ** (epsilon / (epsilon - 1))
         else:
-            # Set gamma_g to 0 when K_g=0 and eps=1 to remove K_g from prod func
+            # Set gamma_g to 0 when K_g=0 and eps=1 to remove K_g
+            # from prod func
             if K_g == 0 and np.any(p.epsilon) <= 1:
                 gamma_g = p.gamma_g
                 gamma_g[p.epsilon <= 1] = 0
@@ -100,7 +107,8 @@ def get_Y(K, K_g, L, p, method, m=-1):
             Y[epsilon == 1] = Y2[epsilon == 1]
     else:  # TPI case
         if m is not None:
-            # Set gamma_g to 0 when K_g=0 and eps=1 to remove K_g from prod func
+            # Set gamma_g to 0 when K_g=0 and eps=1 to remove K_g
+            # from prod func
             if np.any(K_g == 0) and p.epsilon[m] == 1:
                 gamma_g = 0
                 K_g[K_g == 0] = 1.0
@@ -132,7 +140,8 @@ def get_Y(K, K_g, L, p, method, m=-1):
                     )
                 ) ** (epsilon / (epsilon - 1))
         else:
-            # Set gamma_g to 0 when K_g=0 and eps=1 to remove K_g from prod func
+            # Set gamma_g to 0 when K_g=0 and eps=1 to remove K_g
+            # from prod func
             if np.any(K_g == 0) and np.any(p.epsilon) == 1:
                 gamma_g = p.gamma_g
                 K_g[K_g == 0] = 1.0
@@ -649,7 +658,7 @@ def solve_L(Y, K, K_g, p, method, m=-1):
         if K_g == 0:
             K_g = 1.0
             gamma_g = 0
-    except:
+    except Exception:
         if np.any(K_g == 0):
             K_g[K_g == 0] = 1.0
             gamma_g = 0
@@ -673,7 +682,9 @@ def adj_cost(K, Kp1, p, method):
     Firm capital adjstment costs
 
     ..math::
-        \Psi(K_{t}, K_{t+1}) = \frac{\psi}{2}\biggr(\frac{\biggr(\frac{I_{t}}{K_{t}}-\mu\biggl)^{2}}{\frac{I_{t}}{K_{t}}}\biggl)
+        \Psi(K_{t}, K_{t+1}) = \frac{\psi}{2}\biggr(
+          \frac{\biggr(\frac{I_{t}}{K_{t}}-\mu\biggl)^{2}}
+          {\frac{I_{t}}{K_{t}}}\biggl)
 
     Args:
         K (array-like): Current period capital stock

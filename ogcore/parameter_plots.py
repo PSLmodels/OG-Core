@@ -210,7 +210,8 @@ def plot_ability_profiles(
 
     Args:
         p (OG-Core Specifications class): parameters object
-        t (int): model period for year, if None, then plot ability matrix for SS
+        t (int): model period for year, if None, then plot ability
+            matrix for SS
         log_scale (bool): whether to plot in log points
         include_title (bool): whether to include a title in the plot
         path (string): path to save figure to
@@ -1197,9 +1198,9 @@ def plot_2D_taxfunc(
     if age is not None:
         assert isinstance(age, int)
         assert age >= E
-        s = (
-            age - E
-        )  # Note: assumed age is given in E + model periods (but age below is also assumed to be calendar years)
+        # Note: assumed age is given in E + model periods (but age
+        # below is also assumed to be calendar years)
+        s = age - E
     else:
         s = 0  # if not age-specific, all ages have the same values
     t = year - start_year
