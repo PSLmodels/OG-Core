@@ -57,7 +57,7 @@ GROUP_LABELS = {
 
 
 PARAM_LABELS = {
-    "start_year": ["Initial year", r"$\texttt{start\_year}$"],
+    "start_year": ["Initial year", r"$\texttt{start_year}$"],
     # 'Gamma': ['Initial distribution of savings', r'\hat{\Gamma}_{0}'],
     # 'N': ['Initial population', 'N_{0}'],
     "omega": ["Population by age over time", r"$\omega_{s,t}$"],
@@ -92,7 +92,7 @@ PARAM_LABELS = {
     ],
     "use_zeta": [
         "Whether to distribute bequests between lifetime income groups",
-        r"$\texttt{use\_zeta}$",
+        r"$\texttt{use_zeta}$",
     ],
     "zeta": ["Distribution of bequests", r"$\zeta$"],
     "Z": ["Total factor productivity", "$Z_{t}$"],
@@ -108,15 +108,15 @@ PARAM_LABELS = {
     ],
     "tax_func_type": [
         "Functional form used for income tax functions",
-        r"$\texttt{tax\_func\_type}$",
+        r"$\texttt{tax_func_type}$",
     ],
     "analytical_mtrs": [
         "Whether use analytical MTRs or estimate MTRs",
-        r"$\texttt{analytical\_mtrs}$",
+        r"$\texttt{analytical_mtrs}$",
     ],
     "age_specific": [
         "Whether use age-specific tax functions",
-        r"$\texttt{age\_specific}$",
+        r"$\texttt{age_specific}$",
     ],
     "tau_payroll": ["Payroll tax rate", r"$\tau^{p}_{t}$"],
     # 'theta': ['Replacement rate by average income',
@@ -133,12 +133,12 @@ PARAM_LABELS = {
     "p_wealth": ["Coefficient on level term in wealth tax function", "$P$"],
     "budget_balance": [
         "Whether have a balanced budget in each period",
-        r"$\texttt{budget\_balance}$",
+        r"$\texttt{budget_balance}$",
     ],
     "baseline_spending": [
         "Whether level of spending constant between "
         + "the baseline and reform runs",
-        r"$\texttt{baseline\_spending}$",
+        r"$\texttt{baseline_spending}$",
     ],
     "alpha_T": ["Transfers as a share of GDP", r"$\alpha^{T}_{t}$"],
     "eta": ["Distribution of transfers", r"$\eta_{j,s,t}$"],
@@ -171,27 +171,27 @@ PARAM_LABELS = {
     ],
     "avg_earn_num_years": [
         "Number of years over which compute average earnings for pension benefit",
-        r"$\texttt{avg\_earn\_num\_years}$",
+        r"$\texttt{avg_earn_num_years}$",
     ],
-    "AIME_bkt_1": ["First AIME bracket threshold", r"$\texttt{AIME\_bkt\_1}$"],
+    "AIME_bkt_1": ["First AIME bracket threshold", r"$\texttt{AIME_bkt_1}$"],
     "AIME_bkt_2": [
         "Second AIME bracket threshold",
-        r"$\texttt{AIME\_bkt\_2}$",
+        r"$\texttt{AIME_bkt_2}$",
     ],
     "PIA_rate_bkt_1": [
         "First AIME bracket PIA rate",
-        r"$\texttt{PIA\_rate\_bkt\_1}$",
+        r"$\texttt{PIA_rate_bkt_1}$",
     ],
     "PIA_rate_bkt_2": [
         "Second AIME bracket PIA rate",
-        r"$\texttt{PIA\_rate\_bkt\_2}$",
+        r"$\texttt{PIA_rate_bkt_2}$",
     ],
     "PIA_rate_bkt_3": [
         "Third AIME bracket PIA rate",
-        r"$\texttt{PIA\_rate\_bkt\_3}$",
+        r"$\texttt{PIA_rate_bkt_3}$",
     ],
-    "PIA_maxpayment": ["Maximum PIA payment", r"$\texttt{PIA\_maxpayment}$"],
-    "PIA_minpayment": ["Minimum PIA payment", r"$\texttt{PIA\_minpayment}$"],
+    "PIA_maxpayment": ["Maximum PIA payment", r"$\texttt{PIA_maxpayment}$"],
+    "PIA_minpayment": ["Minimum PIA payment", r"$\texttt{PIA_minpayment}$"],
     "replacement_rate_adjust": [
         "Adjustment to replacement rate",
         r"$\theta_{adj,t}$",
@@ -211,8 +211,8 @@ PARAM_LABELS = {
     ],
     "nu": ["Dampening parameter for TPI", r"$\xi$"],
     "maxiter": ["Maximum number of iterations for TPI", r"$\texttt{maxiter}$"],
-    "mindist_SS": ["SS solution tolerance", r"$\texttt{mindist\_SS}$"],
-    "mindist_TPI": ["TPI solution tolerance", r"$\texttt{mindist\_TPI}$"],
+    "mindist_SS": ["SS solution tolerance", r"$\texttt{mindist_SS}$"],
+    "mindist_TPI": ["TPI solution tolerance", r"$\texttt{mindist_TPI}$"],
 }
 
 # Ignoring the following:
