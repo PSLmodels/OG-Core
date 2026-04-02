@@ -4,12 +4,16 @@
         "additional_members": {
            "section_1": {"type": "str"},
            "section_2": {"type": "str"},
+           "short_description": {"type": "str"},
+           "param_notation": {"type": "str"},
            "array_first": {"type": "bool"}
          }
     },
     "frisch": {
         "title": "Frisch elasticity of labor supply",
         "description": "Frisch elasticity of labor supply.",
+        "short_description": "Frisch elasticity of labor supply",
+        "param_notation": "$\\nu$",
         "section_1": "Household Parameters",
         "section_2": "Behavioral Assumptions",
         "notes": "See Altonji (JPE, 1986) and Peterman (Econ Inquiry, 2016) for estimates of the Frisch elasticity.",
@@ -47,6 +51,8 @@
     "S": {
         "title": "Maximum number of periods of economic life of model agent",
         "description": "Maximum number of periods of economic life of model agent.",
+        "short_description": "Maximum periods in economically active individual life",
+        "param_notation": "$S$",
         "section_1": "Household Parameters",
         "section_2": "Model Dimensions",
         "notes": "",
@@ -66,6 +72,8 @@
     "J": {
         "title": "Number of different labor productivity types of agents",
         "description": "Number of different labor productivity types of agents.",
+        "short_description": "Number of lifetime income groups",
+        "param_notation": "$J$",
         "section_1": "Household Parameters",
         "section_2": "Model Dimensions",
         "notes": "",
@@ -85,6 +93,8 @@
     "T": {
         "title": "Number of periods until it is assumed that the model reaches its steady state",
         "description": "Number of periods until it is assumed that the model reaches its steady state.",
+        "short_description": "Number of periods to steady-state",
+        "param_notation": "$T$",
         "section_1": "Household Parameters",
         "section_2": "Model Dimensions",
         "notes": "",
@@ -142,6 +152,8 @@
     "lambdas": {
         "title": "Fraction of population of each labor productivity type",
         "description": "Fraction of population of each labor productivity type.",
+        "short_description": "Lifetime income group percentages",
+        "param_notation": "$\\lambda_{j}$",
         "section_1": "Household Parameters",
         "section_2": "Model Dimensions",
         "notes": "",
@@ -170,6 +182,8 @@
     "e": {
         "title": "Effective labor hours matrix.",
         "description": "Effective labor hours matrix.",
+        "short_description": "Deterministic ability process",
+        "param_notation": "$e_{j,s,t}$",
         "section_1": "Household Parameters",
         "section_2": "Endowments",
         "notes": "",
@@ -368,6 +382,8 @@
     "sigma": {
         "title": "Coefficient of relative risk aversion in household utility function",
         "description": "Coefficient of relative risk aversion in household utility function.",
+        "short_description": "Coefficient of constant relative risk aversion",
+        "param_notation": "$\\sigma$",
         "section_1": "Household Parameters",
         "section_2": "Behavioral Assumptions",
         "notes": "Default value from Attanasio, Banks, Meghir and Weber (JEBS, 1999).",
@@ -427,6 +443,8 @@
     "gamma": {
         "title": "Capital's share of output in firm production function",
         "description": "Capital's share of output in firm production function.",
+        "short_description": "Capital share of income",
+        "param_notation": "$\\gamma$",
         "section_1": "Firm Parameters",
         "section_2": "Production Function",
         "notes": "Historical value in U.S. is about 0.33, but Elsby, Hobijn, and Sahin (BPEA, 2013) find capital's share is increasing, so default value is above this.",
@@ -469,6 +487,8 @@
     "epsilon": {
         "title": "Elasticity of substitution among private capital, public capital, and labor in firm production function",
         "description": "Elasticity of substitution among private capital, public capital, and labor in firm production function.",
+        "short_description": "Elasticity of substitution between capital and labor",
+        "param_notation": "$\\varepsilon$",
         "section_1": "Firm Parameters",
         "section_2": "Production Function",
         "notes": "If epsilon=1, then production function is Cobb-Douglas.  If epsilon=0, then production function is perfect substitutes.",
@@ -511,6 +531,8 @@
     "Z": {
         "title": "Total factor productivity in firm production function",
         "description": "Total factor productivity in firm production function.  Set value for base year, click '+' to add value for next year.  All future years not specified are set to last value entered.",
+        "short_description": "Total factor productivity",
+        "param_notation": "$Z_{t}$",
         "section_1": "Firm Parameters",
         "section_2": "Production Function",
         "notes": "",
@@ -571,6 +593,8 @@
     "ltilde": {
         "title": "Total time endowment of household",
         "description": "Total time endowment of household.",
+        "short_description": "Maximum hours of labor supply",
+        "param_notation": "$\\tilde{l}$",
         "section_1": "Household Parameters",
         "section_2": "Endowments",
         "notes": "Can be normalized to 1.0 without loss of generality.",
@@ -611,6 +635,8 @@
     "initial_foreign_debt_ratio": {
         "title": "Share of government debt held by foreigners in model start year",
         "description": "Share of government debt held by foreigners in model start year.",
+        "short_description": "Share of government debt held by foreigners in initial period",
+        "param_notation": "$D_{f,0}$",
         "section_1": "Open Economy Parameters",
         "notes": "",
         "type": "float",
@@ -629,6 +655,8 @@
     "zeta_D": {
         "title": "Share of new debt issues from government that are purchased by foreigners",
         "description": "Share of new debt issues from government that are purchased by foreigners. Set value for base year, click '+' to add value for next year.  All future years not specified are set to last value entered.",
+        "short_description": "Share of new debt issues purchased by foreigners",
+        "param_notation": "$\\zeta_{D, t}$",
         "section_1": "Open Economy Parameters",
         "notes": "This value is about 0.4 historically for the U.S., set to zero to have closed econ as default.",
         "type": "float",
@@ -650,6 +678,8 @@
     "zeta_K": {
         "title": "Share of excess demand for capital that is supplied by foreigners",
         "description": "Share of excess demand for capital that is supplied by foreigners. Set value for base year, click '+' to add value for next year.  All future years not specified are set to last value entered.",
+        "short_description": "Share of excess capital demand satisfied by foreigners",
+        "param_notation": "$\\zeta_{K, t}$",
         "section_1": "Open Economy Parameters",
         "notes": "Set to 0.1 when running large-open verion of US economy, but hard to find data to pin this down.",
         "type": "float",
@@ -671,6 +701,8 @@
     "tG1": {
         "title": "Number of model periods until budget closure rule kicks in",
         "description": "Number of model periods until budget closure rule kicks in.",
+        "short_description": "Model period in which budget closure rule starts",
+        "param_notation": "$t_{G1}$",
         "section_1": "Fiscal Policy Parameters",
         "section_2": "Fiscal Closure Rules",
         "notes": "It may make sense for this tG1 to exceed the length of the budget window one is looking at.  But it must also not be too late into the time path that a steady-state won't be reached by time T.",
@@ -690,6 +722,8 @@
     "tG2": {
         "title": "Number of model periods until budget closure ends and budgetary variables jump to steady-state values",
         "description": "Number of model periods until budget closure ends and budgetary variables jump to steady-state values.",
+        "short_description": "Model period in which budget closure rule ends",
+        "param_notation": "$t_{G2}$",
         "section_1": "Fiscal Policy Parameters",
         "section_2": "Fiscal Closure Rules",
         "notes": "The number of periods until the closure rule ends must not exceed T, the time at which the model is assumed to reach the steady-state.",
@@ -709,6 +743,8 @@
     "alpha_T": {
         "title": "Exogenous ratio of government transfers to GDP when budget balance is false",
         "description": "Exogenous ratio of government transfers to GDP when budget balance is false. Set value for base year, click '+' to add value for next year.  All future years not specified are set to last value entered.",
+        "short_description": "Transfers as a share of GDP",
+        "param_notation": "$\\alpha^{T}_{t}$",
         "section_1": "Fiscal Policy Parameters",
         "section_2": "Spending",
         "notes": "",
@@ -731,6 +767,8 @@
     "alpha_G": {
         "title": "Exogenous ratio of government spending to GDP when budget balance is false",
         "description": "Exogenous ratio of government spending to GDP when budget balance is false. Set value for base year, click '+' to add value for next year.  All future years not specified are set to last value entered.",
+        "short_description": "Government spending as a share of GDP",
+        "param_notation": "$\\alpha^{G}_{t}$",
         "section_1": "Fiscal Policy Parameters",
         "section_2": "Spending",
         "notes": "",
@@ -841,6 +879,8 @@
     "rho_G": {
         "title": "Speed of convergence to a stable government budget deficit for periods [tG1, tG2-1]",
         "description": "Speed of convergence to a stable government budget deficit for periods [tG1, tG2-1].",
+        "short_description": "Budget closure rule smoothing parameter",
+        "param_notation": "$\\rho_{G}$",
         "section_1": "Fiscal Policy Parameters",
         "section_2": "Fiscal Closure Rules",
         "notes": "Lower rho_G => slower convergence.",
@@ -860,6 +900,8 @@
     "alpha_RM_1": {
         "title": "Exogenous ratio of aggregate remittances to GDP in current period (t=1)",
         "description": "Exogenous ratio of aggregate remittances to GDP in current period (t=1).",
+        "short_description": "Remittances as a share of GDP in initial period",
+        "param_notation": "$\\alpha_{RM,1}$",
         "section_1": "Household Parameters",
         "section_2": "Endowments",
         "notes": "",
@@ -879,6 +921,8 @@
     "alpha_RM_T": {
         "title": "Exogenous ratio of aggregate remittances to GDP in the long run/steady state (t>T)",
         "description": "Exogenous ratio of aggregate remittances to GDP in the long run/steady state (t>T).",
+        "short_description": "Remittances as a share of GDP in long run",
+        "param_notation": "$\\alpha_{RM,T}$",
         "section_1": "Household Parameters",
         "section_2": "Endowments",
         "notes": "",
@@ -898,6 +942,8 @@
     "g_RM": {
         "title": "Growth rate of aggregate remittances between periods tG1 and tG2",
         "description": "Growth rate of aggregate remittances between periods tG1 and tG2",
+        "short_description": "Growth rate of remittances in initial periods",
+        "param_notation": "$g_{RM,t}$",
         "section_1": "Household Parameters",
         "section_2": "Endowments",
         "notes": "",
@@ -920,6 +966,8 @@
     "debt_ratio_ss": {
         "title": "Debt to GDP ratio to be achieved in the steady state",
         "description": "Debt to GDP ratio to be achieved in the steady state.",
+        "short_description": "Steady-state Debt-to-GDP ratio",
+        "param_notation": "$\\bar{\\alpha}_{D}$",
         "section_1": "Fiscal Policy Parameters",
         "section_2": "Fiscal Closure Rules",
         "notes": "Note that depending upon the tax policy parameters, some debt to GDP ratios may not be achievable with positive government spending.",
@@ -939,6 +987,8 @@
     "initial_debt_ratio": {
         "title": "Debt to GDP ratio in the initial period",
         "description": "Debt to GDP ratio in the initial period.",
+        "short_description": "Initial period Debt-to-GDP ratio",
+        "param_notation": "$\\alpha_{D,0}$",
         "section_1": "Fiscal Policy Parameters",
         "notes": "Should be calibrated based on government debt held by the public to GDP in the model start year.",
         "type": "float",
@@ -975,6 +1025,8 @@
     "r_gov_scale": {
         "title": "Scale parameter to determine government interest rate",
         "description": "Parameter to scale the market interest rate to find interest rate on government debt.",
+        "short_description": "Scale parameter in government interest rate wedge",
+        "param_notation": "$\\tau_{d,t}$",
         "section_1": "Fiscal Policy Parameters",
         "notes": "",
         "type": "float",
@@ -995,6 +1047,8 @@
         "title": "Shift parameter to determine government interest rate",
         "section_1": "Fiscal Policy Parameters",
         "description": "Parameter to shift the market interest rate to find interest rate on government debt.",
+        "short_description": "Shift parameter in government interest rate wedge",
+        "param_notation": "$\\mu_{d,t}$",
         "notes": "",
         "type": "float",
         "number_dims": 1,
@@ -1132,6 +1186,8 @@
     "tau_c": {
         "title": "Consumption tax rate",
         "description": "Consumption tax rate.  Set value for base year, click '+' to add value for next year.  All future years not specified are set to last value entered.",
+        "short_description": "Consumption tax rates",
+        "param_notation": "$\\tau^{c}_{t,s,j}$",
         "section_1": "Fiscal Policy Parameters",
         "section_2": "Taxes",
         "notes": "This policy parameter represents the effective consumption tax rate from sales taxes, VATs, and excise taxes by consumption good. Tax rates cab vary over time. It is thus a TxI array.",
@@ -1176,6 +1232,8 @@
     "h_wealth": {
         "title": "Numerator in wealth tax function",
         "description": "Numerator in wealth tax function. Set value for base year, click '+' to add value for next year.  All future years not specified are set to last value entered.",
+        "short_description": "Coefficient on linear term in wealth tax function",
+        "param_notation": "$H$",
         "section_1": "Fiscal Policy Parameters",
         "section_2": "Taxes",
         "notes": "",
@@ -1198,6 +1256,8 @@
     "m_wealth": {
         "title": "Term in denominator in wealth tax function",
         "description": "Term in denominator in wealth tax function. Set value for base year, click '+' to add value for next year.  All future years not specified are set to last value entered.",
+        "short_description": "Constant in wealth tax function",
+        "param_notation": "$M$",
         "section_1": "Fiscal Policy Parameters",
         "section_2": "Taxes",
         "notes": "Must be positive to avoid division by zero when computing ETR and MTR for wealth tax",
@@ -1220,6 +1280,8 @@
     "p_wealth": {
         "title": "Scale parameter in wealth tax function",
         "description": "Scale parameter in wealth tax function. Set value for base year, click '+' to add value for next year.  All future years not specified are set to last value entered.",
+        "short_description": "Coefficient on level term in wealth tax function",
+        "param_notation": "$P$",
         "section_1": "Fiscal Policy Parameters",
         "section_2": "Taxes",
         "notes": "Set to 0 to have no wealth tax.",
@@ -1242,6 +1304,8 @@
     "tau_bq": {
         "title": "Linear tax rate on bequests",
         "description": "Linear tax rate on bequests. Set value for base year, click '+' to add value for next year.  All future years not specified are set to last value entered.",
+        "short_description": "Bequest (estate) tax rate",
+        "param_notation": "$\\tau^{BQ}_{t}$",
         "section_1": "Fiscal Policy Parameters",
         "section_2": "Taxes",
         "notes": "",
@@ -1264,6 +1328,8 @@
     "tau_payroll": {
         "title": "Linear payroll tax rate",
         "description": "Linear payroll tax rate. Set value for base year, click '+' to add value for next year.  All future years not specified are set to last value entered.",
+        "short_description": "Payroll tax rate",
+        "param_notation": "$\\tau^{p}_{t}$",
         "section_1": "Fiscal Policy Parameters",
         "section_2": "Taxes",
         "notes": "Set to zero as default since tax functions include income and payroll taxes.",
@@ -1286,6 +1352,8 @@
     "chi_b": {
         "title": "Utility weight on bequests",
         "description": "Household utility weight on bequests.",
+        "short_description": "Utility of bequests level parameters",
+        "param_notation": "$\\chi^{b}_{j}$",
         "section_1": "Household Parameters",
         "section_2": "Behavioral Assumptions",
         "notes": "",
@@ -1314,6 +1382,8 @@
     "chi_n": {
         "title": "Utility weight on disutility of labor supply",
         "description": "Household utility weight on on disutility of labor supply.",
+        "short_description": "Disutility of labor level parameters",
+        "param_notation": "$\\chi^{n}_{s}$",
         "section_1": "Household Parameters",
         "section_2": "Behavioral Assumptions",
         "notes": "",
@@ -1512,6 +1582,8 @@
     "eta": {
         "title": "Government transfer allocation",
         "description": "Matrix that allocated government transfers across households.",
+        "short_description": "Distribution of transfers",
+        "param_notation": "$\\eta_{j,s,t}$",
         "section_1": "Fiscal Policy Parameters",
         "section_2": "Spending",
         "notes": "This SxJ matrix gives the fraction of total aggregate transfers going to each age s and ability type j.",
@@ -2253,6 +2325,8 @@
     "eta_RM": {
         "title": "Remittances allocation",
         "description": "Matrix that allocates aggregate remittances across households.",
+        "short_description": "Distribution of remittances",
+        "param_notation": "$\\eta_{RM,j,s,t}$",
         "section_1": "Household Parameters",
         "section_2": "Endowments",
         "notes": "This SxJ matrix gives the fraction of total aggregate remittances going to each age s and ability type j.",
@@ -2994,6 +3068,8 @@
     "zeta": {
         "title": "Bequest distribution process",
         "description": "Matrix that describes the bequest distribution process.",
+        "short_description": "Distribution of bequests",
+        "param_notation": "$\\zeta$",
         "section_1": "Household Parameters",
         "section_2": "Endowments",
         "notes": "This SxJ matrix gives the fraction of total aggregate bequests going to each age s and ability type j.",
@@ -3735,6 +3811,8 @@
     "use_zeta": {
         "title": "Indicator variable for whether or not to use the zeta matrix to distribute bequests",
         "description": "Indicator variable for whether or not to use the zeta matrix to distribute bequests.",
+        "short_description": "Whether to distribute bequests between lifetime income groups",
+        "param_notation": "$\\texttt{use_zeta}$",
         "section_1": "Household Parameters",
         "section_2": "Endowments",
         "notes": "",
@@ -3783,6 +3861,8 @@
     "analytical_mtrs": {
         "title": "Flag to use analytically derived marginal tax rates in tax functions",
         "description": "Flag to use analytically derived marginal tax rates in tax functions.",
+        "short_description": "Whether use analytical MTRs or estimate MTRs",
+        "param_notation": "$\\texttt{analytical_mtrs}$",
         "section_1": "Fiscal Policy Parameters",
         "section_2": "Taxes",
         "notes": "",
@@ -3799,6 +3879,8 @@
     "age_specific": {
         "title": "Flag to use analytically derived marginal tax rates in tax functions",
         "description": "Flag to use analytically derived marginal tax rates in tax functions.",
+        "short_description": "Whether use age-specific tax functions",
+        "param_notation": "$\\texttt{age_specific}$",
         "section_1": "Fiscal Policy Parameters",
         "section_2": "Taxes",
         "notes": "",
@@ -3815,6 +3897,8 @@
     "retirement_age": {
         "title": "Age at which agents can collect Social Security benefits",
         "description": "Age at which agents can collect Social Security benefits. Set value for base year, click '+' to add value for next year.  All future years not specified are set to last value entered.",
+        "short_description": "Retirement age",
+        "param_notation": "$R$",
         "section_1": "Fiscal Policy Parameters",
         "section_2": "Government Pension Parameters",
         "notes": "",
@@ -3974,6 +4058,8 @@
     "avg_earn_num_years": {
         "title": "Number of years used to compute average earnings for pension benefits.",
         "description": "Number of years used to compute average earnings for pension benefits.",
+        "short_description": "Number of years over which compute average earnings for pension benefit",
+        "param_notation": "$\\texttt{avg_earn_num_years}$",
         "section_1": "Fiscal Policy Parameters",
         "section_2": "Government Pension Parameters",
         "notes": "US-styel Social Security AIME is computed using average earnings from the highest earnings years for the number of years specified here.",
@@ -3993,6 +4079,8 @@
     "AIME_bkt_1": {
         "title": "Upper bound to the first average index monthly earnings (AIME) bracket",
         "description": "Upper bound to the first average index monthly earnings (AIME) bracket.",
+        "short_description": "First AIME bracket threshold",
+        "param_notation": "$\\texttt{AIME_bkt_1}$",
         "section_1": "Fiscal Policy Parameters",
         "section_2": "Government Pension Parameters",
         "notes": "",
@@ -4012,6 +4100,8 @@
     "AIME_bkt_2": {
         "title": "Upper bound to the second average index monthly earnings (AIME) bracket",
         "description": "Upper bound to the second average index monthly earnings (AIME) bracket.",
+        "short_description": "Second AIME bracket threshold",
+        "param_notation": "$\\texttt{AIME_bkt_2}$",
         "section_1": "Fiscal Policy Parameters",
         "section_2": "Government Pension Parameters",
         "notes": "",
@@ -4031,6 +4121,8 @@
     "PIA_rate_bkt_1": {
         "title": "The rate used to determine the primary insurance amount (PIA) in the first bracket for average index monthly earnings (AIME)",
         "description": "The rate used to determine the primary insurance amount (PIA) in the first bracket for average index monthly earnings (AIME).",
+        "short_description": "First AIME bracket PIA rate",
+        "param_notation": "$\\texttt{PIA_rate_bkt_1}$",
         "section_1": "Fiscal Policy Parameters",
         "section_2": "Government Pension Parameters",
         "notes": "",
@@ -4050,6 +4142,8 @@
     "PIA_rate_bkt_2": {
         "title": "The rate used to determine the primary insurance amount (PIA) in the second bracket for average index monthly earnings (AIME)",
         "description": "The rate used to determine the primary insurance amount (PIA) in the second bracket for average index monthly earnings (AIME).",
+        "short_description": "Second AIME bracket PIA rate",
+        "param_notation": "$\\texttt{PIA_rate_bkt_2}$",
         "section_1": "Fiscal Policy Parameters",
         "section_2": "Government Pension Parameters",
         "notes": "",
@@ -4069,6 +4163,8 @@
     "PIA_rate_bkt_3": {
         "title": "The rate used to determine the primary insurance amount (PIA) in the third bracket for average index monthly earnings (AIME)",
         "description": "The rate used to determine the primary insurance amount (PIA) in the third bracket for average index monthly earnings (AIME).",
+        "short_description": "Third AIME bracket PIA rate",
+        "param_notation": "$\\texttt{PIA_rate_bkt_3}$",
         "section_1": "Fiscal Policy Parameters",
         "section_2": "Government Pension Parameters",
         "notes": "",
@@ -4088,6 +4184,8 @@
     "PIA_maxpayment": {
         "title": "The maximum primary insurance amount (PIA) payment",
         "description": "The maximum primary insurance amount (PIA) payment.",
+        "short_description": "Maximum PIA payment",
+        "param_notation": "$\\texttt{PIA_maxpayment}$",
         "section_1": "Fiscal Policy Parameters",
         "section_2": "Government Pension Parameters",
         "notes": "",
@@ -4107,6 +4205,8 @@
     "PIA_minpayment": {
         "title": "The minimum primary insurance amount (PIA) payment",
         "description": "The minimum primary insurance amount (PIA) payment.",
+        "short_description": "Minimum PIA payment",
+        "param_notation": "$\\texttt{PIA_minpayment}$",
         "section_1": "Fiscal Policy Parameters",
         "section_2": "Government Pension Parameters",
         "notes": "",
@@ -4126,6 +4226,8 @@
     "replacement_rate_adjust": {
         "title": "Adjustment to the Social Security retirement benefits replacement rate",
         "description": "Adjustment to the Social Security retirement benefits replacement rate for year t and household type j. Set value for base year, click '+' to add value for next year.  All future years not specified are set to last value entered.",
+        "short_description": "Adjustment to replacement rate",
+        "param_notation": "$\\theta_{adj,t}$",
         "section_1": "Fiscal Policy Parameters",
         "section_2": "Government Pension Parameters",
         "notes": "This parameter willy only vary along the time path.  It is assumed to be one in the steady state.  The steady state retirement rate can be adjusted by changing the parameters of the retirement benefits function.",
@@ -4148,6 +4250,8 @@
     "budget_balance": {
         "title": "Flag to balance government budget in each period",
         "description": "Flag to balance government budget in each period.",
+        "short_description": "Whether have a balanced budget in each period",
+        "param_notation": "$\\texttt{budget_balance}$",
         "section_1": "Fiscal Policy Parameters",
         "section_2": "Spending",
         "notes": "",
@@ -4169,6 +4273,8 @@
     "baseline_spending": {
         "title": "Flag for use in reform simulations to keep level of government spending and transfers constant between baseline and reform runs",
         "description": "Flag for use in reform simulations to keep level of government spending and transfers constant between baseline and reform runs.",
+        "short_description": "Whether level of spending constant between the baseline and reform runs",
+        "param_notation": "$\\texttt{baseline_spending}$",
         "section_1": "Fiscal Policy Parameters",
         "section_2": "Spending",
         "notes": "",
@@ -4206,6 +4312,8 @@
     "start_year": {
         "title": "Calendar year in which to start model analysis",
         "description": "Calendar year in which to start model analysis.",
+        "short_description": "Initial year",
+        "param_notation": "$\\texttt{start_year}$",
         "section_1": "Other Parameters",
         "section_2": "",
         "notes": "Calendar year for initial model period",
@@ -4225,6 +4333,8 @@
     "tax_func_type": {
         "title": "Functional form for individual income tax functions",
         "description": "Functional form for individual income tax functions.",
+        "short_description": "Functional form used for income tax functions",
+        "param_notation": "$\\texttt{tax_func_type}$",
         "section_1": "Fiscal Policy Parameters",
         "section_2": "Taxes",
         "notes": "",
@@ -4363,6 +4473,8 @@
     "nu": {
         "title": "Parameter for convergence rate of functional iteration",
         "description": "Parameter for convergence rate of functional iteration.",
+        "short_description": "Dampening parameter for TPI",
+        "param_notation": "$\\xi$",
         "section_1": "Model Solution Parameters",
         "notes": "",
         "type": "float",
@@ -4437,6 +4549,8 @@
     "maxiter": {
         "title": "Max iterations for time path iteration",
         "description": "Max iterations for time path iteration.",
+        "short_description": "Maximum number of iterations for TPI",
+        "param_notation": "$\\texttt{maxiter}$",
         "section_1": "Model Solution Parameters",
         "notes": "",
         "type": "int",
@@ -4455,6 +4569,8 @@
     "mindist_SS": {
         "title": "Tolerance for convergence of steady state solution",
         "description": "Tolerance for convergence of steady state solution.",
+        "short_description": "SS solution tolerance",
+        "param_notation": "$\\texttt{mindist_SS}$",
         "section_1": "Model Solution Parameters",
         "notes": "",
         "type": "float",
@@ -4473,6 +4589,8 @@
     "mindist_TPI": {
         "title": "Tolerance for convergence of time path solution",
         "description": "Tolerance for convergence of time path solution.",
+        "short_description": "TPI solution tolerance",
+        "param_notation": "$\\texttt{mindist_TPI}$",
         "section_1": "Model Solution Parameters",
         "notes": "",
         "type": "float",
@@ -4596,6 +4714,8 @@
     "omega": {
         "title": "Population distribution (fraction at each age) over the time path.",
         "description": "Population distribution (fraction at each age) over the time path.",
+        "short_description": "Population by age over time",
+        "param_notation": "$\\omega_{s,t}$",
         "section_1": "Demographic Parameters",
         "notes": "",
         "type": "float",
@@ -4692,6 +4812,8 @@
     "imm_rates": {
         "title": "Immigration rates over the time path.",
         "description": "Immigration rates over the time path.",
+        "short_description": "Immigration rates by age",
+        "param_notation": "$i_{s,t}$",
         "section_1": "Demographic Parameters",
         "notes": "",
         "type": "float",
@@ -4713,6 +4835,8 @@
     "rho": {
         "title": "Age-specific mortality rates.",
         "description": "Age-specific mortality rates.",
+        "short_description": "Mortality rates by age",
+        "param_notation": "$\\rho_{s,t}$",
         "section_1": "Demographic Parameters",
         "notes": "",
         "type": "float",
