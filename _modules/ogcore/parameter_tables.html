@@ -30,10 +30,10 @@
 <link href="../../_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
 
     <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
-    <link rel="stylesheet" type="text/css" href="../../_static/styles/sphinx-book-theme.css?v=a3416100" />
+    <link rel="stylesheet" type="text/css" href="../../_static/styles/sphinx-book-theme.css?v=3c74b3bc" />
     <link rel="stylesheet" type="text/css" href="../../_static/togglebutton.css?v=13237357" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
-    <link rel="stylesheet" type="text/css" href="../../_static/mystnb.8ecb98da25f57f5357bf6f572d296f466b2cfe2517ffebfabe82451661e28f02.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/mystnb.11b39860a7a0cbfd473a3ad8a317855267ff0bd372690045ca344a6b62be495e.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/sphinx-thebe.css?v=4fa983c6" />
     <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=95c83b7e" />
   
@@ -48,7 +48,7 @@
     <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
     <script src="../../_static/copybutton.js?v=f281be69"></script>
-    <script src="../../_static/scripts/sphinx-book-theme.js?v=887ef09a"></script>
+    <script src="../../_static/scripts/sphinx-book-theme.js?v=fab101a9"></script>
     <script>let toggleHintShow = 'Click to show';</script>
     <script>let toggleHintHide = 'Click to hide';</script>
     <script>let toggleOpenOnPrint = 'true';</script>
@@ -317,7 +317,7 @@
 
 
 <button onclick="toggleFullScreen()"
-  class="btn btn-sm btn-fullscreen-button"
+  class="btn btn-sm btn-fullscreen-button pst-navbar-icon"
   title="Fullscreen mode"
   data-bs-placement="bottom" data-bs-toggle="tooltip"
 >
@@ -370,7 +370,7 @@
 <span></span><span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">ogcore.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">save_return_table</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">ogcore.constants</span><span class="w"> </span><span class="kn">import</span> <span class="n">VAR_LABELS</span><span class="p">,</span> <span class="n">PARAM_LABELS</span><span class="p">,</span> <span class="n">DEFAULT_START_YEAR</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">ogcore.constants</span><span class="w"> </span><span class="kn">import</span> <span class="n">VAR_LABELS</span><span class="p">,</span> <span class="n">DEFAULT_START_YEAR</span>
 
 
 <div class="viewcode-block" id="tax_rate_table">
@@ -562,9 +562,34 @@
 <span class="sd">        table (string or DataFrame): table of tax rates</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">table</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;Symbol&quot;</span><span class="p">:</span> <span class="p">[],</span> <span class="s2">&quot;Description&quot;</span><span class="p">:</span> <span class="p">[],</span> <span class="s2">&quot;Value&quot;</span><span class="p">:</span> <span class="p">[]}</span>
-    <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">PARAM_LABELS</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-        <span class="n">table</span><span class="p">[</span><span class="s2">&quot;Symbol&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">v</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
-        <span class="n">table</span><span class="p">[</span><span class="s2">&quot;Description&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">v</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+    <span class="n">param_metadata</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">specification</span><span class="p">(</span>
+        <span class="n">meta_data</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">include_empty</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">serializable</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">use_state</span><span class="o">=</span><span class="kc">True</span>
+    <span class="p">)</span>
+    <span class="n">skip_params</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="s2">&quot;starting_age&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;ending_age&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;constant_demographics&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;constant_rates&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;zero_taxes&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;theta&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;k&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;fert_rates&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;N&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;Gamma&quot;</span><span class="p">,</span>
+    <span class="p">]</span>
+
+    <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">param_metadata</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
+            <span class="k">continue</span>
+        <span class="k">if</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">skip_params</span><span class="p">:</span>
+            <span class="k">continue</span>
+        <span class="n">short_description</span> <span class="o">=</span> <span class="n">v</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;short_description&quot;</span><span class="p">)</span>
+        <span class="n">param_notation</span> <span class="o">=</span> <span class="n">v</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;param_notation&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">short_description</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">param_notation</span><span class="p">:</span>
+            <span class="k">continue</span>
+
+        <span class="n">table</span><span class="p">[</span><span class="s2">&quot;Symbol&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">param_notation</span><span class="p">)</span>
+        <span class="n">table</span><span class="p">[</span><span class="s2">&quot;Description&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">short_description</span><span class="p">)</span>
         <span class="n">value</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">k</span><span class="p">)</span>
         <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="s2">&quot;__len__&quot;</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
             <span class="k">if</span> <span class="n">value</span><span class="o">.</span><span class="n">ndim</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>

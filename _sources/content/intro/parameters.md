@@ -767,7 +767,7 @@ _Out-of-Range Action:_ error
 ## Economic Assumptions
 
 ####  `g_y_annual`  
-_Description:_ Growth rate of labor augmenting technological change.  
+_Description:_ Annual growth rate of labor augmenting technological change.  
 _Value Type:_ float  
 _Valid Range:_ min = -0.01 and max = 0.08  
 _Out-of-Range Action:_ error  
