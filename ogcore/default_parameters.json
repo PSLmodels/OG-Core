@@ -4512,7 +4512,7 @@
         "title": "Parameter for convergence rate of functional iteration",
         "description": "Parameter for convergence rate of functional iteration.",
         "short_description": "Dampening parameter for TPI",
-        "param_notation": "$\\xi_tpi$",
+        "param_notation": "$\\xi$",
         "section_1": "Model Solution Parameters",
         "notes": "",
         "type": "float",
