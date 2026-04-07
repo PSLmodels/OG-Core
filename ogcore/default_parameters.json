@@ -843,6 +843,8 @@
     "infra_investment_leakage_rate": {
         "title": "Government infrastructure investment leakage rate",
         "description": "Fraction of government infrastructure investment lost to leakage (e.g., corruption or other frictions) and treated as deadweight loss. Only (1 - infra_investment_leakage_rate) * I_g enters the public capital stock.",
+        "short_description": "Infrastructure investment leakage rate",
+        "param_notation": "$\\phi_g$",
         "section_1": "Fiscal Policy Parameters",
         "section_2": "Spending",
         "notes": "A value of 0.0 (default) implies no leakage. A value of 0.2 implies 20% of infrastructure spending is lost before entering the public capital stock.",
