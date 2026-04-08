@@ -433,6 +433,13 @@ _Valid Range:_ min = 0.0 and max = 0.3
 _Out-of-Range Action:_ error  
 
 
+####  `infra_investment_leakage_rate`  
+_Description:_ Fraction of government infrastructure investment lost to leakage (e.g., corruption or other frictions) and treated as deadweight loss. Only $(1 - \phi_g)$ of investment enters the public capital stock.  
+_Value Type:_ float  
+_Valid Range:_ min = 0.0 and max = 1.0  
+_Out-of-Range Action:_ error  
+
+
 ####  `alpha_bs_T`  
 _Description:_ Proportional adjustment to government transfers relative to baseline amount when budget balance is true. Set value for base year, click '+' to add value for next year.  All future years not specified are set to last value entered.  
 _Value Type:_ float  
