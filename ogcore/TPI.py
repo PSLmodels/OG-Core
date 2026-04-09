@@ -636,7 +636,7 @@ def run_TPI(p, client=None):
     # compute goods prices
     p_m = np.ones((p.T + p.S, p.M)) * ss_vars["p_m"].reshape(1, p.M)
     p_m[: p.T, :] = firm.get_pm(
-        w[: p.T], Y_vec_init[: p.T, :], L_vec_init[: p.T, :], p, "TPI"
+        w[: p.T], Y_vec_init[: p.T, :], L_vec_init[: p.T, :], p, "TPI", vectorized=True
     )
     p_m = p_m / p_m[:, -1].reshape(
         p.T + p.S, 1
@@ -652,7 +652,7 @@ def run_TPI(p, client=None):
         )
     # repeat with updated w
     p_m[: p.T, :] = firm.get_pm(
-        w[: p.T], Y_vec_init[: p.T, :], L_vec_init[: p.T, :], p, "TPI"
+        w[: p.T], Y_vec_init[: p.T, :], L_vec_init[: p.T, :], p, "TPI", vectorized=True
     )
     p_m = p_m / p_m[:, -1].reshape(
         p.T + p.S, 1
@@ -776,7 +776,7 @@ def run_TPI(p, client=None):
             schema_backup[attr] = getattr(p, attr)
             try:
                 delattr(p, attr)
-            except:
+            except AttributeError:
                 pass
 
     # Scatter the parameters
@@ -786,7 +786,7 @@ def run_TPI(p, client=None):
     for attr, value in schema_backup.items():
         try:
             setattr(p, attr, value)
-        except:
+        except AttributeError:
             pass
 
     # TPI loop
@@ -1150,7 +1150,7 @@ def run_TPI(p, client=None):
         )
 
         # compute new prices
-        new_p_m = firm.get_pm(wnew, Y_vec, L_vec, p, "TPI")
+        new_p_m = firm.get_pm(wnew, Y_vec, L_vec, p, "TPI", vectorized=True)
         new_p_m = new_p_m / new_p_m[:, -1].reshape(
             p.T, 1
         )  # normalize prices by industry M

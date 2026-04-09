@@ -311,38 +311,63 @@ def get_KLratio(r, w, p, method, m=-1):
     return KLratio
 
 
-def get_MPx(Y, x, share, p, method, m=-1):
+def get_MPx(Y, x, share, p, method, m=0, *, vectorized=False):
     r"""
-    Compute the marginal product of x (where x is K, L, or K_g)
+    Compute the marginal product of x (where x is K, L, or K_g).
+
+    The original implementation only handled a single industry at a time.  We
+    now allow ``share`` (and the associated structural parameters) to be
+    arrays over industries so that ``get_pm`` can avoid a Python loop.
 
     .. math::
-        MPx = Z_t^\frac{\varepsilon-1}{\varepsilon}\left[(share)
-        \frac{\hat{Y}_t}{\hat{x}_t}\right]^\frac{1}{\varepsilon}
+        MPx_{m,t} = Z_{m,t}^{(\varepsilon_m-1)/\varepsilon_m}
+            \left[share_m \frac{\hat{Y}_{m,t}}{\hat{x}_{m,t}}\right]^{1/\varepsilon_m}
 
     Args:
-        Y (array_like): output
-        x (array_like): input to production function
-        share (scalar): share of output paid to factor x
+        Y (array_like): output; either shape ``(T,)`` or ``(T,M)``
+        x (array_like): input to production function; same shape as ``Y``
+        share (scalar or array): share(s) of output paid to factor x; if an
+            array it may have shape ``(M,)`` or ``(T,M)``
         p (OG-Core Specifications object): model parameters
-        method (str): adjusts calculation dimensions based on 'SS' or
-            'TPI'
-        m (int): production industry index
+        method (str): adjusts calculation dimensions based on ``'SS'`` or
+            ``'TPI'``
+        m (int): production industry index; when ``m=-1`` the function computes it for the last industry.
+            When ``vectorized=True``, it triggers the vectorized behavior across all industries.
+        vectorized (bool): if True, computes marginal products for all industries across a vectorized array.
 
     Returns:
-        MPx (array_like): the marginal product of x
+        MPx (array_like): the marginal product of x.  Shape matches ``Y``.
     """
+    # reshape inputs according to method
     if method == "SS":
-        Z = p.Z[-1, m]
+        if not vectorized:
+            Z = p.Z[-1, m]
+        else:
+            # vector of Z for all industries
+            Z = p.Z[-1, :].reshape(1, p.M)
     else:
-        Z = p.Z[: p.T, m].reshape(p.T, 1)
-        Y = Y[: p.T].reshape(p.T, 1)
-        x = x[: p.T].reshape(p.T, 1)
-    if np.any(x) == 0:
+        if not vectorized:
+            Z = p.Z[: p.T, m].reshape(p.T, 1)
+            Y = Y[: p.T].reshape(p.T, 1)
+            x = x[: p.T].reshape(p.T, 1)
+        else:
+            Z = p.Z[: p.T, :].reshape(p.T, p.M)
+            Y = Y[: p.T].reshape(p.T, p.M)
+            x = x[: p.T].reshape(p.T, p.M)
+
+    # handle zero inputs safely
+    if np.any(x == 0):
         MPx = np.zeros_like(Y)
     else:
-        MPx = Z ** ((p.epsilon[m] - 1) / p.epsilon[m]) * ((share * Y) / x) ** (
-            1 / p.epsilon[m]
-        )
+        if not vectorized:
+            eps = p.epsilon[m]
+            sh = share
+        else:
+            # broadcast parameter arrays to shape (T,M)
+            eps = np.array(p.epsilon).reshape(1, p.M)
+            sh = np.array(share).reshape(1, p.M)
+
+        MPx = Z ** ((eps - 1) / eps) * ((sh * Y) / x) ** (1 / eps)
 
     return MPx
 
@@ -530,7 +555,7 @@ def get_cost_of_capital(r, p, method, m=-1):
     return cost_of_capital
 
 
-def get_pm(w, Y_vec, L_vec, p, method):
+def get_pm(w, Y_vec, L_vec, p, method, m=0, *, vectorized=False):
     r"""
     Find prices for outputs from each industry.
 
@@ -538,16 +563,25 @@ def get_pm(w, Y_vec, L_vec, p, method):
          p_{m,t}=\frac{w_{t}}{\left((1-\gamma_m-\gamma_{g,m})
         \frac{\hat{Y}_{m,t}}{\hat{L}_{m,t}}\right)^{\varepsilon_m}}
 
+    This function now accepts an optional industry index ``m``.  If ``m`` is
+    specified, a single industry's price path is returned (shape ``T`` or
+    scalar in ``SS``).  When ``vectorized=True`` prices for all industries
+    are computed using vectorized operations rather than a Python loop.
+
     Args:
         w (array_like): the wage rate
         Y_vec (array_like): output for each industry
         L_vec (array_like): labor demand for each industry
         p (OG-Core Specifications object): model parameters
         method (str): adjusts calculation dimensions based on 'SS' or 'TPI'
+        m (int): industry index (default 0).
+        vectorized (bool): if True, computes prices for all industries at once.
 
     Returns:
-        p_m (array_like): output prices for each industry
+        p_m (array_like): output prices for each industry (or a single industry
+            if not vectorized)
     """
+    # reshape inputs according to method
     if method == "SS":
         Y = Y_vec.reshape(1, p.M)
         L = L_vec.reshape(1, p.M)
@@ -556,15 +590,25 @@ def get_pm(w, Y_vec, L_vec, p, method):
         Y = Y_vec.reshape((p.T, p.M))
         L = L_vec.reshape((p.T, p.M))
         T = p.T
-    p_m = np.zeros((T, p.M))
-    for m in range(p.M):  # TODO: try to get rid of this loop
-        MPL = get_MPx(
-            Y[:, m], L[:, m], 1 - p.gamma[m] - p.gamma_g[m], p, method, m
-        ).reshape(T)
-        p_m[:, m] = w / MPL
+
+    if not vectorized:
+        # compute price for specific industry using existing logic
+        share = 1 - p.gamma[m] - p.gamma_g[m]
+        MPL = get_MPx(Y[:, m], L[:, m], share, p, method, m=m, vectorized=False).reshape(T)
+        pmout = w / MPL
+        return float(pmout[0]) if method == "SS" else pmout
+
+    # vectorized calculation for all industries
+    # create share vector of length M
+    shares = (1 - p.gamma - p.gamma_g).reshape(1, p.M)
+    # get marginal products of labor for every industry at once
+    MPL = get_MPx(
+        Y, L, shares, p, method, vectorized=True
+    )  # returns shape (T, M)
+    pmout = w.reshape(T, 1) / MPL
     if method == "SS":
-        p_m = p_m.reshape(p.M)
-    return p_m
+        pmout = pmout.reshape(p.M)
+    return pmout
 
 
 def get_KY_ratio(r, p_m, p, method, m=-1):
@@ -649,7 +693,7 @@ def solve_L(Y, K, K_g, p, method, m=-1):
         if K_g == 0:
             K_g = 1.0
             gamma_g = 0
-    except:
+    except (ValueError, TypeError):
         if np.any(K_g == 0):
             K_g[K_g == 0] = 1.0
             gamma_g = 0
@@ -670,7 +714,7 @@ def solve_L(Y, K, K_g, p, method, m=-1):
 
 def adj_cost(K, Kp1, p, method):
     r"""
-    Firm capital adjstment costs
+    Firm capital adjustment costs
 
     ..math::
         \Psi(K_{t}, K_{t+1}) = \frac{\psi}{2}\biggr(\frac{\biggr(\frac{I_{t}}{K_{t}}-\mu\biggl)^{2}}{\frac{I_{t}}{K_{t}}}\biggl)

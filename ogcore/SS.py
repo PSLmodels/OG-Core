@@ -298,7 +298,7 @@ def inner_loop(outer_loop_vars, p, client):
                 schema_backup[attr] = getattr(p, attr)
                 try:
                     delattr(p, attr)
-                except:
+                except AttributeError:
                     pass
 
         # Scatter the parameters
@@ -308,7 +308,7 @@ def inner_loop(outer_loop_vars, p, client):
         for attr, value in schema_backup.items():
             try:
                 setattr(p, attr, value)
-            except:
+            except AttributeError:
                 pass
 
         # Launch in parallel with submit (or map)
@@ -529,7 +529,7 @@ def inner_loop(outer_loop_vars, p, client):
     theta = pensions.replacement_rate_vals(nssmat, new_w, new_factor, None, p)
 
     # Find updated goods prices
-    new_p_m = firm.get_pm(new_w, Y_vec, L_vec, p, "SS")
+    new_p_m = firm.get_pm(new_w, Y_vec, L_vec, p, "SS", vectorized=True)
     new_p_m = new_p_m / new_p_m[-1]  # normalize prices by industry M
     new_p_i = np.dot(p.io_matrix, new_p_m)
     new_p_tilde = aggr.get_ptilde(new_p_i, p.tau_c[-1, :], p.alpha_c)
@@ -631,7 +631,7 @@ def inner_loop(outer_loop_vars, p, client):
     )
 
     G_vec = np.zeros(p.M)
-    G_vec[-1] = G
+    G_vec[-1] = float(G)
     C_m_vec = np.dot(p.io_matrix.T, C_vec)
     I_d_vec = np.zeros(p.M)
     I_d = aggr.get_I(b_splus1, K_d, K_d, p, "SS")

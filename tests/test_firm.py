@@ -899,10 +899,81 @@ pm_expected4 = np.array([1.95, 1.95, 1.95])
 )
 def test_get_pm(w, Y, L, p, method, expected):
     """
-    Test of the function that computes goods prices
+    Test of the function that computes goods prices for the case where the
+    entire vector of prices is requested.
     """
     pm = firm.get_pm(w, Y, L, p, method)
     assert np.allclose(pm, expected, atol=1e-6)
+
+
+def explicit_price_loop(w, Y, L, p, method):
+    """Compute prices using the original loop logic for comparison."""
+    if method == "SS":
+        out = np.zeros(p.M)
+        for m in range(p.M):
+            share = 1 - p.gamma[m] - p.gamma_g[m]
+            MPL = firm.get_MPx(Y[m], L[m], share, p, method, m)
+            out[m] = w / MPL
+    else:
+        out = np.zeros((p.T, p.M))
+        for m in range(p.M):
+            share = 1 - p.gamma[m] - p.gamma_g[m]
+            MPL = firm.get_MPx(Y[:, m], L[:, m], share, p, method, m)
+            out[:, m] = w / MPL
+    return out
+
+
+@pytest.mark.parametrize(
+    "w,Y,L,p,method",
+    [
+        (w1, Y1, L1, p1, "SS"),
+        (w2, Y3, L2, p1, "TPI"),
+        (w1, Y2, L1, p2, "SS"),
+        (w2, Y4, L2, p2, "TPI"),
+        # add multi-industry scenarios using p7 and p8
+        (np.array([1.0, 1.0]), np.array([10.0, 12.0]), np.array([5.0, 5.0]), p7, "SS"),
+        (
+            np.ones((3, 2)),
+            np.ones((3, 2)) * np.array([10.0, 12.0]),
+            np.ones((3, 2)) * np.array([5.0, 5.0]),
+            p8,
+            "TPI",
+        ),
+    ],
+)
+def test_get_pm_vs_loop(w, Y, L, p, method):
+    """Vectorized `get_pm` should match explicit-loop computation."""
+    expected = explicit_price_loop(w, Y, L, p, method)
+    got = firm.get_pm(w, Y, L, p, method)
+    assert np.allclose(got, expected, atol=1e-6)
+
+
+@pytest.mark.parametrize(
+    "w,Y,L,p,method,m",
+    [
+        (w1, Y1, L1, p1, "SS", 0),
+        (w2, Y3, L2, p1, "TPI", 0),
+        (w1, Y2, L1, p2, "SS", 0),
+        (w2, Y4, L2, p2, "TPI", 0),
+        (np.array([1.0, 1.0]), np.array([10.0, 12.0]), np.array([5.0, 5.0]), p7, "SS", 1),
+        (
+            np.ones((3, 2)),
+            np.ones((3, 2)) * np.array([10.0, 12.0]),
+            np.ones((3, 2)) * np.array([5.0, 5.0]),
+            p8,
+            "TPI",
+            1,
+        ),
+    ],
+)
+def test_get_pm_with_m(w, Y, L, p, method, m):
+    """Specifying an industry index ``m`` returns the correct slice."""
+    all_prices = firm.get_pm(w, Y, L, p, method)
+    single = firm.get_pm(w, Y, L, p, method, m=m)
+    if method == "SS":
+        assert float(single) == float(all_prices[m])
+    else:
+        assert np.allclose(single, all_prices[:, m], atol=1e-6)
 
 
 Y1 = np.array([18.84610765])
