@@ -291,9 +291,9 @@ def get_KLratio_KLonly(r, p, method, m=-1):
         bracket = cost_of_capital * (Z * (gamma ** (1 / epsilon))) ** -1
         denom = (bracket ** (epsilon - 1)) - (gamma ** (1 / epsilon))
         denom = np.maximum(denom, _FLOOR)
-        KLratio = (
-            ((1 - gamma) ** (1 / epsilon)) / denom
-        ) ** (epsilon / (epsilon - 1))
+        KLratio = (((1 - gamma) ** (1 / epsilon)) / denom) ** (
+            epsilon / (epsilon - 1)
+        )
 
     return KLratio
 
@@ -683,9 +683,9 @@ def solve_L(Y, K, K_g, p, method, m=-1):
             - gamma_g ** (1 / epsilon) * K_g_f ** ((epsilon - 1) / epsilon)
         )
         numer = np.maximum(numer, _FLOOR)
-        L = (
-            numer / ((1 - gamma - gamma_g) ** (1 / epsilon))
-        ) ** (epsilon / (epsilon - 1))
+        L = (numer / ((1 - gamma - gamma_g) ** (1 / epsilon))) ** (
+            epsilon / (epsilon - 1)
+        )
 
     return L
 
