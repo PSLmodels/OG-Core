@@ -290,7 +290,13 @@ def get_KLratio_KLonly(r, p, method, m=-1):
         cost_of_capital = get_cost_of_capital(r, p, method, m)
         bracket = cost_of_capital * (Z * (gamma ** (1 / epsilon))) ** -1
         denom = (bracket ** (epsilon - 1)) - (gamma ** (1 / epsilon))
-        denom = np.maximum(denom, _FLOOR)
+        # Guard against division by zero while preserving sign
+        # (negative denom is valid for some epsilon < 1 cases)
+        denom = np.where(
+            denom >= 0,
+            np.maximum(denom, _FLOOR),
+            np.minimum(denom, -_FLOOR),
+        )
         KLratio = (((1 - gamma) ** (1 / epsilon)) / denom) ** (
             epsilon / (epsilon - 1)
         )
