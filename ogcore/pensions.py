@@ -13,7 +13,8 @@ def replacement_rate_vals(nssmat, wss, factor_ss, j, p):
     Calculates replacement rate values for the social security system.
 
     .. math::
-        \theta_{j,R,t+R} = \frac{PIA_{j,R,t+R} \times 12}{factor \times w_{t+R}}
+        \theta_{j,R,t+R} =
+        \frac{PIA_{j,R,t+R} \times 12}{factor \times w_{t+R}}
 
     Args:
         nssmat (Numpy array): initial guess at labor supply, size = SxJ
@@ -206,7 +207,8 @@ def DB_amount(w, e, n, j, p):
 
     .. math::
         pension{j,s,t} = \biggl[\frac{\sum_{s=R-ny}^{R-1}w_{t}e_{j,s,t}
-            n_{j,s,t}}{ny}\biggr]\times Cy \times \alpha_{DB} \quad \forall s > R
+            n_{j,s,t}}{ny}\biggr]\times Cy \times \alpha_{DB}
+            \quad \forall s > R
 
     Args:
         w (array_like): real wage rate
@@ -296,7 +298,8 @@ def NDC_amount(w, e, n, r, Y, j, p):
 
     .. math::
         pension{j,s,t} = \biggl[\sum_{s=E}^{R-1}\tau^{p}_{t}w_{t}
-            e_{j,s,t}n_{j,s,t}(1 + g_{NDC,t})^{R-s-1}\biggr]\delta_{R, t} \quad \forall s > R
+            e_{j,s,t}n_{j,s,t}(1 + g_{NDC,t})^{R-s-1}\biggr]
+            \delta_{R, t} \quad \forall s > R
 
     Args:
         w (array_like): real wage rate
@@ -378,7 +381,8 @@ def PS_amount(w, e, n, j, factor, p):
     Calculate public pension from a points system.
 
     .. math::
-        pension{j,s,t} = \sum_{s=E}^{R-1}w_{t}e_{j,s,t}n_{j,s,t}\times v_{t} \quad \forall s > R
+        pension{j,s,t} = \sum_{s=E}^{R-1}w_{t}e_{j,s,t}n_{j,s,t}
+        \times v_{t} \quad \forall s > R
 
     Args:
         w (array_like): real wage rate
@@ -492,7 +496,8 @@ def deriv_NDC(r, w, e, Y, per_rmn, p):
     .. math::
         \frac{\partial \theta_{j,u,t+u-s}}{\partial n_{j,s,t}} =
             \begin{cases}
-            \tau^{p}_{t}w_{t}e_{j,s}(1+g_{NDC,t})^{u - s}\delta_{R,t}, & \text{if}\ s<R-1 \\
+            \tau^{p}_{t}w_{t}e_{j,s}(1+g_{NDC,t})^{u - s}\delta_{R,t},
+            & \text{if}\ s<R-1 \\
             0, & \text{if}\ s \geq R \\
             \end{cases}
 
@@ -539,7 +544,8 @@ def deriv_DB(w, e, per_rmn, p):
         \frac{\partial \theta_{j,u,t+u-s}}{\partial n_{j,s,t}} =
             \begin{cases}
                 0 , & \text{if}\ s < R - Cy \\
-                w_{t}e_{j,s}\alpha_{DB}\times \frac{Cy}{ny}, & \text{if}\  R - Cy <= s < R  \\
+                w_{t}e_{j,s}\alpha_{DB}\times \frac{Cy}{ny},
+                & \text{if}\  R - Cy <= s < R  \\
                 0, & \text{if}\ s \geq R \\
             \end{cases}
 

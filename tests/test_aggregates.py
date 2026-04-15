@@ -217,7 +217,6 @@ new_param_values = {
     "omega": np.ones((160, 40)) / 40,
     "omega_SS": np.ones(40) / 40,
     "imm_rates": np.zeros((160, 40)),
-    "rho": rho_vec.tolist(),
 }
 # update parameters instance with new values for test
 p.update_specifications(new_param_values)

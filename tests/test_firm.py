@@ -1,4 +1,3 @@
-from math import exp
 import pytest
 from ogcore import firm
 import numpy as np

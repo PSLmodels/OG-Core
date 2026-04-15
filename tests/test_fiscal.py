@@ -33,7 +33,8 @@ D_f3 = df["D_f3"].values.copy()
 D_f4 = df["D_f4"].values.copy()
 r_gov1 = (
     np.ones_like(D1) * 0.05 - 0.02
-)  # 0.02 is the default r_gov_shift parameter and the default scale parameter is 1.0, meaning r_gov1 = 0.05 - 0.02 = 0.03
+)  # 0.02 is the default r_gov_shift parameter and the default scale
+# parameter is 1.0, meaning r_gov1 = 0.05 - 0.02 = 0.03
 r_gov2 = r_gov1
 r_gov3 = r_gov1
 r_gov4 = df["r_gov4"].values.copy()

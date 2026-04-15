@@ -24,9 +24,7 @@ import ogcore.parameter_plots as pp
 from ogcore.constants import DEFAULT_START_YEAR, SHOW_RUNTIME
 from ogcore import utils
 import warnings
-from pygam import LinearGAM, s, te
-from matplotlib import cm
-import random
+from pygam import LinearGAM, s
 
 if not SHOW_RUNTIME:
     warnings.simplefilter("ignore", RuntimeWarning)
@@ -84,9 +82,9 @@ def get_tax_rates(
     Y2 = Y**2
     income = X + Y
     if tax_func_type != "mono":
-        params = np.array(
-            params
-        )  # easier to use arrays for calculations below, except when can't (bc lists of functions)
+        # easier to use arrays for calculations below, except when
+        # can't (bc lists of functions)
+        params = np.array(params)
     if tax_func_type == "GS":
         phi0, phi1, phi2 = (
             np.squeeze(params[..., 0]),
@@ -505,7 +503,7 @@ def replace_outliers(param_list, sse_big_mat):
     param_list_adj = param_list.copy()
     for t in range(sse_big_mat.shape[0]):
         big_cnt = 0
-        for s in range(S):
+        for s in range(S):  # noqa: F402
             # Smooth out ETR tax function outliers
             if sse_big_mat[t, s] and s < S - 1:
                 # For all outlier observations, increase the big_cnt by
@@ -755,7 +753,8 @@ def txfunc_est(
             rate_type,
         )
         lb_max_income = np.maximum(min_income, 0.0) + 1e-4
-        # bnds = ((1e-12, None), (1e-12, None), (lb_max_income, MAX_ETR + 0.15))
+        # bnds = ((1e-12, None), (1e-12, None),
+        #         (lb_max_income, MAX_ETR + 0.15))
         bnds = ((1e-12, 99999), (1e-12, 9999), (lb_max_income, MAX_ETR + 0.15))
         if global_opt:
             params_til = opt.differential_evolution(
@@ -1097,7 +1096,8 @@ def tax_func_loop(
 
     # Each age s must be done in serial
     # Set initial values
-    # TODO: update this, so if using DEP or GS initial parameters are estimated on all ages first
+    # TODO: update this, so if using DEP or GS initial parameters are
+    # estimated on all ages first
     if tax_func_type in ["DEP", "DEP_totalinc", "GS"]:
         s = 0
         df = data
@@ -1870,7 +1870,7 @@ def tax_func_estimate(
                     rmndr_pct_lb = 1 - rmndr_pct_ub
 
         else:
-            err_msg(
+            err_msg = (
                 "txfunc ERROR: S is larger than the difference between "
                 + "the minimum age and the maximum age specified. Please "
                 + "choose an S such that a model period equals at least "
@@ -1891,7 +1891,7 @@ def tax_func_estimate(
             )
             raise ValueError(err_msg)
         else:
-            err_msg(
+            err_msg = (
                 "txfunc ERROR: S is larger than the difference between "
                 + "the minimum age and the maximum age specified. Please "
                 + "choose an S such that a model period equals at least "
@@ -1977,7 +1977,8 @@ def avg_by_bin_multd(x, y, bins, weights=None):
         yNew = np.zeros(size, dtype=float)
         weightsNew = np.zeros(size, dtype=float)
 
-        # iterate through each of the final bins, which consists of bins for each feature
+        # iterate through each of the final bins, which consists of
+        # bins for each feature
         # for each, only retain entries falling in that bin
         for i in range(size):
             index = list(np.unravel_index(i, tupleBins))
@@ -2017,9 +2018,10 @@ def monotone_spline(
         method (string): 'eilers' or 'pygam'
         splines (None or array-like): for 'pygam' only (otherwise set None),
             number of splines used for each feature, if None use default
-        plot_start/plot_end (number between 0, 100): for 'pygam' only if show_plot = True,
-            start and end for percentile of data used in plot, can result in
-            better visualizations if original data has strong outliers
+        plot_start/plot_end (number between 0, 100): for 'pygam' only
+            if show_plot = True, start and end for percentile of data
+            used in plot, can result in better visualizations if
+            original data has strong outliers
 
 
     Returns:
@@ -2036,7 +2038,7 @@ def monotone_spline(
     if method == "pygam":
         if len(x.shape) == 1:
             x = np.expand_dims(x, axis=1)
-        if splines != None and len(splines) != x.shape[1]:
+        if splines is not None and len(splines) != x.shape[1]:
             err_msg = (
                 " pygam method requires splines to be None or "
                 + " same length as # of columns in x, "
@@ -2047,18 +2049,20 @@ def monotone_spline(
             raise ValueError(err_msg)
 
         # bin data
-        if bins == None:
+        if bins is None:
             x_binned, y_binned, weights_binned = x, y, weights
         else:
             x_binned, y_binned, weights_binned = avg_by_bin_multd(
                 x, y, bins, weights
             )
 
-        # setup pygam parameters- in addition to 's' spline terms, can also have 't' tensor
-        # terms which are interactions between two variables. 't' terms also need monotonic constraints
-        # to satisfy previous constraints, they actually impose stronger restriction
+        # setup pygam parameters- in addition to 's' spline terms,
+        # can also have 't' tensor terms which are interactions between
+        # two variables. 't' terms also need monotonic constraints
+        # to satisfy previous constraints, they actually impose
+        # stronger restriction
 
-        if splines == None:
+        if splines is None:
             tempCstr = s(0, constraints="monotonic_inc")
             for i in range(1, x_binned.shape[1]):
                 tempCstr += s(i, constraints="monotonic_inc")
@@ -2092,8 +2096,9 @@ def monotone_spline(
         if show_plot:
             if x.shape[1] == 2:
                 fig, ax = plt.subplots(subplot_kw={"projection": "3d"})
-                # select data in [plot_start, end] percentile across both features
-                # this can be rewritten to generalize for n-dimensions, but didn't know how to plot that
+                # select data in [plot_start, end] percentile across
+                # both features; this can be rewritten to generalize
+                # for n-dimensions, but didn't know how to plot that
                 xactPlot = x[
                     (x[:, 0] >= np.percentile(x[:, 0], plot_start))
                     & (x[:, 0] <= np.percentile(x[:, 0], plot_end))
@@ -2230,8 +2235,8 @@ def monotone_spline(
             wsse_uncstr = None
 
         def mono_interp(x_vec):
-            # replace last point in data with two copies further out to make smooth
-            # extrapolation
+            # replace last point in data with two copies further out
+            # to make smooth extrapolation
             x_new = np.append(
                 x_binned[:-1], [1.005 * x_binned[-1], 1.01 * x_binned[-1]]
             )

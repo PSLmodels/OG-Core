@@ -13,12 +13,9 @@ This module contains the following functions:
 import numpy as np
 import pickle
 import scipy.optimize as opt
-from dask import delayed, compute
-import dask.multiprocessing
 from ogcore import tax, utils, household, firm, fiscal, pensions
 from ogcore import aggregates as aggr
 from ogcore.constants import SHOW_RUNTIME
-from ogcore import config
 import os
 import warnings
 import logging
@@ -267,7 +264,8 @@ def twist_doughnut(
         tr (Numpy array): government transfer amount
         theta (Numpy array): retirement replacement rates, length J
         factor (scalar): scaling factor converting model units to dollars
-        ubi (Numpy array): length remaining periods of life UBI payout to household
+        ubi (Numpy array): length remaining periods of life UBI payout
+            to household
         j (int): index of ability type
         s (int): years of life remaining
         t (int): model period
@@ -776,7 +774,7 @@ def run_TPI(p, client=None):
             schema_backup[attr] = getattr(p, attr)
             try:
                 delattr(p, attr)
-            except:
+            except Exception:
                 pass
 
     # Scatter the parameters
@@ -786,7 +784,7 @@ def run_TPI(p, client=None):
     for attr, value in schema_backup.items():
         try:
             setattr(p, attr, value)
-        except:
+        except Exception:
             pass
 
     # TPI loop
@@ -824,7 +822,8 @@ def run_TPI(p, client=None):
                 if not_done:
                     # Some futures didn't complete in time
                     raise TimeoutError(
-                        f"{len(not_done)} futures did not complete within 600 seconds"
+                        f"{len(not_done)} futures did not complete"
+                        " within 600 seconds"
                     )
                 results = client.gather(futures)
             except Exception as e:
@@ -1365,7 +1364,7 @@ def run_TPI(p, client=None):
     I_d = aggr.get_I(
         bmat_splus1[: p.T], K_d[1 : p.T + 1], K_d[: p.T], p, "TPI"
     )
-    I = aggr.get_I(bmat_splus1[: p.T], K[1 : p.T + 1], K[: p.T], p, "TPI")
+    I = aggr.get_I(bmat_splus1[: p.T], K[1 : p.T + 1], K[: p.T], p, "TPI")  # noqa: E741
     # solve resource constraint
     # foreign debt service costs
     debt_service_f = fiscal.get_debt_service_f(r_p, D_f)
