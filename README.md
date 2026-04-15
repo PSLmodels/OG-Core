@@ -63,7 +63,7 @@ The CSV output file `./ogcore_example_output.csv` can be compared to the [`./run
 * Clone this repository to a directory on your computer
 * From the terminal, navigate to the directory to which you cloned this repository and run `uv pip install -e ".[dev]"` to install the package and all development dependencies
 * Navigate to `./run_examples`
-* Run the model with an example reform from terminal/command prompt by typing `python run_ogcore_example.py`
+* Run the model with an example reform from terminal/command prompt by typing `uv run python run_ogcore_example.py`
 * You can adjust the `./run_examples/run_ogcore_example.py` script by modifying model parameters specified in the `og_spec` dictionary.
 * Model outputs will be saved in the following files:
   * `./run_examples/run_example_plots`
