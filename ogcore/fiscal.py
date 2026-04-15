@@ -448,8 +448,12 @@ def get_K_g(K_g0, I_g, p, method):
     Law of motion for the government capital stock
 
     .. math::
-        K_{g,t+1} = \frac{(1 - \delta_g)K_{g,t} + I_{g,t}}
+        K_{g,t+1} = \frac{(1 - \delta_g)K_{g,t} + (1 - \phi_g)I_{g,t}}
             {(1 + \tilde{g}_{n,t+1})e^{g_y}}
+
+    where :math:`\phi_g` (``infra_investment_leakage_rate``) is the fraction
+    of infrastructure investment lost to leakage. When :math:`\phi_g = 0`,
+    there is no leakage and the formula reduces to the baseline.
 
     Args:
         K_g0 (scalar): initial stock of public capital
@@ -461,14 +465,17 @@ def get_K_g(K_g0, I_g, p, method):
         K_g (array_like): stock of public capital
 
     """
+    phi_g = p.infra_investment_leakage_rate
     if method == "TPI":
         K_g = np.zeros(p.T)
         K_g[0] = K_g0
         for t in range(p.T - 1):  # TODO: numba jit this
             growth = (1 + p.g_n[t + 1]) * np.exp(p.g_y)
-            K_g[t + 1] = ((1 - p.delta_g) * K_g[t] + I_g[t]) / growth
+            K_g[t + 1] = (
+                (1 - p.delta_g) * K_g[t] + (1 - phi_g) * I_g[t]
+            ) / growth
     else:  # SS
         growth = (1 + p.g_n_ss) * np.exp(p.g_y)
-        K_g = I_g / (growth - (1 - p.delta_g))
+        K_g = (1 - phi_g) * I_g / (growth - (1 - p.delta_g))
 
     return K_g
