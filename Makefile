@@ -10,8 +10,8 @@ help:
 	@echo "USAGE: make [TARGET]"
 	@echo "TARGETS:"
 	@echo "help       : show help message"
-	@echo "clean      : remove .pyc files and local ccc package"
-	@echo "package    : build and install local package"
+	@echo "clean      : remove .pyc files and local ogcore package"
+	@echo "install    : build and install local package"
 	@echo "pytest     : generate report for and cleanup after"
 	@echo "             pytest -W ignore -m ''"
 	@echo "cstest     : generate coding-style errors using the"
@@ -25,7 +25,11 @@ help:
 clean:
 	@find . -name *pyc -exec rm {} \;
 	@find . -name *cache -maxdepth 1 -exec rm -r {} \;
-	@conda uninstall ccc --yes --quiet 2>&1 > /dev/null
+	@conda uninstall ogcore --yes --quiet 2>&1 > /dev/null
+
+.PHONY=install
+install:
+	pip install -e .[dev]
 
 .PHONY=pytest
 pytest:
@@ -68,12 +72,12 @@ git-pr:
 
 .PHONY=build-docs
 build-docs:
-	@cd ./docs ; python make_params.py; python make_vars.py; jb build ./book
+	@cd ./docs ; jb clean docs; python make_params.py; python make_vars.py; jb build ./book
 
 format:
-	ruff format .
-	ruff check . --fix
-	linecheck . --fix
+	uv run ruff format .
+	uv run ruff check . --fix
+	uv run linecheck . --fix
 
 pip-package:
 	uv build
