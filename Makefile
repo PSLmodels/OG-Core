@@ -19,7 +19,7 @@ help:
 	@echo "coverage   : generate test coverage report"
 	@echo "git-sync   : synchronize local, origin, and upstream Git repos"
 	@echo "git-pr N=n : create local pr-n branch containing upstream PR"
-	@echo "make-docs  : build new Jupyter Book documentation files"
+	@echo "documentation  : build new Jupyter Book documentation files"
 
 .PHONY=clean
 clean:
@@ -62,17 +62,13 @@ else
 endif
 	@$(pytest-cleanup)
 
-.PHONY=git-sync
-git-sync:
-	@./gitsync
-
-.PHONY=git-pr
-git-pr:
-	@./gitpr $(N)
-
-.PHONY=build-docs
-build-docs:
-	@cd ./docs ; jb clean docs; python make_params.py; python make_vars.py; jb build ./book
+.PHONY=documentation
+documentation:
+	uv run python -m ipykernel install --user --name=ogcore-dev
+	uv run jb clean docs
+	uv run python ./docs/make_params.py
+	uv run python ./docs/make_vars.py
+	uv run jb build ./docs/book
 
 format:
 	uv run ruff format .

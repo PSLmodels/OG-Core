@@ -31,8 +31,7 @@ jobs:
 
       - name: Build # Build Jupyter Book
         run: |
-          uv run python -m ipykernel install --user --name=ogcore-dev
-          uv run make build-docs
+          uv run make documentation
 
       - name: Deploy
         uses: JamesIves/github-pages-deploy-action@v4
