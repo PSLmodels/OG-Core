@@ -26,33 +26,33 @@
   </noscript>
   
   <!-- Loaded before other Sphinx assets -->
-  <link href="../../_static/styles/theme.css?digest=7f76b32a3354e82990f2" rel="stylesheet" />
-<link href="../../_static/styles/pydata-sphinx-theme.css?digest=7f76b32a3354e82990f2" rel="stylesheet" />
+  <link href="../../_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+<link href="../../_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
 
     <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
-    <link rel="stylesheet" type="text/css" href="../../_static/styles/sphinx-book-theme.css?v=a3416100" />
-    <link rel="stylesheet" type="text/css" href="../../_static/togglebutton.css?v=13237357" />
+    <link rel="stylesheet" type="text/css" href="../../_static/styles/sphinx-book-theme.css?v=3c74b3bc" />
+    <link rel="stylesheet" type="text/css" href="../../_static/togglebutton.css?v=9c3e77be" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="../../_static/mystnb.11b39860a7a0cbfd473a3ad8a317855267ff0bd372690045ca344a6b62be495e.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/sphinx-thebe.css?v=4fa983c6" />
     <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=95c83b7e" />
   
   <!-- So that users can add custom icons -->
-  <script defer src="../../_static/scripts/fontawesome.js?digest=7f76b32a3354e82990f2"></script>
+  <script src="../../_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=7f76b32a3354e82990f2" />
-<link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=7f76b32a3354e82990f2" />
+  <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
+<link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
     <script src="../../_static/documentation_options.js?v=9eb32ce0"></script>
     <script src="../../_static/doctools.js?v=9a2dae69"></script>
     <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
     <script src="../../_static/copybutton.js?v=f281be69"></script>
-    <script src="../../_static/scripts/sphinx-book-theme.js?v=887ef09a"></script>
+    <script src="../../_static/scripts/sphinx-book-theme.js?v=fab101a9"></script>
     <script>let toggleHintShow = 'Click to show';</script>
     <script>let toggleHintHide = 'Click to hide';</script>
     <script>let toggleOpenOnPrint = 'true';</script>
-    <script src="../../_static/togglebutton.js?v=4a39c7ea"></script>
+    <script src="../../_static/togglebutton.js?v=1ae7504c"></script>
     <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
     <script src="../../_static/design-tabs.js?v=f930bc37"></script>
     <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"; const thebe_selector = ".thebe,.cell"; const thebe_selector_input = "pre"; const thebe_selector_output = ".output, .cell_output"</script>
@@ -60,24 +60,19 @@
     <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
     <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"; const thebe_selector = ".thebe,.cell"; const thebe_selector_input = "pre"; const thebe_selector_output = ".output, .cell_output"</script>
     <script>DOCUMENTATION_OPTIONS.pagename = '_modules/ogcore/tax';</script>
-    <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   <meta name="docsearch:version" content="" />
-  
-    
-    <script src="../../_static/searchtools.js"></script>
-    <script src="../../_static/language_data.js"></script>
-    <script src="../../searchindex.js"></script>
-  
   </head>
-  <body data-default-mode="">
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
   
   
   <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
-
   
   <div id="pst-scroll-pixel-helper"></div>
   
@@ -109,7 +104,7 @@
 </div>
 
   
-    <header id="pst-header" class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
     </header>
   
 
@@ -322,7 +317,7 @@
 
 
 <button onclick="toggleFullScreen()"
-  class="btn btn-sm btn-fullscreen-button"
+  class="btn btn-sm btn-fullscreen-button pst-navbar-icon"
   title="Fullscreen mode"
   data-bs-placement="bottom" data-bs-toggle="tooltip"
 >
@@ -479,8 +474,10 @@
 <span class="sd">        e (Numpy array): effective labor units</span>
 <span class="sd">        etr_params (list): list of effective tax rate function</span>
 <span class="sd">            parameters or nonparametric function</span>
-<span class="sd">        labor_noncompliance_rate (Numpy array): income tax noncompliance rate for labor income</span>
-<span class="sd">        capital_noncompliance_rate (Numpy array): income tax noncompliance rate for capital income</span>
+<span class="sd">        labor_noncompliance_rate (Numpy array): income tax noncompliance</span>
+<span class="sd">            rate for labor income</span>
+<span class="sd">        capital_noncompliance_rate (Numpy array): income tax</span>
+<span class="sd">            noncompliance rate for capital income</span>
 <span class="sd">        tax_filer (Numpy array): array indicating tax filer status</span>
 <span class="sd">        p (OG-Core Specifications object): model parameters</span>
 
@@ -587,7 +584,8 @@
 
 <span class="sd">    .. math::</span>
 <span class="sd">        R_{t}^{b} = \sum_{m=1}^{M}\tau_{m,t}^{b}(Y_{m,t} - w_{t}L_{m,t}) -</span>
-<span class="sd">        \tau_{m,t}^{b}\delta_{m,t}^{\tau}K_{m,t}^{\tau} - \tau^{inv}_{m,t}I_{m,t}</span>
+<span class="sd">        \tau_{m,t}^{b}\delta_{m,t}^{\tau}K_{m,t}^{\tau}</span>
+<span class="sd">        - \tau^{inv}_{m,t}I_{m,t}</span>
 <span class="sd">    Args:</span>
 <span class="sd">        r (array_like): real interest rate</span>
 <span class="sd">        Y (array_like): aggregate output for each industry</span>
@@ -693,7 +691,8 @@
     <span class="p">)</span>
     <span class="n">T_BQ</span> <span class="o">=</span> <span class="n">bequest_tax_liab</span><span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">bq</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="n">j</span><span class="p">,</span> <span class="n">method</span><span class="p">,</span> <span class="n">p</span><span class="p">)</span>
     <span class="n">T_W</span> <span class="o">=</span> <span class="n">wealth_tax_liab</span><span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="n">j</span><span class="p">,</span> <span class="n">method</span><span class="p">,</span> <span class="n">p</span><span class="p">)</span>
-    <span class="c1"># print(&quot;Net taxes shapes = &quot;, T_I.shape, pension.shape, T_BQ.shape, T_W.shape)</span>
+    <span class="c1"># print(&quot;Net taxes shapes = &quot;, T_I.shape, pension.shape,</span>
+    <span class="c1">#        T_BQ.shape, T_W.shape)</span>
     <span class="n">net_tax</span> <span class="o">=</span> <span class="n">T_I</span> <span class="o">-</span> <span class="n">pension</span> <span class="o">+</span> <span class="n">T_BQ</span> <span class="o">+</span> <span class="n">T_W</span> <span class="o">-</span> <span class="n">tr</span> <span class="o">-</span> <span class="n">ubi</span>
 
     <span class="k">return</span> <span class="n">net_tax</span></div>
@@ -955,9 +954,13 @@
 <span class="sd">        c (numpy.ndarray): Consumption array. Dimensions depend on the method:</span>
 <span class="sd">            - If method == &quot;SS&quot;: shape (I, S, J)</span>
 <span class="sd">            - If method != &quot;SS&quot;: shape (T, I, S, J)</span>
-<span class="sd">        p_i (numpy.ndarray): Array of consumption tax rates by good. Shape (I,) or (T, I).</span>
-<span class="sd">        p (OG-Core Specifications object): Model parameters, including tax rates and dimensions.</span>
-<span class="sd">        method (str, optional): Indicates whether calculation is for steady-state (&#39;SS&#39;) or transition path (&#39;TPI&#39;). Default is &#39;SS&#39;.</span>
+<span class="sd">        p_i (numpy.ndarray): Array of consumption tax rates by good.</span>
+<span class="sd">            Shape (I,) or (T, I).</span>
+<span class="sd">        p (OG-Core Specifications object): Model parameters, including</span>
+<span class="sd">            tax rates and dimensions.</span>
+<span class="sd">        method (str, optional): Indicates whether calculation is for</span>
+<span class="sd">            steady-state (&#39;SS&#39;) or transition path (&#39;TPI&#39;).</span>
+<span class="sd">            Default is &#39;SS&#39;.</span>
 
 <span class="sd">    Returns:</span>
 <span class="sd">        c_tax (numpy.ndarray): Consumption tax liability for each household.</span>
@@ -1034,8 +1037,8 @@ By Jason DeBacker and Richard W. Evans
   </div>
   
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script defer src="../../_static/scripts/bootstrap.js?digest=7f76b32a3354e82990f2"></script>
-<script defer src="../../_static/scripts/pydata-sphinx-theme.js?digest=7f76b32a3354e82990f2"></script>
+  <script defer src="../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf"></script>
+<script defer src="../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf"></script>
 
   <footer class="bd-footer">
   </footer>
