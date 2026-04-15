@@ -33,7 +33,8 @@ D_f3 = df["D_f3"].values.copy()
 D_f4 = df["D_f4"].values.copy()
 r_gov1 = (
     np.ones_like(D1) * 0.05 - 0.02
-)  # 0.02 is the default r_gov_shift parameter and the default scale parameter is 1.0, meaning r_gov1 = 0.05 - 0.02 = 0.03
+)  # 0.02 is the default r_gov_shift parameter and the default scale
+# parameter is 1.0, meaning r_gov1 = 0.05 - 0.02 = 0.03
 r_gov2 = r_gov1
 r_gov3 = r_gov1
 r_gov4 = df["r_gov4"].values.copy()
@@ -381,24 +382,26 @@ def test_get_I_g(baseline_spending, Ig_baseline, method):
 
 # need to parameterize to test for TPI and SS
 @pytest.mark.parametrize(
-    "K_g0,I_g,method,expected",
+    "K_g0,I_g,method,leakage,expected",
     [
-        (None, 0.2, "SS", 3.291689115882805),
+        (None, 0.2, "SS", 0.0, 3.291689115882805),
         (
             0.0,
             np.array([0.2, 0.3, 0.01]),
             "TPI",
+            0.0,
             np.array([0, 0.19028344, 0.46284331]),
         ),
+        (None, 0.2, "SS", 0.2, 2.6333513127062443),
     ],
-    ids=["SS", "TPI"],
+    ids=["SS", "TPI", "SS with leakage"],
 )
-def test_get_K_g(K_g0, I_g, method, expected):
+def test_get_K_g(K_g0, I_g, method, leakage, expected):
     """
     Test of the law of motion for the government capital stock
     """
     p = Specifications()
-    p.update_specifications({"T": 3})
+    p.update_specifications({"T": 3, "infra_investment_leakage_rate": leakage})
     p.g_n = np.array([0.02, 0.02, 0.02])
     p.g_n_ss = 0.01
 

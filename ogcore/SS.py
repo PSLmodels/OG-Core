@@ -1,12 +1,9 @@
 # imports
 import numpy as np
 import scipy.optimize as opt
-from dask import delayed, compute
-import dask.multiprocessing
 from ogcore import tax, pensions, household, firm, utils, fiscal
 from ogcore import aggregates as aggr
 from ogcore.constants import SHOW_RUNTIME, DEV_FACTOR_LIST
-from ogcore import config
 import os
 import warnings
 import logging
@@ -39,7 +36,8 @@ def euler_equation_solver(guesses, *args):
 
     Args:
         guesses (Numpy array): initial guesses for b and n, length 2S
-        args (tuple): tuple of arguments (r, w, p_tilde, p_i, bq, TR, factor, j, p)
+        args (tuple): tuple of arguments (r, w, p_tilde, p_i, bq, TR,
+            factor, j, p)
         r (scalar): real interest rate
         w (scalar): real wage rate
         p_tilde (scalar): composite good price
@@ -290,7 +288,6 @@ def inner_loop(outer_loop_vars, p, client):
     # from dask.base import dask_sizeof
 
     if client:
-
         # Before scattering, temporarily remove unpicklable schema objects
         schema_backup = {}
         for attr in ["_defaults_schema", "_validator_schema", "sel"]:
@@ -298,7 +295,7 @@ def inner_loop(outer_loop_vars, p, client):
                 schema_backup[attr] = getattr(p, attr)
                 try:
                     delattr(p, attr)
-                except:
+                except Exception:
                     pass
 
         # Scatter the parameters
@@ -308,7 +305,7 @@ def inner_loop(outer_loop_vars, p, client):
         for attr, value in schema_backup.items():
             try:
                 setattr(p, attr, value)
-            except:
+            except Exception:
                 pass
 
         # Launch in parallel with submit (or map)
@@ -1148,7 +1145,8 @@ def SS_solver(
     euler_savings = euler_errors[: p.S, :]
     euler_labor_leisure = euler_errors[p.S :, :]
     logging.info(
-        f"Maximum error in labor FOC = {np.absolute(euler_labor_leisure).max()}"
+        "Maximum error in labor FOC = "
+        f"{np.absolute(euler_labor_leisure).max()}"
     )
     logging.info(
         f"Maximum error in savings FOC = {np.absolute(euler_savings).max()}"
@@ -1437,9 +1435,7 @@ def run_SS(p, client=None):
             if ss_solutions["b_sp1"].shape == (
                 p.S,
                 p.J,
-            ) and np.squeeze(
-                ss_solutions["Y_m"].shape
-            ) == (p.M):
+            ) and np.squeeze(ss_solutions["Y_m"].shape) == (p.M):
                 logging.info("Using previous solutions for SS")
                 (
                     b_guess,
@@ -1509,14 +1505,15 @@ def run_SS(p, client=None):
             logging.warning("KeyError: previous solutions for SS not found")
             use_new_guesses = True
     if p.baseline or not p.reform_use_baseline_solution or use_new_guesses:
-        # Loop over initial guesses of r and TR until find a solution or until have
-        # gone through all guesses. This should usually solve in the first guess
+        # Loop over initial guesses of r and TR until find a solution
+        # or until have gone through all guesses. This should usually
+        # solve in the first guess
         SS_solved = False
         k = 0
         while not SS_solved and k < len(DEV_FACTOR_LIST) - 1:
             for k, v in enumerate(DEV_FACTOR_LIST):
                 logging.info(
-                    f"SS using initial guess factors for r and TR of "
+                    "SS using initial guess factors for r and TR of "
                     + f"{v[0]} and {v[1]} respectively."
                 )
                 guesses, b_guess, n_guess = SS_initial_guesses(

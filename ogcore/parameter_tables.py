@@ -1,7 +1,7 @@
 import pandas as pd
 import numpy as np
 from ogcore.utils import save_return_table
-from ogcore.constants import VAR_LABELS, PARAM_LABELS, DEFAULT_START_YEAR
+from ogcore.constants import VAR_LABELS, DEFAULT_START_YEAR
 
 
 def tax_rate_table(
@@ -108,42 +108,33 @@ def tax_rate_table(
         len_rates = len(base_etr_rates[start_index : start_index + num_years])
         table = {
             "Year": years[:len_rates],
-            "Baseline "
-            + VAR_LABELS["etr"]: base_etr_rates[
+            "Baseline " + VAR_LABELS["etr"]: base_etr_rates[
                 start_index : start_index + num_years
             ],
-            "Reform "
-            + VAR_LABELS["etr"]: reform_etr_rates[
+            "Reform " + VAR_LABELS["etr"]: reform_etr_rates[
                 start_index : start_index + num_years
             ],
-            "Differences in "
-            + VAR_LABELS["etr"]: reform_etr_rates[
+            "Differences in " + VAR_LABELS["etr"]: reform_etr_rates[
                 start_index : start_index + num_years
             ]
             - base_etr_rates[start_index : start_index + num_years],
-            "Baseline "
-            + VAR_LABELS["mtrx"]: base_mtrx_rates[
+            "Baseline " + VAR_LABELS["mtrx"]: base_mtrx_rates[
                 start_index : start_index + num_years
             ],
-            "Reform "
-            + VAR_LABELS["mtrx"]: reform_mtrx_rates[
+            "Reform " + VAR_LABELS["mtrx"]: reform_mtrx_rates[
                 start_index : start_index + num_years
             ],
-            "Differences in "
-            + VAR_LABELS["mtrx"]: reform_mtrx_rates[
+            "Differences in " + VAR_LABELS["mtrx"]: reform_mtrx_rates[
                 start_index : start_index + num_years
             ]
             - base_mtrx_rates[start_index : start_index + num_years],
-            "Baseline "
-            + VAR_LABELS["mtry"]: base_mtry_rates[
+            "Baseline " + VAR_LABELS["mtry"]: base_mtry_rates[
                 start_index : start_index + num_years
             ],
-            "Reform "
-            + VAR_LABELS["mtry"]: reform_mtry_rates[
+            "Reform " + VAR_LABELS["mtry"]: reform_mtry_rates[
                 start_index : start_index + num_years
             ],
-            "Differences in "
-            + VAR_LABELS["mtry"]: reform_mtry_rates[
+            "Differences in " + VAR_LABELS["mtry"]: reform_mtry_rates[
                 start_index : start_index + num_years
             ]
             - base_mtry_rates[start_index : start_index + num_years],
@@ -152,12 +143,10 @@ def tax_rate_table(
         len_rates = len(base_rates[start_index : start_index + num_years])
         table = {
             "Year": years[:len_rates],
-            "Baseline "
-            + VAR_LABELS[rate_type.lower()]: base_rates[
+            "Baseline " + VAR_LABELS[rate_type.lower()]: base_rates[
                 start_index : start_index + num_years
             ],
-            "Reform "
-            + VAR_LABELS[rate_type.lower()]: reform_rates[
+            "Reform " + VAR_LABELS[rate_type.lower()]: reform_rates[
                 start_index : start_index + num_years
             ],
             "Difference": reform_rates[start_index : start_index + num_years]
@@ -188,9 +177,34 @@ def param_table(p, table_format="tex", path=None):
         table (string or DataFrame): table of tax rates
     """
     table = {"Symbol": [], "Description": [], "Value": []}
-    for k, v in PARAM_LABELS.items():
-        table["Symbol"].append(v[1])
-        table["Description"].append(v[0])
+    param_metadata = p.specification(
+        meta_data=True, include_empty=True, serializable=True, use_state=True
+    )
+    skip_params = [
+        "starting_age",
+        "ending_age",
+        "constant_demographics",
+        "constant_rates",
+        "zero_taxes",
+        "theta",
+        "k",
+        "fert_rates",
+        "N",
+        "Gamma",
+    ]
+
+    for k, v in param_metadata.items():
+        if not isinstance(v, dict):
+            continue
+        if k in skip_params:
+            continue
+        short_description = v.get("short_description")
+        param_notation = v.get("param_notation")
+        if not short_description or not param_notation:
+            continue
+
+        table["Symbol"].append(param_notation)
+        table["Description"].append(short_description)
         value = getattr(p, k)
         if hasattr(value, "__len__") and not isinstance(value, str):
             if value.ndim > 1:

@@ -14,8 +14,6 @@ from ogcore.execute import runner
 from ogcore.parameters import Specifications
 from ogcore.constants import REFORM_DIR, BASELINE_DIR
 from ogcore.utils import safe_read_pickle
-import ogcore
-from ogcore import SS
 import matplotlib.pyplot as plt
 
 # Use a custom matplotlib style file for plots

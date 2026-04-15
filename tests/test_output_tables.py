@@ -4,7 +4,6 @@ Tests of output_tables.py module
 
 import pytest
 import os
-import sys
 import pandas as pd
 import numpy as np
 from ogcore import utils, output_tables

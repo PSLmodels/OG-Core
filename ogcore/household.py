@@ -8,7 +8,6 @@ Household functions.
 import numpy as np
 from ogcore import tax, utils
 import logging
-from ogcore import config
 
 """
 ------------------------------------------------------------------------
@@ -104,9 +103,7 @@ def marg_ut_labor(n, chi_n, p):
     ) * (
         (1 - ((eps_low / p.ltilde) ** p.upsilon))
         ** ((1 - p.upsilon) / p.upsilon)
-    ) - (
-        2 * b2 * eps_low
-    )
+    ) - (2 * b2 * eps_low)
     MDU_n[nvec_low] = 2 * b2 * nvec[nvec_low] + b1
     d2 = (
         0.5
@@ -129,9 +126,7 @@ def marg_ut_labor(n, chi_n, p):
     ) * (
         (1 - ((eps_high / p.ltilde) ** p.upsilon))
         ** ((1 - p.upsilon) / p.upsilon)
-    ) - (
-        2 * d2 * eps_high
-    )
+    ) - (2 * d2 * eps_high)
     MDU_n[nvec_high] = 2 * d2 * nvec[nvec_high] + d1
     output = MDU_n * np.squeeze(chi_n)
     output = np.squeeze(output)
@@ -308,7 +303,8 @@ def get_cons(
         + \hat{w}_t e_{j,s}n_{j,s,t} + \hat{bq}_{j,s,t} + \hat{rm}_{j,s,t}
         + \hat{tr}_{j,s,t} + \hat{ubi}_{j,s,t} + \hat{pension}_{j,s,t}
         - \hat{tax}_{j,s,t} \\
-        &\qquad - \sum_{i=1}^I\left(1 + \tau^c_{i,t}\right)p_{i,t}\hat{c}_{min,i}
+        &\qquad - \sum_{i=1}^I\left(1 + \tau^c_{i,t}\right)
+        p_{i,t}\hat{c}_{min,i}
         - e^{g_y}\hat{b}_{j,s+1,t+1}\biggr] / p_t \\
         &\qquad\qquad\forall j,t \quad\text{and}\quad E+1\leq s\leq E+S
         \quad\text{where}\quad \hat{b}_{j,E+1,t}=0
@@ -385,7 +381,7 @@ def get_ci(c_s, p_i, p_tilde, tau_c, alpha_c, c_min, method="SS"):
         c_si (array_like): consumption of good i
     """
     if method == "SS":
-        I = alpha_c.shape[0]
+        I = alpha_c.shape[0]  # noqa: E741
         S = c_s.shape[0]
         J = c_s.shape[1]
         tau_c = tau_c.reshape(I, 1, 1)
@@ -396,7 +392,7 @@ def get_ci(c_s, p_i, p_tilde, tau_c, alpha_c, c_min, method="SS"):
         c_s = c_s.reshape(1, S, J)
         c_si = alpha_c * (((1 + tau_c) * p_i) / p_tilde) ** (-1) * c_s + c_min
     else:  # Time path case
-        I = alpha_c.shape[0]
+        I = alpha_c.shape[0]  # noqa: E741
         T = p_i.shape[0]
         S = c_s.shape[1]
         J = c_s.shape[2]
@@ -881,11 +877,13 @@ def constraint_checker_TPI(b_dist, n_dist, c_dist, t, ltilde):
     """
     if (b_dist <= 0).any():
         logging.info(
-            f"WARNING: Aggregate capital is less than or equal to zero in period {t}."
+            "WARNING: Aggregate capital is less than or equal to"
+            f" zero in period {t}."
         )
     if (n_dist < 0).any():
         logging.info(
-            f"WARNING: Labor supply violates nonnegativity constraints in period {t}."
+            "WARNING: Labor supply violates nonnegativity"
+            f" constraints in period {t}."
         )
     if (n_dist > ltilde).any():
         logging.info(
