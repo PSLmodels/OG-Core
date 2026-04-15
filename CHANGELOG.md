@@ -5,6 +5,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.15.7] - 2026-04-15 20:00:00
+
+### Added
+
+- Fixed some typos in `CHANGELOG.md` and `intro.md`
+- Added dependabot package version updates to `uv.lock` from [PR 1102](https://github.com/PSLmodels/OG-Core/pull/1102) and [PR 1103](https://github.com/PSLmodels/OG-Core/pull/1103)
+
 ## [0.15.6] - 2026-04-15 16:00:00
 
 ### Added
@@ -523,6 +530,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Any earlier versions of OG-USA can be found in the [`OG-Core`](https://github.com/PSLmodels/OG-Core) repository [release history](https://github.com/PSLmodels/OG-Core/releases) from [v.0.6.4](https://github.com/PSLmodels/OG-Core/releases/tag/v0.6.4) (Jul. 20, 2021) or earlier.
 
 
+[0.15.7]: https://github.com/PSLmodels/OG-Core/compare/v0.15.6...v0.15.7
+[0.15.6]: https://github.com/PSLmodels/OG-Core/compare/v0.15.5...v0.15.6
 [0.15.5]: https://github.com/PSLmodels/OG-Core/compare/v0.15.4...v0.15.5
 [0.15.4]: https://github.com/PSLmodels/OG-Core/compare/v0.15.3...v0.15.4
 [0.15.3]: https://github.com/PSLmodels/OG-Core/compare/v0.15.2...v0.15.3
