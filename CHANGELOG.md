@@ -5,11 +5,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [0.15.8] - 2026-04-15 20:30:00
+## [0.15.8] - 2026-04-16 00:30:00
 
 ### Added
 
-- Updated the `uv.lock` file to the current version of `ogcore` package (0.15.8)
+- Updates the `uv.lock` file to the current version of `ogcore` package (0.15.8)
+- Adds `'**.lock'` to the paths in `build_and_test.yml` so that any changes to the `uv.lock` file trigger the GH Action CI tests in `build_and_test.yml`
+- Incorporates the dependabot updates to `uv.lock` versions from [PR 1105](https://github.com/PSLmodels/OG-Core/pull/1105) and [PR 1106](https://github.com/PSLmodels/OG-Core/pull/1106).
 
 ## [0.15.7] - 2026-04-15 20:00:00
 
