@@ -1771,7 +1771,7 @@ wheels = [
 
 [[package]]
 name = "ogcore"
-version = "0.15.8"
+version = "0.15.9"
 source = { editable = "." }
 dependencies = [
     { name = "dask" },
