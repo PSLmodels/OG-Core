@@ -25,12 +25,16 @@ def set_logging_level(verbose=True):
     VERBOSE = verbose
     level = logging.INFO if verbose else logging.WARNING
 
-    # Configure the root logger
-    logging.basicConfig(level=level, format="%(message)s")
-
-    # Also set the ogcore logger specifically
+    # Configure the ogcore logger with an explicit StreamHandler so it
+    # works regardless of whether another package (e.g. distributed/dask)
+    # has already called basicConfig() on the root logger.
     logger = logging.getLogger("ogcore")
     logger.setLevel(level)
+    if not logger.handlers:
+        handler = logging.StreamHandler()
+        handler.setFormatter(logging.Formatter("%(message)s"))
+        logger.addHandler(handler)
+    logger.propagate = False
 
     return level
 
