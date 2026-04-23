@@ -2,6 +2,7 @@
 Specify what is available to import from the ogcore package.
 """
 
+import ogcore.config  # noqa: F401 -- sets up the ogcore logger on first import
 from ogcore.SS import *  # noqa: F403
 from ogcore.TPI import *  # noqa: F403
 from ogcore.aggregates import *  # noqa: F403
@@ -20,4 +21,4 @@ from ogcore.tax import *  # noqa: F403
 from ogcore.txfunc import *  # noqa: F403
 from ogcore.utils import *  # noqa: F403
 
-__version__ = "0.15.8"
+__version__ = "0.15.9"
