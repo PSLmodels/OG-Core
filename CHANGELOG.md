@@ -5,11 +5,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [0.15.9] - 2026-04-16 12:30:00
+## [0.15.9] - 2026-04-23 01:30:00
 
 ### Added
 
-- Create a `ogcore` logging environment so that logging specificed in `ogcore.config` is not overridden by other logging configurations in user code.  See PR [#1109](https://github.com/PSLmodels/OG-Core/pull/1109)
+- Create a `ogcore` logging environment so that logging specificed in `ogcore.config` is not overridden by other logging configurations in user code. See PR [#1109](https://github.com/PSLmodels/OG-Core/pull/1109).
 
 ## [0.15.8] - 2026-04-16 00:30:00
 
