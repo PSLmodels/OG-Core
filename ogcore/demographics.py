@@ -719,6 +719,7 @@ def get_pop_objs(
     infer_pop=False,
     pop_dist=None,
     pre_pop_dist=None,
+    pre_mort_rates=None,
     country_id=UN_COUNTRY_CODE,
     initial_data_year=START_YEAR - 1,
     final_data_year=START_YEAR + 2,
@@ -752,6 +753,12 @@ def get_pop_objs(
         pre_pop_dist (array_like): user provided population distribution
             for the year before the initial year for calibration,
             length E+S
+        pre_mort_rates (array_like): user provided mortality rates for
+            the year before the initial year for calibration, length E+S.
+            When supplied, used to populate ``rho_preTP`` and to invert
+            ``imm_rates_preTP`` against ``pre_pop_dist`` -> ``pop_2D[0]``.
+            When None, fetched from UN data if ``mort_rates`` was also
+            None; otherwise falls back to the first row of ``mort_rates``.
         country_id (str): country id for UN data
         initial_data_year (int): initial year of data to use
             (not relevant if have user provided data)
@@ -778,6 +785,9 @@ def get_pop_objs(
                 path, length T + S
 
     """
+    user_fert_rates = fert_rates is not None
+    user_mort_rates = mort_rates is not None
+    user_imm_rates = imm_rates is not None
     # TODO: this function does not generalize with T.
     # It assumes one model period is equal to one calendar year in the
     # time dimesion (it does adjust for S, however)
@@ -1160,6 +1170,70 @@ def get_pop_objs(
         ),
         axis=0,
     )
+    rho_preTP = mort_rates_S[0, :]
+    g_n_preTP = g_n_path[0]
+    imm_rates_preTP = imm_rates_mat[0, :]
+
+    # Compute a genuine prior-year boundary transition when we have the
+    # data to do so. The path arrays (rho, imm_rates, g_n, omega) are not
+    # touched -- only the *_preTP fields, which feed aggregates.py's
+    # boundary calculation. ``imm_rates_preTP`` is derived by inverting the
+    # level-space recurrence pre_pop -> pop_2D[0] via ``get_imm_rates``,
+    # so the boundary identity holds at machine precision for whatever
+    # mortality is supplied.
+    if pre_mort_rates is not None:
+        pre_mort_rates_full = np.asarray(pre_mort_rates)
+        assert pre_mort_rates_full.shape == (E + S,)
+        prior_year = initial_data_year - 1
+        # Fertility / infmort only enter ``imm_rates_preTP[0]`` (newborn
+        # age), which aggregates.py never reads. Pass zeros to keep
+        # ``get_imm_rates`` happy without introducing extra kwargs.
+        imm_rates_preTP_full = get_imm_rates(
+            E + S,
+            min_age,
+            max_age,
+            fert_rates=np.zeros((1, E + S)),
+            mort_rates=pre_mort_rates_full.reshape(1, E + S),
+            infmort_rates=np.zeros(1),
+            pop_dist=np.vstack((pre_pop_EpS, pop_2D[0, :])),
+            country_id=country_id,
+            start_year=prior_year,
+            end_year=prior_year,
+        )
+        rho_preTP = pre_mort_rates_full[E:]
+        imm_rates_preTP = imm_rates_preTP_full[0, E:]
+    elif not (user_fert_rates or user_mort_rates or user_imm_rates):
+        prior_year = initial_data_year - 1
+        fert_rates_preTP = get_fert(
+            E + S,
+            min_age,
+            max_age,
+            country_id,
+            start_year=prior_year,
+            end_year=prior_year,
+        )
+        mort_rates_preTP_full, infmort_rates_preTP = get_mort(
+            E + S,
+            min_age,
+            max_age,
+            country_id,
+            start_year=prior_year,
+            end_year=prior_year,
+        )
+        imm_rates_preTP_full = get_imm_rates(
+            E + S,
+            min_age,
+            max_age,
+            fert_rates=fert_rates_preTP,
+            mort_rates=mort_rates_preTP_full,
+            infmort_rates=infmort_rates_preTP,
+            pop_dist=np.vstack((pre_pop_EpS, pop_2D[0, :])),
+            country_id=country_id,
+            start_year=prior_year,
+            end_year=prior_year,
+        )
+        rho_preTP = mort_rates_preTP_full[0, E:]
+        imm_rates_preTP = imm_rates_preTP_full[0, E:]
 
     if GraphDiag:
         # Check whether original SS population distribution is close to
@@ -1315,6 +1389,9 @@ def get_pop_objs(
         "g_n": g_n_path,
         "imm_rates": imm_rates_mat,
         "omega_S_preTP": omega_S_preTP,
+        "rho_preTP": rho_preTP,
+        "g_n_preTP": g_n_preTP,
+        "imm_rates_preTP": imm_rates_preTP,
     }
 
     return pop_dict
