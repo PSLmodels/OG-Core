@@ -85,11 +85,11 @@ def test_pretp_ss_aggregates_use_explicit_boundary_objects():
     imm_shift = np.append(p.imm_rates_preTP[1:], [0.0])
     expected_B = (
         b[:, 0] * (p.omega_S_preTP + (omega_shift * imm_shift))
-    ).sum() / (1.0 + p.g_n_preTP)
+    ).sum() / (1.0 + p.g_n[0])
     expected_BQ = (
         (p.omega_S_preTP * p.rho_preTP * b[:, 0]).sum()
         * (1.0 + r)
-        / (1.0 + p.g_n_preTP)
+        / (1.0 + p.g_n[0])
     )
 
     assert np.allclose(aggr.get_B(b, p, "SS", True), expected_B)
@@ -117,7 +117,7 @@ def test_pretp_tpi_bequests_change_only_boundary_period():
     expected[0] = (
         (p.omega_S_preTP * p.rho_preTP * b_splus1[0, :, 0]).sum()
         * (1.0 + r[0])
-        / (1.0 + p.g_n_preTP)
+        / (1.0 + p.g_n[0])
     )
     for t in range(1, p.T):
         expected[t] = (
