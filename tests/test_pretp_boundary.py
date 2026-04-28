@@ -127,7 +127,9 @@ def test_pretp_tpi_bequests_change_only_boundary_period():
         )
 
     assert np.allclose(
-        np.asarray(aggr.get_BQ(r, b_splus1, None, p, "TPI", False)).reshape(-1),
+        np.asarray(aggr.get_BQ(r, b_splus1, None, p, "TPI", False)).reshape(
+            -1
+        ),
         expected,
     )
 
@@ -147,7 +149,9 @@ def test_pretp_fields_are_optional_for_legacy_callers():
 
     omega_shift = np.append(p.omega_S_preTP[1:], [0.0])
     imm_shift = np.append(p.imm_rates[0, 1:], [0.0])
-    expected_B = (b[:, 0] * (p.omega_S_preTP + (omega_shift * imm_shift))).sum()
+    expected_B = (
+        b[:, 0] * (p.omega_S_preTP + (omega_shift * imm_shift))
+    ).sum()
     expected_B /= 1.0 + p.g_n[0]
     expected_BQ = (
         (p.omega_S_preTP * p.rho[0, :] * b[:, 0]).sum()
@@ -232,12 +236,16 @@ def test_get_pop_objs_pins_growth_timing_contract():
         GraphDiag=False,
     )
 
-    pre_growth = (pop_dist[0, -S:].sum() - pre_pop[-S:].sum()) / pre_pop[-S:].sum()
+    pre_growth = (pop_dist[0, -S:].sum() - pre_pop[-S:].sum()) / pre_pop[
+        -S:
+    ].sum()
     zero_to_one_growth = (
         pop_dist[1, -S:].sum() - pop_dist[0, -S:].sum()
     ) / pop_dist[0, -S:].sum()
 
-    assert np.allclose(pop_dict["omega_S_preTP"], pre_pop[-S:] / pre_pop[-S:].sum())
+    assert np.allclose(
+        pop_dict["omega_S_preTP"], pre_pop[-S:] / pre_pop[-S:].sum()
+    )
     assert np.allclose(pop_dict["g_n_preTP"], pre_growth)
     assert np.allclose(pop_dict["g_n"][0], pre_growth)
     assert np.allclose(pop_dict["g_n"][1], zero_to_one_growth)
@@ -374,9 +382,9 @@ def test_pre_mort_rates_kwarg_collapses_boundary_identity():
 
     main_mort = np.array(
         [
-            [0.07, 0.13, 0.18, 0.34, 1.00],   # year 2020
-            [0.08, 0.14, 0.19, 0.35, 1.00],   # year 2021
-            [0.08, 0.14, 0.19, 0.35, 1.00],   # year 2022
+            [0.07, 0.13, 0.18, 0.34, 1.00],  # year 2020
+            [0.08, 0.14, 0.19, 0.35, 1.00],  # year 2021
+            [0.08, 0.14, 0.19, 0.35, 1.00],  # year 2022
         ]
     )
     main_fert = np.array(
@@ -396,7 +404,9 @@ def test_pre_mort_rates_kwarg_collapses_boundary_identity():
     )
 
     pre_pop = np.array([100.0, 80.0, 60.0, 40.0, 20.0])
-    pop0 = step_population(pre_pop, fert_yrm1, mort_yrm1, infmort_yrm1, imm_yrm1)
+    pop0 = step_population(
+        pre_pop, fert_yrm1, mort_yrm1, infmort_yrm1, imm_yrm1
+    )
     pop1 = step_population(
         pop0, main_fert[0], main_mort[0], main_infmort[0], main_imm[0]
     )
@@ -438,8 +448,8 @@ def test_pre_mort_rates_kwarg_collapses_boundary_identity():
     imm_preTP = pop_dict["imm_rates_preTP"]
 
     lhs = omega_0[1:] * (1.0 + g_n_preTP)
-    rhs = (1.0 - rho_preTP[:-1]) * omega_S_preTP[:-1] + imm_preTP[1:] * omega_S_preTP[1:]
+    rhs = (1.0 - rho_preTP[:-1]) * omega_S_preTP[:-1] + imm_preTP[
+        1:
+    ] * omega_S_preTP[1:]
     assert np.allclose(lhs, rhs, atol=1e-13)
     assert np.allclose(rho_preTP, mort_yrm1[E:])
-
-
