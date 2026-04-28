@@ -332,6 +332,23 @@ class Specifications(paramtools.Parameters):
             )
             self.omega_S_preTP = self.omega_SS
 
+        # Preserve legacy semantics by default, but expose explicit
+        # boundary-period demographic objects when they are not provided.
+        if (not hasattr(self, "omega_S_preTP")) or (
+            np.asarray(self.omega_S_preTP).shape[-1] != self.S
+        ):
+            self.omega_S_preTP = self.omega[0, :]
+        if not hasattr(self, "g_n_preTP"):
+            self.g_n_preTP = self.g_n[0]
+        if (not hasattr(self, "rho_preTP")) or (
+            np.asarray(self.rho_preTP).shape[-1] != self.S
+        ):
+            self.rho_preTP = self.rho[0, :]
+        if (not hasattr(self, "imm_rates_preTP")) or (
+            np.asarray(self.imm_rates_preTP).shape[-1] != self.S
+        ):
+            self.imm_rates_preTP = self.imm_rates[0, :]
+
         # Create time series of stationarized UBI transfers
         self.ubi_nom_array = self.get_ubi_nom_objs()
 
