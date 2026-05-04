@@ -21,6 +21,8 @@ import warnings
 import logging
 from distributed import wait
 
+logger = logging.getLogger(__name__)
+
 if not SHOW_RUNTIME:
     warnings.simplefilter("ignore", RuntimeWarning)
 
@@ -597,7 +599,7 @@ def run_TPI(p, client=None):
     ubi = p.ubi_nom_array / factor
     UBI = aggr.get_L(ubi[: p.T], p, "TPI")
 
-    logging.info(
+    logger.info(
         f"Government spending breakpoints are tG1: {p.tG1}; and tG2: {p.tG2}"
     )
 
@@ -828,7 +830,7 @@ def run_TPI(p, client=None):
                 results = client.gather(futures)
             except Exception as e:
                 # Cancel remaining futures and fall back to serial computation
-                logging.warning(
+                logger.warning(
                     f"Dask computation failed with error: {e}. "
                     "Falling back to serial computation for this iteration."
                 )
@@ -1221,27 +1223,27 @@ def run_TPI(p, client=None):
             TR[: p.T] = utils.convex_combo(TR_new[: p.T], TR[: p.T], p.nu)
         guesses_b = utils.convex_combo(b_mat, guesses_b, p.nu)
         guesses_n = utils.convex_combo(n_mat, guesses_n, p.nu)
-        logging.info(
+        logger.info(
             f"w diff: {(wnew[: p.T] - w[: p.T]).max()}, "
             + f"{(wnew[: p.T] - w[: p.T]).min()}"
         )
-        logging.info(
+        logger.info(
             f"r diff: {(rnew[: p.T] - r[: p.T]).max()}, "
             + f"{(rnew[: p.T] - r[: p.T]).min()}"
         )
-        logging.info(
+        logger.info(
             f"r_p diff: {(r_p_new[: p.T] - r_p[: p.T]).max()}, "
             + f"{(r_p_new[: p.T] - r_p[: p.T]).min()}"
         )
-        logging.info(
+        logger.info(
             f"p_m diff: {(new_p_m[: p.T, :] - p_m[: p.T, :]).max()}, "
             + f"{(new_p_m[: p.T, :] - p_m[: p.T, :]).min()}"
         )
-        logging.info(
+        logger.info(
             f"BQ diff: {(BQnew[: p.T] - BQ[: p.T]).max()}, "
             + f"{(BQnew[: p.T] - BQ[: p.T]).min()}"
         )
-        logging.info(
+        logger.info(
             f"TR diff: {(TR_new[: p.T] - TR[: p.T]).max()}, "
             + f"{(TR_new[: p.T] - TR[: p.T]).min()}"
         )
@@ -1266,8 +1268,8 @@ def run_TPI(p, client=None):
         #         nu /= 2
         #         print 'New Value of nu:', nu
         TPIiter += 1
-        logging.info(f"Iteration: {TPIiter}")
-        logging.info(f"Distance: {TPIdist}")
+        logger.info(f"Iteration: {TPIiter}")
+        logger.info(f"Distance: {TPIdist}")
 
     # Compute effective and marginal tax rates for all agents
     num_params = len(p.mtrx_params[0][0])
@@ -1405,9 +1407,9 @@ def run_TPI(p, client=None):
 
     # Compute resource constraint error
     rce_max = np.amax(np.abs(RC_error))
-    logging.info(f"Max absolute value resource constraint error: {rce_max}")
+    logger.info(f"Max absolute value resource constraint error: {rce_max}")
 
-    logging.info("Checking time path for violations of constraints.")
+    logger.info("Checking time path for violations of constraints.")
     for t in range(p.T):
         household.constraint_checker_TPI(
             b_mat[t], n_mat[t], c_mat[t], t, p.ltilde
@@ -1416,8 +1418,8 @@ def run_TPI(p, client=None):
     eul_savings = euler_errors[:, : p.S, :]
     eul_laborleisure = euler_errors[:, p.S :, :]
 
-    logging.info(f"Max Euler error, savings: {np.abs(eul_savings).max()}")
-    logging.info(
+    logger.info(f"Max Euler error, savings: {np.abs(eul_savings).max()}")
+    logger.info(
         f"Max Euler error labor supply: {np.abs(eul_laborleisure).max()}"
     )
 
@@ -1520,7 +1522,7 @@ def run_TPI(p, client=None):
         pickle.dump(output, f)
 
     if np.any(G) < 0:
-        logging.warning(
+        logger.warning(
             "Government spending is negative along transition path"
             + " to satisfy budget"
         )

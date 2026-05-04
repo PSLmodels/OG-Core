@@ -9,6 +9,7 @@ on:
       - '**.csv'
       - '**.pkl'
       - '**.pbz2'
+      - '**.lock'
   pull_request:
     paths:
       - '**.yml'
@@ -18,6 +19,7 @@ on:
       - '**.csv'
       - '**.pkl'
       - '**.pbz2'
+      - '**.lock'
 jobs:
   build:
     runs-on: ${{ matrix.os }}
@@ -28,11 +30,11 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           persist-credentials: false
       - name: Install uv
-        uses: astral-sh/setup-uv@v4
+        uses: astral-sh/setup-uv@v7
         with:
           python-version: ${{ matrix.python-version }}
       - name: Install package and dependencies
@@ -40,8 +42,8 @@ jobs:
       - name: Test
         run: uv run python -m pytest -m "not local and not benchmark" --cov=./ --cov-report=xml
       - name: Upload coverage to Codecov
-        if: matrix.os == 'ubuntu-latest' && contains(github.repository, 'PSLmodels/OG-Core')
-        uses: codecov/codecov-action@v4
+        if: matrix.os == 'ubuntu-latest' && contains(github.repository, 'PSLmodels/OG-Core') && github.actor != 'dependabot[bot]'
+        uses: codecov/codecov-action@v6
         with:
           files: ./coverage.xml
           flags: unittests

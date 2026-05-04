@@ -8,6 +8,8 @@ import os
 import warnings
 import logging
 
+logger = logging.getLogger(__name__)
+
 if not SHOW_RUNTIME:
     warnings.simplefilter("ignore", RuntimeWarning)
 
@@ -333,9 +335,8 @@ def inner_loop(outer_loop_vars, p, client):
             results = client.gather(futures)
         except Exception as e:
             # Cancel remaining futures and fall back to serial computation
-            import logging
 
-            logging.warning(
+            logger.warning(
                 f"Dask computation failed with error: {e}. "
                 "Falling back to serial computation."
             )
@@ -812,9 +813,9 @@ def SS_solver(
         if iteration > 10:
             if dist_vec[iteration] - dist_vec[iteration - 1] > 0:
                 nu_ss /= 2.0
-                logging.info(f"New value of nu: {nu_ss}")
+                logger.info(f"New value of nu: {nu_ss}")
         iteration += 1
-        logging.info(f"Iteration: {iteration}  Distance: {dist}")
+        logger.info(f"Iteration: {iteration}  Distance: {dist}")
 
     # Generate the SS values of variables, including euler errors
     bssmat_s = np.append(np.zeros((1, p.J)), bmat[:-1, :], axis=0)
@@ -845,7 +846,7 @@ def SS_solver(
         debt_service,
         new_borrowing_f,
     ) = fiscal.get_D_ss(r_gov_ss, Yss, p)
-    logging.info(f"SS debt = {Dss}, {new_borrowing_f}")
+    logger.info(f"SS debt = {Dss}, {new_borrowing_f}")
     w_open = firm.get_w_from_r(p.world_int_rate[-1], p, "SS")
     K_demand_open_ss = np.zeros(p.M)
     for m in range(p.M):
@@ -1103,7 +1104,7 @@ def SS_solver(
     # Fill in arrays, noting that M-1 industries only produce consumption goods
     G_vec_ss = np.zeros(p.M)
     # Map consumption goods back to demands for production goods
-    logging.info(f"IO: {p.io_matrix.T.shape}, C: {C_vec_ss.shape}")
+    logger.info(f"IO: {p.io_matrix.T.shape}, C: {C_vec_ss.shape}")
     C_m_vec_ss = np.dot(p.io_matrix.T, C_vec_ss)
     G_vec_ss[-1] = Gss
     I_d_vec_ss = np.zeros(p.M)
@@ -1124,18 +1125,18 @@ def SS_solver(
         net_capital_outflows_vec,
         RM_vec_ss,
     )
-    logging.info(f"Foreign debt holdings = {D_f_ss}")
-    logging.info(f"Foreign capital holdings = {K_f_ss}")
-    logging.info(f"resource constraint: {RC}")
+    logger.info(f"Foreign debt holdings = {D_f_ss}")
+    logger.info(f"Foreign capital holdings = {K_f_ss}")
+    logger.info(f"resource constraint: {RC}")
 
     if Gss < 0:
-        logging.warning(
+        logger.warning(
             "Steady state government spending is negative to satisfy"
             + " budget"
         )
 
     if ENFORCE_SOLUTION_CHECKS and (max(np.absolute(RC)) > p.RC_SS):
-        logging.warning(f"Resource Constraint Difference: {RC}")
+        logger.warning(f"Resource Constraint Difference: {RC}")
         err = "Steady state aggregate resource constraint not satisfied"
         raise RuntimeError(err)
 
@@ -1144,11 +1145,11 @@ def SS_solver(
 
     euler_savings = euler_errors[: p.S, :]
     euler_labor_leisure = euler_errors[p.S :, :]
-    logging.info(
+    logger.info(
         "Maximum error in labor FOC = "
         f"{np.absolute(euler_labor_leisure).max()}"
     )
-    logging.info(
+    logger.info(
         f"Maximum error in savings FOC = {np.absolute(euler_savings).max()}"
     )
 
@@ -1353,7 +1354,7 @@ def SS_fsolve(guesses, *args):
             + [error_TR]
         )
     error_string = [f"{error:.3e}" for error in errors]
-    logging.info(f"GE loop errors = {error_string}")
+    logger.info(f"GE loop errors = {error_string}")
 
     return errors
 
@@ -1436,7 +1437,7 @@ def run_SS(p, client=None):
                 p.S,
                 p.J,
             ) and np.squeeze(ss_solutions["Y_m"].shape) == (p.M):
-                logging.info("Using previous solutions for SS")
+                logger.info("Using previous solutions for SS")
                 (
                     b_guess,
                     n_guess,
@@ -1497,12 +1498,12 @@ def run_SS(p, client=None):
                     tol=p.mindist_SS,
                 )
             else:
-                logging.warning(
+                logger.warning(
                     "Dimensions of previous solutions for SS do not match"
                 )
                 use_new_guesses = True
         except KeyError:
-            logging.warning("KeyError: previous solutions for SS not found")
+            logger.warning("KeyError: previous solutions for SS not found")
             use_new_guesses = True
     if p.baseline or not p.reform_use_baseline_solution or use_new_guesses:
         # Loop over initial guesses of r and TR until find a solution
@@ -1512,7 +1513,7 @@ def run_SS(p, client=None):
         k = 0
         while not SS_solved and k < len(DEV_FACTOR_LIST) - 1:
             for k, v in enumerate(DEV_FACTOR_LIST):
-                logging.info(
+                logger.info(
                     "SS using initial guess factors for r and TR of "
                     + f"{v[0]} and {v[1]} respectively."
                 )
