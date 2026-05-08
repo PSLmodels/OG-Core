@@ -9,7 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- Updates the `uv.lock` to include dependabot upgrades PRs [#1118](), [#1119](), [#1120](), and [#1121](), as well as some other package upgrades that were available.
+- Updates the `uv.lock` to include dependabot upgrades PRs [#1118](https://github.com/PSLmodels/OG-Core/pull/1118), [#1119](https://github.com/PSLmodels/OG-Core/pull/1119), [#1120](https://github.com/PSLmodels/OG-Core/pull/1120), and [#1121](https://github.com/PSLmodels/OG-Core/pull/1121), as well as some other package upgrades that were available.
 
 ## [0.15.10] - 2026-04-23 12:00:00
 
