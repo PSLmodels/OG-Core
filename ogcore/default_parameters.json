@@ -963,10 +963,11 @@
         "section_2": "Fiscal Policy Parameters",
         "notes": "",
         "number_dims": 1,
+        "type": "float",
         "value": [
             {
                 "value": [
-                    10.0
+                    0.0
                 ]
             }
         ],
