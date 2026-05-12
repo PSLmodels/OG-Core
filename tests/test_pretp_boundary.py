@@ -1,8 +1,10 @@
+import os
 import numpy as np
 from types import SimpleNamespace
 
 from ogcore import aggregates as aggr
 from ogcore import demographics
+from ogcore.parameters import Specifications
 
 
 def make_mock_params():
@@ -453,3 +455,52 @@ def test_pre_mort_rates_kwarg_collapses_boundary_identity():
     ] * omega_S_preTP[1:]
     assert np.allclose(lhs, rhs, atol=1e-13)
     assert np.allclose(rho_preTP, mort_yrm1[E:])
+
+
+def test_get_pop_objs_dict_passes_through_update_specifications():
+    """
+    The dict returned by ``get_pop_objs`` must be accepted by
+    ``Specifications.update_specifications`` without paramtools rejecting any
+    of the new ``*_preTP`` fields. This is the calibration pipeline that
+    downstream country repos (OG-USA, OG-ETH, OG-ZAF, etc.) rely on:
+
+        d = Calibration(p).get_dict()
+        p.update_specifications(d)
+
+    Regression guard for the integration path. paramtools requires every
+    name in ``d`` to be declared in ``default_parameters.json``; if any of
+    the new ``rho_preTP``, ``imm_rates_preTP``, ``g_n_preTP`` entries is
+    missing, this test fails immediately rather than after the downstream
+    runner does.
+    """
+    data_dir = os.path.join(
+        os.path.dirname(os.path.abspath(__file__)), "test_io_data"
+    )
+
+    def ld(name):
+        return np.loadtxt(os.path.join(data_dir, name), delimiter=",")
+
+    pop_dict = demographics.get_pop_objs(
+        E=20,
+        S=80,
+        T=320,
+        min_age=0,
+        max_age=99,
+        fert_rates=ld("fert_rates.csv"),
+        mort_rates=ld("mort_rates.csv"),
+        infmort_rates=ld("infmort_rates.csv"),
+        imm_rates=ld("immigration_rates.csv"),
+        infer_pop=True,
+        pop_dist=ld("population_distribution.csv")[0, :].reshape(1, 100),
+        pre_pop_dist=ld("pre_period_population_distribution.csv"),
+        initial_data_year=2023,
+        final_data_year=2024,
+        GraphDiag=False,
+    )
+
+    p = Specifications()
+    p.update_specifications(pop_dict)
+
+    assert np.allclose(p.g_n_preTP, pop_dict["g_n_preTP"])
+    assert np.allclose(p.rho_preTP, pop_dict["rho_preTP"])
+    assert np.allclose(p.imm_rates_preTP, pop_dict["imm_rates_preTP"])
