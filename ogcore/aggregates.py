@@ -509,7 +509,7 @@ def get_r_p(r, r_gov, p_m, K_vec, K_g, D, MPKg_vec, p, method):
     return np.squeeze(r_p)
 
 
-def resource_constraint(Y, C, G, I_d, I_g, net_capital_flows, RM):
+def resource_constraint(Y, C, G, I_d, I_g, net_capital_flows, RM foreign_aid):
     r"""
     Compute the error in the resource constraint.
 
@@ -518,7 +518,7 @@ def resource_constraint(Y, C, G, I_d, I_g, net_capital_flows, RM):
         \text{rc_error} &= \hat{Y}_t - \hat{C}_t -
       \Bigl(e^{g_y}\bigl[1 + \tilde{g}_{n,t+1}\bigr]\hat{K}^d_{t+1} -
       \hat{K}^d_t\Bigr) - \delta\hat{K}_t - \hat{G}_t - \hat{I}_{g,t} ... \\
-        &\qquad -\: \hat{\text{net capital outflows}}_t + \hat{RM}_t
+        &\qquad -\: \hat{\text{net capital outflows}}_t + \hat{RM}_t + \hat{\text{foreign aid}}_t
       \end{split}
 
     Args:
@@ -529,12 +529,13 @@ def resource_constraint(Y, C, G, I_d, I_g, net_capital_flows, RM):
         I_g (array_like): investment in government capital
         net_capital_flows (array_like): net capital outflows
         RM (array_like): aggregate remittances
+        foreign_aid (array_like): aggregate foreign aid
 
     Returns:
         rc_error (array_like): error in the resource constraint
 
     """
-    rc_error = Y - C - I_d - I_g - G - net_capital_flows + RM
+    rc_error = Y - C - I_d - I_g - G - net_capital_flows + RM + foreign_aid
 
     return rc_error
 
