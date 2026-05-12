@@ -109,10 +109,12 @@ def test_D_G_path(
         "budget_balance": budget_balance,
         "r_gov_DY": r_gov_DY,
         "r_gov_DY2": r_gov_DY2,
+        "alpha_FA": [0.01],
     }
     p.update_specifications(new_param_values, raise_errors=False)
     r = np.ones(p.T + p.S) * 0.05
     p.g_n = np.ones(p.T + p.S) * 0.02
+    growth = (1 + p.g_n) * np.exp(p.g_y)
     D0_baseline = 0.59
     Gbaseline[0] = 0.05
     I_g = np.zeros_like(TR)
@@ -130,8 +132,18 @@ def test_D_G_path(
         D0_baseline,
     )
     test_tuple = fiscal.D_G_path(r, dg_fixed_values, p)
+    # update expected value for no-zero foreign aid
+    foreign_aid = p.alpha_FA[: p.T] * Y[: p.T] / np.cumprod(growth[1: p.T + 1])
+    # expected_tuple[0][1: p.T] = expected_tuple[0][1: p.T] + foreign_aid[0: p.T-1]  # Debt
+    # expected_tuple[1][: p.T] = expected_tuple[1][: p.T] + (p.alpha_FA[: p.T] * Y[: p.T] / (1+growth[:p.T]))  # G
+    # expected_tuple[2][: p.T] = expected_tuple[2][1: p.T] - (p.alpha_FA[: p.T] * Y[: p.T] / (1+growth[:p.T]))  # Domestically held debt
+    # expected_tuple[5][: p.T] = expected_tuple[5][: p.T] - (p.alpha_FA[: p.T] * Y[: p.T] / (1+growth[:p.T]))  # New borrowing
+    print("Foreign aid = ", foreign_aid[:10])
+    print("Debt diff = ", test_tuple[0][:10] - expected_tuple[0][:10])
 
     for i, v in enumerate(test_tuple):
+        print(f"Testing {i}...")
+
         assert np.allclose(v[: p.T], expected_tuple[i][: p.T])
 
 
