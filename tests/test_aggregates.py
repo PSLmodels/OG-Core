@@ -1772,14 +1772,20 @@ def test_resource_constraint(
     # net_capital_flows = np.array([0.1, 0, 0.016, -1.67, -0.477])
     # RM1 = np.array([0.0, 0.0, 0.0, 0.0, 0.0])
     # expected1 = np.array([-9.1, 1, 0.974, 13.67, 1.477])
+    foreign_aid_vec = np.zeros_like(Y)
+    if Y.ndim > 1:
+        foreign_aid_vec[:, -1] = 0.02 * Y
+    else:
+        foreign_aid_vec = 0.02 * Y
     test_RC = aggr.resource_constraint(
-        Y, C, G, I_d, I_g, net_capital_flows, RM
+        Y, C, G, I_d, I_g, net_capital_flows, RM, foreign_aid_vec
     )
     # RM2 = np.array([0.0, 0.0, 0.0, 0.0, 0.03])
     # expected2 = np.array([-9.1, 1, 0.974, 13.67, 1.477])
     # test_RC2 = aggr.resource_constraint(
     #     Y, C, G, I_d, I_g, net_capital_flows, RM2
     # )
+    expected = expected + foreign_aid_vec
 
     assert np.allclose(test_RC, expected)
 
