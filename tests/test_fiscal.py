@@ -133,7 +133,7 @@ def test_D_G_path(
     )
     test_tuple = fiscal.D_G_path(r, dg_fixed_values, p)
     # update expected value for no-zero foreign aid
-    foreign_aid = p.alpha_FA[: p.T] * Y[: p.T] / np.cumprod(growth[1: p.T + 1])
+    foreign_aid = p.alpha_FA[: p.T] * Y[: p.T] / (growth[1: p.T + 1])
     # expected_tuple[0][1: p.T] = expected_tuple[0][1: p.T] + foreign_aid[0: p.T-1]  # Debt
     # expected_tuple[1][: p.T] = expected_tuple[1][: p.T] + (p.alpha_FA[: p.T] * Y[: p.T] / (1+growth[:p.T]))  # G
     # expected_tuple[2][: p.T] = expected_tuple[2][1: p.T] - (p.alpha_FA[: p.T] * Y[: p.T] / (1+growth[:p.T]))  # Domestically held debt
