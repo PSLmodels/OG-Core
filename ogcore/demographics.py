@@ -214,22 +214,24 @@ def get_fert(
     # Create plots if needed
     if graph:
         if start_year == end_year:
-            years_to_plot = [start_year]
+            years_list = [str(start_year)]
+            fert_rates_list = [fert_rates_2D]
         else:
-            years_to_plot = [start_year, end_year]
+            years_list = [str(x) for x in np.arange(start_year, end_year + 1)]
+            fert_rates_list = [
+                fert_rates_2D[i, :] for i in range(fert_rates_2D.shape[0])
+            ]
         if plot_path is not None:
             pp.plot_fert_rates(
-                [fert_rates_2D],
-                start_year=start_year,
-                years_to_plot=years_to_plot,
+                fert_rates_list,
+                labels=years_list,
                 path=plot_path,
             )
             return fert_rates_2D
         else:
             fig = pp.plot_fert_rates(
-                [fert_rates_2D],
-                start_year=start_year,
-                years_to_plot=years_to_plot,
+                fert_rates_list,
+                labels=years_list,
             )
             return fert_rates_2D, fig
     else:
