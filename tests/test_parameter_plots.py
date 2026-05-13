@@ -218,8 +218,6 @@ def test_plot_population_save_fig(tmpdir):
 
 def test_plot_fert_rates():
     totpers = base_params.S
-    min_yr = 20
-    max_yr = 100
     fert_data = (
         np.array(
             [
@@ -250,8 +248,6 @@ def test_plot_fert_rates():
 
 def test_plot_fert_rates_save_fig(tmpdir):
     totpers = base_params.S
-    min_yr = 20
-    max_yr = 100
     fert_data = (
         np.array(
             [
