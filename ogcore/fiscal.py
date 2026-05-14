@@ -368,7 +368,12 @@ def get_TR(
     foreign_aid = p.alpha_FA * Y
     if p.budget_balance:
         new_TR = (
-            total_tax_revenue + foreign_aid - agg_pension_outlays - G - UBI_outlays - I_g
+            total_tax_revenue
+            + foreign_aid
+            - agg_pension_outlays
+            - G
+            - UBI_outlays
+            - I_g
         )
     elif p.baseline_spending:
         new_TR = p.alpha_bs_T[-1] * TR
