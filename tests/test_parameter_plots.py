@@ -218,8 +218,6 @@ def test_plot_population_save_fig(tmpdir):
 
 def test_plot_fert_rates():
     totpers = base_params.S
-    min_yr = 20
-    max_yr = 100
     fert_data = (
         np.array(
             [
@@ -250,8 +248,6 @@ def test_plot_fert_rates():
 
 def test_plot_fert_rates_save_fig(tmpdir):
     totpers = base_params.S
-    min_yr = 20
-    max_yr = 100
     fert_data = (
         np.array(
             [
@@ -279,6 +275,46 @@ def test_plot_fert_rates_save_fig(tmpdir):
         [fert_rates],
         include_title=True,
         path=tmpdir,
+    )
+    img = mpimg.imread(os.path.join(tmpdir, "fert_rates.png"))
+
+    assert isinstance(img, np.ndarray)
+
+
+def test_plot_fert_rates_many_series_numeric_labels():
+    """Test plot_fert_rates with >4 series and numeric (year) labels.
+    Covers the num_series > 4 branch with the try block succeeding."""
+    totpers = base_params.S
+    fert_rates_list = [np.random.uniform(size=totpers) for _ in range(5)]
+    labels = ["2020", "2021", "2022", "2023", "2024"]
+    fig = parameter_plots.plot_fert_rates(
+        fert_rates_list, labels=labels, include_title=True
+    )
+    assert fig
+    plt.close()
+
+
+def test_plot_fert_rates_many_series_nonnumeric_labels():
+    """Test plot_fert_rates with >4 series and non-numeric labels.
+    Covers the num_series > 4 branch with the except block (fallback to range).
+    """
+    totpers = base_params.S
+    fert_rates_list = [np.random.uniform(size=totpers) for _ in range(5)]
+    labels = ["Baseline", "Reform A", "Reform B", "Reform C", "Reform D"]
+    fig = parameter_plots.plot_fert_rates(
+        fert_rates_list, labels=labels, include_title=False
+    )
+    assert fig
+    plt.close()
+
+
+def test_plot_fert_rates_many_series_save_fig(tmpdir):
+    """Test plot_fert_rates with >4 series saves a figure to disk."""
+    totpers = base_params.S
+    fert_rates_list = [np.random.uniform(size=totpers) for _ in range(5)]
+    labels = ["2020", "2021", "2022", "2023", "2024"]
+    parameter_plots.plot_fert_rates(
+        fert_rates_list, labels=labels, path=tmpdir
     )
     img = mpimg.imread(os.path.join(tmpdir, "fert_rates.png"))
 

@@ -243,6 +243,39 @@ def test_get_fert():
 
 
 @pytest.mark.local
+def test_get_fert_multi_year():
+    """
+    Test get_fert with multiple years (start_year != end_year) and graph=True.
+    Covers the else branch that builds years_list and fert_rates_list for
+    multiple years.
+    """
+    S = 100
+    fert_rates, fig = demographics.get_fert(
+        S, 0, 99, start_year=2023, end_year=2024, graph=True
+    )
+    assert fert_rates.shape == (2, S)
+    assert fig
+
+
+@pytest.mark.local
+def test_get_fert_graph_with_plot_path(tmpdir):
+    """
+    Test get_fert with graph=True and a plot_path.
+    Covers the plot_path is not None branch (saves figure, returns only
+    fert_rates_2D without a fig object).
+    """
+    import os
+    import matplotlib.image as mpimg
+
+    S = 100
+    result = demographics.get_fert(S, 0, 99, graph=True, plot_path=str(tmpdir))
+    # When plot_path is given, only fert_rates_2D is returned (not a tuple)
+    assert result.shape[1] == S
+    img = mpimg.imread(os.path.join(str(tmpdir), "fert_rates.png"))
+    assert isinstance(img, np.ndarray)
+
+
+@pytest.mark.local
 def test_get_mort():
     """
     Test of function to get mortality rates from data
