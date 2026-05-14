@@ -215,7 +215,7 @@ def get_fert(
     if graph:
         if start_year == end_year:
             years_list = [str(start_year)]
-            fert_rates_list = [fert_rates_2D]
+            fert_rates_list = [fert_rates_2D[0, :]]
         else:
             years_list = [str(x) for x in np.arange(start_year, end_year + 1)]
             fert_rates_list = [
