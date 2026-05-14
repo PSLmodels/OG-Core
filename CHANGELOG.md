@@ -5,6 +5,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.15.12] - 2026-05-14 12:00:00
+
+### Added
+
+- Caches the `e_long` array in `household.FOC_savings` and `household.FOC_labor` rather than rebuilding it on every call. `e_long` is a pure function of `p.e`, `p.S`, and `p.J`, none of which change during a solve, so a `_get_e_long` helper now builds it once per worker and reuses it. Profiling identified this rebuild as the single most expensive operation in a TPI run. The change is a pure cache — model output is bit-for-bit identical to master — and gives roughly a 3x speedup on a single-reform TPI run. See PR [#1128](https://github.com/PSLmodels/OG-Core/pull/1128).
+
 ## [0.15.11] - 2026-05-08 12:00:00
 
 ### Added
