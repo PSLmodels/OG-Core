@@ -83,8 +83,9 @@ def get_tax_rates(
     income = X + Y
     if tax_func_type != "mono":
         # easier to use arrays for calculations below, except when
-        # can't (bc lists of functions)
-        params = np.array(params)
+        # can't (bc lists of functions). asarray avoids a copy when the
+        # caller already passes an array (the hot TPI path does).
+        params = np.asarray(params)
     if tax_func_type == "GS":
         phi0, phi1, phi2 = (
             np.squeeze(params[..., 0]),
