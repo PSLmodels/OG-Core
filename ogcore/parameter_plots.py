@@ -387,6 +387,9 @@ def plot_fert_rates(
     """
     fig, ax = plt.subplots()
     num_series = len(fert_rates_list)
+    assert num_series == len(labels), (
+        "Number of series must match number of labels"
+    )
 
     if num_series > 4:
         cm = plt.get_cmap("coolwarm")
