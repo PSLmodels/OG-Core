@@ -436,19 +436,19 @@
     <span class="n">path</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
 <span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Plot fertility rates from the data</span>
+<span class="sd">    Plot immigration rates from the data</span>
 
 <span class="sd">    Args:</span>
 <span class="sd">        imm_rates (NumPy array): immigration rates for each of</span>
 <span class="sd">            totpers</span>
 <span class="sd">        start_year (int): first year of data</span>
 <span class="sd">        years_to_plot (list): list of years to plot</span>
-<span class="sd">        source (str): data source for fertility rates</span>
+<span class="sd">        source (str): data source for immigration rates</span>
 <span class="sd">        path (str): path to save figure to, if None then figure</span>
 <span class="sd">            is returned</span>
 
 <span class="sd">    Returns:</span>
-<span class="sd">        fig (Matplotlib plot object): plot of fertility rates</span>
+<span class="sd">        fig (Matplotlib plot object): plot of immigration rates</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="c1"># create line styles to cycle through</span>
@@ -456,7 +456,6 @@
     <span class="k">for</span> <span class="n">y</span> <span class="ow">in</span> <span class="n">years_to_plot</span><span class="p">:</span>
         <span class="n">i</span> <span class="o">=</span> <span class="n">start_year</span> <span class="o">-</span> <span class="n">y</span>
         <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">imm_rates</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="p">:],</span> <span class="n">c</span><span class="o">=</span><span class="s2">&quot;blue&quot;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Year &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">y</span><span class="p">))</span>
-    <span class="c1"># plt.title(&#39;Fertility rates by age ($f_{s}$)&#39;,</span>
     <span class="c1">#     fontsize=20)</span>
     <span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;Age $s$&quot;</span><span class="p">)</span>
     <span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;Immigration rate $i_</span><span class="si">{s}</span><span class="s2">$&quot;</span><span class="p">)</span>
@@ -468,7 +467,7 @@
         <span class="n">fontsize</span><span class="o">=</span><span class="mi">9</span><span class="p">,</span>
     <span class="p">)</span>
     <span class="k">if</span> <span class="n">include_title</span><span class="p">:</span>
-        <span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s2">&quot;Immigration Rates&quot;</span><span class="p">)</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s2">&quot;Immigration Rates by Age&quot;</span><span class="p">)</span>
     <span class="c1"># Save or return figure</span>
     <span class="k">if</span> <span class="n">path</span><span class="p">:</span>
         <span class="n">output_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="s2">&quot;imm_rates&quot;</span><span class="p">)</span>
@@ -805,8 +804,6 @@
 <span class="k">def</span><span class="w"> </span><span class="nf">plot_fert_rates</span><span class="p">(</span>
     <span class="n">fert_rates_list</span><span class="p">,</span>
     <span class="n">labels</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;&quot;</span><span class="p">],</span>
-    <span class="n">start_year</span><span class="o">=</span><span class="n">DEFAULT_START_YEAR</span><span class="p">,</span>
-    <span class="n">years_to_plot</span><span class="o">=</span><span class="p">[</span><span class="n">DEFAULT_START_YEAR</span><span class="p">],</span>
     <span class="n">include_title</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
     <span class="n">source</span><span class="o">=</span><span class="s2">&quot;United Nations, World Population Prospects&quot;</span><span class="p">,</span>
     <span class="n">path</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
@@ -818,8 +815,6 @@
 <span class="sd">        fert_rates_list (list): list of Numpy arrays of fertility rates</span>
 <span class="sd">            for each model period and age</span>
 <span class="sd">        labels (list): list of labels for the legend</span>
-<span class="sd">        start_year (int): first year of data</span>
-<span class="sd">        years_to_plot (list): list of years to plot</span>
 <span class="sd">        include_title (bool): whether to include a title in the plot</span>
 <span class="sd">        source (str): data source for fertility rates</span>
 <span class="sd">        path (str): path to save figure to, if None then figure</span>
@@ -829,23 +824,43 @@
 <span class="sd">        fig (Matplotlib plot object): plot of fertility rates</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="c1"># create line styles to cycle through</span>
     <span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">()</span>
-    <span class="k">for</span> <span class="n">y</span> <span class="ow">in</span> <span class="n">years_to_plot</span><span class="p">:</span>
-        <span class="n">i</span> <span class="o">=</span> <span class="n">start_year</span> <span class="o">-</span> <span class="n">y</span>
+    <span class="n">num_series</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">fert_rates_list</span><span class="p">)</span>
+    <span class="k">assert</span> <span class="n">num_series</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="n">labels</span><span class="p">),</span> <span class="p">(</span>
+        <span class="s2">&quot;Number of series must match number of labels&quot;</span>
+    <span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">num_series</span> <span class="o">&gt;</span> <span class="mi">4</span><span class="p">:</span>
+        <span class="n">cm</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">get_cmap</span><span class="p">(</span><span class="s2">&quot;coolwarm&quot;</span><span class="p">)</span>
+        <span class="c1"># Attempt to convert labels to numeric values for colormap scaling</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">label_values</span> <span class="o">=</span> <span class="p">[</span><span class="nb">int</span><span class="p">(</span><span class="n">label</span><span class="p">)</span> <span class="k">for</span> <span class="n">label</span> <span class="ow">in</span> <span class="n">labels</span><span class="p">]</span>
+        <span class="k">except</span> <span class="p">(</span><span class="ne">ValueError</span><span class="p">,</span> <span class="ne">TypeError</span><span class="p">):</span>
+            <span class="n">label_values</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="n">num_series</span><span class="p">))</span>
+
+        <span class="n">vmin</span><span class="p">,</span> <span class="n">vmax</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">label_values</span><span class="p">),</span> <span class="nb">max</span><span class="p">(</span><span class="n">label_values</span><span class="p">)</span>
+        <span class="n">norm</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">Normalize</span><span class="p">(</span><span class="n">vmin</span><span class="o">=</span><span class="n">vmin</span><span class="p">,</span> <span class="n">vmax</span><span class="o">=</span><span class="n">vmax</span><span class="p">)</span>
         <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">fert_rates</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">fert_rates_list</span><span class="p">):</span>
-            <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">fert_rates</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="p">:],</span> <span class="n">label</span><span class="o">=</span><span class="n">labels</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">+</span> <span class="s2">&quot; &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">y</span><span class="p">))</span>
+            <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">fert_rates</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="n">cm</span><span class="p">(</span><span class="n">norm</span><span class="p">(</span><span class="n">label_values</span><span class="p">[</span><span class="n">i</span><span class="p">])))</span>
+        <span class="n">sm</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">cm</span><span class="o">.</span><span class="n">ScalarMappable</span><span class="p">(</span><span class="n">cmap</span><span class="o">=</span><span class="n">cm</span><span class="p">,</span> <span class="n">norm</span><span class="o">=</span><span class="n">norm</span><span class="p">)</span>
+        <span class="n">sm</span><span class="o">.</span><span class="n">set_array</span><span class="p">([])</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">colorbar</span><span class="p">(</span><span class="n">sm</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Year&quot;</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">fert_rates</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">fert_rates_list</span><span class="p">):</span>
+            <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">fert_rates</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="n">labels</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">loc</span><span class="o">=</span><span class="s2">&quot;upper right&quot;</span><span class="p">)</span>
+
     <span class="k">if</span> <span class="n">include_title</span><span class="p">:</span>
-        <span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s2">&quot;Fertility rates by age ($f_</span><span class="si">{s}</span><span class="s2">$)&quot;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">20</span><span class="p">)</span>
-    <span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;Age $s$&quot;</span><span class="p">)</span>
-    <span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;Fertility rate $f_</span><span class="si">{s}</span><span class="s2">$&quot;</span><span class="p">)</span>
-    <span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">loc</span><span class="o">=</span><span class="s2">&quot;upper right&quot;</span><span class="p">)</span>
-    <span class="n">plt</span><span class="o">.</span><span class="n">text</span><span class="p">(</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">&quot;Fertility rates by age ($f_</span><span class="si">{s}</span><span class="s2">$)&quot;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">20</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;Age $s$&quot;</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;Fertility rate $f_</span><span class="si">{s}</span><span class="s2">$&quot;</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">text</span><span class="p">(</span>
         <span class="o">-</span><span class="mi">5</span><span class="p">,</span>
         <span class="o">-</span><span class="mf">0.023</span><span class="p">,</span>
         <span class="s2">&quot;Source: &quot;</span> <span class="o">+</span> <span class="n">source</span><span class="p">,</span>
         <span class="n">fontsize</span><span class="o">=</span><span class="mi">9</span><span class="p">,</span>
     <span class="p">)</span>
+
     <span class="c1"># Save or return figure</span>
     <span class="k">if</span> <span class="n">path</span><span class="p">:</span>
         <span class="n">output_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="s2">&quot;fert_rates&quot;</span><span class="p">)</span>

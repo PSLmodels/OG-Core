@@ -556,7 +556,7 @@ _Out-of-Range Action:_ error
 _Description:_ Consumption tax rate.  Set value for base year, click '+' to add value for next year.  All future years not specified are set to last value entered.  
 _Notes:_ This policy parameter represents the effective consumption tax rate from sales taxes, VATs, and excise taxes by consumption good. Tax rates cab vary over time. It is thus a TxI array.  
 _Value Type:_ float  
-_Valid Range:_ min = 0.0 and max = 5.0  
+_Valid Range:_ min = -5.0 and max = 5.0  
 _Out-of-Range Action:_ error  
 
 

@@ -501,8 +501,9 @@
     <span class="n">income</span> <span class="o">=</span> <span class="n">X</span> <span class="o">+</span> <span class="n">Y</span>
     <span class="k">if</span> <span class="n">tax_func_type</span> <span class="o">!=</span> <span class="s2">&quot;mono&quot;</span><span class="p">:</span>
         <span class="c1"># easier to use arrays for calculations below, except when</span>
-        <span class="c1"># can&#39;t (bc lists of functions)</span>
-        <span class="n">params</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">params</span><span class="p">)</span>
+        <span class="c1"># can&#39;t (bc lists of functions). asarray avoids a copy when the</span>
+        <span class="c1"># caller already passes an array (the hot TPI path does).</span>
+        <span class="n">params</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">params</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">tax_func_type</span> <span class="o">==</span> <span class="s2">&quot;GS&quot;</span><span class="p">:</span>
         <span class="n">phi0</span><span class="p">,</span> <span class="n">phi1</span><span class="p">,</span> <span class="n">phi2</span> <span class="o">=</span> <span class="p">(</span>
             <span class="n">np</span><span class="o">.</span><span class="n">squeeze</span><span class="p">(</span><span class="n">params</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="mi">0</span><span class="p">]),</span>
