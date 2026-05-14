@@ -1403,7 +1403,7 @@ def run_TPI(p, client=None):
         I_g_vec,
         net_capital_outflows_vec,
         RM_vec,
-        foreign_aid_vec,
+        foreign_aid_vec
     )
     # Compute total investment (not just domestic)
     I_total = aggr.get_I(None, K[1 : p.T + 1], K[: p.T], p, "total_tpi")

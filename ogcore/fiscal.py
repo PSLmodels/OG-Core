@@ -293,12 +293,14 @@ def get_G_ss(
         G (tuple): steady-state government spending
 
     """
+    foreign_aid = p.alpha_FA * Y
     if p.budget_balance:
         G = p.alpha_G[-1] * Y
     else:
         G = (
             total_tax_revenue
             + new_borrowing
+            + foreign_aid
             - (agg_pension_outlays + TR + debt_service + UBI_outlays + I_g)
         )
 
@@ -363,9 +365,10 @@ def get_TR(
         new_TR (array_like): new value of aggregate government transfers
 
     """
+    foreign_aid = p.alpha_FA * Y
     if p.budget_balance:
         new_TR = (
-            total_tax_revenue - agg_pension_outlays - G - UBI_outlays - I_g
+            total_tax_revenue + foreign_aid - agg_pension_outlays - G - UBI_outlays - I_g
         )
     elif p.baseline_spending:
         new_TR = p.alpha_bs_T[-1] * TR
@@ -431,7 +434,7 @@ def get_I_g(Y, Ig_baseline, p, method="SS"):
     Args:
         Y (array_like): aggregate output
         Ig_baseline (array_like): public infrastructure investment in
-            the baseliine simulation
+            the baseline simulation
         p (OG-Core Specifications object): model parameters
         method (str): either 'SS' for steady-state or 'TPI' for transition path
 
