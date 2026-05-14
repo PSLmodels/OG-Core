@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 - Caches the `e_long` array in `household.FOC_savings` and `household.FOC_labor` rather than rebuilding it on every call. `e_long` is a pure function of `p.e`, `p.S`, and `p.J`, none of which change during a solve, so a `_get_e_long` helper now builds it once per worker and reuses it. Profiling identified this rebuild as the single most expensive operation in a TPI run. The change is a pure cache — model output is bit-for-bit identical to master — and gives roughly a 3x speedup on a single-reform TPI run. See PR [#1128](https://github.com/PSLmodels/OG-Core/pull/1128).
+- Builds the per-period tax-parameter slices in `TPI.inner_loop` as numpy arrays via a new `_params_to_array` helper, and switches `txfunc.get_tax_rates` to `np.asarray`, so the repeated per-call list-to-array conversion is skipped on the hot TPI path. `mono` and `mono2D` tax functions store callables rather than numbers, so their nested-list form is passed through unchanged. Profiling identified this conversion as the next hot spot after the `e_long` rebuild. Model output is bit-for-bit identical to master, and the change gives roughly a further 10% speedup on a single-reform TPI run (about 3.3x cumulative versus master). See PR [#1128](https://github.com/PSLmodels/OG-Core/pull/1128).
 
 ## [0.15.11] - 2026-05-08 12:00:00
 
