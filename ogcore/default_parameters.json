@@ -4661,7 +4661,7 @@
         "validators": {
             "range": {
                 "min": 1e-13,
-                "max": 0.001
+                "max": 0.01
             }
         }
     },

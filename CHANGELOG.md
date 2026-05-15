@@ -5,6 +5,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.15.13] - 2026-05-15 06:00:00
+
+### Added
+
+- Increases the maximum value of the `mindist_TPI` parameter to 0.01 in `default_parameters.json`.
+- Updates the `uv.lock` with package updates.
+
 ## [0.15.12] - 2026-05-14 12:00:00
 
 ### Added
@@ -568,6 +575,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Any earlier versions of OG-USA can be found in the [`OG-Core`](https://github.com/PSLmodels/OG-Core) repository [release history](https://github.com/PSLmodels/OG-Core/releases) from [v.0.6.4](https://github.com/PSLmodels/OG-Core/releases/tag/v0.6.4) (Jul. 20, 2021) or earlier.
 
 
+[0.15.13]: https://github.com/PSLmodels/OG-Core/compare/v0.15.12...v0.15.13
+[0.15.12]: https://github.com/PSLmodels/OG-Core/compare/v0.15.11...v0.15.12
 [0.15.11]: https://github.com/PSLmodels/OG-Core/compare/v0.15.10...v0.15.11
 [0.15.10]: https://github.com/PSLmodels/OG-Core/compare/v0.15.9...v0.15.10
 [0.15.9]: https://github.com/PSLmodels/OG-Core/compare/v0.15.8...v0.15.9
