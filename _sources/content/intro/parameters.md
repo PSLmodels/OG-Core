@@ -879,7 +879,7 @@ _Out-of-Range Action:_ error
 ####  `mindist_TPI`  
 _Description:_ Tolerance for convergence of time path solution.  
 _Value Type:_ float  
-_Valid Range:_ min = 1e-13 and max = 0.001  
+_Valid Range:_ min = 1e-13 and max = 0.01  
 _Out-of-Range Action:_ error  
 
 
