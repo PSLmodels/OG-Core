@@ -1,3 +1,4 @@
+import json
 import numpy as np
 import pandas as pd
 import os
@@ -985,5 +986,136 @@ def dynamic_revenue_decomposition(
     table_df.reset_index(inplace=True)
     table_df.rename(columns={"index": "Variable"}, inplace=True)
     table = save_return_table(table_df, table_format, path)
+
+    return table
+
+
+def calib_table(
+    param_list,
+    targets_dict,
+    params,
+    tpi_output,
+    t=0,
+    table_format=None,
+    path=None,
+):
+    """
+    Creates a table summarizing endogenously calibrated parameters,
+    showing parameter values alongside the data targets used in
+    calibration and the corresponding model moments.
+
+    Supported target descriptions (used as keys in ``targets_dict``
+    values):
+
+    * ``"Gini coefficient of wealth"`` -- computed from ``b_sp1``
+    * ``"Investment rate (I/K)"`` -- computed from ``I`` and ``K``
+    * ``"Gini coefficient of income"`` -- computed from
+      ``before_tax_income``
+
+    Args:
+        param_list (list): OG-Core parameter names to include in the
+            table, e.g. ``['beta_annual', 'delta_annual', 'e']``
+        targets_dict (dict): maps each parameter name to a one-item
+            dict ``{target_description: data_value}``, e.g.::
+
+                {
+                    'beta_annual': {'Gini coefficient of wealth': 0.82},
+                    'delta_annual': {'Investment rate (I/K)': 0.07},
+                    'e': {'Gini coefficient of income': 0.55},
+                }
+
+        params (OG-Core Specifications class): model parameters object
+        tpi_output (dict): output dictionary returned by ``TPI.run_TPI``
+        t (int): period index used for model moment calculations.
+            Defaults to ``0`` (first period of the transition path).
+            Pass ``-1`` to use the last period, which approximates
+            steady-state values.
+        table_format (string): format to return table in: ``'csv'``,
+            ``'tex'``, ``'excel'``, ``'json'``; if ``None`` a
+            DataFrame is returned
+        path (string): path to save table to
+
+    Returns:
+        table (various): table as a DataFrame, formatted string, or
+            ``None`` if saved to disk
+
+    """
+    # Load parameter metadata for title and notation
+    default_params_path = os.path.join(cur_path, "default_parameters.json")
+    with open(default_params_path, "r") as f:
+        default_params_meta = json.load(f)
+
+    table_dict = {
+        "Parameter": [],
+        "Value": [],
+        "Data Target": [],
+        "Model Moment": [],
+        "Data Moment": [],
+    }
+
+    for param_name in param_list:
+        # --- Column 1: human-readable name and LaTeX symbol ---
+        if param_name in default_params_meta:
+            meta = default_params_meta[param_name]
+            short_desc = meta.get(
+                "short_description", meta.get("title", param_name)
+            )
+            notation = meta.get("param_notation", "")
+            col1 = f"{short_desc} {notation}".strip()
+        else:
+            col1 = param_name
+
+        # --- Column 2: parameter value or range ---
+        param_val = getattr(params, param_name, None)
+        if param_val is None:
+            col2 = "N/A"
+        else:
+            arr = np.asarray(param_val, dtype=float)
+            if arr.ndim == 0 or arr.size == 1:
+                col2 = f"{float(arr.flat[0]):.4f}"
+            elif np.allclose(arr, arr.flat[0]):
+                col2 = f"{arr.flat[0]:.4f}"
+            else:
+                col2 = f"[{arr.min():.4f}, {arr.max():.4f}]"
+
+        # --- Columns 3-5: target description, model moment, data moment ---
+        target_info = targets_dict.get(param_name, {})
+        if target_info:
+            target_desc = next(iter(target_info))
+            data_val = target_info[target_desc]
+        else:
+            target_desc = ""
+            data_val = np.nan
+
+        # Compute the model moment corresponding to the target description
+        if target_desc == "Gini coefficient of wealth":
+            dist = tpi_output["b_sp1"][t]
+            pop_weights = params.omega[t]
+            pop_weights = pop_weights / pop_weights.sum()
+            ineq = Inequality(
+                dist, pop_weights, params.lambdas, params.S, params.J
+            )
+            model_val = ineq.gini()
+        elif target_desc == "Investment rate (I/K)":
+            model_val = tpi_output["I"][t] / tpi_output["K"][t]
+        elif target_desc == "Gini coefficient of income":
+            dist = tpi_output["before_tax_income"][t]
+            pop_weights = params.omega[t]
+            pop_weights = pop_weights / pop_weights.sum()
+            ineq = Inequality(
+                dist, pop_weights, params.lambdas, params.S, params.J
+            )
+            model_val = ineq.gini()
+        else:
+            model_val = np.nan
+
+        table_dict["Parameter"].append(col1)
+        table_dict["Value"].append(col2)
+        table_dict["Data Target"].append(target_desc)
+        table_dict["Model Moment"].append(model_val)
+        table_dict["Data Moment"].append(data_val)
+
+    table_df = pd.DataFrame.from_dict(table_dict)
+    table = save_return_table(table_df, table_format, path, precision=4)
 
     return table
