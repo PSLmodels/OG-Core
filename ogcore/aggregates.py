@@ -95,14 +95,14 @@ def get_I(b_splus1, K_p1, K, p, method):
             )
             .sum(1)
             .sum(1)
-        ) / (1 + np.squeeze(np.hstack((p.g_n[1 : p.T], p.g_n_ss))))
+        ) / (1 + p.g_n[: p.T])
         aggI = (
-            1 + np.squeeze(np.hstack((p.g_n[1 : p.T], p.g_n_ss)))
+            1 + np.squeeze(p.g_n[: p.T])
         ) * np.exp(p.g_y) * (K_p1 - part2) - (1.0 - p.delta) * K
     elif method == "total_ss":
         aggI = ((1 + p.g_n_ss) * np.exp(p.g_y) - 1 + p.delta) * K
     elif method == "total_tpi":
-        aggI = (1 + p.g_n[1 : p.T + 1]) * np.exp(p.g_y) * K_p1 - (
+        aggI = (1 + p.g_n[: p.T]) * np.exp(p.g_y) * K_p1 - (
             1.0 - p.delta
         ) * K
 
@@ -157,7 +157,7 @@ def get_B(b, p, method, preTP):
         )
         B_presum = part1 + part2
         B = B_presum.sum(1).sum(1)
-        B /= 1.0 + np.hstack((p.g_n[1 : p.T], p.g_n_ss))
+        B /= (1.0 + p.g_n[: p.T])
     return B
 
 
@@ -212,14 +212,14 @@ def get_BQ(r, b_splus1, j, p, method, preTP):
         if j is not None:
             BQ_presum = (b_splus1 * p.lambdas[j]) * (pop * rho)
             BQ = BQ_presum.sum(1)
-            BQ *= (1.0 + r) / (1.0 + p.g_n[: p.T])
+            BQ *= (1.0 + r) / (1.0 + np.append(p.g_n_preTP, p.g_n[: p.T - 1]))
         else:
             BQ_presum = (b_splus1 * np.squeeze(p.lambdas)) * np.tile(
                 np.reshape(pop * rho, (p.T, p.S, 1)), (1, 1, p.J)
             )
             BQ = BQ_presum.sum(1)
             BQ *= np.tile(
-                np.reshape((1.0 + r) / (1.0 + p.g_n[: p.T]), (p.T, 1)),
+                np.reshape((1.0 + r) / (1.0 + np.append(p.g_n_preTP, p.g_n[: p.T - 1])), (p.T, 1)),
                 (1, p.J),
             )
     if p.use_zeta:
