@@ -2,6 +2,7 @@
 Tests of output_plots.py module
 """
 
+import inspect
 import pytest
 import os
 import sys
@@ -163,6 +164,14 @@ def test_plot_aggregates(
     )
     assert fig
     plt.close()
+
+
+def test_plot_aggregates_defaults_to_unstationarized():
+    stationarized_default = inspect.signature(
+        output_plots.plot_aggregates
+    ).parameters["stationarized"].default
+
+    assert stationarized_default is False
 
 
 test_data = [

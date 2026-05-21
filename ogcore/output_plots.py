@@ -19,7 +19,7 @@ def plot_aggregates(
     reform_params=None,
     var_list=["Y", "C", "K", "L"],
     plot_type="pct_diff",
-    stationarized=True,
+    stationarized=False,
     num_years_to_plot=50,
     start_year=DEFAULT_START_YEAR,
     forecast_data=None,
@@ -47,7 +47,7 @@ def plot_aggregates(
             'levels': plot variables in model units
             'forecast': plots variables in levels relative to baseline
                 economic forecast
-        stationarized (bool): whether used stationarized variables
+        stationarized (bool): whether to use stationarized variables
         num_years_to_plot (integer): number of years to include in plot
         start_year (integer): year to start plot
         forecast_data (array_like): baseline economic forecast series,
