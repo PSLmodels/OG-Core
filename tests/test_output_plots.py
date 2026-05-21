@@ -593,3 +593,8 @@ def test_lambda_labels():
     for k, v in labels.items():
         print(k, v)
         assert v == constants.GROUP_LABELS[7][k]
+
+
+def test_consumption_label_uses_latex_tilde():
+    assert "\t" not in constants.VAR_LABELS["c"]
+    assert r"$\tilde{c}_{j,s,t}$" in constants.VAR_LABELS["c"]
