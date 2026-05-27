@@ -134,7 +134,7 @@ def get_B(b, p, method, preTP):
             part1 = b * np.transpose(p.omega_S_preTP * p.lambdas)
             omega_extended = np.append(p.omega_S_preTP[1:], [0.0])
             imm_extended = np.append(p.imm_rates_preTP[1:], [0.0])
-            pop_growth_rate = p.g_n_preTP
+            pop_growth_rate = p.g_n[0]  # this is the only case with the preTP pop growth rate, so can just use p.g_n[0]
         else:
             part1 = b * np.transpose(p.omega_SS * p.lambdas)
             omega_extended = np.append(p.omega_SS[1:], [0.0])
@@ -189,7 +189,7 @@ def get_BQ(r, b_splus1, j, p, method, preTP):
     if method == "SS":
         if preTP:
             omega = p.omega_S_preTP
-            pop_growth_rate = p.g_n_preTP
+            pop_growth_rate = p.g_n[0]  # this is the only case with the preTP pop growth rate, so can just use p.g_n[0]
             rho = p.rho_preTP
         else:
             omega = p.omega_SS
@@ -212,14 +212,14 @@ def get_BQ(r, b_splus1, j, p, method, preTP):
         if j is not None:
             BQ_presum = (b_splus1 * p.lambdas[j]) * (pop * rho)
             BQ = BQ_presum.sum(1)
-            BQ *= (1.0 + r) / (1.0 + np.append(p.g_n_preTP, p.g_n[: p.T - 1]))
+            BQ *= (1.0 + r) / (1.0 + p.g_n[: p.T])
         else:
             BQ_presum = (b_splus1 * np.squeeze(p.lambdas)) * np.tile(
                 np.reshape(pop * rho, (p.T, p.S, 1)), (1, 1, p.J)
             )
             BQ = BQ_presum.sum(1)
             BQ *= np.tile(
-                np.reshape((1.0 + r) / (1.0 + np.append(p.g_n_preTP, p.g_n[: p.T - 1])), (p.T, 1)),
+                np.reshape((1.0 + r) / (1.0 + p.g_n[: p.T]), (p.T, 1)),
                 (1, p.J),
             )
     if p.use_zeta:
