@@ -18,19 +18,19 @@ def plot_imm_rates(
     path=None,
 ):
     """
-    Plot fertility rates from the data
+    Plot immigration rates from the data
 
     Args:
         imm_rates (NumPy array): immigration rates for each of
             totpers
         start_year (int): first year of data
         years_to_plot (list): list of years to plot
-        source (str): data source for fertility rates
+        source (str): data source for immigration rates
         path (str): path to save figure to, if None then figure
             is returned
 
     Returns:
-        fig (Matplotlib plot object): plot of fertility rates
+        fig (Matplotlib plot object): plot of immigration rates
 
     """
     # create line styles to cycle through
@@ -38,7 +38,6 @@ def plot_imm_rates(
     for y in years_to_plot:
         i = start_year - y
         plt.plot(imm_rates[i, :], c="blue", label="Year " + str(y))
-    # plt.title('Fertility rates by age ($f_{s}$)',
     #     fontsize=20)
     plt.xlabel(r"Age $s$")
     plt.ylabel(r"Immigration rate $i_{s}$")
@@ -50,7 +49,7 @@ def plot_imm_rates(
         fontsize=9,
     )
     if include_title:
-        plt.title("Immigration Rates")
+        plt.title("Immigration Rates by Age")
     # Save or return figure
     if path:
         output_path = os.path.join(path, "imm_rates")
@@ -366,8 +365,6 @@ def plot_chi_n(
 def plot_fert_rates(
     fert_rates_list,
     labels=[""],
-    start_year=DEFAULT_START_YEAR,
-    years_to_plot=[DEFAULT_START_YEAR],
     include_title=False,
     source="United Nations, World Population Prospects",
     path=None,
@@ -379,8 +376,6 @@ def plot_fert_rates(
         fert_rates_list (list): list of Numpy arrays of fertility rates
             for each model period and age
         labels (list): list of labels for the legend
-        start_year (int): first year of data
-        years_to_plot (list): list of years to plot
         include_title (bool): whether to include a title in the plot
         source (str): data source for fertility rates
         path (str): path to save figure to, if None then figure
@@ -390,23 +385,43 @@ def plot_fert_rates(
         fig (Matplotlib plot object): plot of fertility rates
 
     """
-    # create line styles to cycle through
     fig, ax = plt.subplots()
-    for y in years_to_plot:
-        i = start_year - y
+    num_series = len(fert_rates_list)
+    assert num_series == len(labels), (
+        "Number of series must match number of labels"
+    )
+
+    if num_series > 4:
+        cm = plt.get_cmap("coolwarm")
+        # Attempt to convert labels to numeric values for colormap scaling
+        try:
+            label_values = [int(label) for label in labels]
+        except (ValueError, TypeError):
+            label_values = list(range(num_series))
+
+        vmin, vmax = min(label_values), max(label_values)
+        norm = plt.Normalize(vmin=vmin, vmax=vmax)
         for i, fert_rates in enumerate(fert_rates_list):
-            plt.plot(fert_rates[i, :], label=labels[i] + " " + str(y))
+            ax.plot(fert_rates, color=cm(norm(label_values[i])))
+        sm = plt.cm.ScalarMappable(cmap=cm, norm=norm)
+        sm.set_array([])
+        plt.colorbar(sm, ax=ax, label="Year")
+    else:
+        for i, fert_rates in enumerate(fert_rates_list):
+            ax.plot(fert_rates, label=labels[i])
+        ax.legend(loc="upper right")
+
     if include_title:
-        plt.title("Fertility rates by age ($f_{s}$)", fontsize=20)
-    plt.xlabel(r"Age $s$")
-    plt.ylabel(r"Fertility rate $f_{s}$")
-    plt.legend(loc="upper right")
-    plt.text(
+        ax.set_title("Fertility rates by age ($f_{s}$)", fontsize=20)
+    ax.set_xlabel(r"Age $s$")
+    ax.set_ylabel(r"Fertility rate $f_{s}$")
+    ax.text(
         -5,
         -0.023,
         "Source: " + source,
         fontsize=9,
     )
+
     # Save or return figure
     if path:
         output_path = os.path.join(path, "fert_rates")

@@ -1283,7 +1283,7 @@
         ],
         "validators": {
             "range": {
-                "min": 0.0,
+                "min": -5.0,
                 "max": 5.0
             }
         }
@@ -4685,7 +4685,7 @@
         "validators": {
             "range": {
                 "min": 1e-13,
-                "max": 0.001
+                "max": 0.01
             }
         }
     },

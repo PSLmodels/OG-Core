@@ -363,6 +363,19 @@ def twist_doughnut(
     return list(error1.flatten()) + list(error2.flatten())
 
 
+def _params_to_array(nested, tax_func_type):
+    """Convert a nested tax-parameter slice to a numpy array.
+
+    For numeric tax functions this lets ``get_tax_rates`` skip a costly
+    per-call list-to-array conversion. ``mono`` and ``mono2D`` store
+    callables rather than numbers, so their nested-list form is returned
+    unchanged.
+    """
+    if tax_func_type in ("mono", "mono2D"):
+        return nested
+    return np.array(nested)
+
+
 def inner_loop(guesses, outer_loop_vars, initial_values, ubi, j, ind, p):
     """
     Given path of economic aggregates and factor prices, solves
@@ -456,27 +469,25 @@ def inner_loop(guesses, outer_loop_vars, initial_values, ubi, j, ind, p):
         ubi_to_use = np.diag(ubi[: p.S, :, j], p.S - (s + 2))
 
         num_params = len(p.etr_params[0][0])
+        # Convert the per-age tax-parameter slices to arrays here, once,
+        # rather than letting get_tax_rates re-convert them from nested
+        # lists on each of its many calls. mono/mono2D store callables,
+        # not numbers, so _params_to_array leaves them as nested lists.
         temp_etr = [
             [p.etr_params[t][p.S - s - 2 + t][i] for i in range(num_params)]
             for t in range(s + 2)
         ]
-        etr_params_to_use = [
-            [temp_etr[i][j] for j in range(num_params)] for i in range(s + 2)
-        ]
+        etr_params_to_use = _params_to_array(temp_etr, p.tax_func_type)
         temp_mtrx = [
             [p.mtrx_params[t][p.S - s - 2 + t][i] for i in range(num_params)]
             for t in range(s + 2)
         ]
-        mtrx_params_to_use = [
-            [temp_mtrx[i][j] for j in range(num_params)] for i in range(s + 2)
-        ]
+        mtrx_params_to_use = _params_to_array(temp_mtrx, p.tax_func_type)
         temp_mtry = [
             [p.mtry_params[t][p.S - s - 2 + t][i] for i in range(num_params)]
             for t in range(s + 2)
         ]
-        mtry_params_to_use = [
-            [temp_mtry[i][j] for j in range(num_params)] for i in range(s + 2)
-        ]
+        mtry_params_to_use = _params_to_array(temp_mtry, p.tax_func_type)
 
         solutions = opt.root(
             twist_doughnut,
@@ -521,18 +532,27 @@ def inner_loop(guesses, outer_loop_vars, initial_values, ubi, j, ind, p):
 
         # initialize array of diagonal elements
         num_params = len(p.etr_params[t][0])
-        etr_params_to_use = [
-            [p.etr_params[t + s][s][i] for i in range(num_params)]
-            for s in range(p.S)
-        ]
-        mtrx_params_to_use = [
-            [p.mtrx_params[t + s][s][i] for i in range(num_params)]
-            for s in range(p.S)
-        ]
-        mtry_params_to_use = [
-            [p.mtry_params[t + s][s][i] for i in range(num_params)]
-            for s in range(p.S)
-        ]
+        etr_params_to_use = _params_to_array(
+            [
+                [p.etr_params[t + s][s][i] for i in range(num_params)]
+                for s in range(p.S)
+            ],
+            p.tax_func_type,
+        )
+        mtrx_params_to_use = _params_to_array(
+            [
+                [p.mtrx_params[t + s][s][i] for i in range(num_params)]
+                for s in range(p.S)
+            ],
+            p.tax_func_type,
+        )
+        mtry_params_to_use = _params_to_array(
+            [
+                [p.mtry_params[t + s][s][i] for i in range(num_params)]
+                for s in range(p.S)
+            ],
+            p.tax_func_type,
+        )
 
         solutions = opt.root(
             twist_doughnut,
