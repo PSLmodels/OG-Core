@@ -1738,7 +1738,8 @@ test_data_rc = [
         np.array([0.0, 0.0, 0.0, 0.0, 0.0]),  # I_g
         np.array([0.1, 0, 0.016, -1.67, -0.477]),  # net_capital_flows
         np.array([0.0, 0.0, 0.0, 0.0, 0.0]),  # RM1
-        np.array([-9.1, 1, 0.974, 13.67, 1.477]),  # expected1
+        np.array([0.0, 0.0, 0.0, 0.0, 0.03]),  # Foreign aid
+        np.array([-9.1, 1, 0.974, 13.67, 1.477 + 0.03]),  # expected1
     ),
     (
         np.array([48, 55, 2, 99, 8]),  # Y
@@ -1748,24 +1749,25 @@ test_data_rc = [
         np.array([0.0, 0.0, 0.0, 0.0, 0.0]),  # I_g
         np.array([0.1, 0, 0.016, -1.67, -0.477]),  # net_capital_flows
         np.array([0.0, 0.0, 0.0, 0.0, 0.03]),  # RM2
-        np.array([-9.1, 1, 0.974, 13.67, 1.507]),  # expected2
+        np.array([0.0, 0.0, 0.0, 0.0, 0.03]),  # Foreign aid
+        np.array([-9.1, 1, 0.974, 13.67, 1.507 + 0.03]),  # expected2
     ),
 ]
 
 
 @pytest.mark.parametrize(
-    "Y,C,G,I_d,I_g,net_capital_flows,RM,expected",
+    "Y,C,G,I_d,I_g,net_capital_flows,RM,FA,expected",
     test_data_rc,
     ids=["RM=0, M=5", "RM>0, M=5"],
 )
 def test_resource_constraint(
-    Y, C, G, I_d, I_g, net_capital_flows, RM, expected
+    Y, C, G, I_d, I_g, net_capital_flows, RM, FA, expected
 ):
     """
     Test resource constraint equation.
     """
     test_RC = aggr.resource_constraint(
-        Y, C, G, I_d, I_g, net_capital_flows, RM
+        Y, C, G, I_d, I_g, net_capital_flows, RM, FA
     )
 
     assert np.allclose(test_RC, expected)

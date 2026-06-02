@@ -293,7 +293,7 @@ def get_G_ss(
         G (tuple): steady-state government spending
 
     """
-    foreign_aid = p.alpha_FA * Y
+    foreign_aid = p.alpha_FA[-1] * Y
     if p.budget_balance:
         G = p.alpha_G[-1] * Y
     else:
