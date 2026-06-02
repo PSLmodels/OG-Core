@@ -704,7 +704,7 @@ def test_get_tax_rates(
     expected,
 ):
     """
-    Teset of txfunc.get_tax_rates() function.
+    Test of txfunc.get_tax_rates() function.
     """
     wgts = np.array([0.1, 0.25, 0.55, 0.1])
     X = np.array([32.0, 44.0, 1.6, 0.4])
@@ -765,7 +765,7 @@ def test_tax_func_estimate(tmpdir, dask_client):
         analytical_mtrs=analytical_mtrs,
         tax_func_type=tax_func_type,
         age_specific=age_specific,
-        client=dask_client,
+        client=None,
         num_workers=NUM_WORKERS,
         tax_func_path=test_path,
     )
