@@ -365,8 +365,11 @@ def get_TR(
         new_TR (array_like): new value of aggregate government transfers
 
     """
-    foreign_aid = p.alpha_FA * Y
     if p.budget_balance:
+        if method == "SS":
+            foreign_aid = p.alpha_FA[-1] * Y
+        else:
+            foreign_aid = p.alpha_FA[: p.T] * Y[: p.T]
         new_TR = (
             total_tax_revenue
             + foreign_aid
