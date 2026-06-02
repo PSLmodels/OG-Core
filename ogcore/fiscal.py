@@ -357,7 +357,7 @@ def get_TR(
         agg_pension_outlays (array_like): total government pension
             outlays
         UBI_outlays (array_like): total universal basic income (UBI) outlays
-        I_g (array_like): public infrastructure investement
+        I_g (array_like): public infrastructure investment
         p (OG-Core Specifications object): model parameters
         method (str): whether doing SS or TP calculation
 
