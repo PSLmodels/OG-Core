@@ -261,7 +261,7 @@ The usual definition of equilibrium would be allocations and prices such that ho
 
   ```{math}
   :label: EqStnrz_Kgmt
-    \hat{K}_{g,m,t+1} = \frac{(1 - \delta_g)\hat{K}_{g,m,t} + \hat{I}_{g,m,t}}{e^{g_y}(1 + \tilde{g}_{n,t+1})}  \quad\forall m,t
+    \hat{K}_{g,m,t+1} = \frac{(1 - \delta_g)\hat{K}_{g,m,t} + (1 - \phi_g)\hat{I}_{g,m,t}}{e^{g_y}(1 + \tilde{g}_{n,t+1})}  \quad\forall m,t
   ```
 
   Stationary aggregate universal basic income expenditure is found in one of two ways depending on how the individual UBI payments $ubi_{j,s,t}$ are modeled. In Section {ref}`SecUBI` of Chapter {ref}`Chap_UnbalGBC`, we discuss how UBI payments to households $ubi_{j,s,t}$ can be growth adjusted so that they grow over time at the rate of productivity growth or non-growth adjusted such that they are constant overtime. In the first case, when UBI benefits are growth adjusted and growing over time, the stationary aggregate government UBI payout $\hat{UBI}_t$ is found by dividing {eq}`EqUnbalGBC_UBI` by $e^{g_y t}\tilde{N}_t$. In the second case, when UBI benefits are constant over time and not growing with productivity, the stationary aggregate government UBI payout $\hat{UBI}_t$ is found by dividing {eq}`EqUnbalGBC_UBI` by only $\tilde{N}_t$.

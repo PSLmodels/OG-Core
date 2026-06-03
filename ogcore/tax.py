@@ -97,8 +97,10 @@ def ETR_income(
         e (Numpy array): effective labor units
         etr_params (list): list of effective tax rate function
             parameters or nonparametric function
-        labor_noncompliance_rate (Numpy array): income tax noncompliance rate for labor income
-        capital_noncompliance_rate (Numpy array): income tax noncompliance rate for capital income
+        labor_noncompliance_rate (Numpy array): income tax noncompliance
+            rate for labor income
+        capital_noncompliance_rate (Numpy array): income tax
+            noncompliance rate for capital income
         tax_filer (Numpy array): array indicating tax filer status
         p (OG-Core Specifications object): model parameters
 
@@ -199,7 +201,8 @@ def get_biz_tax(w, Y, L, K, p_m, p, m, method):
 
     .. math::
         R_{t}^{b} = \sum_{m=1}^{M}\tau_{m,t}^{b}(Y_{m,t} - w_{t}L_{m,t}) -
-        \tau_{m,t}^{b}\delta_{m,t}^{\tau}K_{m,t}^{\tau} - \tau^{inv}_{m,t}I_{m,t}
+        \tau_{m,t}^{b}\delta_{m,t}^{\tau}K_{m,t}^{\tau}
+        - \tau^{inv}_{m,t}I_{m,t}
     Args:
         r (array_like): real interest rate
         Y (array_like): aggregate output for each industry
@@ -302,7 +305,8 @@ def net_taxes(
     )
     T_BQ = bequest_tax_liab(r, b, bq, t, j, method, p)
     T_W = wealth_tax_liab(r, b, t, j, method, p)
-    # print("Net taxes shapes = ", T_I.shape, pension.shape, T_BQ.shape, T_W.shape)
+    # print("Net taxes shapes = ", T_I.shape, pension.shape,
+    #        T_BQ.shape, T_W.shape)
     net_tax = T_I - pension + T_BQ + T_W - tr - ubi
 
     return net_tax
@@ -554,9 +558,13 @@ def cons_tax_liab(c, p_i, p, method="SS"):
         c (numpy.ndarray): Consumption array. Dimensions depend on the method:
             - If method == "SS": shape (I, S, J)
             - If method != "SS": shape (T, I, S, J)
-        p_i (numpy.ndarray): Array of consumption tax rates by good. Shape (I,) or (T, I).
-        p (OG-Core Specifications object): Model parameters, including tax rates and dimensions.
-        method (str, optional): Indicates whether calculation is for steady-state ('SS') or transition path ('TPI'). Default is 'SS'.
+        p_i (numpy.ndarray): Array of consumption tax rates by good.
+            Shape (I,) or (T, I).
+        p (OG-Core Specifications object): Model parameters, including
+            tax rates and dimensions.
+        method (str, optional): Indicates whether calculation is for
+            steady-state ('SS') or transition path ('TPI').
+            Default is 'SS'.
 
     Returns:
         c_tax (numpy.ndarray): Consumption tax liability for each household.

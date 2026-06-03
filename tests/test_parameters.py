@@ -3,7 +3,6 @@ import tempfile
 import pytest
 import numpy as np
 from ogcore.parameters import Specifications, revision_warnings_errors
-from ogcore import utils
 
 # get path to puf if puf.csv in ogcore/ directory
 CUR_PATH = os.path.abspath(os.path.dirname(__file__))
@@ -43,7 +42,6 @@ param_updates1 = {
     "rho": [[0.0, 0.0, 1.0]],
     "e": np.ones((3, 7)),
     "ubi_nom_017": 1000,
-    "eta": np.ones((4, 3, 1)) / 12,
     "ubi_nom_1864": 1200,
     "ubi_nom_65p": 400,
     "ubi_growthadj": True,
@@ -55,7 +53,6 @@ param_updates2 = {
     "rho": [[0.0, 0.0, 1.0]],
     "e": np.ones((3, 7)),
     "ubi_nom_017": 1000,
-    "eta": np.ones((4, 3, 1)) / 12,
     "ubi_nom_1864": 1200,
     "ubi_nom_max": 2000,
     "ubi_nom_65p": 400,
@@ -68,7 +65,6 @@ param_updates3 = {
     "rho": [[0.0, 0.0, 1.0]],
     "e": np.ones((3, 7)),
     "ubi_nom_017": 1000,
-    "eta": np.ones((4, 3, 1)) / 12,
     "ubi_nom_1864": 1200,
     "ubi_nom_65p": 400,
     "ubi_growthadj": False,

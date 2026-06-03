@@ -23,16 +23,28 @@ def D_G_path(r, dg_fixed_values, p):
 
     .. math::
         \begin{split}
-            &e^{g_y}\left(1 + \tilde{g}_{n,t+1}\right)\hat{D}_{t+1} + \hat{Rev}_t = (1 + r_{gov,t})\hat{D}_t + \hat{G}_t + \hat{TR}_t + \hat{UBI}_t \quad\forall t \\
+            &e^{g_y}\left(1 + \tilde{g}_{n,t+1}\right)\hat{D}_{t+1}
+            + \hat{Rev}_t = (1 + r_{gov,t})\hat{D}_t + \hat{G}_t
+            + \hat{TR}_t + \hat{UBI}_t \quad\forall t \\
             &\hat{G}_t = g_{g,t}\:\alpha_{g}\: \hat{Y}_t \\
             &\text{where}\quad g_{g,t} =
             \begin{cases}
-            1 \qquad\qquad\qquad\qquad\qquad\qquad\qquad\qquad\qquad\:\:\text{if}\quad t < T_{G1} \\
-            \frac{e^{g_y}\left(1 + \tilde{g}_{n,t+1}\right)\left[\rho_{d}\alpha_{D}\hat{Y}_{t} + (1-\rho_{d})\hat{D}_{t}\right] - (1+r_{gov,t})\hat{D}_{t} - \hat{TR}_{t} - \hat{UBI}_t + \hat{Rev}_{t}}{\alpha_g \hat{Y}_t} \quad\text{if}\quad T_{G1}\leq t<T_{G2} \\
-            \frac{e^{g_y}\left(1 + \tilde{g}_{n,t+1}\right)\alpha_{D}\hat{Y}_{t} - (1+r_{gov,t})\hat{D}_{t} - \hat{TR}_{t} - \hat{UBI}_t + \hat{Rev}_{t}}{\alpha_g \hat{Y}_t} \qquad\qquad\quad\,\text{if}\quad t \geq T_{G2}
+            1 \quad\text{if}\quad t < T_{G1} \\
+            \frac{e^{g_y}(1+\tilde{g}_{n,t+1})[\rho_{d}\alpha_{D}
+            \hat{Y}_{t}+(1-\rho_{d})\hat{D}_{t}]-(1+r_{gov,t})
+            \hat{D}_{t}-\hat{TR}_{t}-\hat{UBI}_t+\hat{Rev}_{t}}
+            {\alpha_g \hat{Y}_t}
+            \quad\text{if}\quad T_{G1}\leq t<T_{G2} \\
+            \frac{e^{g_y}(1+\tilde{g}_{n,t+1})\alpha_{D}\hat{Y}_{t}
+            -(1+r_{gov,t})\hat{D}_{t}-\hat{TR}_{t}-\hat{UBI}_t
+            +\hat{Rev}_{t}}{\alpha_g \hat{Y}_t}
+            \quad\text{if}\quad t \geq T_{G2}
             \end{cases} \\
             &\text{and}\quad g_{tr,t} = 1 \quad\forall t \\
-            &e^{g_y}\bigl[1 + \tilde{g}_{n,t+1}\bigr]\hat{D}^{f}_{t+1} = \hat{D}^{f}_{t} + \zeta_{D}\Bigl(e^{g_y}\bigl[1 + \tilde{g}_{n,t+1}\bigr]\hat{D}_{t+1} - \hat{D}_{t}\Bigr) \quad\forall t
+            &e^{g_y}\bigl[1+\tilde{g}_{n,t+1}\bigr]\hat{D}^{f}_{t+1}
+            = \hat{D}^{f}_{t} + \zeta_{D}\Bigl(e^{g_y}
+            \bigl[1+\tilde{g}_{n,t+1}\bigr]\hat{D}_{t+1}
+            - \hat{D}_{t}\Bigr) \quad\forall t
         \end{split}
 
     Args:
@@ -203,7 +215,8 @@ def get_D_ss(r_gov, Y, p):
             \bar{D} &= \alpha_D \bar{Y}\\
             \bar{D_d} &= \bar{D} - \bar{D}^{f}\\
             \bar{D_f} &= \zeta_{D}\bar{D} \\
-            \overline{\text{new borrowing}} &= (e^{g_{y}}(1 + \bar{g}_n) - 1)\bar{D}\\
+            \overline{\text{new borrowing}} &=
+            (e^{g_{y}}(1 + \bar{g}_n) - 1)\bar{D}\\
             \overline{\text{debt service}} &= \bar{r}_{gov}\bar{D} \\
             \overline{\text{new foreign borrowing}} &=
             (e^{g_{y}}(1 + \bar{g}_n) - 1)\bar{D_f}\\
@@ -361,14 +374,17 @@ def get_r_gov(r, DY_ratio, p, method, t=0):
     Determine the interest rate on government debt
 
     .. math::
-        r_{gov,t} = \max\{(1-\tau_{d,t}r_{t} - \mu_d + \beta_1 \frac{D_t}{Y_t} + \beta_2 \left(\frac{D_t}{Y_t}\right)^2, 0.0\}
+        r_{gov,t} = \max\{(1-\tau_{d,t}r_{t} - \mu_d
+        + \beta_1 \frac{D_t}{Y_t}
+        + \beta_2 \left(\frac{D_t}{Y_t}\right)^2, 0.0\}
 
     Args:
         r (array_like): interest rate on private capital debt over the
             time path or in the steady state
         DY_ratio (array_like): ratio of government debt to GDP
         p (OG-Core Specifications object): model parameters
-        method (str): either 'scalar' for one period or 'TPI' for transition path
+        method (str): either 'scalar' for one period or 'TPI' for
+            transition path
         t (int): time period index, used only if method is 'scalar'
 
     Returns:
@@ -432,8 +448,12 @@ def get_K_g(K_g0, I_g, p, method):
     Law of motion for the government capital stock
 
     .. math::
-        K_{g,t+1} = \frac{(1 - \delta_g)K_{g,t} + I_{g,t}}
+        K_{g,t+1} = \frac{(1 - \delta_g)K_{g,t} + (1 - \phi_g)I_{g,t}}
             {(1 + \tilde{g}_{n,t+1})e^{g_y}}
+
+    where :math:`\phi_g` (``infra_investment_leakage_rate``) is the fraction
+    of infrastructure investment lost to leakage. When :math:`\phi_g = 0`,
+    there is no leakage and the formula reduces to the baseline.
 
     Args:
         K_g0 (scalar): initial stock of public capital
@@ -445,14 +465,17 @@ def get_K_g(K_g0, I_g, p, method):
         K_g (array_like): stock of public capital
 
     """
+    phi_g = p.infra_investment_leakage_rate
     if method == "TPI":
         K_g = np.zeros(p.T)
         K_g[0] = K_g0
         for t in range(p.T - 1):  # TODO: numba jit this
             growth = (1 + p.g_n[t + 1]) * np.exp(p.g_y)
-            K_g[t + 1] = ((1 - p.delta_g) * K_g[t] + I_g[t]) / growth
+            K_g[t + 1] = (
+                (1 - p.delta_g) * K_g[t] + (1 - phi_g) * I_g[t]
+            ) / growth
     else:  # SS
         growth = (1 + p.g_n_ss) * np.exp(p.g_y)
-        K_g = I_g / (growth - (1 - p.delta_g))
+        K_g = (1 - phi_g) * I_g / (growth - (1 - p.delta_g))
 
     return K_g

@@ -8,7 +8,7 @@ import pytest
 import numpy as np
 import os
 import pickle
-from ogcore import SS, utils, aggregates, fiscal
+from ogcore import SS, utils, aggregates
 from ogcore.parameters import Specifications
 from ogcore import firm
 

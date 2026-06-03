@@ -3,7 +3,6 @@ Example script for setting policy and running OG-Core.
 """
 
 # import modules
-from asyncio import base_events
 import multiprocessing
 from distributed import Client
 import time

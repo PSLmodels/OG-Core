@@ -10,8 +10,8 @@ help:
 	@echo "USAGE: make [TARGET]"
 	@echo "TARGETS:"
 	@echo "help       : show help message"
-	@echo "clean      : remove .pyc files and local ccc package"
-	@echo "package    : build and install local package"
+	@echo "clean      : remove .pyc files and local ogcore package"
+	@echo "install    : build and install local package"
 	@echo "pytest     : generate report for and cleanup after"
 	@echo "             pytest -W ignore -m ''"
 	@echo "cstest     : generate coding-style errors using the"
@@ -19,13 +19,17 @@ help:
 	@echo "coverage   : generate test coverage report"
 	@echo "git-sync   : synchronize local, origin, and upstream Git repos"
 	@echo "git-pr N=n : create local pr-n branch containing upstream PR"
-	@echo "make-docs  : build new Jupyter Book documentation files"
+	@echo "documentation  : build new Jupyter Book documentation files"
 
 .PHONY=clean
 clean:
 	@find . -name *pyc -exec rm {} \;
 	@find . -name *cache -maxdepth 1 -exec rm -r {} \;
-	@conda uninstall ccc --yes --quiet 2>&1 > /dev/null
+	@conda uninstall ogcore --yes --quiet 2>&1 > /dev/null
+
+.PHONY=install
+install:
+	pip install -e .[dev]
 
 .PHONY=pytest
 pytest:
@@ -58,23 +62,18 @@ else
 endif
 	@$(pytest-cleanup)
 
-.PHONY=git-sync
-git-sync:
-	@./gitsync
-
-.PHONY=git-pr
-git-pr:
-	@./gitpr $(N)
-
-.PHONY=build-docs
-build-docs:
-	@cd ./docs ; python make_params.py; python make_vars.py; jb build ./book
+.PHONY=documentation
+documentation:
+	uv run python -m ipykernel install --user --name=ogcore-dev
+	uv run jb clean docs
+	uv run python ./docs/make_params.py
+	uv run python ./docs/make_vars.py
+	uv run jb build ./docs/book
 
 format:
-	black . -l 79
-	linecheck . --fix
+	uv run ruff format .
+	uv run ruff check . --fix
+	uv run linecheck . --fix
 
 pip-package:
-	pip install wheel
-	pip install setuptools
-	python setup.py sdist bdist_wheel
+	uv build

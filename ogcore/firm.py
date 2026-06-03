@@ -8,6 +8,10 @@ path
 ------------------------------------------------------------------------
 """
 
+# Floor for quantities raised to potentially negative powers in CES.
+# Prevents 0^(negative) → inf/NaN when epsilon != 1.
+_FLOOR = 1e-12
+
 """
 ------------------------------------------------------------------------
     Functions
@@ -22,9 +26,14 @@ def get_Y(K, K_g, L, p, method, m=-1):
 
     .. math::
         \hat{Y}_t &= F(\hat{K}_t, \hat{K}_{g,t}, \hat{L}_t) \\
-        &\equiv Z_t\biggl[(\gamma)^\frac{1}{\varepsilon}(\hat{K}_t)^\frac{\varepsilon-1}{\varepsilon} +
-          (\gamma_{g})^\frac{1}{\varepsilon}(\hat{K}_{g,t})^\frac{\varepsilon-1}{\varepsilon} +
-          (1-\gamma-\gamma_{g})^\frac{1}{\varepsilon}(\hat{L}_t)^\frac{\varepsilon-1}{\varepsilon}\biggr]^\frac{\varepsilon}{\varepsilon-1}
+        &\equiv Z_t\biggl[
+          (\gamma)^\frac{1}{\varepsilon}
+          (\hat{K}_t)^\frac{\varepsilon-1}{\varepsilon} +
+          (\gamma_{g})^\frac{1}{\varepsilon}
+          (\hat{K}_{g,t})^\frac{\varepsilon-1}{\varepsilon} +
+          (1-\gamma-\gamma_{g})^\frac{1}{\varepsilon}
+          (\hat{L}_t)^\frac{\varepsilon-1}{\varepsilon}
+          \biggr]^\frac{\varepsilon}{\varepsilon-1}
           \quad\forall t
 
     Args:
@@ -43,7 +52,8 @@ def get_Y(K, K_g, L, p, method, m=-1):
 
     if method == "SS":
         if m is not None:
-            # Set gamma_g to 0 when K_g=0 and eps=1 to remove K_g from prod func
+            # Set gamma_g to 0 when K_g=0 and eps=1 to remove K_g
+            # from prod func
             if K_g == 0 and p.epsilon[m] <= 1:
                 gamma_g = 0
                 K_g = 1
@@ -60,22 +70,26 @@ def get_Y(K, K_g, L, p, method, m=-1):
                     * (L ** (1 - gamma - gamma_g))
                 )
             else:
+                K_f = np.maximum(K, _FLOOR)
+                K_g_f = np.maximum(K_g, _FLOOR)
+                L_f = np.maximum(L, _FLOOR)
                 Y = Z * (
                     (
                         (gamma ** (1 / epsilon))
-                        * (K ** ((epsilon - 1) / epsilon))
+                        * (K_f ** ((epsilon - 1) / epsilon))
                     )
                     + (
                         (gamma_g ** (1 / epsilon))
-                        * (K_g ** ((epsilon - 1) / epsilon))
+                        * (K_g_f ** ((epsilon - 1) / epsilon))
                     )
                     + (
                         ((1 - gamma - gamma_g) ** (1 / epsilon))
-                        * (L ** ((epsilon - 1) / epsilon))
+                        * (L_f ** ((epsilon - 1) / epsilon))
                     )
                 ) ** (epsilon / (epsilon - 1))
         else:
-            # Set gamma_g to 0 when K_g=0 and eps=1 to remove K_g from prod func
+            # Set gamma_g to 0 when K_g=0 and eps=1 to remove K_g
+            # from prod func
             if K_g == 0 and np.any(p.epsilon) <= 1:
                 gamma_g = p.gamma_g
                 gamma_g[p.epsilon <= 1] = 0
@@ -85,22 +99,26 @@ def get_Y(K, K_g, L, p, method, m=-1):
             gamma = p.gamma
             epsilon = p.epsilon
             Z = p.Z[-1, :]
+            K_f = np.maximum(K, _FLOOR)
+            K_g_f = np.maximum(K_g, _FLOOR)
+            L_f = np.maximum(L, _FLOOR)
             Y = Z * (
-                ((gamma ** (1 / epsilon)) * (K ** ((epsilon - 1) / epsilon)))
+                ((gamma ** (1 / epsilon)) * (K_f ** ((epsilon - 1) / epsilon)))
                 + (
                     (gamma_g ** (1 / epsilon))
-                    * (K_g ** ((epsilon - 1) / epsilon))
+                    * (K_g_f ** ((epsilon - 1) / epsilon))
                 )
                 + (
                     ((1 - gamma - gamma_g) ** (1 / epsilon))
-                    * (L ** ((epsilon - 1) / epsilon))
+                    * (L_f ** ((epsilon - 1) / epsilon))
                 )
             ) ** (epsilon / (epsilon - 1))
             Y2 = Z * (K**gamma) * (K_g**gamma_g) * (L ** (1 - gamma - gamma_g))
             Y[epsilon == 1] = Y2[epsilon == 1]
     else:  # TPI case
         if m is not None:
-            # Set gamma_g to 0 when K_g=0 and eps=1 to remove K_g from prod func
+            # Set gamma_g to 0 when K_g=0 and eps=1 to remove K_g
+            # from prod func
             if np.any(K_g == 0) and p.epsilon[m] == 1:
                 gamma_g = 0
                 K_g[K_g == 0] = 1.0
@@ -117,22 +135,26 @@ def get_Y(K, K_g, L, p, method, m=-1):
                     * (L ** (1 - gamma - gamma_g))
                 )
             else:
+                K_f = np.maximum(K, _FLOOR)
+                K_g_f = np.maximum(K_g, _FLOOR)
+                L_f = np.maximum(L, _FLOOR)
                 Y = Z * (
                     (
                         (gamma ** (1 / epsilon))
-                        * (K ** ((epsilon - 1) / epsilon))
+                        * (K_f ** ((epsilon - 1) / epsilon))
                     )
                     + (
                         (gamma_g ** (1 / epsilon))
-                        * (K_g ** ((epsilon - 1) / epsilon))
+                        * (K_g_f ** ((epsilon - 1) / epsilon))
                     )
                     + (
                         ((1 - gamma - gamma_g) ** (1 / epsilon))
-                        * (L ** ((epsilon - 1) / epsilon))
+                        * (L_f ** ((epsilon - 1) / epsilon))
                     )
                 ) ** (epsilon / (epsilon - 1))
         else:
-            # Set gamma_g to 0 when K_g=0 and eps=1 to remove K_g from prod func
+            # Set gamma_g to 0 when K_g=0 and eps=1 to remove K_g
+            # from prod func
             if np.any(K_g == 0) and np.any(p.epsilon) == 1:
                 gamma_g = p.gamma_g
                 K_g[K_g == 0] = 1.0
@@ -141,15 +163,18 @@ def get_Y(K, K_g, L, p, method, m=-1):
             gamma = p.gamma
             epsilon = p.epsilon
             Z = p.Z[: p.T, :]
+            K_f = np.maximum(K, _FLOOR)
+            K_g_f = np.maximum(K_g, _FLOOR)
+            L_f = np.maximum(L, _FLOOR)
             Y = Z * (
-                ((gamma ** (1 / epsilon)) * (K ** ((epsilon - 1) / epsilon)))
+                ((gamma ** (1 / epsilon)) * (K_f ** ((epsilon - 1) / epsilon)))
                 + (
                     (gamma_g ** (1 / epsilon))
-                    * (K_g ** ((epsilon - 1) / epsilon))
+                    * (K_g_f ** ((epsilon - 1) / epsilon))
                 )
                 + (
                     ((1 - gamma - gamma_g) ** (1 / epsilon))
-                    * (L ** ((epsilon - 1) / epsilon))
+                    * (L_f ** ((epsilon - 1) / epsilon))
                 )
             ) ** (epsilon / (epsilon - 1))
             Y2 = Z * (K**gamma) * (K_g**gamma_g) * (L ** (1 - gamma - gamma_g))
@@ -273,10 +298,17 @@ def get_KLratio_KLonly(r, p, method, m=-1):
         # General CES case
         cost_of_capital = get_cost_of_capital(r, p, method, m)
         bracket = cost_of_capital * (Z * (gamma ** (1 / epsilon))) ** -1
-        KLratio = (
-            ((1 - gamma) ** (1 / epsilon))
-            / ((bracket ** (epsilon - 1)) - (gamma ** (1 / epsilon)))
-        ) ** (epsilon / (epsilon - 1))
+        denom = (bracket ** (epsilon - 1)) - (gamma ** (1 / epsilon))
+        # Guard against division by zero while preserving sign
+        # (negative denom is valid for some epsilon < 1 cases)
+        denom = np.where(
+            denom >= 0,
+            np.maximum(denom, _FLOOR),
+            np.minimum(denom, -_FLOOR),
+        )
+        KLratio = (((1 - gamma) ** (1 / epsilon)) / denom) ** (
+            epsilon / (epsilon - 1)
+        )
 
     return KLratio
 
@@ -337,12 +369,13 @@ def get_MPx(Y, x, share, p, method, m=-1):
         Z = p.Z[: p.T, m].reshape(p.T, 1)
         Y = Y[: p.T].reshape(p.T, 1)
         x = x[: p.T].reshape(p.T, 1)
-    if np.any(x) == 0:
+    if np.any(x == 0):
         MPx = np.zeros_like(Y)
     else:
-        MPx = Z ** ((p.epsilon[m] - 1) / p.epsilon[m]) * ((share * Y) / x) ** (
-            1 / p.epsilon[m]
-        )
+        x_f = np.maximum(x, _FLOOR)
+        MPx = Z ** ((p.epsilon[m] - 1) / p.epsilon[m]) * (
+            (share * Y) / x_f
+        ) ** (1 / p.epsilon[m])
 
     return MPx
 
@@ -649,21 +682,25 @@ def solve_L(Y, K, K_g, p, method, m=-1):
         if K_g == 0:
             K_g = 1.0
             gamma_g = 0
-    except:
+    except Exception:
         if np.any(K_g == 0):
             K_g[K_g == 0] = 1.0
             gamma_g = 0
     if epsilon == 1.0:
         L = (Y / (Z * K**gamma * K_g**gamma_g)) ** (1 / (1 - gamma - gamma_g))
     else:
-        L = (
-            (
-                (Y / Z) ** ((epsilon - 1) / epsilon)
-                - gamma ** (1 / epsilon) * K ** ((epsilon - 1) / epsilon)
-                - gamma_g ** (1 / epsilon) * K_g ** ((epsilon - 1) / epsilon)
-            )
-            / ((1 - gamma - gamma_g) ** (1 / epsilon))
-        ) ** (epsilon / (epsilon - 1))
+        Y_f = np.maximum(Y, _FLOOR)
+        K_f = np.maximum(K, _FLOOR)
+        K_g_f = np.maximum(K_g, _FLOOR)
+        numer = (
+            (Y_f / Z) ** ((epsilon - 1) / epsilon)
+            - gamma ** (1 / epsilon) * K_f ** ((epsilon - 1) / epsilon)
+            - gamma_g ** (1 / epsilon) * K_g_f ** ((epsilon - 1) / epsilon)
+        )
+        numer = np.maximum(numer, _FLOOR)
+        L = (numer / ((1 - gamma - gamma_g) ** (1 / epsilon))) ** (
+            epsilon / (epsilon - 1)
+        )
 
     return L
 
@@ -673,7 +710,9 @@ def adj_cost(K, Kp1, p, method):
     Firm capital adjstment costs
 
     ..math::
-        \Psi(K_{t}, K_{t+1}) = \frac{\psi}{2}\biggr(\frac{\biggr(\frac{I_{t}}{K_{t}}-\mu\biggl)^{2}}{\frac{I_{t}}{K_{t}}}\biggl)
+        \Psi(K_{t}, K_{t+1}) = \frac{\psi}{2}\biggr(
+          \frac{\biggr(\frac{I_{t}}{K_{t}}-\mu\biggl)^{2}}
+          {\frac{I_{t}}{K_{t}}}\biggl)
 
     Args:
         K (array-like): Current period capital stock

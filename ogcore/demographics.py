@@ -71,7 +71,8 @@ def get_un_data(
     else:  # if file not exist, prompt user for token
         try:
             UN_TOKEN = input(
-                "Please enter your UN API token (press return if you do not have one): "
+                "Please enter your UN API token "
+                "(press return if you do not have one): "
             )
             # write the UN_TOKEN to a file to find in the future
             with open(os.path.join("un_api_token.txt"), "w") as file:
@@ -103,7 +104,7 @@ def get_un_data(
     else:
         # Read from UN GH Repo:
         print(
-            f"Failed to retrieve population data from UN. Reading "
+            "Failed to retrieve population data from UN. Reading "
             + " from https://github.com/EAPD-DRB/Population-Data "
             + "instead of UN WPP API"
         )
@@ -138,7 +139,8 @@ def get_un_data(
 
         # Do we still want to keep the status code for failures?
         # print(
-        #     f"Failed to retrieve population data. HTTP status code: {response.status_code}"
+        #     "Failed to retrieve population data. HTTP status code: "
+        #     f"{response.status_code}"
         # )
         # assert False
 
@@ -212,22 +214,24 @@ def get_fert(
     # Create plots if needed
     if graph:
         if start_year == end_year:
-            years_to_plot = [start_year]
+            years_list = [str(start_year)]
+            fert_rates_list = [fert_rates_2D[0, :]]
         else:
-            years_to_plot = [start_year, end_year]
+            years_list = [str(x) for x in np.arange(start_year, end_year + 1)]
+            fert_rates_list = [
+                fert_rates_2D[i, :] for i in range(fert_rates_2D.shape[0])
+            ]
         if plot_path is not None:
             pp.plot_fert_rates(
-                [fert_rates_2D],
-                start_year=start_year,
-                years_to_plot=years_to_plot,
+                fert_rates_list,
+                labels=years_list,
                 path=plot_path,
             )
             return fert_rates_2D
         else:
             fig = pp.plot_fert_rates(
-                [fert_rates_2D],
-                start_year=start_year,
-                years_to_plot=years_to_plot,
+                fert_rates_list,
+                labels=years_list,
             )
             return fert_rates_2D, fig
     else:
@@ -445,8 +449,9 @@ def get_pop(
             "47",
             country_id=country_id,
             start_year=start_year,
-            end_year=end_year
-            + 2,  # note go to + 2 because needed to infer immigration for end_year
+            # note go to + 2 because needed to infer immigration
+            # for end_year
+            end_year=end_year + 2,
         )
         # CLean and rebin data
         for y in range(start_year, end_year + 2):
@@ -991,7 +996,8 @@ def get_pop_objs(
     assert np.allclose(pop_counter_2D, pop_2D)
 
     # """"
-    # CHANGE - in OG-Core, we are implicitly assuming pre-TP rates of mortality,
+    # CHANGE - in OG-Core, we are implicitly assuming pre-TP rates of
+    # mortality,
     # fertility, and immigration are the same as the period 0 rates.
 
     # So let's just infer the pre-pop_dist from those.

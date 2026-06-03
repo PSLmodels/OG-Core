@@ -1,5 +1,3 @@
-import sys
-
 from ogcore import txfunc
 from distributed import Client, LocalCluster
 import pytest
@@ -227,7 +225,8 @@ expected_tuple_HSV_mtry = (
 @pytest.mark.parametrize(
     "rate_type,tax_func_type,true_params",
     [
-        # ("etr", "DEP", [6.28E-12, 4.36E-05, 1.04E-23, 7.77E-09, 0.80, 0.80, 0.84, -0.14, -0.15, 0.15, 0.16, -0.15]),
+        # ("etr", "DEP", [6.28E-12, 4.36E-05, 1.04E-23, 7.77E-09,
+        #  0.80, 0.80, 0.84, -0.14, -0.15, 0.15, 0.16, -0.15]),
         (
             "etr",
             "DEP_totalinc",
@@ -862,7 +861,7 @@ def test_monotone_spline():
     )
     # Test whether mono_interp is a function
     assert hasattr(mono_interp1, "__call__")
-    # Not sure what baseline should be to add tests here for "correctness" of values
+    # Not sure what baseline should be to add tests here for "correctness"
 
     # Simulate some data
     N = 100

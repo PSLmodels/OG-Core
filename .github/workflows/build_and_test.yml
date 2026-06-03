@@ -4,22 +4,22 @@ on:
     paths:
       - '**.yml'
       - '**.toml'
-      - '**.ini'
       - '**.py'
       - '**.json'
       - '**.csv'
       - '**.pkl'
       - '**.pbz2'
+      - '**.lock'
   pull_request:
     paths:
       - '**.yml'
       - '**.toml'
-      - '**.ini'
       - '**.py'
       - '**.json'
       - '**.csv'
       - '**.pkl'
       - '**.pbz2'
+      - '**.lock'
 jobs:
   build:
     runs-on: ${{ matrix.os }}
@@ -30,30 +30,20 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           persist-credentials: false
-      - name: Setup Miniconda using Python ${{ matrix.python-version }}
-        uses: conda-incubator/setup-miniconda@v3
+      - name: Install uv
+        uses: astral-sh/setup-uv@v7
         with:
-          miniconda-version: "latest"
-          auto-update-conda: true
-          activate-environment: ogcore-dev
-          environment-file: environment.yml
           python-version: ${{ matrix.python-version }}
-          auto-activate-base: false
-      - name: Build
-        shell: bash -l {0}
-        run: |
-          pip install -e .
+      - name: Install package and dependencies
+        run: uv sync --extra dev
       - name: Test
-        shell: bash -l {0}
-        working-directory: ./
-        run: |
-          python -m pytest -m "not local and not benchmark" --cov=./ --cov-report=xml
+        run: uv run python -m pytest -m "not local and not benchmark" --cov=./ --cov-report=xml
       - name: Upload coverage to Codecov
-        if: matrix.os == 'ubuntu-latest' && contains(github.repository, 'PSLmodels/OG-Core')
-        uses: codecov/codecov-action@v4
+        if: matrix.os == 'ubuntu-latest' && contains(github.repository, 'PSLmodels/OG-Core') && github.actor != 'dependabot[bot]'
+        uses: codecov/codecov-action@v6
         with:
           files: ./coverage.xml
           flags: unittests

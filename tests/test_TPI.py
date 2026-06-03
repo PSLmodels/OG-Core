@@ -4,6 +4,7 @@ module contains the following tests:
     - test_get_initial_SS_values(), 3 parameterizations
     - test_firstdoughnutring(), 1 parameterization
     - test_twist_doughnut(), 2 parameterizations
+    - test_params_to_array(), 7 parameterizations
     - test_inner_loop(), 1 parameterization
     - test_run_TPI_full_run(), 11 parameterizations, local only
     - test_run_TPI(), 2 parameterizations, local only
@@ -19,7 +20,6 @@ import os
 import sys
 import json
 from ogcore import SS, TPI, utils
-import ogcore.aggregates as aggr
 from ogcore.parameters import Specifications
 
 NUM_WORKERS = min(multiprocessing.cpu_count(), 4)
@@ -363,6 +363,26 @@ def test_twist_doughnut(file_inputs, file_outputs):
     test_list = TPI.twist_doughnut(*input_tuple2)
     expected_list = utils.safe_read_pickle(file_outputs)
     assert np.allclose(np.array(test_list), np.array(expected_list), atol=1e-5)
+
+
+@pytest.mark.parametrize(
+    "tax_func_type",
+    ["DEP", "DEP_totalinc", "GS", "HSV", "linear", "mono", "mono2D"],
+    ids=["DEP", "DEP_totalinc", "GS", "HSV", "linear", "mono", "mono2D"],
+)
+def test_params_to_array(tax_func_type):
+    # Test TPI._params_to_array helper.  For numeric tax functions the
+    # nested list is converted to a numpy array; for mono/mono2D (which
+    # store callables, not numbers) the nested list is returned unchanged.
+    nested = [[1.0, 2.0, 3.0], [4.0, 5.0, 6.0]]
+    result = TPI._params_to_array(nested, tax_func_type)
+    if tax_func_type in ("mono", "mono2D"):
+        assert result is nested
+    else:
+        expected = np.array(nested)
+        assert isinstance(result, np.ndarray)
+        assert np.array_equal(result, expected)
+        assert result.dtype == expected.dtype
 
 
 def test_inner_loop():

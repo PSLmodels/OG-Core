@@ -1,4 +1,3 @@
-import pytest
 import numpy as np
 from ogcore import elliptical_u_est as ee
 

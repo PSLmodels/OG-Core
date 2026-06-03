@@ -651,10 +651,10 @@ Note that the budget closure rule (described in Section ref{`SecUnbalGBCcloseRul
 
   ```{math}
   :label: EqUnbalGBC_Kgmt
-    K_{g,m,t+1} = (1 - \delta_g) K_{g,m,t} + I_{g,m,t} \quad\forall m,t
+    K_{g,m,t+1} = (1 - \delta_g) K_{g,m,t} + (1 - \phi_g) I_{g,m,t} \quad\forall m,t
   ```
 
-  where $\delta_g$ is the depreciation rate on infrastructure. The stock of public capital in each industry $m$ complements labor and private capital in the production function of the representative firm, in Equation {eq}`EqFirmsCESprodfun`.
+  where $\delta_g$ is the depreciation rate on infrastructure and $\phi_g$ (`infra_investment_leakage_rate`) is the fraction of infrastructure investment lost to leakage (e.g., corruption or other frictions). The stock of public capital in each industry $m$ complements labor and private capital in the production function of the representative firm, in Equation {eq}`EqFirmsCESprodfun`.
 
   Aggregate spending on UBI at time $t$ is the sum of UBI payments across all households at time $t$:
 

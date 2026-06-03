@@ -21,9 +21,8 @@ import json
 import argparse
 import subprocess
 import platform
-from pathlib import Path
 from datetime import datetime
-from typing import Dict, List, Optional
+from typing import Dict, Optional
 
 # Add the parent directory to path so we can import test modules
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))

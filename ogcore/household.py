@@ -8,13 +8,33 @@ Household functions.
 import numpy as np
 from ogcore import tax, utils
 import logging
-from ogcore import config
+
+logger = logging.getLogger(__name__)
 
 """
 ------------------------------------------------------------------------
     Functions
 ------------------------------------------------------------------------
 """
+
+
+def _get_e_long(p):
+    """Return ``p.e`` extended for the TPI transition window.
+
+    ``e_long`` is a pure function of ``p.e`` / ``p.S`` / ``p.J`` -- none of
+    which change during a solve -- so it is built once and cached on the
+    parameters object. ``FOC_savings`` and ``FOC_labor`` previously rebuilt
+    this array on every call, which profiling identified as the single most
+    expensive operation in a TPI run.
+    """
+    e_long = getattr(p, "_e_long_cache", None)
+    if e_long is None:
+        e_long = np.concatenate(
+            (p.e, np.tile(p.e[-1, :, :].reshape(1, p.S, p.J), (p.S, 1, 1))),
+            axis=0,
+        )
+        p._e_long_cache = e_long
+    return e_long
 
 
 def marg_ut_cons(c, sigma):
@@ -104,9 +124,7 @@ def marg_ut_labor(n, chi_n, p):
     ) * (
         (1 - ((eps_low / p.ltilde) ** p.upsilon))
         ** ((1 - p.upsilon) / p.upsilon)
-    ) - (
-        2 * b2 * eps_low
-    )
+    ) - (2 * b2 * eps_low)
     MDU_n[nvec_low] = 2 * b2 * nvec[nvec_low] + b1
     d2 = (
         0.5
@@ -129,9 +147,7 @@ def marg_ut_labor(n, chi_n, p):
     ) * (
         (1 - ((eps_high / p.ltilde) ** p.upsilon))
         ** ((1 - p.upsilon) / p.upsilon)
-    ) - (
-        2 * d2 * eps_high
-    )
+    ) - (2 * d2 * eps_high)
     MDU_n[nvec_high] = 2 * d2 * nvec[nvec_high] + d1
     output = MDU_n * np.squeeze(chi_n)
     output = np.squeeze(output)
@@ -308,7 +324,8 @@ def get_cons(
         + \hat{w}_t e_{j,s}n_{j,s,t} + \hat{bq}_{j,s,t} + \hat{rm}_{j,s,t}
         + \hat{tr}_{j,s,t} + \hat{ubi}_{j,s,t} + \hat{pension}_{j,s,t}
         - \hat{tax}_{j,s,t} \\
-        &\qquad - \sum_{i=1}^I\left(1 + \tau^c_{i,t}\right)p_{i,t}\hat{c}_{min,i}
+        &\qquad - \sum_{i=1}^I\left(1 + \tau^c_{i,t}\right)
+        p_{i,t}\hat{c}_{min,i}
         - e^{g_y}\hat{b}_{j,s+1,t+1}\biggr] / p_t \\
         &\qquad\qquad\forall j,t \quad\text{and}\quad E+1\leq s\leq E+S
         \quad\text{where}\quad \hat{b}_{j,E+1,t}=0
@@ -385,7 +402,7 @@ def get_ci(c_s, p_i, p_tilde, tau_c, alpha_c, c_min, method="SS"):
         c_si (array_like): consumption of good i
     """
     if method == "SS":
-        I = alpha_c.shape[0]
+        I = alpha_c.shape[0]  # noqa: E741
         S = c_s.shape[0]
         J = c_s.shape[1]
         tau_c = tau_c.reshape(I, 1, 1)
@@ -396,7 +413,7 @@ def get_ci(c_s, p_i, p_tilde, tau_c, alpha_c, c_min, method="SS"):
         c_s = c_s.reshape(1, S, J)
         c_si = alpha_c * (((1 + tau_c) * p_i) / p_tilde) ** (-1) * c_s + c_min
     else:  # Time path case
-        I = alpha_c.shape[0]
+        I = alpha_c.shape[0]  # noqa: E741
         T = p_i.shape[0]
         S = c_s.shape[1]
         J = c_s.shape[2]
@@ -495,13 +512,7 @@ def FOC_savings(
             ]
             income_tax_filer = p.income_tax_filer[t : t + length, j]
             wealth_tax_filer = p.wealth_tax_filer[t : t + length, j]
-            e_long = np.concatenate(
-                (
-                    p.e,
-                    np.tile(p.e[-1, :, :].reshape(1, p.S, p.J), (p.S, 1, 1)),
-                ),
-                axis=0,
-            )
+            e_long = _get_e_long(p)
             e = np.diag(e_long[t : t + p.S, :, j], max(p.S - length, 0))
     else:
         chi_b = p.chi_b
@@ -523,13 +534,7 @@ def FOC_savings(
             ]
             income_tax_filer = p.income_tax_filer[t : t + length, :]
             wealth_tax_filer = p.wealth_tax_filer[t : t + length, :]
-            e_long = np.concatenate(
-                (
-                    p.e,
-                    np.tile(p.e[-1, :, :].reshape(1, p.S, p.J), (p.S, 1, 1)),
-                ),
-                axis=0,
-            )
+            e_long = _get_e_long(p)
             e = np.diag(e_long[t : t + p.S, :, :], max(p.S - length, 0))
     e = np.squeeze(e)
     if method == "SS":
@@ -709,13 +714,7 @@ def FOC_labor(
                 t : t + length, j
             ]
             income_tax_filer = p.income_tax_filer[t : t + length, j]
-            e_long = np.concatenate(
-                (
-                    p.e,
-                    np.tile(p.e[-1, :, :].reshape(1, p.S, p.J), (p.S, 1, 1)),
-                ),
-                axis=0,
-            )
+            e_long = _get_e_long(p)
             e = np.diag(e_long[t : t + p.S, :, j], max(p.S - length, 0))
     else:
         if method == "SS":
@@ -731,13 +730,7 @@ def FOC_labor(
                 t : t + length, :
             ]
             income_tax_filer = p.income_tax_filer[t : t + length, :]
-            e_long = np.concatenate(
-                (
-                    p.e,
-                    np.tile(p.e[-1, :, :].reshape(1, p.S, p.J), (p.S, 1, 1)),
-                ),
-                axis=0,
-            )
+            e_long = _get_e_long(p)
             e = np.diag(e_long[t : t + p.S, :, j], max(p.S - length, 0))
     if method == "TPI":
         if b.ndim == 2:
@@ -833,29 +826,27 @@ def constraint_checker_SS(bssmat, nssmat, cssmat, ltilde):
         Warnings: if constraints are violated, warnings printed
 
     """
-    logging.info("Checking constraints on capital, labor, and consumption.")
+    logger.info("Checking constraints on capital, labor, and consumption.")
 
     if (bssmat < 0).any():
-        logging.info("WARNING: There is negative capital stock")
+        logger.info("WARNING: There is negative capital stock")
     flag2 = False
     if (nssmat < 0).any():
-        logging.info(
+        logger.info(
             "WARNING: Labor supply violates nonnegativity constraints."
         )
         flag2 = True
     if (nssmat > ltilde).any():
-        logging.info("WARNING: Labor supply violates the ltilde constraint.")
+        logger.info("WARNING: Labor supply violates the ltilde constraint.")
         flag2 = True
     if flag2 is False:
-        logging.info(
+        logger.info(
             "There were no violations of the constraints on labor supply.",
         )
     if (cssmat < 0).any():
-        logging.info(
-            "WARNING: Consumption violates nonnegativity constraints."
-        )
+        logger.info("WARNING: Consumption violates nonnegativity constraints.")
     else:
-        logging.info(
+        logger.info(
             "There were no violations of the constraints on consumption."
         )
 
@@ -880,20 +871,22 @@ def constraint_checker_TPI(b_dist, n_dist, c_dist, t, ltilde):
 
     """
     if (b_dist <= 0).any():
-        logging.info(
-            f"WARNING: Aggregate capital is less than or equal to zero in period {t}."
+        logger.info(
+            "WARNING: Aggregate capital is less than or equal to"
+            f" zero in period {t}."
         )
     if (n_dist < 0).any():
-        logging.info(
-            f"WARNING: Labor supply violates nonnegativity constraints in period {t}."
+        logger.info(
+            "WARNING: Labor supply violates nonnegativity"
+            f" constraints in period {t}."
         )
     if (n_dist > ltilde).any():
-        logging.info(
+        logger.info(
             "\tWARNING: Labor suppy violates the ltilde constraint",
             " in period %.f." % t,
         )
     if (c_dist < 0).any():
-        logging.info(
+        logger.info(
             "\tWARNING: Consumption violates nonnegativity",
             " constraints in period %.f." % t,
         )

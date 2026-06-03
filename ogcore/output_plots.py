@@ -2,7 +2,6 @@ import numpy as np
 import os
 import matplotlib.pyplot as plt
 import matplotlib.ticker as mticker
-from mpl_toolkits.mplot3d import Axes3D
 import matplotlib
 from ogcore.constants import (
     VAR_LABELS,
@@ -11,6 +10,9 @@ from ogcore.constants import (
 )
 import ogcore.utils as utils
 from ogcore.utils import Inequality
+
+
+INTEREST_RATE_VARS = {"r_gov", "r", "r_p"}
 
 
 def plot_aggregates(
@@ -42,7 +44,8 @@ def plot_aggregates(
         var_list (list): names of variable to plot
         plot_type (string): type of plot, can be:
             'pct_diff': plots percentage difference between baseline
-                and reform ((reform-base)/base)
+                and reform ((reform-base)/base). For interest rates,
+                percentage point differences are plotted.
             'diff': plots difference between baseline and reform
                 (reform-base)
             'levels': plot variables in model units
@@ -74,6 +77,8 @@ def plot_aggregates(
     # Check that reform included if doing pct_diff or diff plot
     if plot_type == "pct_diff" or plot_type == "diff":
         assert reform_tpi is not None
+    only_interest_rates = all(v in INTEREST_RATE_VARS for v in var_list)
+    has_interest_rates = any(v in INTEREST_RATE_VARS for v in var_list)
     fig1, ax1 = plt.subplots()
     if not stationarized:
         for v in var_list:
@@ -83,16 +88,21 @@ def plot_aggregates(
                     v, reform_tpi, reform_params
                 )
     for i, v in enumerate(var_list):
-        assert (
-            v in VAR_LABELS.keys()
-        ), "{} is not in the list of variable labels".format(v)
+        assert v in VAR_LABELS.keys(), (
+            "{} is not in the list of variable labels".format(v)
+        )
         if plot_type == "pct_diff":
             if v in ["r_gov", "r", "r_p"]:
                 # Compute just percentage point changes for rates
                 plot_var = reform_tpi[v] - base_tpi[v]
             else:
                 plot_var = (reform_tpi[v] - base_tpi[v]) / base_tpi[v]
-            ylabel = r"Pct. change"
+            if only_interest_rates:
+                ylabel = r"Percentage point change"
+            elif has_interest_rates:
+                ylabel = r"Pct. or percentage point change"
+            else:
+                ylabel = r"Pct. change"
             plt.plot(
                 year_vec,
                 plot_var[start_index : start_index + num_years_to_plot],
@@ -120,7 +130,7 @@ def plot_aggregates(
                     ],
                     label="Reform " + VAR_LABELS[v],
                 )
-            ylabel = r"Model Units"
+            ylabel = r"Rate" if only_interest_rates else r"Model Units"
         elif plot_type == "forecast":
             # Need reform and baseline to ensure plot makes sense
             assert reform_tpi is not None
@@ -248,9 +258,9 @@ def plot_industry_aggregates(
         assert reform_tpi is not None
     fig1, ax1 = plt.subplots()
     for i, v in enumerate(var_list):
-        assert (
-            v in VAR_LABELS.keys()
-        ), "{} is not in the list of variable labels".format(v)
+        assert v in VAR_LABELS.keys(), (
+            "{} is not in the list of variable labels".format(v)
+        )
         if len(var_list) == 1:
             var_label = ""
         else:
@@ -438,8 +448,8 @@ def plot_gdp_ratio(
         p (OG-Core Specifications class): parameters object
         var_list (list): names of variable to plot
         plot_type (string): type of plot, can be:
-            'diff': plots difference between baseline and reform
-                (reform-base)
+            'diff' or 'pct_diff': plots percentage point difference
+                between baseline and reform ratios to GDP (reform-base)
             'levels': plot variables in model units
         num_years_to_plot (integer): number of years to include in plot
         start_year (integer): year to start plot
@@ -454,7 +464,7 @@ def plot_gdp_ratio(
     assert isinstance(start_year, (int, np.integer))
     assert isinstance(num_years_to_plot, int)
     assert num_years_to_plot <= base_params.T
-    if plot_type == "diff":
+    if plot_type != "levels":
         assert reform_tpi is not None
     # Make sure both runs cover same time period
     if reform_tpi:
@@ -463,9 +473,9 @@ def plot_gdp_ratio(
     start_index = start_year - base_params.start_year
     fig1, ax1 = plt.subplots()
     for i, v in enumerate(var_list):
-        assert (
-            v in ToGDP_LABELS.keys()
-        ), "{} is not in the list of variable labels".format(v)
+        assert v in ToGDP_LABELS.keys(), (
+            "{} is not in the list of variable labels".format(v)
+        )
         if plot_type == "levels":
             plot_var_base = (
                 base_tpi[v][: base_params.T] / base_tpi["Y"][: base_params.T]
@@ -511,7 +521,10 @@ def plot_gdp_ratio(
                 plot_var[start_index : start_index + num_years_to_plot],
                 label=ToGDP_LABELS[v],
             )
-    ylabel = r"Percent of GDP"
+    if plot_type == "levels":
+        ylabel = r"Percent of GDP"
+    else:
+        ylabel = r"Percentage points of GDP"
     # vertical markers at certain years
     if vertical_line_years:
         for yr in vertical_line_years:

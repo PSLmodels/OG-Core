@@ -5,7 +5,6 @@ import pandas as pd
 import numpy as np
 import tempfile
 import os
-import io
 import pickle
 from ogcore.parameters import Specifications
 
@@ -781,7 +780,8 @@ test_data = [
         (4, 3, 2),
         np.ones((4, 3, 2)) * 2.3,
     ),
-    # (np.array([[2.3, 2.3, 2.3], [2.3, 2.3, 2.3]]), (4, 3, 2), np.ones((4, 3, 2)) * 2.3), use this one to test assert error
+    # (np.array([[2.3, 2.3, 2.3], [2.3, 2.3, 2.3]]), (4, 3, 2),
+    #  np.ones((4, 3, 2)) * 2.3), use this one to test assert error
 ]
 
 
@@ -880,9 +880,11 @@ expected_array6[3:, :] = np.array([1.0, 2.0, 1.25, 2.25])
         "Immediate start and phase in",
         "Start one period in, immediate phase in",
         "Start one period in, phase in over two periods",
-        "Start one period in, phase in over two periods, partial period effect",
+        "Start one period in, phase in over two periods, partial period"
+        " effect",
         "0 effect",
-        "Start one period in, phase in over two periods, partial period effect > 1",
+        "Start one period in, phase in over two periods, partial period"
+        " effect > 1",
     ],
 )
 def test_shift_bio_clock(start_period, end_period, total_effect, expected):
