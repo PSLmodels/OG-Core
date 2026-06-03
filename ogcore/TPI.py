@@ -13,6 +13,7 @@ This module contains the following functions:
 import numpy as np
 import pickle
 import scipy.optimize as opt
+from scipy.sparse import csr_matrix
 from ogcore import tax, utils, household, firm, fiscal, pensions
 from ogcore import aggregates as aggr
 from ogcore.constants import SHOW_RUNTIME
@@ -20,6 +21,19 @@ import os
 import warnings
 import logging
 from distributed import wait
+
+# ``approx_derivative`` and ``group_columns`` live in a private scipy module
+# (scipy.optimize._numdiff). Guard the import so a future scipy change disables
+# the optional sparse-FOC-Jacobian path -- falling back to dense finite
+# differences -- instead of breaking TPI entirely.
+try:
+    from scipy.optimize._numdiff import approx_derivative, group_columns
+
+    _HAVE_SPARSE_FD = True
+except Exception:  # pragma: no cover
+    approx_derivative = None
+    group_columns = None
+    _HAVE_SPARSE_FD = False
 
 logger = logging.getLogger(__name__)
 
@@ -35,6 +49,88 @@ MINIMIZER_TOL = 1e-13
 Set flag for enforcement of solution check
 """
 ENFORCE_SOLUTION_CHECKS = True
+
+
+_BANDED_JAC_CACHE = {}
+
+
+def _detect_jac_sparsity(fun, x0, args, thr_rel=1e-9):
+    """Auto-detect the Jacobian sparsity of `fun` near x0 and return a
+    (csr_pattern, groups) coloring for sparse finite differences, or None if
+    the Jacobian is too dense to benefit (caller then uses plain dense FD).
+
+    One-time per problem dimension (cached). The pattern is unioned over two
+    nearby points so a coupling that happens to vanish at one point is not
+    missed. Portable across countries/calibrations/pensions: it reads the
+    *actual* structure each run rather than assuming a stencil, so a
+    history-dependent pension (dense columns) is detected automatically and
+    falls back to dense finite differences.
+
+    Args:
+        fun (function): the residual function whose Jacobian is probed
+        x0 (array_like): point at which to probe the sparsity
+        args (tuple): extra arguments passed to ``fun``
+        thr_rel (float): relative threshold below which an entry is treated
+            as a structural zero
+
+    Returns:
+        result (tuple or None): ``(csr_pattern, groups)`` coloring for sparse
+            finite differences, or None if the Jacobian is not sparse enough
+            to benefit
+    """
+    n = len(x0)
+    key = (getattr(fun, "__name__", repr(fun)), n)
+    cached = _BANDED_JAC_CACHE.get(key, "miss")
+    if cached != "miss":
+        return cached
+    result = None
+    try:
+        x = np.asarray(x0, dtype=float)
+        mask = np.zeros((n, n), dtype=bool)
+        for xp in (x, x * 1.05 + 0.01):
+            Jd = approx_derivative(fun, xp, args=args, method="2-point")
+            sc = max(float(np.max(np.abs(Jd))), 1e-300)
+            mask |= np.abs(Jd) > thr_rel * sc
+        P = csr_matrix(mask.astype(int))
+        groups = group_columns(P)
+        if int(groups.max()) + 1 < n // 2:
+            result = (P, groups)
+    except Exception:
+        result = None
+    _BANDED_JAC_CACHE[key] = result
+    return result
+
+
+def _banded_jac_for(fun, x0, args, enabled):
+    """Return a sparse finite-difference `jac` callable for ``opt.root`` when
+    ``enabled`` (``p.use_sparse_FOC_jac``) and the Jacobian is sparse enough to
+    benefit; otherwise None, so the caller uses the default dense solver. Used
+    at the household full-lifetime and triangle root-finds.
+
+    Args:
+        fun (function): the residual function passed to ``opt.root``
+        x0 (array_like): initial guess for the root-find
+        args (tuple): extra arguments passed to ``fun``
+        enabled (bool): value of ``p.use_sparse_FOC_jac``
+
+    Returns:
+        _jac (function or None): a callable returning the dense Jacobian built
+            by sparse finite differences, or None to use dense finite
+            differences
+    """
+    if not enabled or not _HAVE_SPARSE_FD:
+        return None
+    bj = _detect_jac_sparsity(fun, x0, args)
+    if bj is None:
+        return None
+    P, groups = bj
+
+    def _jac(_x, *_a):
+        return approx_derivative(
+            fun, _x, args=_a, method="2-point", sparsity=(P, groups)
+        ).toarray()
+
+    return _jac
 
 
 def get_initial_SS_values(p):
@@ -489,32 +585,47 @@ def inner_loop(guesses, outer_loop_vars, initial_values, ubi, j, ind, p):
         ]
         mtry_params_to_use = _params_to_array(temp_mtry, p.tax_func_type)
 
-        solutions = opt.root(
-            twist_doughnut,
-            list(b_guesses_to_use) + list(n_guesses_to_use),
-            args=(
-                r_p,
-                w,
-                p_tilde,
-                p_i,
-                bq_to_use,
-                rm_to_use,
-                tr_to_use,
-                theta_to_use,
-                factor,
-                ubi_to_use,
-                j,
-                s,
-                0,
-                etr_params_to_use,
-                mtrx_params_to_use,
-                mtry_params_to_use,
-                initial_b,
-                p,
-            ),
-            method=p.FOC_root_method,
-            tol=MINIMIZER_TOL,
+        _tri_x0 = list(b_guesses_to_use) + list(n_guesses_to_use)
+        _tri_args = (
+            r_p,
+            w,
+            p_tilde,
+            p_i,
+            bq_to_use,
+            rm_to_use,
+            tr_to_use,
+            theta_to_use,
+            factor,
+            ubi_to_use,
+            j,
+            s,
+            0,
+            etr_params_to_use,
+            mtrx_params_to_use,
+            mtry_params_to_use,
+            initial_b,
+            p,
         )
+        _tri_jac = _banded_jac_for(
+            twist_doughnut, _tri_x0, _tri_args, p.use_sparse_FOC_jac
+        )
+        try:
+            solutions = opt.root(
+                twist_doughnut,
+                _tri_x0,
+                args=_tri_args,
+                method=p.FOC_root_method,
+                tol=MINIMIZER_TOL,
+                jac=_tri_jac,
+            )
+        except Exception:
+            solutions = opt.root(
+                twist_doughnut,
+                _tri_x0,
+                args=_tri_args,
+                method=p.FOC_root_method,
+                tol=MINIMIZER_TOL,
+            )
 
         b_vec = solutions.x[: int(len(solutions.x) / 2)]
         b_mat[ind2, p.S - (s + 2) + ind2] = b_vec
@@ -554,32 +665,52 @@ def inner_loop(guesses, outer_loop_vars, initial_values, ubi, j, ind, p):
             p.tax_func_type,
         )
 
-        solutions = opt.root(
-            twist_doughnut,
-            list(b_guesses_to_use) + list(n_guesses_to_use),
-            args=(
-                r_p,
-                w,
-                p_tilde,
-                p_i,
-                bq_to_use,
-                rm_to_use,
-                tr_to_use,
-                theta_to_use,
-                factor,
-                ubi_to_use,
-                j,
-                None,
-                t,
-                etr_params_to_use,
-                mtrx_params_to_use,
-                mtry_params_to_use,
-                initial_b,
-                p,
-            ),
-            method=p.FOC_root_method,
-            tol=MINIMIZER_TOL,
+        _td_args = (
+            r_p,
+            w,
+            p_tilde,
+            p_i,
+            bq_to_use,
+            rm_to_use,
+            tr_to_use,
+            theta_to_use,
+            factor,
+            ubi_to_use,
+            j,
+            None,
+            t,
+            etr_params_to_use,
+            mtrx_params_to_use,
+            mtry_params_to_use,
+            initial_b,
+            p,
         )
+        _td_x0 = list(b_guesses_to_use) + list(n_guesses_to_use)
+        # When p.use_sparse_FOC_jac is set, supply a banded finite-difference
+        # Jacobian (far fewer evaluations per build); otherwise _bj_jac is None
+        # and opt.root uses its default dense finite differences. The except
+        # clause is a safety net: any solver failure retries with the dense
+        # Jacobian, so the result is unchanged.
+        _bj_jac = _banded_jac_for(
+            twist_doughnut, _td_x0, _td_args, p.use_sparse_FOC_jac
+        )
+        try:
+            solutions = opt.root(
+                twist_doughnut,
+                _td_x0,
+                args=_td_args,
+                method=p.FOC_root_method,
+                tol=MINIMIZER_TOL,
+                jac=_bj_jac,
+            )
+        except Exception:
+            solutions = opt.root(
+                twist_doughnut,
+                _td_x0,
+                args=_td_args,
+                method=p.FOC_root_method,
+                tol=MINIMIZER_TOL,
+            )
         euler_errors[t, :] = solutions.fun
 
         b_vec = solutions.x[: p.S]

@@ -5,6 +5,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.16.1] - 2026-06-04 12:00:00
+
+### Added
+
+- Adds an optional `use_sparse_FOC_jac` `Specifications` parameter (default off, so default runs are unchanged) that accelerates the time path iteration (TPI) household solve. When True, `scipy.optimize.root` is given a sparse (banded) finite-difference Jacobian for the stacked household Euler and labor first order conditions: the sparsity pattern is auto-detected once per problem size and the solver then needs far fewer function evaluations per Jacobian build (about 20x fewer on the default S=80 cohort solve), with an automatic fallback to dense finite differences if the Jacobian is not sparse enough to benefit or if a solve fails. The result matches the dense-finite-difference solution to within the model's resource-constraint accuracy floor on every calibration tested (OG-Core standard example, OG-ETH, OG-ZAF, OG-PHL, OG-IDN), giving roughly a 1.9-2.4x TPI speedup at no accuracy cost.
 
 ## [0.16.0] - 2026-06-02 12:00:00
 

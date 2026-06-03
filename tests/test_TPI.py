@@ -413,6 +413,36 @@ def test_inner_loop():
         assert np.allclose(test_tuple[i], v)
 
 
+def test_inner_loop_sparse_FOC_jac():
+    # The optional banded (sparse finite-difference) Jacobian, enabled via
+    # use_sparse_FOC_jac, must reproduce the default dense-finite-difference
+    # household solution from test_inner_loop.
+    input_tuple = utils.safe_read_pickle(
+        os.path.join(CUR_PATH, "test_io_data", "tpi_inner_loop_inputs.pkl")
+    )
+    guesses, outer_loop_vars_old, initial_values, ubi, j, ind = input_tuple
+    p = Specifications()
+    p.update_specifications({"use_sparse_FOC_jac": True})
+    r = outer_loop_vars_old[0]
+    r_p = outer_loop_vars_old[2]
+    w = outer_loop_vars_old[1]
+    BQ = outer_loop_vars_old[3]
+    RM = outer_loop_vars_old[4]
+    TR = outer_loop_vars_old[5]
+    theta = outer_loop_vars_old[6]
+    p_m = np.ones((p.T + p.S, p.M))
+    outer_loop_vars = (r_p, r, w, p_m, BQ, RM, TR, theta)
+    test_tuple = TPI.inner_loop(
+        guesses, outer_loop_vars, initial_values, ubi, j, ind, p
+    )
+    expected_tuple = utils.safe_read_pickle(
+        os.path.join(CUR_PATH, "test_io_data", "tpi_inner_loop_outputs.pkl")
+    )
+
+    for i, v in enumerate(expected_tuple):
+        assert np.allclose(test_tuple[i], v)
+
+
 filename1 = os.path.join(
     CUR_PATH, "test_io_data", "run_TPI_outputs_baseline.pkl"
 )
