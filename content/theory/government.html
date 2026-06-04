@@ -987,9 +987,9 @@
 </section>
 <section id="government-budget-constraint">
 <span id="secunbalgbcbudgconstr"></span><h2>Government Budget Constraint<a class="headerlink" href="#government-budget-constraint" title="Link to this heading">#</a></h2>
-<p>Let the level of government debt in period <span class="math notranslate nohighlight">\(t\)</span> be given by <span class="math notranslate nohighlight">\(D_t\)</span>. The government budget constraint requires that government revenue <span class="math notranslate nohighlight">\(Rev_t\)</span> plus the budget deficit (<span class="math notranslate nohighlight">\(D_{t+1} - D_t\)</span>) equal expenditures on interest on the debt, government spending on public goods <span class="math notranslate nohighlight">\(G_t\)</span>, total infrastructure investments <span class="math notranslate nohighlight">\(I_{g,t}\)</span>, total pension outlays, total transfer payments to households <span class="math notranslate nohighlight">\(TR_t\)</span>, and <span class="math notranslate nohighlight">\(UBI_t\)</span> every period <span class="math notranslate nohighlight">\(t\)</span>,</p>
+<p>Let the level of government debt in period <span class="math notranslate nohighlight">\(t\)</span> be given by <span class="math notranslate nohighlight">\(D_t\)</span>. The government budget constraint requires that government revenue <span class="math notranslate nohighlight">\(Rev_t\)</span>, external foreign assistance, <span class="math notranslate nohighlight">\(FA_t\)</span>, plus the budget deficit (<span class="math notranslate nohighlight">\(D_{t+1} - D_t\)</span>) equal expenditures on interest on the debt, government spending on public goods <span class="math notranslate nohighlight">\(G_t\)</span>, total infrastructure investments <span class="math notranslate nohighlight">\(I_{g,t}\)</span>, total pension outlays, total transfer payments to households <span class="math notranslate nohighlight">\(TR_t\)</span>, and <span class="math notranslate nohighlight">\(UBI_t\)</span> every period <span class="math notranslate nohighlight">\(t\)</span>,</p>
 <div class="math notranslate nohighlight" id="equation-equnbalgbcbudgconstr">
-<span class="eqno">(88)<a class="headerlink" href="#equation-equnbalgbcbudgconstr" title="Link to this equation">#</a></span>\[  D_{t+1} + Rev_t = (1 + r_{gov,t})D_t + G_t + I_{g,t} + Pensions_t + TR_t + UBI_t  \quad\forall t\]</div>
+<span class="eqno">(88)<a class="headerlink" href="#equation-equnbalgbcbudgconstr" title="Link to this equation">#</a></span>\[  D_{t+1} + Rev_t + FA_t = (1 + r_{gov,t})D_t + G_t + I_{g,t} + Pensions_t + TR_t + UBI_t  \quad\forall t\]</div>
 <p>where <span class="math notranslate nohighlight">\(r_{gov,t}\)</span> is the interest rate paid by the government defined in equation <a class="reference internal" href="#equation-equnbalgbc-rate-wedge">(94)</a> below, <span class="math notranslate nohighlight">\(G_{t}\)</span> is government spending on public goods, <span class="math notranslate nohighlight">\(I_{g,t}\)</span> is total government spending on infrastructure investment, <span class="math notranslate nohighlight">\(TR_{t}\)</span> are non-pension government transfers, and <span class="math notranslate nohighlight">\(UBI_t\)</span> is the total UBI transfer outlays across households in time <span class="math notranslate nohighlight">\(t\)</span>. All variables in <a class="reference internal" href="#equation-equnbalgbcbudgconstr">(88)</a> are real variables denominated in units of current-period output in industry <span class="math notranslate nohighlight">\(M\)</span> the numeraire (<span class="math notranslate nohighlight">\(p_{M,t}=1\)</span> for all <span class="math notranslate nohighlight">\(t\)</span>).</p>
 <p>We assume that government spending on public goods in terms of the numeraire good is a fixed fraction of GDP each period in the initial periods.</p>
 <div class="math notranslate nohighlight" id="equation-equnbalgbc-gt">
@@ -1039,8 +1039,8 @@
   &amp;\text{where}\quad g_{g,t} =
     \begin{cases}
       1 \qquad\qquad\qquad\qquad\qquad\qquad\qquad\qquad\qquad\quad\:\text{if}\quad t &lt; T_{G1} \\
-      \frac{\left[\rho_{d}\alpha_{D}Y_{t} + (1-\rho_{d})D_{t}\right] - (1+r_{gov,t})D_{t} - I_{g,t} - TR_{t} - UBI_{t} + Rev_{t}}{\alpha_g Y_t} \quad\text{if}\quad T_{G1}\leq t&lt;T_{G2} \\
-      \frac{\alpha_{D}Y_{t} - (1+r_{gov,t})D_{t} - I_{g,t} - TR_{t} - UBI_{t} + Rev_{t}}{\alpha_g Y_t} \qquad\qquad\quad\:\:\,\text{if}\quad t \geq T_{G2}
+      \frac{\left[\rho_{d}\alpha_{D}Y_{t} + (1-\rho_{d})D_{t}\right] - (1+r_{gov,t})D_{t} - I_{g,t} - TR_{t} - UBI_{t} + Rev_{t} + FA_{t}}{\alpha_g Y_t} \quad\text{if}\quad T_{G1}\leq t&lt;T_{G2} \\
+      \frac{\alpha_{D}Y_{t} - (1+r_{gov,t})D_{t} - I_{g,t} - TR_{t} - UBI_{t} + Rev_{t} + FA_{t}}{\alpha_g Y_t} \qquad\qquad\quad\:\:\,\text{if}\quad t \geq T_{G2}
     \end{cases} \\
   &amp;\text{and}\quad g_{tr,t} = 1 \quad\forall t
 \end{split}\end{split}\]</div>
@@ -1055,8 +1055,8 @@
   &amp;\text{where}\quad g_{tr,t} =
     \begin{cases}
       1 \qquad\qquad\qquad\qquad\qquad\qquad\qquad\qquad\qquad\:\:\:\,\text{if}\quad t &lt; T_{G1} \\
-      \frac{\left[\rho_{d}\alpha_{D}Y_{t} + (1-\rho_{d})D_{t}\right] - (1+r_{gov,t})D_{t} - G_{t} - I_{g,t} -  UBI_{t} + Rev_{t}}{\alpha_{tr} Y_t} \quad\text{if}\quad T_{G1}\leq t&lt;T_{G2} \\
-      \frac{\alpha_{D}Y_{t} - (1+r_{gov,t})D_{t} - G_{t} - I_{g,t} - UBI_{t} + Rev_{t}}{\alpha_{tr}Y_t} \qquad\qquad\quad\:\:\:\text{if}\quad t \geq T_{G2}
+      \frac{\left[\rho_{d}\alpha_{D}Y_{t} + (1-\rho_{d})D_{t}\right] - (1+r_{gov,t})D_{t} - G_{t} - I_{g,t} -  UBI_{t} + Rev_{t} + FA_{t}}{\alpha_{tr} Y_t} \quad\text{if}\quad T_{G1}\leq t&lt;T_{G2} \\
+      \frac{\alpha_{D}Y_{t} - (1+r_{gov,t})D_{t} - G_{t} - I_{g,t} - UBI_{t} + Rev_{t} + FA_{t}}{\alpha_{tr}Y_t} \qquad\qquad\quad\:\:\:\text{if}\quad t \geq T_{G2}
     \end{cases} \\
   &amp;\text{and}\quad g_{g,t} = 1 \quad\forall t
 \end{split}\end{split}\]</div>
@@ -1075,8 +1075,8 @@
   &amp;\text{where}\quad g_{trg,t} =
   \begin{cases}
     1 \qquad\qquad\qquad\qquad\qquad\qquad\qquad\qquad\quad\:\,\text{if}\quad t &lt; T_{G1} \\
-    \frac{\left[\rho_{d}\alpha_{D}Y_{t} + (1-\rho_{d})D_{t}\right] - (1+r_{gov,t})D_{t} - I_{g,t} - UBI_{t} + Rev_{t}}{\left(\alpha_g + \alpha_{tr}\right)Y_t} \quad\text{if}\quad T_{G1}\leq t&lt;T_{G2} \\
-    \frac{\alpha_{D}Y_{t} - (1+r_{gov,t})D_{t} - I_{g,t} - UBI_{t} + Rev_{t}}{\left(\alpha_g + \alpha_{tr}\right)Y_t} \qquad\qquad\quad\:\:\:\text{if}\quad t \geq T_{G2}
+    \frac{\left[\rho_{d}\alpha_{D}Y_{t} + (1-\rho_{d})D_{t}\right] - (1+r_{gov,t})D_{t} - I_{g,t} - UBI_{t} + Rev_{t} + FA_{t}}{\left(\alpha_g + \alpha_{tr}\right)Y_t} \quad\text{if}\quad T_{G1}\leq t&lt;T_{G2} \\
+    \frac{\alpha_{D}Y_{t} - (1+r_{gov,t})D_{t} - I_{g,t} - UBI_{t} + Rev_{t} + FA_{t}}{\left(\alpha_g + \alpha_{tr}\right)Y_t} \qquad\qquad\quad\:\:\:\text{if}\quad t \geq T_{G2}
   \end{cases}
 \end{split}\end{split}\]</div>
 <p>The first case in <a class="reference internal" href="#equation-equnbalgbcclosure-trgt">(99)</a> says that government spending and government transfers <span class="math notranslate nohighlight">\(TR_t\)</span> will their respective fixed fractions <span class="math notranslate nohighlight">\(\alpha_g\)</span> and <span class="math notranslate nohighlight">\(\alpha_{tr}\)</span> of GDP <span class="math notranslate nohighlight">\(Y_t\)</span> for every period before <span class="math notranslate nohighlight">\(T_{G1}\)</span>. The second case specifies that, starting in period <span class="math notranslate nohighlight">\(T_{G1}\)</span> and continuing until before period <span class="math notranslate nohighlight">\(T_{G2}\)</span>, government spending and transfers be adjusted by the same rate to set tomorrow’s debt <span class="math notranslate nohighlight">\(D_{t+1}\)</span> to be a convex combination between target debt <span class="math notranslate nohighlight">\(\alpha_D Y_t\)</span> and the current debt level <span class="math notranslate nohighlight">\(D_t\)</span>. The last case specifies that, for every period after <span class="math notranslate nohighlight">\(T_{G2}\)</span>, government spending and transfers are set such that the next-period debt be a fixed target percentage <span class="math notranslate nohighlight">\(\alpha_D\)</span> of GDP.</p>

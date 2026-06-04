@@ -770,14 +770,15 @@ for each industry</p></li>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="ogcore.aggregates.resource_constraint">
-<span class="sig-prename descclassname"><span class="pre">ogcore.aggregates.</span></span><span class="sig-name descname"><span class="pre">resource_constraint</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">Y</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">C</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">G</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">I_d</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">I_g</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">net_capital_flows</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">RM</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogcore/aggregates.html#resource_constraint"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogcore.aggregates.resource_constraint" title="Link to this definition">#</a></dt>
+<span class="sig-prename descclassname"><span class="pre">ogcore.aggregates.</span></span><span class="sig-name descname"><span class="pre">resource_constraint</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">Y</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">C</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">G</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">I_d</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">I_g</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">net_capital_flows</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">RM</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">foreign_aid</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogcore/aggregates.html#resource_constraint"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogcore.aggregates.resource_constraint" title="Link to this definition">#</a></dt>
 <dd><p>Compute the error in the resource constraint.</p>
 <div class="math notranslate nohighlight">
 \[\begin{split}\begin{split}
   \text{rc_error} &amp;= \hat{Y}_t - \hat{C}_t -
 \Bigl(e^{g_y}\bigl[1 + \tilde{g}_{n,t+1}\bigr]\hat{K}^d_{t+1} -
 \hat{K}^d_t\Bigr) - \delta\hat{K}_t - \hat{G}_t - \hat{I}_{g,t} ... \\
-  &amp;\qquad -\: \hat{\text{net capital outflows}}_t + \hat{RM}_t
+  &amp;\qquad -\: \hat{\text{net capital outflows}}_t + \hat{RM}_t +
+  \hat{\text{foreign aid}}_t
 \end{split}\end{split}\]</div>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -789,6 +790,7 @@ for each industry</p></li>
 <li><p><strong>I_g</strong> (<em>array_like</em>) – investment in government capital</p></li>
 <li><p><strong>net_capital_flows</strong> (<em>array_like</em>) – net capital outflows</p></li>
 <li><p><strong>RM</strong> (<em>array_like</em>) – aggregate remittances</p></li>
+<li><p><strong>foreign_aid</strong> (<em>array_like</em>) – foreign aid payments</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>

@@ -279,6 +279,15 @@ _Valid Range:_ min = 0.0 and max = 5.0
 _Out-of-Range Action:_ error  
 
 
+### Fiscal Policy Parameters
+
+####  `alpha_FA`  
+_Description:_ Foreign aid payments to domestic government as a share of GDP.  
+_Value Type:_ float  
+_Valid Range:_ min = 0.0 and max = 1.0  
+_Out-of-Range Action:_ error  
+
+
 ### Government Pension Parameters
 
 ####  `retirement_age`  

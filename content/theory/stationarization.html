@@ -660,7 +660,7 @@
   &amp;\quad\forall t\end{split}\]</div>
 <p>Every term in the government budget constraint <a class="reference internal" href="government.html#equation-equnbalgbcbudgconstr">(88)</a> is growing at both the productivity growth rate and the population growth rate, so we stationarize it by dividing both sides by <span class="math notranslate nohighlight">\(e^{g_y t}\tilde{N}_t\)</span>. We also have to multiply and divide the next period debt term <span class="math notranslate nohighlight">\(D_{t+1}\)</span> by <span class="math notranslate nohighlight">\(e^{g_y(t+1)}\tilde{N}_{t+1}\)</span>, leaving the term <span class="math notranslate nohighlight">\(e^{g_y}(1 + \tilde{g}_{n,t+1})\)</span>.</p>
 <div class="math notranslate nohighlight" id="equation-eqstnrzgovbc">
-<span class="eqno">(145)<a class="headerlink" href="#equation-eqstnrzgovbc" title="Link to this equation">#</a></span>\[  e^{g_y}\left(1 + \tilde{g}_{n,t+1}\right)\hat{D}_{t+1} + \hat{Rev}_t = (1 + r_{gov,t})\hat{D}_t + \hat{G}_t + \hat{I}_{g,t} + \hat{Pensions}_t + \hat{TR}_t + \hat{UBI}_t \quad\forall t\]</div>
+<span class="eqno">(145)<a class="headerlink" href="#equation-eqstnrzgovbc" title="Link to this equation">#</a></span>\[  e^{g_y}\left(1 + \tilde{g}_{n,t+1}\right)\hat{D}_{t+1} + \hat{Rev}_t + \hat{FA}_t = (1 + r_{gov,t})\hat{D}_t + \hat{G}_t + \hat{I}_{g,t} + \hat{Pensions}_t + \hat{TR}_t + \hat{UBI}_t \quad\forall t\]</div>
 <p>The stationarized versions of the rule for total government infrastructure investment spending <span class="math notranslate nohighlight">\(I_{g,t}\)</span> in <a class="reference internal" href="government.html#equation-equnbalgbc-igt">(90)</a> and the rule for government investment spending in each industry in <a class="reference internal" href="government.html#equation-equnbalgbc-igt">(90)</a> are found by dividing both sides of the respective equations by <span class="math notranslate nohighlight">\(e^{g_y t}\tilde{N}_t\)</span>.</p>
 <div class="math notranslate nohighlight" id="equation-eqstnrz-igt">
 <span class="eqno">(146)<a class="headerlink" href="#equation-eqstnrz-igt" title="Link to this equation">#</a></span>\[  \hat{I}_{g,t} = \alpha_{I,t}\: \hat{Y}_t \quad\forall t\]</div>
@@ -689,8 +689,8 @@
   &amp;\text{where}\quad g_{g,t} =
   \begin{cases}
     1 \qquad\qquad\qquad\qquad\qquad\qquad\qquad\qquad\qquad\qquad\qquad\quad\text{if}\quad t &lt; T_{G1} \\
-    \frac{e^{g_y}\left(1 + \tilde{g}_{n,t+1}\right)\left[\rho_{d}\alpha_{D}\hat{Y}_{t} + (1-\rho_{d})\hat{D}_{t}\right] - (1+r_{gov,t})\hat{D}_{t} - \hat{TR}_{t} - \hat{I}_{g,t} - \hat{UBI}_t + \hat{Rev}_{t}}{\alpha_g \hat{Y}_t} \:\text{if}\: T_{G1}\leq t&lt;T_{G2} \\
-    \frac{e^{g_y}\left(1 + \tilde{g}_{n,t+1}\right)\alpha_{D}\hat{Y}_{t} - (1+r_{gov,t})\hat{D}_{t} - \hat{TR}_{t} - \hat{I}_{g,t} - \hat{UBI}_t + \hat{Rev}_{t}}{\alpha_g \hat{Y}_t} \qquad\qquad\quad\,\text{if}\quad t \geq T_{G2}
+    \frac{e^{g_y}\left(1 + \tilde{g}_{n,t+1}\right)\left[\rho_{d}\alpha_{D}\hat{Y}_{t} + (1-\rho_{d})\hat{D}_{t}\right] - (1+r_{gov,t})\hat{D}_{t} - \hat{TR}_{t} - \hat{I}_{g,t} - \hat{UBI}_t + \hat{Rev}_{t} + \hat{FA}_t}{\alpha_g \hat{Y}_t} \:\text{if}\: T_{G1}\leq t&lt;T_{G2} \\
+    \frac{e^{g_y}\left(1 + \tilde{g}_{n,t+1}\right)\alpha_{D}\hat{Y}_{t} - (1+r_{gov,t})\hat{D}_{t} - \hat{TR}_{t} - \hat{I}_{g,t} - \hat{UBI}_t + \hat{Rev}_{t} + \hat{FA}_t}{\alpha_g \hat{Y}_t} \qquad\qquad\quad\,\text{if}\quad t \geq T_{G2}
   \end{cases} \\
   &amp;\text{and}\quad g_{tr,t} = 1 \quad\forall t
 \end{split}\end{split}\]</div>
@@ -701,8 +701,8 @@
   &amp;\text{where}\quad g_{tr,t} =
   \begin{cases}
     1 \qquad\qquad\qquad\qquad\qquad\qquad\qquad\qquad\qquad\qquad\qquad\:\:\:\text{if}\quad t &lt; T_{G1} \\
-    \frac{e^{g_y}\left(1 + \tilde{g}_{n,t+1}\right)\left[\rho_{d}\alpha_{D}\hat{Y}_{t} + (1-\rho_{d})\hat{D}_{t}\right] - (1+r_{gov,t})\hat{D}_{t} - \hat{G}_{t} - \hat{I}_{g,t} - \hat{UBI}_t + \hat{Rev}_{t}}{\alpha_{tr} \hat{Y}_t} \:\text{if}\: T_{G1}\leq t&lt;T_{G2} \\
-    \frac{e^{g_y}\left(1 + \tilde{g}_{n,t+1}\right)\alpha_{D}\hat{Y}_{t} - (1+r_{gov,t})\hat{D}_{t} - \hat{G}_{t} - \hat{I}_{g,t} - \hat{UBI}_t + \hat{Rev}_{t}}{\alpha_{tr} \hat{Y}_t} \qquad\qquad\quad\,\text{if}\quad t \geq T_{G2}
+    \frac{e^{g_y}\left(1 + \tilde{g}_{n,t+1}\right)\left[\rho_{d}\alpha_{D}\hat{Y}_{t} + (1-\rho_{d})\hat{D}_{t}\right] - (1+r_{gov,t})\hat{D}_{t} - \hat{G}_{t} - \hat{I}_{g,t} - \hat{UBI}_t + \hat{Rev}_{t} + \hat{FA}_t}{\alpha_{tr} \hat{Y}_t} \:\text{if}\: T_{G1}\leq t&lt;T_{G2} \\
+    \frac{e^{g_y}\left(1 + \tilde{g}_{n,t+1}\right)\alpha_{D}\hat{Y}_{t} - (1+r_{gov,t})\hat{D}_{t} - \hat{G}_{t} - \hat{I}_{g,t} - \hat{UBI}_t + \hat{Rev}_{t} + \hat{FA}_t}{\alpha_{tr} \hat{Y}_t} \qquad\qquad\quad\,\text{if}\quad t \geq T_{G2}
   \end{cases} \\
   &amp;\text{and}\quad g_{g,t} = 1 \quad\forall t
 \end{split}\end{split}\]</div>
@@ -713,8 +713,8 @@
   &amp;\text{where}\quad g_{trg,t} =
   \begin{cases}
     1 \qquad\qquad\qquad\qquad\qquad\qquad\qquad\qquad\qquad\qquad\:\quad \text{if}\quad t &lt; T_{G1} \\
-    \frac{e^{g_y}\left(1 + \tilde{g}_{n,t+1}\right)\left[\rho_{d}\alpha_{D}\hat{Y}_{t} + (1-\rho_{d})\hat{D}_{t}\right] - (1+r_{gov,t})\hat{D}_{t} - \hat{I}_{g,t} - \hat{UBI}_t + \hat{Rev}_{t}}{\left(\alpha_g + \alpha_{tr}\right)\hat{Y}_t} \:\text{if}\: T_{G1}\leq t&lt;T_{G2} \\
-    \frac{e^{g_y}\left(1 + \tilde{g}_{n,t+1}\right)\alpha_{D}\hat{Y}_{t} - (1+r_{gov,t})\hat{D}_{t} - \hat{I}_{g,t} - \hat{UBI}_t + \hat{Rev}_{t}}{\left(\alpha_g + \alpha_{tr}\right)\hat{Y}_t} \qquad\qquad\quad\,\text{if}\quad t \geq T_{G2}
+    \frac{e^{g_y}\left(1 + \tilde{g}_{n,t+1}\right)\left[\rho_{d}\alpha_{D}\hat{Y}_{t} + (1-\rho_{d})\hat{D}_{t}\right] - (1+r_{gov,t})\hat{D}_{t} - \hat{I}_{g,t} - \hat{UBI}_t + \hat{Rev}_{t} + \hat{FA}_t}{\left(\alpha_g + \alpha_{tr}\right)\hat{Y}_t} \:\text{if}\: T_{G1}\leq t&lt;T_{G2} \\
+    \frac{e^{g_y}\left(1 + \tilde{g}_{n,t+1}\right)\alpha_{D}\hat{Y}_{t} - (1+r_{gov,t})\hat{D}_{t} - \hat{I}_{g,t} - \hat{UBI}_t + \hat{Rev}_{t} + \hat{FA}_t}{\left(\alpha_g + \alpha_{tr}\right)\hat{Y}_t} \qquad\qquad\quad\,\text{if}\quad t \geq T_{G2}
   \end{cases}
 \end{split}\end{split}\]</div>
 <section id="stationarized-pension-system-equations">

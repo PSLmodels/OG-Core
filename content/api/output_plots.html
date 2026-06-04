@@ -637,7 +637,8 @@ object</p></li>
 <li><p><strong>plot_type</strong> (<em>string</em>) – <p>type of plot, can be:
 ‘pct_diff’: plots percentage difference between baseline</p>
 <blockquote>
-<div><p>and reform ((reform-base)/base)</p>
+<div><p>and reform ((reform-base)/base). For interest rates,
+percentage point differences are plotted.</p>
 </div></blockquote>
 <dl class="simple">
 <dt>’diff’: plots difference between baseline and reform</dt><dd><p>(reform-base)</p>
@@ -705,9 +706,9 @@ vertical lines at</p></li>
 <li><p><strong>p</strong> (<em>OG-Core Specifications class</em>) – parameters object</p></li>
 <li><p><strong>var_list</strong> (<em>list</em>) – names of variable to plot</p></li>
 <li><p><strong>plot_type</strong> (<em>string</em>) – <p>type of plot, can be:
-‘diff’: plots difference between baseline and reform</p>
+‘diff’ or ‘pct_diff’: plots percentage point difference</p>
 <blockquote>
-<div><p>(reform-base)</p>
+<div><p>between baseline and reform ratios to GDP (reform-base)</p>
 </div></blockquote>
 <p>’levels’: plot variables in model units</p>
 </p></li>

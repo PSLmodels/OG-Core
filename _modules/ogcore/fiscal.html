@@ -512,6 +512,9 @@
     <span class="k">else</span><span class="p">:</span>
         <span class="n">G</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">alpha_G</span><span class="p">[:</span> <span class="n">p</span><span class="o">.</span><span class="n">T</span><span class="p">]</span> <span class="o">*</span> <span class="n">Y</span><span class="p">[:</span> <span class="n">p</span><span class="o">.</span><span class="n">T</span><span class="p">]</span>
 
+    <span class="c1"># direct foreign aid</span>
+    <span class="n">foreign_aid</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">alpha_FA</span><span class="p">[:</span> <span class="n">p</span><span class="o">.</span><span class="n">T</span><span class="p">]</span> <span class="o">*</span> <span class="n">Y</span><span class="p">[:</span> <span class="n">p</span><span class="o">.</span><span class="n">T</span><span class="p">]</span>
+
     <span class="k">if</span> <span class="n">p</span><span class="o">.</span><span class="n">budget_balance</span><span class="p">:</span>
         <span class="n">D</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">T</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
         <span class="n">G</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">alpha_G</span><span class="p">[:</span> <span class="n">p</span><span class="o">.</span><span class="n">T</span><span class="p">]</span> <span class="o">*</span> <span class="n">Y</span><span class="p">[:</span> <span class="n">p</span><span class="o">.</span><span class="n">T</span><span class="p">]</span>
@@ -534,6 +537,7 @@
                 <span class="o">+</span> <span class="n">UBI_outlays</span><span class="p">[</span><span class="n">t</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span>
                 <span class="o">+</span> <span class="n">agg_pension_outlays</span><span class="p">[</span><span class="n">t</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span>
                 <span class="o">-</span> <span class="n">total_tax_revenue</span><span class="p">[</span><span class="n">t</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span>
+                <span class="o">-</span> <span class="n">foreign_aid</span><span class="p">[</span><span class="n">t</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span>
             <span class="p">)</span>
             <span class="n">r_gov</span><span class="p">[</span><span class="n">t</span><span class="p">]</span> <span class="o">=</span> <span class="n">get_r_gov</span><span class="p">(</span><span class="n">r</span><span class="p">[</span><span class="n">t</span><span class="p">],</span> <span class="n">D</span><span class="p">[</span><span class="n">t</span><span class="p">]</span> <span class="o">/</span> <span class="n">Y</span><span class="p">[</span><span class="n">t</span><span class="p">],</span> <span class="n">p</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s2">&quot;scalar&quot;</span><span class="p">,</span> <span class="n">t</span><span class="o">=</span><span class="n">t</span><span class="p">)</span>
             <span class="k">if</span> <span class="p">(</span><span class="n">t</span> <span class="o">&gt;=</span> <span class="n">p</span><span class="o">.</span><span class="n">tG1</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="n">t</span> <span class="o">&lt;</span> <span class="n">p</span><span class="o">.</span><span class="n">tG2</span><span class="p">):</span>
@@ -542,6 +546,7 @@
                     <span class="o">*</span> <span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">rho_G</span> <span class="o">*</span> <span class="n">p</span><span class="o">.</span><span class="n">debt_ratio_ss</span> <span class="o">*</span> <span class="n">Y</span><span class="p">[</span><span class="n">t</span><span class="p">]</span> <span class="o">+</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">p</span><span class="o">.</span><span class="n">rho_G</span><span class="p">)</span> <span class="o">*</span> <span class="n">D</span><span class="p">[</span><span class="n">t</span><span class="p">])</span>
                     <span class="o">-</span> <span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="n">r_gov</span><span class="p">[</span><span class="n">t</span><span class="p">])</span> <span class="o">*</span> <span class="n">D</span><span class="p">[</span><span class="n">t</span><span class="p">]</span>
                     <span class="o">+</span> <span class="n">total_tax_revenue</span><span class="p">[</span><span class="n">t</span><span class="p">]</span>
+                    <span class="o">+</span> <span class="n">foreign_aid</span><span class="p">[</span><span class="n">t</span><span class="p">]</span>
                     <span class="o">-</span> <span class="n">agg_pension_outlays</span><span class="p">[</span><span class="n">t</span><span class="p">]</span>
                     <span class="o">-</span> <span class="n">I_g</span><span class="p">[</span><span class="n">t</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span>
                     <span class="o">-</span> <span class="n">TR</span><span class="p">[</span><span class="n">t</span><span class="p">]</span>
@@ -552,6 +557,7 @@
                     <span class="n">growth</span><span class="p">[</span><span class="n">t</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">debt_ratio_ss</span> <span class="o">*</span> <span class="n">Y</span><span class="p">[</span><span class="n">t</span><span class="p">])</span>
                     <span class="o">-</span> <span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="n">r_gov</span><span class="p">[</span><span class="n">t</span><span class="p">])</span> <span class="o">*</span> <span class="n">D</span><span class="p">[</span><span class="n">t</span><span class="p">]</span>
                     <span class="o">+</span> <span class="n">total_tax_revenue</span><span class="p">[</span><span class="n">t</span><span class="p">]</span>
+                    <span class="o">+</span> <span class="n">foreign_aid</span><span class="p">[</span><span class="n">t</span><span class="p">]</span>
                     <span class="o">-</span> <span class="n">agg_pension_outlays</span><span class="p">[</span><span class="n">t</span><span class="p">]</span>
                     <span class="o">-</span> <span class="n">I_g</span><span class="p">[</span><span class="n">t</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span>
                     <span class="o">-</span> <span class="n">TR</span><span class="p">[</span><span class="n">t</span><span class="p">]</span>
@@ -570,12 +576,14 @@
             <span class="o">+</span> <span class="n">UBI_outlays</span><span class="p">[</span><span class="n">t</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span>
             <span class="o">+</span> <span class="n">agg_pension_outlays</span><span class="p">[</span><span class="n">t</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span>
             <span class="o">-</span> <span class="n">total_tax_revenue</span><span class="p">[</span><span class="n">t</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span>
+            <span class="o">-</span> <span class="n">foreign_aid</span><span class="p">[</span><span class="n">t</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span>
         <span class="p">)</span>
         <span class="n">r_gov</span><span class="p">[</span><span class="n">t</span><span class="p">]</span> <span class="o">=</span> <span class="n">get_r_gov</span><span class="p">(</span><span class="n">r</span><span class="p">[</span><span class="n">t</span><span class="p">],</span> <span class="n">D</span><span class="p">[</span><span class="n">t</span><span class="p">]</span> <span class="o">/</span> <span class="n">Y</span><span class="p">[</span><span class="n">t</span><span class="p">],</span> <span class="n">p</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s2">&quot;scalar&quot;</span><span class="p">,</span> <span class="n">t</span><span class="o">=</span><span class="n">t</span><span class="p">)</span>
         <span class="n">G</span><span class="p">[</span><span class="n">t</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
             <span class="n">growth</span><span class="p">[</span><span class="n">t</span><span class="p">]</span> <span class="o">*</span> <span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">debt_ratio_ss</span> <span class="o">*</span> <span class="n">Y</span><span class="p">[</span><span class="n">t</span><span class="p">])</span>
             <span class="o">-</span> <span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="n">r_gov</span><span class="p">[</span><span class="n">t</span><span class="p">])</span> <span class="o">*</span> <span class="n">D</span><span class="p">[</span><span class="n">t</span><span class="p">]</span>
             <span class="o">+</span> <span class="n">total_tax_revenue</span><span class="p">[</span><span class="n">t</span><span class="p">]</span>
+            <span class="o">+</span> <span class="n">foreign_aid</span><span class="p">[</span><span class="n">t</span><span class="p">]</span>
             <span class="o">-</span> <span class="n">agg_pension_outlays</span><span class="p">[</span><span class="n">t</span><span class="p">]</span>
             <span class="o">-</span> <span class="n">I_g</span><span class="p">[</span><span class="n">t</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span>
             <span class="o">-</span> <span class="n">TR</span><span class="p">[</span><span class="n">t</span><span class="p">]</span>
@@ -589,6 +597,7 @@
             <span class="o">+</span> <span class="n">UBI_outlays</span><span class="p">[</span><span class="n">t</span><span class="p">]</span>
             <span class="o">+</span> <span class="n">agg_pension_outlays</span><span class="p">[</span><span class="n">t</span><span class="p">]</span>
             <span class="o">-</span> <span class="n">total_tax_revenue</span><span class="p">[</span><span class="n">t</span><span class="p">]</span>
+            <span class="o">-</span> <span class="n">foreign_aid</span><span class="p">[</span><span class="n">t</span><span class="p">]</span>
         <span class="p">)</span>
         <span class="n">D_ratio_max</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">amax</span><span class="p">(</span><span class="n">D</span><span class="p">[:</span> <span class="n">p</span><span class="o">.</span><span class="n">T</span><span class="p">]</span> <span class="o">/</span> <span class="n">Y</span><span class="p">[:</span> <span class="n">p</span><span class="o">.</span><span class="n">T</span><span class="p">])</span>
         <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Maximum debt ratio: &quot;</span><span class="p">,</span> <span class="n">D_ratio_max</span><span class="p">)</span>
@@ -708,12 +717,14 @@
 <span class="sd">        G (tuple): steady-state government spending</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">foreign_aid</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">alpha_FA</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="n">Y</span>
     <span class="k">if</span> <span class="n">p</span><span class="o">.</span><span class="n">budget_balance</span><span class="p">:</span>
         <span class="n">G</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">alpha_G</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="n">Y</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="n">G</span> <span class="o">=</span> <span class="p">(</span>
             <span class="n">total_tax_revenue</span>
             <span class="o">+</span> <span class="n">new_borrowing</span>
+            <span class="o">+</span> <span class="n">foreign_aid</span>
             <span class="o">-</span> <span class="p">(</span><span class="n">agg_pension_outlays</span> <span class="o">+</span> <span class="n">TR</span> <span class="o">+</span> <span class="n">debt_service</span> <span class="o">+</span> <span class="n">UBI_outlays</span> <span class="o">+</span> <span class="n">I_g</span><span class="p">)</span>
         <span class="p">)</span>
 
@@ -776,7 +787,7 @@
 <span class="sd">        agg_pension_outlays (array_like): total government pension</span>
 <span class="sd">            outlays</span>
 <span class="sd">        UBI_outlays (array_like): total universal basic income (UBI) outlays</span>
-<span class="sd">        I_g (array_like): public infrastructure investement</span>
+<span class="sd">        I_g (array_like): public infrastructure investment</span>
 <span class="sd">        p (OG-Core Specifications object): model parameters</span>
 <span class="sd">        method (str): whether doing SS or TP calculation</span>
 
@@ -785,8 +796,17 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="n">p</span><span class="o">.</span><span class="n">budget_balance</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">method</span> <span class="o">==</span> <span class="s2">&quot;SS&quot;</span><span class="p">:</span>
+            <span class="n">foreign_aid</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">alpha_FA</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="n">Y</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">foreign_aid</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">alpha_FA</span><span class="p">[:</span> <span class="n">p</span><span class="o">.</span><span class="n">T</span><span class="p">]</span> <span class="o">*</span> <span class="n">Y</span><span class="p">[:</span> <span class="n">p</span><span class="o">.</span><span class="n">T</span><span class="p">]</span>
         <span class="n">new_TR</span> <span class="o">=</span> <span class="p">(</span>
-            <span class="n">total_tax_revenue</span> <span class="o">-</span> <span class="n">agg_pension_outlays</span> <span class="o">-</span> <span class="n">G</span> <span class="o">-</span> <span class="n">UBI_outlays</span> <span class="o">-</span> <span class="n">I_g</span>
+            <span class="n">total_tax_revenue</span>
+            <span class="o">+</span> <span class="n">foreign_aid</span>
+            <span class="o">-</span> <span class="n">agg_pension_outlays</span>
+            <span class="o">-</span> <span class="n">G</span>
+            <span class="o">-</span> <span class="n">UBI_outlays</span>
+            <span class="o">-</span> <span class="n">I_g</span>
         <span class="p">)</span>
     <span class="k">elif</span> <span class="n">p</span><span class="o">.</span><span class="n">baseline_spending</span><span class="p">:</span>
         <span class="n">new_TR</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">alpha_bs_T</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="n">TR</span>
@@ -858,7 +878,7 @@
 <span class="sd">    Args:</span>
 <span class="sd">        Y (array_like): aggregate output</span>
 <span class="sd">        Ig_baseline (array_like): public infrastructure investment in</span>
-<span class="sd">            the baseliine simulation</span>
+<span class="sd">            the baseline simulation</span>
 <span class="sd">        p (OG-Core Specifications object): model parameters</span>
 <span class="sd">        method (str): either &#39;SS&#39; for steady-state or &#39;TPI&#39; for transition path</span>
 
