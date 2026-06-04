@@ -109,6 +109,7 @@ def test_D_G_path(
         "budget_balance": budget_balance,
         "r_gov_DY": r_gov_DY,
         "r_gov_DY2": r_gov_DY2,
+        "alpha_FA": [0.01],
     }
     p.update_specifications(new_param_values, raise_errors=False)
     r = np.ones(p.T + p.S) * 0.05
@@ -132,6 +133,7 @@ def test_D_G_path(
     test_tuple = fiscal.D_G_path(r, dg_fixed_values, p)
 
     for i, v in enumerate(test_tuple):
+        print(f"Testing {i}...")
         assert np.allclose(v[: p.T], expected_tuple[i][: p.T])
 
 

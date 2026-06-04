@@ -1115,7 +1115,8 @@ def SS_solver(
     net_capital_outflows_vec[-1] = net_capital_outflows
     RM_vec_ss = np.zeros(p.M)
     RM_vec_ss[-1] = RM_ss
-
+    foreign_aid_vec_ss = np.zeros(p.M)
+    foreign_aid_vec_ss[-1] = p.alpha_FA[-1] * Yss
     RC = aggr.resource_constraint(
         Y_vec_ss,
         C_m_vec_ss,
@@ -1124,6 +1125,7 @@ def SS_solver(
         I_g_vec_ss,
         net_capital_outflows_vec,
         RM_vec_ss,
+        foreign_aid_vec_ss,
     )
     logger.info(f"Foreign debt holdings = {D_f_ss}")
     logger.info(f"Foreign capital holdings = {K_f_ss}")

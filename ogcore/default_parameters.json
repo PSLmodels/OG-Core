@@ -954,6 +954,30 @@
             }
         }
     },
+    "alpha_FA": {
+        "title": "Foreign aid payments to domestic government as a share of GDP",
+        "description": "Foreign aid payments to domestic government as a share of GDP.",
+        "short_description": "Foreign aid as a share of GDP",
+        "param_notation": "$\\alpha_{FA}$",
+        "section_1": "Fiscal Policy Parameters",
+        "section_2": "Fiscal Policy Parameters",
+        "notes": "",
+        "number_dims": 1,
+        "type": "float",
+        "value": [
+            {
+                "value": [
+                    0.0
+                ]
+            }
+        ],
+        "validators": {
+            "range": {
+                "min": 0.0,
+                "max": 1.0
+            }
+        }
+    },
     "alpha_RM_1": {
         "title": "Exogenous ratio of aggregate remittances to GDP in current period (t=1)",
         "description": "Exogenous ratio of aggregate remittances to GDP in current period (t=1).",
