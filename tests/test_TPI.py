@@ -388,11 +388,15 @@ def test_params_to_array(tax_func_type):
 def test_inner_loop():
     # Test TPI.inner_loop function.  Provide inputs to function and
     # ensure that output returned matches what it has been before.
+    # Explicitly disable use_sparse_FOC_jac so this regression test
+    # continues to exercise the legacy dense-finite-difference path
+    # (the sparse path is covered by test_inner_loop_sparse_FOC_jac).
     input_tuple = utils.safe_read_pickle(
         os.path.join(CUR_PATH, "test_io_data", "tpi_inner_loop_inputs.pkl")
     )
     guesses, outer_loop_vars_old, initial_values, ubi, j, ind = input_tuple
     p = Specifications()
+    p.update_specifications({"use_sparse_FOC_jac": False})
     r = outer_loop_vars_old[0]
     r_p = outer_loop_vars_old[2]
     w = outer_loop_vars_old[1]

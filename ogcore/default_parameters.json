@@ -4394,7 +4394,7 @@
     },
     "use_sparse_FOC_jac": {
         "title": "Flag to use a sparse (banded) finite-difference Jacobian in the household first order condition root finder",
-        "description": "Flag to use a sparse (banded) finite-difference Jacobian in the household first order condition root finder. When True, the sparsity pattern of the stacked Euler/labor first order conditions is auto-detected once per problem size and supplied to scipy.optimize.root, which then needs far fewer function evaluations per Jacobian build than the default dense finite differences. The solver falls back to the dense finite-difference Jacobian automatically if the Jacobian is not sparse enough to benefit or if a solve fails, so the result is unchanged.",
+        "description": "Flag to use a sparse (banded) finite-difference Jacobian in the household first order condition root finder. When True (the default), the sparsity pattern of the stacked Euler/labor first order conditions is auto-detected once per problem size and supplied to scipy.optimize.root, which then needs far fewer function evaluations per Jacobian build than the default dense finite differences. The solver falls back to the dense finite-difference Jacobian automatically if the Jacobian is not sparse enough to benefit or if a solve fails. Set to False to use the legacy dense Jacobian on every call.",
         "short_description": "Use a banded finite-difference Jacobian in the household solver",
         "param_notation": "$\\texttt{use_sparse_FOC_jac}$",
         "section_1": "Model Solution Parameters",
@@ -4402,7 +4402,7 @@
         "type": "bool",
         "value": [
             {
-                "value": false
+                "value": true
             }
         ],
         "validators": {
