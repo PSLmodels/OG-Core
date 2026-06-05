@@ -95,6 +95,9 @@ def _detect_jac_sparsity(fun, x0, args, thr_rel=1e-9):
         groups = group_columns(P)
         if int(groups.max()) + 1 < n // 2:
             result = (P, groups)
+        # else: pattern not sparse enough to benefit (expected at small
+        # firstdoughnutring dims); silently return None so the caller uses
+        # dense FD without surfacing a noisy notice.
     except Exception:
         result = None
     _BANDED_JAC_CACHE[key] = result
@@ -734,6 +737,8 @@ def run_TPI(p, client=None):
             results
 
     """
+    if p.use_sparse_FOC_jac and not _HAVE_SPARSE_FD:
+        print("[TPI] sparse FOC jacobian unavailable; using dense")
     # unpack tuples of parameters
     initial_values, ss_vars, theta, baseline_values = get_initial_SS_values(p)
     B0, b_sinit, b_splus1init, factor, initial_b, initial_n = initial_values
