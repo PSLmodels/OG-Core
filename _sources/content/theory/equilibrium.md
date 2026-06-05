@@ -25,6 +25,15 @@ In all of the specifications of `OG-Core`, we use a two-stage fixed point algori
 
 Our approach is to choose the minimum number of macroeconomic variables in an outer loop in order to be able to solve the household's $2JS$ Euler equations in terms of only the $\bar{n}_{j,s}$ and $\bar{b}_{j,s+1}$ variables directly, holding all other variables constant. The household system of Euler equations has a provable root solution and is orders of magnitude more tractable (less nonlinear) to solve holding these outer loop variables constant.
 
+Moreover, with the outer-loop variables held fixed, each cohort's system of $2S$ Euler equations is not only less nonlinear but structurally sparse: every equation involves at most five of the $2S$ unknowns---a household's own age and its immediate neighbors. The root finder normally probes each unknown separately when building each step ($2S = 160$ evaluations of the system when $S = 80$), but with most equations depending on only a handful of unknowns, those affecting no common equation can be probed together, cutting the count to about seven at $S = 80$---a number set by how many neighbors couple, not by $S$. The parameter `use_sparse_FOC_jac` (default `True`) controls this; set it to `False` to use the legacy dense-finite-difference Jacobian on every call. The structure is derived in Appendix {ref}`SecAppDerivHHjac`.
+
+```{figure} ./images/HH_jac_sparsity.png
+---
+name: FigHHjacSparsity
+---
+Sparsity pattern of the household equation Jacobian, at $S = 12$. Left: the standard finite-difference solve treats every entry of the $2S\times 2S$ matrix as live ($(2S)^2 = 576$ entries). Right: the actual structure---each Euler equation depends only on a household's own age and its immediate neighbors, leaving most entries zero (92 of 576 here; 636 of 25{,}600 at the default $S = 80$).
+```
+
 The steady-state solution method for each of the cases above is associated with a solution method that has a subset of the following outer-loop variables $\Bigl\{\bar{r}_p, \bar{r}, \bar{w}, \{\bar{p}_m\}_{m=1}^{M-1}, \bar{Y}, \overline{TR}, \overline{BQ}, factor\Bigr\}$.
 
 

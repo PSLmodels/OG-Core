@@ -850,6 +850,12 @@ _Out-of-Range Action:_ error
 
 ## Model Solution Parameters
 
+####  `use_sparse_FOC_jac`  
+_Description:_ Flag to use a sparse (banded) finite-difference Jacobian in the household first order condition root finder. When True (the default), the sparsity pattern of the stacked Euler/labor first order conditions is auto-detected once per problem size and supplied to scipy.optimize.root, which then needs far fewer function evaluations per Jacobian build than the default dense finite differences. The solver falls back to the dense finite-difference Jacobian automatically if the Jacobian is not sparse enough to benefit or if a solve fails. Set to False to use the legacy dense Jacobian on every call.  
+_Value Type:_ bool  
+_Valid Choices:_[True, False]  
+
+
 ####  `nu`  
 _Description:_ Parameter for convergence rate of functional iteration.  
 _Value Type:_ float  

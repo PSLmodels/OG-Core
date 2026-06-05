@@ -632,6 +632,7 @@
 </ul>
 </li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#model-solution-parameters">Model Solution Parameters</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#use-sparse-foc-jac"><code class="docutils literal notranslate"><span class="pre">use_sparse_FOC_jac</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#nu"><code class="docutils literal notranslate"><span class="pre">nu</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ss-root-method"><code class="docutils literal notranslate"><span class="pre">SS_root_method</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#foc-root-method"><code class="docutils literal notranslate"><span class="pre">FOC_root_method</span></code></a></li>
@@ -1528,6 +1529,12 @@ organization of the theory in the <code class="docutils literal notranslate"><sp
 </section>
 <section id="model-solution-parameters">
 <h2>Model Solution Parameters<a class="headerlink" href="#model-solution-parameters" title="Link to this heading">#</a></h2>
+<section id="use-sparse-foc-jac">
+<h3><code class="docutils literal notranslate"><span class="pre">use_sparse_FOC_jac</span></code><a class="headerlink" href="#use-sparse-foc-jac" title="Link to this heading">#</a></h3>
+<p><em>Description:</em> Flag to use a sparse (banded) finite-difference Jacobian in the household first order condition root finder. When True (the default), the sparsity pattern of the stacked Euler/labor first order conditions is auto-detected once per problem size and supplied to scipy.optimize.root, which then needs far fewer function evaluations per Jacobian build than the default dense finite differences. The solver falls back to the dense finite-difference Jacobian automatically if the Jacobian is not sparse enough to benefit or if a solve fails. Set to False to use the legacy dense Jacobian on every call.<br />
+<em>Value Type:</em> bool<br />
+<em>Valid Choices:</em>[True, False]</p>
+</section>
 <section id="nu">
 <h3><code class="docutils literal notranslate"><span class="pre">nu</span></code><a class="headerlink" href="#nu" title="Link to this heading">#</a></h3>
 <p><em>Description:</em> Parameter for convergence rate of functional iteration.<br />
@@ -1863,6 +1870,7 @@ organization of the theory in the <code class="docutils literal notranslate"><sp
 </ul>
 </li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#model-solution-parameters">Model Solution Parameters</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#use-sparse-foc-jac"><code class="docutils literal notranslate"><span class="pre">use_sparse_FOC_jac</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#nu"><code class="docutils literal notranslate"><span class="pre">nu</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ss-root-method"><code class="docutils literal notranslate"><span class="pre">SS_root_method</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#foc-root-method"><code class="docutils literal notranslate"><span class="pre">FOC_root_method</span></code></a></li>
