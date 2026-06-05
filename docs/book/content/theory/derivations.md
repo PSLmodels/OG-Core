@@ -114,3 +114,16 @@ In the Cobb-Douglas unit elasticity case ($\varepsilon=1$) of the CES production
 ```
 
 Again, even if this simple case, we cannot solve for $r$ as a function of $w$ for the reasons above.
+
+
+(SecAppDerivHHjac)=
+## Sparsity of the household equation Jacobian
+
+  Holding fixed the prices and policies a type-$j$ cohort faces, its $2S$ stationarized necessary conditions {eq}`EqStnrz_eul_n`, {eq}`EqStnrz_eul_b`, and {eq}`EqStnrz_eul_bS` in the $2S$ unknowns $\{n_{j,s},\hat b_{j,s+1}\}_{s=E+1}^{E+S}$ have a banded Jacobian. From the budget constraint {eq}`EqStnrzHHBC`, stationarized consumption at age $s$ depends on only three unknowns,
+
+  ```{math}
+  :label: EqAppDerivHHjac_cons
+    \hat c_{j,s} = \frac{1}{p}\Bigl[(1+r_p)\hat b_{j,s} + \hat w\,e_{j,s}\,n_{j,s} - \widehat{tax}_{j,s} - e^{g_y}\hat b_{j,s+1}\Bigr] + X_{j,s},
+  ```
+
+  where $\widehat{tax}_{j,s}$ depends only on $(\hat b_{j,s}, n_{j,s})$ through labor and capital income (already in the active set, so it adds no further coupling), and $X_{j,s}$ collects terms fixed in the inner solve (bequests $\hat{bq}_{j,s}$, remittances $\hat{rm}_{j,s}$, government transfers $\hat{tr}_{j,s}$, UBI $\hat{ubi}_{j,s}$, the pension benefit $\theta_j$, and the $\hat c_{min,i}$ terms). The labor Euler equation {eq}`EqStnrz_eul_n` at age $s$ therefore depends on $\{\hat b_{j,s},\hat b_{j,s+1},n_{j,s}\}$ alone, and the savings Euler equation {eq}`EqStnrz_eul_b`---which links $\hat c_{j,s}$ to $\hat b_{j,s+1}$ and $\hat c_{j,s+1}$---depends on $\{\hat b_{j,s},\hat b_{j,s+1},\hat b_{j,s+2},n_{j,s},n_{j,s+1}\}$. The marginal tax rates $\tau^{mtrx}_s$ and $\tau^{mtry}_{s+1}$ are functions of own-age income (already in these sets), so they add no further coupling, and the terminal condition {eq}`EqStnrz_eul_bS` is sparser still. Each of the $2S$ equations therefore depends on at most five of the $2S$ unknowns, regardless of $S$, so the Jacobian has at most $10S$ nonzero entries rather than the $(2S)^2 = 4S^2$ of a fully coupled system. This is the per-cohort counterpart to the dense $2JS$ system noted at the start of Chapter {ref}`Chap_Eqm`: cohorts couple only through prices, which are held fixed in the inner solve. A finite-difference Jacobian can then be built from a number of evaluations set by the bandwidth---about seven at $S = 80$---rather than $2S$, by probing together unknowns that affect no common equation (Figure {numref}`FigHHjacSparsity`).
