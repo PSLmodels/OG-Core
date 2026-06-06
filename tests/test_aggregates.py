@@ -64,23 +64,25 @@ def test_get_L_J1_regression():
     rho_vec_j1 = np.zeros((1, 40))
     rho_vec_j1[0, -1] = 1.0
     p_j1 = Specifications()
-    p_j1.update_specifications({
-        "T": 160,
-        "S": 40,
-        "J": 1,
-        "rho": rho_vec_j1.tolist(),
-        "chi_n": np.ones(1),
-        "lambdas": [1.0],
-        "e": np.ones((40, 1)),
-        "labor_income_tax_noncompliance_rate": [[0.0]],
-        "capital_income_tax_noncompliance_rate": [[0.0]],
-        "income_tax_filer": [[1.0]],
-        "wealth_tax_filer": [[1.0]],
-        "replacement_rate_adjust": [[1.0]],
-        "eta": np.ones((40, 1)) / 40,
-        "omega": np.ones((160, 40)) / 40,
-        "omega_SS": np.ones(40) / 40,
-    })
+    p_j1.update_specifications(
+        {
+            "T": 160,
+            "S": 40,
+            "J": 1,
+            "rho": rho_vec_j1.tolist(),
+            "chi_n": np.ones(1),
+            "lambdas": [1.0],
+            "e": np.ones((40, 1)),
+            "labor_income_tax_noncompliance_rate": [[0.0]],
+            "capital_income_tax_noncompliance_rate": [[0.0]],
+            "income_tax_filer": [[1.0]],
+            "wealth_tax_filer": [[1.0]],
+            "replacement_rate_adjust": [[1.0]],
+            "eta": np.ones((40, 1)) / 40,
+            "omega": np.ones((160, 40)) / 40,
+            "omega_SS": np.ones(40) / 40,
+        }
+    )
     n = np.random.default_rng(0).random((p_j1.S, p_j1.J))
     # Reference: explicit double-sum over ages and types.
     expected = 0.0
