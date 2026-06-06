@@ -51,6 +51,50 @@ def test_get_L(n, p, method, expected):
     assert np.allclose(L, expected)
 
 
+def test_get_L_J1_regression():
+    """
+    Regression test for issue #1143: aggregate labor for J=1 must use a
+    proper (S, J) shape for ``p.e[-1, :, :]``. A stray ``np.squeeze`` in
+    ``get_L`` collapsed the J axis to a 1-D array, which then broadcast
+    against the (S, J) weight into an (S, S) outer product, scaling
+    aggregate labor by S. This test checks the get_L result against a
+    plain index-by-index loop so any future shape-collapse regression
+    fails loudly.
+    """
+    rho_vec_j1 = np.zeros((1, 40))
+    rho_vec_j1[0, -1] = 1.0
+    p_j1 = Specifications()
+    p_j1.update_specifications({
+        "T": 160,
+        "S": 40,
+        "J": 1,
+        "rho": rho_vec_j1.tolist(),
+        "chi_n": np.ones(1),
+        "lambdas": [1.0],
+        "e": np.ones((40, 1)),
+        "labor_income_tax_noncompliance_rate": [[0.0]],
+        "capital_income_tax_noncompliance_rate": [[0.0]],
+        "income_tax_filer": [[1.0]],
+        "wealth_tax_filer": [[1.0]],
+        "replacement_rate_adjust": [[1.0]],
+        "eta": np.ones((40, 1)) / 40,
+        "omega": np.ones((160, 40)) / 40,
+        "omega_SS": np.ones(40) / 40,
+    })
+    n = np.random.default_rng(0).random((p_j1.S, p_j1.J))
+    # Reference: explicit double-sum over ages and types.
+    expected = 0.0
+    for s in range(p_j1.S):
+        for j in range(p_j1.J):
+            expected += (
+                p_j1.omega_SS[s]
+                * float(p_j1.lambdas[j])
+                * float(p_j1.e[-1, s, j])
+                * n[s, j]
+            )
+    assert np.allclose(aggr.get_L(n, p_j1, "SS"), expected)
+
+
 p = Specifications()
 rho_vec = np.zeros((1, 40))
 rho_vec[0, -1] = 1.0

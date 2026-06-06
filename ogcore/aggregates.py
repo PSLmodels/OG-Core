@@ -33,8 +33,12 @@ def get_L(n, p, method):
 
     """
     if method == "SS":
+        # NOTE: avoid np.squeeze on p.e[-1, :, :] here — for J=1 it collapses
+        # the J axis to a 1-D array, and the subsequent multiplication against
+        # the (S, J) weight broadcasts into an (S, S) outer product, producing
+        # a labor aggregate S times too large. p.e[-1, :, :] is already (S, J).
         L_presum = (
-            np.squeeze(p.e[-1, :, :])
+            p.e[-1, :, :]
             * np.transpose(p.omega_SS * p.lambdas)
             * n
         )
