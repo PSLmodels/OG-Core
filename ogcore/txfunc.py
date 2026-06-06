@@ -261,11 +261,16 @@ def get_tax_rates(
                 ) + min_income
                 txrates = tau_income + shift_income + shift
     elif tax_func_type == "linear":
-        rate = np.squeeze(params[..., 0])
-        try:
-            txrates = rate * np.ones_like(income)
-        except ValueError:
-            txrates = rate.reshape(income.shape) * np.ones_like(income)
+        # NOTE: ``np.squeeze`` on params[..., 0] was unsafe for J=1 aggregate
+        # callers, where it collapses the (S, 1) rate to (S,) and the
+        # subsequent multiplication against the (S, 1) income broadcasts into
+        # an (S, S) outer product. Match rate to income's shape explicitly.
+        rate = np.asarray(params[..., 0])
+        if rate.size == np.size(income):
+            rate = rate.reshape(np.shape(income))
+        else:
+            rate = np.squeeze(rate)
+        txrates = rate * np.ones_like(income)
     elif tax_func_type == "mono":
         if for_estimation:
             mono_interp = params[0]

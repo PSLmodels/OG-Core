@@ -510,8 +510,12 @@ def inner_loop(outer_loop_vars, p, client):
     new_r_p = aggr.get_r_p(
         new_r, new_r_gov, p_m, K_vec, K_g, D, MPKg_vec, p, "SS"
     )
+    # NOTE: avoid np.squeeze on p.e[-1, :, :] — for J=1 it collapses the J
+    # axis to a 1-D array, and the subsequent multiplication against the
+    # (S, J) nssmat broadcasts into an (S, S) outer product, scaling the
+    # income sum by S. p.e[-1, :, :] is already (S, J).
     average_income_model = (
-        (new_r_p * b_s + new_w * np.squeeze(p.e[-1, :, :]) * nssmat)
+        (new_r_p * b_s + new_w * p.e[-1, :, :] * nssmat)
         * p.omega_SS.reshape(p.S, 1)
         * p.lambdas.reshape(1, p.J)
     ).sum()
