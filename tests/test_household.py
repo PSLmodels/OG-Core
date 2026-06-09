@@ -1084,11 +1084,16 @@ def test_get_y():
     """
     Test of household.get_y() function.
     """
-    r_p = np.array([0.05, 0.04, 0.09])
-    w = np.array([1.2, 0.8, 2.5])
-    b_s = np.array([0.5, 0.99, 9])
-    n = np.array([0.8, 3.2, 0.2])
-    expected_y = np.array([0.9754, 3.8796, 0.91])
+    # get_y is called in the SS with (S, J) household arrays, so test with
+    # 2-D inputs (here J=1, a single column) and confirm the (S, J) shape is
+    # preserved. A stray np.squeeze on the earnings profile previously
+    # collapsed this to (S,), producing an (S, S) outer product for J=1
+    # (issue #1143).
+    r_p = np.array([0.05, 0.04, 0.09]).reshape(3, 1)
+    w = np.array([1.2, 0.8, 2.5]).reshape(3, 1)
+    b_s = np.array([0.5, 0.99, 9]).reshape(3, 1)
+    n = np.array([0.8, 3.2, 0.2]).reshape(3, 1)
+    expected_y = np.array([0.9754, 3.8796, 0.91]).reshape(3, 1)
     p = Specifications()
     # p.update_specifications({'S': 4, 'J': 1})
     p.S = 3
@@ -1099,6 +1104,7 @@ def test_get_y():
     test_y = household.get_y(r_p, w, b_s, n, p, "SS")
     # TODO: test with "TPI"
 
+    assert test_y.shape == (3, 1)
     assert np.allclose(test_y, expected_y)
 
 

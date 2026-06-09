@@ -725,37 +725,43 @@ def test_get_tax_rates(
     assert np.allclose(test_txrates, expected)
 
 
-def test_get_tax_rates_linear_J1_shape():
+@pytest.mark.parametrize(
+    "tax_func_type,coeffs",
+    [
+        (
+            "DEP",
+            [1e-4, 1e-4, 1e-4, 1e-4, 0.6, 0.6, 0.5, 0.0, 0.0, 0.1, 0.1, 0.0],
+        ),
+        ("DEP_totalinc", [1e-4, 1e-4, 0.6, 0.0, 0.1, 0.0]),
+        ("GS", [0.3, 0.5, 0.5]),
+        ("HSV", [0.8, 0.1]),
+        ("linear", [0.25]),
+    ],
+    ids=["DEP", "DEP_totalinc", "GS", "HSV", "linear"],
+)
+def test_get_tax_rates_J1_shape(tax_func_type, coeffs):
     """
-    Regression test for issue #1143: when ``tax_func_type == "linear"``
-    is called from the aggregate (j=None) SS path with J=1, ``params``
-    has shape (S, 1, 1) so ``params[..., 0]`` is (S, 1). A stray
-    ``np.squeeze`` collapsed it to (S,), which then broadcast against
-    the (S, 1) income into an (S, S) outer product. The output should
-    have the same shape as the income input.
+    Regression test for issue #1143. In the aggregate (j=None) tax-rate
+    path with J=1, the coefficient slice ``params[..., i]`` is shaped
+    (S, 1). A stray ``np.squeeze`` collapsed it to (S,), which then
+    broadcast against the (S, 1) income into an (S, S) outer product --
+    silently wrong taxes for J=1. The output must keep the income's
+    (S, J) shape for every parametric tax function type.
     """
     S = 40
-    # Aggregate J=1 path: params (S, 1, 1), income (S, 1)
-    params_j1 = np.full((S, 1, 1), 0.25)
-    X_j1 = np.linspace(1.0, 100.0, S).reshape(S, 1)
-    Y_j1 = np.linspace(0.5, 50.0, S).reshape(S, 1)
-    out_j1 = txfunc.get_tax_rates(
-        params_j1, X_j1, Y_j1, None, "linear", "etr", for_estimation=False
-    )
-    assert out_j1.shape == (S, 1), (
-        f"linear branch lost the J=1 column: got {out_j1.shape}, "
-        f"expected {(S, 1)}"
-    )
-
-    # Aggregate J=2 path: params (S, 2, 1), income (S, 2). Should be
-    # unaffected by the fix; included as a non-regression check.
-    params_j2 = np.full((S, 2, 1), 0.25)
-    X_j2 = np.tile(X_j1, (1, 2))
-    Y_j2 = np.tile(Y_j1, (1, 2))
-    out_j2 = txfunc.get_tax_rates(
-        params_j2, X_j2, Y_j2, None, "linear", "etr", for_estimation=False
-    )
-    assert out_j2.shape == (S, 2)
+    X = np.linspace(1.0, 100.0, S)
+    Y = np.linspace(0.5, 50.0, S)
+    for J in (1, 2):
+        params = np.tile(np.array(coeffs), (S, J, 1))  # (S, J, n_params)
+        Xj = np.tile(X.reshape(S, 1), (1, J))
+        Yj = np.tile(Y.reshape(S, 1), (1, J))
+        out = txfunc.get_tax_rates(
+            params, Xj, Yj, None, tax_func_type, "etr", for_estimation=False
+        )
+        assert np.shape(out) == (S, J), (
+            f"{tax_func_type}: J={J} output shape {np.shape(out)} "
+            f"!= {(S, J)} (J=1 axis collapse)"
+        )
 
 
 @pytest.mark.local

@@ -989,7 +989,7 @@ def SS_solver(
         0,
         None,
         "SS",
-        np.squeeze(p.e[-1, :, :]),
+        np.squeeze(p.e[-1, :, :]).reshape((p.S, p.J)),
         etr_params_3D,
         p,
     )
@@ -1003,7 +1003,7 @@ def SS_solver(
         None,
         False,
         "SS",
-        np.squeeze(p.e[-1, :, :]),
+        np.squeeze(p.e[-1, :, :]).reshape((p.S, p.J)),
         factor_ss,
         p,
     )
