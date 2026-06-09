@@ -615,11 +615,11 @@ Note that the budget closure rule (described in Section ref{`SecUnbalGBCcloseRul
 (SecUnbalGBCbudgConstr)=
 ## Government Budget Constraint
 
-  Let the level of government debt in period $t$ be given by $D_t$. The government budget constraint requires that government revenue $Rev_t$ plus the budget deficit ($D_{t+1} - D_t$) equal expenditures on interest on the debt, government spending on public goods $G_t$, total infrastructure investments $I_{g,t}$, total pension outlays, total transfer payments to households $TR_t$, and $UBI_t$ every period $t$,
+  Let the level of government debt in period $t$ be given by $D_t$. The government budget constraint requires that government revenue $Rev_t$, external foreign assistance, $FA_t$, plus the budget deficit ($D_{t+1} - D_t$) equal expenditures on interest on the debt, government spending on public goods $G_t$, total infrastructure investments $I_{g,t}$, total pension outlays, total transfer payments to households $TR_t$, and $UBI_t$ every period $t$,
 
   ```{math}
   :label: EqUnbalGBCbudgConstr
-    D_{t+1} + Rev_t = (1 + r_{gov,t})D_t + G_t + I_{g,t} + Pensions_t + TR_t + UBI_t  \quad\forall t
+    D_{t+1} + Rev_t + FA_t = (1 + r_{gov,t})D_t + G_t + I_{g,t} + Pensions_t + TR_t + UBI_t  \quad\forall t
   ```
 
   where $r_{gov,t}$ is the interest rate paid by the government defined in equation {eq}`EqUnbalGBC_rate_wedge` below, $G_{t}$ is government spending on public goods, $I_{g,t}$ is total government spending on infrastructure investment, $TR_{t}$ are non-pension government transfers, and $UBI_t$ is the total UBI transfer outlays across households in time $t$. All variables in {eq}`EqUnbalGBCbudgConstr` are real variables denominated in units of current-period output in industry $M$ the numeraire ($p_{M,t}=1$ for all $t$).
@@ -713,8 +713,8 @@ Note that the budget closure rule (described in Section ref{`SecUnbalGBCcloseRul
     &\text{where}\quad g_{g,t} =
       \begin{cases}
         1 \qquad\qquad\qquad\qquad\qquad\qquad\qquad\qquad\qquad\quad\:\text{if}\quad t < T_{G1} \\
-        \frac{\left[\rho_{d}\alpha_{D}Y_{t} + (1-\rho_{d})D_{t}\right] - (1+r_{gov,t})D_{t} - I_{g,t} - TR_{t} - UBI_{t} + Rev_{t}}{\alpha_g Y_t} \quad\text{if}\quad T_{G1}\leq t<T_{G2} \\
-        \frac{\alpha_{D}Y_{t} - (1+r_{gov,t})D_{t} - I_{g,t} - TR_{t} - UBI_{t} + Rev_{t}}{\alpha_g Y_t} \qquad\qquad\quad\:\:\,\text{if}\quad t \geq T_{G2}
+        \frac{\left[\rho_{d}\alpha_{D}Y_{t} + (1-\rho_{d})D_{t}\right] - (1+r_{gov,t})D_{t} - I_{g,t} - TR_{t} - UBI_{t} + Rev_{t} + FA_{t}}{\alpha_g Y_t} \quad\text{if}\quad T_{G1}\leq t<T_{G2} \\
+        \frac{\alpha_{D}Y_{t} - (1+r_{gov,t})D_{t} - I_{g,t} - TR_{t} - UBI_{t} + Rev_{t} + FA_{t}}{\alpha_g Y_t} \qquad\qquad\quad\:\:\,\text{if}\quad t \geq T_{G2}
       \end{cases} \\
     &\text{and}\quad g_{tr,t} = 1 \quad\forall t
   \end{split}
@@ -735,8 +735,8 @@ Note that the budget closure rule (described in Section ref{`SecUnbalGBCcloseRul
     &\text{where}\quad g_{tr,t} =
       \begin{cases}
         1 \qquad\qquad\qquad\qquad\qquad\qquad\qquad\qquad\qquad\:\:\:\,\text{if}\quad t < T_{G1} \\
-        \frac{\left[\rho_{d}\alpha_{D}Y_{t} + (1-\rho_{d})D_{t}\right] - (1+r_{gov,t})D_{t} - G_{t} - I_{g,t} -  UBI_{t} + Rev_{t}}{\alpha_{tr} Y_t} \quad\text{if}\quad T_{G1}\leq t<T_{G2} \\
-        \frac{\alpha_{D}Y_{t} - (1+r_{gov,t})D_{t} - G_{t} - I_{g,t} - UBI_{t} + Rev_{t}}{\alpha_{tr}Y_t} \qquad\qquad\quad\:\:\:\text{if}\quad t \geq T_{G2}
+        \frac{\left[\rho_{d}\alpha_{D}Y_{t} + (1-\rho_{d})D_{t}\right] - (1+r_{gov,t})D_{t} - G_{t} - I_{g,t} -  UBI_{t} + Rev_{t} + FA_{t}}{\alpha_{tr} Y_t} \quad\text{if}\quad T_{G1}\leq t<T_{G2} \\
+        \frac{\alpha_{D}Y_{t} - (1+r_{gov,t})D_{t} - G_{t} - I_{g,t} - UBI_{t} + Rev_{t} + FA_{t}}{\alpha_{tr}Y_t} \qquad\qquad\quad\:\:\:\text{if}\quad t \geq T_{G2}
       \end{cases} \\
     &\text{and}\quad g_{g,t} = 1 \quad\forall t
   \end{split}
@@ -766,8 +766,8 @@ Note that the budget closure rule (described in Section ref{`SecUnbalGBCcloseRul
     &\text{where}\quad g_{trg,t} =
     \begin{cases}
       1 \qquad\qquad\qquad\qquad\qquad\qquad\qquad\qquad\quad\:\,\text{if}\quad t < T_{G1} \\
-      \frac{\left[\rho_{d}\alpha_{D}Y_{t} + (1-\rho_{d})D_{t}\right] - (1+r_{gov,t})D_{t} - I_{g,t} - UBI_{t} + Rev_{t}}{\left(\alpha_g + \alpha_{tr}\right)Y_t} \quad\text{if}\quad T_{G1}\leq t<T_{G2} \\
-      \frac{\alpha_{D}Y_{t} - (1+r_{gov,t})D_{t} - I_{g,t} - UBI_{t} + Rev_{t}}{\left(\alpha_g + \alpha_{tr}\right)Y_t} \qquad\qquad\quad\:\:\:\text{if}\quad t \geq T_{G2}
+      \frac{\left[\rho_{d}\alpha_{D}Y_{t} + (1-\rho_{d})D_{t}\right] - (1+r_{gov,t})D_{t} - I_{g,t} - UBI_{t} + Rev_{t} + FA_{t}}{\left(\alpha_g + \alpha_{tr}\right)Y_t} \quad\text{if}\quad T_{G1}\leq t<T_{G2} \\
+      \frac{\alpha_{D}Y_{t} - (1+r_{gov,t})D_{t} - I_{g,t} - UBI_{t} + Rev_{t} + FA_{t}}{\left(\alpha_g + \alpha_{tr}\right)Y_t} \qquad\qquad\quad\:\:\:\text{if}\quad t \geq T_{G2}
     \end{cases}
   \end{split}
   ```

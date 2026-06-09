@@ -94,6 +94,9 @@ def D_G_path(r, dg_fixed_values, p):
     else:
         G = p.alpha_G[: p.T] * Y[: p.T]
 
+    # direct foreign aid
+    foreign_aid = p.alpha_FA[: p.T] * Y[: p.T]
+
     if p.budget_balance:
         D = np.zeros(p.T + 1)
         G = p.alpha_G[: p.T] * Y[: p.T]
@@ -116,6 +119,7 @@ def D_G_path(r, dg_fixed_values, p):
                 + UBI_outlays[t - 1]
                 + agg_pension_outlays[t - 1]
                 - total_tax_revenue[t - 1]
+                - foreign_aid[t - 1]
             )
             r_gov[t] = get_r_gov(r[t], D[t] / Y[t], p, method="scalar", t=t)
             if (t >= p.tG1) and (t < p.tG2):
@@ -124,6 +128,7 @@ def D_G_path(r, dg_fixed_values, p):
                     * (p.rho_G * p.debt_ratio_ss * Y[t] + (1 - p.rho_G) * D[t])
                     - (1 + r_gov[t]) * D[t]
                     + total_tax_revenue[t]
+                    + foreign_aid[t]
                     - agg_pension_outlays[t]
                     - I_g[t - 1]
                     - TR[t]
@@ -134,6 +139,7 @@ def D_G_path(r, dg_fixed_values, p):
                     growth[t + 1] * (p.debt_ratio_ss * Y[t])
                     - (1 + r_gov[t]) * D[t]
                     + total_tax_revenue[t]
+                    + foreign_aid[t]
                     - agg_pension_outlays[t]
                     - I_g[t - 1]
                     - TR[t]
@@ -152,12 +158,14 @@ def D_G_path(r, dg_fixed_values, p):
             + UBI_outlays[t - 1]
             + agg_pension_outlays[t - 1]
             - total_tax_revenue[t - 1]
+            - foreign_aid[t - 1]
         )
         r_gov[t] = get_r_gov(r[t], D[t] / Y[t], p, method="scalar", t=t)
         G[t] = (
             growth[t] * (p.debt_ratio_ss * Y[t])
             - (1 + r_gov[t]) * D[t]
             + total_tax_revenue[t]
+            + foreign_aid[t]
             - agg_pension_outlays[t]
             - I_g[t - 1]
             - TR[t]
@@ -171,6 +179,7 @@ def D_G_path(r, dg_fixed_values, p):
             + UBI_outlays[t]
             + agg_pension_outlays[t]
             - total_tax_revenue[t]
+            - foreign_aid[t]
         )
         D_ratio_max = np.amax(D[: p.T] / Y[: p.T])
         print("Maximum debt ratio: ", D_ratio_max)
@@ -284,12 +293,14 @@ def get_G_ss(
         G (tuple): steady-state government spending
 
     """
+    foreign_aid = p.alpha_FA[-1] * Y
     if p.budget_balance:
         G = p.alpha_G[-1] * Y
     else:
         G = (
             total_tax_revenue
             + new_borrowing
+            + foreign_aid
             - (agg_pension_outlays + TR + debt_service + UBI_outlays + I_g)
         )
 
@@ -346,7 +357,7 @@ def get_TR(
         agg_pension_outlays (array_like): total government pension
             outlays
         UBI_outlays (array_like): total universal basic income (UBI) outlays
-        I_g (array_like): public infrastructure investement
+        I_g (array_like): public infrastructure investment
         p (OG-Core Specifications object): model parameters
         method (str): whether doing SS or TP calculation
 
@@ -355,8 +366,17 @@ def get_TR(
 
     """
     if p.budget_balance:
+        if method == "SS":
+            foreign_aid = p.alpha_FA[-1] * Y
+        else:
+            foreign_aid = p.alpha_FA[: p.T] * Y[: p.T]
         new_TR = (
-            total_tax_revenue - agg_pension_outlays - G - UBI_outlays - I_g
+            total_tax_revenue
+            + foreign_aid
+            - agg_pension_outlays
+            - G
+            - UBI_outlays
+            - I_g
         )
     elif p.baseline_spending:
         new_TR = p.alpha_bs_T[-1] * TR
@@ -422,7 +442,7 @@ def get_I_g(Y, Ig_baseline, p, method="SS"):
     Args:
         Y (array_like): aggregate output
         Ig_baseline (array_like): public infrastructure investment in
-            the baseliine simulation
+            the baseline simulation
         p (OG-Core Specifications object): model parameters
         method (str): either 'SS' for steady-state or 'TPI' for transition path
 

@@ -954,6 +954,30 @@
             }
         }
     },
+    "alpha_FA": {
+        "title": "Foreign aid payments to domestic government as a share of GDP",
+        "description": "Foreign aid payments to domestic government as a share of GDP.",
+        "short_description": "Foreign aid as a share of GDP",
+        "param_notation": "$\\alpha_{FA}$",
+        "section_1": "Fiscal Policy Parameters",
+        "section_2": "Fiscal Policy Parameters",
+        "notes": "",
+        "number_dims": 1,
+        "type": "float",
+        "value": [
+            {
+                "value": [
+                    0.0
+                ]
+            }
+        ],
+        "validators": {
+            "range": {
+                "min": 0.0,
+                "max": 1.0
+            }
+        }
+    },
     "alpha_RM_1": {
         "title": "Exogenous ratio of aggregate remittances to GDP in current period (t=1)",
         "description": "Exogenous ratio of aggregate remittances to GDP in current period (t=1).",
@@ -4368,6 +4392,23 @@
            "choice": {"choices": [true, false]}
             }
     },
+    "use_sparse_FOC_jac": {
+        "title": "Flag to use a sparse (banded) finite-difference Jacobian in the household first order condition root finder",
+        "description": "Flag to use a sparse (banded) finite-difference Jacobian in the household first order condition root finder. When True (the default), the sparsity pattern of the stacked Euler/labor first order conditions is auto-detected once per problem size and supplied to scipy.optimize.root, which then needs far fewer function evaluations per Jacobian build than the default dense finite differences. The solver falls back to the dense finite-difference Jacobian automatically if the Jacobian is not sparse enough to benefit or if a solve fails. Set to False to use the legacy dense Jacobian on every call.",
+        "short_description": "Use a banded finite-difference Jacobian in the household solver",
+        "param_notation": "$\\texttt{use_sparse_FOC_jac}$",
+        "section_1": "Model Solution Parameters",
+        "notes": "",
+        "type": "bool",
+        "value": [
+            {
+                "value": true
+            }
+        ],
+        "validators": {
+            "choice": {"choices": [true, false]}
+        }
+    },
     "start_year": {
         "title": "Calendar year in which to start model analysis",
         "description": "Calendar year in which to start model analysis.",
@@ -4661,7 +4702,7 @@
         "validators": {
             "range": {
                 "min": 1e-13,
-                "max": 0.001
+                "max": 0.01
             }
         }
     },
