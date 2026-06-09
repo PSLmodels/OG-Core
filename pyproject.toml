@@ -109,3 +109,8 @@ markers = [
     "real: marks tests using real OG-Core tax function code",
     "platform: marks tests for platform-specific optimization",
 ]
+
+[dependency-groups]
+dev = [
+    "ipykernel>=7.2.0",
+]
