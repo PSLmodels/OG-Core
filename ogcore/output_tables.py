@@ -1034,19 +1034,84 @@ def model_fit_table(
             ``None`` if saved to disk
 
     """
-    table_dict = {
-        "Moment": [],
-        "Data": [],
-        "Model": [],
-    }
+    # Ordered groups and the moment descriptions belonging to each
+    MOMENT_GROUPS = [
+        (
+            "Macroeconomic moments",
+            [
+                r"Investment rate $(I/K)$",
+                r"Capital-Output ratio $(K/Y)$",
+                r"Consumption-Output ratio $(C/Y)$",
+                r"Savings rate $(B/Y)$",
+                r"Interest rate $(r)$",
+                r"Capital share of output",
+                r"Labor share of output",
+            ],
+        ),
+        (
+            "Fiscal moments",
+            [
+                r"Revenue to GDP ratio $(T/Y)$",
+                r"Gov't consumption to GDP ratio $(G/Y)$",
+                r"Pension outlays to GDP ratio $(Pension/Y)$",
+                r"Infrastructure spending to GDP ratio $(I_g/Y)$",
+                r"Debt to GDP ratio $(D/Y)$",
+            ],
+        ),
+        (
+            "Distributional moments",
+            [
+                "Gini coefficient, wealth",
+                "Gini coefficient, income",
+                "Gini coefficient, after-tax income",
+            ],
+        ),
+        (
+            "Demographic moments",
+            [
+                r"Fraction 65+",
+                r"Pop growth rate",
+            ],
+        ),
+    ]
 
+    # Compute model moments for all entries in targets_dict
+    computed = {}
     for moment, data_val in targets_dict.items():
-        # --- Columns 1-3: target description, model moment, data moment ---
         target_desc = moment
 
-        # Compute the model moment corresponding to the target description
+        # Macroeconomic moments
+        if target_desc == r"Investment rate $(I/K)$":
+            model_val = tpi_output["I"][t] / tpi_output["K"][t]
+        elif target_desc == r"Capital-Output ratio $(K/Y)$":
+            model_val = tpi_output["K"][t] / tpi_output["Y"][t]
+        elif target_desc == r"Consumption-Output ratio $(C/Y)$":
+            model_val = tpi_output["C"][t] / tpi_output["Y"][t]
+        elif target_desc == r"Savings rate $(B/Y)$":
+            model_val = tpi_output["B"][t] / tpi_output["Y"][t]
+        elif target_desc == r"Interest rate $(r)$":
+            model_val = tpi_output["r"][t]
+        elif target_desc == r"Capital share of output":
+            model_val = (
+                1 - tpi_output["r"][t] * tpi_output["K"][t] / tpi_output["Y"][t]
+            )
+        elif target_desc == r"Labor share of output":
+            model_val = tpi_output["w"][t] * tpi_output["L"][t] / tpi_output["Y"][t]
+        # Fiscal moments
+        elif target_desc == r"Revenue to GDP ratio $(T/Y)$":
+            model_val = (
+                tpi_output["total_total_tax_revenue"][t] / tpi_output["Y"][t]
+            )
+        elif target_desc == r"Gov't consumption to GDP ratio $(G/Y)$":
+            model_val = tpi_output["G"][t] / tpi_output["Y"][t]
+        elif target_desc == r"Pension outlays to GDP ratio $(Pension/Y)$":
+            model_val = tpi_output["agg_pension_outlays"][t] / tpi_output["Y"][t]
+        elif target_desc == r"Infrastructure spending to GDP ratio $(I_g/Y)$":
+            model_val = tpi_output["I_g"][t] / tpi_output["Y"][t]
+        elif target_desc == r"Debt to GDP ratio $(D/Y)$":
+            model_val = tpi_output["D"][t] / tpi_output["Y"][t]
         # Distributional moments
-        if target_desc == "Gini coefficient, wealth":
+        elif target_desc == "Gini coefficient, wealth":
             dist = tpi_output["b_sp1"][t]
             pop_weights = params.omega[t]
             pop_weights = pop_weights / pop_weights.sum()
@@ -1063,40 +1128,17 @@ def model_fit_table(
             )
             model_val = ineq.gini()
         elif target_desc == "Gini coefficient, after-tax income":
-            dist = tpi_output["before_tax_income"][t] + tpi_output["hh_net_taxes"][t]
+            dist = (
+                tpi_output["before_tax_income"][t]
+                + tpi_output["hh_net_taxes"][t]
+            )
             pop_weights = params.omega[t]
             pop_weights = pop_weights / pop_weights.sum()
             ineq = Inequality(
                 dist, pop_weights, params.lambdas, params.S, params.J
             )
             model_val = ineq.gini()
-        # Macro moments
-        elif target_desc == r"Investment rate $(I/K)$":
-            model_val = tpi_output["I"][t] / tpi_output["K"][t]
-        elif target_desc == r"Capital-Output ratio $(K/Y)$":
-            model_val = tpi_output["K"][t] / tpi_output["Y"][t]
-        elif target_desc == r"Consumption-Output ratio $(C/Y)$":
-            model_val = tpi_output["C"][t] / tpi_output["Y"][t]
-        elif target_desc == r"Savings rate $(B/Y)$":
-            model_val = tpi_output["B"][t] / tpi_output["Y"][t]
-        elif target_desc == r"Interest rate $(r)$":
-            model_val = tpi_output["r"][t]
-        elif target_desc == r"Capital share of output":
-            model_val = 1 - tpi_output["r"][t] * tpi_output["K"][t] / tpi_output["Y"][t]
-        elif target_desc == r"Labor share of output":
-            model_val = tpi_output["w"][t] * tpi_output["L"][t] / tpi_output["Y"][t]
-        # Fiscal moments
-        elif target_desc == r"Revenue to GDP ratio $(T/Y)$":
-            model_val = tpi_output["total_total_tax_revenue"][t] / tpi_output["Y"][t]
-        elif target_desc == r"Gov't consumption to GDP ratio $(G/Y)$":
-            model_val = tpi_output["G"][t] / tpi_output["Y"][t]
-        elif target_desc == r"Pension outlays to GDP ratio $(Pension/Y)$":
-            model_val = tpi_output["agg_pension_outlays"][t] / tpi_output["Y"][t]
-        elif target_desc == r"Infrastructure spending to GDP ratio $(I_g/Y)$":
-            model_val = tpi_output["I_g"][t] / tpi_output["Y"][t]
-        elif target_desc == r"Debt to GDP ratio $(D/Y)$":
-            model_val = tpi_output["D"][t] / tpi_output["Y"][t]
-        # Demograhic moments
+        # Demographic moments
         elif target_desc == r"Fraction 65+":
             model_val = (
                 params.omega[t, -35:].sum()  # NOTE: not flexible with S, E changes
@@ -1107,9 +1149,33 @@ def model_fit_table(
         else:
             model_val = np.nan
 
-        table_dict["Moment"].append(target_desc)
-        table_dict["Data"].append(data_val)
-        table_dict["Model"].append(model_val)
+        computed[target_desc] = (data_val, model_val)
+
+    # Build the grouped table; skip any group with no matching moments
+    all_grouped = {m for _, moments in MOMENT_GROUPS for m in moments}
+    table_dict = {"Moment": [], "Data": [], "Model": []}
+
+    for group_name, group_moments in MOMENT_GROUPS:
+        group_entries = [m for m in group_moments if m in computed]
+        if not group_entries:
+            continue
+        # Group header row (no data values)
+        table_dict["Moment"].append(group_name)
+        table_dict["Data"].append(np.nan)
+        table_dict["Model"].append(np.nan)
+        # Indented moment rows
+        for m in group_entries:
+            data_val, model_val = computed[m]
+            table_dict["Moment"].append(f"  {m}")
+            table_dict["Data"].append(data_val)
+            table_dict["Model"].append(model_val)
+
+    # Append any moments not belonging to a known group
+    for target_desc, (data_val, model_val) in computed.items():
+        if target_desc not in all_grouped:
+            table_dict["Moment"].append(target_desc)
+            table_dict["Data"].append(data_val)
+            table_dict["Model"].append(model_val)
 
     table_df = pd.DataFrame.from_dict(table_dict)
     table = save_return_table(table_df, table_format, path, precision=4)
