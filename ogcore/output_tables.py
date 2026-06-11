@@ -1125,7 +1125,7 @@ def model_fit_table(
         elif target_desc == "Gini coefficient, after-tax income":
             dist = (
                 tpi_output["before_tax_income"][t]
-                + tpi_output["hh_net_taxes"][t]
+                - tpi_output["hh_net_taxes"][t]
             )
             pop_weights = params.omega[t]
             pop_weights = pop_weights / pop_weights.sum()
