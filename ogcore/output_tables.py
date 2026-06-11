@@ -1085,7 +1085,8 @@ def model_fit_table(
             model_val = tpi_output["r"][t]
         elif target_desc == r"Capital share of output":
             model_val = (
-                1 - tpi_output["w"][t] * tpi_output["L"][t] / tpi_output["Y"][t]
+                1
+                - tpi_output["w"][t] * tpi_output["L"][t] / tpi_output["Y"][t]
             )
         elif target_desc == r"Labor share of output":
             model_val = (
