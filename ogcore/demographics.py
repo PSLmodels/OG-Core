@@ -82,6 +82,11 @@ def get_un_data(
 
     # get data from url
     payload = {}
+    # Accept a token with or without a leading "Bearer " prefix so the
+    # header isn't doubled into "Bearer Bearer <token>".
+    UN_TOKEN = UN_TOKEN.strip()
+    if UN_TOKEN.lower().startswith("bearer "):
+        UN_TOKEN = UN_TOKEN[len("bearer ") :].strip()
     headers = {"Authorization": "Bearer " + UN_TOKEN}
     response = get_legacy_session().get(target, headers=headers, data=payload)
     # Check if the request was successful before processing
@@ -97,7 +102,12 @@ def get_un_data(
             axis=1,
             inplace=True,
         )
-        df.loc[df.age == "100+", "age"] = 100
+        # The "100+" top age bin appears only in some series (mortality,
+        # population), so the age column may parse as int (no "100+") or
+        # str. Normalize to str so the replacement works under pandas
+        # >=3.0's strict string dtype, then cast the column to int.
+        df.age = df.age.astype(str)
+        df.loc[df.age == "100+", "age"] = "100"
         df.age = df.age.astype(int)
         df.year = df.year.astype(int)
         df = df[df.age < 100]  # need to drop 100+ age category
