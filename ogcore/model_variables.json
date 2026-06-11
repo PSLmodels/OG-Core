@@ -392,7 +392,7 @@
         "type": "array-like",
         "TPI dimensions": "T",
         "SS dimensions": "scalar",
-        "label": "Composite consumption good price ($\tilde{p}_{t}$)",
+        "label": "Composite consumption good price ($\\tilde{p}_{t}$)",
         "toGDP_label": ""
     },
     "b_sp1": {
@@ -428,7 +428,7 @@
         "type": "array-like",
         "TPI dimensions": "TxSxJ",
         "SS dimensions": "SxJ",
-        "label": "Household Consumption ($\tilde{c}_{j,s,t}$)",
+        "label": "Household Consumption ($\\tilde{c}_{j,s,t}$)",
         "toGDP_label": ""
     },
     "c_i": {
