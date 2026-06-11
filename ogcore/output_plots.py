@@ -838,7 +838,9 @@ def ss_profiles(
             if var != "n":
                 # If not labor, normalize so data and model match in
                 # first period
-                plot_data = plot_data / plot_data.values[0] * base_var[0]
+                plot_data_arr = np.asarray(plot_data)
+                if plot_data_arr[0] != 0:
+                    plot_data = plot_data_arr / plot_data_arr[0] * base_var[0]
             plt.plot(
                 age_vec, plot_data, linewidth=2.0, label="Data", linestyle=":"
             )
