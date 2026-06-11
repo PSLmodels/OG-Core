@@ -1000,13 +1000,6 @@ def model_fit_table(
     """
     Creates a table summarizing the model fit.
 
-    Supported target descriptions (used as keys in ``targets_dict``):
-
-    * ``"Gini coefficient of wealth"`` -- computed from ``b_sp1``
-    * ``"Investment rate (I/K)"`` -- computed from ``I`` and ``K``
-    * ``"Gini coefficient of income"`` -- computed from
-      ``before_tax_income``
-
     Args:
         targets_dict (dict): maps each parameter name to a one-item
             dict ``{target_description: data_value}``, e.g.::
