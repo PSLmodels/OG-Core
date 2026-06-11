@@ -836,7 +836,8 @@ def ss_profiles(
             plt.plot(age_vec, reform_var, label="Reform", linestyle="--")
         if plot_data is not None:
             if var != "n":
-                # If not labor, normalize so data and model match in first period
+                # If not labor, normalize so data and model match in
+                # first period
                 plot_data = plot_data / plot_data.values[0] * base_var[0]
             plt.plot(
                 age_vec, plot_data, linewidth=2.0, label="Data", linestyle=":"

@@ -1,4 +1,3 @@
-import json
 import numpy as np
 import pandas as pd
 import os
@@ -1093,19 +1092,22 @@ def model_fit_table(
             model_val = tpi_output["r"][t]
         elif target_desc == r"Capital share of output":
             model_val = (
-                1 - tpi_output["r"][t] * tpi_output["K"][t] / tpi_output["Y"][t]
+                1
+                - tpi_output["r"][t] * tpi_output["K"][t] / tpi_output["Y"][t]
             )
         elif target_desc == r"Labor share of output":
-            model_val = tpi_output["w"][t] * tpi_output["L"][t] / tpi_output["Y"][t]
+            model_val = (
+                tpi_output["w"][t] * tpi_output["L"][t] / tpi_output["Y"][t]
+            )
         # Fiscal moments
         elif target_desc == r"Revenue to GDP ratio $(T/Y)$":
-            model_val = (
-                tpi_output["total_tax_revenue"][t] / tpi_output["Y"][t]
-            )
+            model_val = tpi_output["total_tax_revenue"][t] / tpi_output["Y"][t]
         elif target_desc == r"Gov't consumption to GDP ratio $(G/Y)$":
             model_val = tpi_output["G"][t] / tpi_output["Y"][t]
         elif target_desc == r"Pension outlays to GDP ratio $(Pension/Y)$":
-            model_val = tpi_output["agg_pension_outlays"][t] / tpi_output["Y"][t]
+            model_val = (
+                tpi_output["agg_pension_outlays"][t] / tpi_output["Y"][t]
+            )
         elif target_desc == r"Infrastructure spending to GDP ratio $(I_g/Y)$":
             model_val = tpi_output["I_g"][t] / tpi_output["Y"][t]
         elif target_desc == r"Debt to GDP ratio $(D/Y)$":
@@ -1141,7 +1143,9 @@ def model_fit_table(
         # Demographic moments
         elif target_desc == r"Fraction 65+":
             model_val = (
-                params.omega[t, -35:].sum()  # NOTE: not flexible with S, E changes
+                params.omega[
+                    t, -35:
+                ].sum()  # NOTE: not flexible with S, E changes
                 / params.omega[t].sum()
             )
         elif target_desc == r"Pop growth rate":
