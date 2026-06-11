@@ -1100,7 +1100,7 @@ def model_fit_table(
         # Fiscal moments
         elif target_desc == r"Revenue to GDP ratio $(T/Y)$":
             model_val = (
-                tpi_output["total_total_tax_revenue"][t] / tpi_output["Y"][t]
+                tpi_output["total_tax_revenue"][t] / tpi_output["Y"][t]
             )
         elif target_desc == r"Gov't consumption to GDP ratio $(G/Y)$":
             model_val = tpi_output["G"][t] / tpi_output["Y"][t]
