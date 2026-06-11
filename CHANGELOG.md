@@ -5,6 +5,16 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.16.2] - 2026-06-11 18:00:00
+
+### Added
+
+ - Adds `output_tables.model_fit_table` function that generates a table comparing model output to data for a set of target moments, and adds a test of this function in `test_output_tables.py`. The function takes as input a list of target moment descriptions, the TPI output dictionary, and the model parameters object, and returns a pandas DataFrame with the target moment descriptions, the model values for those moments, and the data values for those moments (where applicable). The function currently supports a set of macroeconomic moments (interest rate, capital share of output, labor share of output), inequality moments (Gini coefficient for before-tax income and after-tax income), and demographic moments (fraction of population 65+ and population growth rate). See PR [#1138](https://github.com/PSLmodels/OG-Core/pull/1138).
+
+### Bug Fix
+
+- Fixed math notion for tilde variables in plot labels in `output_plots.py` to be consistent with the documentation and the code. See PR [#1148](https://github.com/PSLmodels/OG-Core/pull/1148).
+
 ## [0.16.1] - 2026-06-04 12:00:00
 
 ### Added
@@ -587,6 +597,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Any earlier versions of OG-USA can be found in the [`OG-Core`](https://github.com/PSLmodels/OG-Core) repository [release history](https://github.com/PSLmodels/OG-Core/releases) from [v.0.6.4](https://github.com/PSLmodels/OG-Core/releases/tag/v0.6.4) (Jul. 20, 2021) or earlier.
 
 
+[0.16.2]: https://github.com/PSLmodels/OG-Core/compare/v0.16.1...v0.16.2
+[0.16.1]: https://github.com/PSLmodels/OG-Core/compare/v0.16.0...v0.16.1
 [0.16.0]: https://github.com/PSLmodels/OG-Core/compare/v0.15.13...v0.16.0
 [0.15.13]: https://github.com/PSLmodels/OG-Core/compare/v0.15.12...v0.15.13
 [0.15.12]: https://github.com/PSLmodels/OG-Core/compare/v0.15.11...v0.15.12
