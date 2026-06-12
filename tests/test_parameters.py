@@ -194,3 +194,28 @@ def test_expand_taxfunc_params():
     assert len(specs.etr_params) == specs.T + specs.S
     assert len(specs.etr_params[0]) == specs.S
     assert specs.etr_params[0][0][0] == 0.35
+
+
+def test_J_dimensioned_length_guard():
+    """beta_annual / chi_b must have 1 or J values; see issue #1146.
+
+    Wrong-length vectors used to flow through silently: a short one crashed
+    much later (IndexError deep in the SS solve) and a long one was silently
+    truncated to the first J entries.
+    """
+    # one value broadcasts to all J groups
+    specs = Specifications()
+    specs.update_specifications({"beta_annual": [0.95], "chi_b": [50.0]})
+    assert specs.beta.shape == (specs.J,)
+    assert specs.chi_b.shape == (specs.J,)
+    assert np.allclose(specs.chi_b, 50.0)
+
+    # a uniform vector of the wrong length is reshaped losslessly
+    specs2 = Specifications()
+    specs2.update_specifications({"beta_annual": [0.96, 0.96, 0.96]})
+    assert specs2.beta.shape == (specs2.J,)
+
+    # a non-uniform vector of the wrong length raises immediately
+    specs3 = Specifications()
+    with pytest.raises(ValueError, match="beta_annual"):
+        specs3.update_specifications({"beta_annual": [0.94, 0.95, 0.96]})
