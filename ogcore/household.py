@@ -800,7 +800,11 @@ def get_y(r_p, w, b_s, n, p, method):
         method (str): adjusts calculation dimensions based on 'SS' or 'TPI'
     """
     if method == "SS":
-        e = np.squeeze(p.e[-1, :, :])
+        # NOTE: do not np.squeeze here -- for J=1 it collapses p.e[-1, :, :]
+        # from (S, 1) to (S,), which then broadcasts against the (S, 1) b_s/n
+        # into an (S, S) outer product, giving wrong before-tax income. The
+        # array is already (S, J).
+        e = p.e[-1, :, :]
     elif method == "TPI":
         e = p.e
     y = r_p * b_s + w * e * n

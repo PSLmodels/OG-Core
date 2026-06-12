@@ -725,6 +725,45 @@ def test_get_tax_rates(
     assert np.allclose(test_txrates, expected)
 
 
+@pytest.mark.parametrize(
+    "tax_func_type,coeffs",
+    [
+        (
+            "DEP",
+            [1e-4, 1e-4, 1e-4, 1e-4, 0.6, 0.6, 0.5, 0.0, 0.0, 0.1, 0.1, 0.0],
+        ),
+        ("DEP_totalinc", [1e-4, 1e-4, 0.6, 0.0, 0.1, 0.0]),
+        ("GS", [0.3, 0.5, 0.5]),
+        ("HSV", [0.8, 0.1]),
+        ("linear", [0.25]),
+    ],
+    ids=["DEP", "DEP_totalinc", "GS", "HSV", "linear"],
+)
+def test_get_tax_rates_J1_shape(tax_func_type, coeffs):
+    """
+    Regression test for issue #1143. In the aggregate (j=None) tax-rate
+    path with J=1, the coefficient slice ``params[..., i]`` is shaped
+    (S, 1). A stray ``np.squeeze`` collapsed it to (S,), which then
+    broadcast against the (S, 1) income into an (S, S) outer product --
+    silently wrong taxes for J=1. The output must keep the income's
+    (S, J) shape for every parametric tax function type.
+    """
+    S = 40
+    X = np.linspace(1.0, 100.0, S)
+    Y = np.linspace(0.5, 50.0, S)
+    for J in (1, 2):
+        params = np.tile(np.array(coeffs), (S, J, 1))  # (S, J, n_params)
+        Xj = np.tile(X.reshape(S, 1), (1, J))
+        Yj = np.tile(Y.reshape(S, 1), (1, J))
+        out = txfunc.get_tax_rates(
+            params, Xj, Yj, None, tax_func_type, "etr", for_estimation=False
+        )
+        assert np.shape(out) == (S, J), (
+            f"{tax_func_type}: J={J} output shape {np.shape(out)} "
+            f"!= {(S, J)} (J=1 axis collapse)"
+        )
+
+
 @pytest.mark.local
 def test_tax_func_estimate(tmpdir, dask_client):
     """
