@@ -10,6 +10,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
  - Adds `output_tables.model_fit_table` function that generates a table comparing model output to data for a set of target moments, and adds a test of this function in `test_output_tables.py`. The function takes as input a list of target moment descriptions, the TPI output dictionary, and the model parameters object, and returns a pandas DataFrame with the target moment descriptions, the model values for those moments, and the data values for those moments (where applicable). The function currently supports a set of macroeconomic moments (interest rate, capital share of output, labor share of output), inequality moments (Gini coefficient for before-tax income and after-tax income), and demographic moments (fraction of population 65+ and population growth rate). See PR [#1138](https://github.com/PSLmodels/OG-Core/pull/1138).
+ - Validates `beta_annual` and `chi_b` against `J`. ([PR #1149](https://github.com/PSLmodels/OG-Core/pull/1149))
+
+### Bug Fixes
+- Fixes issue with reading UN data on Pandas >= 3.0 and UN token string. ([PR #1151](https://github.com/PSLmodels/OG-Core/pull/1151))
+- Fixes math notation for plot labels. ([PR #1148](https://github.com/PSLmodels/OG-Core/pull/1148))
+- Fixes reshaping issues with `J=1` parameterization. ([PR #1145](https://github.com/PSLmodels/OG-Core/pull/1145))
 
 ### Bug Fix
 
