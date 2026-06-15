@@ -500,6 +500,11 @@
 
     <span class="c1"># get data from url</span>
     <span class="n">payload</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="c1"># Accept a token with or without a leading &quot;Bearer &quot; prefix so the</span>
+    <span class="c1"># header isn&#39;t doubled into &quot;Bearer Bearer &lt;token&gt;&quot;.</span>
+    <span class="n">UN_TOKEN</span> <span class="o">=</span> <span class="n">UN_TOKEN</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+    <span class="k">if</span> <span class="n">UN_TOKEN</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;bearer &quot;</span><span class="p">):</span>
+        <span class="n">UN_TOKEN</span> <span class="o">=</span> <span class="n">UN_TOKEN</span><span class="p">[</span><span class="nb">len</span><span class="p">(</span><span class="s2">&quot;bearer &quot;</span><span class="p">)</span> <span class="p">:]</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
     <span class="n">headers</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;Authorization&quot;</span><span class="p">:</span> <span class="s2">&quot;Bearer &quot;</span> <span class="o">+</span> <span class="n">UN_TOKEN</span><span class="p">}</span>
     <span class="n">response</span> <span class="o">=</span> <span class="n">get_legacy_session</span><span class="p">()</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="n">headers</span><span class="o">=</span><span class="n">headers</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">payload</span><span class="p">)</span>
     <span class="c1"># Check if the request was successful before processing</span>
@@ -515,7 +520,12 @@
             <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
             <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
         <span class="p">)</span>
-        <span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">df</span><span class="o">.</span><span class="n">age</span> <span class="o">==</span> <span class="s2">&quot;100+&quot;</span><span class="p">,</span> <span class="s2">&quot;age&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">100</span>
+        <span class="c1"># The &quot;100+&quot; top age bin appears only in some series (mortality,</span>
+        <span class="c1"># population), so the age column may parse as int (no &quot;100+&quot;) or</span>
+        <span class="c1"># str. Normalize to str so the replacement works under pandas</span>
+        <span class="c1"># &gt;=3.0&#39;s strict string dtype, then cast the column to int.</span>
+        <span class="n">df</span><span class="o">.</span><span class="n">age</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">age</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">str</span><span class="p">)</span>
+        <span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">df</span><span class="o">.</span><span class="n">age</span> <span class="o">==</span> <span class="s2">&quot;100+&quot;</span><span class="p">,</span> <span class="s2">&quot;age&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;100&quot;</span>
         <span class="n">df</span><span class="o">.</span><span class="n">age</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">age</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span>
         <span class="n">df</span><span class="o">.</span><span class="n">year</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">year</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span>
         <span class="n">df</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="n">df</span><span class="o">.</span><span class="n">age</span> <span class="o">&lt;</span> <span class="mi">100</span><span class="p">]</span>  <span class="c1"># need to drop 100+ age category</span>

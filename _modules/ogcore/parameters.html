@@ -510,6 +510,28 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">T</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">T</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">J</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">lambdas</span><span class="p">)</span>
 
+        <span class="c1"># beta_annual and chi_b carry one value per lifetime-income group, but</span>
+        <span class="c1"># paramtools validates values and nesting depth, not list length, so a</span>
+        <span class="c1"># wrong-length vector used to flow through silently: a short one</span>
+        <span class="c1"># crashed much later (IndexError deep in the SS solve, far from the</span>
+        <span class="c1"># cause) and a long one was silently truncated to the first J entries</span>
+        <span class="c1"># -- wrong economics with no symptom. Guard here, where J is first</span>
+        <span class="c1"># known: one value broadcasts to all J groups, J values pass through,</span>
+        <span class="c1"># a uniform vector of any other length is reshaped losslessly</span>
+        <span class="c1"># (smaller-J runs that keep the uniform defaults rely on this), and a</span>
+        <span class="c1"># non-uniform mismatch raises immediately.</span>
+        <span class="k">for</span> <span class="n">param</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;beta_annual&quot;</span><span class="p">,</span> <span class="s2">&quot;chi_b&quot;</span><span class="p">):</span>
+            <span class="n">val</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">param</span><span class="p">))</span><span class="o">.</span><span class="n">ravel</span><span class="p">()</span>
+            <span class="k">if</span> <span class="n">val</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">J</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">val</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="mi">1</span> <span class="ow">or</span> <span class="n">np</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="n">val</span> <span class="o">==</span> <span class="n">val</span><span class="p">[</span><span class="mi">0</span><span class="p">]):</span>
+                    <span class="nb">setattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">param</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">full</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">J</span><span class="p">,</span> <span class="n">val</span><span class="p">[</span><span class="mi">0</span><span class="p">]))</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                        <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">param</span><span class="si">}</span><span class="s2"> must have either 1 value (applied to all &quot;</span>
+                        <span class="sa">f</span><span class="s2">&quot;J groups) or J=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">J</span><span class="si">}</span><span class="s2"> values; got &quot;</span>
+                        <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">val</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="s2"> non-uniform values.&quot;</span>
+                    <span class="p">)</span>
+
         <span class="c1"># get parameters of elliptical utility function</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">b_ellipse</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">upsilon</span> <span class="o">=</span> <span class="n">elliptical_u_est</span><span class="o">.</span><span class="n">estimation</span><span class="p">(</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">frisch</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">ltilde</span>

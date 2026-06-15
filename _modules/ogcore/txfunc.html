@@ -504,12 +504,24 @@
         <span class="c1"># can&#39;t (bc lists of functions). asarray avoids a copy when the</span>
         <span class="c1"># caller already passes an array (the hot TPI path does).</span>
         <span class="n">params</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">params</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_coef</span><span class="p">(</span><span class="n">idx</span><span class="p">):</span>
+        <span class="c1"># Pull tax-function coefficient ``idx`` for every observation.</span>
+        <span class="c1">#</span>
+        <span class="c1"># ``np.squeeze`` was used here, but for a J=1 model-application call</span>
+        <span class="c1"># the coefficient slice is shaped (S, 1); squeezing drops the J axis</span>
+        <span class="c1"># to (S,), which then broadcasts against the (S, 1) income into an</span>
+        <span class="c1"># (S, S) outer product -- silently wrong taxes for J=1. Reshape to the</span>
+        <span class="c1"># income shape when the sizes line up (model application), and only</span>
+        <span class="c1"># fall back to squeeze for the estimation path, where the coefficient</span>
+        <span class="c1"># is a scalar and income is the data vector.</span>
+        <span class="n">v</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">params</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="n">idx</span><span class="p">])</span>
+        <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">size</span><span class="p">(</span><span class="n">v</span><span class="p">)</span> <span class="o">==</span> <span class="n">np</span><span class="o">.</span><span class="n">size</span><span class="p">(</span><span class="n">income</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">v</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">shape</span><span class="p">(</span><span class="n">income</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">squeeze</span><span class="p">(</span><span class="n">v</span><span class="p">)</span>
+
     <span class="k">if</span> <span class="n">tax_func_type</span> <span class="o">==</span> <span class="s2">&quot;GS&quot;</span><span class="p">:</span>
-        <span class="n">phi0</span><span class="p">,</span> <span class="n">phi1</span><span class="p">,</span> <span class="n">phi2</span> <span class="o">=</span> <span class="p">(</span>
-            <span class="n">np</span><span class="o">.</span><span class="n">squeeze</span><span class="p">(</span><span class="n">params</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="mi">0</span><span class="p">]),</span>
-            <span class="n">np</span><span class="o">.</span><span class="n">squeeze</span><span class="p">(</span><span class="n">params</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="mi">1</span><span class="p">]),</span>
-            <span class="n">np</span><span class="o">.</span><span class="n">squeeze</span><span class="p">(</span><span class="n">params</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="mi">2</span><span class="p">]),</span>
-        <span class="p">)</span>
+        <span class="n">phi0</span><span class="p">,</span> <span class="n">phi1</span><span class="p">,</span> <span class="n">phi2</span> <span class="o">=</span> <span class="p">(</span><span class="n">_coef</span><span class="p">(</span><span class="mi">0</span><span class="p">),</span> <span class="n">_coef</span><span class="p">(</span><span class="mi">1</span><span class="p">),</span> <span class="n">_coef</span><span class="p">(</span><span class="mi">2</span><span class="p">))</span>
         <span class="k">if</span> <span class="n">rate_type</span> <span class="o">==</span> <span class="s2">&quot;etr&quot;</span><span class="p">:</span>
             <span class="n">txrates</span> <span class="o">=</span> <span class="p">(</span>
                 <span class="n">phi0</span> <span class="o">*</span> <span class="p">(</span><span class="n">income</span> <span class="o">-</span> <span class="p">((</span><span class="n">income</span><span class="o">**-</span><span class="n">phi1</span><span class="p">)</span> <span class="o">+</span> <span class="n">phi2</span><span class="p">)</span> <span class="o">**</span> <span class="p">(</span><span class="o">-</span><span class="mi">1</span> <span class="o">/</span> <span class="n">phi1</span><span class="p">))</span>
@@ -523,10 +535,7 @@
                 <span class="p">)</span>
             <span class="p">)</span>
     <span class="k">if</span> <span class="n">tax_func_type</span> <span class="o">==</span> <span class="s2">&quot;HSV&quot;</span><span class="p">:</span>
-        <span class="n">lambda_s</span><span class="p">,</span> <span class="n">tau_s</span> <span class="o">=</span> <span class="p">(</span>
-            <span class="n">np</span><span class="o">.</span><span class="n">squeeze</span><span class="p">(</span><span class="n">params</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="mi">0</span><span class="p">]),</span>
-            <span class="n">np</span><span class="o">.</span><span class="n">squeeze</span><span class="p">(</span><span class="n">params</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="mi">1</span><span class="p">]),</span>
-        <span class="p">)</span>
+        <span class="n">lambda_s</span><span class="p">,</span> <span class="n">tau_s</span> <span class="o">=</span> <span class="p">(</span><span class="n">_coef</span><span class="p">(</span><span class="mi">0</span><span class="p">),</span> <span class="n">_coef</span><span class="p">(</span><span class="mi">1</span><span class="p">))</span>
         <span class="k">if</span> <span class="n">rate_type</span> <span class="o">==</span> <span class="s2">&quot;etr&quot;</span><span class="p">:</span>
             <span class="n">txrates</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">-</span> <span class="p">(</span><span class="n">lambda_s</span> <span class="o">*</span> <span class="p">(</span><span class="n">income</span> <span class="o">**</span> <span class="p">(</span><span class="o">-</span><span class="n">tau_s</span><span class="p">)))</span>
         <span class="k">else</span><span class="p">:</span>  <span class="c1"># marginal tax rate function</span>
@@ -546,18 +555,18 @@
             <span class="n">shift_y</span><span class="p">,</span>
             <span class="n">shift</span><span class="p">,</span>
         <span class="p">)</span> <span class="o">=</span> <span class="p">(</span>
-            <span class="n">np</span><span class="o">.</span><span class="n">squeeze</span><span class="p">(</span><span class="n">params</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="mi">0</span><span class="p">]),</span>
-            <span class="n">np</span><span class="o">.</span><span class="n">squeeze</span><span class="p">(</span><span class="n">params</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="mi">1</span><span class="p">]),</span>
-            <span class="n">np</span><span class="o">.</span><span class="n">squeeze</span><span class="p">(</span><span class="n">params</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="mi">2</span><span class="p">]),</span>
-            <span class="n">np</span><span class="o">.</span><span class="n">squeeze</span><span class="p">(</span><span class="n">params</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="mi">3</span><span class="p">]),</span>
-            <span class="n">np</span><span class="o">.</span><span class="n">squeeze</span><span class="p">(</span><span class="n">params</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="mi">4</span><span class="p">]),</span>
-            <span class="n">np</span><span class="o">.</span><span class="n">squeeze</span><span class="p">(</span><span class="n">params</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="mi">5</span><span class="p">]),</span>
-            <span class="n">np</span><span class="o">.</span><span class="n">squeeze</span><span class="p">(</span><span class="n">params</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="mi">6</span><span class="p">]),</span>
-            <span class="n">np</span><span class="o">.</span><span class="n">squeeze</span><span class="p">(</span><span class="n">params</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="mi">7</span><span class="p">]),</span>
-            <span class="n">np</span><span class="o">.</span><span class="n">squeeze</span><span class="p">(</span><span class="n">params</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="mi">8</span><span class="p">]),</span>
-            <span class="n">np</span><span class="o">.</span><span class="n">squeeze</span><span class="p">(</span><span class="n">params</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="mi">9</span><span class="p">]),</span>
-            <span class="n">np</span><span class="o">.</span><span class="n">squeeze</span><span class="p">(</span><span class="n">params</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="mi">10</span><span class="p">]),</span>
-            <span class="n">np</span><span class="o">.</span><span class="n">squeeze</span><span class="p">(</span><span class="n">params</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="mi">11</span><span class="p">]),</span>
+            <span class="n">_coef</span><span class="p">(</span><span class="mi">0</span><span class="p">),</span>
+            <span class="n">_coef</span><span class="p">(</span><span class="mi">1</span><span class="p">),</span>
+            <span class="n">_coef</span><span class="p">(</span><span class="mi">2</span><span class="p">),</span>
+            <span class="n">_coef</span><span class="p">(</span><span class="mi">3</span><span class="p">),</span>
+            <span class="n">_coef</span><span class="p">(</span><span class="mi">4</span><span class="p">),</span>
+            <span class="n">_coef</span><span class="p">(</span><span class="mi">5</span><span class="p">),</span>
+            <span class="n">_coef</span><span class="p">(</span><span class="mi">6</span><span class="p">),</span>
+            <span class="n">_coef</span><span class="p">(</span><span class="mi">7</span><span class="p">),</span>
+            <span class="n">_coef</span><span class="p">(</span><span class="mi">8</span><span class="p">),</span>
+            <span class="n">_coef</span><span class="p">(</span><span class="mi">9</span><span class="p">),</span>
+            <span class="n">_coef</span><span class="p">(</span><span class="mi">10</span><span class="p">),</span>
+            <span class="n">_coef</span><span class="p">(</span><span class="mi">11</span><span class="p">),</span>
         <span class="p">)</span>
         <span class="n">Etil</span> <span class="o">=</span> <span class="n">A</span> <span class="o">+</span> <span class="n">B</span>
         <span class="n">Ftil</span> <span class="o">=</span> <span class="n">C</span> <span class="o">+</span> <span class="n">D</span>
@@ -629,12 +638,12 @@
                 <span class="p">)</span> <span class="o">+</span> <span class="n">shift</span>
     <span class="k">elif</span> <span class="n">tax_func_type</span> <span class="o">==</span> <span class="s2">&quot;DEP_totalinc&quot;</span><span class="p">:</span>
         <span class="n">A</span><span class="p">,</span> <span class="n">B</span><span class="p">,</span> <span class="n">max_income</span><span class="p">,</span> <span class="n">min_income</span><span class="p">,</span> <span class="n">shift_income</span><span class="p">,</span> <span class="n">shift</span> <span class="o">=</span> <span class="p">(</span>
-            <span class="n">np</span><span class="o">.</span><span class="n">squeeze</span><span class="p">(</span><span class="n">params</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="mi">0</span><span class="p">]),</span>
-            <span class="n">np</span><span class="o">.</span><span class="n">squeeze</span><span class="p">(</span><span class="n">params</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="mi">1</span><span class="p">]),</span>
-            <span class="n">np</span><span class="o">.</span><span class="n">squeeze</span><span class="p">(</span><span class="n">params</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="mi">2</span><span class="p">]),</span>
-            <span class="n">np</span><span class="o">.</span><span class="n">squeeze</span><span class="p">(</span><span class="n">params</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="mi">3</span><span class="p">]),</span>
-            <span class="n">np</span><span class="o">.</span><span class="n">squeeze</span><span class="p">(</span><span class="n">params</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="mi">4</span><span class="p">]),</span>
-            <span class="n">np</span><span class="o">.</span><span class="n">squeeze</span><span class="p">(</span><span class="n">params</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="mi">5</span><span class="p">]),</span>
+            <span class="n">_coef</span><span class="p">(</span><span class="mi">0</span><span class="p">),</span>
+            <span class="n">_coef</span><span class="p">(</span><span class="mi">1</span><span class="p">),</span>
+            <span class="n">_coef</span><span class="p">(</span><span class="mi">2</span><span class="p">),</span>
+            <span class="n">_coef</span><span class="p">(</span><span class="mi">3</span><span class="p">),</span>
+            <span class="n">_coef</span><span class="p">(</span><span class="mi">4</span><span class="p">),</span>
+            <span class="n">_coef</span><span class="p">(</span><span class="mi">5</span><span class="p">),</span>
         <span class="p">)</span>
         <span class="n">Etil</span> <span class="o">=</span> <span class="n">A</span> <span class="o">+</span> <span class="n">B</span>
         <span class="n">income2</span> <span class="o">=</span> <span class="n">income</span><span class="o">**</span><span class="mi">2</span>
@@ -679,11 +688,7 @@
                 <span class="p">)</span> <span class="o">+</span> <span class="n">min_income</span>
                 <span class="n">txrates</span> <span class="o">=</span> <span class="n">tau_income</span> <span class="o">+</span> <span class="n">shift_income</span> <span class="o">+</span> <span class="n">shift</span>
     <span class="k">elif</span> <span class="n">tax_func_type</span> <span class="o">==</span> <span class="s2">&quot;linear&quot;</span><span class="p">:</span>
-        <span class="n">rate</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">squeeze</span><span class="p">(</span><span class="n">params</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="mi">0</span><span class="p">])</span>
-        <span class="k">try</span><span class="p">:</span>
-            <span class="n">txrates</span> <span class="o">=</span> <span class="n">rate</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">ones_like</span><span class="p">(</span><span class="n">income</span><span class="p">)</span>
-        <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
-            <span class="n">txrates</span> <span class="o">=</span> <span class="n">rate</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">income</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">ones_like</span><span class="p">(</span><span class="n">income</span><span class="p">)</span>
+        <span class="n">txrates</span> <span class="o">=</span> <span class="n">_coef</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">ones_like</span><span class="p">(</span><span class="n">income</span><span class="p">)</span>
     <span class="k">elif</span> <span class="n">tax_func_type</span> <span class="o">==</span> <span class="s2">&quot;mono&quot;</span><span class="p">:</span>
         <span class="k">if</span> <span class="n">for_estimation</span><span class="p">:</span>
             <span class="n">mono_interp</span> <span class="o">=</span> <span class="n">params</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>

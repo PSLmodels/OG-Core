@@ -451,11 +451,11 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="n">method</span> <span class="o">==</span> <span class="s2">&quot;SS&quot;</span><span class="p">:</span>
-        <span class="n">L_presum</span> <span class="o">=</span> <span class="p">(</span>
-            <span class="n">np</span><span class="o">.</span><span class="n">squeeze</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">e</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="p">:,</span> <span class="p">:])</span>
-            <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">transpose</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">omega_SS</span> <span class="o">*</span> <span class="n">p</span><span class="o">.</span><span class="n">lambdas</span><span class="p">)</span>
-            <span class="o">*</span> <span class="n">n</span>
-        <span class="p">)</span>
+        <span class="c1"># NOTE: avoid np.squeeze on p.e[-1, :, :] here — for J=1 it collapses</span>
+        <span class="c1"># the J axis to a 1-D array, and the subsequent multiplication against</span>
+        <span class="c1"># the (S, J) weight broadcasts into an (S, S) outer product, producing</span>
+        <span class="c1"># a labor aggregate S times too large. p.e[-1, :, :] is already (S, J).</span>
+        <span class="n">L_presum</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">e</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="p">:,</span> <span class="p">:]</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">transpose</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">omega_SS</span> <span class="o">*</span> <span class="n">p</span><span class="o">.</span><span class="n">lambdas</span><span class="p">)</span> <span class="o">*</span> <span class="n">n</span>
         <span class="n">L</span> <span class="o">=</span> <span class="n">L_presum</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
     <span class="k">elif</span> <span class="n">method</span> <span class="o">==</span> <span class="s2">&quot;TPI&quot;</span><span class="p">:</span>
         <span class="n">L_presum</span> <span class="o">=</span> <span class="p">(</span><span class="n">n</span> <span class="o">*</span> <span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">e</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">squeeze</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">lambdas</span><span class="p">)))</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">tile</span><span class="p">(</span>

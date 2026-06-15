@@ -1424,6 +1424,194 @@
 
     <span class="k">return</span> <span class="n">table</span></div>
 
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">model_fit_table</span><span class="p">(</span>
+    <span class="n">targets_dict</span><span class="p">,</span>
+    <span class="n">params</span><span class="p">,</span>
+    <span class="n">tpi_output</span><span class="p">,</span>
+    <span class="n">t</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+    <span class="n">table_format</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">path</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+<span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Creates a table summarizing the model fit.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        targets_dict (dict): maps each parameter name to a one-item</span>
+<span class="sd">            dict ``{target_description: data_value}``, e.g.::</span>
+
+<span class="sd">                {</span>
+<span class="sd">                    &#39;Gini coefficient of wealth&#39;: 0.82,</span>
+<span class="sd">                    &#39;Investment rate (I/K)&#39;: 0.07,</span>
+<span class="sd">                    &#39;Gini coefficient of income&#39;: 0.55,</span>
+<span class="sd">                }</span>
+
+<span class="sd">        params (OG-Core Specifications class): model parameters object</span>
+<span class="sd">        tpi_output (dict): output dictionary returned by ``TPI.run_TPI``</span>
+<span class="sd">        t (int): period index used for model moment calculations.</span>
+<span class="sd">            Defaults to ``0`` (first period of the transition path).</span>
+<span class="sd">            Pass ``-1`` to use the last period, which approximates</span>
+<span class="sd">            steady-state values.</span>
+<span class="sd">        table_format (string): format to return table in: ``&#39;csv&#39;``,</span>
+<span class="sd">            ``&#39;tex&#39;``, ``&#39;excel&#39;``, ``&#39;json&#39;``; if ``None`` a</span>
+<span class="sd">            DataFrame is returned</span>
+<span class="sd">        path (string): path to save table to</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        table (various): table as a DataFrame, formatted string, or</span>
+<span class="sd">            ``None`` if saved to disk</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Ordered groups and the moment descriptions belonging to each</span>
+    <span class="n">MOMENT_GROUPS</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="p">(</span>
+            <span class="s2">&quot;Macroeconomic moments&quot;</span><span class="p">,</span>
+            <span class="p">[</span>
+                <span class="sa">r</span><span class="s2">&quot;Investment rate $(I/K)$&quot;</span><span class="p">,</span>
+                <span class="sa">r</span><span class="s2">&quot;Capital-Output ratio $(K/Y)$&quot;</span><span class="p">,</span>
+                <span class="sa">r</span><span class="s2">&quot;Consumption-Output ratio $(C/Y)$&quot;</span><span class="p">,</span>
+                <span class="sa">r</span><span class="s2">&quot;Savings rate $(B/Y)$&quot;</span><span class="p">,</span>
+                <span class="sa">r</span><span class="s2">&quot;Interest rate $(r)$&quot;</span><span class="p">,</span>
+                <span class="sa">r</span><span class="s2">&quot;Capital share of output&quot;</span><span class="p">,</span>
+                <span class="sa">r</span><span class="s2">&quot;Labor share of output&quot;</span><span class="p">,</span>
+            <span class="p">],</span>
+        <span class="p">),</span>
+        <span class="p">(</span>
+            <span class="s2">&quot;Fiscal moments&quot;</span><span class="p">,</span>
+            <span class="p">[</span>
+                <span class="sa">r</span><span class="s2">&quot;Revenue to GDP ratio $(T/Y)$&quot;</span><span class="p">,</span>
+                <span class="sa">r</span><span class="s2">&quot;Gov&#39;t consumption to GDP ratio $(G/Y)$&quot;</span><span class="p">,</span>
+                <span class="sa">r</span><span class="s2">&quot;Pension outlays to GDP ratio $(Pension/Y)$&quot;</span><span class="p">,</span>
+                <span class="sa">r</span><span class="s2">&quot;Infrastructure spending to GDP ratio $(I_g/Y)$&quot;</span><span class="p">,</span>
+                <span class="sa">r</span><span class="s2">&quot;Debt to GDP ratio $(D/Y)$&quot;</span><span class="p">,</span>
+            <span class="p">],</span>
+        <span class="p">),</span>
+        <span class="p">(</span>
+            <span class="s2">&quot;Distributional moments&quot;</span><span class="p">,</span>
+            <span class="p">[</span>
+                <span class="s2">&quot;Gini coefficient, wealth&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;Gini coefficient, income&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;Gini coefficient, after-tax income&quot;</span><span class="p">,</span>
+            <span class="p">],</span>
+        <span class="p">),</span>
+        <span class="p">(</span>
+            <span class="s2">&quot;Demographic moments&quot;</span><span class="p">,</span>
+            <span class="p">[</span>
+                <span class="sa">r</span><span class="s2">&quot;Fraction 65+&quot;</span><span class="p">,</span>
+                <span class="sa">r</span><span class="s2">&quot;Pop growth rate&quot;</span><span class="p">,</span>
+            <span class="p">],</span>
+        <span class="p">),</span>
+    <span class="p">]</span>
+
+    <span class="c1"># Compute model moments for all entries in targets_dict</span>
+    <span class="n">computed</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="k">for</span> <span class="n">moment</span><span class="p">,</span> <span class="n">data_val</span> <span class="ow">in</span> <span class="n">targets_dict</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+        <span class="n">target_desc</span> <span class="o">=</span> <span class="n">moment</span>
+
+        <span class="c1"># Macroeconomic moments</span>
+        <span class="k">if</span> <span class="n">target_desc</span> <span class="o">==</span> <span class="sa">r</span><span class="s2">&quot;Investment rate $(I/K)$&quot;</span><span class="p">:</span>
+            <span class="n">model_val</span> <span class="o">=</span> <span class="n">tpi_output</span><span class="p">[</span><span class="s2">&quot;I&quot;</span><span class="p">][</span><span class="n">t</span><span class="p">]</span> <span class="o">/</span> <span class="n">tpi_output</span><span class="p">[</span><span class="s2">&quot;K&quot;</span><span class="p">][</span><span class="n">t</span><span class="p">]</span>
+        <span class="k">elif</span> <span class="n">target_desc</span> <span class="o">==</span> <span class="sa">r</span><span class="s2">&quot;Capital-Output ratio $(K/Y)$&quot;</span><span class="p">:</span>
+            <span class="n">model_val</span> <span class="o">=</span> <span class="n">tpi_output</span><span class="p">[</span><span class="s2">&quot;K&quot;</span><span class="p">][</span><span class="n">t</span><span class="p">]</span> <span class="o">/</span> <span class="n">tpi_output</span><span class="p">[</span><span class="s2">&quot;Y&quot;</span><span class="p">][</span><span class="n">t</span><span class="p">]</span>
+        <span class="k">elif</span> <span class="n">target_desc</span> <span class="o">==</span> <span class="sa">r</span><span class="s2">&quot;Consumption-Output ratio $(C/Y)$&quot;</span><span class="p">:</span>
+            <span class="n">model_val</span> <span class="o">=</span> <span class="n">tpi_output</span><span class="p">[</span><span class="s2">&quot;C&quot;</span><span class="p">][</span><span class="n">t</span><span class="p">]</span> <span class="o">/</span> <span class="n">tpi_output</span><span class="p">[</span><span class="s2">&quot;Y&quot;</span><span class="p">][</span><span class="n">t</span><span class="p">]</span>
+        <span class="k">elif</span> <span class="n">target_desc</span> <span class="o">==</span> <span class="sa">r</span><span class="s2">&quot;Savings rate $(B/Y)$&quot;</span><span class="p">:</span>
+            <span class="n">model_val</span> <span class="o">=</span> <span class="n">tpi_output</span><span class="p">[</span><span class="s2">&quot;B&quot;</span><span class="p">][</span><span class="n">t</span><span class="p">]</span> <span class="o">/</span> <span class="n">tpi_output</span><span class="p">[</span><span class="s2">&quot;Y&quot;</span><span class="p">][</span><span class="n">t</span><span class="p">]</span>
+        <span class="k">elif</span> <span class="n">target_desc</span> <span class="o">==</span> <span class="sa">r</span><span class="s2">&quot;Interest rate $(r)$&quot;</span><span class="p">:</span>
+            <span class="n">model_val</span> <span class="o">=</span> <span class="n">tpi_output</span><span class="p">[</span><span class="s2">&quot;r&quot;</span><span class="p">][</span><span class="n">t</span><span class="p">]</span>
+        <span class="k">elif</span> <span class="n">target_desc</span> <span class="o">==</span> <span class="sa">r</span><span class="s2">&quot;Capital share of output&quot;</span><span class="p">:</span>
+            <span class="n">model_val</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="mi">1</span>
+                <span class="o">-</span> <span class="n">tpi_output</span><span class="p">[</span><span class="s2">&quot;w&quot;</span><span class="p">][</span><span class="n">t</span><span class="p">]</span> <span class="o">*</span> <span class="n">tpi_output</span><span class="p">[</span><span class="s2">&quot;L&quot;</span><span class="p">][</span><span class="n">t</span><span class="p">]</span> <span class="o">/</span> <span class="n">tpi_output</span><span class="p">[</span><span class="s2">&quot;Y&quot;</span><span class="p">][</span><span class="n">t</span><span class="p">]</span>
+            <span class="p">)</span>
+        <span class="k">elif</span> <span class="n">target_desc</span> <span class="o">==</span> <span class="sa">r</span><span class="s2">&quot;Labor share of output&quot;</span><span class="p">:</span>
+            <span class="n">model_val</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="n">tpi_output</span><span class="p">[</span><span class="s2">&quot;w&quot;</span><span class="p">][</span><span class="n">t</span><span class="p">]</span> <span class="o">*</span> <span class="n">tpi_output</span><span class="p">[</span><span class="s2">&quot;L&quot;</span><span class="p">][</span><span class="n">t</span><span class="p">]</span> <span class="o">/</span> <span class="n">tpi_output</span><span class="p">[</span><span class="s2">&quot;Y&quot;</span><span class="p">][</span><span class="n">t</span><span class="p">]</span>
+            <span class="p">)</span>
+        <span class="c1"># Fiscal moments</span>
+        <span class="k">elif</span> <span class="n">target_desc</span> <span class="o">==</span> <span class="sa">r</span><span class="s2">&quot;Revenue to GDP ratio $(T/Y)$&quot;</span><span class="p">:</span>
+            <span class="n">model_val</span> <span class="o">=</span> <span class="n">tpi_output</span><span class="p">[</span><span class="s2">&quot;total_tax_revenue&quot;</span><span class="p">][</span><span class="n">t</span><span class="p">]</span> <span class="o">/</span> <span class="n">tpi_output</span><span class="p">[</span><span class="s2">&quot;Y&quot;</span><span class="p">][</span><span class="n">t</span><span class="p">]</span>
+        <span class="k">elif</span> <span class="n">target_desc</span> <span class="o">==</span> <span class="sa">r</span><span class="s2">&quot;Gov&#39;t consumption to GDP ratio $(G/Y)$&quot;</span><span class="p">:</span>
+            <span class="n">model_val</span> <span class="o">=</span> <span class="n">tpi_output</span><span class="p">[</span><span class="s2">&quot;G&quot;</span><span class="p">][</span><span class="n">t</span><span class="p">]</span> <span class="o">/</span> <span class="n">tpi_output</span><span class="p">[</span><span class="s2">&quot;Y&quot;</span><span class="p">][</span><span class="n">t</span><span class="p">]</span>
+        <span class="k">elif</span> <span class="n">target_desc</span> <span class="o">==</span> <span class="sa">r</span><span class="s2">&quot;Pension outlays to GDP ratio $(Pension/Y)$&quot;</span><span class="p">:</span>
+            <span class="n">model_val</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="n">tpi_output</span><span class="p">[</span><span class="s2">&quot;agg_pension_outlays&quot;</span><span class="p">][</span><span class="n">t</span><span class="p">]</span> <span class="o">/</span> <span class="n">tpi_output</span><span class="p">[</span><span class="s2">&quot;Y&quot;</span><span class="p">][</span><span class="n">t</span><span class="p">]</span>
+            <span class="p">)</span>
+        <span class="k">elif</span> <span class="n">target_desc</span> <span class="o">==</span> <span class="sa">r</span><span class="s2">&quot;Infrastructure spending to GDP ratio $(I_g/Y)$&quot;</span><span class="p">:</span>
+            <span class="n">model_val</span> <span class="o">=</span> <span class="n">tpi_output</span><span class="p">[</span><span class="s2">&quot;I_g&quot;</span><span class="p">][</span><span class="n">t</span><span class="p">]</span> <span class="o">/</span> <span class="n">tpi_output</span><span class="p">[</span><span class="s2">&quot;Y&quot;</span><span class="p">][</span><span class="n">t</span><span class="p">]</span>
+        <span class="k">elif</span> <span class="n">target_desc</span> <span class="o">==</span> <span class="sa">r</span><span class="s2">&quot;Debt to GDP ratio $(D/Y)$&quot;</span><span class="p">:</span>
+            <span class="n">model_val</span> <span class="o">=</span> <span class="n">tpi_output</span><span class="p">[</span><span class="s2">&quot;D&quot;</span><span class="p">][</span><span class="n">t</span><span class="p">]</span> <span class="o">/</span> <span class="n">tpi_output</span><span class="p">[</span><span class="s2">&quot;Y&quot;</span><span class="p">][</span><span class="n">t</span><span class="p">]</span>
+        <span class="c1"># Distributional moments</span>
+        <span class="k">elif</span> <span class="n">target_desc</span> <span class="o">==</span> <span class="s2">&quot;Gini coefficient, wealth&quot;</span><span class="p">:</span>
+            <span class="n">dist</span> <span class="o">=</span> <span class="n">tpi_output</span><span class="p">[</span><span class="s2">&quot;b_sp1&quot;</span><span class="p">][</span><span class="n">t</span><span class="p">]</span>
+            <span class="n">pop_weights</span> <span class="o">=</span> <span class="n">params</span><span class="o">.</span><span class="n">omega</span><span class="p">[</span><span class="n">t</span><span class="p">]</span>
+            <span class="n">pop_weights</span> <span class="o">=</span> <span class="n">pop_weights</span> <span class="o">/</span> <span class="n">pop_weights</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+            <span class="n">ineq</span> <span class="o">=</span> <span class="n">Inequality</span><span class="p">(</span>
+                <span class="n">dist</span><span class="p">,</span> <span class="n">pop_weights</span><span class="p">,</span> <span class="n">params</span><span class="o">.</span><span class="n">lambdas</span><span class="p">,</span> <span class="n">params</span><span class="o">.</span><span class="n">S</span><span class="p">,</span> <span class="n">params</span><span class="o">.</span><span class="n">J</span>
+            <span class="p">)</span>
+            <span class="n">model_val</span> <span class="o">=</span> <span class="n">ineq</span><span class="o">.</span><span class="n">gini</span><span class="p">()</span>
+        <span class="k">elif</span> <span class="n">target_desc</span> <span class="o">==</span> <span class="s2">&quot;Gini coefficient, income&quot;</span><span class="p">:</span>
+            <span class="n">dist</span> <span class="o">=</span> <span class="n">tpi_output</span><span class="p">[</span><span class="s2">&quot;before_tax_income&quot;</span><span class="p">][</span><span class="n">t</span><span class="p">]</span>
+            <span class="n">pop_weights</span> <span class="o">=</span> <span class="n">params</span><span class="o">.</span><span class="n">omega</span><span class="p">[</span><span class="n">t</span><span class="p">]</span>
+            <span class="n">pop_weights</span> <span class="o">=</span> <span class="n">pop_weights</span> <span class="o">/</span> <span class="n">pop_weights</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+            <span class="n">ineq</span> <span class="o">=</span> <span class="n">Inequality</span><span class="p">(</span>
+                <span class="n">dist</span><span class="p">,</span> <span class="n">pop_weights</span><span class="p">,</span> <span class="n">params</span><span class="o">.</span><span class="n">lambdas</span><span class="p">,</span> <span class="n">params</span><span class="o">.</span><span class="n">S</span><span class="p">,</span> <span class="n">params</span><span class="o">.</span><span class="n">J</span>
+            <span class="p">)</span>
+            <span class="n">model_val</span> <span class="o">=</span> <span class="n">ineq</span><span class="o">.</span><span class="n">gini</span><span class="p">()</span>
+        <span class="k">elif</span> <span class="n">target_desc</span> <span class="o">==</span> <span class="s2">&quot;Gini coefficient, after-tax income&quot;</span><span class="p">:</span>
+            <span class="n">dist</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="n">tpi_output</span><span class="p">[</span><span class="s2">&quot;before_tax_income&quot;</span><span class="p">][</span><span class="n">t</span><span class="p">]</span>
+                <span class="o">-</span> <span class="n">tpi_output</span><span class="p">[</span><span class="s2">&quot;hh_net_taxes&quot;</span><span class="p">][</span><span class="n">t</span><span class="p">]</span>
+            <span class="p">)</span>
+            <span class="n">pop_weights</span> <span class="o">=</span> <span class="n">params</span><span class="o">.</span><span class="n">omega</span><span class="p">[</span><span class="n">t</span><span class="p">]</span>
+            <span class="n">pop_weights</span> <span class="o">=</span> <span class="n">pop_weights</span> <span class="o">/</span> <span class="n">pop_weights</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+            <span class="n">ineq</span> <span class="o">=</span> <span class="n">Inequality</span><span class="p">(</span>
+                <span class="n">dist</span><span class="p">,</span> <span class="n">pop_weights</span><span class="p">,</span> <span class="n">params</span><span class="o">.</span><span class="n">lambdas</span><span class="p">,</span> <span class="n">params</span><span class="o">.</span><span class="n">S</span><span class="p">,</span> <span class="n">params</span><span class="o">.</span><span class="n">J</span>
+            <span class="p">)</span>
+            <span class="n">model_val</span> <span class="o">=</span> <span class="n">ineq</span><span class="o">.</span><span class="n">gini</span><span class="p">()</span>
+        <span class="c1"># Demographic moments</span>
+        <span class="k">elif</span> <span class="n">target_desc</span> <span class="o">==</span> <span class="sa">r</span><span class="s2">&quot;Fraction 65+&quot;</span><span class="p">:</span>
+            <span class="n">idx_65</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">65</span> <span class="o">-</span> <span class="n">params</span><span class="o">.</span><span class="n">starting_age</span><span class="p">)</span>
+            <span class="n">omega_t</span> <span class="o">=</span> <span class="n">params</span><span class="o">.</span><span class="n">omega</span><span class="p">[</span><span class="n">t</span><span class="p">]</span>
+            <span class="n">model_val</span> <span class="o">=</span> <span class="n">omega_t</span><span class="p">[</span><span class="n">idx_65</span><span class="p">:]</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span> <span class="o">/</span> <span class="n">omega_t</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+        <span class="k">elif</span> <span class="n">target_desc</span> <span class="o">==</span> <span class="sa">r</span><span class="s2">&quot;Pop growth rate&quot;</span><span class="p">:</span>
+            <span class="n">model_val</span> <span class="o">=</span> <span class="n">params</span><span class="o">.</span><span class="n">g_n</span><span class="p">[</span><span class="n">t</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">model_val</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span>
+
+        <span class="n">computed</span><span class="p">[</span><span class="n">target_desc</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">data_val</span><span class="p">,</span> <span class="n">model_val</span><span class="p">)</span>
+
+    <span class="c1"># Build the grouped table; skip any group with no matching moments</span>
+    <span class="n">all_grouped</span> <span class="o">=</span> <span class="p">{</span><span class="n">m</span> <span class="k">for</span> <span class="n">_</span><span class="p">,</span> <span class="n">moments</span> <span class="ow">in</span> <span class="n">MOMENT_GROUPS</span> <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="n">moments</span><span class="p">}</span>
+    <span class="n">table_dict</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;Moment&quot;</span><span class="p">:</span> <span class="p">[],</span> <span class="s2">&quot;Data&quot;</span><span class="p">:</span> <span class="p">[],</span> <span class="s2">&quot;Model&quot;</span><span class="p">:</span> <span class="p">[]}</span>
+
+    <span class="k">for</span> <span class="n">group_name</span><span class="p">,</span> <span class="n">group_moments</span> <span class="ow">in</span> <span class="n">MOMENT_GROUPS</span><span class="p">:</span>
+        <span class="n">group_entries</span> <span class="o">=</span> <span class="p">[</span><span class="n">m</span> <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="n">group_moments</span> <span class="k">if</span> <span class="n">m</span> <span class="ow">in</span> <span class="n">computed</span><span class="p">]</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">group_entries</span><span class="p">:</span>
+            <span class="k">continue</span>
+        <span class="c1"># Group header row (no data values)</span>
+        <span class="n">table_dict</span><span class="p">[</span><span class="s2">&quot;Moment&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">group_name</span><span class="p">)</span>
+        <span class="n">table_dict</span><span class="p">[</span><span class="s2">&quot;Data&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">)</span>
+        <span class="n">table_dict</span><span class="p">[</span><span class="s2">&quot;Model&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">)</span>
+        <span class="c1"># Indented moment rows</span>
+        <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="n">group_entries</span><span class="p">:</span>
+            <span class="n">data_val</span><span class="p">,</span> <span class="n">model_val</span> <span class="o">=</span> <span class="n">computed</span><span class="p">[</span><span class="n">m</span><span class="p">]</span>
+            <span class="n">table_dict</span><span class="p">[</span><span class="s2">&quot;Moment&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  </span><span class="si">{</span><span class="n">m</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="n">table_dict</span><span class="p">[</span><span class="s2">&quot;Data&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">data_val</span><span class="p">)</span>
+            <span class="n">table_dict</span><span class="p">[</span><span class="s2">&quot;Model&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">model_val</span><span class="p">)</span>
+
+    <span class="c1"># Append any moments not belonging to a known group</span>
+    <span class="k">for</span> <span class="n">target_desc</span><span class="p">,</span> <span class="p">(</span><span class="n">data_val</span><span class="p">,</span> <span class="n">model_val</span><span class="p">)</span> <span class="ow">in</span> <span class="n">computed</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+        <span class="k">if</span> <span class="n">target_desc</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">all_grouped</span><span class="p">:</span>
+            <span class="n">table_dict</span><span class="p">[</span><span class="s2">&quot;Moment&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">target_desc</span><span class="p">)</span>
+            <span class="n">table_dict</span><span class="p">[</span><span class="s2">&quot;Data&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">data_val</span><span class="p">)</span>
+            <span class="n">table_dict</span><span class="p">[</span><span class="s2">&quot;Model&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">model_val</span><span class="p">)</span>
+
+    <span class="n">table_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="o">.</span><span class="n">from_dict</span><span class="p">(</span><span class="n">table_dict</span><span class="p">)</span>
+    <span class="n">table</span> <span class="o">=</span> <span class="n">save_return_table</span><span class="p">(</span><span class="n">table_df</span><span class="p">,</span> <span class="n">table_format</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">precision</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">table</span>
 </pre></div>
 
                 </article>
