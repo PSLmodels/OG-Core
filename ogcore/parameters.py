@@ -87,6 +87,28 @@ class Specifications(paramtools.Parameters):
         self.T = int(self.T)
         self.J = len(self.lambdas)
 
+        # beta_annual and chi_b carry one value per lifetime-income group, but
+        # paramtools validates values and nesting depth, not list length, so a
+        # wrong-length vector used to flow through silently: a short one
+        # crashed much later (IndexError deep in the SS solve, far from the
+        # cause) and a long one was silently truncated to the first J entries
+        # -- wrong economics with no symptom. Guard here, where J is first
+        # known: one value broadcasts to all J groups, J values pass through,
+        # a uniform vector of any other length is reshaped losslessly
+        # (smaller-J runs that keep the uniform defaults rely on this), and a
+        # non-uniform mismatch raises immediately.
+        for param in ("beta_annual", "chi_b"):
+            val = np.asarray(getattr(self, param)).ravel()
+            if val.shape[0] != self.J:
+                if val.shape[0] == 1 or np.all(val == val[0]):
+                    setattr(self, param, np.full(self.J, val[0]))
+                else:
+                    raise ValueError(
+                        f"{param} must have either 1 value (applied to all "
+                        f"J groups) or J={self.J} values; got "
+                        f"{val.shape[0]} non-uniform values."
+                    )
+
         # get parameters of elliptical utility function
         self.b_ellipse, self.upsilon = elliptical_u_est.estimation(
             self.frisch, self.ltilde

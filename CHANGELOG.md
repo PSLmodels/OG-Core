@@ -5,6 +5,56 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.16.2] - 2026-06-15 12:00:00
+
+### Added
+
+ - Adds `output_tables.model_fit_table` function that generates a table comparing model output to data for a set of target moments, and adds a test of this function in `test_output_tables.py`. The function takes as input a list of target moment descriptions, the TPI output dictionary, and the model parameters object, and returns a pandas DataFrame with the target moment descriptions, the model values for those moments, and the data values for those moments (where applicable). The function currently supports a set of macroeconomic moments (interest rate, capital share of output, labor share of output), inequality moments (Gini coefficient for before-tax income and after-tax income), and demographic moments (fraction of population 65+ and population growth rate). See PR [#1138](https://github.com/PSLmodels/OG-Core/pull/1138).
+ - Validates `beta_annual` and `chi_b` against `J`. ([PR #1149](https://github.com/PSLmodels/OG-Core/pull/1149))
+
+### Bug Fixes
+- Fixes issue with reading UN data on Pandas >= 3.0 and UN token string. ([PR #1151](https://github.com/PSLmodels/OG-Core/pull/1151))
+- Fixes math notation for plot labels. ([PR #1148](https://github.com/PSLmodels/OG-Core/pull/1148))
+- Fixes reshaping issues with `J=1` parameterization. ([PR #1145](https://github.com/PSLmodels/OG-Core/pull/1145))
+
+### Bug Fix
+
+- Fixed math notion for tilde variables in plot labels in `output_plots.py` to be consistent with the documentation and the code. See PR [#1148](https://github.com/PSLmodels/OG-Core/pull/1148).
+
+## [0.16.1] - 2026-06-04 12:00:00
+
+### Added
+
+- Adds a `use_sparse_FOC_jac` `Specifications` parameter (default `True`) that accelerates the time path iteration (TPI) household solve. With it on, `scipy.optimize.root` is given a sparse (banded) finite-difference Jacobian for the stacked household Euler and labor first order conditions: the sparsity pattern is auto-detected once per problem size and the solver then needs far fewer function evaluations per Jacobian build (about 20x fewer on the default S=80 cohort solve), with an automatic fallback to dense finite differences if the Jacobian is not sparse enough to benefit or if a solve fails. The result matches the legacy dense-finite-difference solution to within the model's resource-constraint accuracy floor on every calibration tested (OG-Core standard example, OG-ETH, OG-ZAF, OG-PHL, OG-IDN), giving roughly a 1.9-2.4x TPI speedup at no accuracy cost. Set `use_sparse_FOC_jac=False` to recover bit-identical agreement with v0.16.0 and earlier.
+
+## [0.16.0] - 2026-06-02 12:00:00
+
+### Added
+
+- Adds a new parameter, `alpha_FA`, that allows the user to specify the level of direct foreign aid as a percentage of GDP.  See PR [#1126](https://github.com/PSLmodels/OG-Core/pull/1126).
+
+## [0.15.13] - 2026-05-15 06:00:00
+
+### Added
+
+- Increases the maximum value of the `mindist_TPI` parameter to 0.01 in `default_parameters.json`.
+- Updates the `uv.lock` with package updates.
+
+## [0.15.12] - 2026-05-14 12:00:00
+
+### Added
+
+- Caches the `e_long` array in `household.FOC_savings` and `household.FOC_labor` rather than rebuilding it on every call. `e_long` is a pure function of `p.e`, `p.S`, and `p.J`, none of which change during a solve, so a `_get_e_long` helper now builds it once per worker and reuses it. Profiling identified this rebuild as the single most expensive operation in a TPI run. The change is a pure cache — model output is bit-for-bit identical to master — and gives roughly a 3x speedup on a single-reform TPI run. See PR [#1128](https://github.com/PSLmodels/OG-Core/pull/1128).
+- Builds the per-period tax-parameter slices in `TPI.inner_loop` as numpy arrays via a new `_params_to_array` helper, and switches `txfunc.get_tax_rates` to `np.asarray`, so the repeated per-call list-to-array conversion is skipped on the hot TPI path. `mono` and `mono2D` tax functions store callables rather than numbers, so their nested-list form is passed through unchanged. Profiling identified this conversion as the next hot spot after the `e_long` rebuild. Model output is bit-for-bit identical to master, and the change gives roughly a further 10% speedup on a single-reform TPI run (about 3.3x cumulative versus master). See PR [#1128](https://github.com/PSLmodels/OG-Core/pull/1128).
+- Changes the minimum of the allowable range for `tau_c` in `default_parameters.py` to allow for government consumption subsidies.
+- Fixes a bug in the `parameter_plots.plot_fert_rates` function. See PR [#1127](https://github.com/PSLmodels/OG-Core/pull/1127).
+
+## [0.15.11] - 2026-05-08 12:00:00
+
+### Added
+
+- Updates the `uv.lock` to include dependabot upgrades PRs [#1118](https://github.com/PSLmodels/OG-Core/pull/1118), [#1119](https://github.com/PSLmodels/OG-Core/pull/1119), [#1120](https://github.com/PSLmodels/OG-Core/pull/1120), and [#1121](https://github.com/PSLmodels/OG-Core/pull/1121), as well as some other package upgrades that were available.
+
 ## [0.15.10] - 2026-04-23 12:00:00
 
 ### Added
@@ -553,6 +603,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Any earlier versions of OG-USA can be found in the [`OG-Core`](https://github.com/PSLmodels/OG-Core) repository [release history](https://github.com/PSLmodels/OG-Core/releases) from [v.0.6.4](https://github.com/PSLmodels/OG-Core/releases/tag/v0.6.4) (Jul. 20, 2021) or earlier.
 
 
+[0.16.2]: https://github.com/PSLmodels/OG-Core/compare/v0.16.1...v0.16.2
+[0.16.1]: https://github.com/PSLmodels/OG-Core/compare/v0.16.0...v0.16.1
+[0.16.0]: https://github.com/PSLmodels/OG-Core/compare/v0.15.13...v0.16.0
+[0.15.13]: https://github.com/PSLmodels/OG-Core/compare/v0.15.12...v0.15.13
+[0.15.12]: https://github.com/PSLmodels/OG-Core/compare/v0.15.11...v0.15.12
+[0.15.11]: https://github.com/PSLmodels/OG-Core/compare/v0.15.10...v0.15.11
 [0.15.10]: https://github.com/PSLmodels/OG-Core/compare/v0.15.9...v0.15.10
 [0.15.9]: https://github.com/PSLmodels/OG-Core/compare/v0.15.8...v0.15.9
 [0.15.8]: https://github.com/PSLmodels/OG-Core/compare/v0.15.7...v0.15.8

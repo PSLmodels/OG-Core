@@ -33,11 +33,11 @@ def get_L(n, p, method):
 
     """
     if method == "SS":
-        L_presum = (
-            np.squeeze(p.e[-1, :, :])
-            * np.transpose(p.omega_SS * p.lambdas)
-            * n
-        )
+        # NOTE: avoid np.squeeze on p.e[-1, :, :] here — for J=1 it collapses
+        # the J axis to a 1-D array, and the subsequent multiplication against
+        # the (S, J) weight broadcasts into an (S, S) outer product, producing
+        # a labor aggregate S times too large. p.e[-1, :, :] is already (S, J).
+        L_presum = p.e[-1, :, :] * np.transpose(p.omega_SS * p.lambdas) * n
         L = L_presum.sum()
     elif method == "TPI":
         L_presum = (n * (p.e * np.squeeze(p.lambdas))) * np.tile(
@@ -509,7 +509,7 @@ def get_r_p(r, r_gov, p_m, K_vec, K_g, D, MPKg_vec, p, method):
     return np.squeeze(r_p)
 
 
-def resource_constraint(Y, C, G, I_d, I_g, net_capital_flows, RM):
+def resource_constraint(Y, C, G, I_d, I_g, net_capital_flows, RM, foreign_aid):
     r"""
     Compute the error in the resource constraint.
 
@@ -518,7 +518,8 @@ def resource_constraint(Y, C, G, I_d, I_g, net_capital_flows, RM):
         \text{rc_error} &= \hat{Y}_t - \hat{C}_t -
       \Bigl(e^{g_y}\bigl[1 + \tilde{g}_{n,t+1}\bigr]\hat{K}^d_{t+1} -
       \hat{K}^d_t\Bigr) - \delta\hat{K}_t - \hat{G}_t - \hat{I}_{g,t} ... \\
-        &\qquad -\: \hat{\text{net capital outflows}}_t + \hat{RM}_t
+        &\qquad -\: \hat{\text{net capital outflows}}_t + \hat{RM}_t +
+        \hat{\text{foreign aid}}_t
       \end{split}
 
     Args:
@@ -529,12 +530,13 @@ def resource_constraint(Y, C, G, I_d, I_g, net_capital_flows, RM):
         I_g (array_like): investment in government capital
         net_capital_flows (array_like): net capital outflows
         RM (array_like): aggregate remittances
+        foreign_aid (array_like): foreign aid payments
 
     Returns:
         rc_error (array_like): error in the resource constraint
 
     """
-    rc_error = Y - C - I_d - I_g - G - net_capital_flows + RM
+    rc_error = Y - C - I_d - I_g - G - net_capital_flows + RM + foreign_aid
 
     return rc_error
 

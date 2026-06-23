@@ -82,6 +82,11 @@ def get_un_data(
 
     # get data from url
     payload = {}
+    # Accept a token with or without a leading "Bearer " prefix so the
+    # header isn't doubled into "Bearer Bearer <token>".
+    UN_TOKEN = UN_TOKEN.strip()
+    if UN_TOKEN.lower().startswith("bearer "):
+        UN_TOKEN = UN_TOKEN[len("bearer ") :].strip()
     headers = {"Authorization": "Bearer " + UN_TOKEN}
     response = get_legacy_session().get(target, headers=headers, data=payload)
     # Check if the request was successful before processing
@@ -97,7 +102,12 @@ def get_un_data(
             axis=1,
             inplace=True,
         )
-        df.loc[df.age == "100+", "age"] = 100
+        # The "100+" top age bin appears only in some series (mortality,
+        # population), so the age column may parse as int (no "100+") or
+        # str. Normalize to str so the replacement works under pandas
+        # >=3.0's strict string dtype, then cast the column to int.
+        df.age = df.age.astype(str)
+        df.loc[df.age == "100+", "age"] = "100"
         df.age = df.age.astype(int)
         df.year = df.year.astype(int)
         df = df[df.age < 100]  # need to drop 100+ age category
@@ -214,22 +224,24 @@ def get_fert(
     # Create plots if needed
     if graph:
         if start_year == end_year:
-            years_to_plot = [start_year]
+            years_list = [str(start_year)]
+            fert_rates_list = [fert_rates_2D[0, :]]
         else:
-            years_to_plot = [start_year, end_year]
+            years_list = [str(x) for x in np.arange(start_year, end_year + 1)]
+            fert_rates_list = [
+                fert_rates_2D[i, :] for i in range(fert_rates_2D.shape[0])
+            ]
         if plot_path is not None:
             pp.plot_fert_rates(
-                [fert_rates_2D],
-                start_year=start_year,
-                years_to_plot=years_to_plot,
+                fert_rates_list,
+                labels=years_list,
                 path=plot_path,
             )
             return fert_rates_2D
         else:
             fig = pp.plot_fert_rates(
-                [fert_rates_2D],
-                start_year=start_year,
-                years_to_plot=years_to_plot,
+                fert_rates_list,
+                labels=years_list,
             )
             return fert_rates_2D, fig
     else:

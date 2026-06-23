@@ -18,6 +18,25 @@ logger = logging.getLogger(__name__)
 """
 
 
+def _get_e_long(p):
+    """Return ``p.e`` extended for the TPI transition window.
+
+    ``e_long`` is a pure function of ``p.e`` / ``p.S`` / ``p.J`` -- none of
+    which change during a solve -- so it is built once and cached on the
+    parameters object. ``FOC_savings`` and ``FOC_labor`` previously rebuilt
+    this array on every call, which profiling identified as the single most
+    expensive operation in a TPI run.
+    """
+    e_long = getattr(p, "_e_long_cache", None)
+    if e_long is None:
+        e_long = np.concatenate(
+            (p.e, np.tile(p.e[-1, :, :].reshape(1, p.S, p.J), (p.S, 1, 1))),
+            axis=0,
+        )
+        p._e_long_cache = e_long
+    return e_long
+
+
 def marg_ut_cons(c, sigma):
     r"""
     Compute the marginal utility of consumption.
@@ -493,13 +512,7 @@ def FOC_savings(
             ]
             income_tax_filer = p.income_tax_filer[t : t + length, j]
             wealth_tax_filer = p.wealth_tax_filer[t : t + length, j]
-            e_long = np.concatenate(
-                (
-                    p.e,
-                    np.tile(p.e[-1, :, :].reshape(1, p.S, p.J), (p.S, 1, 1)),
-                ),
-                axis=0,
-            )
+            e_long = _get_e_long(p)
             e = np.diag(e_long[t : t + p.S, :, j], max(p.S - length, 0))
     else:
         chi_b = p.chi_b
@@ -521,13 +534,7 @@ def FOC_savings(
             ]
             income_tax_filer = p.income_tax_filer[t : t + length, :]
             wealth_tax_filer = p.wealth_tax_filer[t : t + length, :]
-            e_long = np.concatenate(
-                (
-                    p.e,
-                    np.tile(p.e[-1, :, :].reshape(1, p.S, p.J), (p.S, 1, 1)),
-                ),
-                axis=0,
-            )
+            e_long = _get_e_long(p)
             e = np.diag(e_long[t : t + p.S, :, :], max(p.S - length, 0))
     e = np.squeeze(e)
     if method == "SS":
@@ -707,13 +714,7 @@ def FOC_labor(
                 t : t + length, j
             ]
             income_tax_filer = p.income_tax_filer[t : t + length, j]
-            e_long = np.concatenate(
-                (
-                    p.e,
-                    np.tile(p.e[-1, :, :].reshape(1, p.S, p.J), (p.S, 1, 1)),
-                ),
-                axis=0,
-            )
+            e_long = _get_e_long(p)
             e = np.diag(e_long[t : t + p.S, :, j], max(p.S - length, 0))
     else:
         if method == "SS":
@@ -729,13 +730,7 @@ def FOC_labor(
                 t : t + length, :
             ]
             income_tax_filer = p.income_tax_filer[t : t + length, :]
-            e_long = np.concatenate(
-                (
-                    p.e,
-                    np.tile(p.e[-1, :, :].reshape(1, p.S, p.J), (p.S, 1, 1)),
-                ),
-                axis=0,
-            )
+            e_long = _get_e_long(p)
             e = np.diag(e_long[t : t + p.S, :, j], max(p.S - length, 0))
     if method == "TPI":
         if b.ndim == 2:
@@ -805,7 +800,11 @@ def get_y(r_p, w, b_s, n, p, method):
         method (str): adjusts calculation dimensions based on 'SS' or 'TPI'
     """
     if method == "SS":
-        e = np.squeeze(p.e[-1, :, :])
+        # NOTE: do not np.squeeze here -- for J=1 it collapses p.e[-1, :, :]
+        # from (S, 1) to (S,), which then broadcasts against the (S, 1) b_s/n
+        # into an (S, S) outer product, giving wrong before-tax income. The
+        # array is already (S, J).
+        e = p.e[-1, :, :]
     elif method == "TPI":
         e = p.e
     y = r_p * b_s + w * e * n

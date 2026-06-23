@@ -4,6 +4,7 @@ module contains the following tests:
     - test_get_initial_SS_values(), 3 parameterizations
     - test_firstdoughnutring(), 1 parameterization
     - test_twist_doughnut(), 2 parameterizations
+    - test_params_to_array(), 7 parameterizations
     - test_inner_loop(), 1 parameterization
     - test_run_TPI_full_run(), 11 parameterizations, local only
     - test_run_TPI(), 2 parameterizations, local only
@@ -364,14 +365,68 @@ def test_twist_doughnut(file_inputs, file_outputs):
     assert np.allclose(np.array(test_list), np.array(expected_list), atol=1e-5)
 
 
+@pytest.mark.parametrize(
+    "tax_func_type",
+    ["DEP", "DEP_totalinc", "GS", "HSV", "linear", "mono", "mono2D"],
+    ids=["DEP", "DEP_totalinc", "GS", "HSV", "linear", "mono", "mono2D"],
+)
+def test_params_to_array(tax_func_type):
+    # Test TPI._params_to_array helper.  For numeric tax functions the
+    # nested list is converted to a numpy array; for mono/mono2D (which
+    # store callables, not numbers) the nested list is returned unchanged.
+    nested = [[1.0, 2.0, 3.0], [4.0, 5.0, 6.0]]
+    result = TPI._params_to_array(nested, tax_func_type)
+    if tax_func_type in ("mono", "mono2D"):
+        assert result is nested
+    else:
+        expected = np.array(nested)
+        assert isinstance(result, np.ndarray)
+        assert np.array_equal(result, expected)
+        assert result.dtype == expected.dtype
+
+
 def test_inner_loop():
     # Test TPI.inner_loop function.  Provide inputs to function and
     # ensure that output returned matches what it has been before.
+    # Explicitly disable use_sparse_FOC_jac so this regression test
+    # continues to exercise the legacy dense-finite-difference path
+    # (the sparse path is covered by test_inner_loop_sparse_FOC_jac).
     input_tuple = utils.safe_read_pickle(
         os.path.join(CUR_PATH, "test_io_data", "tpi_inner_loop_inputs.pkl")
     )
     guesses, outer_loop_vars_old, initial_values, ubi, j, ind = input_tuple
     p = Specifications()
+    p.update_specifications({"use_sparse_FOC_jac": False})
+    r = outer_loop_vars_old[0]
+    r_p = outer_loop_vars_old[2]
+    w = outer_loop_vars_old[1]
+    BQ = outer_loop_vars_old[3]
+    RM = outer_loop_vars_old[4]
+    TR = outer_loop_vars_old[5]
+    theta = outer_loop_vars_old[6]
+    p_m = np.ones((p.T + p.S, p.M))
+    outer_loop_vars = (r_p, r, w, p_m, BQ, RM, TR, theta)
+    test_tuple = TPI.inner_loop(
+        guesses, outer_loop_vars, initial_values, ubi, j, ind, p
+    )
+    expected_tuple = utils.safe_read_pickle(
+        os.path.join(CUR_PATH, "test_io_data", "tpi_inner_loop_outputs.pkl")
+    )
+
+    for i, v in enumerate(expected_tuple):
+        assert np.allclose(test_tuple[i], v)
+
+
+def test_inner_loop_sparse_FOC_jac():
+    # The optional banded (sparse finite-difference) Jacobian, enabled via
+    # use_sparse_FOC_jac, must reproduce the default dense-finite-difference
+    # household solution from test_inner_loop.
+    input_tuple = utils.safe_read_pickle(
+        os.path.join(CUR_PATH, "test_io_data", "tpi_inner_loop_inputs.pkl")
+    )
+    guesses, outer_loop_vars_old, initial_values, ubi, j, ind = input_tuple
+    p = Specifications()
+    p.update_specifications({"use_sparse_FOC_jac": True})
     r = outer_loop_vars_old[0]
     r_p = outer_loop_vars_old[2]
     w = outer_loop_vars_old[1]

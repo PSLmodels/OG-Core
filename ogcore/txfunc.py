@@ -83,14 +83,27 @@ def get_tax_rates(
     income = X + Y
     if tax_func_type != "mono":
         # easier to use arrays for calculations below, except when
-        # can't (bc lists of functions)
-        params = np.array(params)
+        # can't (bc lists of functions). asarray avoids a copy when the
+        # caller already passes an array (the hot TPI path does).
+        params = np.asarray(params)
+
+    def _coef(idx):
+        # Pull tax-function coefficient ``idx`` for every observation.
+        #
+        # ``np.squeeze`` was used here, but for a J=1 model-application call
+        # the coefficient slice is shaped (S, 1); squeezing drops the J axis
+        # to (S,), which then broadcasts against the (S, 1) income into an
+        # (S, S) outer product -- silently wrong taxes for J=1. Reshape to the
+        # income shape when the sizes line up (model application), and only
+        # fall back to squeeze for the estimation path, where the coefficient
+        # is a scalar and income is the data vector.
+        v = np.asarray(params[..., idx])
+        if np.size(v) == np.size(income):
+            return v.reshape(np.shape(income))
+        return np.squeeze(v)
+
     if tax_func_type == "GS":
-        phi0, phi1, phi2 = (
-            np.squeeze(params[..., 0]),
-            np.squeeze(params[..., 1]),
-            np.squeeze(params[..., 2]),
-        )
+        phi0, phi1, phi2 = (_coef(0), _coef(1), _coef(2))
         if rate_type == "etr":
             txrates = (
                 phi0 * (income - ((income**-phi1) + phi2) ** (-1 / phi1))
@@ -104,10 +117,7 @@ def get_tax_rates(
                 )
             )
     if tax_func_type == "HSV":
-        lambda_s, tau_s = (
-            np.squeeze(params[..., 0]),
-            np.squeeze(params[..., 1]),
-        )
+        lambda_s, tau_s = (_coef(0), _coef(1))
         if rate_type == "etr":
             txrates = 1 - (lambda_s * (income ** (-tau_s)))
         else:  # marginal tax rate function
@@ -127,18 +137,18 @@ def get_tax_rates(
             shift_y,
             shift,
         ) = (
-            np.squeeze(params[..., 0]),
-            np.squeeze(params[..., 1]),
-            np.squeeze(params[..., 2]),
-            np.squeeze(params[..., 3]),
-            np.squeeze(params[..., 4]),
-            np.squeeze(params[..., 5]),
-            np.squeeze(params[..., 6]),
-            np.squeeze(params[..., 7]),
-            np.squeeze(params[..., 8]),
-            np.squeeze(params[..., 9]),
-            np.squeeze(params[..., 10]),
-            np.squeeze(params[..., 11]),
+            _coef(0),
+            _coef(1),
+            _coef(2),
+            _coef(3),
+            _coef(4),
+            _coef(5),
+            _coef(6),
+            _coef(7),
+            _coef(8),
+            _coef(9),
+            _coef(10),
+            _coef(11),
         )
         Etil = A + B
         Ftil = C + D
@@ -210,12 +220,12 @@ def get_tax_rates(
                 ) + shift
     elif tax_func_type == "DEP_totalinc":
         A, B, max_income, min_income, shift_income, shift = (
-            np.squeeze(params[..., 0]),
-            np.squeeze(params[..., 1]),
-            np.squeeze(params[..., 2]),
-            np.squeeze(params[..., 3]),
-            np.squeeze(params[..., 4]),
-            np.squeeze(params[..., 5]),
+            _coef(0),
+            _coef(1),
+            _coef(2),
+            _coef(3),
+            _coef(4),
+            _coef(5),
         )
         Etil = A + B
         income2 = income**2
@@ -260,11 +270,7 @@ def get_tax_rates(
                 ) + min_income
                 txrates = tau_income + shift_income + shift
     elif tax_func_type == "linear":
-        rate = np.squeeze(params[..., 0])
-        try:
-            txrates = rate * np.ones_like(income)
-        except ValueError:
-            txrates = rate.reshape(income.shape) * np.ones_like(income)
+        txrates = _coef(0) * np.ones_like(income)
     elif tax_func_type == "mono":
         if for_estimation:
             mono_interp = params[0]

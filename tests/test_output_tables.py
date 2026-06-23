@@ -197,3 +197,44 @@ def test_dynamic_revenue_decomposition(include_business_tax, full_break_out):
         full_break_out=full_break_out,
     )
     assert isinstance(df, pd.DataFrame)
+
+
+@pytest.mark.parametrize(
+    "targets_dict",
+    [
+        # Single macroeconomic moment
+        {r"Interest rate $(r)$": 0.04},
+        # Multiple macroeconomic moments
+        {
+            r"Investment rate $(I/K)$": 0.07,
+            r"Capital-Output ratio $(K/Y)$": 3.0,
+            r"Consumption-Output ratio $(C/Y)$": 0.65,
+        },
+        # Fiscal moments
+        {
+            r"Revenue to GDP ratio $(T/Y)$": 0.20,
+            r"Debt to GDP ratio $(D/Y)$": 0.60,
+        },
+        # Unrecognized moment key (model value falls back to NaN)
+        {"Custom unrecognized moment": 0.5},
+        # Mix of known and unknown moments
+        {
+            r"Interest rate $(r)$": 0.04,
+            "Custom unrecognized moment": 0.5,
+        },
+    ],
+    ids=[
+        "single macro moment",
+        "multiple macro moments",
+        "fiscal moments",
+        "unrecognized moment",
+        "mixed known and unknown",
+    ],
+)
+def test_model_fit_table(targets_dict):
+    df = output_tables.model_fit_table(
+        targets_dict,
+        base_params,
+        base_tpi,
+    )
+    assert isinstance(df, pd.DataFrame)

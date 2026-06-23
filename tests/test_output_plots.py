@@ -249,6 +249,38 @@ def test_plot_aggregates_not_a_type(tmpdir):
         )
 
 
+def test_plot_aggregates_interest_rate_pct_diff_label():
+    fig = output_plots.plot_aggregates(
+        base_tpi,
+        base_params,
+        reform_tpi=reform_tpi,
+        reform_params=reform_params,
+        var_list=["r"],
+        plot_type="pct_diff",
+        num_years_to_plot=20,
+        start_year=int(base_params.start_year),
+    )
+
+    assert fig.axes[0].get_ylabel() == "Percentage point change"
+    plt.close()
+
+
+def test_plot_aggregates_interest_rate_levels_label():
+    fig = output_plots.plot_aggregates(
+        base_tpi,
+        base_params,
+        reform_tpi=reform_tpi,
+        reform_params=reform_params,
+        var_list=["r"],
+        plot_type="levels",
+        num_years_to_plot=20,
+        start_year=int(base_params.start_year),
+    )
+
+    assert fig.axes[0].get_ylabel() == "Rate"
+    plt.close()
+
+
 test_data = [
     (base_tpi, base_params, None, None, None, None, "levels"),
     (base_tpi, base_params, reform_tpi, reform_params, None, None, "levels"),
@@ -314,6 +346,20 @@ def test_plot_gdp_ratio_save_fig(tmpdir):
     img = mpimg.imread(path)
 
     assert isinstance(img, np.ndarray)
+
+
+def test_plot_gdp_ratio_pct_diff_label():
+    fig = output_plots.plot_gdp_ratio(
+        base_tpi,
+        base_params,
+        reform_tpi=reform_tpi,
+        reform_params=reform_params,
+        start_year=int(base_params.start_year),
+        plot_type="pct_diff",
+    )
+
+    assert fig.axes[0].get_ylabel() == "Percentage points of GDP"
+    plt.close()
 
 
 def test_ability_bar():

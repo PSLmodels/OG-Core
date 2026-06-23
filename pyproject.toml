@@ -4,14 +4,14 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "ogcore"
-version = "0.15.10"
+version = "0.16.2"
 authors = [
     {name = "Jason DeBacker and Richard W. Evans"},
 ]
 description = "A general equilibrium overlapping generations model for fiscal policy analysis"
 readme = "README.md"
 license = {text = "CC0 1.0 Universal (CC0 1.0) Public Domain Dedication"}
-requires-python = ">=3.11, <3.14"
+requires-python = ">=3.12, <3.14"
 classifiers = [
     "Development Status :: 2 - Pre-Alpha",
     "Intended Audience :: Developers",
@@ -20,7 +20,6 @@ classifiers = [
     "Operating System :: OS Independent",
     "Programming Language :: Python",
     "Programming Language :: Python :: 3",
-    "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
     "Programming Language :: Python :: 3.13",
     "Topic :: Software Development :: Libraries :: Python Modules",
@@ -108,4 +107,9 @@ markers = [
     "slow: marks tests that take longer to run",
     "real: marks tests using real OG-Core tax function code",
     "platform: marks tests for platform-specific optimization",
+]
+
+[dependency-groups]
+dev = [
+    "ipykernel>=7.2.0",
 ]

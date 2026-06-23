@@ -51,6 +51,52 @@ def test_get_L(n, p, method, expected):
     assert np.allclose(L, expected)
 
 
+def test_get_L_J1_regression():
+    """
+    Regression test for issue #1143: aggregate labor for J=1 must use a
+    proper (S, J) shape for ``p.e[-1, :, :]``. A stray ``np.squeeze`` in
+    ``get_L`` collapsed the J axis to a 1-D array, which then broadcast
+    against the (S, J) weight into an (S, S) outer product, scaling
+    aggregate labor by S. This test checks the get_L result against a
+    plain index-by-index loop so any future shape-collapse regression
+    fails loudly.
+    """
+    rho_vec_j1 = np.zeros((1, 40))
+    rho_vec_j1[0, -1] = 1.0
+    p_j1 = Specifications()
+    p_j1.update_specifications(
+        {
+            "T": 160,
+            "S": 40,
+            "J": 1,
+            "rho": rho_vec_j1.tolist(),
+            "chi_n": np.ones(1),
+            "lambdas": [1.0],
+            "e": np.ones((40, 1)),
+            "labor_income_tax_noncompliance_rate": [[0.0]],
+            "capital_income_tax_noncompliance_rate": [[0.0]],
+            "income_tax_filer": [[1.0]],
+            "wealth_tax_filer": [[1.0]],
+            "replacement_rate_adjust": [[1.0]],
+            "eta": np.ones((40, 1)) / 40,
+            "omega": np.ones((160, 40)) / 40,
+            "omega_SS": np.ones(40) / 40,
+        }
+    )
+    n = np.random.default_rng(0).random((p_j1.S, p_j1.J))
+    # Reference: explicit double-sum over ages and types.
+    expected = 0.0
+    for s in range(p_j1.S):
+        for j in range(p_j1.J):
+            expected += (
+                p_j1.omega_SS[s]
+                * float(p_j1.lambdas[j])
+                * float(p_j1.e[-1, s, j])
+                * n[s, j]
+            )
+    assert np.allclose(aggr.get_L(n, p_j1, "SS"), expected)
+
+
 p = Specifications()
 rho_vec = np.zeros((1, 40))
 rho_vec[0, -1] = 1.0
@@ -1747,7 +1793,8 @@ test_data_rc = [
         np.array([0.0, 0.0, 0.0, 0.0, 0.0]),  # I_g
         np.array([0.1, 0, 0.016, -1.67, -0.477]),  # net_capital_flows
         np.array([0.0, 0.0, 0.0, 0.0, 0.0]),  # RM1
-        np.array([-9.1, 1, 0.974, 13.67, 1.477]),  # expected1
+        np.array([0.0, 0.0, 0.0, 0.0, 0.03]),  # Foreign aid
+        np.array([-9.1, 1, 0.974, 13.67, 1.477 + 0.03]),  # expected1
     ),
     (
         np.array([48, 55, 2, 99, 8]),  # Y
@@ -1757,38 +1804,26 @@ test_data_rc = [
         np.array([0.0, 0.0, 0.0, 0.0, 0.0]),  # I_g
         np.array([0.1, 0, 0.016, -1.67, -0.477]),  # net_capital_flows
         np.array([0.0, 0.0, 0.0, 0.0, 0.03]),  # RM2
-        np.array([-9.1, 1, 0.974, 13.67, 1.507]),  # expected2
+        np.array([0.0, 0.0, 0.0, 0.0, 0.03]),  # Foreign aid
+        np.array([-9.1, 1, 0.974, 13.67, 1.507 + 0.03]),  # expected2
     ),
 ]
 
 
 @pytest.mark.parametrize(
-    "Y,C,G,I_d,I_g,net_capital_flows,RM,expected",
+    "Y,C,G,I_d,I_g,net_capital_flows,RM,FA,expected",
     test_data_rc,
     ids=["RM=0, M=5", "RM>0, M=5"],
 )
 def test_resource_constraint(
-    Y, C, G, I_d, I_g, net_capital_flows, RM, expected
+    Y, C, G, I_d, I_g, net_capital_flows, RM, FA, expected
 ):
     """
     Test resource constraint equation.
     """
-    # Y = np.array([48, 55, 2, 99, 8])
-    # C = np.array([33, 44, 0.4, 55, 6])
-    # G = np.array([4, 5, 0.01, 22, 0])
-    # I_d = np.array([20, 5, 0.6, 10, 1])
-    # I_g = np.zeros_like(I_d)
-    # net_capital_flows = np.array([0.1, 0, 0.016, -1.67, -0.477])
-    # RM1 = np.array([0.0, 0.0, 0.0, 0.0, 0.0])
-    # expected1 = np.array([-9.1, 1, 0.974, 13.67, 1.477])
     test_RC = aggr.resource_constraint(
-        Y, C, G, I_d, I_g, net_capital_flows, RM
+        Y, C, G, I_d, I_g, net_capital_flows, RM, FA
     )
-    # RM2 = np.array([0.0, 0.0, 0.0, 0.0, 0.03])
-    # expected2 = np.array([-9.1, 1, 0.974, 13.67, 1.477])
-    # test_RC2 = aggr.resource_constraint(
-    #     Y, C, G, I_d, I_g, net_capital_flows, RM2
-    # )
 
     assert np.allclose(test_RC, expected)
 
