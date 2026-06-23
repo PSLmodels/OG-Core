@@ -469,6 +469,7 @@ def test_time_path_length():
     assert pop_dict["g_n"].shape[0] == T + S
     assert pop_dict["imm_rates"].shape[0] == T + S
     assert pop_dict["rho"].shape[0] == T + S
+    assert np.isscalar(pop_dict["g_n_preTP"])
 
 
 # test of get pop when infer population, but don't pass initial pop

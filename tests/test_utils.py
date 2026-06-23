@@ -920,9 +920,11 @@ p2 = Specifications()
 p2.g_n = np.ones(p2.T + p2.S) * 0.01
 p2.g_y = 0.04
 g_y_discount = np.exp(np.arange(p2.T) * (p2.g_y - p1.g_y))
-g_n_discount = np.cumprod(1 + (p2.g_n[: p2.T])) / np.cumprod(
-    1 + p1.g_n[: p1.T]
-)
+pop_growth1 = np.ones(p1.T)
+pop_growth1[1:] = np.cumprod(1 + p1.g_n[: p1.T - 1])
+pop_growth2 = np.ones(p2.T)
+pop_growth2[1:] = np.cumprod(1 + p2.g_n[: p2.T - 1])
+g_n_discount = pop_growth2 / pop_growth1
 expected_pct_change2 = {
     "K": (np.ones(p2.T) * (1.2 * g_y_discount * g_n_discount)) - 1,
     "Y": (np.ones(p2.T) * (1.2 * g_y_discount * g_n_discount)) - 1,

@@ -1162,11 +1162,12 @@ def get_pop_objs(
         "g_n_ss": g_n_SS,
         "omega_SS": omega_SSfx[-S:] / omega_SSfx[-S:].sum(),
         "rho": mort_rates_S[1:, :],
-        "g_n": g_n_path,
+        "g_n": g_n_path[1:],
         "imm_rates": imm_rates_mat[1:, :],
         "omega_S_preTP": omega_path_S[0, :],
         "imm_rates_preTP": imm_rates_mat[0, :],
-        "rho_preTP": mort_rates_S[0, :]
+        "rho_preTP": mort_rates_S[0, :],
+        "g_n_preTP": g_n_path[0],
     }
 
     return pop_dict
