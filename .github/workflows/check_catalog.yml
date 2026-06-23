@@ -1,0 +1,35 @@
+name: Check installer catalog
+
+on:
+  push:
+    paths:
+      - 'scripts/install.sh'
+      - 'scripts/install.ps1'
+      - 'scripts/repos.json'
+      - '.github/workflows/check_catalog.yml'
+  pull_request:
+    paths:
+      - 'scripts/install.sh'
+      - 'scripts/install.ps1'
+      - 'scripts/repos.json'
+      - '.github/workflows/check_catalog.yml'
+
+jobs:
+  catalog-in-sync:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - name: Emit catalog from each installer
+        run: |
+          bash scripts/install.sh --list-json > /tmp/catalog_sh.json
+          pwsh -File scripts/install.ps1 -ListJson > /tmp/catalog_ps.json
+      - name: Verify install.sh, install.ps1, and repos.json agree
+        run: |
+          norm() { jq -S '{schema_version, repos: (.repos | sort_by(.key))}' "$1"; }
+          if ! diff <(norm scripts/repos.json) <(norm /tmp/catalog_sh.json); then
+            echo "::error::install.sh --list-json does not match scripts/repos.json"; exit 1
+          fi
+          if ! diff <(norm scripts/repos.json) <(norm /tmp/catalog_ps.json); then
+            echo "::error::install.ps1 -ListJson does not match scripts/repos.json"; exit 1
+          fi
+          echo "Catalog in sync across install.sh, install.ps1, and repos.json."
