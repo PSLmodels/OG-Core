@@ -441,12 +441,12 @@ function Install-OneRepo($owner, $name, $pkg, $desc, $url, $idx, $total) {
                 if ((Normalize-RemoteUrl $existingUrl) -eq (Normalize-RemoteUrl $url)) {
                     $destHasRepo = $true
                 } else {
-                    Write-Fail "$name: destination is a git repo for a different remote" $existingUrl
+                    Write-Fail "${name}: destination is a git repo for a different remote" $existingUrl
                     Record-Repo $name "FAIL" "wrong remote at $destAbs"
                     return
                 }
             } else {
-                Write-Fail "$name: destination exists and is not empty" $destAbs
+                Write-Fail "${name}: destination exists and is not empty" $destAbs
                 Record-Repo $name "FAIL" "destination not empty"
                 return
             }
@@ -462,14 +462,14 @@ function Install-OneRepo($owner, $name, $pkg, $desc, $url, $idx, $total) {
                 Write-Cmd "git -C $destAbs pull --ff-only"
                 & $GitBin -C $destAbs pull --ff-only
                 if ($LASTEXITCODE -eq 0) { Write-Pass "$name updated" }
-                else { Write-Warn2 "$name: git pull failed; using existing state"; $repoState = "WARN" }
-            } else { Write-Skip "$name: using existing clone as-is" }
+                else { Write-Warn2 "${name}: git pull failed; using existing state"; $repoState = "WARN" }
+            } else { Write-Skip "${name}: using existing clone as-is" }
         } else {
             if ($Branch) { Write-Host ("  Will clone {0} (branch: {1}) into {2}." -f $url, $Branch, $destAbs) }
             else { Write-Host ("  Will clone {0} into {1}." -f $url, $destAbs) }
             $doClone = $true
             if ($PerStep) { if (-not (Prompt-YN "Clone now?" 'y')) { $doClone = $false } }
-            if (-not $doClone) { Write-Fail "$name: clone declined"; Record-Repo $name "FAIL" "clone declined"; return }
+            if (-not $doClone) { Write-Fail "${name}: clone declined"; Record-Repo $name "FAIL" "clone declined"; return }
             if ($Branch) {
                 Write-Cmd "git clone --branch $Branch $url $destAbs"
                 & $GitBin clone --branch $Branch $url $destAbs
@@ -477,7 +477,7 @@ function Install-OneRepo($owner, $name, $pkg, $desc, $url, $idx, $total) {
                 Write-Cmd "git clone $url $destAbs"
                 & $GitBin clone $url $destAbs
             }
-            if ($LASTEXITCODE -ne 0) { Write-Fail "$name: git clone failed"; Record-Repo $name "FAIL" "git clone failed"; return }
+            if ($LASTEXITCODE -ne 0) { Write-Fail "${name}: git clone failed"; Record-Repo $name "FAIL" "git clone failed"; return }
             $branchNow = "?"
             try { $branchNow = (& $GitBin -C $destAbs rev-parse --abbrev-ref HEAD 2>$null).Trim() } catch {}
             Write-Pass "$name cloned" "$destAbs (branch: $branchNow)"
@@ -485,11 +485,11 @@ function Install-OneRepo($owner, $name, $pkg, $desc, $url, $idx, $total) {
 
         # --- Verify the repo is uv-native ---
         if (-not (Test-Path (Join-Path $destAbs "pyproject.toml"))) {
-            Write-Fail "$name: no pyproject.toml (not a uv-native repo)"
+            Write-Fail "${name}: no pyproject.toml (not a uv-native repo)"
             Record-Repo $name "FAIL" "no pyproject.toml"
             return
         }
-        if (-not (Test-Path (Join-Path $destAbs "uv.lock"))) { Write-Warn2 "$name: no uv.lock; uv sync will create one" }
+        if (-not (Test-Path (Join-Path $destAbs "uv.lock"))) { Write-Warn2 "${name}: no uv.lock; uv sync will create one" }
 
         # --- uv sync ---
         $syncArgs = @("sync")
@@ -499,18 +499,18 @@ function Install-OneRepo($owner, $name, $pkg, $desc, $url, $idx, $total) {
             Write-Host "  Will run: uv $($syncArgs -join ' ')  (in $destAbs)"
             if (-not (Prompt-YN "Run uv sync now?" 'y')) { $doSync = $false }
         }
-        if (-not $doSync) { Write-Fail "$name: uv sync declined"; Record-Repo $name "FAIL" "uv sync declined"; return }
+        if (-not $doSync) { Write-Fail "${name}: uv sync declined"; Record-Repo $name "FAIL" "uv sync declined"; return }
         Write-Cmd "uv $($syncArgs -join ' ')  (cwd: $destAbs)"
         Push-Location $destAbs
         $syncRc = 1
         try { & $UvBin @syncArgs; $syncRc = $LASTEXITCODE } finally { Pop-Location }
-        if ($syncRc -ne 0) { Write-Fail "$name: uv sync failed"; Record-Repo $name "FAIL" "uv sync failed"; return }
+        if ($syncRc -ne 0) { Write-Fail "${name}: uv sync failed"; Record-Repo $name "FAIL" "uv sync failed"; return }
         Write-Pass "$name installed (uv sync)"
 
         # --- Verify import ---
         $venvPy = Join-Path $destAbs ".venv\Scripts\python.exe"
         if (-not (Test-Path $venvPy)) {
-            Write-Fail "$name: venv python not found" $venvPy
+            Write-Fail "${name}: venv python not found" $venvPy
             Record-Repo $name "FAIL" "no venv python"
             return
         }
@@ -518,15 +518,15 @@ function Install-OneRepo($owner, $name, $pkg, $desc, $url, $idx, $total) {
         if ($LASTEXITCODE -eq 0) {
             $ver = "?"
             try { $ver = (& $venvPy -W ignore -c "import $pkg; print(getattr($pkg, '__version__', '?'))" 2>&1 | Select-Object -Last 1).ToString().Trim() } catch {}
-            Write-Pass "$name: import $pkg" $ver
+            Write-Pass "${name}: import $pkg" $ver
             if ($repoState -eq "WARN") { Record-Repo $name "WARN" "import $pkg ($ver); pull warning" }
             else { Record-Repo $name "PASS" "import $pkg ($ver)" }
         } else {
-            Write-Fail "$name: import $pkg failed" "package not importable; check log above"
+            Write-Fail "${name}: import $pkg failed" "package not importable; check log above"
             Record-Repo $name "FAIL" "import $pkg failed"
         }
     } catch {
-        Write-Fail "$name: unexpected error" $_.Exception.Message
+        Write-Fail "${name}: unexpected error" $_.Exception.Message
         Record-Repo $name "FAIL" "error: $($_.Exception.Message)"
     }
 }
