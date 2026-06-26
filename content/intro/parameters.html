@@ -627,8 +627,11 @@
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#omega-s-pretp"><code class="docutils literal notranslate"><span class="pre">omega_S_preTP</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#g-n"><code class="docutils literal notranslate"><span class="pre">g_n</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#g-n-ss"><code class="docutils literal notranslate"><span class="pre">g_n_ss</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#g-n-pretp"><code class="docutils literal notranslate"><span class="pre">g_n_preTP</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#imm-rates"><code class="docutils literal notranslate"><span class="pre">imm_rates</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#imm-rates-pretp"><code class="docutils literal notranslate"><span class="pre">imm_rates_preTP</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#rho"><code class="docutils literal notranslate"><span class="pre">rho</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#rho-pretp"><code class="docutils literal notranslate"><span class="pre">rho_preTP</span></code></a></li>
 </ul>
 </li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#model-solution-parameters">Model Solution Parameters</a><ul class="nav section-nav flex-column">
@@ -1512,6 +1515,13 @@ organization of the theory in the <code class="docutils literal notranslate"><sp
 <em>Valid Range:</em> min = -1.0 and max = 1.0<br />
 <em>Out-of-Range Action:</em> error</p>
 </section>
+<section id="g-n-pretp">
+<h3><code class="docutils literal notranslate"><span class="pre">g_n_preTP</span></code><a class="headerlink" href="#g-n-pretp" title="Link to this heading">#</a></h3>
+<p><em>Description:</em> Population growth rate from year before model start to start year.<br />
+<em>Value Type:</em> float<br />
+<em>Valid Range:</em> min = -1.0 and max = 1.0<br />
+<em>Out-of-Range Action:</em> error</p>
+</section>
 <section id="imm-rates">
 <h3><code class="docutils literal notranslate"><span class="pre">imm_rates</span></code><a class="headerlink" href="#imm-rates" title="Link to this heading">#</a></h3>
 <p><em>Description:</em> Immigration rates over the time path.<br />
@@ -1519,8 +1529,22 @@ organization of the theory in the <code class="docutils literal notranslate"><sp
 <em>Valid Range:</em> min = -1.0 and max = 1.0<br />
 <em>Out-of-Range Action:</em> error</p>
 </section>
+<section id="imm-rates-pretp">
+<h3><code class="docutils literal notranslate"><span class="pre">imm_rates_preTP</span></code><a class="headerlink" href="#imm-rates-pretp" title="Link to this heading">#</a></h3>
+<p><em>Description:</em> Immigration rates in period before model start year.<br />
+<em>Value Type:</em> float<br />
+<em>Valid Range:</em> min = -1.0 and max = 1.0<br />
+<em>Out-of-Range Action:</em> error</p>
+</section>
 <section id="rho">
 <h3><code class="docutils literal notranslate"><span class="pre">rho</span></code><a class="headerlink" href="#rho" title="Link to this heading">#</a></h3>
+<p><em>Description:</em> Age-specific mortality rates.<br />
+<em>Value Type:</em> float<br />
+<em>Valid Range:</em> min = 0.0 and max = 1.0<br />
+<em>Out-of-Range Action:</em> error</p>
+</section>
+<section id="rho-pretp">
+<h3><code class="docutils literal notranslate"><span class="pre">rho_preTP</span></code><a class="headerlink" href="#rho-pretp" title="Link to this heading">#</a></h3>
 <p><em>Description:</em> Age-specific mortality rates.<br />
 <em>Value Type:</em> float<br />
 <em>Valid Range:</em> min = 0.0 and max = 1.0<br />
@@ -1626,7 +1650,7 @@ organization of the theory in the <code class="docutils literal notranslate"><sp
 <p><em>Description:</em> Calendar year in which to start model analysis.<br />
 <em>Notes:</em> Calendar year for initial model period<br />
 <em>Value Type:</em> int<br />
-<em>Valid Range:</em> min = 2013 and max = 2100<br />
+<em>Valid Range:</em> min = 2013 and max = 2101<br />
 <em>Out-of-Range Action:</em> error</p>
 </section>
 <section id="mean-income-data">
@@ -1865,8 +1889,11 @@ organization of the theory in the <code class="docutils literal notranslate"><sp
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#omega-s-pretp"><code class="docutils literal notranslate"><span class="pre">omega_S_preTP</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#g-n"><code class="docutils literal notranslate"><span class="pre">g_n</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#g-n-ss"><code class="docutils literal notranslate"><span class="pre">g_n_ss</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#g-n-pretp"><code class="docutils literal notranslate"><span class="pre">g_n_preTP</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#imm-rates"><code class="docutils literal notranslate"><span class="pre">imm_rates</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#imm-rates-pretp"><code class="docutils literal notranslate"><span class="pre">imm_rates_preTP</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#rho"><code class="docutils literal notranslate"><span class="pre">rho</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#rho-pretp"><code class="docutils literal notranslate"><span class="pre">rho_preTP</span></code></a></li>
 </ul>
 </li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#model-solution-parameters">Model Solution Parameters</a><ul class="nav section-nav flex-column">

@@ -834,6 +834,13 @@ _Valid Range:_ min = -1.0 and max = 1.0
 _Out-of-Range Action:_ error  
 
 
+####  `g_n_preTP`  
+_Description:_ Population growth rate from year before model start to start year.  
+_Value Type:_ float  
+_Valid Range:_ min = -1.0 and max = 1.0  
+_Out-of-Range Action:_ error  
+
+
 ####  `imm_rates`  
 _Description:_ Immigration rates over the time path.  
 _Value Type:_ float  
@@ -841,7 +848,21 @@ _Valid Range:_ min = -1.0 and max = 1.0
 _Out-of-Range Action:_ error  
 
 
+####  `imm_rates_preTP`  
+_Description:_ Immigration rates in period before model start year.  
+_Value Type:_ float  
+_Valid Range:_ min = -1.0 and max = 1.0  
+_Out-of-Range Action:_ error  
+
+
 ####  `rho`  
+_Description:_ Age-specific mortality rates.  
+_Value Type:_ float  
+_Valid Range:_ min = 0.0 and max = 1.0  
+_Out-of-Range Action:_ error  
+
+
+####  `rho_preTP`  
 _Description:_ Age-specific mortality rates.  
 _Value Type:_ float  
 _Valid Range:_ min = 0.0 and max = 1.0  
@@ -945,7 +966,7 @@ _Out-of-Range Action:_ error
 _Description:_ Calendar year in which to start model analysis.  
 _Notes:_ Calendar year for initial model period  
 _Value Type:_ int  
-_Valid Range:_ min = 2013 and max = 2100  
+_Valid Range:_ min = 2013 and max = 2101  
 _Out-of-Range Action:_ error  
 
 

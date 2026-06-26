@@ -1576,7 +1576,11 @@
             <span class="n">omega_t</span> <span class="o">=</span> <span class="n">params</span><span class="o">.</span><span class="n">omega</span><span class="p">[</span><span class="n">t</span><span class="p">]</span>
             <span class="n">model_val</span> <span class="o">=</span> <span class="n">omega_t</span><span class="p">[</span><span class="n">idx_65</span><span class="p">:]</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span> <span class="o">/</span> <span class="n">omega_t</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
         <span class="k">elif</span> <span class="n">target_desc</span> <span class="o">==</span> <span class="sa">r</span><span class="s2">&quot;Pop growth rate&quot;</span><span class="p">:</span>
-            <span class="n">model_val</span> <span class="o">=</span> <span class="n">params</span><span class="o">.</span><span class="n">g_n</span><span class="p">[</span><span class="n">t</span><span class="p">]</span>
+            <span class="c1"># g_n[t] is now growth from period t to t+1; the boundary</span>
+            <span class="c1"># growth into period 0 lives in g_n_preTP. Report the growth</span>
+            <span class="c1"># into period t so this stays calendar-aligned with the</span>
+            <span class="c1"># omega[t]-based moments above.</span>
+            <span class="n">model_val</span> <span class="o">=</span> <span class="n">params</span><span class="o">.</span><span class="n">g_n_preTP</span> <span class="k">if</span> <span class="n">t</span> <span class="o">==</span> <span class="mi">0</span> <span class="k">else</span> <span class="n">params</span><span class="o">.</span><span class="n">g_n</span><span class="p">[</span><span class="n">t</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">model_val</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span>
 

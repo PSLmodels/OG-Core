@@ -780,7 +780,6 @@
     <span class="n">infmort_rates</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="n">imm_rates</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="n">initial_pop</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-    <span class="n">pre_pop_dist</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="n">country_id</span><span class="o">=</span><span class="n">UN_COUNTRY_CODE</span><span class="p">,</span>
     <span class="n">start_year</span><span class="o">=</span><span class="n">START_YEAR</span><span class="p">,</span>
     <span class="n">end_year</span><span class="o">=</span><span class="n">END_YEAR</span><span class="p">,</span>
@@ -809,8 +808,6 @@
 <span class="sd">            and model age</span>
 <span class="sd">        initial_pop_data (Pandas DataFrame): initial population data</span>
 <span class="sd">            for the first year of model calibration (start_year)</span>
-<span class="sd">        pre_pop_dist (Numpy array): population distribution for the year</span>
-<span class="sd">            before the initial year for calibration</span>
 <span class="sd">        country_id (str): country id for UN data</span>
 <span class="sd">        start_year (int): start year data</span>
 <span class="sd">        end_year (int): end year for data</span>
@@ -818,33 +815,11 @@
 
 <span class="sd">    Returns:</span>
 <span class="sd">        pop_2D (Numpy array): population distribution over T0 periods</span>
-<span class="sd">        pre_pop (Numpy array): population distribution one year before</span>
-<span class="sd">            initial year for calibration of omega_S_preTP</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="c1"># Generate time path of the nonstationary population distribution</span>
     <span class="c1"># Get path up to end of data year</span>
     <span class="n">pop_2D</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">end_year</span> <span class="o">+</span> <span class="mi">2</span> <span class="o">-</span> <span class="n">start_year</span><span class="p">,</span> <span class="n">E</span> <span class="o">+</span> <span class="n">S</span><span class="p">))</span>
     <span class="k">if</span> <span class="n">infer_pop</span><span class="p">:</span>
-        <span class="k">if</span> <span class="n">pre_pop_dist</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">pre_pop_data</span> <span class="o">=</span> <span class="n">get_un_data</span><span class="p">(</span>
-                <span class="s2">&quot;47&quot;</span><span class="p">,</span>
-                <span class="n">country_id</span><span class="o">=</span><span class="n">country_id</span><span class="p">,</span>
-                <span class="n">start_year</span><span class="o">=</span><span class="n">start_year</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span>
-                <span class="n">end_year</span><span class="o">=</span><span class="n">start_year</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span>
-            <span class="p">)</span>
-            <span class="k">if</span> <span class="n">download_path</span><span class="p">:</span>
-                <span class="n">pre_pop_data</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span>
-                    <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">download_path</span><span class="p">,</span> <span class="s2">&quot;raw_pre_pop_data_UN.csv&quot;</span><span class="p">),</span>
-                    <span class="n">index</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-                <span class="p">)</span>
-            <span class="n">pre_pop_sample</span> <span class="o">=</span> <span class="n">pre_pop_data</span><span class="p">[</span>
-                <span class="p">(</span><span class="n">pre_pop_data</span><span class="p">[</span><span class="s2">&quot;age&quot;</span><span class="p">]</span> <span class="o">&gt;=</span> <span class="n">min_age</span><span class="p">)</span>
-                <span class="o">&amp;</span> <span class="p">(</span><span class="n">pre_pop_data</span><span class="p">[</span><span class="s2">&quot;age&quot;</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="n">max_age</span><span class="p">)</span>
-            <span class="p">]</span>
-            <span class="n">pre_pop</span> <span class="o">=</span> <span class="n">pre_pop_sample</span><span class="o">.</span><span class="n">value</span><span class="o">.</span><span class="n">values</span>
-            <span class="n">pre_pop_dist</span> <span class="o">=</span> <span class="n">pop_rebin</span><span class="p">(</span><span class="n">pre_pop</span><span class="p">,</span> <span class="n">E</span> <span class="o">+</span> <span class="n">S</span><span class="p">)</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="n">pre_pop</span> <span class="o">=</span> <span class="n">pre_pop_dist</span>
         <span class="k">if</span> <span class="n">initial_pop</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">initial_pop_data</span> <span class="o">=</span> <span class="n">get_un_data</span><span class="p">(</span>
                 <span class="s2">&quot;47&quot;</span><span class="p">,</span>
@@ -900,22 +875,8 @@
             <span class="n">pop</span> <span class="o">=</span> <span class="n">pop_data_sample</span><span class="o">.</span><span class="n">value</span><span class="o">.</span><span class="n">values</span>
             <span class="c1"># Generate the current population distribution given that E+S might</span>
             <span class="c1"># be less than max_age-min_age+1</span>
-            <span class="c1"># age_per_EpS = np.arange(1, E + S + 1)</span>
             <span class="n">pop_EpS</span> <span class="o">=</span> <span class="n">pop_rebin</span><span class="p">(</span><span class="n">pop</span><span class="p">,</span> <span class="n">E</span> <span class="o">+</span> <span class="n">S</span><span class="p">)</span>
             <span class="n">pop_2D</span><span class="p">[</span><span class="n">y</span> <span class="o">-</span> <span class="n">start_year</span><span class="p">,</span> <span class="p">:]</span> <span class="o">=</span> <span class="n">pop_EpS</span>
-
-        <span class="c1"># get population distribution one year before initial year for</span>
-        <span class="c1"># calibration of omega_S_preTP</span>
-        <span class="n">pre_pop_data</span> <span class="o">=</span> <span class="n">get_un_data</span><span class="p">(</span>
-            <span class="s2">&quot;47&quot;</span><span class="p">,</span>
-            <span class="n">country_id</span><span class="o">=</span><span class="n">country_id</span><span class="p">,</span>
-            <span class="n">start_year</span><span class="o">=</span><span class="n">start_year</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span>
-            <span class="n">end_year</span><span class="o">=</span><span class="n">start_year</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span>
-        <span class="p">)</span>
-        <span class="n">pre_pop_sample</span> <span class="o">=</span> <span class="n">pre_pop_data</span><span class="p">[</span>
-            <span class="p">(</span><span class="n">pre_pop_data</span><span class="p">[</span><span class="s2">&quot;age&quot;</span><span class="p">]</span> <span class="o">&gt;=</span> <span class="n">min_age</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">pre_pop_data</span><span class="p">[</span><span class="s2">&quot;age&quot;</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="n">max_age</span><span class="p">)</span>
-        <span class="p">]</span>
-        <span class="n">pre_pop</span> <span class="o">=</span> <span class="n">pre_pop_sample</span><span class="o">.</span><span class="n">value</span><span class="o">.</span><span class="n">values</span>
 
     <span class="k">if</span> <span class="n">download_path</span><span class="p">:</span>
         <span class="n">np</span><span class="o">.</span><span class="n">savetxt</span><span class="p">(</span>
@@ -923,15 +884,8 @@
             <span class="n">pop_2D</span><span class="p">,</span>
             <span class="n">delimiter</span><span class="o">=</span><span class="s2">&quot;,&quot;</span><span class="p">,</span>
         <span class="p">)</span>
-        <span class="n">np</span><span class="o">.</span><span class="n">savetxt</span><span class="p">(</span>
-            <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
-                <span class="n">download_path</span><span class="p">,</span> <span class="s2">&quot;pre_period_population_distribution.csv&quot;</span>
-            <span class="p">),</span>
-            <span class="n">pre_pop</span><span class="p">,</span>
-            <span class="n">delimiter</span><span class="o">=</span><span class="s2">&quot;,&quot;</span><span class="p">,</span>
-        <span class="p">)</span>
 
-    <span class="k">return</span> <span class="n">pop_2D</span><span class="p">,</span> <span class="n">pre_pop</span></div>
+    <span class="k">return</span> <span class="n">pop_2D</span></div>
 
 
 
@@ -1169,7 +1123,6 @@
     <span class="n">imm_rates</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="n">infer_pop</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
     <span class="n">pop_dist</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-    <span class="n">pre_pop_dist</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="n">country_id</span><span class="o">=</span><span class="n">UN_COUNTRY_CODE</span><span class="p">,</span>
     <span class="n">initial_data_year</span><span class="o">=</span><span class="n">START_YEAR</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span>
     <span class="n">final_data_year</span><span class="o">=</span><span class="n">START_YEAR</span> <span class="o">+</span> <span class="mi">2</span><span class="p">,</span>
@@ -1200,9 +1153,6 @@
 <span class="sd">        infer_pop (bool): =True if want to infer the population</span>
 <span class="sd">        pop_dist (array_like): user provided population distribution,</span>
 <span class="sd">            dimensions are T0+1 x E+S</span>
-<span class="sd">        pre_pop_dist (array_like): user provided population distribution</span>
-<span class="sd">            for the year before the initial year for calibration,</span>
-<span class="sd">            length E+S</span>
 <span class="sd">        country_id (str): country id for UN data</span>
 <span class="sd">        initial_data_year (int): initial year of data to use</span>
 <span class="sd">            (not relevant if have user provided data)</span>
@@ -1229,9 +1179,12 @@
 <span class="sd">                path, length T + S</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">start_data_year</span> <span class="o">=</span> <span class="n">initial_data_year</span> <span class="o">-</span> <span class="mi">1</span>  <span class="c1"># grab data from one year</span>
+    <span class="n">T</span> <span class="o">=</span> <span class="n">T</span> <span class="o">+</span> <span class="mi">1</span>  <span class="c1"># add one period to T to account for period -1 pop</span>
+    <span class="c1"># before initial so have pre-start year population distribution</span>
     <span class="c1"># TODO: this function does not generalize with T.</span>
     <span class="c1"># It assumes one model period is equal to one calendar year in the</span>
-    <span class="c1"># time dimesion (it does adjust for S, however)</span>
+    <span class="c1"># time dimension (it does adjust for S, however)</span>
     <span class="n">T0</span> <span class="o">=</span> <span class="p">(</span>
         <span class="n">final_data_year</span> <span class="o">-</span> <span class="n">initial_data_year</span> <span class="o">+</span> <span class="mi">1</span>
     <span class="p">)</span>  <span class="c1"># number of periods until constant fertility and mortality rates</span>
@@ -1242,8 +1195,8 @@
         <span class="n">final_data_year</span><span class="p">,</span>
     <span class="p">)</span>
     <span class="k">assert</span> <span class="n">E</span> <span class="o">+</span> <span class="n">S</span> <span class="o">&lt;=</span> <span class="n">max_age</span> <span class="o">-</span> <span class="n">min_age</span> <span class="o">+</span> <span class="mi">1</span>
-    <span class="k">assert</span> <span class="n">initial_data_year</span> <span class="o">&gt;=</span> <span class="mi">2011</span> <span class="ow">and</span> <span class="n">initial_data_year</span> <span class="o">&lt;=</span> <span class="mi">2100</span> <span class="o">-</span> <span class="mi">1</span>
-    <span class="k">assert</span> <span class="n">final_data_year</span> <span class="o">&gt;=</span> <span class="mi">2011</span> <span class="ow">and</span> <span class="n">final_data_year</span> <span class="o">&lt;=</span> <span class="mi">2100</span> <span class="o">-</span> <span class="mi">1</span>
+    <span class="k">assert</span> <span class="n">initial_data_year</span> <span class="o">&gt;=</span> <span class="mi">2012</span> <span class="ow">and</span> <span class="n">initial_data_year</span> <span class="o">&lt;=</span> <span class="mi">2100</span> <span class="o">-</span> <span class="mi">1</span>
+    <span class="k">assert</span> <span class="n">final_data_year</span> <span class="o">&gt;=</span> <span class="mi">2012</span> <span class="ow">and</span> <span class="n">final_data_year</span> <span class="o">&lt;=</span> <span class="mi">2100</span> <span class="o">-</span> <span class="mi">1</span>
     <span class="c1"># Ensure that the last year of data used is before SS transition assumed</span>
     <span class="c1"># Really, it will need to be well before this</span>
     <span class="k">assert</span> <span class="n">final_data_year</span> <span class="o">&gt;</span> <span class="n">initial_data_year</span>
@@ -1264,7 +1217,7 @@
             <span class="n">min_age</span><span class="p">,</span>
             <span class="n">max_age</span><span class="p">,</span>
             <span class="n">country_id</span><span class="p">,</span>
-            <span class="n">initial_data_year</span><span class="p">,</span>
+            <span class="n">start_data_year</span><span class="p">,</span>
             <span class="n">final_data_year</span><span class="p">,</span>
             <span class="n">download_path</span><span class="o">=</span><span class="n">download_path</span><span class="p">,</span>
         <span class="p">)</span>
@@ -1293,7 +1246,7 @@
             <span class="n">min_age</span><span class="p">,</span>
             <span class="n">max_age</span><span class="p">,</span>
             <span class="n">country_id</span><span class="p">,</span>
-            <span class="n">initial_data_year</span><span class="p">,</span>
+            <span class="n">start_data_year</span><span class="p">,</span>
             <span class="n">final_data_year</span><span class="p">,</span>
             <span class="n">download_path</span><span class="o">=</span><span class="n">download_path</span><span class="p">,</span>
         <span class="p">)</span>
@@ -1331,7 +1284,7 @@
                 <span class="n">initial_pop</span> <span class="o">=</span> <span class="n">pop_dist</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="p">:]</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">pop_dist</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="n">initial_pop</span> <span class="o">=</span> <span class="kc">None</span>
-            <span class="n">pop_2D</span><span class="p">,</span> <span class="n">pre_pop</span> <span class="o">=</span> <span class="n">get_pop</span><span class="p">(</span>
+            <span class="n">pop_2D</span> <span class="o">=</span> <span class="n">get_pop</span><span class="p">(</span>
                 <span class="n">E</span><span class="p">,</span>
                 <span class="n">S</span><span class="p">,</span>
                 <span class="n">min_age</span><span class="p">,</span>
@@ -1342,40 +1295,32 @@
                 <span class="n">infmort_rates</span><span class="p">,</span>
                 <span class="n">imm_rates</span><span class="p">,</span>
                 <span class="n">initial_pop</span><span class="p">,</span>
-                <span class="n">pre_pop_dist</span><span class="p">,</span>
                 <span class="n">country_id</span><span class="p">,</span>
-                <span class="n">initial_data_year</span><span class="p">,</span>
+                <span class="n">start_data_year</span><span class="p">,</span>
                 <span class="n">final_data_year</span><span class="p">,</span>
                 <span class="n">download_path</span><span class="o">=</span><span class="n">download_path</span><span class="p">,</span>
             <span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">pop_2D</span><span class="p">,</span> <span class="n">pre_pop</span> <span class="o">=</span> <span class="n">get_pop</span><span class="p">(</span>
+            <span class="n">pop_2D</span> <span class="o">=</span> <span class="n">get_pop</span><span class="p">(</span>
                 <span class="n">E</span><span class="p">,</span>
                 <span class="n">S</span><span class="p">,</span>
                 <span class="n">min_age</span><span class="p">,</span>
                 <span class="n">max_age</span><span class="p">,</span>
                 <span class="n">country_id</span><span class="o">=</span><span class="n">country_id</span><span class="p">,</span>
-                <span class="n">start_year</span><span class="o">=</span><span class="n">initial_data_year</span><span class="p">,</span>
+                <span class="n">start_year</span><span class="o">=</span><span class="n">start_data_year</span><span class="p">,</span>
                 <span class="n">end_year</span><span class="o">=</span><span class="n">final_data_year</span><span class="p">,</span>
                 <span class="n">download_path</span><span class="o">=</span><span class="n">download_path</span><span class="p">,</span>
             <span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="c1"># Check first dims of pop_dist as input by user</span>
-        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;T0 = &quot;</span><span class="p">,</span> <span class="n">T0</span><span class="p">)</span>
         <span class="k">assert</span> <span class="n">pop_dist</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="n">T0</span> <span class="o">+</span> <span class="mi">1</span>  <span class="c1"># population needs to be</span>
         <span class="c1"># one year longer in order to find immigration rates</span>
         <span class="k">assert</span> <span class="n">pop_dist</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="n">E</span> <span class="o">+</span> <span class="n">S</span>
-        <span class="c1"># Check that pre_pop specified</span>
-        <span class="k">assert</span> <span class="n">pre_pop_dist</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
-        <span class="k">assert</span> <span class="n">pre_pop_dist</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="n">pop_dist</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
-        <span class="n">pre_pop</span> <span class="o">=</span> <span class="n">pre_pop_dist</span>
         <span class="c1"># Create 2D array of population distribution</span>
         <span class="n">pop_2D</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">T0</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">E</span> <span class="o">+</span> <span class="n">S</span><span class="p">))</span>
         <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">T0</span> <span class="o">+</span> <span class="mi">1</span><span class="p">):</span>
             <span class="n">pop_EpS</span> <span class="o">=</span> <span class="n">pop_rebin</span><span class="p">(</span><span class="n">pop_dist</span><span class="p">[</span><span class="n">t</span><span class="p">,</span> <span class="p">:],</span> <span class="n">E</span> <span class="o">+</span> <span class="n">S</span><span class="p">)</span>
             <span class="n">pop_2D</span><span class="p">[</span><span class="n">t</span><span class="p">,</span> <span class="p">:]</span> <span class="o">=</span> <span class="n">pop_EpS</span>
-    <span class="c1"># Get percentage distribution for S periods for pre-TP period</span>
-    <span class="n">pre_pop_EpS</span> <span class="o">=</span> <span class="n">pop_rebin</span><span class="p">(</span><span class="n">pre_pop</span><span class="p">,</span> <span class="n">E</span> <span class="o">+</span> <span class="n">S</span><span class="p">)</span>
     <span class="c1"># Get immigration rates if not provided</span>
     <span class="k">if</span> <span class="n">imm_rates</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">imm_rates_orig</span> <span class="o">=</span> <span class="n">get_imm_rates</span><span class="p">(</span>
@@ -1387,7 +1332,7 @@
             <span class="n">infmort_rates</span><span class="p">,</span>
             <span class="n">pop_2D</span><span class="p">,</span>
             <span class="n">country_id</span><span class="p">,</span>
-            <span class="n">initial_data_year</span><span class="p">,</span>
+            <span class="n">start_data_year</span><span class="p">,</span>
             <span class="n">final_data_year</span><span class="p">,</span>
             <span class="n">download_path</span><span class="o">=</span><span class="n">download_path</span><span class="p">,</span>
         <span class="p">)</span>
@@ -1411,26 +1356,13 @@
     <span class="p">)</span>
     <span class="c1"># If the population distribution was given, check it for consistency</span>
     <span class="c1"># with the fertility, mortality, and immigration rates</span>
-    <span class="c1"># if pop_dist is not None and not infer_pop:</span>
-    <span class="c1"># len_pop_dist = pop_dist.shape[0]</span>
-    <span class="c1"># pop_counter_2D = np.zeros((len_pop_dist, E + S))</span>
     <span class="n">len_pop_dist</span> <span class="o">=</span> <span class="n">pop_2D</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
     <span class="n">pop_counter_2D</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">len_pop_dist</span><span class="p">,</span> <span class="n">E</span> <span class="o">+</span> <span class="n">S</span><span class="p">))</span>
     <span class="c1"># set initial population distribution in the counterfactual to</span>
     <span class="c1"># the first year of the user provided distribution</span>
-    <span class="c1"># pop_counter_2D[0, :] = pop_dist[0, :]</span>
     <span class="n">pop_counter_2D</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="p">:]</span> <span class="o">=</span> <span class="n">pop_2D</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="p">:]</span>
     <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">len_pop_dist</span><span class="p">):</span>
         <span class="c1"># find newborns next period</span>
-        <span class="c1"># newborns = np.dot(fert_rates[t - 1, :], pop_counter_2D[t - 1, :])</span>
-
-        <span class="c1"># pop_counter_2D[t, 0] = (</span>
-        <span class="c1">#     1 - infmort_rates[t - 1]</span>
-        <span class="c1"># ) * newborns + imm_rates[t - 1, 0] * pop_counter_2D[t - 1, 0]</span>
-        <span class="c1"># pop_counter_2D[t, 1:] = (</span>
-        <span class="c1">#     pop_counter_2D[t - 1, :-1] * (1 - mort_rates[t - 1, :-1])</span>
-        <span class="c1">#     + pop_counter_2D[t - 1, 1:] * imm_rates_orig[t - 1, 1:]</span>
-        <span class="c1"># )</span>
         <span class="n">newborns</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">fert_rates</span><span class="p">[</span><span class="n">t</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="p">:],</span> <span class="n">pop_counter_2D</span><span class="p">[</span><span class="n">t</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="p">:])</span>
 
         <span class="n">pop_counter_2D</span><span class="p">[</span><span class="n">t</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
@@ -1441,98 +1373,7 @@
             <span class="o">+</span> <span class="n">pop_counter_2D</span><span class="p">[</span><span class="n">t</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">:]</span> <span class="o">*</span> <span class="n">imm_rates_orig</span><span class="p">[</span><span class="n">t</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">:]</span>
         <span class="p">)</span>
     <span class="c1"># Check that counterfactual pop dist is close to pop dist given</span>
-    <span class="c1"># assert np.allclose(pop_counter_2D, pop_dist)</span>
     <span class="k">assert</span> <span class="n">np</span><span class="o">.</span><span class="n">allclose</span><span class="p">(</span><span class="n">pop_counter_2D</span><span class="p">,</span> <span class="n">pop_2D</span><span class="p">)</span>
-
-    <span class="c1"># &quot;&quot;&quot;&quot;</span>
-    <span class="c1"># CHANGE - in OG-Core, we are implicitly assuming pre-TP rates of</span>
-    <span class="c1"># mortality,</span>
-    <span class="c1"># fertility, and immigration are the same as the period 0 rates.</span>
-
-    <span class="c1"># So let&#39;s just infer the pre-pop_dist from those.</span>
-    <span class="c1"># &quot;&quot;&quot;</span>
-    <span class="c1"># pop1 = pop_2D[0, :]</span>
-    <span class="c1"># fert0 = fert_rates[0, :]</span>
-    <span class="c1"># mort0 = mort_rates[0, :]</span>
-    <span class="c1"># infmort0 = infmort_rates[0]</span>
-    <span class="c1"># imm0 = imm_rates_orig[0, :]</span>
-    <span class="c1"># pre_pop_guess = pop1.copy()</span>
-
-    <span class="c1"># # I can&#39;t solve this analytically, so set up a system of equation</span>
-    <span class="c1"># # to solve</span>
-    <span class="c1"># def pre_pop_solve(pre_pop_guess, pop1, fert0, mort0, infmort0, imm0):</span>
-    <span class="c1">#     pre_pop = pre_pop_guess</span>
-    <span class="c1">#     errors = np.zeros(E + S)</span>
-    <span class="c1">#     errors[0] = pop1[0] - (</span>
-    <span class="c1">#         (1 - infmort0) * (fert0 * pre_pop).sum() + imm0[0] * pre_pop[0]</span>
-    <span class="c1">#     )</span>
-    <span class="c1">#     errors[1:] = pop1[1:] - (</span>
-    <span class="c1">#         pre_pop[:-1] * (1 - mort0[:-1]) + pre_pop[1:] * imm0[1:]</span>
-    <span class="c1">#     )</span>
-    <span class="c1">#     # print(&quot;Max error = &quot;, np.abs(errors).max())</span>
-    <span class="c1">#     return errors</span>
-
-    <span class="c1"># opt_res = opt.root(</span>
-    <span class="c1">#     pre_pop_solve,</span>
-    <span class="c1">#     pre_pop_guess,</span>
-    <span class="c1">#     args=(pop1, fert0, mort0, infmort0, imm0),</span>
-    <span class="c1">#     method=&quot;lm&quot;,</span>
-    <span class="c1"># )</span>
-    <span class="c1"># pre_pop = opt_res.x</span>
-    <span class="c1"># print(</span>
-    <span class="c1">#     &quot;Success? &quot;,</span>
-    <span class="c1">#     opt_res.success,</span>
-    <span class="c1">#     &quot;, Max diff = &quot;,</span>
-    <span class="c1">#     np.abs(opt_res.fun).max(),</span>
-    <span class="c1"># )</span>
-    <span class="c1"># pre_pop_EpS = pop_rebin(pre_pop, E + S)</span>
-
-    <span class="c1"># # Check result</span>
-    <span class="c1"># initial_pop_counter = np.zeros(E + S)</span>
-    <span class="c1"># newborns = (fert_rates[0, :] * pre_pop[:]).sum()</span>
-    <span class="c1"># initial_pop_counter[0] = (</span>
-    <span class="c1">#     1 - infmort_rates[0]</span>
-    <span class="c1"># ) * newborns + imm_rates_orig[0, 0] * pre_pop[0]</span>
-    <span class="c1"># initial_pop_counter[1:] = (</span>
-    <span class="c1">#     pre_pop[:-1] * (1 - mort_rates[0, :-1])</span>
-    <span class="c1">#     + pre_pop[1:] * imm_rates_orig[0, 1:]</span>
-    <span class="c1"># )</span>
-    <span class="c1"># # Test that using pre pop get to pop in period 1</span>
-    <span class="c1"># print(&quot;Max diff = &quot;, np.abs(pop_2D[0, :] - initial_pop_counter).max())</span>
-    <span class="c1"># # assert np.allclose(initial_pop_counter, pop_2D[0, :])</span>
-
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    NEW CODE - use the actual UN historical data instead of solving backwards</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="c1"># Get percentage distribution for S periods for pre-TP period</span>
-    <span class="c1"># Use the actual UN historical data instead of solving backwards</span>
-    <span class="c1"># pre_pop_EpS = pop_rebin(pre_pop, E + S) -- this assignment is</span>
-    <span class="c1"># above on line 924, but keep for clarity</span>
-
-    <span class="c1"># Check result</span>
-    <span class="c1"># Verify that the UN pre-period data is reasonably consistent</span>
-    <span class="c1"># with the period 0 population using the demographic transition equations</span>
-    <span class="n">initial_pop_counter</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">E</span> <span class="o">+</span> <span class="n">S</span><span class="p">)</span>
-    <span class="n">newborns</span> <span class="o">=</span> <span class="p">(</span><span class="n">fert_rates</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="p">:]</span> <span class="o">*</span> <span class="n">pre_pop_EpS</span><span class="p">[:])</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
-    <span class="n">initial_pop_counter</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
-        <span class="mi">1</span> <span class="o">-</span> <span class="n">infmort_rates</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-    <span class="p">)</span> <span class="o">*</span> <span class="n">newborns</span> <span class="o">+</span> <span class="n">imm_rates_orig</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="n">pre_pop_EpS</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-    <span class="n">initial_pop_counter</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span> <span class="o">=</span> <span class="p">(</span>
-        <span class="n">pre_pop_EpS</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">mort_rates</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
-        <span class="o">+</span> <span class="n">pre_pop_EpS</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span> <span class="o">*</span> <span class="n">imm_rates_orig</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">:]</span>
-    <span class="p">)</span>
-
-    <span class="n">max_diff</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">pop_2D</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="p">:]</span> <span class="o">-</span> <span class="n">initial_pop_counter</span><span class="p">)</span><span class="o">.</span><span class="n">max</span><span class="p">()</span>
-    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Pre-period population verification: Max diff = &quot;</span><span class="p">,</span> <span class="n">max_diff</span><span class="p">)</span>
-
-    <span class="k">if</span> <span class="n">max_diff</span> <span class="o">&gt;</span> <span class="mi">100_000</span><span class="p">:</span>
-        <span class="nb">print</span><span class="p">(</span>
-            <span class="s2">&quot;WARNING: Large difference between UN pre-period population &quot;</span>
-            <span class="o">+</span> <span class="s2">&quot;and period 0 population (</span><span class="si">{:.2f}</span><span class="s2">). &quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">max_diff</span><span class="p">)</span>
-            <span class="o">+</span> <span class="s2">&quot;This may indicate inconsistencies in the data or &quot;</span>
-            <span class="o">+</span> <span class="s2">&quot;immigration rate calculations, but using UN historical &quot;</span>
-            <span class="o">+</span> <span class="s2">&quot;data as it is more reliable than backward-solved estimates.&quot;</span>
-        <span class="p">)</span>
 
     <span class="c1"># Create the transition matrix for the population distribution</span>
     <span class="c1"># from T0 going forward (i.e., past when we have data on forecasts)</span>
@@ -1567,7 +1408,8 @@
     <span class="c1"># steady-state distribution by adjusting immigration rates, holding</span>
     <span class="c1"># constant mortality, fertility, and SS growth rates</span>
     <span class="n">imm_tol</span> <span class="o">=</span> <span class="mf">1e-14</span>
-    <span class="n">fixper</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="mf">1.5</span> <span class="o">*</span> <span class="n">S</span> <span class="o">+</span> <span class="n">T0</span><span class="p">)</span>
+    <span class="n">fixper</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="mf">1.5</span> <span class="o">*</span> <span class="n">S</span><span class="p">)</span>
+    <span class="k">assert</span> <span class="n">fixper</span> <span class="o">&gt;</span> <span class="n">T0</span>  <span class="c1"># ensure that we are fixing period after data</span>
     <span class="n">omega_SSfx</span> <span class="o">=</span> <span class="n">omega_path_lev</span><span class="p">[</span><span class="n">fixper</span><span class="p">,</span> <span class="p">:]</span> <span class="o">/</span> <span class="n">omega_path_lev</span><span class="p">[</span><span class="n">fixper</span><span class="p">,</span> <span class="p">:]</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
     <span class="n">imm_objs</span> <span class="o">=</span> <span class="p">(</span>
         <span class="n">fert_rates</span><span class="p">[</span><span class="n">fixper</span><span class="p">,</span> <span class="p">:],</span>
@@ -1592,15 +1434,11 @@
         <span class="n">omega_path_S</span><span class="p">[</span><span class="n">fixper</span><span class="p">,</span> <span class="p">:]</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="mi">1</span><span class="p">,</span> <span class="n">S</span><span class="p">)),</span> <span class="p">(</span><span class="n">T</span> <span class="o">+</span> <span class="n">S</span> <span class="o">-</span> <span class="n">fixper</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
     <span class="p">)</span>
     <span class="n">g_n_path</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">T</span> <span class="o">+</span> <span class="n">S</span><span class="p">)</span>
-    <span class="n">g_n_path</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span> <span class="o">=</span> <span class="p">(</span>
+    <span class="n">g_n_path</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
         <span class="n">omega_path_lev</span><span class="p">[</span><span class="mi">1</span><span class="p">:,</span> <span class="o">-</span><span class="n">S</span><span class="p">:]</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
         <span class="o">-</span> <span class="n">omega_path_lev</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="n">S</span><span class="p">:]</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
     <span class="p">)</span> <span class="o">/</span> <span class="n">omega_path_lev</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="n">S</span><span class="p">:]</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
-    <span class="n">g_n_path</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
-        <span class="n">omega_path_lev</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="o">-</span><span class="n">S</span><span class="p">:]</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span> <span class="o">-</span> <span class="n">pre_pop_EpS</span><span class="p">[</span><span class="o">-</span><span class="n">S</span><span class="p">:]</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
-    <span class="p">)</span> <span class="o">/</span> <span class="n">pre_pop_EpS</span><span class="p">[</span><span class="o">-</span><span class="n">S</span><span class="p">:]</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
     <span class="n">g_n_path</span><span class="p">[</span><span class="n">fixper</span> <span class="o">+</span> <span class="mi">1</span> <span class="p">:]</span> <span class="o">=</span> <span class="n">g_n_SS</span>
-    <span class="n">omega_S_preTP</span> <span class="o">=</span> <span class="n">pre_pop_EpS</span><span class="p">[</span><span class="o">-</span><span class="n">S</span><span class="p">:]</span> <span class="o">/</span> <span class="n">pre_pop_EpS</span><span class="p">[</span><span class="o">-</span><span class="n">S</span><span class="p">:]</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
     <span class="n">imm_rates_mat</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">(</span>
         <span class="p">(</span>
             <span class="n">imm_rates_orig</span><span class="p">[:</span><span class="n">fixper</span><span class="p">,</span> <span class="n">E</span><span class="p">:],</span>
@@ -1759,13 +1597,16 @@
 
     <span class="c1"># Return objects in a dictionary</span>
     <span class="n">pop_dict</span> <span class="o">=</span> <span class="p">{</span>
-        <span class="s2">&quot;omega&quot;</span><span class="p">:</span> <span class="n">omega_path_S</span><span class="p">,</span>
+        <span class="s2">&quot;omega&quot;</span><span class="p">:</span> <span class="n">omega_path_S</span><span class="p">[</span><span class="mi">1</span><span class="p">:,</span> <span class="p">:],</span>
         <span class="s2">&quot;g_n_ss&quot;</span><span class="p">:</span> <span class="n">g_n_SS</span><span class="p">,</span>
         <span class="s2">&quot;omega_SS&quot;</span><span class="p">:</span> <span class="n">omega_SSfx</span><span class="p">[</span><span class="o">-</span><span class="n">S</span><span class="p">:]</span> <span class="o">/</span> <span class="n">omega_SSfx</span><span class="p">[</span><span class="o">-</span><span class="n">S</span><span class="p">:]</span><span class="o">.</span><span class="n">sum</span><span class="p">(),</span>
-        <span class="s2">&quot;rho&quot;</span><span class="p">:</span> <span class="n">mort_rates_S</span><span class="p">,</span>
-        <span class="s2">&quot;g_n&quot;</span><span class="p">:</span> <span class="n">g_n_path</span><span class="p">,</span>
-        <span class="s2">&quot;imm_rates&quot;</span><span class="p">:</span> <span class="n">imm_rates_mat</span><span class="p">,</span>
-        <span class="s2">&quot;omega_S_preTP&quot;</span><span class="p">:</span> <span class="n">omega_S_preTP</span><span class="p">,</span>
+        <span class="s2">&quot;rho&quot;</span><span class="p">:</span> <span class="n">mort_rates_S</span><span class="p">[</span><span class="mi">1</span><span class="p">:,</span> <span class="p">:],</span>
+        <span class="s2">&quot;g_n&quot;</span><span class="p">:</span> <span class="n">g_n_path</span><span class="p">[</span><span class="mi">1</span><span class="p">:],</span>
+        <span class="s2">&quot;imm_rates&quot;</span><span class="p">:</span> <span class="n">imm_rates_mat</span><span class="p">[</span><span class="mi">1</span><span class="p">:,</span> <span class="p">:],</span>
+        <span class="s2">&quot;omega_S_preTP&quot;</span><span class="p">:</span> <span class="n">omega_path_S</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="p">:],</span>
+        <span class="s2">&quot;imm_rates_preTP&quot;</span><span class="p">:</span> <span class="n">imm_rates_mat</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="p">:],</span>
+        <span class="s2">&quot;rho_preTP&quot;</span><span class="p">:</span> <span class="n">mort_rates_S</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="p">:],</span>
+        <span class="s2">&quot;g_n_preTP&quot;</span><span class="p">:</span> <span class="n">g_n_path</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
     <span class="p">}</span>
 
     <span class="k">return</span> <span class="n">pop_dict</span></div>
