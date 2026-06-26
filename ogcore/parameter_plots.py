@@ -147,7 +147,13 @@ def plot_pop_growth(
     year_vec = np.arange(start_year, start_year + num_years_to_plot)
     start_index = start_year - p.start_year
     fig, ax = plt.subplots()
-    plt.plot(year_vec, p.g_n[start_index : start_index + num_years_to_plot])
+    # g_n stores the pre-time-path boundary growth separately in
+    # g_n_preTP; prepend it to recover the year-aligned growth path.
+    g_n_full = np.append(p.g_n_preTP, p.g_n)
+    plt.plot(
+        year_vec,
+        g_n_full[start_index : start_index + num_years_to_plot],
+    )
     plt.xlabel(r"Year $t$")
     plt.ylabel(r"Population Growth Rate $g_{n, t}$")
     ticks_loc = ax.get_yticks().tolist()
@@ -500,7 +506,11 @@ def plot_g_n(p_list, label_list=[""], include_title=False, path=None):
     years = np.arange(p0.start_year, p0.start_year + p0.T)
     fig, ax = plt.subplots()
     for i, p in enumerate(p_list):
-        plt.plot(years, p.g_n[: p.T], label=label_list[i])
+        plt.plot(
+            years,
+            np.append(p.g_n_preTP, p.g_n[: p.T - 1]),
+            label=label_list[i],
+        )
     plt.xlabel(r"Year $s$ (model periods)")
     plt.ylabel(r"Population Growth Rate $g_{n,t}$")
     if label_list[0] != "":
