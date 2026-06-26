@@ -4,15 +4,17 @@
 #
 # Takes a user from zero (only git installed) to a working OG-* model env:
 #   1. Install uv (if not present)
-#   2. Clone the chosen repo
+#   2. Clone the chosen repo(s)
 #   3. uv sync --extra dev (installs Python + project + deps)
 #   4. Verify import
 #
+# Installs one repo, several (--repo a,b or repeated --repo), or all (--all).
 # Only repos that have migrated to uv (pyproject.toml + uv.lock) are offered.
 #
 # Usage:
-#   ./scripts/install.sh                   # interactive
-#   ./scripts/install.sh --repo og-eth     # skip the model menu
+#   ./scripts/install.sh                            # interactive (one repo)
+#   ./scripts/install.sh --repo og-eth              # skip the model menu
+#   ./scripts/install.sh --all --dest ~/OG --yes    # install everything, no prompts
 #   ./scripts/install.sh --help
 # ──────────────────────────────────────────────────────────────────────────────
 set -euo pipefail
@@ -26,10 +28,14 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 REPOS=(
     "og-core|PSLmodels|OG-Core|ogcore|base model (no country calibration)"
     "og-eth|EAPD-DRB|OG-ETH|ogeth|Ethiopia"
+    "og-zaf|EAPD-DRB|OG-ZAF|ogzaf|South Africa"
+    "og-idn|EAPD-DRB|OG-IDN|ogidn|Indonesia"
+    "og-phl|EAPD-DRB|OG-PHL|ogphl|Philippines"
 )
 
 # ── Defaults ──────────────────────────────────────────────────────────────────
-REPO_KEY=""
+SELECTED_KEYS=()
+INSTALL_ALL=0
 REPO_URL=""
 BRANCH=""
 DEST=""
@@ -37,6 +43,8 @@ ASSUME_YES=0
 SKIP_UV_INSTALL=0
 WITH_DEV_DEPS=1
 WRITE_LOG=1
+# Scratch fields populated by lookup_repo / choose_repo_interactive.
+REPO_OWNER=""; REPO_NAME=""; PKG_NAME=""; REPO_DESC=""
 
 usage() {
     cat <<EOF
@@ -47,39 +55,93 @@ Usage:
 
 Options:
   -h, --help              Show this message and exit.
+      --list              Print the repo catalog (human-readable) and exit.
+      --list-json         Print the repo catalog as JSON and exit.
   -y, --yes               Auto-confirm every prompt (non-interactive).
-      --repo KEY          Skip menu; one of: og-core, og-eth
-      --repo-url URL      Use a custom Git URL. Bypasses the menu.
-      --branch BRANCH     For development: clone a non-default branch (default:
-                          repo's default branch). Useful for testing forks/PRs.
-      --dest DIR          Parent directory where the clone is created
-                          (default: current directory). The clone always
-                          lands in <DIR>/\${REPO_NAME}.
+      --repo KEY          Install a catalog repo (see --list). Repeat for
+                          several (--repo og-zaf --repo og-idn); a comma-
+                          separated list (--repo og-zaf,og-idn) also works.
+      --all               Install every repo in the catalog.
+      --repo-url URL      Install one custom Git URL (single repo only).
+      --branch BRANCH     For development: clone a non-default branch. Single
+                          repo only (not valid with --all or multiple --repo).
+      --dest DIR          Parent directory for the clone(s) (default: current
+                          directory). Each repo lands in <DIR>/<REPO_NAME>.
       --no-dev-deps       Install runtime deps only (skip dev/test tooling).
       --skip-uv-install   Don't install uv; assume it's already on PATH.
       --no-log            Don't write a log file.
 
 Examples:
-  $0                                        # fully interactive
-  $0 --repo og-eth                          # menu skipped; prompt for dest
-  $0 --repo og-eth --dest ~/Projects --yes        # clones to ~/Projects/OG-ETH
-  $0 --repo-url git@github.com:me/OG-USA.git --dest .
+  $0                                          # interactive (one repo)
+  $0 --repo og-eth                            # menu skipped; prompt for dest
+  $0 --repo og-zaf --repo og-idn --dest ~/OG  # install several
+  $0 --all --dest ~/OG --yes                  # hands-free: install all, no prompts
+  $0 --repo og-eth --dest ~/OG --yes          # hands-free: one repo, no prompts
   $0 --repo-url https://github.com/me/OG-ETH.git --branch my-branch --dest /tmp
 EOF
 }
 
+# ── Catalog listing (--list / --list-json) ────────────────────────────────────
+# Both emit from the embedded REPOS array (the runtime source of truth) so they
+# work even when only the script is fetched (the curl one-liner). scripts/repos.json
+# is the same data as a standalone file; a CI check keeps the two in sync.
+print_catalog_human() {
+    printf '%-9s  %-22s  %-8s  %s\n' "KEY" "REPO" "PACKAGE" "DESCRIPTION"
+    local entry k owner name pkg desc
+    for entry in "${REPOS[@]}"; do
+        IFS='|' read -r k owner name pkg desc <<< "$entry"
+        printf '%-9s  %-22s  %-8s  %s\n' "$k" "$owner/$name" "$pkg" "$desc"
+    done
+}
+
+print_catalog_json() {
+    printf '{\n  "schema_version": 1,\n  "repos": [\n'
+    local entry k owner name pkg desc first=1
+    for entry in "${REPOS[@]}"; do
+        IFS='|' read -r k owner name pkg desc <<< "$entry"
+        if [ "$first" -eq 0 ]; then printf ',\n'; fi
+        first=0
+        printf '    {"key": "%s", "owner": "%s", "repo": "%s", "package": "%s", "description": "%s"}' \
+            "$k" "$owner" "$name" "$pkg" "$desc"
+    done
+    printf '\n  ]\n}\n'
+}
+
 # ── Argument parsing ──────────────────────────────────────────────────────────
+# Split a comma-separated value and append each key to SELECTED_KEYS.
+add_repo_keys() {
+    local value="$1" part
+    local IFS=','
+    for part in $value; do
+        [ -n "$part" ] && SELECTED_KEYS+=("$part")
+    done
+}
+
+# Ensure a value-taking option actually has its value (avoids a raw "$2:
+# unbound variable" crash under set -u when a flag is the last argument).
+need_arg() {
+    if [ "$1" -lt 2 ]; then
+        echo "Option $2 requires a value." >&2
+        echo >&2
+        usage >&2
+        exit 2
+    fi
+}
+
 while [ $# -gt 0 ]; do
     case "$1" in
         -h|--help) usage; exit 0;;
+        --list) print_catalog_human; exit 0;;
+        --list-json) print_catalog_json; exit 0;;
         -y|--yes) ASSUME_YES=1; shift;;
-        --repo) REPO_KEY="$2"; shift 2;;
-        --repo=*) REPO_KEY="${1#*=}"; shift;;
-        --repo-url) REPO_URL="$2"; shift 2;;
+        --all) INSTALL_ALL=1; shift;;
+        --repo) need_arg $# "--repo"; add_repo_keys "$2"; shift 2;;
+        --repo=*) add_repo_keys "${1#*=}"; shift;;
+        --repo-url) need_arg $# "--repo-url"; REPO_URL="$2"; shift 2;;
         --repo-url=*) REPO_URL="${1#*=}"; shift;;
-        --branch) BRANCH="$2"; shift 2;;
+        --branch) need_arg $# "--branch"; BRANCH="$2"; shift 2;;
         --branch=*) BRANCH="${1#*=}"; shift;;
-        --dest) DEST="$2"; shift 2;;
+        --dest) need_arg $# "--dest"; DEST="$2"; shift 2;;
         --dest=*) DEST="${1#*=}"; shift;;
         --no-dev-deps) WITH_DEV_DEPS=0; shift;;
         --skip-uv-install) SKIP_UV_INSTALL=1; shift;;
@@ -118,13 +180,12 @@ print_warn() { printf "  ${YELLOW}[WARN]${RESET} %s%s\n" "$1" "${2:+  ${DIM}($2)
 print_skip() { printf "  ${YELLOW}[SKIP]${RESET} %s%s\n" "$1" "${2:+  ${DIM}($2)${RESET}}"; }
 echo_cmd()   { printf "  ${DIM}$ %s${RESET}\n" "$*"; }
 
-TOTAL_STEPS=4
-step_banner() {
-    echo
-    hr
-    printf "  ${BOLD}Step %s of %s: %s${RESET}\n" "$1" "$TOTAL_STEPS" "$2"
-    hr
-}
+section() { echo; hr; printf "  ${BOLD}%s${RESET}\n" "$1"; hr; }
+
+err() { printf "${RED}ERROR:${RESET} %s\n" "$1" >&2; exit 2; }
+
+# Normalize a Git URL for comparison (strip trailing .git, lowercase).
+norm_url() { printf '%s' "$1" | sed -E 's#\.git/?$##' | tr '[:upper:]' '[:lower:]'; }
 
 prompt_yn() {
     local prompt="$1" default="${2:-y}" opts
@@ -135,7 +196,7 @@ prompt_yn() {
     fi
     if [ ! -t 0 ]; then
         printf "${RED}ERROR:${RESET} stdin is not a terminal and --yes was not given.\n" >&2
-        return 2
+        exit 2
     fi
     while true; do
         printf "%s %s " "$prompt" "$opts"
@@ -215,10 +276,10 @@ lookup_repo() {
     return 1
 }
 
-# ── Pick repo (interactive menu or from --repo flag) ──────────────────────────
+# ── Pick repo interactively (single repo; multi is opt-in via --repo/--all) ────
 choose_repo_interactive() {
     if [ ! -t 0 ]; then
-        printf "${RED}ERROR:${RESET} no --repo given and stdin is not a terminal.\n" >&2
+        printf "${RED}ERROR:${RESET} no --repo/--all given and stdin is not a terminal.\n" >&2
         exit 2
     fi
     echo
@@ -226,7 +287,7 @@ choose_repo_interactive() {
     printf "  ${BOLD}OG-* Installer (uv-based)${RESET}\n"
     hr_thick
     printf "  Which OG country model do you want to install?\n"
-    printf "  ${DIM}(only repos that have migrated to uv are listed)${RESET}\n"
+    printf "  ${DIM}(only repos that have migrated to uv are listed; use --all for every one)${RESET}\n"
     echo
     local i=1 entry k owner name pkg desc
     for entry in "${REPOS[@]}"; do
@@ -254,43 +315,214 @@ choose_repo_interactive() {
             REPO_URL="$url"; return 0
         fi
         local idx=$((choice - 1))
-        IFS='|' read -r REPO_KEY REPO_OWNER REPO_NAME PKG_NAME REPO_DESC <<< "${REPOS[$idx]}"
+        IFS='|' read -r _ REPO_OWNER REPO_NAME PKG_NAME REPO_DESC <<< "${REPOS[$idx]}"
         return 0
     done
 }
 
-if [ -n "$REPO_URL" ] && [ -z "$REPO_KEY" ]; then
-    : # custom URL; menu skipped
-elif [ -n "$REPO_KEY" ]; then
-    if ! lookup_repo "$REPO_KEY"; then
-        printf "${RED}ERROR:${RESET} unknown --repo '%s'. Use --help for the list.\n" "$REPO_KEY" >&2
-        exit 2
+# ── Per-repo result tracking ──────────────────────────────────────────────────
+REPO_RESULT_NAMES=(); REPO_RESULT_STATES=(); REPO_RESULT_DETAILS=()
+record_repo() { REPO_RESULT_NAMES+=("$1"); REPO_RESULT_STATES+=("$2"); REPO_RESULT_DETAILS+=("$3"); }
+
+# install_one_repo OWNER NAME PKG DESC URL IDX TOTAL
+# Clone (or update) + uv sync + verify for ONE repo. Never exits; records a
+# per-repo result and returns 0 (ok/warn) or 1 (failed) so the caller can
+# continue to the next repo. Uses globals: PARENT_ABS, UV_BIN, GIT_BIN,
+# WITH_DEV_DEPS, BRANCH (single-repo only), PER_STEP (1 = ask before each step).
+install_one_repo() {
+    local owner="$1" name="$2" pkg="$3" desc="$4" url="$5" idx="$6" total="$7"
+    local dest_abs="${PARENT_ABS}/${name}"
+    local repo_state="PASS" branch_now=""
+
+    echo
+    hr
+    if [ "$total" -gt 1 ]; then
+        printf "  ${BOLD}[%d/%d] %s${RESET}  ${DIM}%s${RESET}\n" "$idx" "$total" "$name" "$owner/$name"
+    else
+        printf "  ${BOLD}%s${RESET}  ${DIM}%s${RESET}\n" "$name" "$owner/$name"
     fi
+    hr
+
+    # --- Clone or update existing ---
+    local dest_has_repo=0
+    if [ -d "$dest_abs" ]; then
+        if [ -z "$(ls -A "$dest_abs" 2>/dev/null || true)" ]; then
+            : # empty dir; clone into it
+        elif [ -d "$dest_abs/.git" ]; then
+            local existing_url
+            existing_url="$("$GIT_BIN" -C "$dest_abs" config --get remote.origin.url 2>/dev/null || true)"
+            if [ "$(norm_url "$existing_url")" = "$(norm_url "$url")" ]; then
+                dest_has_repo=1
+            else
+                print_fail "$name: destination is a git repo for a different remote" "$existing_url"
+                record_repo "$name" FAIL "wrong remote at $dest_abs"
+                return 1
+            fi
+        else
+            print_fail "$name: destination exists and is not empty" "$dest_abs"
+            record_repo "$name" FAIL "destination not empty"
+            return 1
+        fi
+    fi
+
+    if [ "$dest_has_repo" = 1 ]; then
+        branch_now="$("$GIT_BIN" -C "$dest_abs" rev-parse --abbrev-ref HEAD 2>/dev/null || echo "?")"
+        printf "  Existing clone found at %s (branch: %s).\n" "$dest_abs" "$branch_now"
+        local do_update=1
+        if [ "$PER_STEP" = 1 ]; then
+            prompt_yn "Update existing clone (git pull --ff-only)?" y || do_update=0
+        fi
+        if [ "$do_update" = 1 ]; then
+            echo_cmd "git -C $dest_abs pull --ff-only"
+            if "$GIT_BIN" -C "$dest_abs" pull --ff-only; then
+                print_pass "$name updated"
+            else
+                print_warn "$name: git pull failed; using existing state"
+                repo_state="WARN"
+            fi
+        else
+            print_skip "$name: using existing clone as-is"
+        fi
+    else
+        if [ -n "$BRANCH" ]; then
+            printf "  Will clone %s (branch: %s) into %s.\n" "$url" "$BRANCH" "$dest_abs"
+        else
+            printf "  Will clone %s into %s.\n" "$url" "$dest_abs"
+        fi
+        local do_clone=1
+        if [ "$PER_STEP" = 1 ]; then
+            prompt_yn "Clone now?" y || do_clone=0
+        fi
+        if [ "$do_clone" = 0 ]; then
+            print_fail "$name: clone declined"
+            record_repo "$name" FAIL "clone declined"
+            return 1
+        fi
+        if [ -n "$BRANCH" ]; then
+            echo_cmd "git clone --branch $BRANCH $url $dest_abs"
+            if ! "$GIT_BIN" clone --branch "$BRANCH" "$url" "$dest_abs"; then
+                print_fail "$name: git clone failed"; record_repo "$name" FAIL "git clone failed"; return 1
+            fi
+        else
+            echo_cmd "git clone $url $dest_abs"
+            if ! "$GIT_BIN" clone "$url" "$dest_abs"; then
+                print_fail "$name: git clone failed"; record_repo "$name" FAIL "git clone failed"; return 1
+            fi
+        fi
+        branch_now="$("$GIT_BIN" -C "$dest_abs" rev-parse --abbrev-ref HEAD 2>/dev/null || echo "?")"
+        print_pass "$name cloned" "$dest_abs (branch: $branch_now)"
+    fi
+
+    # --- Verify the repo is uv-native ---
+    if [ ! -f "$dest_abs/pyproject.toml" ]; then
+        print_fail "$name: no pyproject.toml (not a uv-native repo)"
+        record_repo "$name" FAIL "no pyproject.toml"
+        return 1
+    fi
+    [ ! -f "$dest_abs/uv.lock" ] && print_warn "$name: no uv.lock; uv sync will create one"
+
+    # --- uv sync ---
+    local sync_args
+    sync_args=("sync")
+    [ "$WITH_DEV_DEPS" = 1 ] && sync_args+=("--extra" "dev")
+    local do_sync=1
+    if [ "$PER_STEP" = 1 ]; then
+        printf "  Will run: uv %s  (in %s)\n" "${sync_args[*]}" "$dest_abs"
+        prompt_yn "Run uv sync now?" y || do_sync=0
+    fi
+    if [ "$do_sync" = 0 ]; then
+        print_fail "$name: uv sync declined"
+        record_repo "$name" FAIL "uv sync declined"
+        return 1
+    fi
+    echo_cmd "uv ${sync_args[*]}  (cwd: $dest_abs)"
+    if ! ( cd "$dest_abs" && "$UV_BIN" "${sync_args[@]}" ); then
+        print_fail "$name: uv sync failed"
+        record_repo "$name" FAIL "uv sync failed"
+        return 1
+    fi
+    print_pass "$name installed (uv sync)"
+
+    # --- Verify import ---
+    local venv_py="$dest_abs/.venv/bin/python"
+    if [ ! -x "$venv_py" ]; then
+        print_fail "$name: venv python not found" "$venv_py"
+        record_repo "$name" FAIL "no venv python"
+        return 1
+    fi
+    if "$venv_py" -W ignore -c "import $pkg" >/dev/null 2>&1; then
+        local ver
+        ver="$("$venv_py" -W ignore -c "import $pkg; print(getattr($pkg, '__version__', '?'))" 2>/dev/null || echo '?')"
+        print_pass "$name: import $pkg" "$ver"
+        if [ "$repo_state" = "WARN" ]; then
+            record_repo "$name" WARN "import $pkg ($ver); pull warning"
+        else
+            record_repo "$name" PASS "import $pkg ($ver)"
+        fi
+        return 0
+    else
+        print_fail "$name: import $pkg failed" "package not importable; check log above"
+        record_repo "$name" FAIL "import $pkg failed"
+        return 1
+    fi
+}
+
+# ── Resolve the list of repos to install ──────────────────────────────────────
+# Each TARGETS entry: OWNER|NAME|PKG|DESC|URL
+TARGETS=()
+if [ -n "$REPO_URL" ]; then
+    if [ "$INSTALL_ALL" = 1 ] || [ "${#SELECTED_KEYS[@]}" -gt 0 ]; then
+        err "--repo-url installs a single repo; it cannot be combined with --all or --repo."
+    fi
+    base="$(basename "$REPO_URL")"
+    cu_name="${base%.git}"
+    cu_pkg="$(printf '%s' "$cu_name" | tr '[:upper:]' '[:lower:]' | tr -d '-')"
+    TARGETS+=("(custom URL)|$cu_name|$cu_pkg|custom repo|$REPO_URL")
+elif [ "$INSTALL_ALL" = 1 ]; then
+    if [ "${#SELECTED_KEYS[@]}" -gt 0 ]; then
+        err "--all installs every repo; do not also pass --repo."
+    fi
+    for entry in "${REPOS[@]}"; do
+        IFS='|' read -r k owner name pkg desc <<< "$entry"
+        TARGETS+=("$owner|$name|$pkg|$desc|https://github.com/$owner/$name.git")
+    done
+elif [ "${#SELECTED_KEYS[@]}" -gt 0 ]; then
+    seen=" "
+    for key in "${SELECTED_KEYS[@]}"; do
+        case "$seen" in *" $key "*) continue;; esac
+        seen="$seen$key "
+        if lookup_repo "$key"; then
+            TARGETS+=("$REPO_OWNER|$REPO_NAME|$PKG_NAME|$REPO_DESC|https://github.com/$REPO_OWNER/$REPO_NAME.git")
+        else
+            err "unknown --repo '$key'. Run --list to see valid keys."
+        fi
+    done
 else
     choose_repo_interactive
+    if [ -n "$REPO_URL" ]; then
+        base="$(basename "$REPO_URL")"
+        cu_name="${base%.git}"
+        cu_pkg="$(printf '%s' "$cu_name" | tr '[:upper:]' '[:lower:]' | tr -d '-')"
+        TARGETS+=("(custom URL)|$cu_name|$cu_pkg|custom repo|$REPO_URL")
+    else
+        TARGETS+=("$REPO_OWNER|$REPO_NAME|$PKG_NAME|$REPO_DESC|https://github.com/$REPO_OWNER/$REPO_NAME.git")
+    fi
 fi
 
-# Custom URL: derive repo name + package name from it.
-if [ -n "$REPO_URL" ] && [ -z "${REPO_NAME:-}" ]; then
-    base="$(basename "$REPO_URL")"
-    REPO_NAME="${base%.git}"
-    REPO_OWNER="(custom URL)"
-    REPO_DESC="custom repo"
-    PKG_NAME="$(printf '%s' "$REPO_NAME" | tr '[:upper:]' '[:lower:]' | tr -d '-')"
-    REPO_KEY="$PKG_NAME"
+TOTAL_TARGETS="${#TARGETS[@]}"
+if [ -n "$BRANCH" ] && [ "$TOTAL_TARGETS" -gt 1 ]; then
+    err "--branch can only be used with a single repo (selected: $TOTAL_TARGETS)."
 fi
+# One repo keeps the per-step confirmations; multiple run as a batch.
+PER_STEP=1; [ "$TOTAL_TARGETS" -gt 1 ] && PER_STEP=0
 
-if [ -z "$REPO_URL" ]; then
-    REPO_URL="https://github.com/${REPO_OWNER}/${REPO_NAME}.git"
-fi
-
-# ── Pick destination (PARENT directory; clone lands at PARENT/REPO_NAME) ──────
+# ── Pick destination (PARENT directory; each repo lands at PARENT/REPO_NAME) ──
 if [ -z "$DEST" ]; then
     if [ ! -t 0 ]; then
         DEST="."
     else
-        printf "\n  Where would you like to install %s?\n" "$REPO_NAME"
-        printf "  Enter the PARENT directory; %s will be cloned as a subfolder inside.\n" "$REPO_NAME"
+        printf "\n  Where would you like to install?\n"
+        printf "  Enter the PARENT directory; each repo is cloned into its own subfolder.\n"
         printf "  Default: current directory (%s)\n" "$(pwd)"
         printf "  Parent directory [.]: "
         IFS= read -r DEST || true
@@ -304,16 +536,14 @@ case "$DEST" in
     "~/"*) DEST="$HOME/${DEST#~/}";;
 esac
 
-# DEST is the parent directory. Must exist; resolve to absolute.
 if [ ! -d "$DEST" ]; then
     printf "${RED}ERROR:${RESET} parent directory does not exist: %s\n" "$DEST" >&2
     printf "Create it first (mkdir -p %s) or pick a different --dest.\n" "$DEST" >&2
     exit 1
 fi
 PARENT_ABS="$(cd "$DEST" && pwd)"
-DEST_ABS="${PARENT_ABS}/${REPO_NAME}"
 
-# Refuse if PARENT is a dangerous system dir. (User-home is fine -- clone lands
+# Refuse if PARENT is a dangerous system dir. (User-home is fine -- clones land
 # inside it, not overwriting it.)
 case "$PARENT_ABS" in
     "/"|"/usr"|"/etc"|"/var"|"/bin"|"/sbin"|"/opt")
@@ -327,12 +557,8 @@ hr_thick
 printf "  ${BOLD}OG-* Installer (uv-based)${RESET}\n"
 hr_thick
 printf "  Platform     : %s %s\n" "$OS_NAME" "$(uname -m)"
-printf "  Model        : %s\n" "$REPO_NAME"
-printf "  Description  : %s\n" "$REPO_DESC"
-printf "  Source       : %s\n" "$REPO_URL"
+printf "  Destination  : %s\n" "$PARENT_ABS"
 [ -n "$BRANCH" ] && printf "  Branch       : %s\n" "$BRANCH"
-printf "  Destination  : %s\n" "$DEST_ABS"
-printf "  Package      : %s\n" "$PKG_NAME"
 printf "  Dev/test deps: %s\n" "$([ "$WITH_DEV_DEPS" = 1 ] && echo yes || echo no)"
 if [ "$UV_PRESENT" = 1 ]; then
     printf "  uv           : %s ${GREEN}detected${RESET}\n" "$UV_BIN"
@@ -341,36 +567,36 @@ else
 fi
 [ "$WRITE_LOG" = 1 ] && printf "  Log file     : %s\n" "$LOG_FILE"
 echo
-printf "  ${BOLD}Plan (%d steps):${RESET}\n" "$TOTAL_STEPS"
-if [ "$UV_PRESENT" = 1 ] || [ "$SKIP_UV_INSTALL" = 1 ]; then
-    printf "    1. Install uv                      ${DIM}skipped${RESET}\n"
-else
-    printf "    1. Install uv                      ${DIM}~5MB, seconds${RESET}\n"
-fi
-printf "    2. Clone %-25s ${DIM}depends on network${RESET}\n" "$REPO_NAME"
-printf "    3. uv sync (Python + deps)         ${DIM}~30s, ~500MB${RESET}\n"
-printf "    4. Verify installation             ${DIM}a few seconds${RESET}\n"
+printf "  ${BOLD}Repos to install (%d):${RESET}\n" "$TOTAL_TARGETS"
+for t in "${TARGETS[@]}"; do
+    IFS='|' read -r t_owner t_name t_pkg t_desc t_url <<< "$t"
+    printf "    - %-9s ${DIM}%s${RESET} -> %s/%s\n" "$t_name" "$t_desc" "$PARENT_ABS" "$t_name"
+done
 echo
-printf "  You will be asked to confirm before each mutating step.\n"
+printf "  Each repo: clone, uv sync (Python + deps, ~30s/~500MB), verify import.\n"
+if [ "$PER_STEP" = 1 ]; then
+    printf "  You will be asked to confirm before each mutating step.\n"
+else
+    printf "  ${BOLD}%d repos${RESET} will be installed after one confirmation below.\n" "$TOTAL_TARGETS"
+fi
 echo
 
-if ! prompt_yn "Proceed with installation?" y; then
+proceed_prompt="Proceed with installation?"
+[ "$TOTAL_TARGETS" -gt 1 ] && proceed_prompt="Proceed with installing $TOTAL_TARGETS repos?"
+if ! prompt_yn "$proceed_prompt" y; then
     printf "${YELLOW}Aborted by user.${RESET}\n"; exit 0
 fi
 
-# ── Result tracking ───────────────────────────────────────────────────────────
-declare -a STEP_NAMES=() STEP_STATES=() STEP_DETAILS=()
-record_step() { STEP_NAMES+=("$1"); STEP_STATES+=("$2"); STEP_DETAILS+=("$3"); }
 START_TS=$(date +%s)
 
-# ── Step 1: Install uv ────────────────────────────────────────────────────────
-step_banner 1 "Install uv"
+# ── Install uv (once, shared by all repos) ────────────────────────────────────
+section "Install uv"
+UV_STATE="PASS"; UV_DETAIL=""
 if [ "$UV_PRESENT" = 1 ]; then
     print_pass "uv already present" "$UV_BIN"
-    record_step "uv" SKIP "already present"
+    UV_STATE="SKIP"; UV_DETAIL="already present"
 elif [ "$SKIP_UV_INSTALL" = 1 ]; then
     print_fail "--skip-uv-install given but no uv found"
-    record_step "uv" FAIL "no uv and --skip-uv-install"
     exit 1
 else
     printf "  Will install uv via the official installer:\n"
@@ -379,7 +605,6 @@ else
     printf "    Method : curl | sh -- no sudo, installs to your home directory.\n"
     echo
     if ! prompt_yn "Download and install uv?" y; then
-        record_step "uv" SKIP "declined"
         printf "${RED}Cannot continue without uv. Aborting.${RESET}\n"; exit 1
     fi
     echo_cmd "curl -LsSf https://astral.sh/uv/install.sh | sh"
@@ -392,127 +617,19 @@ else
     fi
     if [ -z "$UV_BIN" ] || [ ! -x "$UV_BIN" ]; then
         print_fail "uv install completed but binary not found"
-        record_step "uv" FAIL "binary not found post-install"
         exit 1
     fi
     print_pass "uv installed" "$UV_BIN ($("$UV_BIN" --version 2>/dev/null | head -1))"
-    record_step "uv" PASS "$UV_BIN"
+    UV_DETAIL="$UV_BIN"
 fi
 
-# ── Step 2: Clone the repo ────────────────────────────────────────────────────
-step_banner 2 "Clone ${REPO_NAME}"
-
-DEST_HAS_REPO=0; DEST_EMPTY=0
-if [ -d "$DEST_ABS" ]; then
-    if [ -z "$(ls -A "$DEST_ABS" 2>/dev/null || true)" ]; then
-        DEST_EMPTY=1
-    elif [ -d "$DEST_ABS/.git" ]; then
-        existing_url="$("$GIT_BIN" -C "$DEST_ABS" config --get remote.origin.url 2>/dev/null || true)"
-        norm() { printf '%s' "$1" | sed -E 's#\.git/?$##' | tr '[:upper:]' '[:lower:]'; }
-        if [ "$(norm "$existing_url")" = "$(norm "$REPO_URL")" ]; then
-            DEST_HAS_REPO=1
-        else
-            print_fail "Destination is a git repo for a different remote" "$existing_url"
-            printf "  Either remove %s or pick a different destination with --dest.\n" "$DEST_ABS"
-            record_step "Clone" FAIL "wrong remote"; exit 1
-        fi
-    else
-        print_fail "Destination exists and is not empty (and not a git clone)" "$DEST_ABS"
-        printf "  Either remove %s or pick a different destination with --dest.\n" "$DEST_ABS"
-        record_step "Clone" FAIL "destination not empty"; exit 1
-    fi
-fi
-
-if [ "$DEST_HAS_REPO" = 1 ]; then
-    branch="$("$GIT_BIN" -C "$DEST_ABS" rev-parse --abbrev-ref HEAD 2>/dev/null || echo "?")"
-    printf "  Existing clone of %s found at %s (branch: %s).\n" "$REPO_NAME" "$DEST_ABS" "$branch"
-    printf "  Will run 'git pull --ff-only' to bring it up to date.\n"
-    echo
-    if prompt_yn "Update existing clone?" y; then
-        echo_cmd "git -C $DEST_ABS pull --ff-only"
-        if "$GIT_BIN" -C "$DEST_ABS" pull --ff-only; then
-            print_pass "Repo updated" "$DEST_ABS"
-            record_step "Clone" PASS "updated ($branch)"
-        else
-            print_warn "git pull failed; continuing with existing state"
-            record_step "Clone" WARN "pull failed; existing state used"
-        fi
-    else
-        print_skip "Update" "using existing clone as-is"
-        record_step "Clone" SKIP "existing clone used as-is ($branch)"
-    fi
-else
-    if [ -n "$BRANCH" ]; then
-        printf "  Will clone %s (branch: %s) into %s.\n" "$REPO_URL" "$BRANCH" "$DEST_ABS"
-    else
-        printf "  Will clone %s into %s.\n" "$REPO_URL" "$DEST_ABS"
-    fi
-    echo
-    if prompt_yn "Clone now?" y; then
-        if [ -n "$BRANCH" ]; then
-            echo_cmd "git clone --branch $BRANCH $REPO_URL $DEST_ABS"
-            "$GIT_BIN" clone --branch "$BRANCH" "$REPO_URL" "$DEST_ABS"
-        else
-            echo_cmd "git clone $REPO_URL $DEST_ABS"
-            "$GIT_BIN" clone "$REPO_URL" "$DEST_ABS"
-        fi
-        branch="$("$GIT_BIN" -C "$DEST_ABS" rev-parse --abbrev-ref HEAD 2>/dev/null || echo "?")"
-        print_pass "Cloned" "$DEST_ABS (branch: $branch)"
-        record_step "Clone" PASS "$branch"
-    else
-        print_fail "Clone declined; cannot continue."
-        record_step "Clone" FAIL "declined"; exit 1
-    fi
-fi
-
-# Verify the repo is uv-native (has pyproject.toml and uv.lock).
-if [ ! -f "$DEST_ABS/pyproject.toml" ]; then
-    print_fail "$DEST_ABS has no pyproject.toml"
-    printf "  This installer requires repos that have migrated to uv.\n"
-    record_step "Clone" FAIL "no pyproject.toml"; exit 1
-fi
-if [ ! -f "$DEST_ABS/uv.lock" ]; then
-    print_warn "$DEST_ABS has no uv.lock; uv sync will create one"
-fi
-
-# ── Step 3: uv sync ───────────────────────────────────────────────────────────
-step_banner 3 "Install ${REPO_NAME} (uv sync)"
-sync_args=("sync")
-[ "$WITH_DEV_DEPS" = 1 ] && sync_args+=("--extra" "dev")
-printf "  Will install %s + Python + all deps into %s/.venv\n" "$REPO_NAME" "$DEST_ABS"
-printf "  Working directory : %s\n" "$DEST_ABS"
-printf "  Command           : uv %s\n" "${sync_args[*]}"
-echo
-if prompt_yn "Run uv sync now?" y; then
-    cd "$DEST_ABS"
-    echo_cmd "uv ${sync_args[*]}"
-    "$UV_BIN" "${sync_args[@]}"
-    print_pass "${REPO_NAME} installed (editable)"
-    record_step "${REPO_NAME} install" PASS "uv sync"
-else
-    print_fail "uv sync declined; package will not be importable."
-    record_step "${REPO_NAME} install" FAIL "declined"
-fi
-
-# ── Step 4: Verify ────────────────────────────────────────────────────────────
-step_banner 4 "Verify installation"
-if [ ! -x "$DEST_ABS/.venv/bin/python" ]; then
-    print_fail "Venv python not found; skipping import check." "$DEST_ABS/.venv/bin/python"
-    record_step "Verification" FAIL "no venv python"
-else
-    # -W ignore silences upstream deprecation warnings (e.g. from pygam) so
-    # the verification output stays clean.
-    pyver="$("$DEST_ABS/.venv/bin/python" -W ignore -c 'import sys; print(sys.version.split()[0])' 2>/dev/null || echo unknown)"
-    print_pass "Python in .venv" "$pyver"
-    if "$DEST_ABS/.venv/bin/python" -W ignore -c "import $PKG_NAME" >/dev/null 2>&1; then
-        ver="$("$DEST_ABS/.venv/bin/python" -W ignore -c "import $PKG_NAME; print(getattr($PKG_NAME, '__version__', '?'))" 2>/dev/null)"
-        print_pass "import $PKG_NAME" "$ver"
-        record_step "Verification" PASS "import $PKG_NAME ($ver)"
-    else
-        print_fail "import $PKG_NAME" "package not importable; check log above"
-        record_step "Verification" FAIL "import $PKG_NAME failed"
-    fi
-fi
+# ── Install each repo (continue on failure) ───────────────────────────────────
+i=0
+for t in "${TARGETS[@]}"; do
+    i=$((i + 1))
+    IFS='|' read -r t_owner t_name t_pkg t_desc t_url <<< "$t"
+    install_one_repo "$t_owner" "$t_name" "$t_pkg" "$t_desc" "$t_url" "$i" "$TOTAL_TARGETS" || true
+done
 
 # ── Summary ───────────────────────────────────────────────────────────────────
 END_TS=$(date +%s); ELAPSED=$((END_TS - START_TS))
@@ -520,41 +637,41 @@ ELAPSED_MIN=$((ELAPSED / 60)); ELAPSED_SEC=$((ELAPSED % 60))
 
 echo
 hr_thick
-printf "  ${BOLD}Installation Summary -- %s${RESET}\n" "$REPO_NAME"
+printf "  ${BOLD}Installation Summary${RESET}\n"
 hr_thick
+case "$UV_STATE" in
+    PASS) print_pass "uv" "$UV_DETAIL";;
+    SKIP) print_skip "uv" "$UV_DETAIL";;
+    *)    print_warn "uv" "$UV_DETAIL";;
+esac
 all_ok=1
-for i in "${!STEP_NAMES[@]}"; do
-    name="${STEP_NAMES[$i]}"; state="${STEP_STATES[$i]}"; detail="${STEP_DETAILS[$i]}"
+for idx in "${!REPO_RESULT_NAMES[@]}"; do
+    name="${REPO_RESULT_NAMES[$idx]}"; state="${REPO_RESULT_STATES[$idx]}"; detail="${REPO_RESULT_DETAILS[$idx]}"
     case "$state" in
         PASS) print_pass "$name" "$detail";;
-        SKIP) print_skip "$name" "$detail";;
         WARN) print_warn "$name" "$detail";;
+        SKIP) print_skip "$name" "$detail";;
         FAIL) print_fail "$name" "$detail"; all_ok=0;;
-        *)    print_warn "$name" "unknown: $state";;
+        *)    print_warn "$name" "unknown: $state"; all_ok=0;;
     esac
 done
 echo
 printf "  Elapsed  : %dm %ds\n" "$ELAPSED_MIN" "$ELAPSED_SEC"
-printf "  Location : %s\n" "$DEST_ABS"
-printf "  Venv     : %s/.venv\n" "$DEST_ABS"
+printf "  Location : %s\n" "$PARENT_ABS"
 [ "$WRITE_LOG" = 1 ] && printf "  Log      : %s\n" "$LOG_FILE"
 echo
 
 if [ "$all_ok" = 1 ]; then
-    printf "  ${GREEN}${BOLD}All steps completed successfully.${RESET}\n"
+    printf "  ${GREEN}${BOLD}All repos installed successfully.${RESET}\n"
     echo
-    printf "  ${BOLD}To start using ${REPO_NAME}:${RESET}\n"
-    printf "    cd %s\n" "$DEST_ABS"
-    printf "    source .venv/bin/activate         # activate venv\n"
-    printf "    python -W ignore -c \"import %s; print(%s.__file__)\"\n" "$PKG_NAME" "$PKG_NAME"
-    printf "  Or run commands without activating:\n"
-    printf "    uv run python -W ignore -c \"import %s; print(%s.__file__)\"\n" "$PKG_NAME" "$PKG_NAME"
-    if [ -d "$DEST_ABS/examples" ]; then
-        printf "\n  Example scripts: %s/examples\n" "$DEST_ABS"
-    fi
+    printf "  ${BOLD}To start using them:${RESET}\n"
+    for idx in "${!REPO_RESULT_NAMES[@]}"; do
+        name="${REPO_RESULT_NAMES[$idx]}"
+        printf "    cd %s/%s && source .venv/bin/activate\n" "$PARENT_ABS" "$name"
+    done
     exit 0
 else
-    printf "  ${RED}${BOLD}One or more steps failed.${RESET}\n"
+    printf "  ${RED}${BOLD}One or more repos failed.${RESET}\n"
     echo
     printf "  Review the [FAIL] entries above.\n"
     [ "$WRITE_LOG" = 1 ] && printf "  Full output is in: %s\n" "$LOG_FILE"
