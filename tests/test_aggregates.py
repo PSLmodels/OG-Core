@@ -145,8 +145,8 @@ part2 = (
     )
     .sum(1)
     .sum(1)
-) / (1 + np.squeeze(np.hstack((p.g_n[1 : p.T], p.g_n_ss))))
-aggI_TPI = (1 + np.squeeze(np.hstack((p.g_n[1 : p.T], p.g_n_ss)))) * np.exp(
+) / (1 + np.squeeze(np.hstack((p.g_n[: p.T - 1], p.g_n_ss))))
+aggI_TPI = (1 + np.squeeze(np.hstack((p.g_n[: p.T - 1], p.g_n_ss)))) * np.exp(
     p.g_y
 ) * (K_p1 - part2) - (1.0 - p.delta) * K
 test_data = [
@@ -156,11 +156,9 @@ test_data = [
 aggI_total_SS = (1 + p.g_n_ss) * np.exp(p.g_y) * (K[-1]) - (1.0 - p.delta) * K[
     -1
 ]
-aggI_total_TPI = (
-    (1 + np.squeeze(np.hstack((p.g_n[1 : p.T], p.g_n_ss))))
-    * np.exp(p.g_y)
-    * K_p1
-) - (1.0 - p.delta) * K
+aggI_total_TPI = ((1 + p.g_n[: p.T]) * np.exp(p.g_y) * K_p1) - (
+    1.0 - p.delta
+) * K
 test_data = [
     (b_splus1[-1, :, :], K_p1[-1], K[-1], p, "SS", aggI_SS),
     (b_splus1, K_p1, K, p, "TPI", aggI_TPI),
@@ -202,6 +200,10 @@ new_param_values = {
     "omega": np.ones((160, 40)) / 40,
     "omega_SS": np.ones(40) / 40,
     "imm_rates": np.zeros((160, 40)),
+    "omega_S_preTP": np.ones(40) / 40,
+    "imm_rates_preTP": np.zeros(40),
+    "rho_preTP": rho_vec[0, :],
+    "g_n_preTP": 0.01,
 }
 # update parameters instance with new values for test
 p.update_specifications(new_param_values)
@@ -222,9 +224,9 @@ B_test = (
 )
 expected1 = B_test[-1, :, :].sum() / (1.0 + p.g_n_ss)
 expected2 = B_test.sum(1).sum(1) / (
-    1.0 + np.hstack((p.g_n[1 : p.T], p.g_n_ss))
+    1.0 + np.hstack((p.g_n[: p.T - 1], p.g_n_ss))
 )
-expected3 = B_test[0, :, :].sum() / (1.0 + p.g_n[0])
+expected3 = B_test[0, :, :].sum() / (1.0 + p.g_n_preTP)
 test_data = [
     (b[-1, :, :], p, "SS", False, expected1),
     (b, p, "TPI", False, expected2),
@@ -263,6 +265,10 @@ new_param_values = {
     "omega": np.ones((160, 40)) / 40,
     "omega_SS": np.ones(40) / 40,
     "imm_rates": np.zeros((160, 40)),
+    "omega_S_preTP": np.ones(40) / 40,
+    "imm_rates_preTP": np.zeros(40),
+    "rho_preTP": rho_vec[0, :],
+    "g_n_preTP": 0.01,
 }
 # update parameters instance with new values for test
 p.update_specifications(new_param_values)
@@ -274,7 +280,8 @@ pop = np.append(p.omega_S_preTP.reshape(1, p.S), p.omega[: p.T - 1, :], axis=0)
 BQ_presum = (b_splus1 * np.squeeze(p.lambdas)) * np.tile(
     np.reshape(p.rho[0, :] * pop, (p.T, p.S, 1)), (1, 1, p.J)
 )
-growth_adj = (1.0 + r) / (1.0 + p.g_n[: p.T])
+growth_adj = (1.0 + r) / (1.0 + np.append(p.g_n_preTP, p.g_n[: p.T - 1]))
+growth_adj_preTP = (1.0 + r[0]) / (1.0 + p.g_n_preTP)
 
 expected1 = BQ_presum[-1, :, :].sum(0) * growth_adj[-1]
 expected2 = BQ_presum[-1, :, 1].sum(0) * growth_adj[-1]
@@ -282,8 +289,8 @@ expected3 = BQ_presum.sum(1) * np.tile(
     np.reshape(growth_adj, (p.T, 1)), (1, p.J)
 )
 expected4 = BQ_presum[:, :, 1].sum(1) * growth_adj
-expected5 = BQ_presum[0, :, :].sum(0) * growth_adj[0]
-expected6 = BQ_presum[0, :, 1].sum(0) * growth_adj[0]
+expected5 = BQ_presum[0, :, :].sum(0) * growth_adj_preTP
+expected6 = BQ_presum[0, :, 1].sum(0) * growth_adj_preTP
 
 p2 = copy.deepcopy(p)
 p2.use_zeta = True
@@ -1150,6 +1157,29 @@ expected_RM_3 = np.array(
         0.03125,
     ]
 )
+
+
+def expected_RM_path(Y, p):
+    RM = np.zeros_like(Y)
+    RM[0] = p.alpha_RM_1 * Y[0]
+    for t in range(1, p.tG1):
+        RM[t] = ((1 + p.g_RM[t]) / (np.exp(p.g_y) * (1 + p.g_n[t - 1]))) * RM[
+            t - 1
+        ]
+    rho_vec = np.linspace(0, 1, p.tG2 - p.tG1)
+    for t in range(p.tG1, p.tG2 - 1):
+        RM[t] = (
+            rho_vec[t - p.tG1] * p.alpha_RM_T * Y[t]
+            + (1 - rho_vec[t - p.tG1])
+            * ((1 + p.g_RM[t]) / (np.exp(p.g_y) * (1 + p.g_n[t - 1])))
+            * RM[t - 1]
+        )
+    RM[p.tG2 - 1 :] = p.alpha_RM_T * Y[p.tG2 - 1 :]
+    return RM
+
+
+expected_RM_2 = expected_RM_path(Y_RM_2, p_RM_1)
+expected_RM_3 = expected_RM_path(Y_RM_2, p_RM_3)
 test_data_RM = [
     (Y_RM_1, p_RM_1, "SS", expected_RM_1),
     (Y_RM_2, p_RM_1, "TPI", expected_RM_2),

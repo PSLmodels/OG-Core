@@ -1240,7 +1240,8 @@ def unstationarize_vars(
     """
     # compute non-stationary variables
     T = params.T
-    pop_growth = np.cumprod(1 + params.g_n[:T])
+    pop_growth = np.ones(T)
+    pop_growth[1:] = np.cumprod(1 + params.g_n[: T - 1])
     prod_growth = np.exp(params.g_y * np.arange(params.T))
     if ("_m" in var) or ("_i" in var):
         pop_growth = pop_growth.reshape(T, 1)

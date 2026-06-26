@@ -95,16 +95,14 @@ def get_I(b_splus1, K_p1, K, p, method):
             )
             .sum(1)
             .sum(1)
-        ) / (1 + np.squeeze(np.hstack((p.g_n[1 : p.T], p.g_n_ss))))
+        ) / (1 + np.squeeze(np.hstack((p.g_n[: p.T - 1], p.g_n_ss))))
         aggI = (
-            1 + np.squeeze(np.hstack((p.g_n[1 : p.T], p.g_n_ss)))
+            1 + np.squeeze(np.hstack((p.g_n[: p.T - 1], p.g_n_ss)))
         ) * np.exp(p.g_y) * (K_p1 - part2) - (1.0 - p.delta) * K
     elif method == "total_ss":
         aggI = ((1 + p.g_n_ss) * np.exp(p.g_y) - 1 + p.delta) * K
     elif method == "total_tpi":
-        aggI = (1 + p.g_n[1 : p.T + 1]) * np.exp(p.g_y) * K_p1 - (
-            1.0 - p.delta
-        ) * K
+        aggI = (1 + p.g_n[: p.T]) * np.exp(p.g_y) * K_p1 - (1.0 - p.delta) * K
 
     return aggI
 
@@ -133,8 +131,8 @@ def get_B(b, p, method, preTP):
         if preTP:
             part1 = b * np.transpose(p.omega_S_preTP * p.lambdas)
             omega_extended = np.append(p.omega_S_preTP[1:], [0.0])
-            imm_extended = np.append(p.imm_rates[0, 1:], [0.0])
-            pop_growth_rate = p.g_n[0]
+            imm_extended = np.append(p.imm_rates_preTP[1:], [0.0])
+            pop_growth_rate = p.g_n_preTP
         else:
             part1 = b * np.transpose(p.omega_SS * p.lambdas)
             omega_extended = np.append(p.omega_SS[1:], [0.0])
@@ -157,7 +155,7 @@ def get_B(b, p, method, preTP):
         )
         B_presum = part1 + part2
         B = B_presum.sum(1).sum(1)
-        B /= 1.0 + np.hstack((p.g_n[1 : p.T], p.g_n_ss))
+        B /= 1.0 + np.hstack((p.g_n[: p.T - 1], p.g_n_ss))
     return B
 
 
@@ -189,8 +187,8 @@ def get_BQ(r, b_splus1, j, p, method, preTP):
     if method == "SS":
         if preTP:
             omega = p.omega_S_preTP
-            pop_growth_rate = p.g_n[0]
-            rho = p.rho[0, :]
+            pop_growth_rate = p.g_n_preTP
+            rho = p.rho_preTP
         else:
             omega = p.omega_SS
             pop_growth_rate = p.g_n_ss
@@ -206,20 +204,24 @@ def get_BQ(r, b_splus1, j, p, method, preTP):
             p.omega_S_preTP.reshape(1, p.S), p.omega[: p.T - 1, :], axis=0
         )
         rho = np.append(
-            p.rho[0, :].reshape(1, p.S), p.rho[: p.T - 1, :], axis=0
+            p.rho_preTP.reshape(1, p.S), p.rho[: p.T - 1, :], axis=0
         )
 
         if j is not None:
             BQ_presum = (b_splus1 * p.lambdas[j]) * (pop * rho)
             BQ = BQ_presum.sum(1)
-            BQ *= (1.0 + r) / (1.0 + p.g_n[: p.T])
+            BQ *= (1.0 + r) / (1.0 + np.append(p.g_n_preTP, p.g_n[: p.T - 1]))
         else:
             BQ_presum = (b_splus1 * np.squeeze(p.lambdas)) * np.tile(
                 np.reshape(pop * rho, (p.T, p.S, 1)), (1, 1, p.J)
             )
             BQ = BQ_presum.sum(1)
             BQ *= np.tile(
-                np.reshape((1.0 + r) / (1.0 + p.g_n[: p.T]), (p.T, 1)),
+                np.reshape(
+                    (1.0 + r)
+                    / (1.0 + np.append(p.g_n_preTP, p.g_n[: p.T - 1])),
+                    (p.T, 1),
+                ),
                 (1, p.J),
             )
     if p.use_zeta:
@@ -261,15 +263,15 @@ def get_RM(Y, p, method):
         RM = np.zeros_like(Y)
         RM[0] = p.alpha_RM_1 * Y[0]
         for t in range(1, p.tG1):
-            RM[t] = ((1 + p.g_RM[t]) / (np.exp(p.g_y) * (1 + p.g_n[t]))) * RM[
-                t - 1
-            ]
+            RM[t] = (
+                (1 + p.g_RM[t]) / (np.exp(p.g_y) * (1 + p.g_n[t - 1]))
+            ) * RM[t - 1]
         rho_vec = np.linspace(0, 1, p.tG2 - p.tG1)
         for t in range(p.tG1, p.tG2 - 1):
             RM[t] = (
                 rho_vec[t - p.tG1] * p.alpha_RM_T * Y[t]
                 + (1 - rho_vec[t - p.tG1])
-                * ((1 + p.g_RM[t]) / (np.exp(p.g_y) * (1 + p.g_n[t])))
+                * ((1 + p.g_RM[t]) / (np.exp(p.g_y) * (1 + p.g_n[t - 1])))
                 * RM[t - 1]
             )
         RM[p.tG2 - 1 :] = p.alpha_RM_T * Y[p.tG2 - 1 :]

@@ -1139,7 +1139,11 @@ def model_fit_table(
             omega_t = params.omega[t]
             model_val = omega_t[idx_65:].sum() / omega_t.sum()
         elif target_desc == r"Pop growth rate":
-            model_val = params.g_n[t]
+            # g_n[t] is now growth from period t to t+1; the boundary
+            # growth into period 0 lives in g_n_preTP. Report the growth
+            # into period t so this stays calendar-aligned with the
+            # omega[t]-based moments above.
+            model_val = params.g_n_preTP if t == 0 else params.g_n[t - 1]
         else:
             model_val = np.nan
 

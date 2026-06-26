@@ -81,7 +81,7 @@ def D_G_path(r, dg_fixed_values, p):
         D0_baseline,
     ) = dg_fixed_values
 
-    growth = (1 + p.g_n) * np.exp(p.g_y)
+    growth = (1 + np.append(p.g_n_preTP, p.g_n[: p.T])) * np.exp(p.g_y)
 
     D = np.zeros(p.T + 1)
     if p.baseline:
@@ -194,13 +194,11 @@ def D_G_path(r, dg_fixed_values, p):
             )
         D_d = D[: p.T] - D_f[: p.T]
         new_borrowing = (
-            D[1 : p.T + 1] * np.exp(p.g_y) * (1 + p.g_n[1 : p.T + 1])
-            - D[: p.T]
+            D[1 : p.T + 1] * np.exp(p.g_y) * (1 + p.g_n[: p.T]) - D[: p.T]
         )
         debt_service = r_gov[: p.T] * D[: p.T]
         new_borrowing_f = (
-            D_f[1 : p.T + 1] * np.exp(p.g_y) * (1 + p.g_n[1 : p.T + 1])
-            - D_f[: p.T]
+            D_f[1 : p.T + 1] * np.exp(p.g_y) * (1 + p.g_n[: p.T]) - D_f[: p.T]
         )
 
     return (
@@ -490,7 +488,7 @@ def get_K_g(K_g0, I_g, p, method):
         K_g = np.zeros(p.T)
         K_g[0] = K_g0
         for t in range(p.T - 1):  # TODO: numba jit this
-            growth = (1 + p.g_n[t + 1]) * np.exp(p.g_y)
+            growth = (1 + p.g_n[t]) * np.exp(p.g_y)
             K_g[t + 1] = (
                 (1 - p.delta_g) * K_g[t] + (1 - phi_g) * I_g[t]
             ) / growth
