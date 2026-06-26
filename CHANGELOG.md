@@ -5,7 +5,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [0.16.3] - 2026-06-23 20:30:00
+## [0.16.3] - 2026-06-25 15:00:00
+
+### Added
+
+- Better functionality and more country repositories with the OG installer. See PR [#1162](https://github.com/PSLmodels/OG-Core/pull/1162)
 
 ### Bug Fix
 - Fixes an inconsistency with the pre-time path population distribution and growth rates. Note that the `demographics.get_pop` function has been changed and now only returns one object: the population distribution (not also the distribution prior to the start year).  In addition, the `get_pop` and `get_pop_objs` functions no longer have the `pre_pop_dist` kwarg. See PR [#1073](https://github.com/PSLmodels/OG-Core/pull/1073).
