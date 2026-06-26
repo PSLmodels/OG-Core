@@ -1,0 +1,40 @@
+{
+  "schema_version": 1,
+  "repos": [
+    {
+      "key": "og-core",
+      "owner": "PSLmodels",
+      "repo": "OG-Core",
+      "package": "ogcore",
+      "description": "base model (no country calibration)"
+    },
+    {
+      "key": "og-eth",
+      "owner": "EAPD-DRB",
+      "repo": "OG-ETH",
+      "package": "ogeth",
+      "description": "Ethiopia"
+    },
+    {
+      "key": "og-zaf",
+      "owner": "EAPD-DRB",
+      "repo": "OG-ZAF",
+      "package": "ogzaf",
+      "description": "South Africa"
+    },
+    {
+      "key": "og-idn",
+      "owner": "EAPD-DRB",
+      "repo": "OG-IDN",
+      "package": "ogidn",
+      "description": "Indonesia"
+    },
+    {
+      "key": "og-phl",
+      "owner": "EAPD-DRB",
+      "repo": "OG-PHL",
+      "package": "ogphl",
+      "description": "Philippines"
+    }
+  ]
+}

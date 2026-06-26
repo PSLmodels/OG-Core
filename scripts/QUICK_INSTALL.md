@@ -2,7 +2,7 @@
 
 A single installer for OG-Core and its country calibrations. Pre-req: **git** installed. Nothing else.
 
-It installs uv if needed, clones the repo you choose, runs `uv sync --extra dev`, and verifies the import. Pick the repo from a menu, or pass `--repo` / `-Repo`.
+It installs uv if needed, clones the repo(s) you choose, runs `uv sync --extra dev`, and verifies the import. Pick one from a menu, name several with `--repo` / `-Repo`, or install everything with `--all` / `-All`.
 
 You can run it two ways — paste a one-line command, or download the script and run it. Both do the same thing.
 
@@ -44,27 +44,38 @@ powershell -ExecutionPolicy Bypass -File .\install.ps1
 
 By default the installer shows a menu of repos and prompts for a destination. Flags let you go straight there — they work with either method above:
 
-- `--repo` / `-Repo` — a short key for a repo in the built-in catalog:
+- `--repo` / `-Repo` — a short key for a repo in the built-in catalog. To install several at once: on macOS/Linux repeat the flag (`--repo og-zaf --repo og-idn`), or comma-separate; on Windows comma-separate (`-Repo og-zaf,og-idn`). Keys:
   - `og-core` — base model ([PSLmodels/OG-Core](https://github.com/PSLmodels/OG-Core))
-  - `og-eth` — Ethiopia calibration ([EAPD-DRB/OG-ETH](https://github.com/EAPD-DRB/OG-ETH)); works once its uv migration lands
-- `--repo-url` / `-RepoUrl` — a full git URL, for any other uv-based repo (a fork, or a country repo not yet in the catalog). Clones the default branch.
-- `--branch` / `-Branch` — **for development work**: install a non-default branch (e.g. a fork or a migration branch before it merges).
-- `--dest` / `-Dest` and `--yes` / `-Yes` — set the parent directory and skip the confirmation prompt.
+  - `og-eth` — Ethiopia ([EAPD-DRB/OG-ETH](https://github.com/EAPD-DRB/OG-ETH))
+  - `og-zaf` — South Africa ([EAPD-DRB/OG-ZAF](https://github.com/EAPD-DRB/OG-ZAF))
+  - `og-idn` — Indonesia ([EAPD-DRB/OG-IDN](https://github.com/EAPD-DRB/OG-IDN))
+  - `og-phl` — Philippines ([EAPD-DRB/OG-PHL](https://github.com/EAPD-DRB/OG-PHL))
+- `--all` / `-All` — install every repo in the catalog (each into its own subfolder).
+- `--list` / `-List` and `--list-json` / `-ListJson` — print the repo catalog (human-readable or JSON) and exit, without installing anything. The same catalog is also published as a static file you can fetch directly: [`scripts/repos.json`](repos.json).
+- `--repo-url` / `-RepoUrl` — a full git URL for a single custom repo (a fork, or a country repo not yet in the catalog). Clones the default branch.
+- `--branch` / `-Branch` — **for development work**: install a non-default branch. Single repo only (not valid with `--all` or multiple `--repo`).
+- `--dest` / `-Dest` and `--yes` / `-Yes` — set the parent directory and skip every confirmation prompt. Combine with `--repo` / `--all` for a fully hands-free install.
 
 ```bash
-# macOS / Linux -- OG-Core to ~/Projects/OG-Core, no prompts
+# macOS / Linux
+# one repo, no prompts
 bash install.sh --repo og-core --dest ~/Projects --yes
-# any repo by URL (default branch)
-bash install.sh --repo-url https://github.com/OWNER/OG-XYZ.git
-# a specific branch (development)
+# several at once (repeat the flag, or comma-separate)
+bash install.sh --repo og-zaf --repo og-idn --dest ~/Projects
+# hands-free: install everything, no prompts
+bash install.sh --all --dest ~/Projects --yes
+# a single custom repo on a specific branch (development)
 bash install.sh --repo-url https://github.com/OWNER/OG-XYZ.git --branch my-feature
 ```
 
 ```powershell
-# Windows -- OG-Core to C:\Users\<you>\Projects\OG-Core, no prompts
+# Windows
+# one repo, no prompts
 powershell -ExecutionPolicy Bypass -File .\install.ps1 -Repo og-core -Dest C:\Users\$env:USERNAME\Projects -Yes
-# any repo by URL (default branch)
-powershell -ExecutionPolicy Bypass -File .\install.ps1 -RepoUrl https://github.com/OWNER/OG-XYZ.git
+# several at once
+powershell -ExecutionPolicy Bypass -File .\install.ps1 -Repo og-zaf,og-idn -Dest C:\OG
+# hands-free: install everything, no prompts
+powershell -ExecutionPolicy Bypass -File .\install.ps1 -All -Dest C:\OG -Yes
 ```
 
 More country calibrations get added to the catalog as they migrate to uv.

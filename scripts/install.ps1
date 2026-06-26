@@ -5,25 +5,36 @@
 .DESCRIPTION
     Takes a user from zero (only git installed) to a working OG-* model env:
       1. Install uv (if not present)
-      2. Clone the chosen repo
+      2. Clone the chosen repo(s)
       3. uv sync --extra dev (installs Python + project + deps)
       4. Verify import
 
+    Installs one repo, several (-Repo og-zaf,og-idn), or all (-All).
     Only repos that have migrated to uv (pyproject.toml + uv.lock) are offered.
 
 .PARAMETER Repo
-    Skip the model menu. One of: og-core, og-eth.
+    Catalog repo key(s) to install. Comma-separate for several:
+    -Repo og-zaf,og-idn  (see -List for valid keys).
+
+.PARAMETER All
+    Install every repo in the catalog.
+
+.PARAMETER List
+    Print the repo catalog (human-readable) and exit.
+
+.PARAMETER ListJson
+    Print the repo catalog as JSON and exit.
 
 .PARAMETER RepoUrl
-    Use a custom Git URL (e.g. your fork or SSH URL). Bypasses the menu.
+    Install one custom Git URL (single repo only). Bypasses the menu.
 
 .PARAMETER Dest
-    Parent directory where the clone is created. Default: current directory.
-    The clone always lands in <Dest>\<RepoName>.
+    Parent directory for the clone(s). Default: current directory.
+    Each repo lands in <Dest>\<RepoName>.
 
 .PARAMETER Branch
-    For development: clone a non-default branch (default: repo's default
-    branch). Useful for testing forks/PRs before they merge.
+    For development: clone a non-default branch. Single repo only (not valid
+    with -All or multiple -Repo).
 
 .PARAMETER Yes
     Auto-confirm every prompt (non-interactive).
@@ -42,16 +53,23 @@
     Fully interactive: pick a model and a destination, then install.
 
 .EXAMPLE
-    .\scripts\install.ps1 -Repo og-eth -Dest C:\work -Yes
-    Unattended install of OG-ETH into C:\work\OG-ETH.
+    .\scripts\install.ps1 -Repo og-zaf,og-idn -Dest C:\OG
+    Install several models at once into C:\OG.
+
+.EXAMPLE
+    .\scripts\install.ps1 -All -Dest C:\OG -Yes
+    Hands-free: install every repo into C:\OG with no prompts.
 #>
 
 [CmdletBinding()]
 param(
-    [string]$Repo = "",
+    [string[]]$Repo = @(),
+    [switch]$All,
     [string]$RepoUrl = "",
     [string]$Branch = "",
     [string]$Dest = "",
+    [switch]$List,
+    [switch]$ListJson,
     [switch]$Yes,
     [switch]$NoDevDeps,
     [switch]$SkipUvInstall,
@@ -70,8 +88,33 @@ $WithDevDeps = -not $NoDevDeps
 # -- Repo catalog (only uv-migrated repos) -------------------------------------
 $Repos = @(
     [pscustomobject]@{ Key="og-core"; Owner="PSLmodels"; Name="OG-Core"; Pkg="ogcore"; Desc="base model (no country calibration)" },
-    [pscustomobject]@{ Key="og-eth";  Owner="EAPD-DRB";  Name="OG-ETH";  Pkg="ogeth";  Desc="Ethiopia" }
+    [pscustomobject]@{ Key="og-eth";  Owner="EAPD-DRB";  Name="OG-ETH";  Pkg="ogeth";  Desc="Ethiopia" },
+    [pscustomobject]@{ Key="og-zaf";  Owner="EAPD-DRB";  Name="OG-ZAF";  Pkg="ogzaf";  Desc="South Africa" },
+    [pscustomobject]@{ Key="og-idn";  Owner="EAPD-DRB";  Name="OG-IDN";  Pkg="ogidn";  Desc="Indonesia" },
+    [pscustomobject]@{ Key="og-phl";  Owner="EAPD-DRB";  Name="OG-PHL";  Pkg="ogphl";  Desc="Philippines" }
 )
+
+# -- Catalog listing (-List / -ListJson) ---------------------------------------
+# Emit from the embedded $Repos (runtime source of truth) so it works even when
+# only the script is fetched. scripts/repos.json holds the same data as a file;
+# a CI check keeps them in sync.
+if ($ListJson) {
+    $catalog = [pscustomobject]@{
+        schema_version = 1
+        repos = @($Repos | ForEach-Object {
+            [pscustomobject]@{ key = $_.Key; owner = $_.Owner; repo = $_.Name; package = $_.Pkg; description = $_.Desc }
+        })
+    }
+    $catalog | ConvertTo-Json -Depth 5
+    exit 0
+}
+if ($List) {
+    "{0,-9}  {1,-22}  {2,-8}  {3}" -f "KEY", "REPO", "PACKAGE", "DESCRIPTION"
+    foreach ($r in $Repos) {
+        "{0,-9}  {1,-22}  {2,-8}  {3}" -f $r.Key, "$($r.Owner)/$($r.Name)", $r.Pkg, $r.Desc
+    }
+    exit 0
+}
 
 # -- Colors --------------------------------------------------------------------
 $UseAnsi = $Host.UI.SupportsVirtualTerminal -or ($env:WT_SESSION -ne $null)
@@ -120,12 +163,21 @@ function Write-Skip($label, $detail = "") {
 }
 function Write-Cmd($cmd) { Write-Host "  $DIM`$ $cmd$RESET" }
 
-$TotalSteps = 4
-function Step-Banner($n, $title) {
+function Write-Section($title) {
     Write-Host ""
     Write-Hr
-    Write-Host "  ${BOLD}Step $n of ${TotalSteps}: $title${RESET}"
+    Write-Host "  ${BOLD}$title${RESET}"
     Write-Hr
+}
+
+function Fail-Arg($msg) {
+    Write-Host "${RED}ERROR:${RESET} $msg" -ForegroundColor Red
+    Stop-TranscriptIfActive
+    exit 2
+}
+
+function Normalize-RemoteUrl($u) {
+    return ($u -replace '\.git/?$', '').ToLower()
 }
 
 function Test-Interactive {
@@ -141,7 +193,8 @@ function Prompt-YN($prompt, $default = 'y') {
     }
     if (-not (Test-Interactive)) {
         Write-Host "${RED}ERROR:${RESET} non-interactive session and -Yes not given." -ForegroundColor Red
-        return $false
+        Stop-TranscriptIfActive
+        exit 2
     }
     while ($true) {
         $ans = Read-Host "$prompt $opts"
@@ -197,12 +250,12 @@ function Detect-Uv {
 [void](Detect-Uv)
 $UvPresent = [bool]$UvBin
 
-# -- Pick repo -----------------------------------------------------------------
+# -- Pick repo interactively (single repo; multi is opt-in via -Repo/-All) -----
 $RepoOwner = $null; $RepoName = $null; $PkgName = $null; $RepoDesc = $null
 
 function Choose-RepoInteractive {
     if (-not (Test-Interactive)) {
-        Write-Host "${RED}ERROR:${RESET} no -Repo given and session is non-interactive." -ForegroundColor Red
+        Write-Host "${RED}ERROR:${RESET} no -Repo/-All given and session is non-interactive." -ForegroundColor Red
         Stop-TranscriptIfActive; exit 2
     }
     Write-Host ""
@@ -210,7 +263,7 @@ function Choose-RepoInteractive {
     Write-Host "  ${BOLD}OG-* Installer (uv-based)${RESET}"
     Write-HrThick
     Write-Host "  Which OG country model do you want to install?"
-    Write-Host "  ${DIM}(only repos that have migrated to uv are listed)${RESET}"
+    Write-Host "  ${DIM}(only repos that have migrated to uv are listed; use -All for every one)${RESET}"
     Write-Host ""
     $i = 1
     foreach ($r in $script:Repos) {
@@ -231,47 +284,63 @@ function Choose-RepoInteractive {
             return
         }
         $r = $script:Repos[$n - 1]
-        $script:Repo = $r.Key
         $script:RepoOwner = $r.Owner; $script:RepoName = $r.Name
         $script:PkgName = $r.Pkg; $script:RepoDesc = $r.Desc
         return
     }
 }
 
-if ($RepoUrl -and -not $Repo) {
-    # custom URL via CLI; menu skipped
-} elseif ($Repo) {
-    $match = $Repos | Where-Object { $_.Key -eq $Repo }
-    if (-not $match) {
-        Write-Host "${RED}ERROR:${RESET} unknown -Repo '$Repo'. Use -? for the list." -ForegroundColor Red
-        Stop-TranscriptIfActive; exit 2
+# -- Resolve the list of repos to install --------------------------------------
+$Targets = @()
+if ($RepoUrl) {
+    if ($All -or $Repo.Count -gt 0) {
+        Fail-Arg "-RepoUrl installs a single repo; it cannot be combined with -All or -Repo."
     }
-    $RepoOwner = $match.Owner; $RepoName = $match.Name
-    $PkgName = $match.Pkg; $RepoDesc = $match.Desc
+    $leaf = Split-Path -Leaf $RepoUrl
+    $cuName = $leaf -replace '\.git$', ''
+    $cuPkg = ($cuName.ToLower() -replace '-', '')
+    $Targets += [pscustomobject]@{ Owner="(custom URL)"; Name=$cuName; Pkg=$cuPkg; Desc="custom repo"; Url=$RepoUrl }
+} elseif ($All) {
+    if ($Repo.Count -gt 0) { Fail-Arg "-All installs every repo; do not also pass -Repo." }
+    foreach ($r in $Repos) {
+        $Targets += [pscustomobject]@{ Owner=$r.Owner; Name=$r.Name; Pkg=$r.Pkg; Desc=$r.Desc; Url="https://github.com/$($r.Owner)/$($r.Name).git" }
+    }
+} elseif ($Repo.Count -gt 0) {
+    $seen = @{}
+    foreach ($key in $Repo) {
+        if ($seen.ContainsKey($key)) { continue }
+        $seen[$key] = $true
+        $match = $Repos | Where-Object { $_.Key -eq $key }
+        if (-not $match) { Fail-Arg "unknown -Repo '$key'. Run -List to see valid keys." }
+        $Targets += [pscustomobject]@{ Owner=$match.Owner; Name=$match.Name; Pkg=$match.Pkg; Desc=$match.Desc; Url="https://github.com/$($match.Owner)/$($match.Name).git" }
+    }
 } else {
     Choose-RepoInteractive
+    if ($RepoUrl) {
+        $leaf = Split-Path -Leaf $RepoUrl
+        $cuName = $leaf -replace '\.git$', ''
+        $cuPkg = ($cuName.ToLower() -replace '-', '')
+        $Targets += [pscustomobject]@{ Owner="(custom URL)"; Name=$cuName; Pkg=$cuPkg; Desc="custom repo"; Url=$RepoUrl }
+    } else {
+        $Targets += [pscustomobject]@{ Owner=$RepoOwner; Name=$RepoName; Pkg=$PkgName; Desc=$RepoDesc; Url="https://github.com/$RepoOwner/$RepoName.git" }
+    }
 }
 
-# Custom URL: derive repo name + package name
-if ($RepoUrl -and -not $RepoName) {
-    $leaf = Split-Path -Leaf $RepoUrl
-    $RepoName = $leaf -replace '\.git$', ''
-    $RepoOwner = "(custom URL)"; $RepoDesc = "custom repo"
-    $PkgName = ($RepoName.ToLower() -replace '-', '')
-    $Repo = $PkgName
+$TotalTargets = $Targets.Count
+if ($Branch -and $TotalTargets -gt 1) {
+    Fail-Arg "-Branch can only be used with a single repo (selected: $TotalTargets)."
 }
-if (-not $RepoUrl) {
-    $RepoUrl = "https://github.com/$RepoOwner/$RepoName.git"
-}
+# One repo keeps the per-step confirmations; multiple run as a batch.
+$PerStep = ($TotalTargets -eq 1)
 
-# -- Pick destination ----------------------------------------------------------
+# -- Pick destination (PARENT directory; each repo lands at PARENT\RepoName) ---
 if (-not $Dest) {
     if (-not (Test-Interactive)) {
         $Dest = "."
     } else {
         Write-Host ""
-        Write-Host ("  Where would you like to install {0}?" -f $RepoName)
-        Write-Host ("  Enter the PARENT directory; {0} will be cloned as a subfolder inside." -f $RepoName)
+        Write-Host "  Where would you like to install?"
+        Write-Host "  Enter the PARENT directory; each repo is cloned into its own subfolder."
         Write-Host ("  Default: current directory ({0})" -f (Get-Location).Path)
         $entered = Read-Host "  Parent directory [.]"
         if ([string]::IsNullOrWhiteSpace($entered)) { $Dest = "." } else { $Dest = $entered }
@@ -284,20 +353,18 @@ if ($Dest.StartsWith("~")) {
     $Dest = Join-Path $env:USERPROFILE $Dest.Substring(1).TrimStart('\','/')
 }
 
-# $Dest is the parent directory. Must exist; resolve to absolute.
 if (-not (Test-Path $Dest)) {
     Write-Host "${RED}ERROR:${RESET} parent directory does not exist: $Dest" -ForegroundColor Red
     Write-Host "Create it first (mkdir $Dest) or pick a different -Dest."
     Stop-TranscriptIfActive; exit 1
 }
 $ParentAbs = (Resolve-Path $Dest).Path
-$DestAbs = Join-Path $ParentAbs $RepoName
 
-# Refuse if PARENT is a dangerous system dir. (User-home is fine -- clone lands
+# Refuse if PARENT is a dangerous system dir. (User-home is fine -- clones land
 # inside it, not overwriting it.)
 $parentNorm = $ParentAbs.TrimEnd('\').ToLower()
 $dangerous = @(
-    $env:WINDIR.ToLower(),
+    "${env:WINDIR}".ToLower(),
     "${env:ProgramFiles}".ToLower(),
     "${env:ProgramFiles(x86)}".ToLower()
 )
@@ -312,12 +379,8 @@ Write-HrThick
 Write-Host "  ${BOLD}OG-* Installer (uv-based)${RESET}"
 Write-HrThick
 Write-Host ("  Platform     : Windows {0}" -f $env:PROCESSOR_ARCHITECTURE)
-Write-Host ("  Model        : {0}" -f $RepoName)
-Write-Host ("  Description  : {0}" -f $RepoDesc)
-Write-Host ("  Source       : {0}" -f $RepoUrl)
+Write-Host ("  Destination  : {0}" -f $ParentAbs)
 if ($Branch) { Write-Host ("  Branch       : {0}" -f $Branch) }
-Write-Host ("  Destination  : {0}" -f $DestAbs)
-Write-Host ("  Package      : {0}" -f $PkgName)
 Write-Host ("  Dev/test deps: {0}" -f $(if ($WithDevDeps) { "yes" } else { "no" }))
 if ($UvPresent) {
     Write-Host ("  uv           : {0} {1}detected{2}" -f $UvBin, $GREEN, $RESET)
@@ -326,39 +389,158 @@ if ($UvPresent) {
 }
 if ($WriteLog) { Write-Host ("  Log file     : {0}" -f $LogFile) }
 Write-Host ""
-Write-Host "  ${BOLD}Plan ($TotalSteps steps):${RESET}"
-if ($UvPresent -or $SkipUvInstall) {
-    Write-Host "    1. Install uv                      ${DIM}skipped${RESET}"
-} else {
-    Write-Host "    1. Install uv                      ${DIM}~5MB, seconds${RESET}"
+Write-Host "  ${BOLD}Repos to install ($TotalTargets):${RESET}"
+foreach ($t in $Targets) {
+    Write-Host "    - $($t.Name)  ${DIM}$($t.Desc)${RESET} -> $ParentAbs\$($t.Name)"
 }
-Write-Host ("    2. Clone {0,-25} ${DIM}depends on network${RESET}" -f $RepoName)
-Write-Host "    3. uv sync (Python + deps)         ${DIM}~30s, ~500MB${RESET}"
-Write-Host "    4. Verify installation             ${DIM}a few seconds${RESET}"
 Write-Host ""
-Write-Host "  You will be asked to confirm before each mutating step."
+Write-Host "  Each repo: clone, uv sync (Python + deps, ~30s/~500MB), verify import."
+if ($PerStep) {
+    Write-Host "  You will be asked to confirm before each mutating step."
+} else {
+    Write-Host "  ${BOLD}$TotalTargets repos${RESET} will be installed after one confirmation below."
+}
 Write-Host ""
 
-if (-not (Prompt-YN "Proceed with installation?" 'y')) {
+$proceedPrompt = if ($TotalTargets -gt 1) { "Proceed with installing $TotalTargets repos?" } else { "Proceed with installation?" }
+if (-not (Prompt-YN $proceedPrompt 'y')) {
     Write-Host "${YELLOW}Aborted by user.${RESET}"
     Stop-TranscriptIfActive; exit 0
 }
 
-# -- Result tracking -----------------------------------------------------------
-$StepResults = New-Object System.Collections.Generic.List[object]
-function Record-Step($name, $state, $detail = "") {
-    $script:StepResults.Add([pscustomobject]@{ Name=$name; State=$state; Detail=$detail })
+# -- Per-repo result tracking --------------------------------------------------
+$RepoResults = New-Object System.Collections.Generic.List[object]
+function Record-Repo($name, $state, $detail = "") {
+    $script:RepoResults.Add([pscustomobject]@{ Name=$name; State=$state; Detail=$detail })
 }
+
+# Install ONE repo: clone (or update) + uv sync + verify. Never throws to the
+# caller; records a per-repo result so the loop can continue on failure. Uses
+# script-scope $ParentAbs, $UvBin, $GitBin, $WithDevDeps, $Branch, $PerStep.
+function Install-OneRepo($owner, $name, $pkg, $desc, $url, $idx, $total) {
+    $destAbs = Join-Path $ParentAbs $name
+    $repoState = "PASS"
+    Write-Host ""
+    Write-Hr
+    if ($total -gt 1) {
+        Write-Host "  ${BOLD}[$idx/$total] $name${RESET}  ${DIM}$owner/$name${RESET}"
+    } else {
+        Write-Host "  ${BOLD}$name${RESET}  ${DIM}$owner/$name${RESET}"
+    }
+    Write-Hr
+
+    try {
+        # --- Clone or update existing ---
+        $destHasRepo = $false
+        if (Test-Path $destAbs) {
+            if (@(Get-ChildItem -Force $destAbs -ErrorAction SilentlyContinue).Count -eq 0) {
+                # empty dir; clone into it
+            } elseif (Test-Path (Join-Path $destAbs ".git")) {
+                $existingUrl = ""
+                try { $existingUrl = (& $GitBin -C $destAbs config --get remote.origin.url 2>$null).Trim() } catch {}
+                if ((Normalize-RemoteUrl $existingUrl) -eq (Normalize-RemoteUrl $url)) {
+                    $destHasRepo = $true
+                } else {
+                    Write-Fail "${name}: destination is a git repo for a different remote" $existingUrl
+                    Record-Repo $name "FAIL" "wrong remote at $destAbs"
+                    return
+                }
+            } else {
+                Write-Fail "${name}: destination exists and is not empty" $destAbs
+                Record-Repo $name "FAIL" "destination not empty"
+                return
+            }
+        }
+
+        if ($destHasRepo) {
+            $branchNow = "?"
+            try { $branchNow = (& $GitBin -C $destAbs rev-parse --abbrev-ref HEAD 2>$null).Trim() } catch {}
+            Write-Host ("  Existing clone found at {0} (branch: {1})." -f $destAbs, $branchNow)
+            $doUpdate = $true
+            if ($PerStep) { if (-not (Prompt-YN "Update existing clone (git pull --ff-only)?" 'y')) { $doUpdate = $false } }
+            if ($doUpdate) {
+                Write-Cmd "git -C $destAbs pull --ff-only"
+                & $GitBin -C $destAbs pull --ff-only
+                if ($LASTEXITCODE -eq 0) { Write-Pass "$name updated" }
+                else { Write-Warn2 "${name}: git pull failed; using existing state"; $repoState = "WARN" }
+            } else { Write-Skip "${name}: using existing clone as-is" }
+        } else {
+            if ($Branch) { Write-Host ("  Will clone {0} (branch: {1}) into {2}." -f $url, $Branch, $destAbs) }
+            else { Write-Host ("  Will clone {0} into {1}." -f $url, $destAbs) }
+            $doClone = $true
+            if ($PerStep) { if (-not (Prompt-YN "Clone now?" 'y')) { $doClone = $false } }
+            if (-not $doClone) { Write-Fail "${name}: clone declined"; Record-Repo $name "FAIL" "clone declined"; return }
+            if ($Branch) {
+                Write-Cmd "git clone --branch $Branch $url $destAbs"
+                & $GitBin clone --branch $Branch $url $destAbs
+            } else {
+                Write-Cmd "git clone $url $destAbs"
+                & $GitBin clone $url $destAbs
+            }
+            if ($LASTEXITCODE -ne 0) { Write-Fail "${name}: git clone failed"; Record-Repo $name "FAIL" "git clone failed"; return }
+            $branchNow = "?"
+            try { $branchNow = (& $GitBin -C $destAbs rev-parse --abbrev-ref HEAD 2>$null).Trim() } catch {}
+            Write-Pass "$name cloned" "$destAbs (branch: $branchNow)"
+        }
+
+        # --- Verify the repo is uv-native ---
+        if (-not (Test-Path (Join-Path $destAbs "pyproject.toml"))) {
+            Write-Fail "${name}: no pyproject.toml (not a uv-native repo)"
+            Record-Repo $name "FAIL" "no pyproject.toml"
+            return
+        }
+        if (-not (Test-Path (Join-Path $destAbs "uv.lock"))) { Write-Warn2 "${name}: no uv.lock; uv sync will create one" }
+
+        # --- uv sync ---
+        $syncArgs = @("sync")
+        if ($WithDevDeps) { $syncArgs += @("--extra", "dev") }
+        $doSync = $true
+        if ($PerStep) {
+            Write-Host "  Will run: uv $($syncArgs -join ' ')  (in $destAbs)"
+            if (-not (Prompt-YN "Run uv sync now?" 'y')) { $doSync = $false }
+        }
+        if (-not $doSync) { Write-Fail "${name}: uv sync declined"; Record-Repo $name "FAIL" "uv sync declined"; return }
+        Write-Cmd "uv $($syncArgs -join ' ')  (cwd: $destAbs)"
+        Push-Location $destAbs
+        $syncRc = 1
+        try { & $UvBin @syncArgs; $syncRc = $LASTEXITCODE } finally { Pop-Location }
+        if ($syncRc -ne 0) { Write-Fail "${name}: uv sync failed"; Record-Repo $name "FAIL" "uv sync failed"; return }
+        Write-Pass "$name installed (uv sync)"
+
+        # --- Verify import ---
+        $venvPy = Join-Path $destAbs ".venv\Scripts\python.exe"
+        if (-not (Test-Path $venvPy)) {
+            Write-Fail "${name}: venv python not found" $venvPy
+            Record-Repo $name "FAIL" "no venv python"
+            return
+        }
+        & $venvPy -W ignore -c "import $pkg" 2>&1 | Out-Null
+        if ($LASTEXITCODE -eq 0) {
+            $ver = "?"
+            try { $ver = (& $venvPy -W ignore -c "import $pkg; print(getattr($pkg, '__version__', '?'))" 2>&1 | Select-Object -Last 1).ToString().Trim() } catch {}
+            Write-Pass "${name}: import $pkg" $ver
+            if ($repoState -eq "WARN") { Record-Repo $name "WARN" "import $pkg ($ver); pull warning" }
+            else { Record-Repo $name "PASS" "import $pkg ($ver)" }
+        } else {
+            Write-Fail "${name}: import $pkg failed" "package not importable; check log above"
+            Record-Repo $name "FAIL" "import $pkg failed"
+        }
+    } catch {
+        Write-Fail "${name}: unexpected error" $_.Exception.Message
+        Record-Repo $name "FAIL" "error: $($_.Exception.Message)"
+    }
+}
+
 $StartTime = Get-Date
 
-# -- Step 1: Install uv --------------------------------------------------------
-Step-Banner 1 "Install uv"
+# -- Install uv (once, shared by all repos) ------------------------------------
+Write-Section "Install uv"
+$UvState = "PASS"; $UvDetail = ""
 if ($UvPresent) {
     Write-Pass "uv already present" $UvBin
-    Record-Step "uv" "SKIP" "already present"
+    $UvState = "SKIP"; $UvDetail = "already present"
 } elseif ($SkipUvInstall) {
     Write-Fail "-SkipUvInstall given but no uv found"
-    Record-Step "uv" "FAIL" "no uv and -SkipUvInstall"
     Stop-TranscriptIfActive; exit 1
 } else {
     Write-Host "  Will install uv via the official installer:"
@@ -366,7 +548,6 @@ if ($UvPresent) {
     Write-Host "    Method : irm | iex -- installs to your user profile, no admin."
     Write-Host ""
     if (-not (Prompt-YN "Download and install uv?" 'y')) {
-        Record-Step "uv" "SKIP" "declined"
         Write-Host "${RED}Cannot continue without uv. Aborting.${RESET}"
         Stop-TranscriptIfActive; exit 1
     }
@@ -378,160 +559,28 @@ if ($UvPresent) {
         "[Net.ServicePointManager]::SecurityProtocol = 'Tls12'; iwr https://astral.sh/uv/install.ps1 -UseBasicParsing | iex"
     if ($LASTEXITCODE -ne 0) {
         Write-Fail "uv install subprocess returned $LASTEXITCODE"
-        Record-Step "uv" "FAIL" "install subprocess failed"
         Stop-TranscriptIfActive; exit 1
     }
     [void](Detect-Uv)
     if (-not $UvBin) {
-        # Documented default install location
         $candidate = "$env:USERPROFILE\.local\bin\uv.exe"
         if (Test-Path $candidate) { $UvBin = $candidate }
     }
     if (-not $UvBin -or -not (Test-Path $UvBin)) {
         Write-Fail "uv install completed but binary not found"
-        Record-Step "uv" "FAIL" "binary not found post-install"
         Stop-TranscriptIfActive; exit 1
     }
     $uvVer = ""
     try { $uvVer = ((& $UvBin --version 2>$null) | Select-Object -First 1).Trim() } catch {}
     Write-Pass "uv installed" "$UvBin ($uvVer)"
-    Record-Step "uv" "PASS" $UvBin
+    $UvDetail = $UvBin
 }
 
-# -- Step 2: Clone the repo ----------------------------------------------------
-Step-Banner 2 "Clone $RepoName"
-
-function Normalize-RemoteUrl($u) {
-    return ($u -replace '\.git/?$', '').ToLower()
-}
-
-$DestHasRepo = $false; $DestEmpty = $false
-if (Test-Path $DestAbs) {
-    if ((Get-ChildItem -Force $DestAbs -ErrorAction SilentlyContinue | Measure-Object).Count -eq 0) {
-        $DestEmpty = $true
-    } elseif (Test-Path (Join-Path $DestAbs ".git")) {
-        $existingUrl = ""
-        try { $existingUrl = (& $GitBin -C $DestAbs config --get remote.origin.url 2>$null).Trim() } catch {}
-        if ((Normalize-RemoteUrl $existingUrl) -eq (Normalize-RemoteUrl $RepoUrl)) {
-            $DestHasRepo = $true
-        } else {
-            Write-Fail "Destination is a git repo for a different remote" $existingUrl
-            Write-Host "  Either remove $DestAbs or pick a different destination with -Dest."
-            Record-Step "Clone" "FAIL" "wrong remote"
-            Stop-TranscriptIfActive; exit 1
-        }
-    } else {
-        Write-Fail "Destination exists and is not empty (and not a git clone)" $DestAbs
-        Write-Host "  Either remove $DestAbs or pick a different destination with -Dest."
-        Record-Step "Clone" "FAIL" "destination not empty"
-        Stop-TranscriptIfActive; exit 1
-    }
-}
-
-if ($DestHasRepo) {
-    $branch = "?"
-    try { $branch = (& $GitBin -C $DestAbs rev-parse --abbrev-ref HEAD 2>$null).Trim() } catch {}
-    Write-Host ("  Existing clone of {0} found at {1} (branch: {2})." -f $RepoName, $DestAbs, $branch)
-    Write-Host "  Will run 'git pull --ff-only' to bring it up to date."
-    Write-Host ""
-    if (Prompt-YN "Update existing clone?" 'y') {
-        Write-Cmd "git -C $DestAbs pull --ff-only"
-        & $GitBin -C $DestAbs pull --ff-only
-        if ($LASTEXITCODE -eq 0) {
-            Write-Pass "Repo updated" $DestAbs
-            Record-Step "Clone" "PASS" "updated ($branch)"
-        } else {
-            Write-Warn2 "git pull failed; continuing with existing state"
-            Record-Step "Clone" "WARN" "pull failed; existing state used"
-        }
-    } else {
-        Write-Skip "Update" "using existing clone as-is"
-        Record-Step "Clone" "SKIP" "existing clone used as-is ($branch)"
-    }
-} else {
-    if ($Branch) {
-        Write-Host ("  Will clone {0} (branch: {1}) into {2}." -f $RepoUrl, $Branch, $DestAbs)
-    } else {
-        Write-Host ("  Will clone {0} into {1}." -f $RepoUrl, $DestAbs)
-    }
-    Write-Host ""
-    if (Prompt-YN "Clone now?" 'y') {
-        if ($Branch) {
-            Write-Cmd "git clone --branch $Branch $RepoUrl $DestAbs"
-            & $GitBin clone --branch $Branch $RepoUrl $DestAbs
-        } else {
-            Write-Cmd "git clone $RepoUrl $DestAbs"
-            & $GitBin clone $RepoUrl $DestAbs
-        }
-        if ($LASTEXITCODE -ne 0) { throw "git clone failed (exit $LASTEXITCODE)" }
-        $branch = "?"
-        try { $branch = (& $GitBin -C $DestAbs rev-parse --abbrev-ref HEAD 2>$null).Trim() } catch {}
-        Write-Pass "Cloned" "$DestAbs (branch: $branch)"
-        Record-Step "Clone" "PASS" $branch
-    } else {
-        Write-Fail "Clone declined; cannot continue."
-        Record-Step "Clone" "FAIL" "declined"
-        Stop-TranscriptIfActive; exit 1
-    }
-}
-
-# Verify the repo is uv-native.
-if (-not (Test-Path (Join-Path $DestAbs "pyproject.toml"))) {
-    Write-Fail "$DestAbs has no pyproject.toml"
-    Write-Host "  This installer requires repos that have migrated to uv."
-    Record-Step "Clone" "FAIL" "no pyproject.toml"
-    Stop-TranscriptIfActive; exit 1
-}
-if (-not (Test-Path (Join-Path $DestAbs "uv.lock"))) {
-    Write-Warn2 "$DestAbs has no uv.lock; uv sync will create one"
-}
-
-# -- Step 3: uv sync -----------------------------------------------------------
-Step-Banner 3 "Install $RepoName (uv sync)"
-$syncArgs = @("sync")
-if ($WithDevDeps) { $syncArgs += @("--extra", "dev") }
-Write-Host ("  Will install {0} + Python + all deps into {1}\.venv" -f $RepoName, $DestAbs)
-Write-Host "  Working directory : $DestAbs"
-Write-Host ("  Command           : uv {0}" -f ($syncArgs -join ' '))
-Write-Host ""
-if (Prompt-YN "Run uv sync now?" 'y') {
-    Push-Location $DestAbs
-    try {
-        Write-Cmd ("uv {0}" -f ($syncArgs -join ' '))
-        & $UvBin @syncArgs
-        if ($LASTEXITCODE -ne 0) { throw "uv sync failed (exit $LASTEXITCODE)" }
-        Write-Pass "$RepoName installed (editable)"
-        Record-Step "$RepoName install" "PASS" "uv sync"
-    } finally { Pop-Location }
-} else {
-    Write-Fail "uv sync declined; package will not be importable."
-    Record-Step "$RepoName install" "FAIL" "declined"
-}
-
-# -- Step 4: Verify ------------------------------------------------------------
-Step-Banner 4 "Verify installation"
-$VenvPython = Join-Path $DestAbs ".venv\Scripts\python.exe"
-if (-not (Test-Path $VenvPython)) {
-    Write-Fail "Venv python not found; skipping import check." $VenvPython
-    Record-Step "Verification" "FAIL" "no venv python"
-} else {
-    $pyver = ""
-    try { $pyver = (& $VenvPython -W ignore -c "import sys; print(sys.version.split()[0])" 2>&1 | Select-Object -Last 1).ToString().Trim() } catch {}
-    Write-Pass "Python in .venv" $pyver
-
-    # Run import as a discrete process; merge stderr into stdout so PS doesn't
-    # treat upstream deprecation warnings (e.g. from pygam) as halting errors.
-    # -W ignore silences Python's own warnings.
-    & $VenvPython -W ignore -c "import $PkgName" 2>&1 | Out-Null
-    if ($LASTEXITCODE -eq 0) {
-        $ver = ""
-        try { $ver = (& $VenvPython -W ignore -c "import $PkgName; print(getattr($PkgName, '__version__', '?'))" 2>&1 | Select-Object -Last 1).ToString().Trim() } catch {}
-        Write-Pass "import $PkgName" $ver
-        Record-Step "Verification" "PASS" "import $PkgName ($ver)"
-    } else {
-        Write-Fail "import $PkgName" "package not importable; check log above"
-        Record-Step "Verification" "FAIL" "import $PkgName failed"
-    }
+# -- Install each repo (continue on failure) -----------------------------------
+$idx = 0
+foreach ($t in $Targets) {
+    $idx++
+    Install-OneRepo $t.Owner $t.Name $t.Pkg $t.Desc $t.Url $idx $TotalTargets
 }
 
 # -- Summary -------------------------------------------------------------------
@@ -541,44 +590,40 @@ $ElapsedSec = [int]($Elapsed.TotalSeconds - ($ElapsedMin * 60))
 
 Write-Host ""
 Write-HrThick
-Write-Host ("  ${BOLD}Installation Summary -- {0}${RESET}" -f $RepoName)
+Write-Host "  ${BOLD}Installation Summary${RESET}"
 Write-HrThick
-
+switch ($UvState) {
+    "PASS" { Write-Pass "uv" $UvDetail }
+    "SKIP" { Write-Skip "uv" $UvDetail }
+    default { Write-Warn2 "uv" $UvDetail }
+}
 $AllOk = $true
-foreach ($r in $StepResults) {
+foreach ($r in $RepoResults) {
     switch ($r.State) {
         "PASS" { Write-Pass  $r.Name $r.Detail }
-        "SKIP" { Write-Skip  $r.Name $r.Detail }
         "WARN" { Write-Warn2 $r.Name $r.Detail }
+        "SKIP" { Write-Skip  $r.Name $r.Detail }
         "FAIL" { Write-Fail  $r.Name $r.Detail; $AllOk = $false }
-        default { Write-Warn2 $r.Name "unknown: $($r.State)" }
+        default { Write-Warn2 $r.Name "unknown: $($r.State)"; $AllOk = $false }
     }
 }
 Write-Host ""
 Write-Host ("  Elapsed  : {0}m {1}s" -f $ElapsedMin, $ElapsedSec)
-Write-Host ("  Location : {0}" -f $DestAbs)
-Write-Host ("  Venv     : {0}\.venv" -f $DestAbs)
+Write-Host ("  Location : {0}" -f $ParentAbs)
 if ($WriteLog) { Write-Host ("  Log      : {0}" -f $LogFile) }
 Write-Host ""
 
 if ($AllOk) {
-    Write-Host "  ${GREEN}${BOLD}All steps completed successfully.${RESET}"
+    Write-Host "  ${GREEN}${BOLD}All repos installed successfully.${RESET}"
     Write-Host ""
-    Write-Host "  ${BOLD}To start using ${RepoName}:${RESET}"
-    Write-Host "    cd $DestAbs"
-    Write-Host "    .\.venv\Scripts\Activate.ps1     # activate venv"
-    Write-Host ("    python -W ignore -c `"import {0}; print({0}.__file__)`"" -f $PkgName)
-    Write-Host "  Or run commands without activating:"
-    Write-Host ("    uv run python -W ignore -c `"import {0}; print({0}.__file__)`"" -f $PkgName)
-    $exDir = Join-Path $DestAbs "examples"
-    if (Test-Path $exDir) {
-        Write-Host ""
-        Write-Host ("  Example scripts: {0}" -f $exDir)
+    Write-Host "  ${BOLD}To start using them:${RESET}"
+    foreach ($r in $RepoResults) {
+        Write-Host ("    cd {0}\{1}; .\.venv\Scripts\Activate.ps1" -f $ParentAbs, $r.Name)
     }
     Stop-TranscriptIfActive
     exit 0
 } else {
-    Write-Host "  ${RED}${BOLD}One or more steps failed.${RESET}"
+    Write-Host "  ${RED}${BOLD}One or more repos failed.${RESET}"
     Write-Host ""
     Write-Host "  Review the [FAIL] entries above."
     if ($WriteLog) { Write-Host "  Full output is in: $LogFile" }
