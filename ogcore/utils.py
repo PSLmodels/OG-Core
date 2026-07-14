@@ -1006,6 +1006,15 @@ def extrapolate_array(param_in, dims=None, item="Parameter Name"):
                     ),
                     axis=0,
                 )
+            elif param_in.shape[0] == dims[0]:
+                param_in = (
+                    np.tile(
+                        param_in.reshape(dims[0], dims[1], 1),
+                        (1, 1, dims[2]),
+                    )
+                    / dims[2]
+                )
+                param_out = param_in
             else:
                 print(item + " dimensions are: ", param_in.shape)
                 print("please give an " + item + " that is either SxJ or TxS")

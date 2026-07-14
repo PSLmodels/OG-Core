@@ -20,8 +20,8 @@ new_param_values = {
     "replacement_rate_adjust": [[1.0]],
     "eta": (np.ones((40, 2)) / (40 * 2)),
     "lambdas": [0.6, 0.4],
-    "omega": np.ones((160, 40)) / 40,
-    "omega_SS": np.ones(40) / 40,
+    # "omega":  np.tile(np.reshape(np.ones((160, 40)) / 40, (160, 40, 1)), (1, 1, 2)) * np.array([0.6, 0.4]).tolist(),
+    # "omega_SS": np.tile(np.reshape(np.ones(40) / 40, (40, 1)), (1, 2)) * np.array([0.6, 0.4]).tolist(),
     "e": np.ones((40, 2)),
 }
 # update parameters instance with new values for test
@@ -32,8 +32,7 @@ for t in range(p.T):
     for i in range(p.S):
         for k in range(p.J):
             L_loop[t, i, k] *= (
-                p.omega[t, i].item()
-                * p.lambdas[k].item()
+                p.omega[t, i, k].item()
                 * n[t, i, k].item()
                 * p.e[t, i, k].item()
             )
