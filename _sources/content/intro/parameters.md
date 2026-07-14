@@ -884,6 +884,34 @@ _Valid Range:_ min = 0.01 and max = 0.5
 _Out-of-Range Action:_ error  
 
 
+####  `TPI_outer_method`  
+_Description:_ Update rule for the transition-path outer loop. 'picard' (default) is the model's historical damped functional iteration x <- (1-nu) x + nu G(x) (see nu), which leaves model solutions unchanged. 'anderson' uses limited-memory Anderson acceleration on the residual history to take larger, better-directed steps, guarded by a trust region anchored to the damped point (TPI_trust_radius).  
+_Notes:_ Opt-in solver acceleration. The default ('picard') reproduces the constant-nu behavior exactly.  
+_Value Type:_ str  
+_Valid Choices:_['picard', 'anderson']  
+
+
+####  `TPI_anderson_m`  
+_Description:_ Number of past iterate/residual differences retained by the Anderson accelerator when TPI_outer_method='anderson'. Ignored otherwise.  
+_Value Type:_ int  
+_Valid Range:_ min = 1 and max = 50  
+_Out-of-Range Action:_ error  
+
+
+####  `TPI_anderson_beta`  
+_Description:_ Mixing weight for the Anderson step when TPI_outer_method='anderson'. beta=1 is undamped; beta<1 adds damping for robustness far from the solution. Ignored otherwise.  
+_Value Type:_ float  
+_Valid Range:_ min = 0.1 and max = 1.0  
+_Out-of-Range Action:_ error  
+
+
+####  `TPI_trust_radius`  
+_Description:_ Initial trust radius for the accelerated TPI step, as a multiple of the damped functional-iteration step length around the always-feasible damped point. Grown after an improving iteration and shrunk (with a reset) after a worsening one. A non-positive value disables the trust region (unguarded accelerator; not recommended). Ignored when TPI_outer_method='picard'.  
+_Value Type:_ float  
+_Valid Range:_ min = 0.0 and max = 100.0  
+_Out-of-Range Action:_ error  
+
+
 ####  `SS_root_method`  
 _Description:_ Root finding algorithm for outer loop of the SS solution.  
 _Notes:_ Uses scipy.optimize.root, please see scipy documentation for description of methods. Note that some methods may require more arguments than are in the function calls in SS.py and TPI.py and will therefore break without modifications of the source code.  

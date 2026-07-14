@@ -24,6 +24,7 @@ There is also a link to the source code for each documented member.
    parameter_tables
    parameters
    pensions
+   solvers
    tax
    txfunc
    utils
