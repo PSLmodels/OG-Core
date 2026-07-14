@@ -18,7 +18,7 @@ jobs:
   catalog-in-sync:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
       - name: Emit catalog from each installer
         run: |
           bash scripts/install.sh --list-json > /tmp/catalog_sh.json
