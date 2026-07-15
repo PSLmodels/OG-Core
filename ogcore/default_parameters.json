@@ -956,9 +956,9 @@
     },
     "alpha_FA": {
         "title": "Foreign aid payments to domestic government as a share of GDP",
-        "description": "Foreign aid payments to domestic government as a share of GDP.",
+        "description": "Foreign aid payments to domestic government as a share of GDP. Set value for base year, click '+' to add value for next year.  All future years not specified are set to last value entered.",
         "short_description": "Foreign aid as a share of GDP",
-        "param_notation": "$\\alpha_{FA}$",
+        "param_notation": "$\\alpha_{FA,t}$",
         "section_1": "Fiscal Policy Parameters",
         "section_2": "Fiscal Policy Parameters",
         "notes": "",
@@ -4587,6 +4587,84 @@
             "range": {
                 "min": 0.01,
                 "max": 0.5
+            }
+        }
+    },
+    "TPI_outer_method": {
+        "title": "Update rule for the TPI outer (price/aggregate) loop",
+        "description": "Update rule for the transition-path outer loop. 'picard' (default) is the model's historical damped functional iteration x <- (1-nu) x + nu G(x) (see nu), which leaves model solutions unchanged. 'anderson' uses limited-memory Anderson acceleration on the residual history to take larger, better-directed steps, guarded by a trust region anchored to the damped point (TPI_trust_radius).",
+        "short_description": "TPI outer-loop update rule",
+        "section_1": "Model Solution Parameters",
+        "notes": "Opt-in solver acceleration. The default ('picard') reproduces the constant-nu behavior exactly.",
+        "type": "str",
+        "value": [
+            {
+                "value": "picard"
+            }
+        ],
+        "validators": {
+            "choice": {
+                "choices": [
+                    "picard",
+                    "anderson"
+                ]
+            }
+        }
+    },
+    "TPI_anderson_m": {
+        "title": "Anderson acceleration memory depth",
+        "description": "Number of past iterate/residual differences retained by the Anderson accelerator when TPI_outer_method='anderson'. Ignored otherwise.",
+        "short_description": "Anderson memory depth (m)",
+        "section_1": "Model Solution Parameters",
+        "notes": "",
+        "type": "int",
+        "value": [
+            {
+                "value": 5
+            }
+        ],
+        "validators": {
+            "range": {
+                "min": 1,
+                "max": 50
+            }
+        }
+    },
+    "TPI_anderson_beta": {
+        "title": "Anderson acceleration mixing parameter",
+        "description": "Mixing weight for the Anderson step when TPI_outer_method='anderson'. beta=1 is undamped; beta<1 adds damping for robustness far from the solution. Ignored otherwise.",
+        "short_description": "Anderson mixing (beta)",
+        "section_1": "Model Solution Parameters",
+        "notes": "",
+        "type": "float",
+        "value": [
+            {
+                "value": 1.0
+            }
+        ],
+        "validators": {
+            "range": {
+                "min": 0.1,
+                "max": 1.0
+            }
+        }
+    },
+    "TPI_trust_radius": {
+        "title": "Trust radius for the anchored Anderson step",
+        "description": "Initial trust radius for the accelerated TPI step, as a multiple of the damped functional-iteration step length around the always-feasible damped point. Grown after an improving iteration and shrunk (with a reset) after a worsening one. A non-positive value disables the trust region (unguarded accelerator; not recommended). Ignored when TPI_outer_method='picard'.",
+        "short_description": "Anchored-Anderson trust radius",
+        "section_1": "Model Solution Parameters",
+        "notes": "",
+        "type": "float",
+        "value": [
+            {
+                "value": 1.0
+            }
+        ],
+        "validators": {
+            "range": {
+                "min": 0.0,
+                "max": 100.0
             }
         }
     },

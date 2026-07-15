@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "ogcore"
-version = "0.16.3"
+version = "0.16.4"
 authors = [
     {name = "Jason DeBacker and Richard W. Evans"},
 ]

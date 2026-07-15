@@ -85,6 +85,10 @@ def main():
     """
     # update the effective corporate income tax rate
     og_spec.update({"cit_rate": [[0.35]]})
+    # Optional: accelerate the TPI outer loop with anchored Anderson
+    # acceleration, which solves to the same equilibrium in roughly half
+    # the outer-loop iterations (see the TPI_outer_method parameter).
+    # og_spec.update({"TPI_outer_method": "anderson"})
     p2 = Specifications(
         baseline=False,
         num_workers=num_workers,

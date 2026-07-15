@@ -19,7 +19,7 @@ import numpy as np
 import os
 import sys
 import json
-from ogcore import SS, TPI, utils
+from ogcore import SS, TPI, utils, solvers
 from ogcore.parameters import Specifications
 
 NUM_WORKERS = min(multiprocessing.cpu_count(), 4)
@@ -290,6 +290,49 @@ def test_firstdoughnutring():
     )
 
     assert np.allclose(np.array(test_list), np.array(expected_list))
+
+
+def test_tpi_outer_method_default_is_picard():
+    # The pluggable outer method defaults to picard -> no accelerator, so the
+    # solve path (and golden outputs) is unchanged.
+    p = Specifications()
+    assert p.TPI_outer_method == "picard"
+    assert solvers.make_outer_updater(p.TPI_outer_method, p) is None
+
+
+def test_make_outer_updater():
+    # picard -> None (native damped path); anderson -> an AndersonAccelerator
+    # configured from the p.TPI_anderson_* params; unknown -> ValueError.
+    p = Specifications()
+    assert solvers.make_outer_updater("picard", p) is None
+    u = solvers.make_outer_updater("anderson", p)
+    assert isinstance(u, solvers.AndersonAccelerator)
+    assert u.m == p.TPI_anderson_m
+    assert u.beta == p.TPI_anderson_beta
+    with pytest.raises(ValueError):
+        solvers.make_outer_updater("not-a-method", p)
+
+
+def test_anderson_accelerator_beats_picard():
+    # On a linear contraction fixed point, Anderson must converge and in far
+    # fewer iterations than plain damped Picard (guards the accelerator math).
+    out = solvers._selftest()
+    assert out["anderson_iters"] < out["picard_iters"]
+    assert out["anderson_iters"] < 20
+
+
+def test_anderson_scaling_and_reset():
+    # The per-element scale makes the first step a damped-Picard step, and
+    # reset() clears the residual history.
+    u = solvers.AndersonAccelerator(m=3, beta=1.0)
+    x = np.array([0.05, 1000.0, -2.0])
+    gx = np.array([0.06, 1010.0, -1.5])
+    x1 = u.update(x, gx)
+    # beta=1 first step returns gx exactly (x + 1*(gx - x)).
+    assert np.allclose(x1, gx)
+    assert len(u._F) == 1
+    u.reset()
+    assert u._F == [] and u._X == []
 
 
 file_in1 = os.path.join(

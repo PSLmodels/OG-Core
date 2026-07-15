@@ -181,6 +181,7 @@ class Specifications(paramtools.Parameters):
             "alpha_G",
             "alpha_T",
             "alpha_I",
+            "alpha_FA",
             "alpha_bs_G",
             "alpha_bs_T",
             "alpha_bs_I",

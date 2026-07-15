@@ -913,7 +913,7 @@ def SS_solver(
         (p.S, 1),
     )
     capital_noncompliance_rate_2D = np.tile(
-        np.reshape(p.labor_income_tax_noncompliance_rate[-1, :], (1, p.J)),
+        np.reshape(p.capital_income_tax_noncompliance_rate[-1, :], (1, p.J)),
         (p.S, 1),
     )
     income_tax_filer_2D = np.tile(

@@ -21,4 +21,4 @@ from ogcore.tax import *  # noqa: F403
 from ogcore.txfunc import *  # noqa: F403
 from ogcore.utils import *  # noqa: F403
 
-__version__ = "0.16.3"
+__version__ = "0.16.4"

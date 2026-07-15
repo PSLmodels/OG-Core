@@ -14,7 +14,7 @@ import numpy as np
 import pickle
 import scipy.optimize as opt
 from scipy.sparse import csr_matrix
-from ogcore import tax, utils, household, firm, fiscal, pensions
+from ogcore import tax, utils, household, firm, fiscal, pensions, solvers
 from ogcore import aggregates as aggr
 from ogcore.constants import SHOW_RUNTIME
 import os
@@ -924,6 +924,27 @@ def run_TPI(p, client=None):
     TPIdist = 10
     euler_errors = np.zeros((p.T, 2 * p.S, p.J))
     TPIdist_vec = np.zeros(p.maxiter)
+    # Pluggable outer-loop update rule. Default "picard" -> None -> the native
+    # damped functional-iteration path below (unchanged, so golden outputs
+    # are preserved); "anderson" accelerates using the residual history. See
+    # ogcore.solvers.
+    outer_updater = solvers.make_outer_updater(
+        getattr(p, "TPI_outer_method", "picard"), p
+    )
+    # Optional trust region for the accelerated step ("anchored" Anderson):
+    # clamp each step to within trust_radius x the damped-step length of the
+    # always-feasible damped point, growing the radius after an improving step
+    # and shrinking it (with a reset) after a worsening one. This keeps the
+    # accelerated iterate near a feasible point -- the standard cure for the
+    # overshoot-into-infeasible-region divergence of unguarded accelerators.
+    # Defaults to 1.0 (anchored) when accelerating; a non-positive radius
+    # disables the trust region (unguarded accelerator, for testing only).
+    trust_radius = getattr(p, "TPI_trust_radius", 1.0)
+    if trust_radius is not None and trust_radius <= 0:
+        trust_radius = None
+    trust_radius_min = getattr(p, "TPI_trust_radius_min", 0.1)
+    trust_radius_max = getattr(p, "TPI_trust_radius_max", 10.0)
+    prev_accel_dist = np.inf
 
     # Before scattering, temporarily remove unpicklable schema objects
     schema_backup = {}
@@ -1366,17 +1387,80 @@ def run_TPI(p, client=None):
         RM = np.concatenate([RM, np.ones(p.S) * RM[-1]])
 
         # update vars for next iteration
-        w[: p.T] = utils.convex_combo(wnew[: p.T], w[: p.T], p.nu)
-        r[: p.T] = utils.convex_combo(rnew[: p.T], r[: p.T], p.nu)
+        if outer_updater is None:
+            # "picard": the historical damped functional-iteration step,
+            # unchanged, so the default behavior (and golden outputs) is
+            # preserved exactly.
+            w[: p.T] = utils.convex_combo(wnew[: p.T], w[: p.T], p.nu)
+            r[: p.T] = utils.convex_combo(rnew[: p.T], r[: p.T], p.nu)
+            r_p[: p.T] = utils.convex_combo(r_p_new[: p.T], r_p[: p.T], p.nu)
+            p_m[: p.T, :] = utils.convex_combo(
+                new_p_m[: p.T, :], p_m[: p.T, :], p.nu
+            )
+            BQ[: p.T] = utils.convex_combo(BQnew[: p.T], BQ[: p.T], p.nu)
+            if not p.baseline_spending:
+                TR[: p.T] = utils.convex_combo(TR_new[: p.T], TR[: p.T], p.nu)
+        else:
+            # Accelerated outer step on the packed macro/price vector
+            # {r_p, r, w, p_m, BQ[, TR]}; the update rule (Anderson) uses the
+            # recent residual history. Auxiliaries stay damped below.
+            blocks = [
+                (r_p, r_p_new),
+                (r, rnew),
+                (w, wnew),
+                (p_m, new_p_m),
+                (BQ, BQnew),
+            ]
+            if not p.baseline_spending:
+                blocks.append((TR, TR_new))
+            x, gx = solvers.pack_outer_vars(blocks, p.T)
+            # True fixed-point residual (implied vs the PRE-update guess). The
+            # post-update TPIdist below is spuriously ~0 for steps that set
+            # x_next ~= gx (e.g. Anderson's undamped first step), so it is
+            # overridden with this to avoid declaring false convergence.
+            accel_dist = float(np.max(utils.pct_diff_func(gx, x)))
+            # Anchored/trust-region control: grow the radius after an improving
+            # accelerated step and shrink it (resetting the memory) after a
+            # worsening one, using the residual trend as the accept/reject
+            # signal. None => unclamped.
+            if trust_radius is not None and TPIiter > 0:
+                if accel_dist <= prev_accel_dist:
+                    trust_radius = min(trust_radius_max, trust_radius * 1.5)
+                else:
+                    trust_radius = max(trust_radius_min, trust_radius * 0.5)
+                    outer_updater.reset()
+                    logger.info(
+                        f"accel step worsened; trust radius -> {trust_radius}"
+                    )
+            prev_accel_dist = accel_dist
+            # Accelerate the DAMPED map (1-nu)x + nu*G(x), which is contractive
+            # at the calibrated nu, rather than the raw map G -- G is
+            # non-contractive on the stiff case (why Picard needs a low nu), so
+            # accelerating it directly overshoots and diverges. Same fixed
+            # point; convergence is still measured on the raw residual above.
+            gx_damped = (1.0 - p.nu) * x + p.nu * gx
+            x_next = outer_updater.update(x, gx_damped)
+            if not np.all(np.isfinite(x_next)):
+                # accelerated step blew up -> damped Picard fallback + reset
+                x_next = p.nu * gx + (1.0 - p.nu) * x
+                outer_updater.reset()
+                logger.info(
+                    "accelerated step non-finite; Picard fallback + reset"
+                )
+            elif trust_radius is not None:
+                # Clamp the accelerated step to the trust region around the
+                # always-feasible damped point gx_damped, sized relative to the
+                # damped step length so it tightens as the solve converges.
+                dev = x_next - gx_damped
+                dev_norm = float(np.linalg.norm(dev))
+                max_dev = trust_radius * float(np.linalg.norm(gx_damped - x))
+                if dev_norm > max_dev > 0.0:
+                    x_next = gx_damped + dev * (max_dev / dev_norm)
+            solvers.unpack_outer_vars(x_next, blocks, p.T)
+        # Auxiliaries (unchanged): government rate, debt, and the household
+        # policy warm-starts stay on the damped update.
         r_gov[: p.T] = utils.convex_combo(r_gov_new[: p.T], r_gov[: p.T], p.nu)
-        r_p[: p.T] = utils.convex_combo(r_p_new[: p.T], r_p[: p.T], p.nu)
-        p_m[: p.T, :] = utils.convex_combo(
-            new_p_m[: p.T, :], p_m[: p.T, :], p.nu
-        )
-        BQ[: p.T] = utils.convex_combo(BQnew[: p.T], BQ[: p.T], p.nu)
         D[: p.T] = Dnew[: p.T]
-        if not p.baseline_spending:
-            TR[: p.T] = utils.convex_combo(TR_new[: p.T], TR[: p.T], p.nu)
         guesses_b = utils.convex_combo(b_mat, guesses_b, p.nu)
         guesses_n = utils.convex_combo(n_mat, guesses_n, p.nu)
         logger.info(
@@ -1414,15 +1498,23 @@ def run_TPI(p, client=None):
             + list(utils.pct_diff_func(BQnew[: p.T], BQ[: p.T]).flatten())
             + list(utils.pct_diff_func(TR_new[: p.T], TR[: p.T]))
         ).max()
+        if outer_updater is not None:
+            # accelerated methods: use the true residual accel_dist, computed
+            # above from the pre-update guess, because the post-update
+            # distance can be spuriously ~0 for accelerated steps.
+            TPIdist = accel_dist
 
         TPIdist_vec[TPIiter] = TPIdist
-        # After T=10, if cycling occurs, drop the value of nu
-        # wait til after T=10 or so, because sometimes there is a jump up
-        # in the first couple iterations
-        # if TPIiter > 10:
-        #     if TPIdist_vec[TPIiter] - TPIdist_vec[TPIiter - 1] > 0:
-        #         nu /= 2
-        #         print 'New Value of nu:', nu
+        # Accelerated safety net: if a step raised the distance sharply or went
+        # non-finite, reset the accelerator so the next step is a fresh damped
+        # restart (prevents runaway on the stiff case). Never fires for picard.
+        if outer_updater is not None and TPIiter > 0:
+            if (
+                not np.isfinite(TPIdist)
+                or TPIdist > 10.0 * TPIdist_vec[TPIiter - 1]
+            ):
+                outer_updater.reset()
+                logger.info("accelerated step diverged; reset accelerator")
         TPIiter += 1
         logger.info(f"Iteration: {TPIiter}")
         logger.info(f"Distance: {TPIdist}")

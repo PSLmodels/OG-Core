@@ -5,6 +5,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.16.4] - 2026-07-02 12:00:00
+
+### Added
+
+- Adds an opt-in accelerated update rule for the TPI outer loop, selected by the new `TPI_outer_method` parameter (default `"picard"`, which leaves the model's historical damped functional iteration and all model solutions unchanged). Setting `TPI_outer_method="anderson"` uses limited-memory Anderson acceleration on the outer-loop residual history, guarded by a trust region anchored to the always-feasible damped point (controlled by `TPI_anderson_m`, `TPI_anderson_beta`, and `TPI_trust_radius`). On a stiff multi-industry reform that limit-cycles under constant dampening, this converged to the same equilibrium in 53 outer iterations vs 126 for constant `nu=0.1` (about −37% wall-clock vs the best damped-`nu` schedule). The new solver lives in `ogcore/solvers.py`. See PR [#1164](https://github.com/PSLmodels/OG-Core/pull/1164).
+
 ## [0.16.3] - 2026-06-25 15:00:00
 
 ### Added

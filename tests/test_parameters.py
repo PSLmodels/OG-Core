@@ -36,6 +36,23 @@ def test_compute_default_params():
     assert specs.alpha_G[10] == 1
 
 
+def test_alpha_FA_extended_over_time_path():
+    # alpha_FA is a GDP-share fiscal parameter that may vary over the time
+    # path, so it should be extrapolated to length T+S with the last value
+    # carried forward (like alpha_G/alpha_T/alpha_I).  A multi-element path
+    # previously stayed short and broke the TPI fiscal calculations when
+    # broadcast against Y[:T].
+    specs = Specifications()
+    specs.alpha_FA = np.array([0.01, 0.02, 0.03])
+    specs.compute_default_params()
+    assert specs.alpha_FA.shape[0] == specs.T + specs.S
+    assert specs.alpha_FA[0] == 0.01
+    assert specs.alpha_FA[2] == 0.03
+    # periods beyond the entered path take the last value entered
+    assert specs.alpha_FA[specs.T] == 0.03
+    assert specs.alpha_FA[-1] == 0.03
+
+
 param_updates1 = {
     "T": 4,
     "S": 3,
