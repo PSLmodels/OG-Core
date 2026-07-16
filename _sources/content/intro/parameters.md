@@ -282,7 +282,7 @@ _Out-of-Range Action:_ error
 ### Fiscal Policy Parameters
 
 ####  `alpha_FA`  
-_Description:_ Foreign aid payments to domestic government as a share of GDP.  
+_Description:_ Foreign aid payments to domestic government as a share of GDP. Set value for base year, click '+' to add value for next year.  All future years not specified are set to last value entered.  
 _Value Type:_ float  
 _Valid Range:_ min = 0.0 and max = 1.0  
 _Out-of-Range Action:_ error  

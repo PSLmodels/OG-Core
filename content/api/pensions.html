@@ -583,7 +583,10 @@
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>w</strong> (<em>array_like</em>) – real wage rate</p></li>
 <li><p><strong>e</strong> (<em>Numpy array</em>) – effective labor units</p></li>
-<li><p><strong>n</strong> (<em>Numpy array</em>) – labor supply</p></li>
+<li><p><strong>n</strong> (<em>Numpy array</em>) – labor supply; may be a partial lifetime path
+(length &lt; S, for cohorts alive when the time path begins),
+a steady-state vector (S,) or matrix (S, J), or the full
+time path (T, S, J)</p></li>
 <li><p><strong>j</strong> (<em>int</em>) – index of lifetime income group</p></li>
 <li><p><strong>p</strong> (<em>OG-Core Specifications object</em>) – model parameters</p></li>
 </ul>

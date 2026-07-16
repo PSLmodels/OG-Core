@@ -641,7 +641,10 @@
 <span class="sd">    Args:</span>
 <span class="sd">        w (array_like): real wage rate</span>
 <span class="sd">        e (Numpy array): effective labor units</span>
-<span class="sd">        n (Numpy array): labor supply</span>
+<span class="sd">        n (Numpy array): labor supply; may be a partial lifetime path</span>
+<span class="sd">            (length &lt; S, for cohorts alive when the time path begins),</span>
+<span class="sd">            a steady-state vector (S,) or matrix (S, J), or the full</span>
+<span class="sd">            time path (T, S, J)</span>
 <span class="sd">        j (int): index of lifetime income group</span>
 <span class="sd">        p (OG-Core Specifications object): model parameters</span>
 
@@ -654,23 +657,38 @@
     <span class="n">equiv_periods</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="nb">round</span><span class="p">((</span><span class="n">p</span><span class="o">.</span><span class="n">S</span> <span class="o">/</span> <span class="mf">80.0</span><span class="p">)</span> <span class="o">*</span> <span class="n">p</span><span class="o">.</span><span class="n">avg_earn_num_years</span><span class="p">))</span> <span class="o">-</span> <span class="mi">1</span>
     <span class="n">equiv_yr_contrib</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="nb">round</span><span class="p">((</span><span class="n">p</span><span class="o">.</span><span class="n">S</span> <span class="o">/</span> <span class="mf">80.0</span><span class="p">)</span> <span class="o">*</span> <span class="n">p</span><span class="o">.</span><span class="n">yr_contrib</span><span class="p">))</span> <span class="o">-</span> <span class="mi">1</span>
     <span class="n">L_inc_avg_s</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">equiv_periods</span><span class="p">)</span>
+    <span class="c1"># Retirement age is potentially time varying (PR #433), but the DB</span>
+    <span class="c1"># system supports a single retirement age for now; use the</span>
+    <span class="c1"># steady-state value (see Issue #1014). g_y is a scalar parameter,</span>
+    <span class="c1"># but the numba loops index it, so pass it as a 1-element array.</span>
+    <span class="n">S_ret</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">retire</span><span class="p">)</span><span class="o">.</span><span class="n">flat</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+    <span class="n">g_y_arr</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">atleast_1d</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">g_y</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">))</span><span class="o">.</span><span class="n">ravel</span><span class="p">()</span>
+    <span class="c1"># The wage may arrive as a scalar (steady state, or one remaining</span>
+    <span class="c1"># period in the TPI); the loops index it as a path, so broadcast it</span>
+    <span class="c1"># to the length of the labor-supply vector.</span>
+    <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">ndim</span><span class="p">(</span><span class="n">w</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="n">w</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">full</span><span class="p">(</span><span class="n">n</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="nb">float</span><span class="p">(</span><span class="n">w</span><span class="p">))</span>
 
     <span class="k">if</span> <span class="n">n</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&lt;</span> <span class="n">p</span><span class="o">.</span><span class="n">S</span><span class="p">:</span>
         <span class="n">per_rmn</span> <span class="o">=</span> <span class="n">n</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-        <span class="c1"># TODO: think about how to handle setting w_preTP and n_preTP</span>
-        <span class="c1"># TODO: will need to update how the e matrix is handled here</span>
-        <span class="c1"># and else where to allow for it to be time varying</span>
-        <span class="n">w_S</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">p</span><span class="o">.</span><span class="n">w_preTP</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">S</span><span class="p">))[:(</span><span class="o">-</span><span class="n">per_rmn</span><span class="p">)],</span> <span class="n">w</span><span class="p">)</span>
+        <span class="c1"># Pre-time-path wages: the recent past is anchored to the</span>
+        <span class="c1"># period-0 wage of the current path (trend growth is handled</span>
+        <span class="c1"># by the de-trending inside the benefit formula); labor comes</span>
+        <span class="c1"># from the model&#39;s initial condition n_preTP (see Issue #1014)</span>
+        <span class="n">w_S</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">w</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">S</span><span class="p">))[:(</span><span class="o">-</span><span class="n">per_rmn</span><span class="p">)],</span> <span class="n">w</span><span class="p">)</span>
         <span class="n">n_S</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">n_preTP</span><span class="p">[:(</span><span class="o">-</span><span class="n">per_rmn</span><span class="p">),</span> <span class="n">j</span><span class="p">],</span> <span class="n">n</span><span class="p">)</span>
 
         <span class="n">DB</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">S</span><span class="p">)</span>
         <span class="n">DB</span> <span class="o">=</span> <span class="n">DB_1dim_loop</span><span class="p">(</span>
             <span class="n">w_S</span><span class="p">,</span>
-            <span class="n">p</span><span class="o">.</span><span class="n">e</span><span class="p">[:,</span> <span class="n">j</span><span class="p">],</span>
+            <span class="c1"># TODO: will need to update how the e matrix is handled</span>
+            <span class="c1"># here and elsewhere to allow for it to be time varying</span>
+            <span class="c1"># (see Issue #1014); use the steady-state profile for now</span>
+            <span class="n">p</span><span class="o">.</span><span class="n">e</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="p">:,</span> <span class="n">j</span><span class="p">]</span> <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">ndim</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">e</span><span class="p">)</span> <span class="o">==</span> <span class="mi">3</span> <span class="k">else</span> <span class="n">p</span><span class="o">.</span><span class="n">e</span><span class="p">[:,</span> <span class="n">j</span><span class="p">],</span>
             <span class="n">n_S</span><span class="p">,</span>
-            <span class="n">p</span><span class="o">.</span><span class="n">retire</span><span class="p">,</span>
+            <span class="n">S_ret</span><span class="p">,</span>
             <span class="n">p</span><span class="o">.</span><span class="n">S</span><span class="p">,</span>
-            <span class="n">p</span><span class="o">.</span><span class="n">g_y</span><span class="p">,</span>
+            <span class="n">g_y_arr</span><span class="p">,</span>
             <span class="n">L_inc_avg_s</span><span class="p">,</span>
             <span class="n">L_inc_avg</span><span class="p">,</span>
             <span class="n">DB</span><span class="p">,</span>
@@ -687,9 +705,9 @@
                 <span class="n">w</span><span class="p">,</span>
                 <span class="n">e</span><span class="p">,</span>
                 <span class="n">n</span><span class="p">,</span>
-                <span class="n">p</span><span class="o">.</span><span class="n">retire</span><span class="p">,</span>
+                <span class="n">S_ret</span><span class="p">,</span>
                 <span class="n">p</span><span class="o">.</span><span class="n">S</span><span class="p">,</span>
-                <span class="n">p</span><span class="o">.</span><span class="n">g_y</span><span class="p">,</span>
+                <span class="n">g_y_arr</span><span class="p">,</span>
                 <span class="n">L_inc_avg_s</span><span class="p">,</span>
                 <span class="n">L_inc_avg</span><span class="p">,</span>
                 <span class="n">DB</span><span class="p">,</span>
@@ -705,12 +723,32 @@
                 <span class="n">w</span><span class="p">,</span>
                 <span class="n">e</span><span class="p">,</span>
                 <span class="n">n</span><span class="p">,</span>
-                <span class="n">p</span><span class="o">.</span><span class="n">retire</span><span class="p">,</span>
+                <span class="n">S_ret</span><span class="p">,</span>
                 <span class="n">p</span><span class="o">.</span><span class="n">S</span><span class="p">,</span>
-                <span class="n">p</span><span class="o">.</span><span class="n">g_y</span><span class="p">,</span>
+                <span class="n">g_y_arr</span><span class="p">,</span>
                 <span class="n">L_inc_avg_sj</span><span class="p">,</span>
                 <span class="n">L_inc_avg</span><span class="p">,</span>
                 <span class="n">DB</span><span class="p">,</span>
+                <span class="n">equiv_periods</span><span class="p">,</span>
+                <span class="n">p</span><span class="o">.</span><span class="n">alpha_db</span><span class="p">,</span>
+                <span class="n">equiv_yr_contrib</span><span class="p">,</span>
+            <span class="p">)</span>
+
+        <span class="k">elif</span> <span class="n">np</span><span class="o">.</span><span class="n">ndim</span><span class="p">(</span><span class="n">n</span><span class="p">)</span> <span class="o">==</span> <span class="mi">3</span><span class="p">:</span>
+            <span class="n">T</span> <span class="o">=</span> <span class="n">n</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="n">w_path</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">squeeze</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">w</span><span class="p">))</span>
+            <span class="k">if</span> <span class="n">w_path</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">w_path</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">full</span><span class="p">(</span><span class="n">T</span><span class="p">,</span> <span class="nb">float</span><span class="p">(</span><span class="n">w_path</span><span class="p">))</span>
+            <span class="n">e_ss</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">e</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">ndim</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">e</span><span class="p">)</span> <span class="o">==</span> <span class="mi">3</span> <span class="k">else</span> <span class="n">p</span><span class="o">.</span><span class="n">e</span>
+            <span class="n">DB</span> <span class="o">=</span> <span class="n">DB_3dim_loop</span><span class="p">(</span>
+                <span class="n">w_path</span><span class="p">,</span>
+                <span class="n">e_ss</span><span class="p">,</span>
+                <span class="n">n</span><span class="p">,</span>
+                <span class="n">p</span><span class="o">.</span><span class="n">n_preTP</span><span class="p">,</span>
+                <span class="n">S_ret</span><span class="p">,</span>
+                <span class="n">p</span><span class="o">.</span><span class="n">S</span><span class="p">,</span>
+                <span class="n">p</span><span class="o">.</span><span class="n">J</span><span class="p">,</span>
+                <span class="nb">float</span><span class="p">(</span><span class="n">g_y_arr</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]),</span>
                 <span class="n">equiv_periods</span><span class="p">,</span>
                 <span class="n">p</span><span class="o">.</span><span class="n">alpha_db</span><span class="p">,</span>
                 <span class="n">equiv_yr_contrib</span><span class="p">,</span>
@@ -746,22 +784,34 @@
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">g_ndc_amount</span> <span class="o">=</span> <span class="n">g_ndc</span><span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="n">Y</span><span class="p">,</span> <span class="n">p</span><span class="p">)</span>
     <span class="n">delta_ret_amount</span> <span class="o">=</span> <span class="n">delta_ret</span><span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="n">Y</span><span class="p">,</span> <span class="n">p</span><span class="p">)</span>
+    <span class="c1"># Single retirement age for now (see Issue #1014); g_y is a scalar</span>
+    <span class="c1"># but the numba loops index it; the steady-state wage is a scalar</span>
+    <span class="c1"># but the loops index it as a path.</span>
+    <span class="n">S_ret</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">retire</span><span class="p">)</span><span class="o">.</span><span class="n">flat</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+    <span class="n">g_y_arr</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">atleast_1d</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">g_y</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">))</span><span class="o">.</span><span class="n">ravel</span><span class="p">()</span>
+    <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">ndim</span><span class="p">(</span><span class="n">w</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="n">w</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">full</span><span class="p">(</span><span class="n">n</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="nb">float</span><span class="p">(</span><span class="n">w</span><span class="p">))</span>
 
     <span class="k">if</span> <span class="n">n</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&lt;</span> <span class="n">p</span><span class="o">.</span><span class="n">S</span><span class="p">:</span>
         <span class="n">per_rmn</span> <span class="o">=</span> <span class="n">n</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
 
-        <span class="n">w_S</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">p</span><span class="o">.</span><span class="n">w_preTP</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">S</span><span class="p">))[:(</span><span class="o">-</span><span class="n">per_rmn</span><span class="p">)],</span> <span class="n">w</span><span class="p">)</span>
+        <span class="c1"># Pre-time-path wages: the recent past is anchored to the</span>
+        <span class="c1"># period-0 wage of the current path (trend growth is handled</span>
+        <span class="c1"># by the de-trending inside the benefit formula); labor comes</span>
+        <span class="c1"># from the model&#39;s initial condition n_preTP (see Issue #1014)</span>
+        <span class="n">w_S</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">w</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">S</span><span class="p">))[:(</span><span class="o">-</span><span class="n">per_rmn</span><span class="p">)],</span> <span class="n">w</span><span class="p">)</span>
         <span class="n">n_S</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">n_preTP</span><span class="p">[:(</span><span class="o">-</span><span class="n">per_rmn</span><span class="p">),</span> <span class="n">j</span><span class="p">],</span> <span class="n">n</span><span class="p">)</span>
 
-        <span class="n">NDC_s</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">retire</span><span class="p">)</span>
+        <span class="n">NDC_s</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">S_ret</span><span class="p">)</span>
         <span class="n">NDC</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">S</span><span class="p">)</span>
         <span class="n">NDC</span> <span class="o">=</span> <span class="n">NDC_1dim_loop</span><span class="p">(</span>
             <span class="n">w_S</span><span class="p">,</span>
-            <span class="n">p</span><span class="o">.</span><span class="n">e</span><span class="p">[:,</span> <span class="n">j</span><span class="p">],</span>
+            <span class="c1"># steady-state earnings profile for now (see Issue #1014)</span>
+            <span class="n">p</span><span class="o">.</span><span class="n">e</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="p">:,</span> <span class="n">j</span><span class="p">]</span> <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">ndim</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">e</span><span class="p">)</span> <span class="o">==</span> <span class="mi">3</span> <span class="k">else</span> <span class="n">p</span><span class="o">.</span><span class="n">e</span><span class="p">[:,</span> <span class="n">j</span><span class="p">],</span>
             <span class="n">n_S</span><span class="p">,</span>
-            <span class="n">p</span><span class="o">.</span><span class="n">retire</span><span class="p">,</span>
+            <span class="n">S_ret</span><span class="p">,</span>
             <span class="n">p</span><span class="o">.</span><span class="n">S</span><span class="p">,</span>
-            <span class="n">p</span><span class="o">.</span><span class="n">g_y</span><span class="p">,</span>
+            <span class="n">g_y_arr</span><span class="p">,</span>
             <span class="n">p</span><span class="o">.</span><span class="n">tau_p</span><span class="p">,</span>
             <span class="n">g_ndc_amount</span><span class="p">,</span>
             <span class="n">delta_ret_amount</span><span class="p">,</span>
@@ -772,15 +822,15 @@
 
     <span class="k">else</span><span class="p">:</span>
         <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">ndim</span><span class="p">(</span><span class="n">n</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
-            <span class="n">NDC_s</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">retire</span><span class="p">)</span>
+            <span class="n">NDC_s</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">S_ret</span><span class="p">)</span>
             <span class="n">NDC</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">S</span><span class="p">)</span>
             <span class="n">NDC</span> <span class="o">=</span> <span class="n">NDC_1dim_loop</span><span class="p">(</span>
                 <span class="n">w</span><span class="p">,</span>
                 <span class="n">e</span><span class="p">,</span>
                 <span class="n">n</span><span class="p">,</span>
-                <span class="n">p</span><span class="o">.</span><span class="n">retire</span><span class="p">,</span>
+                <span class="n">S_ret</span><span class="p">,</span>
                 <span class="n">p</span><span class="o">.</span><span class="n">S</span><span class="p">,</span>
-                <span class="n">p</span><span class="o">.</span><span class="n">g_y</span><span class="p">,</span>
+                <span class="n">g_y_arr</span><span class="p">,</span>
                 <span class="n">p</span><span class="o">.</span><span class="n">tau_p</span><span class="p">,</span>
                 <span class="n">g_ndc_amount</span><span class="p">,</span>
                 <span class="n">delta_ret_amount</span><span class="p">,</span>
@@ -788,15 +838,15 @@
                 <span class="n">NDC</span><span class="p">,</span>
             <span class="p">)</span>
         <span class="k">elif</span> <span class="n">np</span><span class="o">.</span><span class="n">ndim</span><span class="p">(</span><span class="n">n</span><span class="p">)</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
-            <span class="n">NDC_sj</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">p</span><span class="o">.</span><span class="n">retire</span><span class="p">,</span> <span class="n">p</span><span class="o">.</span><span class="n">J</span><span class="p">))</span>
+            <span class="n">NDC_sj</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">S_ret</span><span class="p">,</span> <span class="n">p</span><span class="o">.</span><span class="n">J</span><span class="p">))</span>
             <span class="n">NDC</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">p</span><span class="o">.</span><span class="n">S</span><span class="p">,</span> <span class="n">p</span><span class="o">.</span><span class="n">J</span><span class="p">))</span>
             <span class="n">NDC</span> <span class="o">=</span> <span class="n">NDC_2dim_loop</span><span class="p">(</span>
                 <span class="n">w</span><span class="p">,</span>
                 <span class="n">e</span><span class="p">,</span>
                 <span class="n">n</span><span class="p">,</span>
-                <span class="n">p</span><span class="o">.</span><span class="n">retire</span><span class="p">,</span>
+                <span class="n">S_ret</span><span class="p">,</span>
                 <span class="n">p</span><span class="o">.</span><span class="n">S</span><span class="p">,</span>
-                <span class="n">p</span><span class="o">.</span><span class="n">g_y</span><span class="p">,</span>
+                <span class="n">g_y_arr</span><span class="p">,</span>
                 <span class="n">p</span><span class="o">.</span><span class="n">tau_p</span><span class="p">,</span>
                 <span class="n">g_ndc_amount</span><span class="p">,</span>
                 <span class="n">delta_ret_amount</span><span class="p">,</span>
@@ -831,19 +881,32 @@
 <span class="sd">        PS (Numpy array): pension amount for each household</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
+    <span class="c1"># Single retirement age for now (see Issue #1014); g_y is</span>
+    <span class="c1"># a scalar but the numba loops index it; the steady-state wage is a</span>
+    <span class="c1"># scalar but the loops index it as a path.</span>
+    <span class="n">S_ret</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">retire</span><span class="p">)</span><span class="o">.</span><span class="n">flat</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+    <span class="n">g_y_arr</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">atleast_1d</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">g_y</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">))</span><span class="o">.</span><span class="n">ravel</span><span class="p">()</span>
+    <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">ndim</span><span class="p">(</span><span class="n">w</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="n">w</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">full</span><span class="p">(</span><span class="n">n</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="nb">float</span><span class="p">(</span><span class="n">w</span><span class="p">))</span>
+
     <span class="k">if</span> <span class="n">n</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&lt;</span> <span class="n">p</span><span class="o">.</span><span class="n">S</span><span class="p">:</span>
         <span class="n">per_rmn</span> <span class="o">=</span> <span class="n">n</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-        <span class="n">w_S</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">p</span><span class="o">.</span><span class="n">w_preTP</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">S</span><span class="p">))[:(</span><span class="o">-</span><span class="n">per_rmn</span><span class="p">)],</span> <span class="n">w</span><span class="p">)</span>
+        <span class="c1"># Pre-time-path wages: the recent past is anchored to the</span>
+        <span class="c1"># period-0 wage of the current path (trend growth is handled</span>
+        <span class="c1"># by the de-trending inside the benefit formula); labor comes</span>
+        <span class="c1"># from the model&#39;s initial condition n_preTP (see Issue #1014)</span>
+        <span class="n">w_S</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">w</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">S</span><span class="p">))[:(</span><span class="o">-</span><span class="n">per_rmn</span><span class="p">)],</span> <span class="n">w</span><span class="p">)</span>
         <span class="n">n_S</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">n_preTP</span><span class="p">[:(</span><span class="o">-</span><span class="n">per_rmn</span><span class="p">),</span> <span class="n">j</span><span class="p">],</span> <span class="n">n</span><span class="p">)</span>
-        <span class="n">L_inc_avg_s</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">retire</span><span class="p">)</span>
+        <span class="n">L_inc_avg_s</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">S_ret</span><span class="p">)</span>
         <span class="n">PS</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">S</span><span class="p">)</span>
         <span class="n">PS</span> <span class="o">=</span> <span class="n">PS_1dim_loop</span><span class="p">(</span>
             <span class="n">w_S</span><span class="p">,</span>
-            <span class="n">p</span><span class="o">.</span><span class="n">e</span><span class="p">[:,</span> <span class="n">j</span><span class="p">],</span>
+            <span class="c1"># steady-state earnings profile for now (see Issue #1014)</span>
+            <span class="n">p</span><span class="o">.</span><span class="n">e</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="p">:,</span> <span class="n">j</span><span class="p">]</span> <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">ndim</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">e</span><span class="p">)</span> <span class="o">==</span> <span class="mi">3</span> <span class="k">else</span> <span class="n">p</span><span class="o">.</span><span class="n">e</span><span class="p">[:,</span> <span class="n">j</span><span class="p">],</span>
             <span class="n">n_S</span><span class="p">,</span>
-            <span class="n">p</span><span class="o">.</span><span class="n">retire</span><span class="p">,</span>
+            <span class="n">S_ret</span><span class="p">,</span>
             <span class="n">p</span><span class="o">.</span><span class="n">S</span><span class="p">,</span>
-            <span class="n">p</span><span class="o">.</span><span class="n">g_y</span><span class="p">,</span>
+            <span class="n">g_y_arr</span><span class="p">,</span>
             <span class="n">p</span><span class="o">.</span><span class="n">vpoint</span><span class="p">,</span>
             <span class="n">factor</span><span class="p">,</span>
             <span class="n">L_inc_avg_s</span><span class="p">,</span>
@@ -853,15 +916,15 @@
 
     <span class="k">else</span><span class="p">:</span>
         <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">ndim</span><span class="p">(</span><span class="n">n</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
-            <span class="n">L_inc_avg_s</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">retire</span><span class="p">)</span>
+            <span class="n">L_inc_avg_s</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">S_ret</span><span class="p">)</span>
             <span class="n">PS</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">S</span><span class="p">)</span>
             <span class="n">PS</span> <span class="o">=</span> <span class="n">PS_1dim_loop</span><span class="p">(</span>
                 <span class="n">w</span><span class="p">,</span>
                 <span class="n">e</span><span class="p">,</span>
                 <span class="n">n</span><span class="p">,</span>
-                <span class="n">p</span><span class="o">.</span><span class="n">retire</span><span class="p">,</span>
+                <span class="n">S_ret</span><span class="p">,</span>
                 <span class="n">p</span><span class="o">.</span><span class="n">S</span><span class="p">,</span>
-                <span class="n">p</span><span class="o">.</span><span class="n">g_y</span><span class="p">,</span>
+                <span class="n">g_y_arr</span><span class="p">,</span>
                 <span class="n">p</span><span class="o">.</span><span class="n">vpoint</span><span class="p">,</span>
                 <span class="n">factor</span><span class="p">,</span>
                 <span class="n">L_inc_avg_s</span><span class="p">,</span>
@@ -869,16 +932,16 @@
             <span class="p">)</span>
 
         <span class="k">elif</span> <span class="n">np</span><span class="o">.</span><span class="n">ndim</span><span class="p">(</span><span class="n">n</span><span class="p">)</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
-            <span class="n">L_inc_avg_sj</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">p</span><span class="o">.</span><span class="n">retire</span><span class="p">,</span> <span class="n">p</span><span class="o">.</span><span class="n">J</span><span class="p">))</span>
+            <span class="n">L_inc_avg_sj</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">S_ret</span><span class="p">,</span> <span class="n">p</span><span class="o">.</span><span class="n">J</span><span class="p">))</span>
             <span class="n">PS</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">p</span><span class="o">.</span><span class="n">S</span><span class="p">,</span> <span class="n">p</span><span class="o">.</span><span class="n">J</span><span class="p">))</span>
             <span class="n">PS</span> <span class="o">=</span> <span class="n">PS_2dim_loop</span><span class="p">(</span>
                 <span class="n">w</span><span class="p">,</span>
                 <span class="n">e</span><span class="p">,</span>
                 <span class="n">n</span><span class="p">,</span>
-                <span class="n">p</span><span class="o">.</span><span class="n">retire</span><span class="p">,</span>
+                <span class="n">S_ret</span><span class="p">,</span>
                 <span class="n">p</span><span class="o">.</span><span class="n">S</span><span class="p">,</span>
                 <span class="n">p</span><span class="o">.</span><span class="n">J</span><span class="p">,</span>
-                <span class="n">p</span><span class="o">.</span><span class="n">g_y</span><span class="p">,</span>
+                <span class="n">g_y_arr</span><span class="p">,</span>
                 <span class="n">p</span><span class="o">.</span><span class="n">vpoint</span><span class="p">,</span>
                 <span class="n">factor</span><span class="p">,</span>
                 <span class="n">L_inc_avg_sj</span><span class="p">,</span>
@@ -953,9 +1016,11 @@
 <span class="sd">        d_theta (Numpy array): change in NDC pension benefits for</span>
 <span class="sd">            another unit of labor supply</span>
 <span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Single retirement age for now (see Issue #1014)</span>
+    <span class="n">S_ret</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">retire</span><span class="p">)</span><span class="o">.</span><span class="n">flat</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
     <span class="k">if</span> <span class="n">per_rmn</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
         <span class="n">d_theta</span> <span class="o">=</span> <span class="mi">0</span>
-    <span class="k">elif</span> <span class="n">per_rmn</span> <span class="o">&lt;</span> <span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">S</span> <span class="o">-</span> <span class="n">p</span><span class="o">.</span><span class="n">retire</span> <span class="o">+</span> <span class="mi">1</span><span class="p">):</span>
+    <span class="k">elif</span> <span class="n">per_rmn</span> <span class="o">&lt;</span> <span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">S</span> <span class="o">-</span> <span class="n">S_ret</span> <span class="o">+</span> <span class="mi">1</span><span class="p">):</span>
         <span class="n">d_theta</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">per_rmn</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="n">d_theta_empty</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">per_rmn</span><span class="p">)</span>
@@ -966,7 +1031,7 @@
             <span class="n">e</span><span class="p">,</span>
             <span class="n">per_rmn</span><span class="p">,</span>
             <span class="n">p</span><span class="o">.</span><span class="n">S</span><span class="p">,</span>
-            <span class="n">p</span><span class="o">.</span><span class="n">retire</span><span class="p">,</span>
+            <span class="n">S_ret</span><span class="p">,</span>
             <span class="n">p</span><span class="o">.</span><span class="n">tau_p</span><span class="p">,</span>
             <span class="n">g_ndc_amount</span><span class="p">,</span>
             <span class="n">delta_ret_amount</span><span class="p">,</span>
@@ -1004,14 +1069,16 @@
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">equiv_periods</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="nb">round</span><span class="p">((</span><span class="n">p</span><span class="o">.</span><span class="n">S</span> <span class="o">/</span> <span class="mf">80.0</span><span class="p">)</span> <span class="o">*</span> <span class="n">p</span><span class="o">.</span><span class="n">avg_earn_num_years</span><span class="p">))</span> <span class="o">-</span> <span class="mi">1</span>
     <span class="n">equiv_yr_contrib</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="nb">round</span><span class="p">((</span><span class="n">p</span><span class="o">.</span><span class="n">S</span> <span class="o">/</span> <span class="mf">80.0</span><span class="p">)</span> <span class="o">*</span> <span class="n">p</span><span class="o">.</span><span class="n">yr_contrib</span><span class="p">))</span> <span class="o">-</span> <span class="mi">1</span>
-    <span class="k">if</span> <span class="n">per_rmn</span> <span class="o">&lt;</span> <span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">S</span> <span class="o">-</span> <span class="n">p</span><span class="o">.</span><span class="n">retire</span> <span class="o">+</span> <span class="mi">1</span><span class="p">):</span>
+    <span class="c1"># Single retirement age for now (see Issue #1014)</span>
+    <span class="n">S_ret</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">retire</span><span class="p">)</span><span class="o">.</span><span class="n">flat</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+    <span class="k">if</span> <span class="n">per_rmn</span> <span class="o">&lt;</span> <span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">S</span> <span class="o">-</span> <span class="n">S_ret</span> <span class="o">+</span> <span class="mi">1</span><span class="p">):</span>
         <span class="n">d_theta</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">S</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="n">d_theta</span> <span class="o">=</span> <span class="n">deriv_DB_loop</span><span class="p">(</span>
             <span class="n">w</span><span class="p">,</span>
             <span class="n">e</span><span class="p">,</span>
             <span class="n">p</span><span class="o">.</span><span class="n">S</span><span class="p">,</span>
-            <span class="n">p</span><span class="o">.</span><span class="n">retire</span><span class="p">,</span>
+            <span class="n">S_ret</span><span class="p">,</span>
             <span class="n">per_rmn</span><span class="p">,</span>
             <span class="n">equiv_periods</span><span class="p">,</span>
             <span class="n">p</span><span class="o">.</span><span class="n">alpha_db</span><span class="p">,</span>
@@ -1048,12 +1115,14 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">if</span> <span class="n">per_rmn</span> <span class="o">&lt;</span> <span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">S</span> <span class="o">-</span> <span class="n">p</span><span class="o">.</span><span class="n">retire</span> <span class="o">+</span> <span class="mi">1</span><span class="p">):</span>
+    <span class="c1"># Single retirement age for now (see Issue #1014)</span>
+    <span class="n">S_ret</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">retire</span><span class="p">)</span><span class="o">.</span><span class="n">flat</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+    <span class="k">if</span> <span class="n">per_rmn</span> <span class="o">&lt;</span> <span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">S</span> <span class="o">-</span> <span class="n">S_ret</span> <span class="o">+</span> <span class="mi">1</span><span class="p">):</span>
         <span class="n">d_theta</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">S</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="n">d_theta_empty</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">S</span><span class="p">)</span>
         <span class="n">d_theta</span> <span class="o">=</span> <span class="n">deriv_PS_loop</span><span class="p">(</span>
-            <span class="n">w</span><span class="p">,</span> <span class="n">e</span><span class="p">,</span> <span class="n">p</span><span class="o">.</span><span class="n">S</span><span class="p">,</span> <span class="n">p</span><span class="o">.</span><span class="n">retire</span><span class="p">,</span> <span class="n">per_rmn</span><span class="p">,</span> <span class="n">d_theta_empty</span><span class="p">,</span> <span class="n">p</span><span class="o">.</span><span class="n">vpoint</span><span class="p">,</span> <span class="n">factor</span>
+            <span class="n">w</span><span class="p">,</span> <span class="n">e</span><span class="p">,</span> <span class="n">p</span><span class="o">.</span><span class="n">S</span><span class="p">,</span> <span class="n">S_ret</span><span class="p">,</span> <span class="n">per_rmn</span><span class="p">,</span> <span class="n">d_theta_empty</span><span class="p">,</span> <span class="n">p</span><span class="o">.</span><span class="n">vpoint</span><span class="p">,</span> <span class="n">factor</span>
         <span class="p">)</span>
         <span class="n">d_theta</span> <span class="o">=</span> <span class="n">d_theta</span><span class="p">[</span><span class="o">-</span><span class="n">per_rmn</span><span class="p">:]</span>
 
@@ -1176,10 +1245,12 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">surv_rates</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">-</span> <span class="n">p</span><span class="o">.</span><span class="n">mort_rates_SS</span>
-    <span class="n">dir_delta_s_empty</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">S</span> <span class="o">-</span> <span class="n">p</span><span class="o">.</span><span class="n">retire</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+    <span class="c1"># Single retirement age for now (see Issue #1014)</span>
+    <span class="n">S_ret</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">retire</span><span class="p">)</span><span class="o">.</span><span class="n">flat</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+    <span class="n">dir_delta_s_empty</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">S</span> <span class="o">-</span> <span class="n">S_ret</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
     <span class="n">g_dir_value</span> <span class="o">=</span> <span class="n">g_dir</span><span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="n">Y</span><span class="p">,</span> <span class="n">p</span><span class="o">.</span><span class="n">g_y</span><span class="p">,</span> <span class="n">p</span><span class="o">.</span><span class="n">g_n</span><span class="p">,</span> <span class="n">p</span><span class="o">.</span><span class="n">dir_growth_rate</span><span class="p">)</span>
     <span class="n">dir_delta</span> <span class="o">=</span> <span class="n">delta_ret_loop</span><span class="p">(</span>
-        <span class="n">p</span><span class="o">.</span><span class="n">S</span><span class="p">,</span> <span class="n">p</span><span class="o">.</span><span class="n">retire</span><span class="p">,</span> <span class="n">surv_rates</span><span class="p">,</span> <span class="n">g_dir_value</span><span class="p">,</span> <span class="n">dir_delta_s_empty</span>
+        <span class="n">p</span><span class="o">.</span><span class="n">S</span><span class="p">,</span> <span class="n">S_ret</span><span class="p">,</span> <span class="n">surv_rates</span><span class="p">,</span> <span class="n">g_dir_value</span><span class="p">,</span> <span class="n">dir_delta_s_empty</span>
     <span class="p">)</span>
     <span class="n">delta_ret</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">/</span> <span class="p">(</span><span class="n">dir_delta</span> <span class="o">+</span> <span class="n">p</span><span class="o">.</span><span class="n">indR</span> <span class="o">-</span> <span class="n">p</span><span class="o">.</span><span class="n">k_ret</span><span class="p">)</span>
 
@@ -1509,9 +1580,76 @@
 
 
 
+<span class="nd">@numba</span><span class="o">.</span><span class="n">jit</span><span class="p">(</span><span class="n">nopython</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">DB_3dim_loop</span><span class="p">(</span>
+    <span class="n">w_path</span><span class="p">,</span>
+    <span class="n">e_ss</span><span class="p">,</span>
+    <span class="n">n</span><span class="p">,</span>
+    <span class="n">n_preTP</span><span class="p">,</span>
+    <span class="n">S_ret</span><span class="p">,</span>
+    <span class="n">S</span><span class="p">,</span>
+    <span class="n">J</span><span class="p">,</span>
+    <span class="n">g_y</span><span class="p">,</span>
+    <span class="n">avg_earn_num_years</span><span class="p">,</span>
+    <span class="n">alpha_db</span><span class="p">,</span>
+    <span class="n">yr_contr</span><span class="p">,</span>
+<span class="p">):</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Calculate public pension from a defined benefits system over the</span>
+<span class="sd">    full time path.</span>
+
+<span class="sd">    Used when the TPI solution evaluates taxes for all periods at once</span>
+<span class="sd">    to compute aggregates. Each retiree&#39;s benefit is computed from their</span>
+<span class="sd">    own cohort&#39;s wage and labor history: the wage entering the average</span>
+<span class="sd">    for a household aged u at time t, earned at age s, is the wage at</span>
+<span class="sd">    time t - (u - s). Histories that predate the time path use the</span>
+<span class="sd">    period-0 wage (trend growth is handled by the de-trending in the</span>
+<span class="sd">    benefit formula) and the model&#39;s initial labor supply, so this</span>
+<span class="sd">    reproduces exactly what the per-cohort household solves compute and</span>
+<span class="sd">    household behavior and aggregates are consistent. The inner work is</span>
+<span class="sd">    vectorized rather than looped.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        w_path (Numpy array): real wage rate path, length T</span>
+<span class="sd">        e_ss (Numpy array): effective labor units, size SxJ</span>
+<span class="sd">        n (Numpy array): labor supply, size TxSxJ</span>
+<span class="sd">        n_preTP (Numpy array): pre-time-path labor supply, size SxJ</span>
+<span class="sd">        S_ret (int): retirement age</span>
+<span class="sd">        S (int): number of periods in the model</span>
+<span class="sd">        J (int): number of lifetime income groups</span>
+<span class="sd">        g_y (scalar): growth rate of technology</span>
+<span class="sd">        avg_earn_num_years (int): number of years earnings are averaged</span>
+<span class="sd">            over</span>
+<span class="sd">        alpha_db (scalar): replacement rate per year of contribution</span>
+<span class="sd">        yr_contr (int): years of contribution</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        DB (Numpy array): pension amount for each household, size TxSxJ</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">T</span> <span class="o">=</span> <span class="n">n</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">s_idx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">S_ret</span> <span class="o">-</span> <span class="n">avg_earn_num_years</span><span class="p">,</span> <span class="n">S_ret</span><span class="p">)</span>
+    <span class="n">DB</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">T</span><span class="p">,</span> <span class="n">S</span><span class="p">,</span> <span class="n">J</span><span class="p">))</span>
+    <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">T</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">u</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">S_ret</span><span class="p">,</span> <span class="n">S</span><span class="p">):</span>
+            <span class="n">tau</span> <span class="o">=</span> <span class="n">t</span> <span class="o">-</span> <span class="p">(</span><span class="n">u</span> <span class="o">-</span> <span class="n">s_idx</span><span class="p">)</span>
+            <span class="n">w_hist</span> <span class="o">=</span> <span class="n">w_path</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">clip</span><span class="p">(</span><span class="n">tau</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">T</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)]</span>
+            <span class="n">n_hist</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span>
+                <span class="p">(</span><span class="n">tau</span> <span class="o">&gt;=</span> <span class="mi">0</span><span class="p">)[:,</span> <span class="kc">None</span><span class="p">],</span>
+                <span class="n">n</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">clip</span><span class="p">(</span><span class="n">tau</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">T</span> <span class="o">-</span> <span class="mi">1</span><span class="p">),</span> <span class="n">s_idx</span><span class="p">,</span> <span class="p">:],</span>
+                <span class="n">n_preTP</span><span class="p">[</span><span class="n">s_idx</span><span class="p">,</span> <span class="p">:],</span>
+            <span class="p">)</span>
+            <span class="n">L</span> <span class="o">=</span> <span class="p">(</span><span class="n">w_hist</span><span class="p">[:,</span> <span class="kc">None</span><span class="p">]</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">g_y</span> <span class="o">*</span> <span class="p">(</span><span class="n">u</span> <span class="o">-</span> <span class="n">s_idx</span><span class="p">))[:,</span> <span class="kc">None</span><span class="p">])</span> <span class="o">*</span> <span class="p">(</span>
+                <span class="n">e_ss</span><span class="p">[</span><span class="n">s_idx</span><span class="p">,</span> <span class="p">:]</span> <span class="o">*</span> <span class="n">n_hist</span>
+            <span class="p">)</span>
+            <span class="n">DB</span><span class="p">[</span><span class="n">t</span><span class="p">,</span> <span class="n">u</span><span class="p">,</span> <span class="p">:]</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="p">(</span><span class="n">L</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span> <span class="o">/</span> <span class="n">avg_earn_num_years</span><span class="p">)</span> <span class="o">*</span> <span class="n">yr_contr</span> <span class="o">*</span> <span class="n">alpha_db</span>
+            <span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">DB</span>
+
+
 <div class="viewcode-block" id="NDC_1dim_loop">
 <a class="viewcode-back" href="../../content/api/pensions.html#ogcore.pensions.NDC_1dim_loop">[docs]</a>
-<span class="nd">@numba</span><span class="o">.</span><span class="n">jit</span><span class="p">(</span><span class="n">nopython</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">NDC_1dim_loop</span><span class="p">(</span><span class="n">w</span><span class="p">,</span> <span class="n">e</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">S_ret</span><span class="p">,</span> <span class="n">S</span><span class="p">,</span> <span class="n">g_y</span><span class="p">,</span> <span class="n">tau_p</span><span class="p">,</span> <span class="n">g_ndc</span><span class="p">,</span> <span class="n">delta_ret</span><span class="p">,</span> <span class="n">NDC_s</span><span class="p">,</span> <span class="n">NDC</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Calculate public pension from a notional defined contribution</span>
