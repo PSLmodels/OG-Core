@@ -665,15 +665,16 @@
             <span class="p">)</span>
             <span class="nb">setattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">,</span> <span class="n">param_out</span><span class="p">)</span>
         <span class="c1"># Deal with parameters that vary across age and over time</span>
-        <span class="n">tp_param_list4</span> <span class="o">=</span> <span class="p">[</span>
-            <span class="s2">&quot;rho&quot;</span><span class="p">,</span>
-        <span class="p">]</span>
-        <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">tp_param_list4</span><span class="p">:</span>
-            <span class="n">param_in</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">)</span>
-            <span class="n">param_out</span> <span class="o">=</span> <span class="n">extrapolate_array</span><span class="p">(</span>
-                <span class="n">param_in</span><span class="p">,</span> <span class="n">dims</span><span class="o">=</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">T</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">S</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">S</span><span class="p">),</span> <span class="n">item</span><span class="o">=</span><span class="n">item</span>
-            <span class="p">)</span>
-            <span class="nb">setattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">,</span> <span class="n">param_out</span><span class="p">)</span>
+        <span class="c1"># None at the moment - moved to vary by J also</span>
+        <span class="c1"># tp_param_list4 = [</span>
+        <span class="c1">#     &quot;rho&quot;,</span>
+        <span class="c1"># ]</span>
+        <span class="c1"># for item in tp_param_list4:</span>
+        <span class="c1">#     param_in = getattr(self, item)</span>
+        <span class="c1">#     param_out = extrapolate_array(</span>
+        <span class="c1">#         param_in, dims=(self.T + self.S, self.S), item=item</span>
+        <span class="c1">#     )</span>
+        <span class="c1">#     setattr(self, item, param_out)</span>
         <span class="c1"># Deal with tax parameters that maybe age and time specific</span>
         <span class="n">tax_params_to_TP</span> <span class="o">=</span> <span class="p">[</span>
             <span class="s2">&quot;etr_params&quot;</span><span class="p">,</span>
@@ -700,14 +701,24 @@
         <span class="c1"># Try to deal with size of eta and eta_RM. They may vary by S, J, T,</span>
         <span class="c1"># but want to allow user to enter one that varies by only S, S and J,</span>
         <span class="c1"># S and T, or T and S and J.</span>
-        <span class="n">eta_params_to_TP</span> <span class="o">=</span> <span class="p">[</span>
-            <span class="s2">&quot;eta&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;eta_RM&quot;</span><span class="p">,</span>
-        <span class="p">]</span>
+        <span class="n">eta_params_to_TP</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;eta&quot;</span><span class="p">,</span> <span class="s2">&quot;eta_RM&quot;</span><span class="p">,</span> <span class="s2">&quot;omega&quot;</span><span class="p">,</span> <span class="s2">&quot;rho&quot;</span><span class="p">,</span> <span class="s2">&quot;imm_rates&quot;</span><span class="p">]</span>
         <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">eta_params_to_TP</span><span class="p">:</span>
             <span class="n">param_in</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">)</span>
             <span class="n">param_out</span> <span class="o">=</span> <span class="n">extrapolate_array</span><span class="p">(</span>
                 <span class="n">param_in</span><span class="p">,</span> <span class="n">dims</span><span class="o">=</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">T</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">S</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">S</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">J</span><span class="p">),</span> <span class="n">item</span><span class="o">=</span><span class="n">item</span>
+            <span class="p">)</span>
+            <span class="nb">setattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">,</span> <span class="n">param_out</span><span class="p">)</span>
+        <span class="c1"># extrapolate SS demog objects</span>
+        <span class="n">demog_obj_to_SS</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="s2">&quot;omega_SS&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;omega_S_preTP&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;imm_rates_preTP&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;rho_preTP&quot;</span><span class="p">,</span>
+        <span class="p">]</span>
+        <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">demog_obj_to_SS</span><span class="p">:</span>
+            <span class="n">param_in</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">)</span>
+            <span class="n">param_out</span> <span class="o">=</span> <span class="n">extrapolate_array</span><span class="p">(</span>
+                <span class="n">param_in</span><span class="p">,</span> <span class="n">dims</span><span class="o">=</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">S</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">J</span><span class="p">),</span> <span class="n">item</span><span class="o">=</span><span class="n">item</span>
             <span class="p">)</span>
             <span class="nb">setattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">,</span> <span class="n">param_out</span><span class="p">)</span>
         <span class="c1"># extrapolate lifetime ability e matrix over time dimension</span>
@@ -768,19 +779,23 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">g_n_ss</span> <span class="o">=</span> <span class="mf">0.0</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">g_n_preTP</span> <span class="o">=</span> <span class="mf">0.0</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">g_n</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">T</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">S</span><span class="p">)</span>
-            <span class="n">surv_rate</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones_like</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">rho</span><span class="p">)</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">rho</span>
+            <span class="c1"># Average rho over J for scalar survival computation</span>
+            <span class="n">rho_ss</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">rho</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="p">:,</span> <span class="p">:]</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">axis</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span>  <span class="c1"># (S,)</span>
             <span class="n">surv_rate1</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">S</span><span class="p">,))</span>  <span class="c1"># prob start at age S</span>
-            <span class="n">surv_rate1</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">cumprod</span><span class="p">(</span><span class="n">surv_rate</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
+            <span class="n">surv_rate1</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">cumprod</span><span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">rho_ss</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
             <span class="c1"># number of each age alive at any time</span>
-            <span class="n">omega_SS</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">S</span><span class="p">)</span> <span class="o">*</span> <span class="n">surv_rate1</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">omega_SS</span> <span class="o">=</span> <span class="n">omega_SS</span> <span class="o">/</span> <span class="n">omega_SS</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">imm_rates</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">T</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">S</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">S</span><span class="p">))</span>
+            <span class="n">omega_SS_1d</span> <span class="o">=</span> <span class="n">surv_rate1</span> <span class="o">/</span> <span class="n">surv_rate1</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>  <span class="c1"># (S,)</span>
+            <span class="c1"># Expand to (S, J) joint distribution</span>
+            <span class="n">lambdas_arr</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">lambdas</span><span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">J</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">omega_SS</span> <span class="o">=</span> <span class="n">omega_SS_1d</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">S</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="n">lambdas_arr</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">imm_rates</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">T</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">S</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">S</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">J</span><span class="p">))</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">omega</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">tile</span><span class="p">(</span>
-                <span class="n">np</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">omega_SS</span><span class="p">,</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">S</span><span class="p">)),</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">T</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">S</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">omega_SS</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">S</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">J</span><span class="p">),</span>
+                <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">T</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">S</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span>
             <span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">omega_S_preTP</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">omega_SS</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">imm_rates_preTP</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">S</span><span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">rho_preTP</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">rho</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="p">:]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">omega_S_preTP</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">omega_SS</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">imm_rates_preTP</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">S</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">J</span><span class="p">))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">rho_preTP</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">rho</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="p">:,</span> <span class="p">:]</span>
 
         <span class="c1"># Create time series of stationarized UBI transfers</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">ubi_nom_array</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_ubi_nom_objs</span><span class="p">()</span></div>

@@ -924,9 +924,13 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">dist</span> <span class="o">=</span> <span class="n">dist</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">pop_weights</span> <span class="o">=</span> <span class="n">pop_weights</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">ability_weights</span> <span class="o">=</span> <span class="n">ability_weights</span>
-        <span class="n">weights</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">tile</span><span class="p">(</span>
-            <span class="n">pop_weights</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">S</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">J</span><span class="p">)</span>
-        <span class="p">)</span> <span class="o">*</span> <span class="n">ability_weights</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">J</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">pop_weights</span><span class="p">)</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+            <span class="c1"># pop_weights is already (S, J) joint distribution</span>
+            <span class="n">weights</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">pop_weights</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">weights</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">tile</span><span class="p">(</span>
+                <span class="n">pop_weights</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">S</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">J</span><span class="p">)</span>
+            <span class="p">)</span> <span class="o">*</span> <span class="n">ability_weights</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">J</span><span class="p">)</span>
         <span class="n">flattened_dist</span> <span class="o">=</span> <span class="n">dist</span><span class="o">.</span><span class="n">flatten</span><span class="p">()</span>
         <span class="n">flattened_weights</span> <span class="o">=</span> <span class="n">weights</span><span class="o">.</span><span class="n">flatten</span><span class="p">()</span>
         <span class="n">idx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">argsort</span><span class="p">(</span><span class="n">flattened_dist</span><span class="p">)</span>
@@ -951,7 +955,11 @@
             <span class="n">nu</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">cumsum</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sort_dist</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">sort_weights</span><span class="p">)</span>
         <span class="k">elif</span> <span class="nb">type</span> <span class="o">==</span> <span class="s2">&quot;age&quot;</span><span class="p">:</span>
             <span class="n">flattened_dist</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dist</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">flatten</span><span class="p">()</span>
-            <span class="n">flattened_weights</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">pop_weights</span><span class="o">.</span><span class="n">flatten</span><span class="p">()</span>
+            <span class="n">pw</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pop_weights</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">pw</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+                <span class="n">flattened_weights</span> <span class="o">=</span> <span class="n">pw</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">flatten</span><span class="p">()</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">flattened_weights</span> <span class="o">=</span> <span class="n">pw</span><span class="o">.</span><span class="n">flatten</span><span class="p">()</span>
             <span class="n">idx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">argsort</span><span class="p">(</span><span class="n">flattened_dist</span><span class="p">)</span>
             <span class="n">sort_dist</span> <span class="o">=</span> <span class="n">flattened_dist</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span>
             <span class="n">sort_weights</span> <span class="o">=</span> <span class="n">flattened_weights</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span> <span class="o">/</span> <span class="n">flattened_weights</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
@@ -1488,6 +1496,15 @@
                         <span class="p">),</span>
                     <span class="p">),</span>
                     <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+                <span class="p">)</span>
+            <span class="c1"># case if T+S by S input</span>
+            <span class="k">elif</span> <span class="n">param_in</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="n">dims</span><span class="p">[</span><span class="mi">0</span><span class="p">]:</span>
+                <span class="n">param_out</span> <span class="o">=</span> <span class="p">(</span>
+                    <span class="n">np</span><span class="o">.</span><span class="n">tile</span><span class="p">(</span>
+                        <span class="n">param_in</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">dims</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">dims</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="mi">1</span><span class="p">),</span>
+                        <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">dims</span><span class="p">[</span><span class="mi">2</span><span class="p">]),</span>
+                    <span class="p">)</span>
+                    <span class="o">/</span> <span class="n">dims</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
                 <span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="nb">print</span><span class="p">(</span><span class="n">item</span> <span class="o">+</span> <span class="s2">&quot; dimensions are: &quot;</span><span class="p">,</span> <span class="n">param_in</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>

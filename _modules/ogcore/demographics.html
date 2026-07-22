@@ -1110,6 +1110,418 @@
 
 
 
+<span class="k">def</span><span class="w"> </span><span class="nf">_logistic</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Numerically stable logistic transform.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="mi">1</span> <span class="o">/</span> <span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="n">np</span><span class="o">.</span><span class="n">clip</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="o">-</span><span class="mi">700</span><span class="p">,</span> <span class="mi">700</span><span class="p">)))</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_income_shares_and_midpoints</span><span class="p">(</span><span class="n">income_percentiles</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Convert income group population shares into centered percentile midpoints.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">income_shares</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">income_percentiles</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span><span class="o">.</span><span class="n">ravel</span><span class="p">()</span>
+    <span class="k">if</span> <span class="n">income_shares</span><span class="o">.</span><span class="n">ndim</span> <span class="o">!=</span> <span class="mi">1</span> <span class="ow">or</span> <span class="n">income_shares</span><span class="o">.</span><span class="n">size</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;income_percentiles must be a one-dimensional array.&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">income_shares</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;income_percentiles must contain positive values.&quot;</span><span class="p">)</span>
+    <span class="n">income_shares</span> <span class="o">=</span> <span class="n">income_shares</span> <span class="o">/</span> <span class="n">income_shares</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+    <span class="n">percentile_midpoints</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="mi">100</span> <span class="o">*</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">cumsum</span><span class="p">(</span><span class="n">income_shares</span><span class="p">)</span> <span class="o">-</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="n">income_shares</span><span class="p">)</span> <span class="o">-</span> <span class="mi">50</span>
+    <span class="p">)</span>
+    <span class="k">return</span> <span class="n">income_shares</span><span class="p">,</span> <span class="n">percentile_midpoints</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_extend_time_path</span><span class="p">(</span><span class="n">arr</span><span class="p">,</span> <span class="n">num_periods</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Extend or trim the first dimension of an array to num_periods.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">arr</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="n">num_periods</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">arr</span>
+    <span class="k">if</span> <span class="n">arr</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&gt;</span> <span class="n">num_periods</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">arr</span><span class="p">[:</span><span class="n">num_periods</span><span class="p">]</span>
+    <span class="n">extension</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">repeat</span><span class="p">(</span><span class="n">arr</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">:,</span> <span class="o">...</span><span class="p">],</span> <span class="n">num_periods</span> <span class="o">-</span> <span class="n">arr</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">((</span><span class="n">arr</span><span class="p">,</span> <span class="n">extension</span><span class="p">),</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_format_age_gradient</span><span class="p">(</span><span class="n">gradient</span><span class="p">,</span> <span class="n">num_periods</span><span class="p">,</span> <span class="n">E</span><span class="p">,</span> <span class="n">S</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Put an age gradient into a num_periods x (E+S) array.</span>
+
+<span class="sd">    A length-S vector is interpreted as applying to economically active ages</span>
+<span class="sd">    only, with zero gradients for younger ages.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">totpers</span> <span class="o">=</span> <span class="n">E</span> <span class="o">+</span> <span class="n">S</span>
+    <span class="k">if</span> <span class="n">gradient</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">num_periods</span><span class="p">,</span> <span class="n">totpers</span><span class="p">))</span>
+
+    <span class="n">gradient</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">gradient</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">gradient</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">full</span><span class="p">((</span><span class="n">num_periods</span><span class="p">,</span> <span class="n">totpers</span><span class="p">),</span> <span class="n">gradient</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">gradient</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">gradient</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="n">full_gradient</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">full</span><span class="p">(</span><span class="n">totpers</span><span class="p">,</span> <span class="n">gradient</span><span class="o">.</span><span class="n">item</span><span class="p">())</span>
+        <span class="k">elif</span> <span class="n">gradient</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="n">S</span><span class="p">:</span>
+            <span class="n">full_gradient</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">((</span><span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">E</span><span class="p">),</span> <span class="n">gradient</span><span class="p">))</span>
+        <span class="k">elif</span> <span class="n">gradient</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="n">totpers</span><span class="p">:</span>
+            <span class="n">full_gradient</span> <span class="o">=</span> <span class="n">gradient</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2"> must have length 1, S=</span><span class="si">{</span><span class="n">S</span><span class="si">}</span><span class="s2">, or E+S=</span><span class="si">{</span><span class="n">totpers</span><span class="si">}</span><span class="s2">.&quot;</span>
+            <span class="p">)</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">tile</span><span class="p">(</span><span class="n">full_gradient</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">totpers</span><span class="p">),</span> <span class="p">(</span><span class="n">num_periods</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
+
+    <span class="k">if</span> <span class="n">gradient</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">gradient</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="n">S</span><span class="p">:</span>
+            <span class="n">gradient</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">(</span>
+                <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">gradient</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">E</span><span class="p">)),</span> <span class="n">gradient</span><span class="p">),</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span>
+            <span class="p">)</span>
+        <span class="k">elif</span> <span class="n">gradient</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">!=</span> <span class="n">totpers</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2"> must have second dimension S=</span><span class="si">{</span><span class="n">S</span><span class="si">}</span><span class="s2"> or E+S=</span><span class="si">{</span><span class="n">totpers</span><span class="si">}</span><span class="s2">.&quot;</span>
+            <span class="p">)</span>
+        <span class="k">return</span> <span class="n">_extend_time_path</span><span class="p">(</span><span class="n">gradient</span><span class="p">,</span> <span class="n">num_periods</span><span class="p">)</span>
+
+    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2"> must be a scalar, vector, or 2D array.&quot;</span><span class="p">)</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_format_infmort_gradient</span><span class="p">(</span><span class="n">gradient</span><span class="p">,</span> <span class="n">num_periods</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Put an infant mortality gradient into a num_periods vector.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">gradient</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">num_periods</span><span class="p">)</span>
+
+    <span class="n">gradient</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">gradient</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">gradient</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">full</span><span class="p">(</span><span class="n">num_periods</span><span class="p">,</span> <span class="n">gradient</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">gradient</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">gradient</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">full</span><span class="p">(</span><span class="n">num_periods</span><span class="p">,</span> <span class="n">gradient</span><span class="o">.</span><span class="n">item</span><span class="p">())</span>
+        <span class="k">return</span> <span class="n">_extend_time_path</span><span class="p">(</span><span class="n">gradient</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="n">num_periods</span><span class="p">)</span><span class="o">.</span><span class="n">ravel</span><span class="p">()</span>
+
+    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;infmort_gradient must be a scalar or vector.&quot;</span><span class="p">)</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_format_imm_shares</span><span class="p">(</span><span class="n">imm_pctiles</span><span class="p">,</span> <span class="n">num_periods</span><span class="p">,</span> <span class="n">E</span><span class="p">,</span> <span class="n">S</span><span class="p">,</span> <span class="n">income_shares</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Format immigrant income shares as num_periods x (E+S) x J.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">totpers</span> <span class="o">=</span> <span class="n">E</span> <span class="o">+</span> <span class="n">S</span>
+    <span class="n">J</span> <span class="o">=</span> <span class="n">income_shares</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="k">if</span> <span class="n">imm_pctiles</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">tile</span><span class="p">(</span>
+            <span class="n">income_shares</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">J</span><span class="p">),</span> <span class="p">(</span><span class="n">num_periods</span><span class="p">,</span> <span class="n">totpers</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="p">)</span>
+
+    <span class="n">imm_shares</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">imm_pctiles</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">imm_shares</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">imm_shares</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">!=</span> <span class="n">J</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;imm_pctiles must have J=</span><span class="si">{</span><span class="n">J</span><span class="si">}</span><span class="s2"> elements.&quot;</span><span class="p">)</span>
+        <span class="n">imm_shares</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">tile</span><span class="p">(</span>
+            <span class="n">imm_shares</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">J</span><span class="p">),</span> <span class="p">(</span><span class="n">num_periods</span><span class="p">,</span> <span class="n">totpers</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="p">)</span>
+    <span class="k">elif</span> <span class="n">imm_shares</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">imm_shares</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">!=</span> <span class="n">J</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;imm_pctiles last dimension must be J=</span><span class="si">{</span><span class="n">J</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">imm_shares</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="n">S</span><span class="p">:</span>
+            <span class="n">young_shares</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">tile</span><span class="p">(</span><span class="n">income_shares</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">J</span><span class="p">),</span> <span class="p">(</span><span class="n">E</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
+            <span class="n">imm_shares</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">((</span><span class="n">young_shares</span><span class="p">,</span> <span class="n">imm_shares</span><span class="p">),</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">imm_shares</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">!=</span> <span class="n">totpers</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;imm_pctiles first dimension must be S=</span><span class="si">{</span><span class="n">S</span><span class="si">}</span><span class="s2"> or E+S=</span><span class="si">{</span><span class="n">totpers</span><span class="si">}</span><span class="s2">.&quot;</span>
+            <span class="p">)</span>
+        <span class="n">imm_shares</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">tile</span><span class="p">(</span>
+            <span class="n">imm_shares</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">totpers</span><span class="p">,</span> <span class="n">J</span><span class="p">),</span> <span class="p">(</span><span class="n">num_periods</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="p">)</span>
+    <span class="k">elif</span> <span class="n">imm_shares</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">3</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">imm_shares</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">!=</span> <span class="n">J</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;imm_pctiles last dimension must be J=</span><span class="si">{</span><span class="n">J</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">imm_shares</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="n">S</span><span class="p">:</span>
+            <span class="n">young_shares</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">tile</span><span class="p">(</span>
+                <span class="n">income_shares</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">J</span><span class="p">),</span> <span class="p">(</span><span class="n">imm_shares</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">E</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+            <span class="p">)</span>
+            <span class="n">imm_shares</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">((</span><span class="n">young_shares</span><span class="p">,</span> <span class="n">imm_shares</span><span class="p">),</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">imm_shares</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">!=</span> <span class="n">totpers</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;imm_pctiles second dimension must be S=</span><span class="si">{</span><span class="n">S</span><span class="si">}</span><span class="s2"> or E+S=</span><span class="si">{</span><span class="n">totpers</span><span class="si">}</span><span class="s2">.&quot;</span>
+            <span class="p">)</span>
+        <span class="n">imm_shares</span> <span class="o">=</span> <span class="n">_extend_time_path</span><span class="p">(</span><span class="n">imm_shares</span><span class="p">,</span> <span class="n">num_periods</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+            <span class="s2">&quot;imm_pctiles must be a vector, 2D array, or 3D array.&quot;</span>
+        <span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">imm_shares</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;imm_pctiles must be nonnegative.&quot;</span><span class="p">)</span>
+    <span class="n">denom</span> <span class="o">=</span> <span class="n">imm_shares</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">axis</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span> <span class="n">keepdims</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">denom</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;imm_pctiles must sum to a positive value across J.&quot;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">imm_shares</span> <span class="o">/</span> <span class="n">denom</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_within_age_weights</span><span class="p">(</span><span class="n">pop_by_age_j</span><span class="p">,</span> <span class="n">income_shares</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Compute J weights within each age, using income_shares if an age is empty.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">age_totals</span> <span class="o">=</span> <span class="n">pop_by_age_j</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">axis</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span> <span class="n">keepdims</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">default_weights</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">tile</span><span class="p">(</span>
+        <span class="n">income_shares</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">income_shares</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span>
+        <span class="p">(</span><span class="n">pop_by_age_j</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="mi">1</span><span class="p">),</span>
+    <span class="p">)</span>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">divide</span><span class="p">(</span>
+        <span class="n">pop_by_age_j</span><span class="p">,</span>
+        <span class="n">age_totals</span><span class="p">,</span>
+        <span class="n">out</span><span class="o">=</span><span class="n">default_weights</span><span class="p">,</span>
+        <span class="n">where</span><span class="o">=</span><span class="n">age_totals</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">,</span>
+    <span class="p">)</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_mean_preserving_logit_rates</span><span class="p">(</span><span class="n">mean_rates</span><span class="p">,</span> <span class="n">slopes</span><span class="p">,</span> <span class="n">weights</span><span class="p">,</span> <span class="n">pct_midpoints</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Create J-specific rates bounded in [0, 1] with weighted mean mean_rates.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">mean_rates</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">mean_rates</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
+    <span class="n">slopes</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">slopes</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
+    <span class="n">weights</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">weights</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
+    <span class="n">rates</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">weights</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+
+    <span class="k">for</span> <span class="n">idx</span> <span class="ow">in</span> <span class="n">np</span><span class="o">.</span><span class="n">ndindex</span><span class="p">(</span><span class="n">mean_rates</span><span class="o">.</span><span class="n">shape</span><span class="p">):</span>
+        <span class="n">mean_rate</span> <span class="o">=</span> <span class="n">mean_rates</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span>
+        <span class="n">slope</span> <span class="o">=</span> <span class="n">slopes</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span>
+        <span class="n">w</span> <span class="o">=</span> <span class="n">weights</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span>
+        <span class="n">w</span> <span class="o">=</span> <span class="n">w</span> <span class="o">/</span> <span class="n">w</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="n">mean_rate</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">rates</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.0</span>
+        <span class="k">elif</span> <span class="n">mean_rate</span> <span class="o">&gt;=</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="n">rates</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span> <span class="o">=</span> <span class="mf">1.0</span>
+        <span class="k">elif</span> <span class="n">np</span><span class="o">.</span><span class="n">isclose</span><span class="p">(</span><span class="n">slope</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">):</span>
+            <span class="n">rates</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span> <span class="o">=</span> <span class="n">mean_rate</span>
+        <span class="k">else</span><span class="p">:</span>
+
+            <span class="k">def</span><span class="w"> </span><span class="nf">mean_error</span><span class="p">(</span><span class="n">intercept</span><span class="p">):</span>
+                <span class="k">return</span> <span class="p">(</span>
+                    <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">w</span><span class="p">,</span> <span class="n">_logistic</span><span class="p">(</span><span class="n">intercept</span> <span class="o">+</span> <span class="n">slope</span> <span class="o">*</span> <span class="n">pct_midpoints</span><span class="p">))</span>
+                    <span class="o">-</span> <span class="n">mean_rate</span>
+                <span class="p">)</span>
+
+            <span class="n">intercept</span> <span class="o">=</span> <span class="n">opt</span><span class="o">.</span><span class="n">brentq</span><span class="p">(</span><span class="n">mean_error</span><span class="p">,</span> <span class="o">-</span><span class="mi">700</span><span class="p">,</span> <span class="mi">700</span><span class="p">)</span>
+            <span class="n">rates</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span> <span class="o">=</span> <span class="n">_logistic</span><span class="p">(</span><span class="n">intercept</span> <span class="o">+</span> <span class="n">slope</span> <span class="o">*</span> <span class="n">pct_midpoints</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">rates</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">expand_pop_obj_J</span><span class="p">(</span>
+    <span class="n">omega_path_lev</span><span class="p">,</span>
+    <span class="n">omega_path_S</span><span class="p">,</span>
+    <span class="n">omega_SSfx</span><span class="p">,</span>
+    <span class="n">fert_rates</span><span class="p">,</span>
+    <span class="n">mort_rates</span><span class="p">,</span>
+    <span class="n">infmort_rates</span><span class="p">,</span>
+    <span class="n">imm_rates</span><span class="p">,</span>
+    <span class="n">mort_rates_S</span><span class="p">,</span>
+    <span class="n">imm_rates_mat</span><span class="p">,</span>
+    <span class="n">E</span><span class="p">,</span>
+    <span class="n">S</span><span class="p">,</span>
+    <span class="n">g_n_SS</span><span class="p">,</span>
+    <span class="n">fixper</span><span class="p">,</span>
+    <span class="n">income_percentiles</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">fert_gradient</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">mort_gradient</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">infmort_gradient</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">imm_pctiles</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+<span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Expand aggregate demographic objects to age x income-group objects.</span>
+
+<span class="sd">    The aggregate population path and rates are left unchanged. If</span>
+<span class="sd">    income_percentiles is None and no income-specific inputs are</span>
+<span class="sd">    provided, the original aggregate objects are returned. Otherwise,</span>
+<span class="sd">    income_percentiles gives the initial population distribution across</span>
+<span class="sd">    J for every age and the income shares of newborns in every period.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        omega_path_lev (Numpy array): T+S x E+S aggregate population levels.</span>
+<span class="sd">        omega_path_S (Numpy array): T+S x S aggregate active-age population</span>
+<span class="sd">            shares.</span>
+<span class="sd">        omega_SSfx (Numpy array): fixed full-life population distribution.</span>
+<span class="sd">        fert_rates (Numpy array): T+S x E+S fertility rates.</span>
+<span class="sd">        mort_rates (Numpy array): T+S x E+S mortality rates.</span>
+<span class="sd">        infmort_rates (Numpy array): T+S infant mortality rates.</span>
+<span class="sd">        imm_rates (Numpy array): T+S x E+S immigration rates, including the</span>
+<span class="sd">            adjusted post-fixper rates.</span>
+<span class="sd">        mort_rates_S (Numpy array): T+S x S mortality rates for active ages.</span>
+<span class="sd">        imm_rates_mat (Numpy array): T+S x S immigration rates for active ages.</span>
+<span class="sd">        E (int): number of non-economically active periods.</span>
+<span class="sd">        S (int): number of economically active periods.</span>
+<span class="sd">        g_n_SS (float): steady-state population growth rate.</span>
+<span class="sd">        fixper (int): period at which the fixed steady-state distribution is</span>
+<span class="sd">            imposed.</span>
+<span class="sd">        income_percentiles (array_like): population shares for each J group.</span>
+<span class="sd">        fert_gradient (array_like): log-odds fertility slopes by age.</span>
+<span class="sd">        mort_gradient (array_like): log-odds mortality slopes by age.</span>
+<span class="sd">        infmort_gradient (array_like): log-odds infant mortality slopes.</span>
+<span class="sd">        imm_pctiles (array_like): immigrant income shares by period,</span>
+<span class="sd">        age, and J.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        dict: demographic objects with the same keys needed by get_pop_objs.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">omega_SS</span> <span class="o">=</span> <span class="n">omega_SSfx</span><span class="p">[</span><span class="o">-</span><span class="n">S</span><span class="p">:]</span> <span class="o">/</span> <span class="n">omega_SSfx</span><span class="p">[</span><span class="o">-</span><span class="n">S</span><span class="p">:]</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+    <span class="n">income_inputs</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="n">fert_gradient</span><span class="p">,</span>
+        <span class="n">mort_gradient</span><span class="p">,</span>
+        <span class="n">infmort_gradient</span><span class="p">,</span>
+        <span class="n">imm_pctiles</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="k">assert</span> <span class="n">income_percentiles</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">,</span> <span class="p">(</span>
+        <span class="s2">&quot;income_percentiles must be provided when using &quot;</span>
+        <span class="o">+</span> <span class="s2">&quot;income-specific inputs.&quot;</span>
+    <span class="p">)</span>
+    <span class="n">income_shares</span><span class="p">,</span> <span class="n">pct_midpoints</span> <span class="o">=</span> <span class="n">_income_shares_and_midpoints</span><span class="p">(</span>
+        <span class="n">income_percentiles</span>
+    <span class="p">)</span>
+    <span class="n">J</span> <span class="o">=</span> <span class="n">income_shares</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">num_periods</span><span class="p">,</span> <span class="n">totpers</span> <span class="o">=</span> <span class="n">omega_path_lev</span><span class="o">.</span><span class="n">shape</span>
+    <span class="k">assert</span> <span class="n">totpers</span> <span class="o">==</span> <span class="n">E</span> <span class="o">+</span> <span class="n">S</span>
+
+    <span class="n">all_income_inputs_none</span> <span class="o">=</span> <span class="nb">all</span><span class="p">(</span><span class="n">x</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">income_inputs</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">all_income_inputs_none</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;In the all are none case.&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="p">{</span>
+            <span class="s2">&quot;omega_path_S&quot;</span><span class="p">:</span> <span class="n">omega_path_S</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span>
+                <span class="n">omega_path_S</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">omega_path_S</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="mi">1</span>
+            <span class="p">)</span>
+            <span class="o">*</span> <span class="n">income_shares</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">J</span><span class="p">),</span>
+            <span class="s2">&quot;omega_SS&quot;</span><span class="p">:</span> <span class="n">omega_SS</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">omega_SS</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="mi">1</span><span class="p">)</span>
+            <span class="o">*</span> <span class="n">income_shares</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">J</span><span class="p">),</span>
+            <span class="s2">&quot;mort_rates_S&quot;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">tile</span><span class="p">(</span>
+                <span class="n">mort_rates_S</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span>
+                    <span class="n">mort_rates_S</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">mort_rates_S</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="mi">1</span>
+                <span class="p">),</span>
+                <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">J</span><span class="p">),</span>
+            <span class="p">),</span>
+            <span class="s2">&quot;imm_rates_mat&quot;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">tile</span><span class="p">(</span>
+                <span class="n">imm_rates_mat</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span>
+                    <span class="n">imm_rates_mat</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">imm_rates_mat</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="mi">1</span>
+                <span class="p">),</span>
+                <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">J</span><span class="p">),</span>
+            <span class="p">),</span>
+        <span class="p">}</span>
+
+    <span class="n">fert_slopes</span> <span class="o">=</span> <span class="n">_format_age_gradient</span><span class="p">(</span>
+        <span class="n">fert_gradient</span><span class="p">,</span> <span class="n">num_periods</span><span class="p">,</span> <span class="n">E</span><span class="p">,</span> <span class="n">S</span><span class="p">,</span> <span class="s2">&quot;fert_gradient&quot;</span>
+    <span class="p">)</span>
+    <span class="n">mort_slopes</span> <span class="o">=</span> <span class="n">_format_age_gradient</span><span class="p">(</span>
+        <span class="n">mort_gradient</span><span class="p">,</span> <span class="n">num_periods</span><span class="p">,</span> <span class="n">E</span><span class="p">,</span> <span class="n">S</span><span class="p">,</span> <span class="s2">&quot;mort_gradient&quot;</span>
+    <span class="p">)</span>
+    <span class="n">infmort_slopes</span> <span class="o">=</span> <span class="n">_format_infmort_gradient</span><span class="p">(</span><span class="n">infmort_gradient</span><span class="p">,</span> <span class="n">num_periods</span><span class="p">)</span>
+    <span class="n">imm_shares</span> <span class="o">=</span> <span class="n">_format_imm_shares</span><span class="p">(</span>
+        <span class="n">imm_pctiles</span><span class="p">,</span> <span class="n">num_periods</span><span class="p">,</span> <span class="n">E</span><span class="p">,</span> <span class="n">S</span><span class="p">,</span> <span class="n">income_shares</span>
+    <span class="p">)</span>
+
+    <span class="c1"># Use the aggregate fixed distribution after fixper, matching the</span>
+    <span class="c1"># age-only steady-state logic already computed above.</span>
+    <span class="n">target_pop</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">omega_path_lev</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">,</span> <span class="n">copy</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">fixed_full_dist</span> <span class="o">=</span> <span class="n">omega_SSfx</span> <span class="o">/</span> <span class="n">omega_SSfx</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+    <span class="k">if</span> <span class="n">fixper</span> <span class="o">&lt;</span> <span class="n">num_periods</span><span class="p">:</span>
+        <span class="n">total_pop</span> <span class="o">=</span> <span class="n">target_pop</span><span class="p">[</span><span class="n">fixper</span><span class="p">]</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+        <span class="n">target_pop</span><span class="p">[</span><span class="n">fixper</span><span class="p">]</span> <span class="o">=</span> <span class="n">total_pop</span> <span class="o">*</span> <span class="n">fixed_full_dist</span>
+        <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">fixper</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">num_periods</span><span class="p">):</span>
+            <span class="n">total_pop</span> <span class="o">*=</span> <span class="mi">1</span> <span class="o">+</span> <span class="n">g_n_SS</span>
+            <span class="n">target_pop</span><span class="p">[</span><span class="n">t</span><span class="p">]</span> <span class="o">=</span> <span class="n">total_pop</span> <span class="o">*</span> <span class="n">fixed_full_dist</span>
+
+    <span class="n">pop_path_J</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">num_periods</span><span class="p">,</span> <span class="n">totpers</span><span class="p">,</span> <span class="n">J</span><span class="p">))</span>
+    <span class="n">fert_rates_J</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">num_periods</span><span class="p">,</span> <span class="n">totpers</span><span class="p">,</span> <span class="n">J</span><span class="p">))</span>
+    <span class="n">mort_rates_J</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">num_periods</span><span class="p">,</span> <span class="n">totpers</span><span class="p">,</span> <span class="n">J</span><span class="p">))</span>
+    <span class="n">imm_rates_J</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">num_periods</span><span class="p">,</span> <span class="n">totpers</span><span class="p">,</span> <span class="n">J</span><span class="p">))</span>
+    <span class="n">infmort_rates_J</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">num_periods</span><span class="p">,</span> <span class="n">J</span><span class="p">))</span>
+    <span class="n">pop_path_J</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">target_pop</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="p">:,</span> <span class="kc">None</span><span class="p">]</span> <span class="o">*</span> <span class="n">income_shares</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">J</span><span class="p">)</span>
+    <span class="n">fixed_pop_dist_J</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">num_periods</span><span class="p">):</span>
+        <span class="n">pop_t_J</span> <span class="o">=</span> <span class="n">pop_path_J</span><span class="p">[</span><span class="n">t</span><span class="p">]</span>
+        <span class="n">age_weights</span> <span class="o">=</span> <span class="n">_within_age_weights</span><span class="p">(</span><span class="n">pop_t_J</span><span class="p">,</span> <span class="n">income_shares</span><span class="p">)</span>
+        <span class="n">fert_rates_J</span><span class="p">[</span><span class="n">t</span><span class="p">]</span> <span class="o">=</span> <span class="n">_mean_preserving_logit_rates</span><span class="p">(</span>
+            <span class="n">fert_rates</span><span class="p">[</span><span class="n">t</span><span class="p">],</span> <span class="n">fert_slopes</span><span class="p">[</span><span class="n">t</span><span class="p">],</span> <span class="n">age_weights</span><span class="p">,</span> <span class="n">pct_midpoints</span>
+        <span class="p">)</span>
+        <span class="n">mort_rates_J</span><span class="p">[</span><span class="n">t</span><span class="p">]</span> <span class="o">=</span> <span class="n">_mean_preserving_logit_rates</span><span class="p">(</span>
+            <span class="n">mort_rates</span><span class="p">[</span><span class="n">t</span><span class="p">],</span> <span class="n">mort_slopes</span><span class="p">[</span><span class="n">t</span><span class="p">],</span> <span class="n">age_weights</span><span class="p">,</span> <span class="n">pct_midpoints</span>
+        <span class="p">)</span>
+        <span class="n">infmort_rates_J</span><span class="p">[</span><span class="n">t</span><span class="p">]</span> <span class="o">=</span> <span class="n">_mean_preserving_logit_rates</span><span class="p">(</span>
+            <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">infmort_rates</span><span class="p">[</span><span class="n">t</span><span class="p">]]),</span>
+            <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">infmort_slopes</span><span class="p">[</span><span class="n">t</span><span class="p">]]),</span>
+            <span class="n">income_shares</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">J</span><span class="p">),</span>
+            <span class="n">pct_midpoints</span><span class="p">,</span>
+        <span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+
+        <span class="n">births</span> <span class="o">=</span> <span class="p">(</span><span class="n">fert_rates_J</span><span class="p">[</span><span class="n">t</span><span class="p">]</span> <span class="o">*</span> <span class="n">pop_t_J</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+        <span class="n">newborns</span> <span class="o">=</span> <span class="n">births</span> <span class="o">*</span> <span class="n">income_shares</span>
+        <span class="n">pre_imm_pop</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">totpers</span><span class="p">,</span> <span class="n">J</span><span class="p">))</span>
+        <span class="n">pre_imm_pop</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">infmort_rates_J</span><span class="p">[</span><span class="n">t</span><span class="p">])</span> <span class="o">*</span> <span class="n">newborns</span>
+        <span class="n">pre_imm_pop</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span> <span class="o">=</span> <span class="n">pop_t_J</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">mort_rates_J</span><span class="p">[</span><span class="n">t</span><span class="p">,</span> <span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+
+        <span class="k">if</span> <span class="n">t</span> <span class="o">+</span> <span class="mi">1</span> <span class="o">&lt;</span> <span class="n">num_periods</span><span class="p">:</span>
+            <span class="n">target_next</span> <span class="o">=</span> <span class="n">target_pop</span><span class="p">[</span><span class="n">t</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">newborns_agg</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">fert_rates</span><span class="p">[</span><span class="n">t</span><span class="p">],</span> <span class="n">target_pop</span><span class="p">[</span><span class="n">t</span><span class="p">])</span>
+            <span class="n">target_next</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">totpers</span><span class="p">)</span>
+            <span class="n">target_next</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">infmort_rates</span><span class="p">[</span><span class="n">t</span><span class="p">])</span> <span class="o">*</span> <span class="n">newborns_agg</span> <span class="o">+</span> <span class="n">imm_rates</span><span class="p">[</span>
+                <span class="n">t</span><span class="p">,</span> <span class="mi">0</span>
+            <span class="p">]</span> <span class="o">*</span> <span class="n">target_pop</span><span class="p">[</span><span class="n">t</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span>
+            <span class="n">target_next</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="n">target_pop</span><span class="p">[</span><span class="n">t</span><span class="p">,</span> <span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">mort_rates</span><span class="p">[</span><span class="n">t</span><span class="p">,</span> <span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+                <span class="o">+</span> <span class="n">imm_rates</span><span class="p">[</span><span class="n">t</span><span class="p">,</span> <span class="mi">1</span><span class="p">:]</span> <span class="o">*</span> <span class="n">target_pop</span><span class="p">[</span><span class="n">t</span><span class="p">,</span> <span class="mi">1</span><span class="p">:]</span>
+            <span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">t</span> <span class="o">==</span> <span class="n">fixper</span><span class="p">:</span>
+            <span class="n">fixed_pop_dist_J</span> <span class="o">=</span> <span class="n">pop_t_J</span> <span class="o">/</span> <span class="n">pop_t_J</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="n">fixed_pop_dist_J</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">t</span> <span class="o">&gt;=</span> <span class="n">fixper</span><span class="p">:</span>
+            <span class="n">target_next_J</span> <span class="o">=</span> <span class="n">fixed_pop_dist_J</span> <span class="o">*</span> <span class="n">target_next</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+            <span class="n">imm_flow_J</span> <span class="o">=</span> <span class="n">target_next_J</span> <span class="o">-</span> <span class="n">pre_imm_pop</span>
+            <span class="n">pop_next_J</span> <span class="o">=</span> <span class="n">target_next_J</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">imm_flow</span> <span class="o">=</span> <span class="n">target_next</span> <span class="o">-</span> <span class="n">pre_imm_pop</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+            <span class="n">imm_flow_J</span> <span class="o">=</span> <span class="n">imm_flow</span><span class="p">[:,</span> <span class="kc">None</span><span class="p">]</span> <span class="o">*</span> <span class="n">imm_shares</span><span class="p">[</span><span class="n">t</span><span class="p">]</span>
+            <span class="n">pop_next_J</span> <span class="o">=</span> <span class="n">pre_imm_pop</span> <span class="o">+</span> <span class="n">imm_flow_J</span>
+
+        <span class="n">imm_rates_J</span><span class="p">[</span><span class="n">t</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">divide</span><span class="p">(</span>
+            <span class="n">imm_flow_J</span><span class="p">,</span>
+            <span class="n">pop_t_J</span><span class="p">,</span>
+            <span class="n">out</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">imm_flow_J</span><span class="p">),</span>
+            <span class="n">where</span><span class="o">=</span><span class="n">pop_t_J</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">,</span>
+        <span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">t</span> <span class="o">+</span> <span class="mi">1</span> <span class="o">&lt;</span> <span class="n">num_periods</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">pop_next_J</span> <span class="o">&lt;</span> <span class="o">-</span><span class="mf">1e-8</span><span class="p">):</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                    <span class="s2">&quot;Income-specific demographic inputs imply a negative &quot;</span>
+                    <span class="s2">&quot;population in at least one age-income cell.&quot;</span>
+                <span class="p">)</span>
+            <span class="n">pop_path_J</span><span class="p">[</span><span class="n">t</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">maximum</span><span class="p">(</span><span class="n">pop_next_J</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">)</span>
+
+    <span class="n">active_pop_J</span> <span class="o">=</span> <span class="n">pop_path_J</span><span class="p">[:,</span> <span class="n">E</span><span class="p">:,</span> <span class="p">:]</span>
+    <span class="n">omega_path_S_J</span> <span class="o">=</span> <span class="n">active_pop_J</span> <span class="o">/</span> <span class="n">active_pop_J</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">))</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span>
+        <span class="n">num_periods</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span>
+    <span class="p">)</span>
+    <span class="n">omega_SS_J</span> <span class="o">=</span> <span class="n">omega_path_S_J</span><span class="p">[</span><span class="n">fixper</span><span class="p">]</span>
+
+    <span class="k">assert</span> <span class="n">np</span><span class="o">.</span><span class="n">allclose</span><span class="p">(</span><span class="n">omega_path_S_J</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">2</span><span class="p">),</span> <span class="n">omega_path_S</span><span class="p">)</span>
+    <span class="k">assert</span> <span class="n">np</span><span class="o">.</span><span class="n">allclose</span><span class="p">(</span><span class="n">omega_SS_J</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">),</span> <span class="n">omega_SS</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="p">{</span>
+        <span class="s2">&quot;omega_path_S&quot;</span><span class="p">:</span> <span class="n">omega_path_S_J</span><span class="p">,</span>
+        <span class="s2">&quot;omega_SS&quot;</span><span class="p">:</span> <span class="n">omega_SS_J</span><span class="p">,</span>
+        <span class="s2">&quot;mort_rates_S&quot;</span><span class="p">:</span> <span class="n">mort_rates_J</span><span class="p">[:,</span> <span class="n">E</span><span class="p">:,</span> <span class="p">:],</span>
+        <span class="s2">&quot;imm_rates_mat&quot;</span><span class="p">:</span> <span class="n">imm_rates_J</span><span class="p">[:,</span> <span class="n">E</span><span class="p">:,</span> <span class="p">:],</span>
+    <span class="p">}</span>
+
+
 <div class="viewcode-block" id="get_pop_objs">
 <a class="viewcode-back" href="../../content/api/demographics.html#ogcore.demographics.get_pop_objs">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">get_pop_objs</span><span class="p">(</span>
@@ -1124,6 +1536,11 @@
     <span class="n">imm_rates</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="n">infer_pop</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
     <span class="n">pop_dist</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">fert_gradient</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">mort_gradient</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">infmort_gradient</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">imm_pctiles</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">income_percentiles</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="n">country_id</span><span class="o">=</span><span class="n">UN_COUNTRY_CODE</span><span class="p">,</span>
     <span class="n">initial_data_year</span><span class="o">=</span><span class="n">START_YEAR</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span>
     <span class="n">final_data_year</span><span class="o">=</span><span class="n">START_YEAR</span> <span class="o">+</span> <span class="mi">2</span><span class="p">,</span>
@@ -1154,6 +1571,23 @@
 <span class="sd">        infer_pop (bool): =True if want to infer the population</span>
 <span class="sd">        pop_dist (array_like): user provided population distribution,</span>
 <span class="sd">            dimensions are T0+1 x E+S</span>
+<span class="sd">        fert_gradient (array_like): user provided fertility rate gradient,</span>
+<span class="sd">            dimensions are S, represents the log-odds slope in the</span>
+<span class="sd">            fertility rate</span>
+<span class="sd">            per percentile of the lifetime income distribution.</span>
+<span class="sd">        mort_gradient (array_like): user provided mortality rate gradient,</span>
+<span class="sd">            dimensions are S, represents the log-odds slope in the</span>
+<span class="sd">            mortality rate</span>
+<span class="sd">            per percentile of the lifetime income distribution.</span>
+<span class="sd">        infmort_gradient (array_like): user provided infant mortality</span>
+<span class="sd">            rate gradient, dimensions are S, represents the log-odds</span>
+<span class="sd">            slope in the infant mortality rate per percentile of the</span>
+<span class="sd">            lifetime income distribution.</span>
+<span class="sd">        imm_pctiles (array_like): user provided lifetime income distribution</span>
+<span class="sd">            for new immigrants, shape is num_per x S x J, where num_per</span>
+<span class="sd">            is the number of years between initial and final_data_year</span>
+<span class="sd">        income_percentiles (array_like): user provided income percentiles,</span>
+<span class="sd">            dimensions are J, the number of lifetime income groups</span>
 <span class="sd">        country_id (str): country id for UN data</span>
 <span class="sd">        initial_data_year (int): initial year of data to use</span>
 <span class="sd">            (not relevant if have user provided data)</span>
@@ -1440,16 +1874,14 @@
         <span class="o">-</span> <span class="n">omega_path_lev</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="n">S</span><span class="p">:]</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
     <span class="p">)</span> <span class="o">/</span> <span class="n">omega_path_lev</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="n">S</span><span class="p">:]</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
     <span class="n">g_n_path</span><span class="p">[</span><span class="n">fixper</span> <span class="o">+</span> <span class="mi">1</span> <span class="p">:]</span> <span class="o">=</span> <span class="n">g_n_SS</span>
-    <span class="n">imm_rates_mat</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">(</span>
+    <span class="n">imm_rates_full</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">(</span>
         <span class="p">(</span>
-            <span class="n">imm_rates_orig</span><span class="p">[:</span><span class="n">fixper</span><span class="p">,</span> <span class="n">E</span><span class="p">:],</span>
-            <span class="n">np</span><span class="o">.</span><span class="n">tile</span><span class="p">(</span>
-                <span class="n">imm_rates_adj</span><span class="p">[</span><span class="n">E</span><span class="p">:]</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">S</span><span class="p">),</span>
-                <span class="p">(</span><span class="n">T</span> <span class="o">+</span> <span class="n">S</span> <span class="o">-</span> <span class="n">fixper</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span>
-            <span class="p">),</span>
+            <span class="n">imm_rates_orig</span><span class="p">[:</span><span class="n">fixper</span><span class="p">,</span> <span class="p">:],</span>
+            <span class="n">np</span><span class="o">.</span><span class="n">tile</span><span class="p">(</span><span class="n">imm_rates_adj</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">E</span> <span class="o">+</span> <span class="n">S</span><span class="p">),</span> <span class="p">(</span><span class="n">T</span> <span class="o">+</span> <span class="n">S</span> <span class="o">-</span> <span class="n">fixper</span><span class="p">,</span> <span class="mi">1</span><span class="p">)),</span>
         <span class="p">),</span>
         <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
     <span class="p">)</span>
+    <span class="n">imm_rates_mat</span> <span class="o">=</span> <span class="n">imm_rates_full</span><span class="p">[:,</span> <span class="n">E</span><span class="p">:]</span>
 
     <span class="k">if</span> <span class="n">GraphDiag</span><span class="p">:</span>
         <span class="c1"># Check whether original SS population distribution is close to</span>
@@ -1596,17 +2028,38 @@
             <span class="n">path</span><span class="o">=</span><span class="n">OUTPUT_DIR</span><span class="p">,</span>
         <span class="p">)</span>
 
+    <span class="n">pop_objs</span> <span class="o">=</span> <span class="n">expand_pop_obj_J</span><span class="p">(</span>
+        <span class="n">omega_path_lev</span><span class="p">,</span>
+        <span class="n">omega_path_S</span><span class="p">,</span>
+        <span class="n">omega_SSfx</span><span class="p">,</span>
+        <span class="n">fert_rates</span><span class="p">,</span>
+        <span class="n">mort_rates</span><span class="p">,</span>
+        <span class="n">infmort_rates</span><span class="p">,</span>
+        <span class="n">imm_rates_full</span><span class="p">,</span>
+        <span class="n">mort_rates_S</span><span class="p">,</span>
+        <span class="n">imm_rates_mat</span><span class="p">,</span>
+        <span class="n">E</span><span class="p">,</span>
+        <span class="n">S</span><span class="p">,</span>
+        <span class="n">g_n_SS</span><span class="p">,</span>
+        <span class="n">fixper</span><span class="p">,</span>
+        <span class="n">income_percentiles</span><span class="o">=</span><span class="n">income_percentiles</span><span class="p">,</span>
+        <span class="n">fert_gradient</span><span class="o">=</span><span class="n">fert_gradient</span><span class="p">,</span>
+        <span class="n">mort_gradient</span><span class="o">=</span><span class="n">mort_gradient</span><span class="p">,</span>
+        <span class="n">infmort_gradient</span><span class="o">=</span><span class="n">infmort_gradient</span><span class="p">,</span>
+        <span class="n">imm_pctiles</span><span class="o">=</span><span class="n">imm_pctiles</span><span class="p">,</span>
+    <span class="p">)</span>
+
     <span class="c1"># Return objects in a dictionary</span>
     <span class="n">pop_dict</span> <span class="o">=</span> <span class="p">{</span>
-        <span class="s2">&quot;omega&quot;</span><span class="p">:</span> <span class="n">omega_path_S</span><span class="p">[</span><span class="mi">1</span><span class="p">:,</span> <span class="p">:],</span>
+        <span class="s2">&quot;omega&quot;</span><span class="p">:</span> <span class="n">pop_objs</span><span class="p">[</span><span class="s2">&quot;omega_path_S&quot;</span><span class="p">][</span><span class="mi">1</span><span class="p">:,</span> <span class="p">:,</span> <span class="p">:],</span>
         <span class="s2">&quot;g_n_ss&quot;</span><span class="p">:</span> <span class="n">g_n_SS</span><span class="p">,</span>
-        <span class="s2">&quot;omega_SS&quot;</span><span class="p">:</span> <span class="n">omega_SSfx</span><span class="p">[</span><span class="o">-</span><span class="n">S</span><span class="p">:]</span> <span class="o">/</span> <span class="n">omega_SSfx</span><span class="p">[</span><span class="o">-</span><span class="n">S</span><span class="p">:]</span><span class="o">.</span><span class="n">sum</span><span class="p">(),</span>
-        <span class="s2">&quot;rho&quot;</span><span class="p">:</span> <span class="n">mort_rates_S</span><span class="p">[</span><span class="mi">1</span><span class="p">:,</span> <span class="p">:],</span>
+        <span class="s2">&quot;omega_SS&quot;</span><span class="p">:</span> <span class="n">pop_objs</span><span class="p">[</span><span class="s2">&quot;omega_SS&quot;</span><span class="p">],</span>
+        <span class="s2">&quot;rho&quot;</span><span class="p">:</span> <span class="n">pop_objs</span><span class="p">[</span><span class="s2">&quot;mort_rates_S&quot;</span><span class="p">][</span><span class="mi">1</span><span class="p">:,</span> <span class="p">:,</span> <span class="p">:],</span>
         <span class="s2">&quot;g_n&quot;</span><span class="p">:</span> <span class="n">g_n_path</span><span class="p">[</span><span class="mi">1</span><span class="p">:],</span>
-        <span class="s2">&quot;imm_rates&quot;</span><span class="p">:</span> <span class="n">imm_rates_mat</span><span class="p">[</span><span class="mi">1</span><span class="p">:,</span> <span class="p">:],</span>
-        <span class="s2">&quot;omega_S_preTP&quot;</span><span class="p">:</span> <span class="n">omega_path_S</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="p">:],</span>
-        <span class="s2">&quot;imm_rates_preTP&quot;</span><span class="p">:</span> <span class="n">imm_rates_mat</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="p">:],</span>
-        <span class="s2">&quot;rho_preTP&quot;</span><span class="p">:</span> <span class="n">mort_rates_S</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="p">:],</span>
+        <span class="s2">&quot;imm_rates&quot;</span><span class="p">:</span> <span class="n">pop_objs</span><span class="p">[</span><span class="s2">&quot;imm_rates_mat&quot;</span><span class="p">][</span><span class="mi">1</span><span class="p">:,</span> <span class="p">:,</span> <span class="p">:],</span>
+        <span class="s2">&quot;omega_S_preTP&quot;</span><span class="p">:</span> <span class="n">pop_objs</span><span class="p">[</span><span class="s2">&quot;omega_path_S&quot;</span><span class="p">][</span><span class="mi">0</span><span class="p">,</span> <span class="p">:,</span> <span class="p">:],</span>
+        <span class="s2">&quot;imm_rates_preTP&quot;</span><span class="p">:</span> <span class="n">pop_objs</span><span class="p">[</span><span class="s2">&quot;imm_rates_mat&quot;</span><span class="p">][</span><span class="mi">0</span><span class="p">,</span> <span class="p">:,</span> <span class="p">:],</span>
+        <span class="s2">&quot;rho_preTP&quot;</span><span class="p">:</span> <span class="n">pop_objs</span><span class="p">[</span><span class="s2">&quot;mort_rates_S&quot;</span><span class="p">][</span><span class="mi">0</span><span class="p">,</span> <span class="p">:,</span> <span class="p">:],</span>
         <span class="s2">&quot;g_n_preTP&quot;</span><span class="p">:</span> <span class="n">g_n_path</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
     <span class="p">}</span>
 
