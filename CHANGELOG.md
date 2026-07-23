@@ -5,6 +5,20 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.18.1] - 2026-07-22 12:00:00
+
+### Bug Fixes
+
+- Fixes Issue [#1180](https://github.com/PSLmodels/OG-Core/issues/1180):
+  `get_pop_objs` raised an `AssertionError` for the homogeneous case
+  (`income_percentiles=None` with no income-specific inputs), because
+  `expand_pop_obj_J` asserted before reaching its homogeneous branch.
+  `income_percentiles` now defaults to a single income group (J=1) when
+  no income-specific inputs are supplied, restoring the pre-0.18 call
+  signature; it remains required whenever gradients or immigrant income
+  shares are provided. Also removes a stray debug `print` from that
+  branch.
+
 ## [0.18.0] - 2026-07-20 12:00:00
 
 ### Added
