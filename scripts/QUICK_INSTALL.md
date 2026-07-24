@@ -50,6 +50,7 @@ By default the installer shows a menu of repos and prompts for a destination. Fl
   - `og-zaf` — South Africa ([EAPD-DRB/OG-ZAF](https://github.com/EAPD-DRB/OG-ZAF))
   - `og-idn` — Indonesia ([EAPD-DRB/OG-IDN](https://github.com/EAPD-DRB/OG-IDN))
   - `og-phl` — Philippines ([EAPD-DRB/OG-PHL](https://github.com/EAPD-DRB/OG-PHL))
+  - `og-bra` — Brazil ([PSLmodels/OG-BRA](https://github.com/PSLmodels/OG-BRA))
 - `--all` / `-All` — install every repo in the catalog (each into its own subfolder).
 - `--list` / `-List` and `--list-json` / `-ListJson` — print the repo catalog (human-readable or JSON) and exit, without installing anything. The same catalog is also published as a static file you can fetch directly: [`scripts/repos.json`](repos.json).
 - `--repo-url` / `-RepoUrl` — a full git URL for a single custom repo (a fork, or a country repo not yet in the catalog). Clones the default branch.
