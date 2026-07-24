@@ -688,7 +688,9 @@ lifetime income distribution.</p></li>
 for new immigrants, shape is num_per x S x J, where num_per
 is the number of years between initial and final_data_year</p></li>
 <li><p><strong>income_percentiles</strong> (<em>array_like</em>) – user provided income percentiles,
-dimensions are J, the number of lifetime income groups</p></li>
+dimensions are J, the number of lifetime income groups;
+defaults to a single income group (J=1) when no
+income-specific inputs are supplied</p></li>
 <li><p><strong>country_id</strong> (<em>str</em>) – country id for UN data</p></li>
 <li><p><strong>initial_data_year</strong> (<em>int</em>) – initial year of data to use
 (not relevant if have user provided data)</p></li>

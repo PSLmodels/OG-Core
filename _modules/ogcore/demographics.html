@@ -1339,9 +1339,10 @@
 
 <span class="sd">    The aggregate population path and rates are left unchanged. If</span>
 <span class="sd">    income_percentiles is None and no income-specific inputs are</span>
-<span class="sd">    provided, the original aggregate objects are returned. Otherwise,</span>
-<span class="sd">    income_percentiles gives the initial population distribution across</span>
-<span class="sd">    J for every age and the income shares of newborns in every period.</span>
+<span class="sd">    provided, the aggregate objects are broadcast across a single</span>
+<span class="sd">    income group (J=1). Otherwise, income_percentiles gives the initial</span>
+<span class="sd">    population distribution across J for every age and the income</span>
+<span class="sd">    shares of newborns in every period.</span>
 
 <span class="sd">    Args:</span>
 <span class="sd">        omega_path_lev (Numpy array): T+S x E+S aggregate population levels.</span>
@@ -1360,7 +1361,9 @@
 <span class="sd">        g_n_SS (float): steady-state population growth rate.</span>
 <span class="sd">        fixper (int): period at which the fixed steady-state distribution is</span>
 <span class="sd">            imposed.</span>
-<span class="sd">        income_percentiles (array_like): population shares for each J group.</span>
+<span class="sd">        income_percentiles (array_like): population shares for each J</span>
+<span class="sd">            group; defaults to a single income group when no</span>
+<span class="sd">            income-specific inputs are supplied.</span>
 <span class="sd">        fert_gradient (array_like): log-odds fertility slopes by age.</span>
 <span class="sd">        mort_gradient (array_like): log-odds mortality slopes by age.</span>
 <span class="sd">        infmort_gradient (array_like): log-odds infant mortality slopes.</span>
@@ -1377,10 +1380,15 @@
         <span class="n">infmort_gradient</span><span class="p">,</span>
         <span class="n">imm_pctiles</span><span class="p">,</span>
     <span class="p">)</span>
-    <span class="k">assert</span> <span class="n">income_percentiles</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">,</span> <span class="p">(</span>
-        <span class="s2">&quot;income_percentiles must be provided when using &quot;</span>
-        <span class="o">+</span> <span class="s2">&quot;income-specific inputs.&quot;</span>
-    <span class="p">)</span>
+    <span class="n">all_income_inputs_none</span> <span class="o">=</span> <span class="nb">all</span><span class="p">(</span><span class="n">x</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">income_inputs</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">income_percentiles</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">assert</span> <span class="n">all_income_inputs_none</span><span class="p">,</span> <span class="p">(</span>
+            <span class="s2">&quot;income_percentiles must be provided when using &quot;</span>
+            <span class="o">+</span> <span class="s2">&quot;income-specific inputs.&quot;</span>
+        <span class="p">)</span>
+        <span class="c1"># No income heterogeneity requested: broadcast the aggregate</span>
+        <span class="c1"># objects across a single income group.</span>
+        <span class="n">income_percentiles</span> <span class="o">=</span> <span class="p">[</span><span class="mi">100</span><span class="p">]</span>
     <span class="n">income_shares</span><span class="p">,</span> <span class="n">pct_midpoints</span> <span class="o">=</span> <span class="n">_income_shares_and_midpoints</span><span class="p">(</span>
         <span class="n">income_percentiles</span>
     <span class="p">)</span>
@@ -1388,10 +1396,7 @@
     <span class="n">num_periods</span><span class="p">,</span> <span class="n">totpers</span> <span class="o">=</span> <span class="n">omega_path_lev</span><span class="o">.</span><span class="n">shape</span>
     <span class="k">assert</span> <span class="n">totpers</span> <span class="o">==</span> <span class="n">E</span> <span class="o">+</span> <span class="n">S</span>
 
-    <span class="n">all_income_inputs_none</span> <span class="o">=</span> <span class="nb">all</span><span class="p">(</span><span class="n">x</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">income_inputs</span><span class="p">)</span>
-
     <span class="k">if</span> <span class="n">all_income_inputs_none</span><span class="p">:</span>
-        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;In the all are none case.&quot;</span><span class="p">)</span>
         <span class="k">return</span> <span class="p">{</span>
             <span class="s2">&quot;omega_path_S&quot;</span><span class="p">:</span> <span class="n">omega_path_S</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span>
                 <span class="n">omega_path_S</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">omega_path_S</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="mi">1</span>
@@ -1587,7 +1592,9 @@
 <span class="sd">            for new immigrants, shape is num_per x S x J, where num_per</span>
 <span class="sd">            is the number of years between initial and final_data_year</span>
 <span class="sd">        income_percentiles (array_like): user provided income percentiles,</span>
-<span class="sd">            dimensions are J, the number of lifetime income groups</span>
+<span class="sd">            dimensions are J, the number of lifetime income groups;</span>
+<span class="sd">            defaults to a single income group (J=1) when no</span>
+<span class="sd">            income-specific inputs are supplied</span>
 <span class="sd">        country_id (str): country id for UN data</span>
 <span class="sd">        initial_data_year (int): initial year of data to use</span>
 <span class="sd">            (not relevant if have user provided data)</span>
