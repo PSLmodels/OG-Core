@@ -1103,6 +1103,24 @@
             }
         }
     },
+    "initial_wealth_ratio": {
+        "title": "Ratio of aggregate household wealth in the initial period to its steady-state level",
+        "description": "Scales the initial distribution of household wealth used to start the transition path. The transition imposes the steady-state wealth profile on the initial population, rescaled so that aggregate initial wealth equals initial_wealth_ratio times the steady-state aggregate. The default of 1.0 reproduces the long-standing behavior.",
+        "section_1": "Household Parameters",
+        "notes": "Calibrate from observed household wealth or capital stock data in the model start year, as approximately the ratio of observed wealth-to-GDP to the model's steady-state wealth-to-GDP. With the default of 1.0, an initial age distribution far from the stationary one implies a large uniform wealth windfall (younger population) or confiscation (older population) for all initial households.",
+        "type": "float",
+        "value": [
+            {
+                "value": 1.0
+            }
+        ],
+        "validators": {
+            "range": {
+                "min": 0.05,
+                "max": 5.0
+            }
+        }
+    },
     "r_gov_scale": {
         "title": "Scale parameter to determine government interest rate",
         "description": "Parameter to scale the market interest rate to find interest rate on government debt.",

@@ -162,7 +162,11 @@ def get_initial_SS_values(p):
     ss_baseline_vars = utils.safe_read_pickle(baseline_ss)
     factor = ss_baseline_vars["factor"]
     B0 = aggr.get_B(ss_baseline_vars["b_sp1"], p, "SS", True)
-    initial_b = ss_baseline_vars["b_sp1"] * (ss_baseline_vars["B"] / B0)
+    initial_b = (
+        ss_baseline_vars["b_sp1"]
+        * (ss_baseline_vars["B"] / B0)
+        * p.initial_wealth_ratio
+    )
     initial_n = ss_baseline_vars["n"]
     # The DB/NDC/PS pension formulas need the labor supplied before the
     # time path begins by cohorts alive at t=0. Use the model's initial

@@ -258,6 +258,30 @@ def test_get_initial_SS_values(baseline, param_updates, filename, tmpdir):
         )
 
 
+def test_get_initial_SS_values_initial_wealth_ratio(tmpdir):
+    """initial_wealth_ratio scales the initial wealth distribution uniformly;
+    the default of 1.0 reproduces the long-standing behavior."""
+    ss_vars = utils.safe_read_pickle(
+        os.path.join(CUR_PATH, "test_io_data", "OUTPUT", "SS", "SS_vars.pkl")
+    )
+    ss_vars_new = {SS_VAR_NAME_MAPPING[k]: v for k, v in ss_vars.items()}
+    baseline_dir = os.path.join(tmpdir, "baseline")
+    utils.mkdirs(os.path.join(baseline_dir, "SS"))
+    with open(os.path.join(baseline_dir, "SS", "SS_vars.pkl"), "wb") as f:
+        pickle.dump(ss_vars_new, f)
+
+    initial_b = {}
+    for ratio in [1.0, 0.7]:
+        p = Specifications(baseline=True, num_workers=NUM_WORKERS)
+        p.update_specifications({"initial_wealth_ratio": ratio})
+        p.baseline_dir = baseline_dir
+        p.output_base = baseline_dir
+        initial_values, _, _, _ = TPI.get_initial_SS_values(p)
+        initial_b[ratio] = initial_values[4]
+
+    assert np.allclose(initial_b[0.7], 0.7 * initial_b[1.0])
+
+
 def test_firstdoughnutring():
     # Test TPI.firstdoughnutring function.  Provide inputs to function and
     # ensure that output returned matches what it has been before.

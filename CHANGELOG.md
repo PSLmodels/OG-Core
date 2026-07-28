@@ -5,6 +5,22 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Added
+
+- New parameter `initial_wealth_ratio` (default 1.0): the ratio of aggregate
+  household wealth in the initial period to its steady-state level. The
+  transition path imposes the steady-state wealth profile on the initial
+  population rescaled so aggregate initial wealth equals the steady-state
+  aggregate; when the initial age distribution is far from the stationary one
+  this hands every initial household a large uniform wealth windfall (younger
+  population) or confiscation (older population), producing artificial
+  consumption/investment swings in the first years of any baseline transition.
+  The new parameter makes initial wealth calibratable to data, like
+  `initial_debt_ratio` and `initial_Kg_ratio`; the default reproduces the
+  previous behavior exactly.
+
 ## [0.18.1] - 2026-07-22 12:00:00
 
 ### Bug Fixes
