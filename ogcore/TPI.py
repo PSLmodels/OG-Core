@@ -162,11 +162,7 @@ def get_initial_SS_values(p):
     ss_baseline_vars = utils.safe_read_pickle(baseline_ss)
     factor = ss_baseline_vars["factor"]
     B0 = aggr.get_B(ss_baseline_vars["b_sp1"], p, "SS", True)
-    initial_b = (
-        ss_baseline_vars["b_sp1"]
-        * (ss_baseline_vars["B"] / B0)
-        * p.initial_wealth_ratio
-    )
+    initial_b = ss_baseline_vars["b_sp1"] * (ss_baseline_vars["B"] / B0)
     initial_n = ss_baseline_vars["n"]
     # The DB/NDC/PS pension formulas need the labor supplied before the
     # time path begins by cohorts alive at t=0. Use the model's initial
@@ -235,6 +231,35 @@ def get_initial_SS_values(p):
     )
 
     return initial_values, ss_vars, theta, baseline_values
+
+
+def scale_initial_wealth(
+    initial_b_shape, B0_shape, target_B0, factor, initial_n, p
+):
+    """
+    Rescale the initial wealth distribution to a target aggregate.
+
+    Args:
+        initial_b_shape (Numpy array): SxJ unscaled initial wealth profile
+        B0_shape (scalar): aggregate of initial_b_shape over the initial
+            population
+        target_B0 (scalar): target aggregate initial wealth
+        factor (scalar): income scaling factor
+        initial_n (Numpy array): initial labor supply
+        p (OG-Core Specifications object): model parameters
+
+    Returns:
+        (tuple): rescaled initial period values,
+            (B0, b_sinit, b_splus1init, factor, initial_b, initial_n)
+
+    """
+    scale = target_B0 / B0_shape
+    initial_b = initial_b_shape * scale
+    b_sinit = np.array(
+        list(np.zeros(p.J).reshape(1, p.J)) + list(initial_b[:-1])
+    )
+    b_splus1init = initial_b
+    return (target_B0, b_sinit, b_splus1init, factor, initial_b, initial_n)
 
 
 def firstdoughnutring(
@@ -762,6 +787,30 @@ def run_TPI(p, client=None):
         Kg0_baseline,
     ) = baseline_values
 
+    # Anchor initial household wealth when initial_wealth_ratio is set (> 0).
+    # Initial wealth is a predetermined state, so the anchor is STATIC within
+    # the solve (rescaling it between outer-loop iterations -- even damped --
+    # drives the initial cohorts' root-finding into infeasible negative-
+    # consumption roots that satisfy the extended FOCs). A baseline run sets
+    # aggregate initial wealth to initial_wealth_ratio times steady-state
+    # GDP, which the steady-state solve has already pinned down exactly; a
+    # reform run clones the baseline's initial wealth outright (the initial
+    # state is history -- policy cannot change what households start with).
+    anchor_initial_wealth = p.initial_wealth_ratio > 0
+    if anchor_initial_wealth:
+        if p.baseline:
+            target_B0 = p.initial_wealth_ratio * ss_vars["Y"]
+        else:
+            baseline_tpi = os.path.join(p.baseline_dir, "TPI", "TPI_vars.pkl")
+            tpi_baseline_vars = utils.safe_read_pickle(baseline_tpi)
+            target_B0 = tpi_baseline_vars["B"][0]
+        initial_values = scale_initial_wealth(
+            initial_b, B0, target_B0, factor, initial_n, p
+        )
+        B0, b_sinit, b_splus1init, factor, initial_b, initial_n = (
+            initial_values
+        )
+
     # Create time path of UBI household benefits and aggregate UBI outlays
     ubi = p.ubi_nom_array / factor
     UBI = aggr.get_L(ubi[: p.T], p, "TPI")
@@ -1183,6 +1232,7 @@ def run_TPI(p, client=None):
         )
         # Update aggregate variables
         L[: p.T] = aggr.get_L(n_mat[: p.T], p, "TPI")
+        B[0] = B0
         B[1 : p.T] = aggr.get_B(bmat_splus1[: p.T], p, "TPI", False)[: p.T - 1]
         w_open = firm.get_w_from_r(p.world_int_rate[: p.T], p, "TPI")
 

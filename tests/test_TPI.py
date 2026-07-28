@@ -258,28 +258,33 @@ def test_get_initial_SS_values(baseline, param_updates, filename, tmpdir):
         )
 
 
-def test_get_initial_SS_values_initial_wealth_ratio(tmpdir):
-    """initial_wealth_ratio scales the initial wealth distribution uniformly;
-    the default of 1.0 reproduces the long-standing behavior."""
-    ss_vars = utils.safe_read_pickle(
-        os.path.join(CUR_PATH, "test_io_data", "OUTPUT", "SS", "SS_vars.pkl")
+def test_scale_initial_wealth():
+    """scale_initial_wealth rescales the wealth profile uniformly to a target
+    aggregate, keeping the profile's shape and rebuilding the beginning- and
+    end-of-period views consistently."""
+    p = Specifications(baseline=True, num_workers=NUM_WORKERS)
+    rng = np.random.default_rng(5)
+    initial_b_shape = rng.uniform(0.1, 2.0, (p.S, p.J))
+    B0_shape = 3.0
+    initial_n = rng.uniform(0.2, 0.5, (p.S, p.J))
+    target_B0 = 4.5
+    (B0, b_sinit, b_splus1init, factor, initial_b, n_out) = (
+        TPI.scale_initial_wealth(
+            initial_b_shape, B0_shape, target_B0, 1000.0, initial_n, p
+        )
     )
-    ss_vars_new = {SS_VAR_NAME_MAPPING[k]: v for k, v in ss_vars.items()}
-    baseline_dir = os.path.join(tmpdir, "baseline")
-    utils.mkdirs(os.path.join(baseline_dir, "SS"))
-    with open(os.path.join(baseline_dir, "SS", "SS_vars.pkl"), "wb") as f:
-        pickle.dump(ss_vars_new, f)
+    assert B0 == target_B0
+    assert np.allclose(initial_b, initial_b_shape * (target_B0 / B0_shape))
+    assert np.allclose(b_splus1init, initial_b)
+    assert np.allclose(b_sinit[0, :], np.zeros(p.J))
+    assert np.allclose(b_sinit[1:, :], initial_b[:-1, :])
+    assert np.allclose(n_out, initial_n)
 
-    initial_b = {}
-    for ratio in [1.0, 0.7]:
-        p = Specifications(baseline=True, num_workers=NUM_WORKERS)
-        p.update_specifications({"initial_wealth_ratio": ratio})
-        p.baseline_dir = baseline_dir
-        p.output_base = baseline_dir
-        initial_values, _, _, _ = TPI.get_initial_SS_values(p)
-        initial_b[ratio] = initial_values[4]
 
-    assert np.allclose(initial_b[0.7], 0.7 * initial_b[1.0])
+def test_initial_wealth_ratio_default_is_off():
+    """The default of 0.0 disables the anchor (legacy behavior)."""
+    p = Specifications(baseline=True, num_workers=NUM_WORKERS)
+    assert p.initial_wealth_ratio == 0.0
 
 
 def test_firstdoughnutring():

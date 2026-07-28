@@ -1104,20 +1104,20 @@
         }
     },
     "initial_wealth_ratio": {
-        "title": "Ratio of aggregate household wealth in the initial period to its steady-state level",
-        "description": "Scales the initial distribution of household wealth used to start the transition path. The transition imposes the steady-state wealth profile on the initial population, rescaled so that aggregate initial wealth equals initial_wealth_ratio times the steady-state aggregate. The default of 1.0 reproduces the long-standing behavior.",
+        "title": "Aggregate household wealth in the initial period, relative to steady-state GDP",
+        "description": "Anchors aggregate household wealth in the initial period of the transition path: B(0) = initial_wealth_ratio x steady-state Y, with the age profile keeping the steady-state shape. Steady-state GDP is the anchor base because it is pinned down exactly before the transition solves, making the anchor static (initial wealth is a predetermined state). Reform runs ignore the parameter and clone the baseline run's initial wealth, so baseline and reform always share the same initial condition. The default of 0.0 disables the anchor and reproduces the long-standing behavior, in which aggregate initial wealth is set equal to its steady-state level regardless of the initial population.",
         "section_1": "Household Parameters",
-        "notes": "Calibrate from observed household wealth or capital stock data in the model start year, as approximately the ratio of observed wealth-to-GDP to the model's steady-state wealth-to-GDP. With the default of 1.0, an initial age distribution far from the stationary one implies a large uniform wealth windfall (younger population) or confiscation (older population) for all initial households.",
+        "notes": "Calibrate so the solved initial-period wealth-to-GDP ratio matches observed household wealth (capital stock plus domestically held government debt) relative to GDP in the start year: set to the data ratio times the model's Y(0)/Y_ss (one solve iteration pins it; report the delivered B(0)/Y(0)). With the anchor disabled, an initial age distribution far from the stationary one implies a large uniform wealth windfall (younger population) or confiscation (older population) for all initial households.",
         "type": "float",
         "value": [
             {
-                "value": 1.0
+                "value": 0.0
             }
         ],
         "validators": {
             "range": {
-                "min": 0.05,
-                "max": 5.0
+                "min": 0.0,
+                "max": 20.0
             }
         }
     },

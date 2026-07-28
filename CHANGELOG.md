@@ -9,17 +9,26 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- New parameter `initial_wealth_ratio` (default 1.0): the ratio of aggregate
-  household wealth in the initial period to its steady-state level. The
-  transition path imposes the steady-state wealth profile on the initial
-  population rescaled so aggregate initial wealth equals the steady-state
-  aggregate; when the initial age distribution is far from the stationary one
-  this hands every initial household a large uniform wealth windfall (younger
-  population) or confiscation (older population), producing artificial
-  consumption/investment swings in the first years of any baseline transition.
-  The new parameter makes initial wealth calibratable to data, like
-  `initial_debt_ratio` and `initial_Kg_ratio`; the default reproduces the
-  previous behavior exactly.
+- New parameter `initial_wealth_ratio` (default 0.0 = disabled): household
+  wealth to GDP ratio in the initial period of the transition path, anchoring
+  B(0) = initial_wealth_ratio x steady-state Y. Initial wealth is a
+  predetermined state, so the anchor is STATIC within the solve, and
+  steady-state GDP is the anchor base because the steady-state solve has
+  already pinned it down exactly. Reform runs ignore the parameter and clone
+  the baseline's initial wealth (read from the baseline's saved transition),
+  so baseline and reform always share the same initial condition. Anchoring
+  to initial-period GDP instead was tried and rejected twice: Y(0) is
+  endogenous, and rescaling the households' initial wealth between
+  outer-loop iterations -- even damped -- drives the initial cohorts'
+  root-finding into infeasible negative-consumption roots that satisfy the
+  extended FOCs and pass the constraint checker. The transition path otherwise imposes the
+  steady-state wealth profile rescaled so aggregate initial wealth equals the
+  steady-state aggregate; when the initial age distribution is far from the
+  stationary one this hands every initial household a large uniform wealth
+  windfall (younger population) or confiscation (older population), producing
+  artificial consumption/investment swings in the first years of any baseline
+  transition. The new parameter makes initial wealth calibratable to data;
+  the default reproduces the previous behavior exactly.
 
 ## [0.18.1] - 2026-07-22 12:00:00
 
