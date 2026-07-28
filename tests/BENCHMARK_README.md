@@ -87,17 +87,17 @@ Each benchmark produces a `BenchmarkResult` with the following metrics:
 ```python
 @dataclass
 class BenchmarkResult:
-    test_name: str           # Name of the test
-    platform: str            # Operating system
-    scheduler: str           # Dask scheduler used
-    num_workers: int         # Number of workers
-    compute_time: float      # Execution time in seconds
-    peak_memory_mb: float    # Peak memory usage in MB
-    avg_memory_mb: float     # Average memory usage in MB
-    data_size_mb: float      # Input data size in MB
-    num_tasks: int           # Number of parallel tasks
-    success: bool            # Whether test succeeded
-    error_message: str       # Error details if failed
+    test_name: str  # Name of the test
+    platform: str  # Operating system
+    scheduler: str  # Dask scheduler used
+    num_workers: int  # Number of workers
+    compute_time: float  # Execution time in seconds
+    peak_memory_mb: float  # Peak memory usage in MB
+    avg_memory_mb: float  # Average memory usage in MB
+    data_size_mb: float  # Input data size in MB
+    num_tasks: int  # Number of parallel tasks
+    success: bool  # Whether test succeeded
+    error_message: str  # Error details if failed
 ```
 
 ### Key Metrics to Monitor
@@ -228,7 +228,7 @@ cluster = LocalCluster(
     n_workers=num_workers,
     threads_per_worker=2,
     processes=False,  # Use threads, not processes
-    memory_limit='4GB',
+    memory_limit="4GB",
 )
 client = Client(cluster)
 ```
