@@ -5,6 +5,20 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Bug Fixes
+
+- Fixes Issue [#1186](https://github.com/PSLmodels/OG-Core/issues/1186):
+  with demographics that vary across lifetime income groups (PR #1165), the
+  `use_zeta = False` branch of `household.get_bq` divided each group's
+  bequest pool by its birth share (`lambdas[j]`) rather than its actual
+  population share, so bequests received did not sum to bequests left and
+  the steady-state resource constraint failed. Receipts are now divided by
+  the group's actual population (from `omega_SS` / `omega`), matching the
+  `use_zeta = True` branch. Results are unchanged when demographics are
+  common across groups.
+
 ## [0.18.1] - 2026-07-22 12:00:00
 
 ### Bug Fixes
