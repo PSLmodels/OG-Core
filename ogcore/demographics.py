@@ -672,6 +672,423 @@ def immsolve(imm_rates, *args):
     return omega_errs
 
 
+def _logistic(x):
+    """
+    Numerically stable logistic transform.
+    """
+    return 1 / (1 + np.exp(-np.clip(x, -700, 700)))
+
+
+def _income_shares_and_midpoints(income_percentiles):
+    """
+    Convert income group population shares into centered percentile midpoints.
+    """
+    income_shares = np.asarray(income_percentiles, dtype=float).ravel()
+    if income_shares.ndim != 1 or income_shares.size < 1:
+        raise ValueError("income_percentiles must be a one-dimensional array.")
+    if np.any(income_shares <= 0):
+        raise ValueError("income_percentiles must contain positive values.")
+    income_shares = income_shares / income_shares.sum()
+    percentile_midpoints = (
+        100 * (np.cumsum(income_shares) - 0.5 * income_shares) - 50
+    )
+    return income_shares, percentile_midpoints
+
+
+def _extend_time_path(arr, num_periods):
+    """
+    Extend or trim the first dimension of an array to num_periods.
+    """
+    if arr.shape[0] == num_periods:
+        return arr
+    if arr.shape[0] > num_periods:
+        return arr[:num_periods]
+    extension = np.repeat(arr[-1:, ...], num_periods - arr.shape[0], axis=0)
+    return np.concatenate((arr, extension), axis=0)
+
+
+def _format_age_gradient(gradient, num_periods, E, S, name):
+    """
+    Put an age gradient into a num_periods x (E+S) array.
+
+    A length-S vector is interpreted as applying to economically active ages
+    only, with zero gradients for younger ages.
+    """
+    totpers = E + S
+    if gradient is None:
+        return np.zeros((num_periods, totpers))
+
+    gradient = np.asarray(gradient, dtype=float)
+    if gradient.ndim == 0:
+        return np.full((num_periods, totpers), gradient)
+
+    if gradient.ndim == 1:
+        if gradient.shape[0] == 1:
+            full_gradient = np.full(totpers, gradient.item())
+        elif gradient.shape[0] == S:
+            full_gradient = np.concatenate((np.zeros(E), gradient))
+        elif gradient.shape[0] == totpers:
+            full_gradient = gradient
+        else:
+            raise ValueError(
+                f"{name} must have length 1, S={S}, or E+S={totpers}."
+            )
+        return np.tile(full_gradient.reshape(1, totpers), (num_periods, 1))
+
+    if gradient.ndim == 2:
+        if gradient.shape[1] == S:
+            gradient = np.concatenate(
+                (np.zeros((gradient.shape[0], E)), gradient), axis=1
+            )
+        elif gradient.shape[1] != totpers:
+            raise ValueError(
+                f"{name} must have second dimension S={S} or E+S={totpers}."
+            )
+        return _extend_time_path(gradient, num_periods)
+
+    raise ValueError(f"{name} must be a scalar, vector, or 2D array.")
+
+
+def _format_infmort_gradient(gradient, num_periods):
+    """
+    Put an infant mortality gradient into a num_periods vector.
+    """
+    if gradient is None:
+        return np.zeros(num_periods)
+
+    gradient = np.asarray(gradient, dtype=float)
+    if gradient.ndim == 0:
+        return np.full(num_periods, gradient)
+    if gradient.ndim == 1:
+        if gradient.shape[0] == 1:
+            return np.full(num_periods, gradient.item())
+        return _extend_time_path(gradient.reshape(-1, 1), num_periods).ravel()
+
+    raise ValueError("infmort_gradient must be a scalar or vector.")
+
+
+def _format_imm_shares(imm_pctiles, num_periods, E, S, income_shares):
+    """
+    Format immigrant income shares as num_periods x (E+S) x J.
+    """
+    totpers = E + S
+    J = income_shares.shape[0]
+    if imm_pctiles is None:
+        return np.tile(
+            income_shares.reshape(1, 1, J), (num_periods, totpers, 1)
+        )
+
+    imm_shares = np.asarray(imm_pctiles, dtype=float)
+    if imm_shares.ndim == 1:
+        if imm_shares.shape[0] != J:
+            raise ValueError(f"imm_pctiles must have J={J} elements.")
+        imm_shares = np.tile(
+            imm_shares.reshape(1, 1, J), (num_periods, totpers, 1)
+        )
+    elif imm_shares.ndim == 2:
+        if imm_shares.shape[-1] != J:
+            raise ValueError(f"imm_pctiles last dimension must be J={J}.")
+        if imm_shares.shape[0] == S:
+            young_shares = np.tile(income_shares.reshape(1, J), (E, 1))
+            imm_shares = np.concatenate((young_shares, imm_shares), axis=0)
+        elif imm_shares.shape[0] != totpers:
+            raise ValueError(
+                f"imm_pctiles first dimension must be S={S} or E+S={totpers}."
+            )
+        imm_shares = np.tile(
+            imm_shares.reshape(1, totpers, J), (num_periods, 1, 1)
+        )
+    elif imm_shares.ndim == 3:
+        if imm_shares.shape[-1] != J:
+            raise ValueError(f"imm_pctiles last dimension must be J={J}.")
+        if imm_shares.shape[1] == S:
+            young_shares = np.tile(
+                income_shares.reshape(1, 1, J), (imm_shares.shape[0], E, 1)
+            )
+            imm_shares = np.concatenate((young_shares, imm_shares), axis=1)
+        elif imm_shares.shape[1] != totpers:
+            raise ValueError(
+                f"imm_pctiles second dimension must be S={S} or E+S={totpers}."
+            )
+        imm_shares = _extend_time_path(imm_shares, num_periods)
+    else:
+        raise ValueError(
+            "imm_pctiles must be a vector, 2D array, or 3D array."
+        )
+
+    if np.any(imm_shares < 0):
+        raise ValueError("imm_pctiles must be nonnegative.")
+    denom = imm_shares.sum(axis=-1, keepdims=True)
+    if np.any(denom <= 0):
+        raise ValueError("imm_pctiles must sum to a positive value across J.")
+    return imm_shares / denom
+
+
+def _within_age_weights(pop_by_age_j, income_shares):
+    """
+    Compute J weights within each age, using income_shares if an age is empty.
+    """
+    age_totals = pop_by_age_j.sum(axis=-1, keepdims=True)
+    default_weights = np.tile(
+        income_shares.reshape(1, income_shares.shape[0]),
+        (pop_by_age_j.shape[0], 1),
+    )
+    return np.divide(
+        pop_by_age_j,
+        age_totals,
+        out=default_weights,
+        where=age_totals > 0,
+    )
+
+
+def _mean_preserving_logit_rates(mean_rates, slopes, weights, pct_midpoints):
+    """
+    Create J-specific rates bounded in [0, 1] with weighted mean mean_rates.
+    """
+    mean_rates = np.asarray(mean_rates, dtype=float)
+    slopes = np.asarray(slopes, dtype=float)
+    weights = np.asarray(weights, dtype=float)
+    rates = np.zeros(weights.shape)
+
+    for idx in np.ndindex(mean_rates.shape):
+        mean_rate = mean_rates[idx]
+        slope = slopes[idx]
+        w = weights[idx]
+        w = w / w.sum()
+
+        if mean_rate <= 0:
+            rates[idx] = 0.0
+        elif mean_rate >= 1:
+            rates[idx] = 1.0
+        elif np.isclose(slope, 0.0):
+            rates[idx] = mean_rate
+        else:
+
+            def mean_error(intercept):
+                return (
+                    np.dot(w, _logistic(intercept + slope * pct_midpoints))
+                    - mean_rate
+                )
+
+            intercept = opt.brentq(mean_error, -700, 700)
+            rates[idx] = _logistic(intercept + slope * pct_midpoints)
+
+    return rates
+
+
+def expand_pop_obj_J(
+    omega_path_lev,
+    omega_path_S,
+    omega_SSfx,
+    fert_rates,
+    mort_rates,
+    infmort_rates,
+    imm_rates,
+    mort_rates_S,
+    imm_rates_mat,
+    E,
+    S,
+    g_n_SS,
+    fixper,
+    income_percentiles=None,
+    fert_gradient=None,
+    mort_gradient=None,
+    infmort_gradient=None,
+    imm_pctiles=None,
+):
+    """
+    Expand aggregate demographic objects to age x income-group objects.
+
+    The aggregate population path and rates are left unchanged. If
+    income_percentiles is None and no income-specific inputs are
+    provided, the aggregate objects are broadcast across a single
+    income group (J=1). Otherwise, income_percentiles gives the initial
+    population distribution across J for every age and the income
+    shares of newborns in every period.
+
+    Args:
+        omega_path_lev (Numpy array): T+S x E+S aggregate population levels.
+        omega_path_S (Numpy array): T+S x S aggregate active-age population
+            shares.
+        omega_SSfx (Numpy array): fixed full-life population distribution.
+        fert_rates (Numpy array): T+S x E+S fertility rates.
+        mort_rates (Numpy array): T+S x E+S mortality rates.
+        infmort_rates (Numpy array): T+S infant mortality rates.
+        imm_rates (Numpy array): T+S x E+S immigration rates, including the
+            adjusted post-fixper rates.
+        mort_rates_S (Numpy array): T+S x S mortality rates for active ages.
+        imm_rates_mat (Numpy array): T+S x S immigration rates for active ages.
+        E (int): number of non-economically active periods.
+        S (int): number of economically active periods.
+        g_n_SS (float): steady-state population growth rate.
+        fixper (int): period at which the fixed steady-state distribution is
+            imposed.
+        income_percentiles (array_like): population shares for each J
+            group; defaults to a single income group when no
+            income-specific inputs are supplied.
+        fert_gradient (array_like): log-odds fertility slopes by age.
+        mort_gradient (array_like): log-odds mortality slopes by age.
+        infmort_gradient (array_like): log-odds infant mortality slopes.
+        imm_pctiles (array_like): immigrant income shares by period,
+        age, and J.
+
+    Returns:
+        dict: demographic objects with the same keys needed by get_pop_objs.
+    """
+    omega_SS = omega_SSfx[-S:] / omega_SSfx[-S:].sum()
+    income_inputs = (
+        fert_gradient,
+        mort_gradient,
+        infmort_gradient,
+        imm_pctiles,
+    )
+    all_income_inputs_none = all(x is None for x in income_inputs)
+    if income_percentiles is None:
+        assert all_income_inputs_none, (
+            "income_percentiles must be provided when using "
+            + "income-specific inputs."
+        )
+        # No income heterogeneity requested: broadcast the aggregate
+        # objects across a single income group.
+        income_percentiles = [100]
+    income_shares, pct_midpoints = _income_shares_and_midpoints(
+        income_percentiles
+    )
+    J = income_shares.shape[0]
+    num_periods, totpers = omega_path_lev.shape
+    assert totpers == E + S
+
+    if all_income_inputs_none:
+        return {
+            "omega_path_S": omega_path_S.reshape(
+                omega_path_S.shape[0], omega_path_S.shape[1], 1
+            )
+            * income_shares.reshape(1, 1, J),
+            "omega_SS": omega_SS.reshape(omega_SS.shape[0], 1)
+            * income_shares.reshape(1, J),
+            "mort_rates_S": np.tile(
+                mort_rates_S.reshape(
+                    mort_rates_S.shape[0], mort_rates_S.shape[1], 1
+                ),
+                (1, 1, J),
+            ),
+            "imm_rates_mat": np.tile(
+                imm_rates_mat.reshape(
+                    imm_rates_mat.shape[0], imm_rates_mat.shape[1], 1
+                ),
+                (1, 1, J),
+            ),
+        }
+
+    fert_slopes = _format_age_gradient(
+        fert_gradient, num_periods, E, S, "fert_gradient"
+    )
+    mort_slopes = _format_age_gradient(
+        mort_gradient, num_periods, E, S, "mort_gradient"
+    )
+    infmort_slopes = _format_infmort_gradient(infmort_gradient, num_periods)
+    imm_shares = _format_imm_shares(
+        imm_pctiles, num_periods, E, S, income_shares
+    )
+
+    # Use the aggregate fixed distribution after fixper, matching the
+    # age-only steady-state logic already computed above.
+    target_pop = np.array(omega_path_lev, dtype=float, copy=True)
+    fixed_full_dist = omega_SSfx / omega_SSfx.sum()
+    if fixper < num_periods:
+        total_pop = target_pop[fixper].sum()
+        target_pop[fixper] = total_pop * fixed_full_dist
+        for t in range(fixper + 1, num_periods):
+            total_pop *= 1 + g_n_SS
+            target_pop[t] = total_pop * fixed_full_dist
+
+    pop_path_J = np.zeros((num_periods, totpers, J))
+    fert_rates_J = np.zeros((num_periods, totpers, J))
+    mort_rates_J = np.zeros((num_periods, totpers, J))
+    imm_rates_J = np.zeros((num_periods, totpers, J))
+    infmort_rates_J = np.zeros((num_periods, J))
+    pop_path_J[0] = target_pop[0, :, None] * income_shares.reshape(1, J)
+    fixed_pop_dist_J = None
+
+    for t in range(num_periods):
+        pop_t_J = pop_path_J[t]
+        age_weights = _within_age_weights(pop_t_J, income_shares)
+        fert_rates_J[t] = _mean_preserving_logit_rates(
+            fert_rates[t], fert_slopes[t], age_weights, pct_midpoints
+        )
+        mort_rates_J[t] = _mean_preserving_logit_rates(
+            mort_rates[t], mort_slopes[t], age_weights, pct_midpoints
+        )
+        infmort_rates_J[t] = _mean_preserving_logit_rates(
+            np.array([infmort_rates[t]]),
+            np.array([infmort_slopes[t]]),
+            income_shares.reshape(1, J),
+            pct_midpoints,
+        )[0]
+
+        births = (fert_rates_J[t] * pop_t_J).sum()
+        newborns = births * income_shares
+        pre_imm_pop = np.zeros((totpers, J))
+        pre_imm_pop[0] = (1 - infmort_rates_J[t]) * newborns
+        pre_imm_pop[1:] = pop_t_J[:-1] * (1 - mort_rates_J[t, :-1])
+
+        if t + 1 < num_periods:
+            target_next = target_pop[t + 1]
+        else:
+            newborns_agg = np.dot(fert_rates[t], target_pop[t])
+            target_next = np.zeros(totpers)
+            target_next[0] = (1 - infmort_rates[t]) * newborns_agg + imm_rates[
+                t, 0
+            ] * target_pop[t, 0]
+            target_next[1:] = (
+                target_pop[t, :-1] * (1 - mort_rates[t, :-1])
+                + imm_rates[t, 1:] * target_pop[t, 1:]
+            )
+
+        if t == fixper:
+            fixed_pop_dist_J = pop_t_J / pop_t_J.sum()
+
+        if fixed_pop_dist_J is not None and t >= fixper:
+            target_next_J = fixed_pop_dist_J * target_next.sum()
+            imm_flow_J = target_next_J - pre_imm_pop
+            pop_next_J = target_next_J
+        else:
+            imm_flow = target_next - pre_imm_pop.sum(axis=1)
+            imm_flow_J = imm_flow[:, None] * imm_shares[t]
+            pop_next_J = pre_imm_pop + imm_flow_J
+
+        imm_rates_J[t] = np.divide(
+            imm_flow_J,
+            pop_t_J,
+            out=np.zeros_like(imm_flow_J),
+            where=pop_t_J != 0,
+        )
+
+        if t + 1 < num_periods:
+            if np.any(pop_next_J < -1e-8):
+                raise ValueError(
+                    "Income-specific demographic inputs imply a negative "
+                    "population in at least one age-income cell."
+                )
+            pop_path_J[t + 1] = np.maximum(pop_next_J, 0.0)
+
+    active_pop_J = pop_path_J[:, E:, :]
+    omega_path_S_J = active_pop_J / active_pop_J.sum(axis=(1, 2)).reshape(
+        num_periods, 1, 1
+    )
+    omega_SS_J = omega_path_S_J[fixper]
+
+    assert np.allclose(omega_path_S_J.sum(axis=2), omega_path_S)
+    assert np.allclose(omega_SS_J.sum(axis=1), omega_SS)
+
+    return {
+        "omega_path_S": omega_path_S_J,
+        "omega_SS": omega_SS_J,
+        "mort_rates_S": mort_rates_J[:, E:, :],
+        "imm_rates_mat": imm_rates_J[:, E:, :],
+    }
+
+
 def get_pop_objs(
     E=20,
     S=80,
@@ -684,6 +1101,11 @@ def get_pop_objs(
     imm_rates=None,
     infer_pop=False,
     pop_dist=None,
+    fert_gradient=None,
+    mort_gradient=None,
+    infmort_gradient=None,
+    imm_pctiles=None,
+    income_percentiles=None,
     country_id=UN_COUNTRY_CODE,
     initial_data_year=START_YEAR - 1,
     final_data_year=START_YEAR + 2,
@@ -714,6 +1136,25 @@ def get_pop_objs(
         infer_pop (bool): =True if want to infer the population
         pop_dist (array_like): user provided population distribution,
             dimensions are T0+1 x E+S
+        fert_gradient (array_like): user provided fertility rate gradient,
+            dimensions are S, represents the log-odds slope in the
+            fertility rate
+            per percentile of the lifetime income distribution.
+        mort_gradient (array_like): user provided mortality rate gradient,
+            dimensions are S, represents the log-odds slope in the
+            mortality rate
+            per percentile of the lifetime income distribution.
+        infmort_gradient (array_like): user provided infant mortality
+            rate gradient, dimensions are S, represents the log-odds
+            slope in the infant mortality rate per percentile of the
+            lifetime income distribution.
+        imm_pctiles (array_like): user provided lifetime income distribution
+            for new immigrants, shape is num_per x S x J, where num_per
+            is the number of years between initial and final_data_year
+        income_percentiles (array_like): user provided income percentiles,
+            dimensions are J, the number of lifetime income groups;
+            defaults to a single income group (J=1) when no
+            income-specific inputs are supplied
         country_id (str): country id for UN data
         initial_data_year (int): initial year of data to use
             (not relevant if have user provided data)
@@ -1000,16 +1441,14 @@ def get_pop_objs(
         - omega_path_lev[:-1, -S:].sum(axis=1)
     ) / omega_path_lev[:-1, -S:].sum(axis=1)
     g_n_path[fixper + 1 :] = g_n_SS
-    imm_rates_mat = np.concatenate(
+    imm_rates_full = np.concatenate(
         (
-            imm_rates_orig[:fixper, E:],
-            np.tile(
-                imm_rates_adj[E:].reshape(1, S),
-                (T + S - fixper, 1),
-            ),
+            imm_rates_orig[:fixper, :],
+            np.tile(imm_rates_adj.reshape(1, E + S), (T + S - fixper, 1)),
         ),
         axis=0,
     )
+    imm_rates_mat = imm_rates_full[:, E:]
 
     if GraphDiag:
         # Check whether original SS population distribution is close to
@@ -1156,17 +1595,38 @@ def get_pop_objs(
             path=OUTPUT_DIR,
         )
 
+    pop_objs = expand_pop_obj_J(
+        omega_path_lev,
+        omega_path_S,
+        omega_SSfx,
+        fert_rates,
+        mort_rates,
+        infmort_rates,
+        imm_rates_full,
+        mort_rates_S,
+        imm_rates_mat,
+        E,
+        S,
+        g_n_SS,
+        fixper,
+        income_percentiles=income_percentiles,
+        fert_gradient=fert_gradient,
+        mort_gradient=mort_gradient,
+        infmort_gradient=infmort_gradient,
+        imm_pctiles=imm_pctiles,
+    )
+
     # Return objects in a dictionary
     pop_dict = {
-        "omega": omega_path_S[1:, :],
+        "omega": pop_objs["omega_path_S"][1:, :, :],
         "g_n_ss": g_n_SS,
-        "omega_SS": omega_SSfx[-S:] / omega_SSfx[-S:].sum(),
-        "rho": mort_rates_S[1:, :],
+        "omega_SS": pop_objs["omega_SS"],
+        "rho": pop_objs["mort_rates_S"][1:, :, :],
         "g_n": g_n_path[1:],
-        "imm_rates": imm_rates_mat[1:, :],
-        "omega_S_preTP": omega_path_S[0, :],
-        "imm_rates_preTP": imm_rates_mat[0, :],
-        "rho_preTP": mort_rates_S[0, :],
+        "imm_rates": pop_objs["imm_rates_mat"][1:, :, :],
+        "omega_S_preTP": pop_objs["omega_path_S"][0, :, :],
+        "imm_rates_preTP": pop_objs["imm_rates_mat"][0, :, :],
+        "rho_preTP": pop_objs["mort_rates_S"][0, :, :],
         "g_n_preTP": g_n_path[0],
     }
 

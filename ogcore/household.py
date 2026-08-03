@@ -176,26 +176,21 @@ def get_bq(BQ, j, p, method):
     if p.use_zeta:
         if j is not None:
             if method == "SS":
-                bq = (p.zeta[:, j] * BQ) / (p.lambdas[j] * p.omega_SS)
+                bq = (p.zeta[:, j] * BQ) / p.omega_SS[:, j]
             else:
                 len_T = BQ.shape[0]
                 bq = (
                     np.reshape(p.zeta[:, j], (1, p.S)) * BQ.reshape((len_T, 1))
-                ) / (p.lambdas[j] * p.omega[:len_T, :])
+                ) / p.omega[:len_T, :, j]
         else:
             if method == "SS":
-                bq = (p.zeta * BQ) / (
-                    p.lambdas.reshape((1, p.J)) * p.omega_SS.reshape((p.S, 1))
-                )
+                bq = (p.zeta * BQ) / p.omega_SS
             else:
                 len_T = BQ.shape[0]
                 bq = (
                     np.reshape(p.zeta, (1, p.S, p.J))
                     * utils.to_timepath_shape(BQ)
-                ) / (
-                    p.lambdas.reshape((1, 1, p.J))
-                    * p.omega[:len_T, :].reshape((len_T, p.S, 1))
-                )
+                ) / p.omega[:len_T, :, :]
     else:
         if j is not None:
             if method == "SS":
@@ -237,22 +232,19 @@ def get_tr(TR, j, p, method):
     """
     if j is not None:
         if method == "SS":
-            tr = (p.eta[-1, :, j] * TR) / (p.lambdas[j] * p.omega_SS)
+            tr = (p.eta[-1, :, j] * TR) / p.omega_SS[:, j]
         else:
             len_T = TR.shape[0]
             tr = (p.eta[:len_T, :, j] * TR.reshape((len_T, 1))) / (
-                p.lambdas[j] * p.omega[:len_T, :]
+                p.omega[:len_T, :, j]
             )
     else:
         if method == "SS":
-            tr = (p.eta[-1, :, :] * TR) / (
-                p.lambdas.reshape((1, p.J)) * p.omega_SS.reshape((p.S, 1))
-            )
+            tr = (p.eta[-1, :, :] * TR) / p.omega_SS
         else:
             len_T = TR.shape[0]
             tr = (p.eta[:len_T, :, :] * utils.to_timepath_shape(TR)) / (
-                p.lambdas.reshape((1, 1, p.J))
-                * p.omega[:len_T, :].reshape((len_T, p.S, 1))
+                p.omega[:len_T, :, :]
             )
 
     return tr
@@ -279,22 +271,19 @@ def get_rm(RM, j, p, method):
     """
     if j is not None:
         if method == "SS":
-            rm = (p.eta_RM[-1, :, j] * RM) / (p.lambdas[j] * p.omega_SS)
+            rm = (p.eta_RM[-1, :, j] * RM) / p.omega_SS[:, j]
         else:
             len_T = RM.shape[0]
             rm = (p.eta_RM[:len_T, :, j] * RM.reshape((len_T, 1))) / (
-                p.lambdas[j] * p.omega[:len_T, :]
+                p.omega[:len_T, :, j]
             )
     else:
         if method == "SS":
-            rm = (p.eta_RM[-1, :, :] * RM) / (
-                p.lambdas.reshape((1, p.J)) * p.omega_SS.reshape((p.S, 1))
-            )
+            rm = (p.eta_RM[-1, :, :] * RM) / p.omega_SS
         else:
             len_T = RM.shape[0]
             rm = (p.eta_RM[:len_T, :, :] * utils.to_timepath_shape(RM)) / (
-                p.lambdas.reshape((1, 1, p.J))
-                * p.omega[:len_T, :].reshape((len_T, p.S, 1))
+                p.omega[:len_T, :, :]
             )
 
     return rm
@@ -541,7 +530,7 @@ def FOC_savings(
         h_wealth = p.h_wealth[-1]
         m_wealth = p.m_wealth[-1]
         p_wealth = p.p_wealth[-1]
-        p_tilde = np.ones_like(p.rho[-1, :]) * p_tilde
+        p_tilde = np.ones_like(rho) * p_tilde
         tau_c = p.tau_c[-1, :]
     elif method == "TPI_scalar":
         h_wealth = p.h_wealth[0]

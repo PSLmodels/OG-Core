@@ -5,11 +5,12 @@ from ogcore import pensions
 from ogcore.parameters import Specifications
 
 p = Specifications()
-rho_vec = np.zeros((1, 4))
-rho_vec[0, -1] = 1.0
+rho_vec = np.zeros((1, 4, 1))
+rho_vec[0, -1, :] = 1.0
 new_param_values = {
     "S": 4,
     "rho": rho_vec.tolist(),
+    "rho_preTP": rho_vec[0, :, :].tolist(),
     "lambdas": [1.0],
     "labor_income_tax_noncompliance_rate": [[0.0]],
     "capital_income_tax_noncompliance_rate": [[0.0]],
@@ -21,6 +22,11 @@ new_param_values = {
     "chi_n": np.ones(4),
     "eta": (np.ones((4, 1)) / (4 * 1)),
     "e": np.ones((4, 1)),
+    "omega": (np.ones((1, 4, 1)) / 4).tolist(),
+    "omega_SS": (np.ones((4, 1)) / 4).tolist(),
+    "omega_S_preTP": (np.ones((4, 1)) / 4).tolist(),
+    "imm_rates": np.zeros((1, 4, 1)).tolist(),
+    "imm_rates_preTP": np.zeros((4, 1)).tolist(),
 }
 p.update_specifications(new_param_values)
 p.retire = [3, 3, 3, 3, 3, 3, 3, 3]
@@ -28,7 +34,8 @@ p1 = Specifications()
 p1.update_specifications(
     {
         "S": 4,
-        "rho": rho_vec.tolist(),
+        "rho": np.tile(rho_vec, (1, 1, 2)).tolist(),
+        "rho_preTP": np.tile(rho_vec[0, :, :], (1, 2)).tolist(),
         "lambdas": [0.5, 0.5],
         "labor_income_tax_noncompliance_rate": [[0.0]],
         "capital_income_tax_noncompliance_rate": [[0.0]],
@@ -40,6 +47,11 @@ p1.update_specifications(
         "chi_n": np.ones(4),
         "eta": (np.ones((4, 2)) / (4 * 2)),
         "e": np.ones((4, 2)),
+        "omega": (np.ones((1, 4, 2)) / (4 * 2)).tolist(),
+        "omega_SS": (np.ones((4, 2)) / (4 * 2)).tolist(),
+        "omega_S_preTP": (np.ones((4, 2)) / (4 * 2)).tolist(),
+        "imm_rates": np.zeros((1, 4, 2)).tolist(),
+        "imm_rates_preTP": np.zeros((4, 2)).tolist(),
     }
 )
 p1.retire = [3, 3, 3, 3, 3, 3, 3, 3]
@@ -817,9 +829,13 @@ p2.tau_p = 0.3
 p2.k_ret = 0.4615
 p2.mort_rates_SS = np.array([0.01, 0.05, 0.3, 0.4, 1])
 p2.e = e
-NDC_expected2 = np.array([0, 0.25185784, 0.24441432])
+# Pre-time-path wages are anchored to the period-0 wage of the passed
+# path (w[0] = 1.1), not the old w_preTP attribute. Earlier expected
+# values under the old convention, kept for reference:
+# NDC_expected2 = np.array([0, 0.25185784, 0.24441432])
 # TODO: why move from numbers below to those above ?  Diff in numpy rounding??
 # NDC_expected2 = np.array([0, 0.251721214, 0.244281728])
+NDC_expected2 = np.array([0, 0.25705613, 0.24945897])
 args2 = (w, e, n, r, None, j, p2)
 
 test_data = [(args1, NDC_expected1), (args2, NDC_expected2)]
@@ -935,7 +951,8 @@ p2.n_preTP = np.array(
     ]
 )
 p2.e = e2
-PS_expected2 = np.array([0, 0, 0.003585952, 0.003479971, 0.003377123])
+# Pre-time-path wages anchored to the period-0 wage (w2[0] = 1.21)
+PS_expected2 = np.array([0, 0, 0.003852672, 0.003738809, 0.00362831])
 args2 = (w2, e2, n2, j, factor, p2)
 
 test_data = [(args1, PS_expected1), (args2, PS_expected2)]
@@ -952,3 +969,82 @@ def test_get_PS(args, PS_expected):
     PS = pensions.PS_amount(w, e, n, j, factor, p)
     print("PS inside of the test", PS)
     assert np.allclose(PS, PS_expected)
+
+
+# Regression tests for the array/scalar bugs hit when the non-US pension
+# systems run against a real Specifications object (Issues #1014 and #1075):
+# p.retire is an array (time-varying since PR #433) but was passed as the
+# scalar S_ret into the numba loops; p.g_y is a scalar but the loops index
+# it; and in the SS the wage is a scalar but the loops index it as a path.
+# The mock-parameter tests above pre-scalarize these inputs, so they never
+# exercised the real interface.
+@pytest.mark.parametrize(
+    "system,updates",
+    [
+        (
+            "Defined Benefits",
+            {"alpha_db": 0.02, "yr_contrib": 35, "avg_earn_num_years": 40},
+        ),
+        ("Points System", {"vpoint": 0.5}),
+        # The NDC growth-rate settings (ndc_growth_rate,
+        # dir_growth_rate) became parameters with Issue #1169; tau_p
+        # must be positive for the pension to be nonzero
+        (
+            "Notional Defined Contribution",
+            {
+                "tau_p": 0.1,
+                "ndc_growth_rate": "LR GDP",
+                "dir_growth_rate": "r",
+            },
+        ),
+    ],
+    ids=["DB", "PS", "NDC"],
+)
+def test_pension_amount_with_real_specifications(system, updates):
+    """
+    pension_amount must accept a real Specifications object in the SS:
+    retire is an array, g_y a scalar, and the steady-state wage a scalar.
+    """
+    p = Specifications()
+    p.update_specifications(dict(updates, pension_system=system))
+    j = 0
+    w = 1.2  # steady-state wage is a scalar
+    r, Y, factor = 0.05, 1.0, 100000.0
+    n = 0.4 * np.ones(p.S)
+    e = p.e[-1, :, j]
+    theta = np.zeros(p.J)
+    pension = pensions.pension_amount(
+        r, w, n, Y, theta, None, j, False, "SS", e, factor, p
+    )
+    S_ret = int(p.retire[-1])
+    assert pension.shape == (p.S,)
+    assert np.all(pension[:S_ret] == 0.0)
+    assert np.all(pension[S_ret:] > 0.0)
+
+
+@pytest.mark.local
+def test_SS_solve_defined_benefits(tmp_path):
+    """
+    The steady state must solve with the Defined Benefits pension system
+    and produce positive aggregate pension outlays (Issue #1014 asked for
+    model-run tests of each pension system; the analogous NDC and Points
+    System runs should be added with the resolution of that issue).
+    """
+    from ogcore.execute import runner
+    from ogcore import utils
+
+    p = Specifications(baseline=True, num_workers=1)
+    p.update_specifications(
+        {
+            "pension_system": "Defined Benefits",
+            "alpha_db": 0.02,
+            "yr_contrib": 35,
+            "avg_earn_num_years": 40,
+        }
+    )
+    p.baseline_dir = p.output_base = str(tmp_path)
+    runner(p, time_path=False, client=None)
+    ss = utils.safe_read_pickle(str(tmp_path / "SS" / "SS_vars.pkl"))
+    Y = np.asarray(ss["Y"]).sum()
+    assert ss["agg_pension_outlays"] > 0.0
+    assert 0.0 < ss["agg_pension_outlays"] / Y < 1.0

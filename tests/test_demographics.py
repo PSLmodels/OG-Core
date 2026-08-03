@@ -42,6 +42,7 @@ def test_get_pop_objs_read_UN_data():
         T,
         0,
         99,
+        income_percentiles=[0.25, 0.25, 0.2, 0.2, 0.05, 0.04, 0.01],
         initial_data_year=start_year - 1,
         final_data_year=start_year,
         GraphDiag=False,
@@ -71,13 +72,13 @@ def test_get_pop_objs():
         infmort_rates=infmort_rates,
         imm_rates=imm_rates,
         infer_pop=True,
+        income_percentiles=[0.25, 0.25, 0.2, 0.2, 0.05, 0.04, 0.01],
         pop_dist=pop_dist[0, :].reshape(1, E + S),
         initial_data_year=start_year - 1,
         final_data_year=start_year,
         GraphDiag=False,
     )
-
-    assert np.allclose(pop_dict["omega_SS"], pop_dict["omega"][-1, :])
+    assert np.allclose(pop_dict["omega_SS"], pop_dict["omega"][-1, :, :])
 
 
 def test_pop_smooth():
@@ -100,6 +101,7 @@ def test_pop_smooth():
         infmort_rates=infmort_rates,
         imm_rates=imm_rates,
         infer_pop=True,
+        income_percentiles=[0.25, 0.25, 0.2, 0.2, 0.05, 0.04, 0.01],
         pop_dist=pop_dist[0, :].reshape(1, E + S),
         initial_data_year=start_year - 1,
         final_data_year=start_year,
@@ -147,6 +149,7 @@ def test_pop_growth_smooth():
         infmort_rates=infmort_rates,
         imm_rates=imm_rates,
         infer_pop=True,
+        income_percentiles=[0.25, 0.25, 0.2, 0.2, 0.05, 0.04, 0.01],
         pop_dist=pop_dist[0, :].reshape(1, E + S),
         initial_data_year=start_year - 1,
         final_data_year=start_year,
@@ -187,6 +190,7 @@ def test_imm_smooth():
         99,
         initial_data_year=start_year - 1,
         final_data_year=start_year,
+        income_percentiles=[0.25, 0.25, 0.2, 0.2, 0.05, 0.04, 0.01],
         GraphDiag=False,
     )
     # assert diffs are small
@@ -338,13 +342,14 @@ def test_custom_series():
         T,
         0,
         99,
+        income_percentiles=[0.25, 0.25, 0.2, 0.2, 0.05, 0.04, 0.01],
         initial_data_year=start_year,
         final_data_year=start_year + 1,
         GraphDiag=False,
         imm_rates=imm_rates,
         infer_pop=True,
     )
-    assert np.allclose(pop_dict["imm_rates"][0, :], imm_rates[0, E:])
+    assert np.allclose(pop_dict["imm_rates"][0, :, 0], imm_rates[0, E:])
 
 
 def test_custom_series_fail():
@@ -398,6 +403,7 @@ def test_custom_series_fail():
             mort_rates=mort_rates,
             infmort_rates=infmort_rates,
             imm_rates=imm_rates,
+            income_percentiles=[0.25, 0.25, 0.2, 0.2, 0.05, 0.04, 0.01],
             pop_dist=pop_dist,
             initial_data_year=start_year,
             final_data_year=start_year + 1,
@@ -428,6 +434,7 @@ def test_SS_dist():
         imm_rates=imm_rates,
         infer_pop=True,
         pop_dist=pop_dist[0, :].reshape(1, E + S),
+        income_percentiles=[0.25, 0.25, 0.2, 0.2, 0.05, 0.04, 0.01],
         initial_data_year=start_year - 1,
         final_data_year=start_year,
         GraphDiag=False,
@@ -459,6 +466,7 @@ def test_time_path_length():
         infmort_rates=infmort_rates,
         imm_rates=imm_rates,
         infer_pop=True,
+        income_percentiles=[0.25, 0.25, 0.2, 0.2, 0.05, 0.04, 0.01],
         pop_dist=pop_dist[0, :].reshape(1, E + S),
         initial_data_year=start_year - 1,
         final_data_year=start_year,
@@ -521,6 +529,7 @@ def test_infer_pop_nones():
         mort_rates=mort_rates,
         infmort_rates=infmort_rates,
         imm_rates=imm_rates,
+        income_percentiles=[0.25, 0.25, 0.2, 0.2, 0.05, 0.04, 0.01],
         infer_pop=True,
         pop_dist=None,
         initial_data_year=start_year,
@@ -548,12 +557,13 @@ def test_data_download(tmpdir):
         T,
         0,
         99,
+        income_percentiles=[0.25, 0.25, 0.2, 0.2, 0.05, 0.04, 0.01],
         initial_data_year=start_year,
         final_data_year=start_year + 1,
         download_path=tmpdir,
     )
 
-    # No read in each file and call get_pop_objs again with the data
+    # Now read in each file and call get_pop_objs again with the data
     fert_rates = np.loadtxt(
         os.path.join(tmpdir, "fert_rates.csv"), delimiter=","
     )
@@ -580,6 +590,7 @@ def test_data_download(tmpdir):
         infmort_rates=infmort_rates[:],
         imm_rates=imm_rates[:, :],
         infer_pop=True,
+        income_percentiles=[0.25, 0.25, 0.2, 0.2, 0.05, 0.04, 0.01],
         pop_dist=pop_dist[0, :].reshape(1, E + S),
         initial_data_year=start_year,
         final_data_year=start_year + 2,
@@ -602,3 +613,210 @@ def test_data_download(tmpdir):
     for key in pop_dict:
         print(key)
         assert np.allclose(pop_dict[key], pop_dict2[key], atol=7e-5)
+
+
+def test_expand_pop_obj_J_tiles_when_no_income_inputs():
+    """
+    Test that income_percentiles expands aggregate objects by J when no
+    income-specific gradients or immigrant shares are supplied.
+    """
+    E = 1
+    S = 3
+    J = 3
+    num_periods = 5
+    fixper = 2
+    income_percentiles = np.array([0.5, 0.3, 0.2])
+    omega_SSfx = np.array([0.2, 0.3, 0.3, 0.2])
+    omega_path_lev = np.tile(omega_SSfx.reshape(1, E + S), (num_periods, 1))
+    omega_path_S = omega_path_lev[:, E:] / omega_path_lev[:, E:].sum(
+        axis=1
+    ).reshape(num_periods, 1)
+    fert_rates = np.zeros((num_periods, E + S))
+    mort_rates = np.tile(
+        np.array([0.01, 0.02, 0.03, 1.0]).reshape(1, E + S),
+        (num_periods, 1),
+    )
+    infmort_rates = np.ones(num_periods) * 0.005
+    imm_rates = np.zeros((num_periods, E + S))
+    mort_rates_S = mort_rates[:, E:]
+    imm_rates_mat = imm_rates[:, E:]
+
+    pop_objs = demographics.expand_pop_obj_J(
+        omega_path_lev,
+        omega_path_S,
+        omega_SSfx,
+        fert_rates,
+        mort_rates,
+        infmort_rates,
+        imm_rates,
+        mort_rates_S,
+        imm_rates_mat,
+        E,
+        S,
+        0.0,
+        fixper,
+        income_percentiles=income_percentiles,
+    )
+
+    assert pop_objs["omega_path_S"].shape == (num_periods, S, J)
+    assert np.allclose(pop_objs["omega_path_S"].sum(axis=2), omega_path_S)
+    assert np.allclose(pop_objs["mort_rates_S"][:, :, 0], mort_rates_S)
+    assert np.allclose(pop_objs["imm_rates_mat"][:, :, 0], imm_rates_mat)
+    assert np.allclose(
+        pop_objs["omega_SS"],
+        omega_path_S[fixper, :, None] * income_percentiles,
+    )
+
+
+def test_expand_pop_obj_J_defaults_to_single_group():
+    """
+    Regression test for Issue #1180: with income_percentiles=None and no
+    income-specific inputs (the pre-0.18 call signature), the aggregate
+    objects must be broadcast across a single income group rather than
+    raising an AssertionError.
+    """
+    E = 1
+    S = 3
+    num_periods = 5
+    fixper = 2
+    omega_SSfx = np.array([0.2, 0.3, 0.3, 0.2])
+    omega_path_lev = np.tile(omega_SSfx.reshape(1, E + S), (num_periods, 1))
+    omega_path_S = omega_path_lev[:, E:] / omega_path_lev[:, E:].sum(
+        axis=1
+    ).reshape(num_periods, 1)
+    fert_rates = np.zeros((num_periods, E + S))
+    mort_rates = np.tile(
+        np.array([0.01, 0.02, 0.03, 1.0]).reshape(1, E + S),
+        (num_periods, 1),
+    )
+    infmort_rates = np.ones(num_periods) * 0.005
+    imm_rates = np.zeros((num_periods, E + S))
+    mort_rates_S = mort_rates[:, E:]
+    imm_rates_mat = imm_rates[:, E:]
+
+    pop_objs = demographics.expand_pop_obj_J(
+        omega_path_lev,
+        omega_path_S,
+        omega_SSfx,
+        fert_rates,
+        mort_rates,
+        infmort_rates,
+        imm_rates,
+        mort_rates_S,
+        imm_rates_mat,
+        E,
+        S,
+        0.0,
+        fixper,
+    )
+
+    assert pop_objs["omega_path_S"].shape == (num_periods, S, 1)
+    assert np.allclose(pop_objs["omega_path_S"][:, :, 0], omega_path_S)
+    assert pop_objs["omega_SS"].shape == (S, 1)
+    assert np.allclose(pop_objs["mort_rates_S"][:, :, 0], mort_rates_S)
+    assert np.allclose(pop_objs["imm_rates_mat"][:, :, 0], imm_rates_mat)
+
+
+def test_expand_pop_obj_J_income_inputs_require_percentiles():
+    """
+    income_percentiles stays required when income-specific inputs are
+    supplied: providing a gradient without percentiles must raise.
+    """
+    E = 1
+    S = 3
+    num_periods = 5
+    fixper = 2
+    omega_SSfx = np.array([0.2, 0.3, 0.3, 0.2])
+    omega_path_lev = np.tile(omega_SSfx.reshape(1, E + S), (num_periods, 1))
+    omega_path_S = omega_path_lev[:, E:] / omega_path_lev[:, E:].sum(
+        axis=1
+    ).reshape(num_periods, 1)
+    fert_rates = np.zeros((num_periods, E + S))
+    mort_rates = np.tile(
+        np.array([0.01, 0.02, 0.03, 1.0]).reshape(1, E + S),
+        (num_periods, 1),
+    )
+    infmort_rates = np.ones(num_periods) * 0.005
+    imm_rates = np.zeros((num_periods, E + S))
+
+    with pytest.raises(AssertionError, match="income_percentiles"):
+        demographics.expand_pop_obj_J(
+            omega_path_lev,
+            omega_path_S,
+            omega_SSfx,
+            fert_rates,
+            mort_rates,
+            infmort_rates,
+            imm_rates,
+            mort_rates[:, E:],
+            imm_rates[:, E:],
+            E,
+            S,
+            0.0,
+            fixper,
+            mort_gradient=np.zeros(E + S),
+        )
+
+
+def test_expand_pop_obj_J_preserves_aggregate_mortality_with_gradients():
+    """
+    Test that log-odds gradients generate bounded J-specific rates whose
+    within-age weighted means recover aggregate mortality rates.
+    """
+    E = 1
+    S = 3
+    J = 3
+    num_periods = 6
+    fixper = 3
+    g_n_ss = 0.01
+    income_percentiles = np.array([0.5, 0.3, 0.2])
+    omega_SSfx = np.array([0.2, 0.3, 0.3, 0.2])
+    omega_path_lev = np.zeros((num_periods, E + S))
+    for t in range(num_periods):
+        omega_path_lev[t] = 100 * ((1 + g_n_ss) ** t) * omega_SSfx
+    omega_path_S = omega_path_lev[:, E:] / omega_path_lev[:, E:].sum(
+        axis=1
+    ).reshape(num_periods, 1)
+    omega_path_S[fixper:] = omega_path_S[fixper]
+    fert_rates = np.tile(
+        np.array([0.0, 0.02, 0.01, 0.0]).reshape(1, E + S),
+        (num_periods, 1),
+    )
+    mort_rates = np.tile(
+        np.array([0.01, 0.02, 0.03, 1.0]).reshape(1, E + S),
+        (num_periods, 1),
+    )
+    infmort_rates = np.ones(num_periods) * 0.005
+    imm_rates = np.zeros((num_periods, E + S))
+    mort_rates_S = mort_rates[:, E:]
+    imm_rates_mat = imm_rates[:, E:]
+    mort_gradient = np.array([-0.01, -0.005, 0.0])
+    fert_gradient = np.array([0.002, 0.001, 0.0])
+
+    pop_objs = demographics.expand_pop_obj_J(
+        omega_path_lev,
+        omega_path_S,
+        omega_SSfx,
+        fert_rates,
+        mort_rates,
+        infmort_rates,
+        imm_rates,
+        mort_rates_S,
+        imm_rates_mat,
+        E,
+        S,
+        g_n_ss,
+        fixper,
+        income_percentiles=income_percentiles,
+        fert_gradient=fert_gradient,
+        mort_gradient=mort_gradient,
+    )
+
+    omega = pop_objs["omega_path_S"]
+    rho = pop_objs["mort_rates_S"]
+    within_age_weights = omega / omega.sum(axis=2, keepdims=True)
+    assert omega.shape == (num_periods, S, J)
+    assert rho.shape == (num_periods, S, J)
+    assert np.allclose(omega.sum(axis=2), omega_path_S)
+    assert np.allclose((within_age_weights * rho).sum(axis=2), mort_rates_S)
+    assert np.all((rho >= 0) & (rho <= 1))

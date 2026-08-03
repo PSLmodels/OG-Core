@@ -595,9 +595,12 @@ def ability_bar(
     ind = np.arange(N)  # the x locations for the groups
     width = 0.2  # the width of the bars
     start_index = start_year - base_params.start_year
-    omega_to_use = base_params.omega[: base_params.T, :].reshape(
-        base_params.T, base_params.S, 1
-    )
+    if base_params.omega.ndim == 3:
+        omega_to_use = base_params.omega[: base_params.T, :, :]
+    else:
+        omega_to_use = base_params.omega[: base_params.T, :].reshape(
+            base_params.T, base_params.S, 1
+        ) * base_params.lambdas.reshape(1, 1, base_params.J)
     base_val = (
         (base_tpi[var] * omega_to_use)[
             start_index : start_index + num_years, :, :
@@ -659,12 +662,24 @@ def ability_bar_ss(
     fig, ax = plt.subplots()
     ind = np.arange(N)  # the x locations for the groups
     width = 0.2  # the width of the bars
-    base_val = (
-        base_ss[var] * base_params.omega_SS.reshape(base_params.S, 1)
-    ).sum(0)
-    reform_val = (
-        reform_ss[var] * reform_params.omega_SS.reshape(reform_params.S, 1)
-    ).sum(0)
+    if base_params.omega_SS.ndim == 2:
+        base_val = (base_ss[var] * base_params.omega_SS).sum(0)
+        reform_val = (reform_ss[var] * reform_params.omega_SS).sum(0)
+    else:
+        base_val = (
+            base_ss[var]
+            * (
+                base_params.omega_SS.reshape(base_params.S, 1)
+                * base_params.lambdas.reshape(1, base_params.J)
+            )
+        ).sum(0)
+        reform_val = (
+            reform_ss[var]
+            * (
+                reform_params.omega_SS.reshape(reform_params.S, 1)
+                * reform_params.lambdas.reshape(1, reform_params.J)
+            )
+        ).sum(0)
     var_to_plot = (reform_val - base_val) / base_val
     ax.bar(ind, var_to_plot * 100, width, bottom=0)
     ax.set_xticks(ind + width / 4)

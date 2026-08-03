@@ -92,8 +92,10 @@ p1.S = 3
 p1.J = 2
 p1.T = 3
 p1.lambdas = np.array([0.6, 0.4])
-p1.omega_SS = np.array([0.25, 0.25, 0.5])
-p1.omega = np.tile(p1.omega_SS.reshape((1, p1.S)), (p1.T, 1))
+p1.omega_SS = np.array([0.25, 0.25, 0.5]).reshape(
+    (p1.S, 1)
+) * p1.lambdas.reshape((1, p1.J))
+p1.omega = np.tile(p1.omega_SS.reshape((1, p1.S, p1.J)), (p1.T, 1, 1))
 BQ1 = 2.5
 p1.use_zeta = True
 expected1 = np.array([[1.66666667, 7.5], [2.5, 10.0], [0.416666667, 0.0]])
@@ -104,8 +106,10 @@ p2.rho = np.array([[0.0, 0.0, 1.0]])
 p2.J = 2
 p2.T = 3
 p2.lambdas = np.array([0.6, 0.4])
-p2.omega_SS = np.array([0.25, 0.25, 0.5])
-p2.omega = np.tile(p2.omega_SS.reshape((1, p2.S)), (p2.T, 1))
+p2.omega_SS = np.array([0.25, 0.25, 0.5]).reshape(
+    (p2.S, 1)
+) * p2.lambdas.reshape((1, p2.J))
+p2.omega = np.tile(p2.omega_SS.reshape((1, p2.S, p2.J)), (p2.T, 1, 1))
 p2.use_zeta = True
 BQ2 = np.array([2.5, 0.8, 3.6])
 expected2 = np.array([7.5, 10.0, 0.0])
@@ -123,8 +127,10 @@ p3.rho = np.array([[0.0, 0.0, 1.0]])
 p3.J = 2
 p3.T = 3
 p3.lambdas = np.array([0.6, 0.4])
-p3.omega_SS = np.array([0.25, 0.25, 0.5])
-p3.omega = np.tile(p2.omega_SS.reshape((1, p2.S)), (p2.T, 1))
+p3.omega_SS = np.array([0.25, 0.25, 0.5]).reshape(
+    (p3.S, 1)
+) * p3.lambdas.reshape((1, p3.J))
+p3.omega = np.tile(p3.omega_SS.reshape((1, p3.S, p3.J)), (p3.T, 1, 1))
 p3.use_zeta = False
 BQ3 = np.array([1.1, 0.8])
 BQ4 = np.array([[1.1, 0.8], [3.2, 4.6], [2.5, 0.1]])
@@ -182,8 +188,10 @@ p1.S = 3
 p1.J = 2
 p1.T = 3
 p1.lambdas = np.array([0.6, 0.4])
-p1.omega_SS = np.array([0.25, 0.25, 0.5])
-p1.omega = np.tile(p1.omega_SS.reshape((1, p1.S)), (p1.T, 1))
+p1.omega_SS = np.array([0.25, 0.25, 0.5]).reshape(
+    (p1.S, 1)
+) * p1.lambdas.reshape((1, p1.J))
+p1.omega = np.tile(p1.omega_SS.reshape((1, p1.S, p1.J)), (p1.T, 1, 1))
 TR1 = 2.5
 expected1 = np.array([[1.66666667, 7.5], [2.5, 10.0], [0.416666667, 0.0]])
 p2 = Specifications()
@@ -196,8 +204,10 @@ p2.eta = np.tile(
     (p2.T, 1, 1),
 )
 p2.lambdas = np.array([0.6, 0.4])
-p2.omega_SS = np.array([0.25, 0.25, 0.5])
-p2.omega = np.tile(p2.omega_SS.reshape((1, p2.S)), (p2.T, 1))
+p2.omega_SS = np.array([0.25, 0.25, 0.5]).reshape(
+    (p2.S, 1)
+) * p2.lambdas.reshape((1, p2.J))
+p2.omega = np.tile(p2.omega_SS.reshape((1, p2.S, p2.J)), (p2.T, 1, 1))
 TR2 = np.array([2.5, 0.8, 3.6])
 expected2 = np.array([7.5, 10.0, 0.0])
 expected3 = np.array(

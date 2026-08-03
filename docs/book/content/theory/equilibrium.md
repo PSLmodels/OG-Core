@@ -179,7 +179,7 @@ The computational algorithm for solving for the steady-state follows the steps b
        ```
 
         1. Make sure that steady-state government spending is nonnegative $\bar{G}\geq 0$. If steady-state government spending is negative, that means the government is getting resources to supply the debt from outside the economy each period to stabilize the debt-to-GDP ratio. $\bar{G}<0$ is a good indicator of unsustainable policies.
-	      1. Make sure that the resource constraint (goods market clearing) {eq}`EqStnrzMarkClrGoods_M` is satisfied. It is redundant, but this is a good check as to whether everything worked correctly.
+    1. Make sure that the industry resource constraints are satisfied, including the input-output demands for government consumption and infrastructure goods. One goods-market condition is redundant, but it provides a useful solution check.
 	      2. Make sure that the government budget constraint {eq}`EqStnrzGovBC` binds.
 	      3. Make sure that all the $2JS$ household Euler equations are solved to a satisfactory tolerance.
 
@@ -411,7 +411,7 @@ The stationary non-steady state (transition path) solution algorithm has followi
 
 24. If the maximum absolute error among the M-1+5 outer loop error terms is less-than-or-equal-to some small positive tolerance $toler_{tpi,out}$ in each period along the transition path, $\max\big|\left(error_{r_p}, error_r, error_w, error_p, error_{bq},error_{tr}\right)\bigr| \leq toler_{tpi,out}$ then the non-steady-state equilibrium has been found.
 
-    1. Make sure that the resource constraint for industry $M$ (goods market clearing) {eq}`EqStnrzMarkClrGoods_M` is satisfied in each period along the time path. It is redundant, but this is a good check as to whether everything worked correctly.
+    1. Make sure that every industry resource constraint, including the input-output demands for government consumption and infrastructure goods, is satisfied in each period. One condition is redundant, but it provides a useful solution check.
     2. Make sure that the government budget constraint {eq}`EqStnrzGovBC` binds in every period.
     3. Make sure that all the $(T+S)\times2JS$ household Euler equations are solved to a satisfactory tolerance in every period.
 

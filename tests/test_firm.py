@@ -25,8 +25,8 @@ K_g3 = np.array([0.0])
 expected3 = np.array([0.592030917])
 # update parameters instance with new values for test
 p4 = Specifications()
-rho_vec = np.zeros((1, 3))
-rho_vec[0, -1] = 1.0
+rho_vec = np.zeros((1, 3, p4.J))
+rho_vec[0, -1, :] = 1.0
 new_param_values4 = {
     "Z": [[2.0]],
     "gamma": [0.5],
@@ -88,6 +88,7 @@ new_param_values7 = {
     "T": 3,
     "S": 3,
     "M": 2,
+    "io_matrix": np.array([[0.0, 1.0]] * 3),
     "chi_n": np.ones(3),
     "e": np.ones((3, p4.J)),
     "rho": rho_vec.tolist(),
@@ -111,6 +112,7 @@ new_param_values8 = {
     "T": 3,
     "S": 3,
     "M": 2,
+    "io_matrix": np.array([[0.0, 1.0]] * 3),
     "chi_n": np.ones(3),
     "e": np.ones((3, p4.J)),
     "rho": rho_vec.tolist(),
@@ -130,6 +132,7 @@ new_param_values9 = {
     "T": 3,
     "S": 3,
     "M": 3,
+    "io_matrix": np.array([[0.0, 0.0, 1.0]] * 3),
     "chi_n": np.ones(3),
     "e": np.ones((3, p5.J)),
     "rho": rho_vec.tolist(),
@@ -157,6 +160,7 @@ new_param_values10 = {
     "T": 3,
     "S": 3,
     "M": 3,
+    "io_matrix": np.array([[0.0, 0.0, 1.0]] * 3),
     "chi_n": np.ones(3),
     "e": np.ones((3, p5.J)),
     "rho": rho_vec.tolist(),
@@ -821,6 +825,7 @@ new_param_values3 = {
     "c_corp_share_of_assets": 1.0,
     "T": 3,
     "M": 2,
+    "io_matrix": np.array([[0.0, 1.0]] * 3),
     "e": p3.e[0, :, :],
 }
 # update parameters instance with new values for test

@@ -221,7 +221,7 @@ _Out-of-Range Action:_ error
 
 
 ####  `io_matrix`  
-_Description:_ Input-output matrix used to map production outputs into consumption goods using a fixed coefficient model.  This matrix has dimensions I x M, where I is the number of distinct consumption goods and M is the number of distinct production goods.  The sum each row of this matrix must be 1.  
+_Description:_ Input-output matrix used to map production outputs into consumption and government goods using a fixed coefficient model. It has dimensions (I+2) x M. The first I rows map consumption goods, row I+1 maps government consumption, and row I+2 maps infrastructure investment. Each row sums to 1.
 _Value Type:_ float  
 _Valid Range:_ min = 0.0 and max = 1.0  
 _Out-of-Range Action:_ error  
@@ -326,6 +326,20 @@ _Valid Range:_ min = 0.0 and max = 1.0
 _Out-of-Range Action:_ error  
 
 
+####  `ndc_growth_rate`  
+_Description:_ Growth rate applied to contributions under a notional defined contribution system.  
+_Notes:_ 'r' uses the model interest rate, 'Curr GDP' the current GDP growth rate, and 'LR GDP' the long-run GDP growth rate.  
+_Value Type:_ str  
+_Valid Choices:_['r', 'Curr GDP', 'LR GDP']  
+
+
+####  `dir_growth_rate`  
+_Description:_ Growth rate used in the conversion coefficient of a notional defined contribution system.  
+_Notes:_ 'r' uses the model interest rate, 'Curr GDP' the current GDP growth rate, and 'LR GDP' the long-run GDP growth rate.  
+_Value Type:_ str  
+_Valid Choices:_['r', 'Curr GDP', 'LR GDP']  
+
+
 ####  `alpha_db`  
 _Description:_ Replacement rate under a defined contribution system.  
 _Value Type:_ float  
@@ -338,6 +352,13 @@ _Description:_ The value of a point under a points system pension.
 _Value Type:_ float  
 _Valid Range:_ min = 0.0 and max = 1.0  
 _Out-of-Range Action:_ error  
+
+
+####  `points_growth_rate`  
+_Description:_ Growth rate applied to contributions under a points system pension.  
+_Notes:_ 'r' uses the model interest rate, 'Curr GDP' the current GDP growth rate, and 'LR GDP' the long-run GDP growth rate.  
+_Value Type:_ str  
+_Valid Choices:_['r', 'Curr GDP', 'LR GDP']  
 
 
 ####  `yr_contrib`  

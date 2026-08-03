@@ -77,9 +77,7 @@ def test_constant_demographics_TPI(tmpdir, dask_client):
         "PIA_rate_bkt_1": 0.0,
         "PIA_rate_bkt_2": 0.0,
         "PIA_rate_bkt_3": 0.0,
-        "eta": (
-            spec.omega_SS.reshape(spec.S, 1) * spec.lambdas.reshape(1, spec.J)
-        ),
+        "eta": spec.omega_SS,  # already (S, J) joint distribution
     }
     spec.update_specifications(og_spec)
     spec.etr_params = np.zeros(
@@ -133,9 +131,7 @@ def test_constant_demographics_TPI_small_open(tmpdir, dask_client):
         "PIA_rate_bkt_1": 0.0,
         "PIA_rate_bkt_2": 0.0,
         "PIA_rate_bkt_3": 0.0,
-        "eta": (
-            spec.omega_SS.reshape(spec.S, 1) * spec.lambdas.reshape(1, spec.J)
-        ),
+        "eta": spec.omega_SS,  # already (S, J) joint distribution
     }
     spec.update_specifications(og_spec)
     spec.etr_params = np.zeros(

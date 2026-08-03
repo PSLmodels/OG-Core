@@ -53,10 +53,12 @@ def test_alpha_FA_extended_over_time_path():
     assert specs.alpha_FA[-1] == 0.03
 
 
+rho_array = np.zeros((4, 3, 7))
+rho_array[:, -1, :] = 1.0
 param_updates1 = {
     "T": 4,
     "S": 3,
-    "rho": [[0.0, 0.0, 1.0]],
+    "rho": rho_array.tolist(),
     "e": np.ones((3, 7)),
     "ubi_nom_017": 1000,
     "ubi_nom_1864": 1200,
@@ -67,7 +69,7 @@ expected1 = np.ones((7, 3, 7)) * 2180
 param_updates2 = {
     "T": 4,
     "S": 3,
-    "rho": [[0.0, 0.0, 1.0]],
+    "rho": rho_array.tolist(),
     "e": np.ones((3, 7)),
     "ubi_nom_017": 1000,
     "ubi_nom_1864": 1200,
@@ -79,7 +81,7 @@ expected2 = np.ones((7, 3, 7)) * 2000
 param_updates3 = {
     "T": 4,
     "S": 3,
-    "rho": [[0.0, 0.0, 1.0]],
+    "rho": rho_array.tolist(),
     "e": np.ones((3, 7)),
     "ubi_nom_017": 1000,
     "ubi_nom_1864": 1200,
@@ -236,3 +238,28 @@ def test_J_dimensioned_length_guard():
     specs3 = Specifications()
     with pytest.raises(ValueError, match="beta_annual"):
         specs3.update_specifications({"beta_annual": [0.94, 0.95, 0.96]})
+
+
+def test_io_matrix_shape_and_row_sums():
+    specs = Specifications()
+    specs.update_specifications(
+        {
+            "M": 2,
+            "I": 2,
+            "io_matrix": [
+                [0.5, 0.5],
+                [0.25, 0.75],
+                [0.2, 0.8],
+                [0.6, 0.4],
+            ],
+        }
+    )
+    assert specs.io_matrix.shape == (4, 2)
+
+    with pytest.raises(ValueError, match="shape"):
+        specs.update_specifications({"io_matrix": [[0.5, 0.5]] * 2})
+
+    with pytest.raises(ValueError, match="sum to 1"):
+        specs.update_specifications(
+            {"io_matrix": [[0.5, 0.5]] * 3 + [[0.2, 0.2]]}
+        )

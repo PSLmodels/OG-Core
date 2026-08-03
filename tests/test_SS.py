@@ -252,7 +252,7 @@ p7.update_specifications(
     {
         "M": 4,
         "I": 4,
-        "io_matrix": np.eye(4),
+        "io_matrix": np.vstack([np.eye(4), np.eye(1, 4, 3), np.eye(1, 4, 3)]),
         "alpha_c": [0.1, 0.5, 0.3, 0.1],
         "c_min": [0.0, 0.0, 0.0, 0.0],
         "epsilon": [1.0, 1.0, 1.0, 1.0],
@@ -418,6 +418,7 @@ def test_SS_solver(baseline, param_updates, filename, dask_client):
         p_m_guess,
         Yguess,
         BQguess,
+        p.alpha_G[-1] * Yguess,
         TRguess,
         Ig_baseline,
         factorguess,
@@ -502,6 +503,7 @@ def test_SS_solver_extra(baseline, param_updates, filename, dask_client):
         p_m_guess,
         Yguess,
         BQguess,
+        p.alpha_G[-1] * Yguess,
         TRguess,
         Ig_baseline,
         factorguess,
@@ -560,7 +562,7 @@ filename5 = "inner_loop_outputs_reform_baselinespending.pkl"
 param_updates7 = {
     "M": 4,
     "I": 4,
-    "io_matrix": np.eye(4),
+    "io_matrix": np.vstack([np.eye(4), np.eye(1, 4, 3), np.eye(1, 4, 3)]),
     "alpha_c": [0.1, 0.5, 0.3, 0.1],
     "c_min": [0.0, 0.0, 0.0, 0.0],
     "epsilon": [1.0, 1.0, 1.0, 1.0],
@@ -578,6 +580,8 @@ param_updates8 = {
             [0.25, 0.25, 0.25, 0.25],
             [0.1, 0.7, 0.0, 0.2],
             [0.0, 0.0, 1.0, 0.0],
+            [0.0, 0.0, 0.0, 1.0],
+            [0.0, 0.0, 0.0, 1.0],
         ]
     ),
     "alpha_c": [0.1, 0.4, 0.3, 0.1, 0.1],
@@ -587,6 +591,7 @@ param_updates8 = {
     "gamma_g": [0.0, 0.0, 0.0, 0.0],
 }
 filename8 = "inner_loop_outputs_reform_MneI.pkl"
+_p_j1_tmp = Specifications()
 param_updates9 = {
     "J": 1,
     "lambdas": np.array([1.0]),
@@ -600,6 +605,13 @@ param_updates9 = {
     "eta": np.ones((80, 1)) * (1 / 80),
     "eta_RM": np.ones((80, 1)) * (1 / 80),
     "replacement_rate_adjust": [[1.0]],
+    "omega": _p_j1_tmp.omega.sum(axis=2, keepdims=True),
+    "omega_SS": _p_j1_tmp.omega_SS.sum(axis=1, keepdims=True),
+    "omega_S_preTP": _p_j1_tmp.omega_S_preTP.sum(axis=1, keepdims=True),
+    "rho": _p_j1_tmp.rho[:, :, :1],
+    "rho_preTP": _p_j1_tmp.rho_preTP[:, :1],
+    "imm_rates": _p_j1_tmp.imm_rates[:, :, :1],
+    "imm_rates_preTP": _p_j1_tmp.imm_rates_preTP[:, :1],
 }
 filename9 = "inner_loop_outputs_J1.pkl"
 
@@ -1235,7 +1247,7 @@ param_updates13 = {
     "cit_rate": [[0.21, 0.25, 0.35]],
     "M": 3,
     "I": 3,
-    "io_matrix": np.eye(3),
+    "io_matrix": np.vstack([np.eye(3), np.eye(1, 3, 2), np.eye(1, 3, 2)]),
     "epsilon": [1.0, 1.0, 1.0],
     "gamma": [0.3, 0.35, 0.4],
     "gamma_g": [0.1, 0.05, 0.15],
@@ -1255,7 +1267,7 @@ param_updates14 = {
     "cit_rate": [[0.21, 0.25, 0.35]],
     "M": 3,
     "I": 3,
-    "io_matrix": np.eye(3),
+    "io_matrix": np.vstack([np.eye(3), np.eye(1, 3, 2), np.eye(1, 3, 2)]),
     "epsilon": [1.0, 1.0, 1.0],
     "gamma": [0.3, 0.35, 0.4],
     "gamma_g": [0.0, 0.0, 0.0],
@@ -1278,7 +1290,7 @@ param_updates16 = {
     "cit_rate": [[0.21, 0.25, 0.35]],
     "M": 3,
     "I": 3,
-    "io_matrix": np.eye(3),
+    "io_matrix": np.vstack([np.eye(3), np.eye(1, 3, 2), np.eye(1, 3, 2)]),
     "epsilon": [1.0, 1.0, 1.0],
     "gamma": [0.3, 0.35, 0.4],
     "gamma_g": [0.0, 0.0, 0.0],
