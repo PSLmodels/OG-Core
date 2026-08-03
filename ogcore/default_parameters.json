@@ -4097,6 +4097,50 @@
             }
         }
     },
+    "ndc_growth_rate": {
+        "title": "Growth rate applied to contributions under a notional defined contribution system.",
+        "description": "Growth rate applied to contributions under a notional defined contribution system.",
+        "section_1": "Fiscal Policy Parameters",
+        "section_2": "Government Pension Parameters",
+        "notes": "'r' uses the model interest rate, 'Curr GDP' the current GDP growth rate, and 'LR GDP' the long-run GDP growth rate.",
+        "type": "str",
+        "value": [
+            {
+                "value": "LR GDP"
+            }
+        ],
+        "validators": {
+            "choice": {
+                "choices": [
+                    "r",
+                    "Curr GDP",
+                    "LR GDP"
+                ]
+            }
+        }
+    },
+    "dir_growth_rate": {
+        "title": "Growth rate used in the conversion coefficient of a notional defined contribution system.",
+        "description": "Growth rate used in the conversion coefficient of a notional defined contribution system.",
+        "section_1": "Fiscal Policy Parameters",
+        "section_2": "Government Pension Parameters",
+        "notes": "'r' uses the model interest rate, 'Curr GDP' the current GDP growth rate, and 'LR GDP' the long-run GDP growth rate.",
+        "type": "str",
+        "value": [
+            {
+                "value": "LR GDP"
+            }
+        ],
+        "validators": {
+            "choice": {
+                "choices": [
+                    "r",
+                    "Curr GDP",
+                    "LR GDP"
+                ]
+            }
+        }
+    },
     "alpha_db": {
         "title": "Replacement rate under a defined contribution system.",
         "description": "Replacement rate under a defined contribution system.",
@@ -4132,6 +4176,28 @@
             "range": {
                 "min": 0.0,
                 "max": 1.0
+            }
+        }
+    },
+    "points_growth_rate": {
+        "title": "Growth rate applied to contributions under a points system pension.",
+        "description": "Growth rate applied to contributions under a points system pension.",
+        "section_1": "Fiscal Policy Parameters",
+        "section_2": "Government Pension Parameters",
+        "notes": "'r' uses the model interest rate, 'Curr GDP' the current GDP growth rate, and 'LR GDP' the long-run GDP growth rate.",
+        "type": "str",
+        "value": [
+            {
+                "value": "LR GDP"
+            }
+        ],
+        "validators": {
+            "choice": {
+                "choices": [
+                    "r",
+                    "Curr GDP",
+                    "LR GDP"
+                ]
             }
         }
     },

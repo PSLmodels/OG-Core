@@ -30,6 +30,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   transition. The new parameter makes initial wealth calibratable to data;
   the default reproduces the previous behavior exactly.
 
+## [0.19.0] - 2026-07-29 12:00:00
+
+### Added
+
+- Fixes Issue [#1169](https://github.com/PSLmodels/OG-Core/issues/1169):
+  the Notional Defined Contribution pension system could not run against
+  a real `Specifications` object because its growth-rate settings were
+  not parameters. `ndc_growth_rate`, `dir_growth_rate`, and
+  `points_growth_rate` are now parameters in `default_parameters.json`
+  (choices `"r"`, `"Curr GDP"`, `"LR GDP"`; default `"LR GDP"`, matching
+  the previous fallback behavior). `g_ndc` and `g_dir` now handle the
+  scalar `r` and `g_y` of the steady state, and `delta_ret` falls back
+  to the steady-state mortality rates implied by `rho` (averaged over
+  lifetime income groups) when no `mort_rates_SS` attribute is set. The
+  NDC system is added to the real-`Specifications` pension test.
+
 ## [0.18.1] - 2026-07-22 12:00:00
 
 ### Bug Fixes
