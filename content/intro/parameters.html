@@ -542,8 +542,11 @@
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#tau-p"><code class="docutils literal notranslate"><span class="pre">tau_p</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#indr"><code class="docutils literal notranslate"><span class="pre">indR</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#k-ret"><code class="docutils literal notranslate"><span class="pre">k_ret</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#ndc-growth-rate"><code class="docutils literal notranslate"><span class="pre">ndc_growth_rate</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#dir-growth-rate"><code class="docutils literal notranslate"><span class="pre">dir_growth_rate</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#alpha-db"><code class="docutils literal notranslate"><span class="pre">alpha_db</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#vpoint"><code class="docutils literal notranslate"><span class="pre">vpoint</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#points-growth-rate"><code class="docutils literal notranslate"><span class="pre">points_growth_rate</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#yr-contrib"><code class="docutils literal notranslate"><span class="pre">yr_contrib</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#avg-earn-num-years"><code class="docutils literal notranslate"><span class="pre">avg_earn_num_years</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#aime-bkt-1"><code class="docutils literal notranslate"><span class="pre">AIME_bkt_1</span></code></a></li>
@@ -1006,6 +1009,20 @@ organization of the theory in the <code class="docutils literal notranslate"><sp
 <em>Valid Range:</em> min = 0.0 and max = 1.0<br />
 <em>Out-of-Range Action:</em> error</p>
 </section>
+<section id="ndc-growth-rate">
+<h4><code class="docutils literal notranslate"><span class="pre">ndc_growth_rate</span></code><a class="headerlink" href="#ndc-growth-rate" title="Link to this heading">#</a></h4>
+<p><em>Description:</em> Growth rate applied to contributions under a notional defined contribution system.<br />
+<em>Notes:</em> ‘r’ uses the model interest rate, ‘Curr GDP’ the current GDP growth rate, and ‘LR GDP’ the long-run GDP growth rate.<br />
+<em>Value Type:</em> str<br />
+<em>Valid Choices:</em>[‘r’, ‘Curr GDP’, ‘LR GDP’]</p>
+</section>
+<section id="dir-growth-rate">
+<h4><code class="docutils literal notranslate"><span class="pre">dir_growth_rate</span></code><a class="headerlink" href="#dir-growth-rate" title="Link to this heading">#</a></h4>
+<p><em>Description:</em> Growth rate used in the conversion coefficient of a notional defined contribution system.<br />
+<em>Notes:</em> ‘r’ uses the model interest rate, ‘Curr GDP’ the current GDP growth rate, and ‘LR GDP’ the long-run GDP growth rate.<br />
+<em>Value Type:</em> str<br />
+<em>Valid Choices:</em>[‘r’, ‘Curr GDP’, ‘LR GDP’]</p>
+</section>
 <section id="alpha-db">
 <h4><code class="docutils literal notranslate"><span class="pre">alpha_db</span></code><a class="headerlink" href="#alpha-db" title="Link to this heading">#</a></h4>
 <p><em>Description:</em> Replacement rate under a defined contribution system.<br />
@@ -1019,6 +1036,13 @@ organization of the theory in the <code class="docutils literal notranslate"><sp
 <em>Value Type:</em> float<br />
 <em>Valid Range:</em> min = 0.0 and max = 1.0<br />
 <em>Out-of-Range Action:</em> error</p>
+</section>
+<section id="points-growth-rate">
+<h4><code class="docutils literal notranslate"><span class="pre">points_growth_rate</span></code><a class="headerlink" href="#points-growth-rate" title="Link to this heading">#</a></h4>
+<p><em>Description:</em> Growth rate applied to contributions under a points system pension.<br />
+<em>Notes:</em> ‘r’ uses the model interest rate, ‘Curr GDP’ the current GDP growth rate, and ‘LR GDP’ the long-run GDP growth rate.<br />
+<em>Value Type:</em> str<br />
+<em>Valid Choices:</em>[‘r’, ‘Curr GDP’, ‘LR GDP’]</p>
 </section>
 <section id="yr-contrib">
 <h4><code class="docutils literal notranslate"><span class="pre">yr_contrib</span></code><a class="headerlink" href="#yr-contrib" title="Link to this heading">#</a></h4>
@@ -1836,8 +1860,11 @@ organization of the theory in the <code class="docutils literal notranslate"><sp
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#tau-p"><code class="docutils literal notranslate"><span class="pre">tau_p</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#indr"><code class="docutils literal notranslate"><span class="pre">indR</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#k-ret"><code class="docutils literal notranslate"><span class="pre">k_ret</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#ndc-growth-rate"><code class="docutils literal notranslate"><span class="pre">ndc_growth_rate</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#dir-growth-rate"><code class="docutils literal notranslate"><span class="pre">dir_growth_rate</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#alpha-db"><code class="docutils literal notranslate"><span class="pre">alpha_db</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#vpoint"><code class="docutils literal notranslate"><span class="pre">vpoint</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#points-growth-rate"><code class="docutils literal notranslate"><span class="pre">points_growth_rate</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#yr-contrib"><code class="docutils literal notranslate"><span class="pre">yr_contrib</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#avg-earn-num-years"><code class="docutils literal notranslate"><span class="pre">avg_earn_num_years</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#aime-bkt-1"><code class="docutils literal notranslate"><span class="pre">AIME_bkt_1</span></code></a></li>

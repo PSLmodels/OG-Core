@@ -1182,14 +1182,14 @@
 <span class="sd">        g_ndc (Numpy array): growth rate used for contributions to NDC</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># r and g_y are scalars in the SS but paths in the TPI; take the</span>
+    <span class="c1"># last element robustly in either case (see Issue #1169)</span>
     <span class="k">if</span> <span class="n">p</span><span class="o">.</span><span class="n">ndc_growth_rate</span> <span class="o">==</span> <span class="s2">&quot;r&quot;</span><span class="p">:</span>
-        <span class="n">g_ndc</span> <span class="o">=</span> <span class="n">r</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+        <span class="n">g_ndc</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">r</span><span class="p">)</span><span class="o">.</span><span class="n">flat</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
     <span class="k">elif</span> <span class="n">p</span><span class="o">.</span><span class="n">ndc_growth_rate</span> <span class="o">==</span> <span class="s2">&quot;Curr GDP&quot;</span><span class="p">:</span>
         <span class="n">g_ndc</span> <span class="o">=</span> <span class="p">(</span><span class="n">Y</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span> <span class="o">-</span> <span class="n">Y</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span> <span class="o">/</span> <span class="n">Y</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
-    <span class="k">elif</span> <span class="n">p</span><span class="o">.</span><span class="n">ndc_growth_rate</span> <span class="o">==</span> <span class="s2">&quot;LR GDP&quot;</span><span class="p">:</span>
-        <span class="n">g_ndc</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">g_y</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="n">p</span><span class="o">.</span><span class="n">g_n</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
-    <span class="k">else</span><span class="p">:</span>
-        <span class="n">g_ndc</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">g_y</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="n">p</span><span class="o">.</span><span class="n">g_n</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+    <span class="k">else</span><span class="p">:</span>  <span class="c1"># &quot;LR GDP&quot;</span>
+        <span class="n">g_ndc</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">g_y</span><span class="p">)</span><span class="o">.</span><span class="n">flat</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">g_n</span><span class="p">)</span><span class="o">.</span><span class="n">flat</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
 
     <span class="k">return</span> <span class="n">g_ndc</span></div>
 
@@ -1212,14 +1212,14 @@
 <span class="sd">        g_dir (Numpy array): growth rate used for contributions to NDC</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># r and g_y are scalars in the SS but paths in the TPI; take the</span>
+    <span class="c1"># last element robustly in either case (see Issue #1169)</span>
     <span class="k">if</span> <span class="n">dir_growth_rate</span> <span class="o">==</span> <span class="s2">&quot;r&quot;</span><span class="p">:</span>
-        <span class="n">g_dir</span> <span class="o">=</span> <span class="n">r</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+        <span class="n">g_dir</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">r</span><span class="p">)</span><span class="o">.</span><span class="n">flat</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
     <span class="k">elif</span> <span class="n">dir_growth_rate</span> <span class="o">==</span> <span class="s2">&quot;Curr GDP&quot;</span><span class="p">:</span>
         <span class="n">g_dir</span> <span class="o">=</span> <span class="p">(</span><span class="n">Y</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span> <span class="o">-</span> <span class="n">Y</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span> <span class="o">/</span> <span class="n">Y</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
-    <span class="k">elif</span> <span class="n">dir_growth_rate</span> <span class="o">==</span> <span class="s2">&quot;LR GDP&quot;</span><span class="p">:</span>
-        <span class="n">g_dir</span> <span class="o">=</span> <span class="n">g_y</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="n">g_n</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
-    <span class="k">else</span><span class="p">:</span>
-        <span class="n">g_dir</span> <span class="o">=</span> <span class="n">g_y</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="n">g_n</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+    <span class="k">else</span><span class="p">:</span>  <span class="c1"># &quot;LR GDP&quot;</span>
+        <span class="n">g_dir</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">g_y</span><span class="p">)</span><span class="o">.</span><span class="n">flat</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">g_n</span><span class="p">)</span><span class="o">.</span><span class="n">flat</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
 
     <span class="k">return</span> <span class="n">g_dir</span></div>
 
@@ -1244,7 +1244,14 @@
 <span class="sd">            pension amount</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">surv_rates</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">-</span> <span class="n">p</span><span class="o">.</span><span class="n">mort_rates_SS</span>
+    <span class="c1"># A real Specifications object has no mort_rates_SS attribute; fall</span>
+    <span class="c1"># back to the steady-state mortality rates implied by rho, averaged</span>
+    <span class="c1"># over lifetime-income groups with their population weights (see</span>
+    <span class="c1"># Issue #1169)</span>
+    <span class="n">mort_rates_SS</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="s2">&quot;mort_rates_SS&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">mort_rates_SS</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">mort_rates_SS</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">rho</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">@</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">lambdas</span><span class="p">)</span><span class="o">.</span><span class="n">ravel</span><span class="p">()</span>
+    <span class="n">surv_rates</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">-</span> <span class="n">mort_rates_SS</span>
     <span class="c1"># Single retirement age for now (see Issue #1014)</span>
     <span class="n">S_ret</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">retire</span><span class="p">)</span><span class="o">.</span><span class="n">flat</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
     <span class="n">dir_delta_s_empty</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">S</span> <span class="o">-</span> <span class="n">S_ret</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>

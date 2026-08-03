@@ -326,6 +326,20 @@ _Valid Range:_ min = 0.0 and max = 1.0
 _Out-of-Range Action:_ error  
 
 
+####  `ndc_growth_rate`  
+_Description:_ Growth rate applied to contributions under a notional defined contribution system.  
+_Notes:_ 'r' uses the model interest rate, 'Curr GDP' the current GDP growth rate, and 'LR GDP' the long-run GDP growth rate.  
+_Value Type:_ str  
+_Valid Choices:_['r', 'Curr GDP', 'LR GDP']  
+
+
+####  `dir_growth_rate`  
+_Description:_ Growth rate used in the conversion coefficient of a notional defined contribution system.  
+_Notes:_ 'r' uses the model interest rate, 'Curr GDP' the current GDP growth rate, and 'LR GDP' the long-run GDP growth rate.  
+_Value Type:_ str  
+_Valid Choices:_['r', 'Curr GDP', 'LR GDP']  
+
+
 ####  `alpha_db`  
 _Description:_ Replacement rate under a defined contribution system.  
 _Value Type:_ float  
@@ -338,6 +352,13 @@ _Description:_ The value of a point under a points system pension.
 _Value Type:_ float  
 _Valid Range:_ min = 0.0 and max = 1.0  
 _Out-of-Range Action:_ error  
+
+
+####  `points_growth_rate`  
+_Description:_ Growth rate applied to contributions under a points system pension.  
+_Notes:_ 'r' uses the model interest rate, 'Curr GDP' the current GDP growth rate, and 'LR GDP' the long-run GDP growth rate.  
+_Value Type:_ str  
+_Valid Choices:_['r', 'Curr GDP', 'LR GDP']  
 
 
 ####  `yr_contrib`  
