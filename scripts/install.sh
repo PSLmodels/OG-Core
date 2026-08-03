@@ -31,6 +31,7 @@ REPOS=(
     "og-zaf|EAPD-DRB|OG-ZAF|ogzaf|South Africa"
     "og-idn|EAPD-DRB|OG-IDN|ogidn|Indonesia"
     "og-phl|EAPD-DRB|OG-PHL|ogphl|Philippines"
+    "og-bra|PSLmodels|OG-BRA|ogbra|Brazil"
 )
 
 # ── Defaults ──────────────────────────────────────────────────────────────────

@@ -25,6 +25,36 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   while stalled carries the diagnosis in the `RuntimeError` message, so
   it reaches users who only see the traceback.
 
+## [0.19.0] - 2026-07-29 12:00:00
+
+### Added
+
+- Fixes Issue [#1169](https://github.com/PSLmodels/OG-Core/issues/1169):
+  the Notional Defined Contribution pension system could not run against
+  a real `Specifications` object because its growth-rate settings were
+  not parameters. `ndc_growth_rate`, `dir_growth_rate`, and
+  `points_growth_rate` are now parameters in `default_parameters.json`
+  (choices `"r"`, `"Curr GDP"`, `"LR GDP"`; default `"LR GDP"`, matching
+  the previous fallback behavior). `g_ndc` and `g_dir` now handle the
+  scalar `r` and `g_y` of the steady state, and `delta_ret` falls back
+  to the steady-state mortality rates implied by `rho` (averaged over
+  lifetime income groups) when no `mort_rates_SS` attribute is set. The
+  NDC system is added to the real-`Specifications` pension test.
+
+## [0.18.1] - 2026-07-22 12:00:00
+
+### Bug Fixes
+
+- Fixes Issue [#1180](https://github.com/PSLmodels/OG-Core/issues/1180):
+  `get_pop_objs` raised an `AssertionError` for the homogeneous case
+  (`income_percentiles=None` with no income-specific inputs), because
+  `expand_pop_obj_J` asserted before reaching its homogeneous branch.
+  `income_percentiles` now defaults to a single income group (J=1) when
+  no income-specific inputs are supplied, restoring the pre-0.18 call
+  signature; it remains required whenever gradients or immigrant income
+  shares are provided. Also removes a stray debug `print` from that
+  branch.
+
 ## [0.18.0] - 2026-07-20 12:00:00
 
 ### Added
@@ -691,6 +721,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Any earlier versions of OG-USA can be found in the [`OG-Core`](https://github.com/PSLmodels/OG-Core) repository [release history](https://github.com/PSLmodels/OG-Core/releases) from [v.0.6.4](https://github.com/PSLmodels/OG-Core/releases/tag/v0.6.4) (Jul. 20, 2021) or earlier.
 
 
+[0.18.1]: https://github.com/PSLmodels/OG-Core/compare/v0.18.0...v0.18.1
 [0.18.0]: https://github.com/PSLmodels/OG-Core/compare/v0.17.0...v0.18.0
 [0.17.0]: https://github.com/PSLmodels/OG-Core/compare/v0.16.4...v0.17.0
 [0.16.4]: https://github.com/PSLmodels/OG-Core/compare/v0.16.3...v0.16.4
