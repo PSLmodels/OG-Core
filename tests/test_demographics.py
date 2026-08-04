@@ -668,6 +668,96 @@ def test_expand_pop_obj_J_tiles_when_no_income_inputs():
     )
 
 
+def test_expand_pop_obj_J_defaults_to_single_group():
+    """
+    Regression test for Issue #1180: with income_percentiles=None and no
+    income-specific inputs (the pre-0.18 call signature), the aggregate
+    objects must be broadcast across a single income group rather than
+    raising an AssertionError.
+    """
+    E = 1
+    S = 3
+    num_periods = 5
+    fixper = 2
+    omega_SSfx = np.array([0.2, 0.3, 0.3, 0.2])
+    omega_path_lev = np.tile(omega_SSfx.reshape(1, E + S), (num_periods, 1))
+    omega_path_S = omega_path_lev[:, E:] / omega_path_lev[:, E:].sum(
+        axis=1
+    ).reshape(num_periods, 1)
+    fert_rates = np.zeros((num_periods, E + S))
+    mort_rates = np.tile(
+        np.array([0.01, 0.02, 0.03, 1.0]).reshape(1, E + S),
+        (num_periods, 1),
+    )
+    infmort_rates = np.ones(num_periods) * 0.005
+    imm_rates = np.zeros((num_periods, E + S))
+    mort_rates_S = mort_rates[:, E:]
+    imm_rates_mat = imm_rates[:, E:]
+
+    pop_objs = demographics.expand_pop_obj_J(
+        omega_path_lev,
+        omega_path_S,
+        omega_SSfx,
+        fert_rates,
+        mort_rates,
+        infmort_rates,
+        imm_rates,
+        mort_rates_S,
+        imm_rates_mat,
+        E,
+        S,
+        0.0,
+        fixper,
+    )
+
+    assert pop_objs["omega_path_S"].shape == (num_periods, S, 1)
+    assert np.allclose(pop_objs["omega_path_S"][:, :, 0], omega_path_S)
+    assert pop_objs["omega_SS"].shape == (S, 1)
+    assert np.allclose(pop_objs["mort_rates_S"][:, :, 0], mort_rates_S)
+    assert np.allclose(pop_objs["imm_rates_mat"][:, :, 0], imm_rates_mat)
+
+
+def test_expand_pop_obj_J_income_inputs_require_percentiles():
+    """
+    income_percentiles stays required when income-specific inputs are
+    supplied: providing a gradient without percentiles must raise.
+    """
+    E = 1
+    S = 3
+    num_periods = 5
+    fixper = 2
+    omega_SSfx = np.array([0.2, 0.3, 0.3, 0.2])
+    omega_path_lev = np.tile(omega_SSfx.reshape(1, E + S), (num_periods, 1))
+    omega_path_S = omega_path_lev[:, E:] / omega_path_lev[:, E:].sum(
+        axis=1
+    ).reshape(num_periods, 1)
+    fert_rates = np.zeros((num_periods, E + S))
+    mort_rates = np.tile(
+        np.array([0.01, 0.02, 0.03, 1.0]).reshape(1, E + S),
+        (num_periods, 1),
+    )
+    infmort_rates = np.ones(num_periods) * 0.005
+    imm_rates = np.zeros((num_periods, E + S))
+
+    with pytest.raises(AssertionError, match="income_percentiles"):
+        demographics.expand_pop_obj_J(
+            omega_path_lev,
+            omega_path_S,
+            omega_SSfx,
+            fert_rates,
+            mort_rates,
+            infmort_rates,
+            imm_rates,
+            mort_rates[:, E:],
+            imm_rates[:, E:],
+            E,
+            S,
+            0.0,
+            fixper,
+            mort_gradient=np.zeros(E + S),
+        )
+
+
 def test_expand_pop_obj_J_preserves_aggregate_mortality_with_gradients():
     """
     Test that log-odds gradients generate bounded J-specific rates whose

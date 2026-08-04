@@ -730,14 +730,14 @@ def g_ndc(r, Y, p):
         g_ndc (Numpy array): growth rate used for contributions to NDC
 
     """
+    # r and g_y are scalars in the SS but paths in the TPI; take the
+    # last element robustly in either case (see Issue #1169)
     if p.ndc_growth_rate == "r":
-        g_ndc = r[-1]
+        g_ndc = np.asarray(r).flat[-1]
     elif p.ndc_growth_rate == "Curr GDP":
         g_ndc = (Y[1:] - Y[:-1]) / Y[:-1]
-    elif p.ndc_growth_rate == "LR GDP":
-        g_ndc = p.g_y[-1] + p.g_n[-1]
-    else:
-        g_ndc = p.g_y[-1] + p.g_n[-1]
+    else:  # "LR GDP"
+        g_ndc = np.asarray(p.g_y).flat[-1] + np.asarray(p.g_n).flat[-1]
 
     return g_ndc
 
@@ -757,14 +757,14 @@ def g_dir(r, Y, g_y, g_n, dir_growth_rate):
         g_dir (Numpy array): growth rate used for contributions to NDC
 
     """
+    # r and g_y are scalars in the SS but paths in the TPI; take the
+    # last element robustly in either case (see Issue #1169)
     if dir_growth_rate == "r":
-        g_dir = r[-1]
+        g_dir = np.asarray(r).flat[-1]
     elif dir_growth_rate == "Curr GDP":
         g_dir = (Y[1:] - Y[:-1]) / Y[:-1]
-    elif dir_growth_rate == "LR GDP":
-        g_dir = g_y[-1] + g_n[-1]
-    else:
-        g_dir = g_y[-1] + g_n[-1]
+    else:  # "LR GDP"
+        g_dir = np.asarray(g_y).flat[-1] + np.asarray(g_n).flat[-1]
 
     return g_dir
 
@@ -786,7 +786,14 @@ def delta_ret(r, Y, p):
             pension amount
 
     """
-    surv_rates = 1 - p.mort_rates_SS
+    # A real Specifications object has no mort_rates_SS attribute; fall
+    # back to the steady-state mortality rates implied by rho, averaged
+    # over lifetime-income groups with their population weights (see
+    # Issue #1169)
+    mort_rates_SS = getattr(p, "mort_rates_SS", None)
+    if mort_rates_SS is None:
+        mort_rates_SS = p.rho[-1] @ np.asarray(p.lambdas).ravel()
+    surv_rates = 1 - mort_rates_SS
     # Single retirement age for now (see Issue #1014)
     S_ret = int(np.asarray(p.retire).flat[-1])
     dir_delta_s_empty = np.zeros(p.S - S_ret + 1)
