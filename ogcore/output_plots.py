@@ -188,7 +188,7 @@ def plot_industry_aggregates(
     var_list=["Y_m"],
     ind_names_list=None,
     plot_type="pct_diff",
-    stationarized=True,
+    stationarized=False,
     num_years_to_plot=50,
     start_year=DEFAULT_START_YEAR,
     forecast_data=None,
