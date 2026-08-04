@@ -654,6 +654,7 @@ def test_inner_loop(baseline, r_p, param_updates, filename, dask_client):
     w = firm.get_w_from_r(r, p, "SS")
     TR = 0.12
     Y = 1.3
+    G = p.alpha_G[-1] * Y
     p_m = np.ones(p.M)
     factor = 100000
     BQ = np.ones(p.J) * 0.00019646295986015257
@@ -667,6 +668,7 @@ def test_inner_loop(baseline, r_p, param_updates, filename, dask_client):
             p_m,
             Y,
             BQ,
+            G,
             TR,
             None,
             factor,
@@ -685,6 +687,7 @@ def test_inner_loop(baseline, r_p, param_updates, filename, dask_client):
             p_m,
             Y,
             BQ,
+            G,
             TR,
             Ig_baseline,
             factor,

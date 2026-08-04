@@ -650,6 +650,35 @@ param_updates12 = {
 filename12 = os.path.join(
     CUR_PATH, "test_io_data", "run_TPI_baseline_MneI_cmin.pkl"
 )
+param_updates13 = {
+    "budget_balance": True,
+    "frisch": 0.41,
+    "cit_rate": [[0.21, 0.25, 0.35]],
+    "M": 3,
+    "I": 3,
+    "io_matrix": np.array(
+        [
+            [0.50, 0.30, 0.20],
+            [0.20, 0.50, 0.30],
+            [0.25, 0.25, 0.50],
+            # Government consumption uses output from all three industries.
+            [0.35, 0.25, 0.40],
+            # Infrastructure investment uses a different industry mix.
+            [0.20, 0.50, 0.30],
+        ]
+    ),
+    "epsilon": [1.0, 1.0, 1.0],
+    "gamma": [0.30, 0.35, 0.40],
+    "gamma_g": [0.10, 0.05, 0.15],
+    "alpha_c": [0.20, 0.40, 0.40],
+    "c_min": [0.0, 0.0, 0.0],
+    "initial_guess_r_SS": 0.11,
+    "initial_guess_TR_SS": 0.07,
+    "alpha_G": [0.05],
+    "alpha_I": [0.01],
+    "initial_Kg_ratio": 0.01,
+    "debt_ratio_ss": 1.5,
+}
 
 
 @pytest.mark.local
@@ -668,6 +697,7 @@ filename12 = os.path.join(
         (True, param_updates10, filename10),
         (True, param_updates11, filename11),
         (True, param_updates12, filename12),
+        (True, param_updates13, None),
     ],
     ids=[
         "Baseline, balanced budget",
@@ -682,6 +712,7 @@ filename12 = os.path.join(
         "Baseline, M=3 zero Kg",
         "Baseline, M!=I",
         "Baseline, M!=I, cmin>0",
+        "Baseline, mixed government IO",
     ],
 )
 def test_run_TPI_full_run(
@@ -746,6 +777,18 @@ def test_run_TPI_full_run(
             pickle.dump(ss_outputs, f)
 
     test_dict = TPI.run_TPI(p, client=dask_client)
+    if filename is None:
+        government_io = p.io_matrix[p.I, :]
+        infrastructure_io = p.io_matrix[p.I + 1, :]
+        assert np.count_nonzero(government_io) >= 2
+        assert np.count_nonzero(infrastructure_io) >= 2
+        assert np.allclose(test_dict["p_g"], test_dict["p_m"] @ government_io)
+        assert np.allclose(
+            test_dict["p_Ig"], test_dict["p_m"] @ infrastructure_io
+        )
+        max_rc_error = np.max(np.abs(test_dict["resource_constraint_error"]))
+        assert max_rc_error < p.RC_TPI
+        return
     expected_dict = utils.safe_read_pickle(filename)
     try:
         expected_dict["r_p"] = expected_dict.pop("r_hh")
