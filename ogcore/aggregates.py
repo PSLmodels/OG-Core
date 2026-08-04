@@ -418,6 +418,12 @@ def revenue(
     payroll_tax_revenue = get_payroll_tax_revenue(
         w, L, iit_payroll_tax_revenue, p, method
     )
+    # When payroll taxes are modeled explicitly via tau_payroll, they are
+    # excluded from the income and payroll tax functions, so payroll tax
+    # revenue must be added into iit_payroll_tax_revenue (which enters
+    # total revenue) before the income tax portion is separated out.
+    if np.any(p.tau_payroll != 0):
+        iit_payroll_tax_revenue += payroll_tax_revenue
     business_tax_revenue = tax.get_biz_tax(w, Y, L, K, p_m, p, m, method).sum(
         -1
     )
