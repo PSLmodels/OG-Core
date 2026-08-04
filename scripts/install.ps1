@@ -91,7 +91,8 @@ $Repos = @(
     [pscustomobject]@{ Key="og-eth";  Owner="EAPD-DRB";  Name="OG-ETH";  Pkg="ogeth";  Desc="Ethiopia" },
     [pscustomobject]@{ Key="og-zaf";  Owner="EAPD-DRB";  Name="OG-ZAF";  Pkg="ogzaf";  Desc="South Africa" },
     [pscustomobject]@{ Key="og-idn";  Owner="EAPD-DRB";  Name="OG-IDN";  Pkg="ogidn";  Desc="Indonesia" },
-    [pscustomobject]@{ Key="og-phl";  Owner="EAPD-DRB";  Name="OG-PHL";  Pkg="ogphl";  Desc="Philippines" }
+    [pscustomobject]@{ Key="og-phl";  Owner="EAPD-DRB";  Name="OG-PHL";  Pkg="ogphl";  Desc="Philippines" },
+    [pscustomobject]@{ Key="og-bra";  Owner="PSLmodels"; Name="OG-BRA";  Pkg="ogbra";  Desc="Brazil" }
 )
 
 # -- Catalog listing (-List / -ListJson) ---------------------------------------

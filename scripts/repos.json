@@ -35,6 +35,13 @@
       "repo": "OG-PHL",
       "package": "ogphl",
       "description": "Philippines"
+    },
+    {
+      "key": "og-bra",
+      "owner": "PSLmodels",
+      "repo": "OG-BRA",
+      "package": "ogbra",
+      "description": "Brazil"
     }
   ]
 }

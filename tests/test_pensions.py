@@ -986,13 +986,20 @@ def test_get_PS(args, PS_expected):
             {"alpha_db": 0.02, "yr_contrib": 35, "avg_earn_num_years": 40},
         ),
         ("Points System", {"vpoint": 0.5}),
+        # The NDC growth-rate settings (ndc_growth_rate,
+        # dir_growth_rate) became parameters with Issue #1169; tau_p
+        # must be positive for the pension to be nonzero
+        (
+            "Notional Defined Contribution",
+            {
+                "tau_p": 0.1,
+                "ndc_growth_rate": "LR GDP",
+                "dir_growth_rate": "r",
+            },
+        ),
     ],
-    ids=["DB", "PS"],
+    ids=["DB", "PS", "NDC"],
 )
-# The Notional Defined Contribution system is excluded above: its
-# growth-rate settings (ndc_growth_rate, dir_growth_rate) are not yet
-# parameters in default_parameters.json, so it cannot run against a real
-# Specifications object at all.  See Issue #1169.
 def test_pension_amount_with_real_specifications(system, updates):
     """
     pension_amount must accept a real Specifications object in the SS:
@@ -1020,9 +1027,8 @@ def test_SS_solve_defined_benefits(tmp_path):
     """
     The steady state must solve with the Defined Benefits pension system
     and produce positive aggregate pension outlays (Issue #1014 asked for
-    model-run tests of each pension system; the NDC system cannot run yet
-    -- see above -- and the analogous Points System run should be added
-    with the resolution of that issue).
+    model-run tests of each pension system; the analogous NDC and Points
+    System runs should be added with the resolution of that issue).
     """
     from ogcore.execute import runner
     from ogcore import utils

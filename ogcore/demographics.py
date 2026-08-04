@@ -901,9 +901,10 @@ def expand_pop_obj_J(
 
     The aggregate population path and rates are left unchanged. If
     income_percentiles is None and no income-specific inputs are
-    provided, the original aggregate objects are returned. Otherwise,
-    income_percentiles gives the initial population distribution across
-    J for every age and the income shares of newborns in every period.
+    provided, the aggregate objects are broadcast across a single
+    income group (J=1). Otherwise, income_percentiles gives the initial
+    population distribution across J for every age and the income
+    shares of newborns in every period.
 
     Args:
         omega_path_lev (Numpy array): T+S x E+S aggregate population levels.
@@ -922,7 +923,9 @@ def expand_pop_obj_J(
         g_n_SS (float): steady-state population growth rate.
         fixper (int): period at which the fixed steady-state distribution is
             imposed.
-        income_percentiles (array_like): population shares for each J group.
+        income_percentiles (array_like): population shares for each J
+            group; defaults to a single income group when no
+            income-specific inputs are supplied.
         fert_gradient (array_like): log-odds fertility slopes by age.
         mort_gradient (array_like): log-odds mortality slopes by age.
         infmort_gradient (array_like): log-odds infant mortality slopes.
@@ -939,10 +942,15 @@ def expand_pop_obj_J(
         infmort_gradient,
         imm_pctiles,
     )
-    assert income_percentiles is not None, (
-        "income_percentiles must be provided when using "
-        + "income-specific inputs."
-    )
+    all_income_inputs_none = all(x is None for x in income_inputs)
+    if income_percentiles is None:
+        assert all_income_inputs_none, (
+            "income_percentiles must be provided when using "
+            + "income-specific inputs."
+        )
+        # No income heterogeneity requested: broadcast the aggregate
+        # objects across a single income group.
+        income_percentiles = [100]
     income_shares, pct_midpoints = _income_shares_and_midpoints(
         income_percentiles
     )
@@ -950,10 +958,7 @@ def expand_pop_obj_J(
     num_periods, totpers = omega_path_lev.shape
     assert totpers == E + S
 
-    all_income_inputs_none = all(x is None for x in income_inputs)
-
     if all_income_inputs_none:
-        print("In the all are none case.")
         return {
             "omega_path_S": omega_path_S.reshape(
                 omega_path_S.shape[0], omega_path_S.shape[1], 1
@@ -1147,7 +1152,9 @@ def get_pop_objs(
             for new immigrants, shape is num_per x S x J, where num_per
             is the number of years between initial and final_data_year
         income_percentiles (array_like): user provided income percentiles,
-            dimensions are J, the number of lifetime income groups
+            dimensions are J, the number of lifetime income groups;
+            defaults to a single income group (J=1) when no
+            income-specific inputs are supplied
         country_id (str): country id for UN data
         initial_data_year (int): initial year of data to use
             (not relevant if have user provided data)
