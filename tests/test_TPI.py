@@ -679,6 +679,9 @@ param_updates13 = {
     "initial_Kg_ratio": 0.01,
     "debt_ratio_ss": 1.5,
 }
+filename13 = os.path.join(
+    CUR_PATH, "test_io_data", "run_TPI_baseline_mixed_IO.pkl"
+)
 
 
 @pytest.mark.local
@@ -697,7 +700,7 @@ param_updates13 = {
         (True, param_updates10, filename10),
         (True, param_updates11, filename11),
         (True, param_updates12, filename12),
-        (True, param_updates13, None),
+        (True, param_updates13, filename13),
     ],
     ids=[
         "Baseline, balanced budget",
@@ -777,18 +780,7 @@ def test_run_TPI_full_run(
             pickle.dump(ss_outputs, f)
 
     test_dict = TPI.run_TPI(p, client=dask_client)
-    if filename is None:
-        government_io = p.io_matrix[p.I, :]
-        infrastructure_io = p.io_matrix[p.I + 1, :]
-        assert np.count_nonzero(government_io) >= 2
-        assert np.count_nonzero(infrastructure_io) >= 2
-        assert np.allclose(test_dict["p_g"], test_dict["p_m"] @ government_io)
-        assert np.allclose(
-            test_dict["p_Ig"], test_dict["p_m"] @ infrastructure_io
-        )
-        max_rc_error = np.max(np.abs(test_dict["resource_constraint_error"]))
-        assert max_rc_error < p.RC_TPI
-        return
+
     expected_dict = utils.safe_read_pickle(filename)
     try:
         expected_dict["r_p"] = expected_dict.pop("r_hh")
