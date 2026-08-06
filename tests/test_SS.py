@@ -617,16 +617,16 @@ filename9 = "inner_loop_outputs_J1.pkl"
 
 
 @pytest.mark.parametrize(
-    "baseline,r_p,param_updates,filename",
+    "baseline,r_p,G,param_updates,filename",
     [
-        (True, 0.03309231672773741, param_updates1, filename1),
-        (True, 0.05, param_updates2, filename2),
-        (True, 0.04260341179572245, param_updates3, filename3),
-        (False, 0.04260341179572245, param_updates4, filename4),
-        (False, 0.04260341179572245, param_updates5, filename5),
-        (False, 0.04759112768438152, param_updates7, filename7),
-        (False, 0.04759112768438152, param_updates8, filename8),
-        (True, 0.04, param_updates9, filename9),
+        (True, 0.03309231672773741, 0.014437452721629856, param_updates1, filename1),
+        (True, 0.05, 0.0, param_updates2, filename2),
+        (True, 0.04260341179572245, -0.014176305891860835, param_updates3, filename3),
+        (False, 0.04260341179572245, -0.016740374031832955, param_updates4, filename4),
+        (False, 0.04260341179572245, -0.10177029059464454, param_updates5, filename5),
+        (False, 0.04759112768438152, 0.0, param_updates7, filename7),
+        (False, 0.04759112768438152, 0.0, param_updates8, filename8),
+        (True, 0.04, -0.1755185349329596, param_updates9, filename9),
     ],
     ids=[
         "Baseline, Small Open",
@@ -639,7 +639,7 @@ filename9 = "inner_loop_outputs_J1.pkl"
         "J=1",
     ],
 )
-def test_inner_loop(baseline, r_p, param_updates, filename, dask_client):
+def test_inner_loop(baseline, r_p, G, param_updates, filename, dask_client):
     # Test SS.inner_loop function. Provide inputs to function and ensure that
     # output returned matches what it has been before.
     p = Specifications(baseline=baseline, num_workers=NUM_WORKERS)
@@ -654,7 +654,6 @@ def test_inner_loop(baseline, r_p, param_updates, filename, dask_client):
     w = firm.get_w_from_r(r, p, "SS")
     TR = 0.12
     Y = 1.3
-    G = p.alpha_G[-1] * Y
     p_m = np.ones(p.M)
     factor = 100000
     BQ = np.ones(p.J) * 0.00019646295986015257
@@ -1304,6 +1303,36 @@ param_updates16 = {
     "debt_ratio_ss": 1.5,
 }
 filename16 = "run_SS_baseline_M3_Kg_zero_cmin.pkl"
+param_updates17 = {
+    "budget_balance": True,
+    "frisch": 0.41,
+    "cit_rate": [[0.21, 0.25, 0.35]],
+    "M": 3,
+    "I": 3,
+    "io_matrix": np.array(
+        [
+            [0.50, 0.30, 0.20],
+            [0.20, 0.50, 0.30],
+            [0.25, 0.25, 0.50],
+            # Government consumption uses output from all three industries.
+            [0.35, 0.25, 0.40],
+            # Infrastructure investment uses a different industry mix.
+            [0.20, 0.50, 0.30],
+        ]
+    ),
+    "epsilon": [1.0, 1.0, 1.0],
+    "gamma": [0.30, 0.35, 0.40],
+    "gamma_g": [0.10, 0.05, 0.15],
+    "alpha_c": [0.20, 0.40, 0.40],
+    "c_min": [0.0, 0.0, 0.0],
+    "initial_guess_r_SS": 0.11,
+    "initial_guess_TR_SS": 0.07,
+    "alpha_G": [0.05],
+    "alpha_I": [0.01],
+    "initial_Kg_ratio": 0.01,
+    "debt_ratio_ss": 1.5,
+}
+filename17 = "run_SS_baseline_mixed_government_io.pkl"
 
 
 # Note that changing the order in which these tests are run will cause
@@ -1328,6 +1357,7 @@ filename16 = "run_SS_baseline_M3_Kg_zero_cmin.pkl"
         (True, param_updates14, filename14),
         (False, param_updates15, filename3),
         (True, param_updates16, filename16),
+        (True, param_updates17, filename17),
     ],
     ids=[
         "Baseline",
@@ -1346,6 +1376,7 @@ filename16 = "run_SS_baseline_M3_Kg_zero_cmin.pkl"
         "Baseline, M=3, zero Kg",
         "Reform, not use baseline solution",
         "Baseline, M=3, zero Kg, cmin > 0",
+        "Baseline, mixed government IO",
     ],
 )
 @pytest.mark.local
@@ -1376,6 +1407,17 @@ def test_run_SS(tmpdir, baseline, param_updates, filename, dask_client):
     )
     p.update_specifications(param_updates)
     test_dict = SS.run_SS(p, client=dask_client)
+    if filename is None:
+        government_io = p.io_matrix[p.I, :]
+        infrastructure_io = p.io_matrix[p.I + 1, :]
+        assert np.count_nonzero(government_io) >= 2
+        assert np.count_nonzero(infrastructure_io) >= 2
+        assert np.isclose(test_dict["p_g"], test_dict["p_m"] @ government_io)
+        assert np.isclose(
+            test_dict["p_Ig"], test_dict["p_m"] @ infrastructure_io
+        )
+        assert np.max(np.abs(test_dict["resource_constraint_error"])) < p.RC_SS
+        return
     expected_dict = utils.safe_read_pickle(
         os.path.join(CUR_PATH, "test_io_data", filename)
     )
@@ -1412,8 +1454,8 @@ def test_initial_guesses(tmpdir, use_zeta):
     guesses, n_guess, b_guess = SS.SS_initial_guesses(p)
 
     if use_zeta:
-        assert len(guesses) == 7 + 1
+        assert len(guesses) == 8 + 1
     else:
-        assert len(guesses) == 7 + p.J
+        assert len(guesses) == 8 + p.J
     assert n_guess.shape == (p.S, p.J)
     assert b_guess.shape == (p.S, p.J)
