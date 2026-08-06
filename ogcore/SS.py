@@ -782,6 +782,7 @@ def SS_solver(
         factor = utils.convex_combo(new_factor, factor, nu_ss)
         BQ = utils.convex_combo(new_BQ, BQ, nu_ss)
         G = utils.convex_combo(new_G, G, nu_ss)
+        G_dist = abs(new_G - G) / max(abs(new_G), abs(G), 1.0)
         if p.baseline_spending:
             Y = utils.convex_combo(new_Y, Y, nu_ss)
             if Y != 0:
@@ -791,7 +792,7 @@ def SS_solver(
                     + [utils.pct_diff_func(new_w, w)]
                     + list(utils.pct_diff_func(new_p_m, p_m))
                     + list(utils.pct_diff_func(new_BQ, BQ))
-                    + [utils.pct_diff_func(new_G, G)]
+                    + [G_dist]
                     + [utils.pct_diff_func(new_Y, Y)]
                     + [utils.pct_diff_func(new_factor, factor)]
                 ).max()
@@ -804,7 +805,7 @@ def SS_solver(
                     + [utils.pct_diff_func(new_w, w)]
                     + list(utils.pct_diff_func(new_p_m, p_m))
                     + list(utils.pct_diff_func(new_BQ, BQ))
-                    + [utils.pct_diff_func(new_G, G)]
+                    + [G_dist]
                     + [abs(new_Y - Y)]
                     + [utils.pct_diff_func(new_factor, factor)]
                 ).max()
@@ -819,7 +820,7 @@ def SS_solver(
                 + [float(utils.pct_diff_func(new_w, w))]
                 + list(utils.pct_diff_func(new_p_m, p_m))
                 + list(utils.pct_diff_func(new_BQ, BQ))
-                + [float(utils.pct_diff_func(new_G, G))]
+                + [float(G_dist)]
                 + [float(utils.pct_diff_func(new_TR, TR))]
                 + [float(utils.pct_diff_func(new_factor, factor))]
             ).max()
@@ -1120,7 +1121,7 @@ def SS_solver(
     net_capital_outflows = aggr.get_capital_outflows(
         r_p_ss, K_f_ss, new_borrowing_f, debt_service_f, p
     )
-    # Fill in arrays, noting that M-1 industries only produce consumption goods
+    # Fill in arrays, noting that M-1 industries don't produce the capital good
     G_vec_ss = p.io_matrix[p.I, :] * Gss
     # Map consumption goods back to demands for production goods
     logger.info(f"IO: {p.io_matrix[: p.I, :].T.shape}, C: {C_vec_ss.shape}")
@@ -1600,23 +1601,16 @@ def run_SS(p, client=None):
     rss = sol.x[1]
     wss = sol.x[2]
     p_m_ss = sol.x[3 : 3 + p.M]
+    Yss = sol.x[3 + p.M]
     if p.baseline:
         BQss = sol.x[3 + p.M + 1 : -3]
         Gss = sol.x[-3]
         TR_ss = sol.x[-2]
         factor_ss = sol.x[-1]
-        Yss = TR_ss / p.alpha_T[-1]  # may not be right - if
-        # budget_balance = True, but that's ok - will be fixed in
-        # SS_solver
     else:
-        Yss = sol.x[3 + p.M]
         BQss = sol.x[3 + p.M + 1 : -2]
         Gss = sol.x[-2]
         TR_ss = sol.x[-1]
-        if not p.baseline_spending:
-            Yss = TR_ss / p.alpha_T[-1]  # may not be right - if
-            # budget_balance = True, but that's ok - will be fixed in
-            # SS_solver
 
     if ENFORCE_SOLUTION_CHECKS and not sol.success:
         raise RuntimeError("Steady state equilibrium not found")

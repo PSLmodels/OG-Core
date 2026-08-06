@@ -1274,6 +1274,7 @@ def run_TPI(p, client=None):
             Gbaseline,
             D0_baseline,
         )
+        G_old = G[: p.T].copy()
         (
             Dnew,
             G[: p.T],
@@ -1284,6 +1285,9 @@ def run_TPI(p, client=None):
             debt_service,
             new_borrowing_f,
         ) = fiscal.D_G_path(r, dg_fixed_values, p)
+        G_dist = np.abs(G[: p.T] - G_old) / np.maximum.reduce(
+            [np.abs(G[: p.T]), np.abs(G_old), np.ones(p.T)]
+        )
 
         rnew = r.copy()
         rnew[: p.T] = np.squeeze(
@@ -1420,7 +1424,10 @@ def run_TPI(p, client=None):
             # post-update TPIdist below is spuriously ~0 for steps that set
             # x_next ~= gx (e.g. Anderson's undamped first step), so it is
             # overridden with this to avoid declaring false convergence.
-            accel_dist = float(np.max(utils.pct_diff_func(gx, x)))
+            accel_dist = max(
+                float(np.max(utils.pct_diff_func(gx, x))),
+                float(np.max(G_dist)),
+            )
             # Anchored/trust-region control: grow the radius after an improving
             # accelerated step and shrink it (resetting the memory) after a
             # worsening one, using the residual trend as the accept/reject
@@ -1499,6 +1506,7 @@ def run_TPI(p, client=None):
             )
             + list(utils.pct_diff_func(BQnew[: p.T], BQ[: p.T]).flatten())
             + list(utils.pct_diff_func(TR_new[: p.T], TR[: p.T]))
+            + list(G_dist)
         ).max()
         if outer_updater is not None:
             # accelerated methods: use the true residual accel_dist, computed
