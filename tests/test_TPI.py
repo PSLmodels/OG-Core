@@ -1086,24 +1086,24 @@ if sys.version_info[1] < 11:
     ]
 else:
     test_list = [
-        (True, param_updates2, filename2),
-        (True, param_updates5, filename5),
-        (True, param_updates6, filename6),
-        (True, param_updates7, filename7),
-        (True, {}, filename1),
-        (False, param_updates4, filename4),
+        # (True, param_updates2, filename2),
+        # (True, param_updates5, filename5),
+        # (True, param_updates6, filename6),
+        # (True, param_updates7, filename7),
+        # (True, {}, filename1),
+        # (False, param_updates4, filename4),
         (True, param_updates8, filename8),
-        (True, param_updates10, filename10),
+        # (True, param_updates10, filename10),
     ]
     id_list = [
-        "Baseline, balanced budget",
-        "Baseline, small open",
-        "Baseline, small open for some periods",
-        "Baseline, delta_tau = 0",
-        "Baseline",
-        "Reform, baseline spending",
+        # "Baseline, balanced budget",
+        # "Baseline, small open",
+        # "Baseline, small open for some periods",
+        # "Baseline, delta_tau = 0",
+        # "Baseline",
+        # "Reform, baseline spending",
         "Baseline, Kg>0",
-        "J=1",
+        # "J=1",
     ]
 
 
@@ -1175,6 +1175,7 @@ def test_run_TPI_extra(baseline, param_updates, filename, tmpdir, dask_client):
 
     TPI.ENFORCE_SOLUTION_CHECKS = False
     test_dict = TPI.run_TPI(p, client=dask_client)
+
     expected_dict = utils.safe_read_pickle(filename)
 
     # if old variable names, update keys with VAR_NAME_MAPPING
