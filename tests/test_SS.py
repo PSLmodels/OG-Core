@@ -824,6 +824,7 @@ def test_inner_loop_extra(baseline, param_updates, filename, dask_client):
     w = firm.get_w_from_r(r, p, "SS")
     TR = 0.12
     Y = 1.3
+    G = 0.014
     factor = 100000
     BQ = np.ones(p.J) * 0.00019646295986015257
     p_m = np.array([1.0])
@@ -841,11 +842,13 @@ def test_inner_loop_extra(baseline, param_updates, filename, dask_client):
         p_m,
         Y,
         BQ,
+        G,
         TR,
         Ig_baseline,
         factor,
     )
     test_tuple = SS.inner_loop(outer_loop_vars, p, dask_client)
+
     expected_tuple = utils.safe_read_pickle(
         os.path.join(CUR_PATH, "test_io_data", filename)
     )
