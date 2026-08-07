@@ -24,6 +24,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   escalates from cycling to diverging), and a run that ends unconverged
   while stalled carries the diagnosis in the `RuntimeError` message, so
   it reaches users who only see the traceback.
+### Bug Fixes
+
+- Fixes Issue [#1186](https://github.com/PSLmodels/OG-Core/issues/1186):
+  with demographics that vary across lifetime income groups (PR #1165), the
+  `use_zeta = False` branch of `household.get_bq` divided each group's
+  bequest pool by its birth share (`lambdas[j]`) rather than its actual
+  population share, so bequests received did not sum to bequests left and
+  the steady-state resource constraint failed. Receipts are now divided by
+  the group's actual population (from `omega_SS` / `omega`), matching the
+  `use_zeta = True` branch. Results are unchanged when demographics are
+  common across groups.
 
 ## [0.19.0] - 2026-07-29 12:00:00
 
