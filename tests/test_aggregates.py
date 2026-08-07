@@ -1218,6 +1218,7 @@ new_param_values = {
     "chi_n": np.ones(2),
     "e": np.ones((40, 2)),
     "M": 3,
+    "io_matrix": np.array([[0.0, 0.0, 1.0]] * 3),
     "labor_income_tax_noncompliance_rate": [[0.0]],
     "capital_income_tax_noncompliance_rate": [[0.0]],
     "income_tax_filer": [[1.0]],
@@ -1837,7 +1838,9 @@ def test_get_r_p(r, r_gov, p_m, K_vec, K_g, D, MPKg_vec, method, expected):
         M = len(p_m)
     else:
         M = 1
-    p.update_specifications({"T": 3, "M": M})
+    io_matrix = np.zeros((p.I + 2, M))
+    io_matrix[:, -1] = 1.0
+    p.update_specifications({"T": 3, "M": M, "io_matrix": io_matrix})
 
     r_p_test = aggr.get_r_p(r, r_gov, p_m, K_vec, K_g, D, MPKg_vec, p, method)
 
@@ -1886,6 +1889,32 @@ def test_resource_constraint(
     )
 
     assert np.allclose(test_RC, expected)
+
+
+def test_get_io_prices_ss_and_tpi():
+    p = Specifications()
+    p.I = 2
+    p.M = 3
+    p.io_matrix = np.array(
+        [
+            [0.5, 0.5, 0.0],
+            [0.0, 0.25, 0.75],
+            [0.2, 0.3, 0.5],
+            [0.6, 0.1, 0.3],
+        ]
+    )
+    p_m = np.array([2.0, 4.0, 1.0])
+    p_i, p_g, p_Ig = aggr.get_io_prices(p_m, p, "SS")
+    assert np.allclose(p_i, [3.0, 1.75])
+    assert np.isclose(p_g, 2.1)
+    assert np.isclose(p_Ig, 1.9)
+
+    p_i_t, p_g_t, p_Ig_t = aggr.get_io_prices(
+        np.vstack([p_m, 2 * p_m]), p, "TPI"
+    )
+    assert np.allclose(p_i_t, np.vstack([p_i, 2 * p_i]))
+    assert np.allclose(p_g_t, [p_g, 2 * p_g])
+    assert np.allclose(p_Ig_t, [p_Ig, 2 * p_Ig])
 
 
 def test_get_capital_outflows():

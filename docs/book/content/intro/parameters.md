@@ -221,7 +221,7 @@ _Out-of-Range Action:_ error
 
 
 ####  `io_matrix`  
-_Description:_ Input-output matrix used to map production outputs into consumption goods using a fixed coefficient model.  This matrix has dimensions I x M, where I is the number of distinct consumption goods and M is the number of distinct production goods.  The sum each row of this matrix must be 1.  
+_Description:_ Input-output matrix used to map production outputs into consumption and government goods using a fixed coefficient model. This matrix has dimensions (I + 2) x M. The first I rows map consumption goods, row I maps government consumption, and row I + 1 maps infrastructure investment. The sum of each row must be 1.  
 _Value Type:_ float  
 _Valid Range:_ min = 0.0 and max = 1.0  
 _Out-of-Range Action:_ error  
@@ -282,7 +282,7 @@ _Out-of-Range Action:_ error
 ### Fiscal Policy Parameters
 
 ####  `alpha_FA`  
-_Description:_ Foreign aid payments to domestic government as a share of GDP.  
+_Description:_ Foreign aid payments to domestic government as a share of GDP. Set value for base year, click '+' to add value for next year.  All future years not specified are set to last value entered.  
 _Value Type:_ float  
 _Valid Range:_ min = 0.0 and max = 1.0  
 _Out-of-Range Action:_ error  
@@ -855,8 +855,22 @@ _Valid Range:_ min = -1.0 and max = 1.0
 _Out-of-Range Action:_ error  
 
 
+####  `g_n_preTP`  
+_Description:_ Population growth rate from year before model start to start year.  
+_Value Type:_ float  
+_Valid Range:_ min = -1.0 and max = 1.0  
+_Out-of-Range Action:_ error  
+
+
 ####  `imm_rates`  
 _Description:_ Immigration rates over the time path.  
+_Value Type:_ float  
+_Valid Range:_ min = -1.0 and max = 1.0  
+_Out-of-Range Action:_ error  
+
+
+####  `imm_rates_preTP`  
+_Description:_ Immigration rates in period before model start year.  
 _Value Type:_ float  
 _Valid Range:_ min = -1.0 and max = 1.0  
 _Out-of-Range Action:_ error  
@@ -869,12 +883,53 @@ _Valid Range:_ min = 0.0 and max = 1.0
 _Out-of-Range Action:_ error  
 
 
+####  `rho_preTP`  
+_Description:_ Age-specific mortality rates.  
+_Value Type:_ float  
+_Valid Range:_ min = 0.0 and max = 1.0  
+_Out-of-Range Action:_ error  
+
+
 ## Model Solution Parameters
+
+####  `use_sparse_FOC_jac`  
+_Description:_ Flag to use a sparse (banded) finite-difference Jacobian in the household first order condition root finder. When True (the default), the sparsity pattern of the stacked Euler/labor first order conditions is auto-detected once per problem size and supplied to scipy.optimize.root, which then needs far fewer function evaluations per Jacobian build than the default dense finite differences. The solver falls back to the dense finite-difference Jacobian automatically if the Jacobian is not sparse enough to benefit or if a solve fails. Set to False to use the legacy dense Jacobian on every call.  
+_Value Type:_ bool  
+_Valid Choices:_[True, False]  
+
 
 ####  `nu`  
 _Description:_ Parameter for convergence rate of functional iteration.  
 _Value Type:_ float  
 _Valid Range:_ min = 0.01 and max = 0.5  
+_Out-of-Range Action:_ error  
+
+
+####  `TPI_outer_method`  
+_Description:_ Update rule for the transition-path outer loop. 'picard' (default) is the model's historical damped functional iteration x <- (1-nu) x + nu G(x) (see nu), which leaves model solutions unchanged. 'anderson' uses limited-memory Anderson acceleration on the residual history to take larger, better-directed steps, guarded by a trust region anchored to the damped point (TPI_trust_radius).  
+_Notes:_ Opt-in solver acceleration. The default ('picard') reproduces the constant-nu behavior exactly.  
+_Value Type:_ str  
+_Valid Choices:_['picard', 'anderson']  
+
+
+####  `TPI_anderson_m`  
+_Description:_ Number of past iterate/residual differences retained by the Anderson accelerator when TPI_outer_method='anderson'. Ignored otherwise.  
+_Value Type:_ int  
+_Valid Range:_ min = 1 and max = 50  
+_Out-of-Range Action:_ error  
+
+
+####  `TPI_anderson_beta`  
+_Description:_ Mixing weight for the Anderson step when TPI_outer_method='anderson'. beta=1 is undamped; beta<1 adds damping for robustness far from the solution. Ignored otherwise.  
+_Value Type:_ float  
+_Valid Range:_ min = 0.1 and max = 1.0  
+_Out-of-Range Action:_ error  
+
+
+####  `TPI_trust_radius`  
+_Description:_ Initial trust radius for the accelerated TPI step, as a multiple of the damped functional-iteration step length around the always-feasible damped point. Grown after an improving iteration and shrunk (with a reset) after a worsening one. A non-positive value disables the trust region (unguarded accelerator; not recommended). Ignored when TPI_outer_method='picard'.  
+_Value Type:_ float  
+_Valid Range:_ min = 0.0 and max = 100.0  
 _Out-of-Range Action:_ error  
 
 
@@ -960,7 +1015,7 @@ _Out-of-Range Action:_ error
 _Description:_ Calendar year in which to start model analysis.  
 _Notes:_ Calendar year for initial model period  
 _Value Type:_ int  
-_Valid Range:_ min = 2013 and max = 2100  
+_Valid Range:_ min = 2013 and max = 2101  
 _Out-of-Range Action:_ error  
 
 

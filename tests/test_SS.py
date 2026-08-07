@@ -105,20 +105,21 @@ guesses1 = np.array(
 args1 = (bssmat, nssmat, None, None, None, p1, None)
 expected1 = np.array(
     [
-        -0.03640424626041604,
-        -0.03002637958804053,
-        0.2262064580426968,
-        0.0,
-        1.4598033016971916,
-        -0.00161369,
-        -0.01822709,
-        -0.01675017,
-        0.006676,
-        0.0104632,
-        -0.01955018,
-        -0.00296457,
-        0.13138229715274724,
-        0.1237126490720427,
+        -0.03640424614142043,
+        -0.030026379462121836,
+        0.2262064568236184,
+        np.float64(0.0),
+        1.459803299555377,
+        np.float64(-0.0016136861758151762),
+        np.float64(-0.01822709407264444),
+        np.float64(-0.016750169337094827),
+        np.float64(0.006675999299112634),
+        np.float64(0.010463199740912059),
+        np.float64(-0.0195501791026684),
+        np.float64(-0.0029645688846319795),
+        0.04618060383526345,
+        0.13138229695998394,
+        0.1237126494797212,
     ]
 )
 # Parameterize the reform, closed econ case
@@ -130,19 +131,20 @@ guesses2 = np.array(
 args2 = (bssmat, nssmat, None, None, 0.51, p2, None)
 expected2 = np.array(
     [
-        -0.0389819118896058,
-        -0.03275578110093917,
-        0.253354429177328,
-        0.0,
-        1.4764069856763156,
-        -0.00165626,
-        -0.01503618,
-        -0.01407456,
-        0.00661677,
-        0.01038606,
-        -0.01932943,
-        -0.00294703,
-        0.132876628710868,
+        -0.038981782953620495,
+        -0.03275564448548307,
+        0.2533530330349689,
+        np.float64(0.0),
+        1.476408236474722,
+        np.float64(-0.0016562604138422362),
+        np.float64(-0.01503617213053432),
+        np.float64(-0.014074565012594308),
+        np.float64(0.006616776071131642),
+        np.float64(0.010386066693365519),
+        np.float64(-0.01932943276910628),
+        np.float64(-0.002947034595217809),
+        -0.04492728893729851,
+        0.13287674128272497,
     ]
 )
 # Parameterize the reform, closed econ, baseline spending case
@@ -156,18 +158,19 @@ guesses3 = np.array(
 args3 = (bssmat, nssmat, 0.13, 0.0, 0.51, p3, None)
 expected3 = np.array(
     [
-        -0.042611174492217574,
-        -0.03660486260948588,
-        0.2942852551844308,
-        0.0,
-        0.43144008183325194,
-        0.0044546,
-        0.00790648,
-        0.01043014,
-        0.00872496,
-        0.01242235,
-        0.00952339,
-        -0.00284511,
+        -0.042611174513442054,
+        -0.036604862632017676,
+        0.29428525543378736,
+        np.float64(0.0),
+        0.43144008144560847,
+        np.float64(0.0044546015943461165),
+        np.float64(0.0079064807426266),
+        np.float64(0.010430141647785694),
+        np.float64(0.008724959658799854),
+        np.float64(0.012422352717728046),
+        np.float64(0.009523392815873923),
+        np.float64(-0.002845111871084427),
+        -0.22921173718593807,
         0.0,
     ]
 )
@@ -179,20 +182,21 @@ guesses4 = np.array(
 args4 = (bssmat, nssmat, None, None, None, p4, None)
 expected4 = np.array(
     [
-        -0.04501723939772713,
-        -0.039160814474571426,
-        0.32336315872334676,
-        0.0,
-        1.5404736783359936,
-        -0.00173474,
-        0.00199568,
-        0.00591891,
-        0.00653568,
-        0.01029101,
-        0.0075058,
-        0.00325183,
-        0.13864263105023944,
-        0.10922623253142945,
+        -0.045016837649332994,
+        -0.039160387414162015,
+        0.3233581639469518,
+        np.float64(0.0),
+        1.540470308196032,
+        np.float64(-0.0017347334191290496),
+        np.float64(0.001994070163844324),
+        np.float64(0.005918916721508901),
+        np.float64(0.006535686515078432),
+        np.float64(0.010291021242077017),
+        np.float64(0.0075058116387135),
+        np.float64(0.003251830410242698),
+        0.05915681987065376,
+        0.13864232773764287,
+        0.10922657920295428,
     ]
 )
 # Parameterize the baseline, small open econ case
@@ -206,18 +210,19 @@ expected5 = np.array(
     [
         -0.02690768327226259,
         -0.019999999999999962,
-        0.1376969417785776,
-        0.0,
-        1.44721176202231,
-        -0.00148021,
-        0.00239001,
-        0.00638136,
-        0.00683071,
-        0.01065305,
-        0.00799657,
-        0.00336337,
-        0.1302490585820079,
-        0.11156343085283874,
+        0.1376969417785774,
+        np.float64(0.0),
+        1.4472117617540476,
+        np.float64(-0.0014802149952521642),
+        np.float64(0.002390010806203345),
+        np.float64(0.006381357559551163),
+        np.float64(0.006830713379503335),
+        np.float64(0.010653050140458123),
+        np.float64(0.00799656558193998),
+        np.float64(0.003363374489236212),
+        0.03385881272432721,
+        0.13024905855786428,
+        0.11156343089226163,
     ]
 )
 # Parameterize the baseline closed economy, delta tau = 0 case
@@ -231,20 +236,21 @@ guesses6 = np.array(
 args6 = (bssmat, nssmat, None, None, None, p6, None)
 expected6 = np.array(
     [
-        -0.051097905293268894,
-        -0.047817638192649635,
-        0.42739129061380643,
-        0.0,
-        1.5904342991581968,
-        -0.00187832,
-        0.00177827,
-        0.00566193,
-        0.00637141,
-        0.01008918,
-        0.00723656,
-        0.00319034,
-        0.1431390869242377,
-        0.10614753083674845,
+        -0.051097905302061576,
+        -0.04781763820535236,
+        0.42739129079157623,
+        np.float64(0.0),
+        1.5904342989227351,
+        np.float64(-0.0018783245688323864),
+        np.float64(0.0017782655211669059),
+        np.float64(0.0056619295277644255),
+        np.float64(0.006371411321605671),
+        np.float64(0.010089176166510753),
+        np.float64(0.007236557912744711),
+        np.float64(0.0031903380761483325),
+        0.06445630236475727,
+        0.14313908690304616,
+        0.10614753087133832,
     ]
 )
 p7 = Specifications(baseline=True)
@@ -252,7 +258,7 @@ p7.update_specifications(
     {
         "M": 4,
         "I": 4,
-        "io_matrix": np.eye(4),
+        "io_matrix": np.vstack([np.eye(4), np.eye(1, 4, 3), np.eye(1, 4, 3)]),
         "alpha_c": [0.1, 0.5, 0.3, 0.1],
         "c_min": [0.0, 0.0, 0.0, 0.0],
         "epsilon": [1.0, 1.0, 1.0, 1.0],
@@ -266,23 +272,24 @@ guesses7 = np.array(
 args7 = (bssmat, nssmat, None, None, None, p7, None)
 expected7 = np.array(
     [
-        -0.06985935377445636,
-        -0.07388184648847439,
-        2.596215180212739,
-        3.0425352411195634,
-        2.08611520332783,
-        2.5993398246497392,
-        0.0,
-        1.6276918281128583,
-        -0.0005336644680328222,
-        0.003641474531794135,
-        0.007892881165609,
-        0.007854285496066054,
-        0.011964025188377221,
-        0.00905400047723115,
-        0.0035962471039776792,
-        0.14649226453015723,
-        0.03816296076039217,
+        -0.0698593537872827,
+        -0.07388184650606822,
+        2.596215181973081,
+        np.float64(3.0425352427748997),
+        np.float64(2.086115204591531),
+        np.float64(2.5993398261235967),
+        np.float64(0.0),
+        1.6276918280746768,
+        np.float64(-0.0005336644644477768),
+        np.float64(0.0036414745371122943),
+        np.float64(0.007892881169048776),
+        np.float64(0.007854285498517724),
+        np.float64(0.01196402519125612),
+        np.float64(0.009054000486872917),
+        np.float64(0.003596247104841384),
+        -0.018788424051967456,
+        0.14649226452672093,
+        0.03816296074614697,
     ]
 )
 
@@ -323,6 +330,7 @@ def test_SS_fsolve(tmpdir, guesses, args, expected):
     r = guesses[0]
     w = firm.get_w_from_r(r_p, p, "SS")
     p_m = np.ones(p.M)
+    G = 0.014
 
     if p.baseline:
         BQ = guesses[3:-2]
@@ -338,9 +346,11 @@ def test_SS_fsolve(tmpdir, guesses, args, expected):
         else:
             Y = TR / p.alpha_T[-1]
     if p.baseline:
-        new_guesses = [r_p, r, w] + list(p_m) + [Y] + list(BQ) + [TR, factor]
+        new_guesses = (
+            [r_p, r, w] + list(p_m) + [Y] + list(BQ) + [G, TR, factor]
+        )
     else:
-        new_guesses = [r_p, r, w] + list(p_m) + [Y] + list(BQ) + [TR]
+        new_guesses = [r_p, r, w] + list(p_m) + [Y] + list(BQ) + [G, TR]
 
     test_list = SS.SS_fsolve(new_guesses, *args)
     print("Test list = ", test_list)
@@ -418,6 +428,7 @@ def test_SS_solver(baseline, param_updates, filename, dask_client):
         p_m_guess,
         Yguess,
         BQguess,
+        p.alpha_G[-1] * Yguess,
         TRguess,
         Ig_baseline,
         factorguess,
@@ -502,6 +513,7 @@ def test_SS_solver_extra(baseline, param_updates, filename, dask_client):
         p_m_guess,
         Yguess,
         BQguess,
+        p.alpha_G[-1] * Yguess,
         TRguess,
         Ig_baseline,
         factorguess,
@@ -560,7 +572,7 @@ filename5 = "inner_loop_outputs_reform_baselinespending.pkl"
 param_updates7 = {
     "M": 4,
     "I": 4,
-    "io_matrix": np.eye(4),
+    "io_matrix": np.vstack([np.eye(4), np.eye(1, 4, 3), np.eye(1, 4, 3)]),
     "alpha_c": [0.1, 0.5, 0.3, 0.1],
     "c_min": [0.0, 0.0, 0.0, 0.0],
     "epsilon": [1.0, 1.0, 1.0, 1.0],
@@ -578,6 +590,8 @@ param_updates8 = {
             [0.25, 0.25, 0.25, 0.25],
             [0.1, 0.7, 0.0, 0.2],
             [0.0, 0.0, 1.0, 0.0],
+            [0.0, 0.0, 0.0, 1.0],
+            [0.0, 0.0, 0.0, 1.0],
         ]
     ),
     "alpha_c": [0.1, 0.4, 0.3, 0.1, 0.1],
@@ -613,16 +627,40 @@ filename9 = "inner_loop_outputs_J1.pkl"
 
 
 @pytest.mark.parametrize(
-    "baseline,r_p,param_updates,filename",
+    "baseline,r_p,G,param_updates,filename",
     [
-        (True, 0.03309231672773741, param_updates1, filename1),
-        (True, 0.05, param_updates2, filename2),
-        (True, 0.04260341179572245, param_updates3, filename3),
-        (False, 0.04260341179572245, param_updates4, filename4),
-        (False, 0.04260341179572245, param_updates5, filename5),
-        (False, 0.04759112768438152, param_updates7, filename7),
-        (False, 0.04759112768438152, param_updates8, filename8),
-        (True, 0.04, param_updates9, filename9),
+        (
+            True,
+            0.03309231672773741,
+            0.014437452721629856,
+            param_updates1,
+            filename1,
+        ),
+        (True, 0.05, 0.0, param_updates2, filename2),
+        (
+            True,
+            0.04260341179572245,
+            -0.014176305891860835,
+            param_updates3,
+            filename3,
+        ),
+        (
+            False,
+            0.04260341179572245,
+            -0.016740374031832955,
+            param_updates4,
+            filename4,
+        ),
+        (
+            False,
+            0.04260341179572245,
+            -0.10177029059464454,
+            param_updates5,
+            filename5,
+        ),
+        (False, 0.04759112768438152, 0.0, param_updates7, filename7),
+        (False, 0.04759112768438152, 0.0, param_updates8, filename8),
+        (True, 0.04, -0.1755185349329596, param_updates9, filename9),
     ],
     ids=[
         "Baseline, Small Open",
@@ -635,7 +673,7 @@ filename9 = "inner_loop_outputs_J1.pkl"
         "J=1",
     ],
 )
-def test_inner_loop(baseline, r_p, param_updates, filename, dask_client):
+def test_inner_loop(baseline, r_p, G, param_updates, filename, dask_client):
     # Test SS.inner_loop function. Provide inputs to function and ensure that
     # output returned matches what it has been before.
     p = Specifications(baseline=baseline, num_workers=NUM_WORKERS)
@@ -663,6 +701,7 @@ def test_inner_loop(baseline, r_p, param_updates, filename, dask_client):
             p_m,
             Y,
             BQ,
+            G,
             TR,
             None,
             factor,
@@ -681,6 +720,7 @@ def test_inner_loop(baseline, r_p, param_updates, filename, dask_client):
             p_m,
             Y,
             BQ,
+            G,
             TR,
             Ig_baseline,
             factor,
@@ -784,6 +824,7 @@ def test_inner_loop_extra(baseline, param_updates, filename, dask_client):
     w = firm.get_w_from_r(r, p, "SS")
     TR = 0.12
     Y = 1.3
+    G = 0.014
     factor = 100000
     BQ = np.ones(p.J) * 0.00019646295986015257
     p_m = np.array([1.0])
@@ -801,11 +842,13 @@ def test_inner_loop_extra(baseline, param_updates, filename, dask_client):
         p_m,
         Y,
         BQ,
+        G,
         TR,
         Ig_baseline,
         factor,
     )
     test_tuple = SS.inner_loop(outer_loop_vars, p, dask_client)
+
     expected_tuple = utils.safe_read_pickle(
         os.path.join(CUR_PATH, "test_io_data", filename)
     )
@@ -1243,7 +1286,7 @@ param_updates13 = {
     "cit_rate": [[0.21, 0.25, 0.35]],
     "M": 3,
     "I": 3,
-    "io_matrix": np.eye(3),
+    "io_matrix": np.vstack([np.eye(3), np.eye(1, 3, 2), np.eye(1, 3, 2)]),
     "epsilon": [1.0, 1.0, 1.0],
     "gamma": [0.3, 0.35, 0.4],
     "gamma_g": [0.1, 0.05, 0.15],
@@ -1263,7 +1306,7 @@ param_updates14 = {
     "cit_rate": [[0.21, 0.25, 0.35]],
     "M": 3,
     "I": 3,
-    "io_matrix": np.eye(3),
+    "io_matrix": np.vstack([np.eye(3), np.eye(1, 3, 2), np.eye(1, 3, 2)]),
     "epsilon": [1.0, 1.0, 1.0],
     "gamma": [0.3, 0.35, 0.4],
     "gamma_g": [0.0, 0.0, 0.0],
@@ -1286,7 +1329,7 @@ param_updates16 = {
     "cit_rate": [[0.21, 0.25, 0.35]],
     "M": 3,
     "I": 3,
-    "io_matrix": np.eye(3),
+    "io_matrix": np.vstack([np.eye(3), np.eye(1, 3, 2), np.eye(1, 3, 2)]),
     "epsilon": [1.0, 1.0, 1.0],
     "gamma": [0.3, 0.35, 0.4],
     "gamma_g": [0.0, 0.0, 0.0],
@@ -1297,6 +1340,36 @@ param_updates16 = {
     "debt_ratio_ss": 1.5,
 }
 filename16 = "run_SS_baseline_M3_Kg_zero_cmin.pkl"
+param_updates17 = {
+    "budget_balance": True,
+    "frisch": 0.41,
+    "cit_rate": [[0.21, 0.25, 0.35]],
+    "M": 3,
+    "I": 3,
+    "io_matrix": np.array(
+        [
+            [0.50, 0.30, 0.20],
+            [0.20, 0.50, 0.30],
+            [0.25, 0.25, 0.50],
+            # Government consumption uses output from all three industries.
+            [0.35, 0.25, 0.40],
+            # Infrastructure investment uses a different industry mix.
+            [0.20, 0.50, 0.30],
+        ]
+    ),
+    "epsilon": [1.0, 1.0, 1.0],
+    "gamma": [0.30, 0.35, 0.40],
+    "gamma_g": [0.10, 0.05, 0.15],
+    "alpha_c": [0.20, 0.40, 0.40],
+    "c_min": [0.0, 0.0, 0.0],
+    "initial_guess_r_SS": 0.11,
+    "initial_guess_TR_SS": 0.07,
+    "alpha_G": [0.05],
+    "alpha_I": [0.01],
+    "initial_Kg_ratio": 0.01,
+    "debt_ratio_ss": 1.5,
+}
+filename17 = "run_SS_baseline_mixed_government_io.pkl"
 
 
 # Note that changing the order in which these tests are run will cause
@@ -1321,6 +1394,7 @@ filename16 = "run_SS_baseline_M3_Kg_zero_cmin.pkl"
         (True, param_updates14, filename14),
         (False, param_updates15, filename3),
         (True, param_updates16, filename16),
+        (True, param_updates17, filename17),
     ],
     ids=[
         "Baseline",
@@ -1339,6 +1413,7 @@ filename16 = "run_SS_baseline_M3_Kg_zero_cmin.pkl"
         "Baseline, M=3, zero Kg",
         "Reform, not use baseline solution",
         "Baseline, M=3, zero Kg, cmin > 0",
+        "Baseline, mixed government IO",
     ],
 )
 @pytest.mark.local
@@ -1369,6 +1444,17 @@ def test_run_SS(tmpdir, baseline, param_updates, filename, dask_client):
     )
     p.update_specifications(param_updates)
     test_dict = SS.run_SS(p, client=dask_client)
+    if filename is None:
+        government_io = p.io_matrix[p.I, :]
+        infrastructure_io = p.io_matrix[p.I + 1, :]
+        assert np.count_nonzero(government_io) >= 2
+        assert np.count_nonzero(infrastructure_io) >= 2
+        assert np.isclose(test_dict["p_g"], test_dict["p_m"] @ government_io)
+        assert np.isclose(
+            test_dict["p_Ig"], test_dict["p_m"] @ infrastructure_io
+        )
+        assert np.max(np.abs(test_dict["resource_constraint_error"])) < p.RC_SS
+        return
     expected_dict = utils.safe_read_pickle(
         os.path.join(CUR_PATH, "test_io_data", filename)
     )
@@ -1405,8 +1491,8 @@ def test_initial_guesses(tmpdir, use_zeta):
     guesses, n_guess, b_guess = SS.SS_initial_guesses(p)
 
     if use_zeta:
-        assert len(guesses) == 7 + 1
+        assert len(guesses) == 8 + 1
     else:
-        assert len(guesses) == 7 + p.J
+        assert len(guesses) == 8 + p.J
     assert n_guess.shape == (p.S, p.J)
     assert b_guess.shape == (p.S, p.J)

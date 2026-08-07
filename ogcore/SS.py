@@ -269,12 +269,12 @@ def inner_loop(outer_loop_vars, p, client):
 
     """
     # unpack variables to pass to function
-    bssmat, nssmat, r_p, r, w, p_m, Y, BQ, TR, Ig_baseline, factor = (
+    bssmat, nssmat, r_p, r, w, p_m, Y, BQ, G, TR, Ig_baseline, factor = (
         outer_loop_vars
     )
 
     p_m = np.array(p_m)  # TODO: why is this a list otherwise?
-    p_i = np.dot(p.io_matrix, p_m)
+    p_i, p_g, p_Ig = aggr.get_io_prices(p_m, p, "SS")
     BQ = np.array(BQ)
     RM = np.array(aggr.get_RM(Y, p, "SS"))
     # initialize array for euler errors
@@ -461,7 +461,12 @@ def inner_loop(outer_loop_vars, p, client):
     K_demand_open_vec = np.zeros(p.M)
     for i_ind in range(p.I):
         C_vec[i_ind] = aggr.get_C(c_i[i_ind, :, :], p, "SS").item()
-    Y_vec = np.dot(p.io_matrix.T, C_vec)
+    I_g = fiscal.get_I_g(Y, Ig_baseline, p, "SS")
+    Y_vec = (
+        np.dot(p.io_matrix[: p.I, :].T, C_vec)
+        + p.io_matrix[p.I, :] * G
+        + p.io_matrix[p.I + 1, :] * I_g
+    )
     for m_ind in range(p.M - 1):
         KYrat_m = firm.get_KY_ratio(r, p_m, p, "SS", m_ind)
         K_vec[m_ind] = KYrat_m * Y_vec[m_ind]
@@ -531,7 +536,7 @@ def inner_loop(outer_loop_vars, p, client):
     # Find updated goods prices
     new_p_m = firm.get_pm(new_w, Y_vec, L_vec, p, "SS")
     new_p_m = new_p_m / new_p_m[-1]  # normalize prices by industry M
-    new_p_i = np.dot(p.io_matrix, new_p_m)
+    new_p_i, new_p_g, new_p_Ig = aggr.get_io_prices(new_p_m, p, "SS")
     new_p_tilde = aggr.get_ptilde(new_p_i, p.tau_c[-1, :], p.alpha_c)
 
     num_params = len(p.etr_params[-1][0])
@@ -614,6 +619,8 @@ def inner_loop(outer_loop_vars, p, client):
         TR,
         UBI_outlays,
         I_g,
+        new_p_g,
+        new_p_Ig,
         new_borrowing,
         debt_service,
         p,
@@ -626,18 +633,18 @@ def inner_loop(outer_loop_vars, p, client):
         agg_pension_outlays,
         UBI_outlays,
         I_g,
+        new_p_g,
+        new_p_Ig,
         p,
         "SS",
     )
 
-    G_vec = np.zeros(p.M)
-    G_vec[-1] = G
-    C_m_vec = np.dot(p.io_matrix.T, C_vec)
+    G_vec = p.io_matrix[p.I, :] * G
+    C_m_vec = np.dot(p.io_matrix[: p.I, :].T, C_vec)
     I_d_vec = np.zeros(p.M)
     I_d = aggr.get_I(b_splus1, K_d, K_d, p, "SS")
     I_d_vec[-1] = I_d
-    I_g_vec = np.zeros(p.M)
-    I_g_vec[-1] = I_g
+    I_g_vec = p.io_matrix[p.I + 1, :] * I_g
     debt_service_f = fiscal.get_debt_service_f(r_p, D_f)
     net_capital_outflows = aggr.get_capital_outflows(
         r_p, K_f, new_borrowing_f, debt_service_f, p
@@ -662,6 +669,7 @@ def inner_loop(outer_loop_vars, p, client):
         Y_vec,
         new_RM,
         new_TR,
+        G,
         Y,
         new_factor,
         new_BQ,
@@ -678,6 +686,7 @@ def SS_solver(
     p_m,
     Y,
     BQ,
+    G,
     TR,
     Ig_baseline,
     factor,
@@ -736,6 +745,7 @@ def SS_solver(
             p_m,
             Y,
             BQ,
+            G,
             TR,
             Ig_baseline,
             factor,
@@ -755,6 +765,7 @@ def SS_solver(
             new_Y_vec,
             new_RM,
             new_TR,
+            new_G,
             new_Y,
             new_factor,
             new_BQ,
@@ -770,6 +781,8 @@ def SS_solver(
         p_m = utils.convex_combo(new_p_m, p_m, nu_ss)
         factor = utils.convex_combo(new_factor, factor, nu_ss)
         BQ = utils.convex_combo(new_BQ, BQ, nu_ss)
+        G = utils.convex_combo(new_G, G, nu_ss)
+        G_dist = abs(new_G - G) / max(abs(new_G), abs(G), 1.0)
         if p.baseline_spending:
             Y = utils.convex_combo(new_Y, Y, nu_ss)
             if Y != 0:
@@ -779,6 +792,7 @@ def SS_solver(
                     + [utils.pct_diff_func(new_w, w)]
                     + list(utils.pct_diff_func(new_p_m, p_m))
                     + list(utils.pct_diff_func(new_BQ, BQ))
+                    + [G_dist]
                     + [utils.pct_diff_func(new_Y, Y)]
                     + [utils.pct_diff_func(new_factor, factor)]
                 ).max()
@@ -791,6 +805,7 @@ def SS_solver(
                     + [utils.pct_diff_func(new_w, w)]
                     + list(utils.pct_diff_func(new_p_m, p_m))
                     + list(utils.pct_diff_func(new_BQ, BQ))
+                    + [G_dist]
                     + [abs(new_Y - Y)]
                     + [utils.pct_diff_func(new_factor, factor)]
                 ).max()
@@ -805,6 +820,7 @@ def SS_solver(
                 + [float(utils.pct_diff_func(new_w, w))]
                 + list(utils.pct_diff_func(new_p_m, p_m))
                 + list(utils.pct_diff_func(new_BQ, BQ))
+                + [float(G_dist)]
                 + [float(utils.pct_diff_func(new_TR, TR))]
                 + [float(utils.pct_diff_func(new_factor, factor))]
             ).max()
@@ -831,7 +847,7 @@ def SS_solver(
     Y_vec_ss = new_Y_vec
     r_gov_ss = fiscal.get_r_gov(rss, p.debt_ratio_ss, p, "scalar", t=-1)
     p_m_ss = new_p_m
-    p_i_ss = np.dot(p.io_matrix, p_m_ss)
+    p_i_ss, p_g_ss, p_Ig_ss = aggr.get_io_prices(p_m_ss, p, "SS")
     p_tilde_ss = aggr.get_ptilde(p_i_ss, p.tau_c[-1, :], p.alpha_c)
     RM_ss = new_RM
     TR_ss = new_TR
@@ -1089,6 +1105,8 @@ def SS_solver(
         TR_ss,
         UBI_outlays,
         I_g_ss,
+        p_g_ss,
+        p_Ig_ss,
         new_borrowing,
         debt_service,
         p,
@@ -1103,16 +1121,14 @@ def SS_solver(
     net_capital_outflows = aggr.get_capital_outflows(
         r_p_ss, K_f_ss, new_borrowing_f, debt_service_f, p
     )
-    # Fill in arrays, noting that M-1 industries only produce consumption goods
-    G_vec_ss = np.zeros(p.M)
+    # Fill in arrays, noting that M-1 industries don't produce the capital good
+    G_vec_ss = p.io_matrix[p.I, :] * Gss
     # Map consumption goods back to demands for production goods
-    logger.info(f"IO: {p.io_matrix.T.shape}, C: {C_vec_ss.shape}")
-    C_m_vec_ss = np.dot(p.io_matrix.T, C_vec_ss)
-    G_vec_ss[-1] = Gss
+    logger.info(f"IO: {p.io_matrix[: p.I, :].T.shape}, C: {C_vec_ss.shape}")
+    C_m_vec_ss = np.dot(p.io_matrix[: p.I, :].T, C_vec_ss)
     I_d_vec_ss = np.zeros(p.M)
     I_d_vec_ss[-1] = I_d_ss
-    I_g_vec_ss = np.zeros(p.M)
-    I_g_vec_ss[-1] = I_g_ss
+    I_g_vec_ss = p.io_matrix[p.I + 1, :] * I_g_ss
     net_capital_outflows_vec = np.zeros(p.M)
     net_capital_outflows_vec[-1] = net_capital_outflows
     RM_vec_ss = np.zeros(p.M)
@@ -1182,13 +1198,17 @@ def SS_solver(
         "total_government_outlays": (
             TR_ss
             + UBI_outlays
-            + Gss
-            + I_g_ss
+            + p_g_ss * Gss
+            + p_Ig_ss * I_g_ss
             + debt_service
             + agg_pension_outlays
         ),
         "total_primary_government_outlays": (
-            agg_pension_outlays + TR_ss + UBI_outlays + Gss + I_g_ss
+            agg_pension_outlays
+            + TR_ss
+            + UBI_outlays
+            + p_g_ss * Gss
+            + p_Ig_ss * I_g_ss
         ),
         "G": Gss,
         "UBI": UBI_outlays,
@@ -1213,6 +1233,8 @@ def SS_solver(
         "w": wss,
         "p_m": p_m_ss,
         "p_i": p_i_ss,
+        "p_g": p_g_ss,
+        "p_Ig": p_Ig_ss,
         "p_tilde": p_tilde_ss,
         "b_sp1": bssmat_splus1,
         "b_s": bssmat_s,
@@ -1273,11 +1295,13 @@ def SS_fsolve(guesses, *args):
     p_m = guesses[3 : 3 + p.M]
     Y = guesses[3 + p.M]
     if p.baseline:
-        BQ = guesses[3 + p.M + 1 : -2]
+        BQ = guesses[3 + p.M + 1 : -3]
+        G = guesses[-3]
         TR = guesses[-2]
         factor = guesses[-1]
     else:
-        BQ = guesses[3 + p.M + 1 : -1]
+        BQ = guesses[3 + p.M + 1 : -2]
+        G = guesses[-2]
         TR = guesses[-1]
         factor = factor_ss
     if p.baseline_spending:
@@ -1294,6 +1318,7 @@ def SS_fsolve(guesses, *args):
         p_m,
         Y,
         BQ,
+        G,
         TR,
         Ig_baseline,
         factor,
@@ -1315,6 +1340,7 @@ def SS_fsolve(guesses, *args):
         new_Y_vec,
         new_RM,
         new_TR,
+        new_G,
         new_Y,
         new_factor,
         new_BQ,
@@ -1336,6 +1362,7 @@ def SS_fsolve(guesses, *args):
     error_Y = float(new_Y - Y)
     error_BQ = new_BQ - BQ
     error_TR = float(new_TR - TR)
+    error_G = float(new_G - G)
     # divide factor by 1000000 to put on similar scale
     error_factor = float(new_factor / 1000000 - factor / 1000000)
     # Check and punish violations of the factor
@@ -1347,7 +1374,7 @@ def SS_fsolve(guesses, *args):
             + list(error_p_m)
             + [error_Y]
             + list(error_BQ)
-            + [error_TR, error_factor]
+            + [error_G, error_TR, error_factor]
         )
     else:
         errors = (
@@ -1355,7 +1382,7 @@ def SS_fsolve(guesses, *args):
             + list(error_p_m)
             + [error_Y]
             + list(error_BQ)
-            + [error_TR]
+            + [error_G, error_TR]
         )
     error_string = [f"{error:.3e}" for error in errors]
     logger.info(f"GE loop errors = {error_string}")
@@ -1385,6 +1412,7 @@ def SS_initial_guesses(p, b_val=0.0055, n_val=0.4, r_tr_scalars=[1.0, 1.0]):
     p_m_guess = np.ones(p.M)
     TRguess = r_tr_scalars[1] * p.initial_guess_TR_SS
     Yguess = TRguess / p.alpha_T[-1]
+    Gguess = p.alpha_G[-1] * Yguess
 
     # create guesses list
     # Note that BQ is an vector of lenght J if use_zeta=False
@@ -1405,7 +1433,7 @@ def SS_initial_guesses(p, b_val=0.0055, n_val=0.4, r_tr_scalars=[1.0, 1.0]):
         + list(p_m_guess)
         + [Yguess]
         + BQ_items
-        + [TRguess]
+        + [Gguess, TRguess]
     )
     if p.baseline:
         guesses.append(p.initial_guess_factor_SS)
@@ -1450,6 +1478,7 @@ def run_SS(p, client=None):
                     wguess,
                     p_m_guess,
                     BQguess,
+                    Gguess,
                     TRguess,
                     Yguess,
                     factor_ss,
@@ -1461,6 +1490,7 @@ def run_SS(p, client=None):
                     float(ss_solutions["w"]),
                     ss_solutions["p_m"],
                     ss_solutions["BQ"],
+                    float(ss_solutions["G"]),
                     float(ss_solutions["TR"]),
                     float(ss_solutions["Y"]),
                     ss_solutions["factor"],
@@ -1480,7 +1510,7 @@ def run_SS(p, client=None):
                     + list(p_m_guess)
                     + [Yguess]
                     + BQ_items
-                    + [TRguess]
+                    + [Gguess, TRguess]
                 )
                 # Now solve for the steady state of the reform
                 ss_params = (
@@ -1571,21 +1601,16 @@ def run_SS(p, client=None):
     rss = sol.x[1]
     wss = sol.x[2]
     p_m_ss = sol.x[3 : 3 + p.M]
+    Yss = sol.x[3 + p.M]
     if p.baseline:
-        BQss = sol.x[3 + p.M + 1 : -2]
+        BQss = sol.x[3 + p.M + 1 : -3]
+        Gss = sol.x[-3]
         TR_ss = sol.x[-2]
         factor_ss = sol.x[-1]
-        Yss = TR_ss / p.alpha_T[-1]  # may not be right - if
-        # budget_balance = True, but that's ok - will be fixed in
-        # SS_solver
     else:
-        Yss = sol.x[3 + p.M]
-        BQss = sol.x[3 + p.M + 1 : -1]
+        BQss = sol.x[3 + p.M + 1 : -2]
+        Gss = sol.x[-2]
         TR_ss = sol.x[-1]
-        if not p.baseline_spending:
-            Yss = TR_ss / p.alpha_T[-1]  # may not be right - if
-            # budget_balance = True, but that's ok - will be fixed in
-            # SS_solver
 
     if ENFORCE_SOLUTION_CHECKS and not sol.success:
         raise RuntimeError("Steady state equilibrium not found")
@@ -1603,6 +1628,7 @@ def run_SS(p, client=None):
         p_m_ss,
         Yss,
         BQss,
+        Gss,
         TR_ss,
         Ig_baseline,
         factor_ss,
