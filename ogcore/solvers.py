@@ -191,6 +191,49 @@ def make_outer_updater(method, p):
     raise ValueError(f"unknown TPI_outer_method: {method!r}")
 
 
+def diagnose_stall(dist_vec, iteration, window, tol=0.05, deterioration=2.0):
+    """
+    Check the TPI outer loop's distance history for a stall.
+
+    The loop has stalled when the best distance over the most recent
+    ``window`` iterations is no better (by a relative margin ``tol``)
+    than the best from before that window: the remaining iterations
+    repeat the same pattern and cannot reach the tolerance. A recent
+    best that is far worse than the earlier best (``deterioration``)
+    means the path is drifting away -- a diverging economy, typically
+    an inconsistent fiscal block; a bounce around the earlier best
+    means the outer loop is cycling around the solution, typically
+    ``nu`` too large for the problem.
+
+    Args:
+        dist_vec (Numpy array): per-iteration outer-loop distances,
+            filled for the first ``iteration`` entries
+        iteration (int): number of completed outer-loop iterations
+        window (int): number of trailing iterations that must improve
+            on the earlier best; a non-positive value disables the
+            check
+        tol (float): minimum relative improvement of the recent best
+            over the earlier best that counts as progress
+        deterioration (float): factor by which the recent best must
+            exceed the earlier best to be read as divergence rather
+            than cycling
+
+    Returns:
+        diagnosis (str or None): None while the loop is progressing
+            (or the check is disabled), otherwise "diverging" or
+            "oscillating"
+    """
+    if window <= 0 or iteration < 2 * window:
+        return None
+    recent = dist_vec[iteration - window : iteration]
+    earlier_best = dist_vec[: iteration - window].min()
+    if recent.min() < (1.0 - tol) * earlier_best:
+        return None
+    if recent.min() >= deterioration * earlier_best:
+        return "diverging"
+    return "oscillating"
+
+
 def _selftest():
     """
     Validate the accelerator math on a linear contraction fixed point,
