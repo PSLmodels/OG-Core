@@ -1801,6 +1801,8 @@ def run_TPI(p, client=None):
         "etr": etr_path[: p.T, ...],
         "mtrx": mtrx_path[: p.T, ...],
         "mtry": mtry_path[: p.T, ...],
+        "theta": theta,
+        "factor": factor,
         "euler_savings": eul_savings[: p.T, ...],
         "euler_labor_leisure": eul_laborleisure[: p.T, ...],
         "resource_constraint_error": RC_error[: p.T, ...],
