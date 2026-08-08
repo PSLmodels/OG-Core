@@ -1048,3 +1048,55 @@ def test_SS_solve_defined_benefits(tmp_path):
     Y = np.asarray(ss["Y"]).sum()
     assert ss["agg_pension_outlays"] > 0.0
     assert 0.0 < ss["agg_pension_outlays"] / Y < 1.0
+
+
+@pytest.mark.local
+def test_SS_solve_notional_defined_contribution(tmp_path):
+    """
+    The steady state must solve with the Notional Defined Contribution
+    pension system and produce positive aggregate pension outlays (the
+    NDC counterpart to test_SS_solve_defined_benefits, Issue #1014).
+    """
+    from ogcore.execute import runner
+    from ogcore import utils
+
+    p = Specifications(baseline=True, num_workers=1)
+    p.update_specifications(
+        {
+            "pension_system": "Notional Defined Contribution",
+            "tau_p": 0.1,
+            "ndc_growth_rate": "LR GDP",
+            "dir_growth_rate": "r",
+        }
+    )
+    p.baseline_dir = p.output_base = str(tmp_path)
+    runner(p, time_path=False, client=None)
+    ss = utils.safe_read_pickle(str(tmp_path / "SS" / "SS_vars.pkl"))
+    Y = np.asarray(ss["Y"]).sum()
+    assert ss["agg_pension_outlays"] > 0.0
+    assert 0.0 < ss["agg_pension_outlays"] / Y < 1.0
+
+
+@pytest.mark.local
+def test_SS_solve_points_system(tmp_path):
+    """
+    The steady state must solve with the Points System pension system
+    and produce positive aggregate pension outlays (the Points System
+    counterpart to test_SS_solve_defined_benefits, Issue #1014).
+    """
+    from ogcore.execute import runner
+    from ogcore import utils
+
+    p = Specifications(baseline=True, num_workers=1)
+    p.update_specifications(
+        {
+            "pension_system": "Points System",
+            "vpoint": 0.5,
+        }
+    )
+    p.baseline_dir = p.output_base = str(tmp_path)
+    runner(p, time_path=False, client=None)
+    ss = utils.safe_read_pickle(str(tmp_path / "SS" / "SS_vars.pkl"))
+    Y = np.asarray(ss["Y"]).sum()
+    assert ss["agg_pension_outlays"] > 0.0
+    assert 0.0 < ss["agg_pension_outlays"] / Y < 1.0
