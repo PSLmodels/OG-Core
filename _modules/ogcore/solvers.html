@@ -626,6 +626,49 @@
 
 
 
+<span class="k">def</span><span class="w"> </span><span class="nf">diagnose_stall</span><span class="p">(</span><span class="n">dist_vec</span><span class="p">,</span> <span class="n">iteration</span><span class="p">,</span> <span class="n">window</span><span class="p">,</span> <span class="n">tol</span><span class="o">=</span><span class="mf">0.05</span><span class="p">,</span> <span class="n">deterioration</span><span class="o">=</span><span class="mf">2.0</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Check the TPI outer loop&#39;s distance history for a stall.</span>
+
+<span class="sd">    The loop has stalled when the best distance over the most recent</span>
+<span class="sd">    ``window`` iterations is no better (by a relative margin ``tol``)</span>
+<span class="sd">    than the best from before that window: the remaining iterations</span>
+<span class="sd">    repeat the same pattern and cannot reach the tolerance. A recent</span>
+<span class="sd">    best that is far worse than the earlier best (``deterioration``)</span>
+<span class="sd">    means the path is drifting away -- a diverging economy, typically</span>
+<span class="sd">    an inconsistent fiscal block; a bounce around the earlier best</span>
+<span class="sd">    means the outer loop is cycling around the solution, typically</span>
+<span class="sd">    ``nu`` too large for the problem.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        dist_vec (Numpy array): per-iteration outer-loop distances,</span>
+<span class="sd">            filled for the first ``iteration`` entries</span>
+<span class="sd">        iteration (int): number of completed outer-loop iterations</span>
+<span class="sd">        window (int): number of trailing iterations that must improve</span>
+<span class="sd">            on the earlier best; a non-positive value disables the</span>
+<span class="sd">            check</span>
+<span class="sd">        tol (float): minimum relative improvement of the recent best</span>
+<span class="sd">            over the earlier best that counts as progress</span>
+<span class="sd">        deterioration (float): factor by which the recent best must</span>
+<span class="sd">            exceed the earlier best to be read as divergence rather</span>
+<span class="sd">            than cycling</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        diagnosis (str or None): None while the loop is progressing</span>
+<span class="sd">            (or the check is disabled), otherwise &quot;diverging&quot; or</span>
+<span class="sd">            &quot;oscillating&quot;</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">window</span> <span class="o">&lt;=</span> <span class="mi">0</span> <span class="ow">or</span> <span class="n">iteration</span> <span class="o">&lt;</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">window</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">None</span>
+    <span class="n">recent</span> <span class="o">=</span> <span class="n">dist_vec</span><span class="p">[</span><span class="n">iteration</span> <span class="o">-</span> <span class="n">window</span> <span class="p">:</span> <span class="n">iteration</span><span class="p">]</span>
+    <span class="n">earlier_best</span> <span class="o">=</span> <span class="n">dist_vec</span><span class="p">[:</span> <span class="n">iteration</span> <span class="o">-</span> <span class="n">window</span><span class="p">]</span><span class="o">.</span><span class="n">min</span><span class="p">()</span>
+    <span class="k">if</span> <span class="n">recent</span><span class="o">.</span><span class="n">min</span><span class="p">()</span> <span class="o">&lt;</span> <span class="p">(</span><span class="mf">1.0</span> <span class="o">-</span> <span class="n">tol</span><span class="p">)</span> <span class="o">*</span> <span class="n">earlier_best</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">None</span>
+    <span class="k">if</span> <span class="n">recent</span><span class="o">.</span><span class="n">min</span><span class="p">()</span> <span class="o">&gt;=</span> <span class="n">deterioration</span> <span class="o">*</span> <span class="n">earlier_best</span><span class="p">:</span>
+        <span class="k">return</span> <span class="s2">&quot;diverging&quot;</span>
+    <span class="k">return</span> <span class="s2">&quot;oscillating&quot;</span>
+
+
 <span class="k">def</span><span class="w"> </span><span class="nf">_selftest</span><span class="p">():</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Validate the accelerator math on a linear contraction fixed point,</span>

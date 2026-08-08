@@ -836,7 +836,6 @@
         <span class="n">cons_tax_revenue</span> <span class="o">=</span> <span class="p">(</span>
             <span class="n">tax</span><span class="o">.</span><span class="n">cons_tax_liab</span><span class="p">(</span><span class="n">c</span><span class="p">,</span> <span class="n">p_i</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">method</span><span class="p">)</span> <span class="o">*</span> <span class="n">pop_weights</span>
         <span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
-        <span class="n">payroll_tax_revenue</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">frac_tax_payroll</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="n">iit_payroll_tax_revenue</span>
     <span class="k">elif</span> <span class="n">method</span> <span class="o">==</span> <span class="s2">&quot;TPI&quot;</span><span class="p">:</span>
         <span class="n">p_i</span> <span class="o">=</span> <span class="p">(</span>
             <span class="n">np</span><span class="o">.</span><span class="n">tile</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">io_matrix</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">p</span><span class="o">.</span><span class="n">I</span><span class="p">,</span> <span class="n">p</span><span class="o">.</span><span class="n">M</span><span class="p">),</span> <span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
@@ -853,9 +852,15 @@
         <span class="n">cons_tax_revenue</span> <span class="o">=</span> <span class="p">(</span>
             <span class="p">(</span><span class="n">tax</span><span class="o">.</span><span class="n">cons_tax_liab</span><span class="p">(</span><span class="n">c</span><span class="p">,</span> <span class="n">p_i</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">method</span><span class="p">)</span> <span class="o">*</span> <span class="n">pop_weights</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
         <span class="p">)</span>
-        <span class="n">payroll_tax_revenue</span> <span class="o">=</span> <span class="p">(</span>
-            <span class="n">p</span><span class="o">.</span><span class="n">frac_tax_payroll</span><span class="p">[:</span> <span class="n">p</span><span class="o">.</span><span class="n">T</span><span class="p">]</span> <span class="o">*</span> <span class="n">iit_payroll_tax_revenue</span>
-        <span class="p">)</span>
+    <span class="n">payroll_tax_revenue</span> <span class="o">=</span> <span class="n">get_payroll_tax_revenue</span><span class="p">(</span>
+        <span class="n">w</span><span class="p">,</span> <span class="n">L</span><span class="p">,</span> <span class="n">iit_payroll_tax_revenue</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">method</span>
+    <span class="p">)</span>
+    <span class="c1"># When payroll taxes are modeled explicitly via tau_payroll, they are</span>
+    <span class="c1"># excluded from the income and payroll tax functions, so payroll tax</span>
+    <span class="c1"># revenue must be added into iit_payroll_tax_revenue (which enters</span>
+    <span class="c1"># total revenue) before the income tax portion is separated out.</span>
+    <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">tau_payroll</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">):</span>
+        <span class="n">iit_payroll_tax_revenue</span> <span class="o">+=</span> <span class="n">payroll_tax_revenue</span>
     <span class="n">business_tax_revenue</span> <span class="o">=</span> <span class="n">tax</span><span class="o">.</span><span class="n">get_biz_tax</span><span class="p">(</span><span class="n">w</span><span class="p">,</span> <span class="n">Y</span><span class="p">,</span> <span class="n">L</span><span class="p">,</span> <span class="n">K</span><span class="p">,</span> <span class="n">p_m</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">m</span><span class="p">,</span> <span class="n">method</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span>
         <span class="o">-</span><span class="mi">1</span>
     <span class="p">)</span>
@@ -882,6 +887,63 @@
         <span class="n">iit_revenue</span><span class="p">,</span>
     <span class="p">)</span></div>
 
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">get_payroll_tax_revenue</span><span class="p">(</span><span class="n">w</span><span class="p">,</span> <span class="n">L</span><span class="p">,</span> <span class="n">iit_payroll_tax_revenue</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">method</span><span class="p">):</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Calculate aggregate payroll tax revenue.</span>
+
+<span class="sd">    How payroll tax revenue is computed depends on how the user has</span>
+<span class="sd">    chosen to represent payroll taxes in the model.  If payroll taxes</span>
+<span class="sd">    are included directly through the ``tau_payroll`` parameter, then</span>
+<span class="sd">    revenue is the payroll tax rate times aggregate labor income:</span>
+
+<span class="sd">    .. math::</span>
+<span class="sd">        PR_{t} = \tau^{p}_{t}w_{t}L_{t}</span>
+
+<span class="sd">    Otherwise, payroll taxes are assumed to be embedded in the estimated</span>
+<span class="sd">    income and payroll tax functions (the default), and payroll tax</span>
+<span class="sd">    revenue is separated out as a fraction ``frac_tax_payroll`` of the</span>
+<span class="sd">    combined income and payroll tax revenue.  These two calculations are</span>
+<span class="sd">    identical when ``tau_payroll`` is zero.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        w (array_like): the real wage rate</span>
+<span class="sd">        L (array_like): aggregate labor by industry</span>
+<span class="sd">        iit_payroll_tax_revenue (array_like): aggregate income and</span>
+<span class="sd">            payroll tax revenue</span>
+<span class="sd">        p (OG-Core Specifications object): model parameters</span>
+<span class="sd">        method (str): adjusts calculation dimensions based on &#39;SS&#39; or</span>
+<span class="sd">            &#39;TPI&#39;</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        payroll_tax_revenue (array_like): aggregate payroll tax revenue</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">tau_payroll</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">):</span>
+        <span class="c1"># Payroll taxes are modeled explicitly via tau_payroll, so</span>
+        <span class="c1"># revenue is the payroll tax rate times aggregate labor income</span>
+        <span class="c1"># (summing labor across industries).</span>
+        <span class="n">L_total</span> <span class="o">=</span> <span class="n">L</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">method</span> <span class="o">==</span> <span class="s2">&quot;SS&quot;</span><span class="p">:</span>
+            <span class="n">payroll_tax_revenue</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">tau_payroll</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="n">w</span> <span class="o">*</span> <span class="n">L_total</span>
+        <span class="k">else</span><span class="p">:</span>  <span class="c1"># TPI</span>
+            <span class="n">payroll_tax_revenue</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="n">p</span><span class="o">.</span><span class="n">tau_payroll</span><span class="p">[:</span> <span class="n">p</span><span class="o">.</span><span class="n">T</span><span class="p">]</span> <span class="o">*</span> <span class="n">w</span><span class="p">[:</span> <span class="n">p</span><span class="o">.</span><span class="n">T</span><span class="p">]</span> <span class="o">*</span> <span class="n">L_total</span><span class="p">[:</span> <span class="n">p</span><span class="o">.</span><span class="n">T</span><span class="p">]</span>
+            <span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="c1"># Payroll taxes are embedded in the income and payroll tax</span>
+        <span class="c1"># functions, so revenue is a fraction of the combined revenue.</span>
+        <span class="k">if</span> <span class="n">method</span> <span class="o">==</span> <span class="s2">&quot;SS&quot;</span><span class="p">:</span>
+            <span class="n">payroll_tax_revenue</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="n">p</span><span class="o">.</span><span class="n">frac_tax_payroll</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="n">iit_payroll_tax_revenue</span>
+            <span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>  <span class="c1"># TPI</span>
+            <span class="n">payroll_tax_revenue</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="n">p</span><span class="o">.</span><span class="n">frac_tax_payroll</span><span class="p">[:</span> <span class="n">p</span><span class="o">.</span><span class="n">T</span><span class="p">]</span> <span class="o">*</span> <span class="n">iit_payroll_tax_revenue</span>
+            <span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">payroll_tax_revenue</span>
 
 
 <div class="viewcode-block" id="get_r_p">

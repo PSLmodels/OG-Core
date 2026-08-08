@@ -933,6 +933,19 @@ _Valid Range:_ min = 0.0 and max = 100.0
 _Out-of-Range Action:_ error  
 
 
+####  `TPI_stall_window`  
+_Description:_ Number of trailing TPI outer-loop iterations over which the best distance must improve on the best from before the window. When it does not, the loop has stalled (cycling or diverging) and a diagnosis is logged; see TPI_stall_action for whether the loop also stops. A value of 0 disables stall detection.  
+_Value Type:_ int  
+_Valid Range:_ min = 0 and max = 500  
+_Out-of-Range Action:_ error  
+
+
+####  `TPI_stall_action`  
+_Description:_ What to do when stall detection (TPI_stall_window) diagnoses a stalled TPI outer loop. 'warn' (default) logs the diagnosis once and lets the loop continue, leaving model solutions unchanged; 'stop' also ends the loop early, so the run fails through the usual non-convergence checks instead of spending the rest of maxiter.  
+_Value Type:_ str  
+_Valid Choices:_['warn', 'stop']  
+
+
 ####  `SS_root_method`  
 _Description:_ Root finding algorithm for outer loop of the SS solution.  
 _Notes:_ Uses scipy.optimize.root, please see scipy documentation for description of methods. Note that some methods may require more arguments than are in the function calls in SS.py and TPI.py and will therefore break without modifications of the source code.  
