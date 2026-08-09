@@ -4752,6 +4752,46 @@
             }
         }
     },
+    "TPI_stall_window": {
+        "title": "Iteration window for TPI stall detection",
+        "description": "Number of trailing TPI outer-loop iterations over which the best distance must improve on the best from before the window. When it does not, the loop has stalled (cycling or diverging) and a diagnosis is logged; see TPI_stall_action for whether the loop also stops. A value of 0 disables stall detection.",
+        "short_description": "TPI stall-detection window",
+        "section_1": "Model Solution Parameters",
+        "notes": "",
+        "type": "int",
+        "value": [
+            {
+                "value": 50
+            }
+        ],
+        "validators": {
+            "range": {
+                "min": 0,
+                "max": 500
+            }
+        }
+    },
+    "TPI_stall_action": {
+        "title": "Action when TPI stall detection fires",
+        "description": "What to do when stall detection (TPI_stall_window) diagnoses a stalled TPI outer loop. 'warn' (default) logs the diagnosis once and lets the loop continue, leaving model solutions unchanged; 'stop' also ends the loop early, so the run fails through the usual non-convergence checks instead of spending the rest of maxiter.",
+        "short_description": "TPI stall action",
+        "section_1": "Model Solution Parameters",
+        "notes": "",
+        "type": "str",
+        "value": [
+            {
+                "value": "warn"
+            }
+        ],
+        "validators": {
+            "choice": {
+                "choices": [
+                    "warn",
+                    "stop"
+                ]
+            }
+        }
+    },
     "SS_root_method": {
         "title": "Root finding algorithm for outer loop of the SS solution",
         "description": "Root finding algorithm for outer loop of the SS solution.",

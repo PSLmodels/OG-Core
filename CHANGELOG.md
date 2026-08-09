@@ -29,6 +29,32 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   artificial consumption/investment swings in the first years of any baseline
   transition. The new parameter makes initial wealth calibratable to data;
   the default reproduces the previous behavior exactly.
+- Stall detection for the TPI outer loop (Issue #1177): when the best
+  distance has not improved over the last `TPI_stall_window` iterations
+  (default 50; 0 disables), `run_TPI` logs a diagnosis distinguishing a
+  cycling outer loop (suggesting a lower `nu` or
+  `TPI_outer_method="anderson"`) from a diverging economy (usually an
+  inconsistent fiscal block, which solver settings cannot fix). The
+  default `TPI_stall_action="warn"` only logs, leaving model solutions
+  unchanged; `"stop"` also ends the loop early, so a hopeless run fails
+  through the existing non-convergence checks instead of spending the
+  rest of `maxiter`. The window check lives in
+  `ogcore.solvers.diagnose_stall` and works for both the picard and
+  anderson update rules. The diagnosis is re-logged if it changes (e.g.
+  escalates from cycling to diverging), and a run that ends unconverged
+  while stalled carries the diagnosis in the `RuntimeError` message, so
+  it reaches users who only see the traceback.
+### Bug Fixes
+
+- Fixes Issue [#1186](https://github.com/PSLmodels/OG-Core/issues/1186):
+  with demographics that vary across lifetime income groups (PR #1165), the
+  `use_zeta = False` branch of `household.get_bq` divided each group's
+  bequest pool by its birth share (`lambdas[j]`) rather than its actual
+  population share, so bequests received did not sum to bequests left and
+  the steady-state resource constraint failed. Receipts are now divided by
+  the group's actual population (from `omega_SS` / `omega`), matching the
+  `use_zeta = True` branch. Results are unchanged when demographics are
+  common across groups.
 
 ## [0.19.0] - 2026-07-29 12:00:00
 
@@ -730,7 +756,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [0.18.0]: https://github.com/PSLmodels/OG-Core/compare/v0.17.0...v0.18.0
 [0.17.0]: https://github.com/PSLmodels/OG-Core/compare/v0.16.4...v0.17.0
 [0.16.4]: https://github.com/PSLmodels/OG-Core/compare/v0.16.3...v0.16.4
-[0.16.3]: https://github.com/PSLmodels/OG-Core/compare/v0.16.2...v0.16.3
 [0.16.3]: https://github.com/PSLmodels/OG-Core/compare/v0.16.2...v0.16.3
 [0.16.2]: https://github.com/PSLmodels/OG-Core/compare/v0.16.1...v0.16.2
 [0.16.1]: https://github.com/PSLmodels/OG-Core/compare/v0.16.0...v0.16.1
