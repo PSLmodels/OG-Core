@@ -287,6 +287,57 @@ def test_initial_wealth_ratio_default_is_off():
     assert p.initial_wealth_ratio == 0.0
 
 
+@pytest.mark.local
+def test_run_TPI_initial_wealth_anchor(tmpdir, dask_client):
+    """
+    A baseline solve delivers aggregate initial wealth equal to
+    initial_wealth_ratio * steady-state Y, and a reform solve clones the
+    baseline's initial wealth regardless of its own ratio value.
+    """
+    baseline_dir = os.path.join(tmpdir, "baseline")
+    p = Specifications(
+        baseline=True,
+        baseline_dir=baseline_dir,
+        output_base=baseline_dir,
+        num_workers=NUM_WORKERS,
+    )
+    SS.ENFORCE_SOLUTION_CHECKS = True
+    ss_outputs = SS.run_SS(p, client=dask_client)
+    utils.mkdirs(os.path.join(baseline_dir, "SS"))
+    with open(os.path.join(baseline_dir, "SS", "SS_vars.pkl"), "wb") as f:
+        pickle.dump(ss_outputs, f)
+    # Anchor mildly below the steady-state wealth-to-GDP ratio so the
+    # target is feasible for any test calibration while still moving B[0]
+    # away from its legacy value.
+    p.initial_wealth_ratio = 0.95 * ss_outputs["B"] / ss_outputs["Y"]
+    tpi_baseline = TPI.run_TPI(p, client=dask_client)
+    assert np.allclose(
+        tpi_baseline["B"][0],
+        p.initial_wealth_ratio * ss_outputs["Y"],
+        rtol=1e-10,
+    )
+    utils.mkdirs(os.path.join(baseline_dir, "TPI"))
+    with open(os.path.join(baseline_dir, "TPI", "TPI_vars.pkl"), "wb") as f:
+        pickle.dump(tpi_baseline, f)
+
+    # Reform: a deliberately different ratio value, which the clone-baseline
+    # design must ignore in favor of the baseline's B[0].
+    reform_dir = os.path.join(tmpdir, "reform")
+    p2 = Specifications(
+        baseline=False,
+        baseline_dir=baseline_dir,
+        output_base=reform_dir,
+        num_workers=NUM_WORKERS,
+    )
+    p2.initial_wealth_ratio = 9.99
+    ss_reform = SS.run_SS(p2, client=dask_client)
+    utils.mkdirs(os.path.join(reform_dir, "SS"))
+    with open(os.path.join(reform_dir, "SS", "SS_vars.pkl"), "wb") as f:
+        pickle.dump(ss_reform, f)
+    tpi_reform = TPI.run_TPI(p2, client=dask_client)
+    assert np.allclose(tpi_reform["B"][0], tpi_baseline["B"][0], rtol=1e-12)
+
+
 def test_firstdoughnutring():
     # Test TPI.firstdoughnutring function.  Provide inputs to function and
     # ensure that output returned matches what it has been before.

@@ -1232,6 +1232,10 @@ def run_TPI(p, client=None):
         )
         # Update aggregate variables
         L[: p.T] = aggr.get_L(n_mat[: p.T], p, "TPI")
+        # B[0] is predetermined (set before the loop, anchored when
+        # initial_wealth_ratio > 0) and nothing in the loop writes to it, so
+        # this re-assert is a no-op today. It guards B[0] in case the update
+        # below is ever refactored to write the full B[: p.T] slice.
         B[0] = B0
         B[1 : p.T] = aggr.get_B(bmat_splus1[: p.T], p, "TPI", False)[: p.T - 1]
         w_open = firm.get_w_from_r(p.world_int_rate[: p.T], p, "TPI")
