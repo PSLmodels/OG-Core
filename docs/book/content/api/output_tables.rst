@@ -11,4 +11,4 @@ ogcore.output_tables
 .. automodule:: ogcore.output_tables
   :members: macro_table, macro_table_SS, ineq_table, gini_table,
     wealth_moments_table, time_series_table,
-    dynamic_revenue_decomposition
+    dynamic_revenue_decomposition, model_fit_table
