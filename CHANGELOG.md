@@ -24,31 +24,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   escalates from cycling to diverging), and a run that ends unconverged
   while stalled carries the diagnosis in the `RuntimeError` message, so
   it reaches users who only see the traceback.
- - Makes default of aggregate plots to plot unstationarized model, resolving issue [#1133](https://github.com/PSLmodels/OG-Core/issues/1133).  [PR #1183](https://github.com/PSLmodels/OG-Core/pull/1183).
+  [PR #1178](https://github.com/PSLmodels/OG-Core/pull/1178).
+- Changes the default of `stationarized` to `False` in `output_plots.plot_aggregates` and `output_plots.plot_industry_aggregates`, so unstationarized values are plotted by default, resolving Issue [#1133](https://github.com/PSLmodels/OG-Core/issues/1133). [PR #1183](https://github.com/PSLmodels/OG-Core/pull/1183).
 
 ### Bug Fixes
 
 - Fixes Issue [#1186](https://github.com/PSLmodels/OG-Core/issues/1186):
-  with demographics that vary across lifetime income groups (PR #1165), the
-  `use_zeta = False` branch of `household.get_bq` divided each group's
-  bequest pool by its birth share (`lambdas[j]`) rather than its actual
-  population share, so bequests received did not sum to bequests left and
-  the steady-state resource constraint failed. Receipts are now divided by
-  the group's actual population (from `omega_SS` / `omega`), matching the
-  `use_zeta = True` branch. Results are unchanged when demographics are
-  common across groups.
+  with demographics that vary across lifetime income groups (introduced in
+  PR #1165), the `use_zeta = False` branch of `household.get_bq` divided
+  each group's bequest pool by its birth share (`lambdas[j]`) rather than
+  its actual population share, so bequests received did not sum to bequests
+  left and the steady-state resource constraint failed. Receipts are now
+  divided by the group's actual population (from `omega_SS` / `omega`),
+  matching the `use_zeta = True` branch. Results are unchanged when
+  demographics are common across groups. [PR #1187](https://github.com/PSLmodels/OG-Core/pull/1187).
 - Fixes Issue [#1015](https://github.com/PSLmodels/OG-Core/issues/1015): fixes escape with special characters in parameter names that caused failures when reading from JSON files.  Adds a test to prevent this in the future.  [PR #1193](https://github.com/PSLmodels/OG-Core/pull/1193).
-- Fixes Issue [#1169](https://github.com/PSLmodels/OG-Core/issues/1169):
-  the Notional Defined Contribution pension system could not run against
-  a real `Specifications` object because its growth-rate settings were
-  not parameters. `ndc_growth_rate`, `dir_growth_rate`, and
-  `points_growth_rate` are now parameters in `default_parameters.json`
-  (choices `"r"`, `"Curr GDP"`, `"LR GDP"`; default `"LR GDP"`, matching
-  the previous fallback behavior). `g_ndc` and `g_dir` now handle the
-  scalar `r` and `g_y` of the steady state, and `delta_ret` falls back
-  to the steady-state mortality rates implied by `rho` (averaged over
-  lifetime income groups) when no `mort_rates_SS` attribute is set. The
-  NDC system is added to the real-`Specifications` pension test. [PR #1190](https://github.com/PSLmodels/OG-Core/pull/1190).
 - Resolve Issue [#1152](https://github.com/PSLmodels/OG-Core/issues/1152): expose same keys in the steady-state and time path dictionaries. [PR #1185](https://github.com/PSLmodels/OG-Core/pull/1185).
 - Correct payroll tax calculations, resolving Issue [#1023](https://github.com/PSLmodels/OG-Core/issues/1023). [PR #1184](https://github.com/PSLmodels/OG-Core/pull/1184).
 
