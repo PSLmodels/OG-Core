@@ -233,6 +233,18 @@ def get_initial_SS_values(p):
     return initial_values, ss_vars, theta, baseline_values
 
 
+def get_initial_wealth_target(p, ss_Y):
+    """Return the target aggregate initial wealth, or None when disabled."""
+    if p.baseline:
+        if p.initial_wealth_ratio <= 0:
+            return None
+        return p.initial_wealth_ratio * ss_Y
+
+    baseline_tpi = os.path.join(p.baseline_dir, "TPI", "TPI_vars.pkl")
+    tpi_baseline_vars = utils.safe_read_pickle(baseline_tpi)
+    return tpi_baseline_vars["B"][0]
+
+
 def scale_initial_wealth(initial_b_shape, B0_shape, target_B0, p):
     """
     Rescale the initial wealth distribution to a target aggregate.
@@ -783,7 +795,8 @@ def run_TPI(p, client=None):
         Kg0_baseline,
     ) = baseline_values
 
-    # Anchor initial household wealth when initial_wealth_ratio is set (> 0).
+    # Anchor baseline initial household wealth when initial_wealth_ratio is
+    # set (> 0), and always clone that initial wealth in reform runs.
     # Initial wealth is a predetermined state, so the anchor is STATIC within
     # the solve (rescaling it between outer-loop iterations -- even damped --
     # drives the initial cohorts' root-finding into infeasible negative-
@@ -792,14 +805,8 @@ def run_TPI(p, client=None):
     # GDP, which the steady-state solve has already pinned down exactly; a
     # reform run clones the baseline's initial wealth outright (the initial
     # state is history -- policy cannot change what households start with).
-    anchor_initial_wealth = p.initial_wealth_ratio > 0
-    if anchor_initial_wealth:
-        if p.baseline:
-            target_B0 = p.initial_wealth_ratio * ss_vars["Y"]
-        else:
-            baseline_tpi = os.path.join(p.baseline_dir, "TPI", "TPI_vars.pkl")
-            tpi_baseline_vars = utils.safe_read_pickle(baseline_tpi)
-            target_B0 = tpi_baseline_vars["B"][0]
+    target_B0 = get_initial_wealth_target(p, ss_vars["Y"])
+    if target_B0 is not None:
         b_sinit, b_splus1init, initial_b = scale_initial_wealth(
             initial_b, B0, target_B0, p
         )
