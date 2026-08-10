@@ -338,16 +338,39 @@ def income_tax_liab(r, w, b, n, factor, t, j, method, e, etr_params, p):
     """
     if j is not None:
         if method == "TPI":
+            length = r.shape[0]
             if b.ndim == 2:
                 r = r.reshape(r.shape[0], 1)
                 w = w.reshape(w.shape[0], 1)
+                labor_income_tax_compliance_rate = (
+                    p.labor_income_tax_noncompliance_rate[
+                        t : t + length, j
+                    ].reshape(length, 1)
+                )
+                capital_income_tax_compliance_rate = (
+                    p.capital_income_tax_noncompliance_rate[
+                        t : t + length, j
+                    ].reshape(length, 1)
+                )
+                tax_filer = p.income_tax_filer[t : t + length, j].reshape(
+                    length, 1
+                )
+            else:
+                labor_income_tax_compliance_rate = (
+                    p.labor_income_tax_noncompliance_rate[t : t + length, j]
+                )
+                capital_income_tax_compliance_rate = (
+                    p.capital_income_tax_noncompliance_rate[t : t + length, j]
+                )
+                tax_filer = p.income_tax_filer[t : t + length, j]
+        elif method == "TPI_scalar":
             labor_income_tax_compliance_rate = (
-                p.labor_income_tax_noncompliance_rate[t, j]
+                p.labor_income_tax_noncompliance_rate[0, j]
             )
             capital_income_tax_compliance_rate = (
-                p.capital_income_tax_noncompliance_rate[t, j]
+                p.capital_income_tax_noncompliance_rate[0, j]
             )
-            tax_filer = p.income_tax_filer[t, j]
+            tax_filer = p.income_tax_filer[0, j]
         else:
             labor_income_tax_compliance_rate = (
                 p.labor_income_tax_noncompliance_rate[-1, j]
@@ -360,13 +383,20 @@ def income_tax_liab(r, w, b, n, factor, t, j, method, e, etr_params, p):
         if method == "TPI":
             r = utils.to_timepath_shape(r)
             w = utils.to_timepath_shape(w)
+            length = r.shape[0]
             labor_income_tax_compliance_rate = (
-                p.labor_income_tax_noncompliance_rate[t, :]
+                p.labor_income_tax_noncompliance_rate[
+                    t : t + length, :
+                ].reshape(length, 1, p.J)
             )
             capital_income_tax_compliance_rate = (
-                p.capital_income_tax_noncompliance_rate[t, :]
+                p.capital_income_tax_noncompliance_rate[
+                    t : t + length, :
+                ].reshape(length, 1, p.J)
             )
-            tax_filer = p.income_tax_filer[t, :]
+            tax_filer = p.income_tax_filer[t : t + length, :].reshape(
+                length, 1, p.J
+            )
         else:
             labor_income_tax_compliance_rate = (
                 p.labor_income_tax_noncompliance_rate[-1, :]

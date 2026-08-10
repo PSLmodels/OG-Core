@@ -37,12 +37,10 @@ def get_L(n, p, method):
         # the J axis to a 1-D array, and the subsequent multiplication against
         # the (S, J) weight broadcasts into an (S, S) outer product, producing
         # a labor aggregate S times too large. p.e[-1, :, :] is already (S, J).
-        L_presum = p.e[-1, :, :] * np.transpose(p.omega_SS * p.lambdas) * n
+        L_presum = p.e[-1, :, :] * p.omega_SS * n
         L = L_presum.sum()
     elif method == "TPI":
-        L_presum = (n * (p.e * np.squeeze(p.lambdas))) * np.tile(
-            np.reshape(p.omega[: p.T, :], (p.T, p.S, 1)), (1, 1, p.J)
-        )
+        L_presum = n * (p.e * p.omega[: p.T, :, :])
         L = L_presum.sum(1).sum(1)
     return L
 
@@ -69,33 +67,28 @@ def get_I(b_splus1, K_p1, K, p, method):
 
     """
     if method == "SS":
-        omega_extended = np.append(p.omega_SS[1:], [0.0])
-        imm_extended = np.append(p.imm_rates[-1, 1:], [0.0])
-        part2 = (
-            (
-                b_splus1
-                * np.transpose((omega_extended * imm_extended) * p.lambdas)
-            ).sum()
-        ) / (1 + p.g_n_ss)
+        omega_extended = np.append(
+            p.omega_SS[1:, :], np.zeros((1, p.J)), axis=0
+        )
+        imm_extended = np.append(
+            p.imm_rates[-1, 1:, :], np.zeros((1, p.J)), axis=0
+        )
+        part2 = ((b_splus1 * omega_extended * imm_extended).sum()) / (
+            1 + p.g_n_ss
+        )
         aggI = (1 + p.g_n_ss) * np.exp(p.g_y) * (K_p1 - part2) - (
             1.0 - p.delta
         ) * K
     elif method == "TPI":
-        omega_shift = np.append(p.omega[: p.T, 1:], np.zeros((p.T, 1)), axis=1)
-        imm_shift = np.append(
-            p.imm_rates[: p.T, 1:], np.zeros((p.T, 1)), axis=1
+        omega_shift = np.append(
+            p.omega[: p.T, 1:, :], np.zeros((p.T, 1, p.J)), axis=1
         )
-        part2 = (
-            (
-                (b_splus1 * np.squeeze(p.lambdas))
-                * np.tile(
-                    np.reshape(imm_shift * omega_shift, (p.T, p.S, 1)),
-                    (1, 1, p.J),
-                )
-            )
-            .sum(1)
-            .sum(1)
-        ) / (1 + np.squeeze(np.hstack((p.g_n[: p.T - 1], p.g_n_ss))))
+        imm_shift = np.append(
+            p.imm_rates[: p.T, 1:, :], np.zeros((p.T, 1, p.J)), axis=1
+        )
+        part2 = ((b_splus1 * imm_shift * omega_shift).sum(1).sum(1)) / (
+            1 + np.squeeze(np.hstack((p.g_n[: p.T - 1], p.g_n_ss)))
+        )
         aggI = (
             1 + np.squeeze(np.hstack((p.g_n[: p.T - 1], p.g_n_ss)))
         ) * np.exp(p.g_y) * (K_p1 - part2) - (1.0 - p.delta) * K
@@ -129,30 +122,36 @@ def get_B(b, p, method, preTP):
     """
     if method == "SS":
         if preTP:
-            part1 = b * np.transpose(p.omega_S_preTP * p.lambdas)
-            omega_extended = np.append(p.omega_S_preTP[1:], [0.0])
-            imm_extended = np.append(p.imm_rates_preTP[1:], [0.0])
+            part1 = b * p.omega_S_preTP
+            omega_extended = np.append(
+                p.omega_S_preTP[1:, :], np.zeros((1, p.J)), axis=0
+            )
+            imm_extended = np.append(
+                p.imm_rates_preTP[1:, :], np.zeros((1, p.J)), axis=0
+            )
             pop_growth_rate = p.g_n_preTP
         else:
-            part1 = b * np.transpose(p.omega_SS * p.lambdas)
-            omega_extended = np.append(p.omega_SS[1:], [0.0])
-            imm_extended = np.append(p.imm_rates[-1, 1:], [0.0])
+            part1 = b * p.omega_SS
+            omega_extended = np.append(
+                p.omega_SS[1:, :], np.zeros((1, p.J)), axis=0
+            )
+            imm_extended = np.append(
+                p.imm_rates[-1, 1:, :], np.zeros((1, p.J)), axis=0
+            )
             pop_growth_rate = p.g_n_ss
-        part2 = b * np.transpose(omega_extended * imm_extended * p.lambdas)
+        part2 = b * omega_extended * imm_extended
         B_presum = part1 + part2
         B = B_presum.sum()
         B /= 1.0 + pop_growth_rate
     elif method == "TPI":
-        part1 = (b * np.squeeze(p.lambdas)) * np.tile(
-            np.reshape(p.omega[: p.T, :], (p.T, p.S, 1)), (1, 1, p.J)
+        part1 = b * p.omega[: p.T, :, :]
+        omega_shift = np.append(
+            p.omega[: p.T, 1:, :], np.zeros((p.T, 1, p.J)), axis=1
         )
-        omega_shift = np.append(p.omega[: p.T, 1:], np.zeros((p.T, 1)), axis=1)
         imm_shift = np.append(
-            p.imm_rates[: p.T, 1:], np.zeros((p.T, 1)), axis=1
+            p.imm_rates[: p.T, 1:, :], np.zeros((p.T, 1, p.J)), axis=1
         )
-        part2 = (b * np.squeeze(p.lambdas)) * np.tile(
-            np.reshape(imm_shift * omega_shift, (p.T, p.S, 1)), (1, 1, p.J)
-        )
+        part2 = b * omega_shift * imm_shift
         B_presum = part1 + part2
         B = B_presum.sum(1).sum(1)
         B /= 1.0 + np.hstack((p.g_n[: p.T - 1], p.g_n_ss))
@@ -194,27 +193,27 @@ def get_BQ(r, b_splus1, j, p, method, preTP):
             pop_growth_rate = p.g_n_ss
             rho = p.rho[-1, :]
         if j is not None:
-            BQ_presum = omega * rho * b_splus1 * p.lambdas[j]
+            BQ_presum = omega[:, j] * rho[:, j] * b_splus1
         else:
-            BQ_presum = np.transpose(omega * (rho * p.lambdas)) * b_splus1
+            BQ_presum = omega * rho * b_splus1
         BQ = BQ_presum.sum(0)
         BQ *= (1.0 + r) / (1.0 + pop_growth_rate)
     elif method == "TPI":
         pop = np.append(
-            p.omega_S_preTP.reshape(1, p.S), p.omega[: p.T - 1, :], axis=0
+            p.omega_S_preTP.reshape(1, p.S, p.J),
+            p.omega[: p.T - 1, :, :],
+            axis=0,
         )
         rho = np.append(
-            p.rho_preTP.reshape(1, p.S), p.rho[: p.T - 1, :], axis=0
+            p.rho_preTP.reshape(1, p.S, p.J), p.rho[: p.T - 1, :, :], axis=0
         )
 
         if j is not None:
-            BQ_presum = (b_splus1 * p.lambdas[j]) * (pop * rho)
+            BQ_presum = b_splus1 * pop[:, :, j] * rho[:, :, j]
             BQ = BQ_presum.sum(1)
             BQ *= (1.0 + r) / (1.0 + np.append(p.g_n_preTP, p.g_n[: p.T - 1]))
         else:
-            BQ_presum = (b_splus1 * np.squeeze(p.lambdas)) * np.tile(
-                np.reshape(pop * rho, (p.T, p.S, 1)), (1, 1, p.J)
-            )
+            BQ_presum = b_splus1 * pop * rho
             BQ = BQ_presum.sum(1)
             BQ *= np.tile(
                 np.reshape(
@@ -302,22 +301,9 @@ def get_C(c, p, method):
     """
 
     if method == "SS":
-        aggC = (
-            (c * np.transpose(p.omega_SS * p.lambdas).reshape(1, p.S, p.J))
-            .sum(-1)
-            .sum(-1)
-        )
+        aggC = (c * p.omega_SS).sum(-1).sum(-1)
     elif method == "TPI":
-        aggC = (
-            (
-                (c * np.squeeze(p.lambdas))
-                * np.tile(
-                    np.reshape(p.omega[: p.T, :], (p.T, p.S, 1)), (1, 1, p.J)
-                )
-            )
-            .sum(-1)
-            .sum(-1)
-        )
+        aggC = (c * p.omega[: p.T, :, :]).sum(-1).sum(-1)
     return aggC
 
 
@@ -404,7 +390,7 @@ def revenue(
     w_tax_liab = tax.wealth_tax_liab(r, b, 0, None, method, p)
     if method == "SS":
         p_i = np.dot(p.io_matrix, p_m)
-        pop_weights = np.transpose(p.omega_SS * p.lambdas)
+        pop_weights = p.omega_SS
         iit_payroll_tax_revenue = (inc_pay_tax_liab * pop_weights).sum()
         agg_pension_outlays = (pension_benefits * pop_weights).sum()
         UBI_outlays = (ubi * pop_weights).sum()
@@ -413,15 +399,12 @@ def revenue(
         cons_tax_revenue = (
             tax.cons_tax_liab(c, p_i, p, method) * pop_weights
         ).sum()
-        payroll_tax_revenue = p.frac_tax_payroll[-1] * iit_payroll_tax_revenue
     elif method == "TPI":
         p_i = (
             np.tile(p.io_matrix.reshape(1, p.I, p.M), (p.T, 1, 1))
             * np.tile(p_m[: p.T, :].reshape(p.T, 1, p.M), (1, p.I, 1))
         ).sum(axis=2)
-        pop_weights = np.squeeze(p.lambdas) * np.tile(
-            np.reshape(p.omega[: p.T, :], (p.T, p.S, 1)), (1, 1, p.J)
-        )
+        pop_weights = p.omega[: p.T, :, :]
         iit_payroll_tax_revenue = (
             (inc_pay_tax_liab * pop_weights).sum(1).sum(1)
         )
@@ -432,9 +415,15 @@ def revenue(
         cons_tax_revenue = (
             (tax.cons_tax_liab(c, p_i, p, method) * pop_weights).sum(1).sum(1)
         )
-        payroll_tax_revenue = (
-            p.frac_tax_payroll[: p.T] * iit_payroll_tax_revenue
-        )
+    payroll_tax_revenue = get_payroll_tax_revenue(
+        w, L, iit_payroll_tax_revenue, p, method
+    )
+    # When payroll taxes are modeled explicitly via tau_payroll, they are
+    # excluded from the income and payroll tax functions, so payroll tax
+    # revenue must be added into iit_payroll_tax_revenue (which enters
+    # total revenue) before the income tax portion is separated out.
+    if np.any(p.tau_payroll != 0):
+        iit_payroll_tax_revenue += payroll_tax_revenue
     business_tax_revenue = tax.get_biz_tax(w, Y, L, K, p_m, p, m, method).sum(
         -1
     )
@@ -460,6 +449,63 @@ def revenue(
         payroll_tax_revenue,
         iit_revenue,
     )
+
+
+def get_payroll_tax_revenue(w, L, iit_payroll_tax_revenue, p, method):
+    r"""
+    Calculate aggregate payroll tax revenue.
+
+    How payroll tax revenue is computed depends on how the user has
+    chosen to represent payroll taxes in the model.  If payroll taxes
+    are included directly through the ``tau_payroll`` parameter, then
+    revenue is the payroll tax rate times aggregate labor income:
+
+    .. math::
+        PR_{t} = \tau^{p}_{t}w_{t}L_{t}
+
+    Otherwise, payroll taxes are assumed to be embedded in the estimated
+    income and payroll tax functions (the default), and payroll tax
+    revenue is separated out as a fraction ``frac_tax_payroll`` of the
+    combined income and payroll tax revenue.  These two calculations are
+    identical when ``tau_payroll`` is zero.
+
+    Args:
+        w (array_like): the real wage rate
+        L (array_like): aggregate labor by industry
+        iit_payroll_tax_revenue (array_like): aggregate income and
+            payroll tax revenue
+        p (OG-Core Specifications object): model parameters
+        method (str): adjusts calculation dimensions based on 'SS' or
+            'TPI'
+
+    Returns:
+        payroll_tax_revenue (array_like): aggregate payroll tax revenue
+
+    """
+    if np.any(p.tau_payroll != 0):
+        # Payroll taxes are modeled explicitly via tau_payroll, so
+        # revenue is the payroll tax rate times aggregate labor income
+        # (summing labor across industries).
+        L_total = L.sum(-1)
+        if method == "SS":
+            payroll_tax_revenue = p.tau_payroll[-1] * w * L_total
+        else:  # TPI
+            payroll_tax_revenue = (
+                p.tau_payroll[: p.T] * w[: p.T] * L_total[: p.T]
+            )
+    else:
+        # Payroll taxes are embedded in the income and payroll tax
+        # functions, so revenue is a fraction of the combined revenue.
+        if method == "SS":
+            payroll_tax_revenue = (
+                p.frac_tax_payroll[-1] * iit_payroll_tax_revenue
+            )
+        else:  # TPI
+            payroll_tax_revenue = (
+                p.frac_tax_payroll[: p.T] * iit_payroll_tax_revenue
+            )
+
+    return payroll_tax_revenue
 
 
 def get_r_p(r, r_gov, p_m, K_vec, K_g, D, MPKg_vec, p, method):

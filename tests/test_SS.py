@@ -587,6 +587,7 @@ param_updates8 = {
     "gamma_g": [0.0, 0.0, 0.0, 0.0],
 }
 filename8 = "inner_loop_outputs_reform_MneI.pkl"
+_p_j1_tmp = Specifications()
 param_updates9 = {
     "J": 1,
     "lambdas": np.array([1.0]),
@@ -600,6 +601,13 @@ param_updates9 = {
     "eta": np.ones((80, 1)) * (1 / 80),
     "eta_RM": np.ones((80, 1)) * (1 / 80),
     "replacement_rate_adjust": [[1.0]],
+    "omega": _p_j1_tmp.omega.sum(axis=2, keepdims=True),
+    "omega_SS": _p_j1_tmp.omega_SS.sum(axis=1, keepdims=True),
+    "omega_S_preTP": _p_j1_tmp.omega_S_preTP.sum(axis=1, keepdims=True),
+    "rho": _p_j1_tmp.rho[:, :, :1],
+    "rho_preTP": _p_j1_tmp.rho_preTP[:, :1],
+    "imm_rates": _p_j1_tmp.imm_rates[:, :, :1],
+    "imm_rates_preTP": _p_j1_tmp.imm_rates_preTP[:, :1],
 }
 filename9 = "inner_loop_outputs_J1.pkl"
 

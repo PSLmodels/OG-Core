@@ -10,7 +10,6 @@ rho_vec[0, -1] = 1.0
 new_param_values = {
     "T": 160,
     "S": 40,
-    "rho": rho_vec.tolist(),
     "J": 2,
     "chi_n": np.ones(2),
     "labor_income_tax_noncompliance_rate": [[0.0]],
@@ -20,9 +19,17 @@ new_param_values = {
     "replacement_rate_adjust": [[1.0]],
     "eta": (np.ones((40, 2)) / (40 * 2)),
     "lambdas": [0.6, 0.4],
-    # "omega":  np.tile(np.reshape(np.ones((160, 40)) / 40, (160, 40, 1)), (1, 1, 2)) * np.array([0.6, 0.4]).tolist(),
-    # "omega_SS": np.tile(np.reshape(np.ones(40) / 40, (40, 1)), (1, 2)) * np.array([0.6, 0.4]).tolist(),
-    "e": np.ones((40, 2)),
+    "omega": (np.ones((160, 40)) / 40).reshape(160, 40, 1)
+    * np.array([0.6, 0.4]).tolist(),
+    "omega_SS": (np.ones(40) / 40).reshape(40, 1)
+    * np.array([0.6, 0.4]).tolist(),
+    "omega_S_preTP": (np.ones(40) / 40).reshape(40, 1)
+    * np.array([0.6, 0.4]).tolist(),
+    "imm_rates": np.zeros((160, 40, 2)).tolist(),
+    "imm_rates_preTP": np.zeros((40, 2)).tolist(),
+    "rho": np.tile(rho_vec.reshape(1, 40, 1), (160, 1, 2)).tolist(),
+    "rho_preTP": np.tile(rho_vec.reshape(40, 1), (1, 2)).tolist(),
+    "e": np.ones((40, 2)).tolist(),
 }
 # update parameters instance with new values for test
 p.update_specifications(new_param_values)
@@ -68,7 +75,6 @@ def test_get_L_J1_regression():
             "T": 160,
             "S": 40,
             "J": 1,
-            "rho": rho_vec_j1.tolist(),
             "chi_n": np.ones(1),
             "lambdas": [1.0],
             "e": np.ones((40, 1)),
@@ -78,8 +84,13 @@ def test_get_L_J1_regression():
             "wealth_tax_filer": [[1.0]],
             "replacement_rate_adjust": [[1.0]],
             "eta": np.ones((40, 1)) / 40,
-            "omega": np.ones((160, 40)) / 40,
-            "omega_SS": np.ones(40) / 40,
+            "omega": (np.ones((160, 40)) / 40).reshape(160, 40, 1).tolist(),
+            "omega_SS": (np.ones(40) / 40).reshape(40, 1).tolist(),
+            "omega_S_preTP": (np.ones(40) / 40).reshape(40, 1).tolist(),
+            "imm_rates": np.zeros((160, 40, 1)).tolist(),
+            "imm_rates_preTP": np.zeros((40, 1)).tolist(),
+            "rho": np.tile(rho_vec_j1.reshape(1, 40, 1), (160, 1, 1)).tolist(),
+            "rho_preTP": np.tile(rho_vec_j1.reshape(40, 1), (1, 1)).tolist(),
         }
     )
     n = np.random.default_rng(0).random((p_j1.S, p_j1.J))
@@ -87,12 +98,7 @@ def test_get_L_J1_regression():
     expected = 0.0
     for s in range(p_j1.S):
         for j in range(p_j1.J):
-            expected += (
-                p_j1.omega_SS[s]
-                * float(p_j1.lambdas[j])
-                * float(p_j1.e[-1, s, j])
-                * n[s, j]
-            )
+            expected += p_j1.omega_SS[s, j] * float(p_j1.e[-1, s, j]) * n[s, j]
     assert np.allclose(aggr.get_L(n, p_j1, "SS"), expected)
 
 
@@ -102,7 +108,6 @@ rho_vec[0, -1] = 1.0
 new_param_values = {
     "T": 160,
     "S": 40,
-    "rho": rho_vec.tolist(),
     "J": 2,
     "chi_n": np.ones(2),
     "e": np.ones((40, 2)),
@@ -113,38 +118,38 @@ new_param_values = {
     "replacement_rate_adjust": [[1.0]],
     "eta": (np.ones((40, 2)) / (40 * 2)),
     "lambdas": [0.6, 0.4],
-    "omega": np.ones((160, 40)) / 40,
-    "omega_SS": np.ones(40) / 40,
-    "imm_rates": np.zeros((160, 40)),
+    "omega": (np.ones((160, 40)) / 40).reshape(160, 40, 1)
+    * np.array([0.6, 0.4]).tolist(),
+    "omega_SS": (np.ones(40) / 40).reshape(40, 1)
+    * np.array([0.6, 0.4]).tolist(),
+    "omega_S_preTP": (np.ones(40) / 40).reshape(40, 1)
+    * np.array([0.6, 0.4]).tolist(),
+    "imm_rates": np.zeros((160, 40, 2)).tolist(),
+    "imm_rates_preTP": np.zeros((40, 2)).tolist(),
+    "rho": np.tile(rho_vec.reshape(1, 40, 1), (160, 1, 2)).tolist(),
+    "rho_preTP": np.tile(rho_vec.reshape(40, 1), (1, 2)).tolist(),
 }
 # update parameters instance with new values for test
 p.update_specifications(new_param_values)
 b_splus1 = 10 * np.random.rand(p.T * p.S * p.J).reshape(p.T, p.S, p.J)
 K_p1 = 0.9 + np.random.rand(p.T)
 K = 0.9 + np.random.rand(p.T)
-omega_extended = np.append(p.omega_SS[1:], [0.0])
-imm_extended = np.append(p.imm_rates[-1, 1:], [0.0])
-part2 = (
-    (
-        b_splus1[-1, :, :]
-        * np.transpose((omega_extended * imm_extended) * p.lambdas)
-    ).sum()
-) / (1 + p.g_n_ss)
+omega_extended = np.append(p.omega_SS[1:, :], [[0.0, 0.0]], axis=0)
+imm_extended = np.append(p.imm_rates[-1, 1:, :], [[0.0, 0.0]], axis=0)
+print("Shapes:", omega_extended.shape, p.omega_SS.shape, p.omega.shape)
+part2 = ((b_splus1[-1, :, :] * omega_extended * imm_extended).sum()) / (
+    1 + p.g_n_ss
+)
 aggI_SS = (1 + p.g_n_ss) * np.exp(p.g_y) * (K_p1[-1] - part2) - (
     1.0 - p.delta
 ) * K[-1]
-omega_shift = np.append(p.omega[: p.T, 1:], np.zeros((p.T, 1)), axis=1)
-imm_shift = np.append(p.imm_rates[: p.T, 1:], np.zeros((p.T, 1)), axis=1)
-part2 = (
-    (
-        (b_splus1 * np.squeeze(p.lambdas))
-        * np.tile(
-            np.reshape(imm_shift * omega_shift, (p.T, p.S, 1)), (1, 1, p.J)
-        )
-    )
-    .sum(1)
-    .sum(1)
-) / (1 + np.squeeze(np.hstack((p.g_n[: p.T - 1], p.g_n_ss))))
+omega_shift = np.append(p.omega[: p.T, 1:, :], np.zeros((p.T, 1, p.J)), axis=1)
+imm_shift = np.append(
+    p.imm_rates[: p.T, 1:, :], np.zeros((p.T, 1, p.J)), axis=1
+)
+part2 = ((b_splus1 * imm_shift * omega_shift).sum(1).sum(1)) / (
+    1 + np.squeeze(np.hstack((p.g_n[: p.T - 1], p.g_n_ss)))
+)
 aggI_TPI = (1 + np.squeeze(np.hstack((p.g_n[: p.T - 1], p.g_n_ss)))) * np.exp(
     p.g_y
 ) * (K_p1 - part2) - (1.0 - p.delta) * K
@@ -185,7 +190,6 @@ rho_vec[0, -1] = 1.0
 new_param_values = {
     "T": 160,
     "S": 40,
-    "rho": rho_vec.tolist(),
     "J": 2,
     "chi_n": np.ones(2),
     "e": np.ones((40, 2)),
@@ -196,31 +200,29 @@ new_param_values = {
     "replacement_rate_adjust": [[1.0]],
     "eta": (np.ones((40, 2)) / (40 * 2)),
     "lambdas": [0.6, 0.4],
-    "omega": np.ones((160, 40)) / 40,
-    "omega_SS": np.ones(40) / 40,
-    "imm_rates": np.zeros((160, 40)),
-    "omega_S_preTP": np.ones(40) / 40,
-    "imm_rates_preTP": np.zeros(40),
-    "rho_preTP": rho_vec[0, :],
+    "omega": (np.ones((160, 40)) / 40).reshape(160, 40, 1)
+    * np.array([0.6, 0.4]).tolist(),
+    "omega_SS": (np.ones(40) / 40).reshape(40, 1)
+    * np.array([0.6, 0.4]).tolist(),
+    "omega_S_preTP": (np.ones(40) / 40).reshape(40, 1)
+    * np.array([0.6, 0.4]).tolist(),
+    "imm_rates": np.zeros((160, 40, 2)).tolist(),
+    "imm_rates_preTP": np.zeros((40, 2)).tolist(),
+    "rho": np.tile(rho_vec.reshape(1, 40, 1), (160, 1, 2)).tolist(),
+    "rho_preTP": np.tile(rho_vec.reshape(40, 1), (1, 2)).tolist(),
     "g_n_preTP": 0.01,
 }
 # update parameters instance with new values for test
 p.update_specifications(new_param_values)
 p.omega_S_preTP = p.omega[0, :]
 b = -0.1 + (7 * np.random.rand(p.T * p.S * p.J).reshape(p.T, p.S, p.J))
-omega_extended = np.append(p.omega[: p.T, 1:], np.zeros((p.T, 1)), axis=1)
-imm_extended = np.append(p.imm_rates[: p.T, 1:], np.zeros((p.T, 1)), axis=1)
-B_test = (
-    b
-    * np.squeeze(p.lambdas)
-    * np.tile(np.reshape(p.omega[: p.T, :], (p.T, p.S, 1)), (1, 1, p.J))
-) + (
-    b
-    * np.squeeze(p.lambdas)
-    * np.tile(
-        np.reshape(omega_extended * imm_extended, (p.T, p.S, 1)), (1, 1, p.J)
-    )
+omega_extended = np.append(
+    p.omega[: p.T, 1:, :], np.zeros((p.T, 1, p.J)), axis=1
 )
+imm_extended = np.append(
+    p.imm_rates[: p.T, 1:, :], np.zeros((p.T, 1, p.J)), axis=1
+)
+B_test = (b * p.omega[: p.T, :, :]) + (b * omega_extended * imm_extended)
 expected1 = B_test[-1, :, :].sum() / (1.0 + p.g_n_ss)
 expected2 = B_test.sum(1).sum(1) / (
     1.0 + np.hstack((p.g_n[: p.T - 1], p.g_n_ss))
@@ -250,7 +252,6 @@ rho_vec[0, -1] = 1.0
 new_param_values = {
     "T": 160,
     "S": 40,
-    "rho": rho_vec.tolist(),
     "J": 2,
     "chi_n": np.ones(2),
     "e": np.ones((40, 2)),
@@ -261,12 +262,16 @@ new_param_values = {
     "replacement_rate_adjust": [[1.0]],
     "eta": (np.ones((40, 2)) / (40 * 2)),
     "lambdas": [0.6, 0.4],
-    "omega": np.ones((160, 40)) / 40,
-    "omega_SS": np.ones(40) / 40,
-    "imm_rates": np.zeros((160, 40)),
-    "omega_S_preTP": np.ones(40) / 40,
-    "imm_rates_preTP": np.zeros(40),
-    "rho_preTP": rho_vec[0, :],
+    "omega": (np.ones((160, 40)) / 40).reshape(160, 40, 1)
+    * np.array([0.6, 0.4]).tolist(),
+    "omega_SS": (np.ones(40) / 40).reshape(40, 1)
+    * np.array([0.6, 0.4]).tolist(),
+    "omega_S_preTP": (np.ones(40) / 40).reshape(40, 1)
+    * np.array([0.6, 0.4]).tolist(),
+    "imm_rates": np.zeros((160, 40, 2)).tolist(),
+    "imm_rates_preTP": np.zeros((40, 2)).tolist(),
+    "rho": np.tile(rho_vec.reshape(1, 40, 1), (160, 1, 2)).tolist(),
+    "rho_preTP": np.tile(rho_vec.reshape(40, 1), (1, 2)).tolist(),
     "g_n_preTP": 0.01,
 }
 # update parameters instance with new values for test
@@ -275,10 +280,10 @@ p.omega_S_preTP = p.omega[0, :]
 # set values for some variables
 r = 0.5 + 0.5 * np.random.rand(p.T)
 b_splus1 = 0.06 + 7 * np.random.rand(p.T, p.S, p.J)
-pop = np.append(p.omega_S_preTP.reshape(1, p.S), p.omega[: p.T - 1, :], axis=0)
-BQ_presum = (b_splus1 * np.squeeze(p.lambdas)) * np.tile(
-    np.reshape(p.rho[0, :] * pop, (p.T, p.S, 1)), (1, 1, p.J)
+pop = np.append(
+    p.omega_S_preTP.reshape(1, p.S, p.J), p.omega[: p.T - 1, :, :], axis=0
 )
+BQ_presum = b_splus1 * p.rho[0, :, :] * pop
 growth_adj = (1.0 + r) / (1.0 + np.append(p.g_n_preTP, p.g_n[: p.T - 1]))
 growth_adj_preTP = (1.0 + r[0]) / (1.0 + p.g_n_preTP)
 
@@ -1209,7 +1214,6 @@ rho_vec[0, -1] = 1.0
 new_param_values = {
     "T": 160,
     "S": 40,
-    "rho": rho_vec.tolist(),
     "J": 2,
     "chi_n": np.ones(2),
     "e": np.ones((40, 2)),
@@ -1221,9 +1225,16 @@ new_param_values = {
     "replacement_rate_adjust": [[1.0]],
     "eta": (np.ones((40, 2)) / (40 * 2)),
     "lambdas": [0.6, 0.4],
-    "omega": np.ones((160, 40)) / 40,
-    "omega_SS": np.ones(40) / 40,
-    "imm_rates": np.zeros((160, 40)),
+    "omega": (np.ones((160, 40)) / 40).reshape(160, 40, 1)
+    * np.array([0.6, 0.4]).tolist(),
+    "omega_SS": (np.ones(40) / 40).reshape(40, 1)
+    * np.array([0.6, 0.4]).tolist(),
+    "omega_S_preTP": (np.ones(40) / 40).reshape(40, 1)
+    * np.array([0.6, 0.4]).tolist(),
+    "imm_rates": np.zeros((160, 40, 2)).tolist(),
+    "imm_rates_preTP": np.zeros((40, 2)).tolist(),
+    "rho": np.tile(rho_vec.reshape(1, 40, 1), (160, 1, 2)).tolist(),
+    "rho_preTP": np.tile(rho_vec.reshape(40, 1), (1, 2)).tolist(),
 }
 # update parameters instance with new values for test
 p.update_specifications(new_param_values)
@@ -1231,8 +1242,8 @@ p.update_specifications(new_param_values)
 c = 0.1 + 0.5 * np.random.rand(p.T * p.M * p.S * p.J).reshape(
     p.T, p.M, p.S, p.J
 )
-aggC_presum = (c * np.squeeze(p.lambdas)) * np.tile(
-    np.reshape(p.omega[: p.T, :], (p.T, 1, p.S, 1)), (1, p.M, 1, p.J)
+aggC_presum = c * np.tile(
+    np.reshape(p.omega[: p.T, :, :], (p.T, 1, p.S, p.J)), (1, p.M, 1, 1)
 )
 expected1 = aggC_presum[-1, -1, :, :].sum(-1).sum(-1)
 expected2 = aggC_presum[:, -1, :, :].sum(-1).sum(-1)
@@ -1263,7 +1274,6 @@ rho_vec[0, -1] = 1.0
 new_param_values = {
     "T": 30,
     "S": 20,
-    "rho": rho_vec.tolist(),
     "J": 2,
     "chi_n": np.ones(2),
     "e": np.ones((20, 2)),
@@ -1283,9 +1293,16 @@ new_param_values = {
     "delta_tau_annual": [
         [float(1 - ((1 - 0.0975) ** (20 / (p.ending_age - p.starting_age))))]
     ],
-    "omega": np.ones((30, 20)) / 20,
-    "omega_SS": np.ones(20) / 20,
-    "imm_rates": np.zeros((30, 20)),
+    "omega": (np.ones((30, 20)) / 20).reshape(30, 20, 1)
+    * np.array([0.6, 0.4]).tolist(),
+    "omega_SS": (np.ones(20) / 20).reshape(20, 1)
+    * np.array([0.6, 0.4]).tolist(),
+    "omega_S_preTP": (np.ones(20) / 20).reshape(20, 1)
+    * np.array([0.6, 0.4]).tolist(),
+    "imm_rates": np.zeros((30, 20, 2)).tolist(),
+    "imm_rates_preTP": np.zeros((20, 2)).tolist(),
+    "rho": np.tile(rho_vec.reshape(1, 20, 1), (30, 1, 2)).tolist(),
+    "rho_preTP": np.tile(rho_vec.reshape(20, 1), (1, 2)).tolist(),
 }
 p.update_specifications(new_param_values)
 # make up some consumption values for testing
@@ -1310,9 +1327,13 @@ factor = 140000.0
 # update parameters instance with new values for test
 p.e = 0.263 + (2.024 - 0.263) * random_state.rand(p.S * p.J).reshape(p.S, p.J)
 p.e = np.tile(p.e.reshape(1, p.S, p.J), (p.T, 1, 1))
-p.omega = 0.039 * random_state.rand(p.T * p.S * 1).reshape(p.T, p.S)
-p.omega = p.omega / p.omega.sum(axis=1).reshape(p.T, 1)
-p.omega_SS = p.omega[-1, :]
+p.omega = (
+    0.039
+    * random_state.rand(p.T * p.S).reshape(p.T, p.S, 1)
+    * np.squeeze(p.lambdas)
+)
+p.omega = p.omega / p.omega.sum(axis=1).sum(axis=1).reshape(p.T, 1, 1)
+p.omega_SS = p.omega[-1, :, :]
 etr_params = 0.22 * random_state.rand(
     p.T * p.S * p.J * num_tax_params
 ).reshape(p.T, p.S, p.J, num_tax_params)
@@ -1324,7 +1345,6 @@ rho_vec[0, -1] = 1.0
 new_param_values3 = {
     "T": 30,
     "S": 20,
-    "rho": rho_vec.tolist(),
     "J": 2,
     "chi_n": np.ones(2),
     "e": np.ones((20, 2)),
@@ -1351,9 +1371,16 @@ new_param_values3 = {
     "delta_tau_annual": [
         [float(1 - ((1 - 0.0975) ** (20 / (p3.ending_age - p3.starting_age))))]
     ],
-    "omega": np.ones((30, 20)) / 20,
-    "omega_SS": np.ones(20) / 20,
-    "imm_rates": np.zeros((30, 20)),
+    "omega": (np.ones((30, 20)) / 20).reshape(30, 20, 1)
+    * np.array([0.6, 0.4]).tolist(),
+    "omega_SS": (np.ones(20) / 20).reshape(20, 1)
+    * np.array([0.6, 0.4]).tolist(),
+    "omega_S_preTP": (np.ones(20) / 20).reshape(20, 1)
+    * np.array([0.6, 0.4]).tolist(),
+    "imm_rates": np.zeros((30, 20, 2)).tolist(),
+    "imm_rates_preTP": np.zeros((20, 2)).tolist(),
+    "rho": np.tile(rho_vec.reshape(1, 20, 1), (30, 1, 2)).tolist(),
+    "rho_preTP": np.tile(rho_vec.reshape(20, 1), (1, 2)).tolist(),
 }
 p3.update_specifications(new_param_values3)
 p3.e = p.e
@@ -1368,7 +1395,6 @@ rho_vec[0, -1] = 1.0
 new_param_values_ubi = {
     "T": 30,
     "S": 20,
-    "rho": rho_vec.tolist(),
     "J": 2,
     "chi_n": np.ones(2),
     "e": np.ones((20, 2)),
@@ -1396,6 +1422,16 @@ new_param_values_ubi = {
     "ubi_nom_017": 1000,
     "ubi_nom_1864": 1500,
     "ubi_nom_65p": 500,
+    "omega": (np.ones((30, 20)) / 20).reshape(30, 20, 1)
+    * np.array([0.6, 0.4]).tolist(),
+    "omega_SS": (np.ones(20) / 20).reshape(20, 1)
+    * np.array([0.6, 0.4]).tolist(),
+    "omega_S_preTP": (np.ones(20) / 20).reshape(20, 1)
+    * np.array([0.6, 0.4]).tolist(),
+    "imm_rates": np.zeros((30, 20, 2)).tolist(),
+    "imm_rates_preTP": np.zeros((20, 2)).tolist(),
+    "rho": np.tile(rho_vec.reshape(1, 20, 1), (30, 1, 2)).tolist(),
+    "rho_preTP": np.tile(rho_vec.reshape(20, 1), (1, 2)).tolist(),
 }
 p_u.update_specifications(new_param_values_ubi)
 # make up some consumption values for testing
@@ -1424,9 +1460,13 @@ p_u.e = 0.263 + (2.024 - 0.263) * random_state.rand(p.S * p.J).reshape(
     p.S, p.J
 )
 p_u.e = np.tile(p_u.e.reshape(1, p_u.S, p_u.J), (p_u.T, 1, 1))
-p_u.omega = 0.039 * random_state.rand(p_u.T * p_u.S * 1).reshape(p_u.T, p_u.S)
-p_u.omega = p_u.omega / p_u.omega.sum(axis=1).reshape(p_u.T, 1)
-p_u.omega_SS = p_u.omega[-1, :]
+p_u.omega = (
+    0.039
+    * random_state.rand(p_u.T * p_u.S).reshape(p_u.T, p_u.S, 1)
+    * np.squeeze(p_u.lambdas)
+)
+p_u.omega = p_u.omega / p_u.omega.sum(axis=1).sum(axis=1).reshape(p_u.T, 1, 1)
+p_u.omega_SS = p_u.omega[-1, :, :]
 etr_params_u = 0.22 * random_state.rand(
     p_u.T * p_u.S * p_u.J * num_tax_params
 ).reshape(p_u.T, p_u.S, p_u.J, num_tax_params)
@@ -1434,111 +1474,111 @@ theta_u = 0.101 + (0.156 - 0.101) * random_state.rand(p_u.J)
 # vector of output prices
 p_m = np.ones((p.T, p.M))
 
-expected1 = 0.5688319028341413
+expected1 = 0.7598207140204407
 expected2 = np.array(
     [
-        0.58978896,
-        0.5318829,
-        0.58291302,
-        0.56616446,
-        0.60152253,
-        0.63685373,
-        0.60718972,
-        0.56236328,
-        0.56929121,
-        0.60536959,
-        0.58763365,
-        0.59627562,
-        0.55409009,
-        0.56782614,
-        0.56400569,
-        0.6636463,
-        0.59160813,
-        0.64735391,
-        0.72066489,
-        0.64096484,
-        0.61899218,
-        0.58806093,
-        0.54783766,
-        0.5393597,
-        0.55685316,
-        0.65395071,
-        0.58946501,
-        0.64129696,
-        0.58759922,
-        0.5580478,
+        0.78077777,
+        0.72068128,
+        0.77564557,
+        0.75220586,
+        0.78498646,
+        0.82226742,
+        0.78953295,
+        0.75499567,
+        0.75017449,
+        0.79555133,
+        0.77677308,
+        0.78748408,
+        0.73859649,
+        0.75895348,
+        0.75059024,
+        0.85599023,
+        0.77630208,
+        0.84016811,
+        0.90505241,
+        0.82363203,
+        0.80717282,
+        0.77141901,
+        0.73973490,
+        0.72241447,
+        0.74309837,
+        0.84927868,
+        0.78312174,
+        0.83015615,
+        0.77981290,
+        0.74258374,
     ]
 )
 expected3 = (
     np.array(
         [
-            0.58978896,
-            0.5318829,
-            0.58291302,
-            0.56616446,
-            0.60152253,
-            0.63685373,
-            0.60718972,
-            0.56236328,
-            0.56929121,
-            0.60536959,
-            0.58763365,
-            0.59627562,
-            0.55409009,
-            0.56782614,
-            0.56400569,
-            0.6636463,
-            0.59160813,
-            0.64735391,
-            0.72066489,
-            0.64096484,
-            0.61899218,
-            0.58806093,
-            0.54783766,
-            0.5393597,
-            0.55685316,
-            0.65395071,
-            0.58946501,
-            0.64129696,
-            0.58759922,
-            0.5580478,
+            0.78077777,
+            0.72068128,
+            0.77564557,
+            0.75220586,
+            0.78498646,
+            0.82226742,
+            0.78953295,
+            0.75499567,
+            0.75017449,
+            0.79555133,
+            0.77677308,
+            0.78748408,
+            0.73859649,
+            0.75895348,
+            0.75059024,
+            0.85599023,
+            0.77630208,
+            0.84016811,
+            0.90505241,
+            0.82363203,
+            0.80717282,
+            0.77141901,
+            0.73973490,
+            0.72241447,
+            0.74309837,
+            0.84927868,
+            0.78312174,
+            0.83015615,
+            0.77981290,
+            0.74258374,
         ]
     )
     - inv_tax_cred_rev3
 )
-expected4 = 0.5688319028341413
+expected4 = 0.7598207140204407
 expected5 = np.array(
     [
-        0.58978896,
-        0.5318829,
-        0.58291302,
-        0.56616446,
-        0.60152253,
-        0.63685373,
-        0.60718972,
-        0.56236328,
-        0.56929121,
-        0.60536959,
-        0.58763365,
-        0.59627562,
-        0.55409009,
-        0.56782614,
-        0.56400569,
-        0.6636463,
-        0.59160813,
-        0.64735391,
-        0.72066489,
-        0.64096484,
-        0.61899218,
-        0.58806093,
-        0.54783766,
-        0.5393597,
-        0.55685316,
-        0.65395071,
-        0.58946501,
-        0.64129696,
-        0.58759922,
-        0.5580478,
+        0.78077777,
+        0.72068128,
+        0.77564557,
+        0.75220586,
+        0.78498646,
+        0.82226742,
+        0.78953295,
+        0.75499567,
+        0.75017449,
+        0.79555133,
+        0.77677308,
+        0.78748408,
+        0.73859649,
+        0.75895348,
+        0.75059024,
+        0.85599023,
+        0.77630208,
+        0.84016811,
+        0.90505241,
+        0.82363203,
+        0.80717282,
+        0.77141901,
+        0.73973490,
+        0.72241447,
+        0.74309837,
+        0.84927868,
+        0.78312174,
+        0.83015615,
+        0.77981290,
+        0.74258374,
     ]
 )
 test_data = [
@@ -1702,6 +1742,45 @@ def test_revenue(
     print("Rev: ", revenue)
     print("Exp: ", expected)
     assert np.allclose(revenue, expected)
+
+
+def test_get_payroll_tax_revenue():
+    """
+    Test of the aggregates.get_payroll_tax_revenue function.
+
+    Checks both ways of representing payroll taxes: embedded in the
+    income and payroll tax functions (tau_payroll == 0, the default) and
+    modeled explicitly via the tau_payroll parameter.
+    """
+    p = Specifications()
+    p.T = 3
+    iit_payroll_ss = 10.0
+    iit_payroll_tpi = np.array([10.0, 11.0, 12.0])
+    w_ss = 1.2
+    L_ss = np.array([2.0, 3.0])  # labor by industry
+    w_tpi = np.array([1.0, 1.1, 1.2])
+    L_tpi = np.array([[1.0, 2.0], [1.5, 2.5], [2.0, 3.0]])  # (T, M)
+
+    # Payroll taxes embedded in the tax functions (tau_payroll == 0)
+    p.tau_payroll = np.zeros(p.T)
+    p.frac_tax_payroll = np.array([0.5, 0.5, 0.5])
+    pr_ss = aggr.get_payroll_tax_revenue(w_ss, L_ss, iit_payroll_ss, p, "SS")
+    assert np.allclose(pr_ss, 0.5 * iit_payroll_ss)
+    pr_tpi = aggr.get_payroll_tax_revenue(
+        w_tpi, L_tpi, iit_payroll_tpi, p, "TPI"
+    )
+    assert np.allclose(pr_tpi, 0.5 * iit_payroll_tpi)
+
+    # Payroll taxes modeled explicitly via tau_payroll
+    p.tau_payroll = np.array([0.1, 0.2, 0.3])
+    pr_ss = aggr.get_payroll_tax_revenue(w_ss, L_ss, iit_payroll_ss, p, "SS")
+    assert np.allclose(pr_ss, 0.3 * w_ss * L_ss.sum())
+    pr_tpi = aggr.get_payroll_tax_revenue(
+        w_tpi, L_tpi, iit_payroll_tpi, p, "TPI"
+    )
+    assert np.allclose(
+        pr_tpi, np.array([0.1, 0.2, 0.3]) * w_tpi * L_tpi.sum(-1)
+    )
 
 
 test_data = [

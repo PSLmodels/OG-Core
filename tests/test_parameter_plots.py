@@ -64,11 +64,7 @@ if sys.version_info[1] < 11:
 micro_data = utils.safe_read_pickle(
     os.path.join(CUR_PATH, "test_io_data", "micro_data_dict_for_tests.pkl")
 )
-if base_params.rho.ndim == 1:
-    base_params.rho = np.tile(
-        base_params.rho.reshape(1, base_params.S),
-        (base_params.T + base_params.S, 1),
-    )
+# rho is now (T+S, S, J) - no reshape needed
 
 
 def test_plot_imm_rates():
@@ -338,7 +334,11 @@ def test_plot_g_n_savefig(tmpdir):
 
 def test_plot_mort_rates_data():
     totpers = base_params.S - 1
-    mort_rates = base_params.rho[-1, 1:].reshape((1, totpers))
+    mort_rates = (
+        (base_params.rho[-1, 1:, :] * base_params.omega[-1, 1:, :])
+        .mean(axis=-1)
+        .reshape((1, totpers))
+    )
     fig = parameter_plots.plot_mort_rates_data(
         mort_rates,
         path=None,
@@ -349,7 +349,11 @@ def test_plot_mort_rates_data():
 
 def test_plot_mort_rates_data_save_fig(tmpdir):
     totpers = base_params.S - 1
-    mort_rates = base_params.rho[-1, 1:].reshape((1, totpers))
+    mort_rates = (
+        (base_params.rho[-1, 1:, :] * base_params.omega[-1, 1:, :])
+        .mean(axis=-1)
+        .reshape((1, totpers))
+    )
     parameter_plots.plot_mort_rates_data(
         mort_rates,
         path=tmpdir,

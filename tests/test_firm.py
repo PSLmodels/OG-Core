@@ -25,8 +25,8 @@ K_g3 = np.array([0.0])
 expected3 = np.array([0.592030917])
 # update parameters instance with new values for test
 p4 = Specifications()
-rho_vec = np.zeros((1, 3))
-rho_vec[0, -1] = 1.0
+rho_vec = np.zeros((1, 3, p4.J))
+rho_vec[0, -1, :] = 1.0
 new_param_values4 = {
     "Z": [[2.0]],
     "gamma": [0.5],

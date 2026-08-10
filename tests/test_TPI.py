@@ -335,6 +335,43 @@ def test_anderson_scaling_and_reset():
     assert u._F == [] and u._X == []
 
 
+def test_stall_defaults_are_warn_only():
+    # Stall detection defaults: a 50-iteration window and warn-only
+    # action, so model solutions are unchanged.
+    p = Specifications()
+    assert p.TPI_stall_window == 50
+    assert p.TPI_stall_action == "warn"
+
+
+def test_diagnose_stall_progressing_and_disabled():
+    # A steadily improving distance history is never a stall, and a
+    # non-positive window (or too-short history) disables the check.
+    improving = 10.0 * 0.9 ** np.arange(100)
+    assert solvers.diagnose_stall(improving, 100, 20, 0.05) is None
+    stuck = np.full(100, 5.0)
+    assert solvers.diagnose_stall(stuck, 100, 0, 0.05) is None
+    assert solvers.diagnose_stall(stuck, 30, 20, 0.05) is None
+
+
+def test_diagnose_stall_oscillating():
+    # A distance that bounces in a band without improving on the earlier
+    # best is diagnosed as the outer loop cycling.
+    rng = np.arange(100)
+    bouncing = 0.3 + 0.25 * (-1.0) ** rng
+    assert solvers.diagnose_stall(bouncing, 100, 20, 0.05) == "oscillating"
+
+
+def test_diagnose_stall_diverging():
+    # A recent best far above the earlier best is diagnosed as a
+    # diverging economy rather than a cycling solver -- whether the
+    # growth is smooth or a widening bounce.
+    growing = 0.1 * 1.05 ** np.arange(100)
+    assert solvers.diagnose_stall(growing, 100, 20, 0.05) == "diverging"
+    rng = np.arange(100)
+    growing_bounce = 0.05 * 1.1**rng * (1.0 + 0.3 * (-1.0) ** rng)
+    assert solvers.diagnose_stall(growing_bounce, 100, 20, 0.05) == "diverging"
+
+
 file_in1 = os.path.join(
     CUR_PATH, "test_io_data", "twist_doughnut_inputs_2.pkl"
 )
@@ -980,6 +1017,18 @@ param_updates10 = {
     "eta": np.ones((40, 1)) * (1 / 40),
     "eta_RM": np.ones((40, 1)) * (1 / 40),
     "replacement_rate_adjust": [[1.0]],
+    # Collapse J dimension from TEST_PARAM_DICT (J=2) to J=1
+    # omega arrays: sum over J (joint distribution marginal)
+    "omega": np.array(TEST_PARAM_DICT["omega"]).sum(-1, keepdims=True),
+    "omega_SS": np.array(TEST_PARAM_DICT["omega_SS"]).sum(-1, keepdims=True),
+    "omega_S_preTP": np.array(TEST_PARAM_DICT["omega_S_preTP"]).sum(
+        -1, keepdims=True
+    ),
+    # rho/imm_rates: same across J, so just take first slice
+    "rho": np.array(TEST_PARAM_DICT["rho"])[:, :, 0:1],
+    "rho_preTP": np.array(TEST_PARAM_DICT["rho_preTP"])[:, 0:1],
+    "imm_rates": np.array(TEST_PARAM_DICT["imm_rates"])[:, :, 0:1],
+    "imm_rates_preTP": np.array(TEST_PARAM_DICT["imm_rates_preTP"])[:, 0:1],
 }
 filename10 = os.path.join(CUR_PATH, "test_io_data", "run_TPI_outputs_J1.pkl")
 # read in mono tax funcs (not age specific)

@@ -77,7 +77,7 @@ def euler_equation_solver(guesses, *args):
         tr,
         ubi,
         theta,
-        p.rho[-1, :],
+        p.rho[-1, :, j],
         p.etr_params[-1],
         p.mtry_params[-1],
         None,
@@ -515,9 +515,7 @@ def inner_loop(outer_loop_vars, p, client):
     # (S, J) nssmat broadcasts into an (S, S) outer product, scaling the
     # income sum by S. p.e[-1, :, :] is already (S, J).
     average_income_model = (
-        (new_r_p * b_s + new_w * p.e[-1, :, :] * nssmat)
-        * p.omega_SS.reshape(p.S, 1)
-        * p.lambdas.reshape(1, p.J)
+        (new_r_p * b_s + new_w * p.e[-1, :, :] * nssmat) * p.omega_SS
     ).sum()
     if p.baseline:
         new_factor = p.mean_income_data / average_income_model
@@ -984,7 +982,7 @@ def SS_solver(
         r_p_ss,
         wss,
         bssmat_s,
-        bqssmat,
+        nssmat,
         factor_ss,
         0,
         None,
@@ -1039,6 +1037,10 @@ def SS_solver(
     yss_before_tax_mat = household.get_y(
         r_p_ss, wss, bssmat_s, nssmat, p, "SS"
     )
+    labor_income_ss = (
+        wss * nssmat * np.squeeze(p.e[-1, :, :]).reshape((p.S, p.J))
+    )
+    capital_income_ss = r_p_ss * bssmat_s
     Css = aggr.get_C(cssmat, p, "SS")
     c_i_ss_mat = household.get_ci(
         cssmat, p_i_ss, p_tilde_ss, p.tau_c[-1, :], p.alpha_c, p.c_min
@@ -1226,7 +1228,10 @@ def SS_solver(
         "tr": trssmat,
         "ubi": ubissmat,
         "before_tax_income": yss_before_tax_mat,
+        "labor_income": labor_income_ss,
+        "capital_income": capital_income_ss,
         "hh_net_taxes": taxss,
+        "income_payroll_taxes": income_tax_ss,
         "sales_tax": sales_tax_ss[: p.T, ...],
         "wealth_tax": wealth_tax_ss[: p.T, ...],
         "bequest_tax": bq_tax_ss[: p.T, ...],

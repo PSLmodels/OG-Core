@@ -89,14 +89,25 @@ def plot_mort_rates(
     for y in years:
         t = y - p0.start_year
         for i, p in enumerate(p_list):
+            # get average mortality rate across all j types if 3D array
+            if p.rho.ndim == 3:
+                # average over all j types
+                if p.omega.ndim == 3:
+                    rho_t = (p.rho[t, :, :] * p.omega[t, :, :]).sum(axis=-1)
+                else:
+                    rho_t = (
+                        p.rho[t, :, :] * p.lambdas.reshape(1, 1, p.J)
+                    ).sum(axis=-1)
+            else:
+                rho_t = p.rho[t, :]
             if survival_rates:
                 plt.plot(
                     age_per,
-                    np.cumprod(1 - p.rho[t, :]),
+                    np.cumprod(1 - rho_t),
                     label=labels[i] + " " + str(y),
                 )
             else:
-                plt.plot(age_per, p.rho[t, :], label=labels[i] + " " + str(y))
+                plt.plot(age_per, rho_t, label=labels[i] + " " + str(y))
     plt.xlabel(r"Age $s$ (model periods)")
     if survival_rates:
         plt.ylabel(r"Cumulative Survival Rates")

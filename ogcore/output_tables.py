@@ -752,9 +752,7 @@ def dynamic_revenue_decomposition(
         None,
         "TPI",
     ).sum(axis=-1)
-    pop_weights = np.squeeze(base_params.lambdas) * np.tile(
-        np.reshape(base_params.omega[:T, :], (T, S, 1)), (1, 1, J)
-    )
+    pop_weights = base_params.omega[:T, :, :]
     for k in indiv_liab.keys():
         tax_rev_dict["indiv"][k] = (indiv_liab[k] * pop_weights).sum(1).sum(1)
         tax_rev_dict["total"][k] = (

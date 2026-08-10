@@ -213,7 +213,10 @@ def DB_amount(w, e, n, j, p):
     Args:
         w (array_like): real wage rate
         e (Numpy array): effective labor units
-        n (Numpy array): labor supply
+        n (Numpy array): labor supply; may be a partial lifetime path
+            (length < S, for cohorts alive when the time path begins),
+            a steady-state vector (S,) or matrix (S, J), or the full
+            time path (T, S, J)
         j (int): index of lifetime income group
         p (OG-Core Specifications object): model parameters
 
@@ -226,23 +229,38 @@ def DB_amount(w, e, n, j, p):
     equiv_periods = int(round((p.S / 80.0) * p.avg_earn_num_years)) - 1
     equiv_yr_contrib = int(round((p.S / 80.0) * p.yr_contrib)) - 1
     L_inc_avg_s = np.zeros(equiv_periods)
+    # Retirement age is potentially time varying (PR #433), but the DB
+    # system supports a single retirement age for now; use the
+    # steady-state value (see Issue #1014). g_y is a scalar parameter,
+    # but the numba loops index it, so pass it as a 1-element array.
+    S_ret = int(np.asarray(p.retire).flat[-1])
+    g_y_arr = np.atleast_1d(np.asarray(p.g_y, dtype=float)).ravel()
+    # The wage may arrive as a scalar (steady state, or one remaining
+    # period in the TPI); the loops index it as a path, so broadcast it
+    # to the length of the labor-supply vector.
+    if np.ndim(w) == 0:
+        w = np.full(n.shape[0], float(w))
 
     if n.shape[0] < p.S:
         per_rmn = n.shape[0]
-        # TODO: think about how to handle setting w_preTP and n_preTP
-        # TODO: will need to update how the e matrix is handled here
-        # and else where to allow for it to be time varying
-        w_S = np.append((p.w_preTP * np.ones(p.S))[:(-per_rmn)], w)
+        # Pre-time-path wages: the recent past is anchored to the
+        # period-0 wage of the current path (trend growth is handled
+        # by the de-trending inside the benefit formula); labor comes
+        # from the model's initial condition n_preTP (see Issue #1014)
+        w_S = np.append((w[0] * np.ones(p.S))[:(-per_rmn)], w)
         n_S = np.append(p.n_preTP[:(-per_rmn), j], n)
 
         DB = np.zeros(p.S)
         DB = DB_1dim_loop(
             w_S,
-            p.e[:, j],
+            # TODO: will need to update how the e matrix is handled
+            # here and elsewhere to allow for it to be time varying
+            # (see Issue #1014); use the steady-state profile for now
+            p.e[-1, :, j] if np.ndim(p.e) == 3 else p.e[:, j],
             n_S,
-            p.retire,
+            S_ret,
             p.S,
-            p.g_y,
+            g_y_arr,
             L_inc_avg_s,
             L_inc_avg,
             DB,
@@ -259,9 +277,9 @@ def DB_amount(w, e, n, j, p):
                 w,
                 e,
                 n,
-                p.retire,
+                S_ret,
                 p.S,
-                p.g_y,
+                g_y_arr,
                 L_inc_avg_s,
                 L_inc_avg,
                 DB,
@@ -277,12 +295,32 @@ def DB_amount(w, e, n, j, p):
                 w,
                 e,
                 n,
-                p.retire,
+                S_ret,
                 p.S,
-                p.g_y,
+                g_y_arr,
                 L_inc_avg_sj,
                 L_inc_avg,
                 DB,
+                equiv_periods,
+                p.alpha_db,
+                equiv_yr_contrib,
+            )
+
+        elif np.ndim(n) == 3:
+            T = n.shape[0]
+            w_path = np.squeeze(np.asarray(w))
+            if w_path.ndim == 0:
+                w_path = np.full(T, float(w_path))
+            e_ss = p.e[-1] if np.ndim(p.e) == 3 else p.e
+            DB = DB_3dim_loop(
+                w_path,
+                e_ss,
+                n,
+                p.n_preTP,
+                S_ret,
+                p.S,
+                p.J,
+                float(g_y_arr[-1]),
                 equiv_periods,
                 p.alpha_db,
                 equiv_yr_contrib,
@@ -315,22 +353,34 @@ def NDC_amount(w, e, n, r, Y, j, p):
     """
     g_ndc_amount = g_ndc(r, Y, p)
     delta_ret_amount = delta_ret(r, Y, p)
+    # Single retirement age for now (see Issue #1014); g_y is a scalar
+    # but the numba loops index it; the steady-state wage is a scalar
+    # but the loops index it as a path.
+    S_ret = int(np.asarray(p.retire).flat[-1])
+    g_y_arr = np.atleast_1d(np.asarray(p.g_y, dtype=float)).ravel()
+    if np.ndim(w) == 0:
+        w = np.full(n.shape[0], float(w))
 
     if n.shape[0] < p.S:
         per_rmn = n.shape[0]
 
-        w_S = np.append((p.w_preTP * np.ones(p.S))[:(-per_rmn)], w)
+        # Pre-time-path wages: the recent past is anchored to the
+        # period-0 wage of the current path (trend growth is handled
+        # by the de-trending inside the benefit formula); labor comes
+        # from the model's initial condition n_preTP (see Issue #1014)
+        w_S = np.append((w[0] * np.ones(p.S))[:(-per_rmn)], w)
         n_S = np.append(p.n_preTP[:(-per_rmn), j], n)
 
-        NDC_s = np.zeros(p.retire)
+        NDC_s = np.zeros(S_ret)
         NDC = np.zeros(p.S)
         NDC = NDC_1dim_loop(
             w_S,
-            p.e[:, j],
+            # steady-state earnings profile for now (see Issue #1014)
+            p.e[-1, :, j] if np.ndim(p.e) == 3 else p.e[:, j],
             n_S,
-            p.retire,
+            S_ret,
             p.S,
-            p.g_y,
+            g_y_arr,
             p.tau_p,
             g_ndc_amount,
             delta_ret_amount,
@@ -341,15 +391,15 @@ def NDC_amount(w, e, n, r, Y, j, p):
 
     else:
         if np.ndim(n) == 1:
-            NDC_s = np.zeros(p.retire)
+            NDC_s = np.zeros(S_ret)
             NDC = np.zeros(p.S)
             NDC = NDC_1dim_loop(
                 w,
                 e,
                 n,
-                p.retire,
+                S_ret,
                 p.S,
-                p.g_y,
+                g_y_arr,
                 p.tau_p,
                 g_ndc_amount,
                 delta_ret_amount,
@@ -357,15 +407,15 @@ def NDC_amount(w, e, n, r, Y, j, p):
                 NDC,
             )
         elif np.ndim(n) == 2:
-            NDC_sj = np.zeros((p.retire, p.J))
+            NDC_sj = np.zeros((S_ret, p.J))
             NDC = np.zeros((p.S, p.J))
             NDC = NDC_2dim_loop(
                 w,
                 e,
                 n,
-                p.retire,
+                S_ret,
                 p.S,
-                p.g_y,
+                g_y_arr,
                 p.tau_p,
                 g_ndc_amount,
                 delta_ret_amount,
@@ -397,19 +447,32 @@ def PS_amount(w, e, n, j, factor, p):
         PS (Numpy array): pension amount for each household
     """
 
+    # Single retirement age for now (see Issue #1014); g_y is
+    # a scalar but the numba loops index it; the steady-state wage is a
+    # scalar but the loops index it as a path.
+    S_ret = int(np.asarray(p.retire).flat[-1])
+    g_y_arr = np.atleast_1d(np.asarray(p.g_y, dtype=float)).ravel()
+    if np.ndim(w) == 0:
+        w = np.full(n.shape[0], float(w))
+
     if n.shape[0] < p.S:
         per_rmn = n.shape[0]
-        w_S = np.append((p.w_preTP * np.ones(p.S))[:(-per_rmn)], w)
+        # Pre-time-path wages: the recent past is anchored to the
+        # period-0 wage of the current path (trend growth is handled
+        # by the de-trending inside the benefit formula); labor comes
+        # from the model's initial condition n_preTP (see Issue #1014)
+        w_S = np.append((w[0] * np.ones(p.S))[:(-per_rmn)], w)
         n_S = np.append(p.n_preTP[:(-per_rmn), j], n)
-        L_inc_avg_s = np.zeros(p.retire)
+        L_inc_avg_s = np.zeros(S_ret)
         PS = np.zeros(p.S)
         PS = PS_1dim_loop(
             w_S,
-            p.e[:, j],
+            # steady-state earnings profile for now (see Issue #1014)
+            p.e[-1, :, j] if np.ndim(p.e) == 3 else p.e[:, j],
             n_S,
-            p.retire,
+            S_ret,
             p.S,
-            p.g_y,
+            g_y_arr,
             p.vpoint,
             factor,
             L_inc_avg_s,
@@ -419,15 +482,15 @@ def PS_amount(w, e, n, j, factor, p):
 
     else:
         if np.ndim(n) == 1:
-            L_inc_avg_s = np.zeros(p.retire)
+            L_inc_avg_s = np.zeros(S_ret)
             PS = np.zeros(p.S)
             PS = PS_1dim_loop(
                 w,
                 e,
                 n,
-                p.retire,
+                S_ret,
                 p.S,
-                p.g_y,
+                g_y_arr,
                 p.vpoint,
                 factor,
                 L_inc_avg_s,
@@ -435,16 +498,16 @@ def PS_amount(w, e, n, j, factor, p):
             )
 
         elif np.ndim(n) == 2:
-            L_inc_avg_sj = np.zeros((p.retire, p.J))
+            L_inc_avg_sj = np.zeros((S_ret, p.J))
             PS = np.zeros((p.S, p.J))
             PS = PS_2dim_loop(
                 w,
                 e,
                 n,
-                p.retire,
+                S_ret,
                 p.S,
                 p.J,
-                p.g_y,
+                g_y_arr,
                 p.vpoint,
                 factor,
                 L_inc_avg_sj,
@@ -513,9 +576,11 @@ def deriv_NDC(r, w, e, Y, per_rmn, p):
         d_theta (Numpy array): change in NDC pension benefits for
             another unit of labor supply
     """
+    # Single retirement age for now (see Issue #1014)
+    S_ret = int(np.asarray(p.retire).flat[-1])
     if per_rmn == 1:
         d_theta = 0
-    elif per_rmn < (p.S - p.retire + 1):
+    elif per_rmn < (p.S - S_ret + 1):
         d_theta = np.zeros(per_rmn)
     else:
         d_theta_empty = np.zeros(per_rmn)
@@ -526,7 +591,7 @@ def deriv_NDC(r, w, e, Y, per_rmn, p):
             e,
             per_rmn,
             p.S,
-            p.retire,
+            S_ret,
             p.tau_p,
             g_ndc_amount,
             delta_ret_amount,
@@ -561,14 +626,16 @@ def deriv_DB(w, e, per_rmn, p):
     """
     equiv_periods = int(round((p.S / 80.0) * p.avg_earn_num_years)) - 1
     equiv_yr_contrib = int(round((p.S / 80.0) * p.yr_contrib)) - 1
-    if per_rmn < (p.S - p.retire + 1):
+    # Single retirement age for now (see Issue #1014)
+    S_ret = int(np.asarray(p.retire).flat[-1])
+    if per_rmn < (p.S - S_ret + 1):
         d_theta = np.zeros(p.S)
     else:
         d_theta = deriv_DB_loop(
             w,
             e,
             p.S,
-            p.retire,
+            S_ret,
             per_rmn,
             equiv_periods,
             p.alpha_db,
@@ -602,12 +669,14 @@ def deriv_PS(w, e, per_rmn, factor, p):
 
     """
 
-    if per_rmn < (p.S - p.retire + 1):
+    # Single retirement age for now (see Issue #1014)
+    S_ret = int(np.asarray(p.retire).flat[-1])
+    if per_rmn < (p.S - S_ret + 1):
         d_theta = np.zeros(p.S)
     else:
         d_theta_empty = np.zeros(p.S)
         d_theta = deriv_PS_loop(
-            w, e, p.S, p.retire, per_rmn, d_theta_empty, p.vpoint, factor
+            w, e, p.S, S_ret, per_rmn, d_theta_empty, p.vpoint, factor
         )
         d_theta = d_theta[-per_rmn:]
 
@@ -661,14 +730,14 @@ def g_ndc(r, Y, p):
         g_ndc (Numpy array): growth rate used for contributions to NDC
 
     """
+    # r and g_y are scalars in the SS but paths in the TPI; take the
+    # last element robustly in either case (see Issue #1169)
     if p.ndc_growth_rate == "r":
-        g_ndc = r[-1]
+        g_ndc = np.asarray(r).flat[-1]
     elif p.ndc_growth_rate == "Curr GDP":
         g_ndc = (Y[1:] - Y[:-1]) / Y[:-1]
-    elif p.ndc_growth_rate == "LR GDP":
-        g_ndc = p.g_y[-1] + p.g_n[-1]
-    else:
-        g_ndc = p.g_y[-1] + p.g_n[-1]
+    else:  # "LR GDP"
+        g_ndc = np.asarray(p.g_y).flat[-1] + np.asarray(p.g_n).flat[-1]
 
     return g_ndc
 
@@ -688,14 +757,14 @@ def g_dir(r, Y, g_y, g_n, dir_growth_rate):
         g_dir (Numpy array): growth rate used for contributions to NDC
 
     """
+    # r and g_y are scalars in the SS but paths in the TPI; take the
+    # last element robustly in either case (see Issue #1169)
     if dir_growth_rate == "r":
-        g_dir = r[-1]
+        g_dir = np.asarray(r).flat[-1]
     elif dir_growth_rate == "Curr GDP":
         g_dir = (Y[1:] - Y[:-1]) / Y[:-1]
-    elif dir_growth_rate == "LR GDP":
-        g_dir = g_y[-1] + g_n[-1]
-    else:
-        g_dir = g_y[-1] + g_n[-1]
+    else:  # "LR GDP"
+        g_dir = np.asarray(g_y).flat[-1] + np.asarray(g_n).flat[-1]
 
     return g_dir
 
@@ -717,11 +786,20 @@ def delta_ret(r, Y, p):
             pension amount
 
     """
-    surv_rates = 1 - p.mort_rates_SS
-    dir_delta_s_empty = np.zeros(p.S - p.retire + 1)
+    # A real Specifications object has no mort_rates_SS attribute; fall
+    # back to the steady-state mortality rates implied by rho, averaged
+    # over lifetime-income groups with their population weights (see
+    # Issue #1169)
+    mort_rates_SS = getattr(p, "mort_rates_SS", None)
+    if mort_rates_SS is None:
+        mort_rates_SS = p.rho[-1] @ np.asarray(p.lambdas).ravel()
+    surv_rates = 1 - mort_rates_SS
+    # Single retirement age for now (see Issue #1014)
+    S_ret = int(np.asarray(p.retire).flat[-1])
+    dir_delta_s_empty = np.zeros(p.S - S_ret + 1)
     g_dir_value = g_dir(r, Y, p.g_y, p.g_n, p.dir_growth_rate)
     dir_delta = delta_ret_loop(
-        p.S, p.retire, surv_rates, g_dir_value, dir_delta_s_empty
+        p.S, S_ret, surv_rates, g_dir_value, dir_delta_s_empty
     )
     delta_ret = 1 / (dir_delta + p.indR - p.k_ret)
 
@@ -1027,6 +1105,73 @@ def DB_2dim_loop(
 
 
 @numba.jit(nopython=True)
+def DB_3dim_loop(
+    w_path,
+    e_ss,
+    n,
+    n_preTP,
+    S_ret,
+    S,
+    J,
+    g_y,
+    avg_earn_num_years,
+    alpha_db,
+    yr_contr,
+):
+    r"""
+    Calculate public pension from a defined benefits system over the
+    full time path.
+
+    Used when the TPI solution evaluates taxes for all periods at once
+    to compute aggregates. Each retiree's benefit is computed from their
+    own cohort's wage and labor history: the wage entering the average
+    for a household aged u at time t, earned at age s, is the wage at
+    time t - (u - s). Histories that predate the time path use the
+    period-0 wage (trend growth is handled by the de-trending in the
+    benefit formula) and the model's initial labor supply, so this
+    reproduces exactly what the per-cohort household solves compute and
+    household behavior and aggregates are consistent. The inner work is
+    vectorized rather than looped.
+
+    Args:
+        w_path (Numpy array): real wage rate path, length T
+        e_ss (Numpy array): effective labor units, size SxJ
+        n (Numpy array): labor supply, size TxSxJ
+        n_preTP (Numpy array): pre-time-path labor supply, size SxJ
+        S_ret (int): retirement age
+        S (int): number of periods in the model
+        J (int): number of lifetime income groups
+        g_y (scalar): growth rate of technology
+        avg_earn_num_years (int): number of years earnings are averaged
+            over
+        alpha_db (scalar): replacement rate per year of contribution
+        yr_contr (int): years of contribution
+
+    Returns:
+        DB (Numpy array): pension amount for each household, size TxSxJ
+    """
+    T = n.shape[0]
+    s_idx = np.arange(S_ret - avg_earn_num_years, S_ret)
+    DB = np.zeros((T, S, J))
+    for t in range(T):
+        for u in range(S_ret, S):
+            tau = t - (u - s_idx)
+            w_hist = w_path[np.clip(tau, 0, T - 1)]
+            n_hist = np.where(
+                (tau >= 0)[:, None],
+                n[np.clip(tau, 0, T - 1), s_idx, :],
+                n_preTP[s_idx, :],
+            )
+            L = (w_hist[:, None] / np.exp(g_y * (u - s_idx))[:, None]) * (
+                e_ss[s_idx, :] * n_hist
+            )
+            DB[t, u, :] = (
+                (L.sum(axis=0) / avg_earn_num_years) * yr_contr * alpha_db
+            )
+
+    return DB
+
+
 def NDC_1dim_loop(w, e, n, S_ret, S, g_y, tau_p, g_ndc, delta_ret, NDC_s, NDC):
     """
     Calculate public pension from a notional defined contribution
