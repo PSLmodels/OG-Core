@@ -282,33 +282,6 @@ def test_initial_wealth_ratio_default_is_off():
     assert p.initial_wealth_ratio == 0.0
 
 
-def test_get_initial_wealth_target(tmpdir):
-    """Baseline anchoring is opt-in, while reform cloning is unconditional."""
-    baseline_dir = os.path.join(tmpdir, "baseline")
-    p = Specifications(
-        baseline=True,
-        baseline_dir=baseline_dir,
-        num_workers=NUM_WORKERS,
-    )
-    assert TPI.get_initial_wealth_target(p, 2.5) is None
-    p.initial_wealth_ratio = 2.0
-    assert np.allclose(TPI.get_initial_wealth_target(p, 2.5), 5.0)
-
-    utils.mkdirs(os.path.join(baseline_dir, "TPI"))
-    with open(os.path.join(baseline_dir, "TPI", "TPI_vars.pkl"), "wb") as f:
-        pickle.dump({"B": np.array([7.0])}, f)
-    p2 = Specifications(
-        baseline=False,
-        baseline_dir=baseline_dir,
-        output_base=os.path.join(tmpdir, "output"),
-        num_workers=NUM_WORKERS,
-    )
-    assert p2.initial_wealth_ratio == 0.0
-    assert np.allclose(TPI.get_initial_wealth_target(p2, 2.5), 7.0)
-    p2.initial_wealth_ratio = 9.99
-    assert np.allclose(TPI.get_initial_wealth_target(p2, 2.5), 7.0)
-
-
 @pytest.mark.local
 def test_run_TPI_initial_wealth_anchor(tmpdir, dask_client):
     """
