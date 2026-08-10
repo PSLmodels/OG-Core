@@ -233,9 +233,7 @@ def get_initial_SS_values(p):
     return initial_values, ss_vars, theta, baseline_values
 
 
-def scale_initial_wealth(
-    initial_b_shape, B0_shape, target_B0, factor, initial_n, p
-):
+def scale_initial_wealth(initial_b_shape, B0_shape, target_B0, p):
     """
     Rescale the initial wealth distribution to a target aggregate.
 
@@ -244,13 +242,11 @@ def scale_initial_wealth(
         B0_shape (scalar): aggregate of initial_b_shape over the initial
             population
         target_B0 (scalar): target aggregate initial wealth
-        factor (scalar): income scaling factor
-        initial_n (Numpy array): initial labor supply
         p (OG-Core Specifications object): model parameters
 
     Returns:
-        (tuple): rescaled initial period values,
-            (B0, b_sinit, b_splus1init, factor, initial_b, initial_n)
+        (tuple): rescaled initial period wealth values,
+            (b_sinit, b_splus1init, initial_b)
 
     """
     scale = target_B0 / B0_shape
@@ -259,7 +255,7 @@ def scale_initial_wealth(
         list(np.zeros(p.J).reshape(1, p.J)) + list(initial_b[:-1])
     )
     b_splus1init = initial_b
-    return (target_B0, b_sinit, b_splus1init, factor, initial_b, initial_n)
+    return (b_sinit, b_splus1init, initial_b)
 
 
 def firstdoughnutring(
@@ -804,11 +800,19 @@ def run_TPI(p, client=None):
             baseline_tpi = os.path.join(p.baseline_dir, "TPI", "TPI_vars.pkl")
             tpi_baseline_vars = utils.safe_read_pickle(baseline_tpi)
             target_B0 = tpi_baseline_vars["B"][0]
-        initial_values = scale_initial_wealth(
-            initial_b, B0, target_B0, factor, initial_n, p
+        b_sinit, b_splus1init, initial_b = scale_initial_wealth(
+            initial_b, B0, target_B0, p
         )
-        B0, b_sinit, b_splus1init, factor, initial_b, initial_n = (
-            initial_values
+        B0 = target_B0
+        # Rebuild the initial_values tuple consumed by inner_loop with the
+        # anchored wealth objects; factor and initial_n are unaffected.
+        initial_values = (
+            B0,
+            b_sinit,
+            b_splus1init,
+            factor,
+            initial_b,
+            initial_n,
         )
 
     # Create time path of UBI household benefits and aggregate UBI outlays

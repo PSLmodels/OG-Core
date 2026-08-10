@@ -266,19 +266,14 @@ def test_scale_initial_wealth():
     rng = np.random.default_rng(5)
     initial_b_shape = rng.uniform(0.1, 2.0, (p.S, p.J))
     B0_shape = 3.0
-    initial_n = rng.uniform(0.2, 0.5, (p.S, p.J))
     target_B0 = 4.5
-    (B0, b_sinit, b_splus1init, factor, initial_b, n_out) = (
-        TPI.scale_initial_wealth(
-            initial_b_shape, B0_shape, target_B0, 1000.0, initial_n, p
-        )
+    b_sinit, b_splus1init, initial_b = TPI.scale_initial_wealth(
+        initial_b_shape, B0_shape, target_B0, p
     )
-    assert B0 == target_B0
     assert np.allclose(initial_b, initial_b_shape * (target_B0 / B0_shape))
     assert np.allclose(b_splus1init, initial_b)
     assert np.allclose(b_sinit[0, :], np.zeros(p.J))
     assert np.allclose(b_sinit[1:, :], initial_b[:-1, :])
-    assert np.allclose(n_out, initial_n)
 
 
 def test_initial_wealth_ratio_default_is_off():
