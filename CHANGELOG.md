@@ -5,7 +5,7 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+## [0.19.1] - 2026-08-10 12:00:00
 
 ### Added
 
@@ -24,6 +24,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   escalates from cycling to diverging), and a run that ends unconverged
   while stalled carries the diagnosis in the `RuntimeError` message, so
   it reaches users who only see the traceback.
+ - Makes default of aggregate plots to plot unstationarized model, resolving issue [#1133](https://github.com/PSLmodels/OG-Core/issues/1133).  [PR #1183](https://github.com/PSLmodels/OG-Core/pull/1183).
+
 ### Bug Fixes
 
 - Fixes Issue [#1186](https://github.com/PSLmodels/OG-Core/issues/1186):
@@ -35,6 +37,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   the group's actual population (from `omega_SS` / `omega`), matching the
   `use_zeta = True` branch. Results are unchanged when demographics are
   common across groups.
+- Fixes Issue [#1015](https://github.com/PSLmodels/OG-Core/issues/1015): fixes escape with special characters in parameter names that caused failures when reading from JSON files.  Adds a test to prevent this in the future.  [PR #1193](https://github.com/PSLmodels/OG-Core/pull/1193).
+- Fixes Issue [#1169](https://github.com/PSLmodels/OG-Core/issues/1169):
+  the Notional Defined Contribution pension system could not run against
+  a real `Specifications` object because its growth-rate settings were
+  not parameters. `ndc_growth_rate`, `dir_growth_rate`, and
+  `points_growth_rate` are now parameters in `default_parameters.json`
+  (choices `"r"`, `"Curr GDP"`, `"LR GDP"`; default `"LR GDP"`, matching
+  the previous fallback behavior). `g_ndc` and `g_dir` now handle the
+  scalar `r` and `g_y` of the steady state, and `delta_ret` falls back
+  to the steady-state mortality rates implied by `rho` (averaged over
+  lifetime income groups) when no `mort_rates_SS` attribute is set. The
+  NDC system is added to the real-`Specifications` pension test. [PR #1190](https://github.com/PSLmodels/OG-Core/pull/1190).
+- Resolve Issue [#1152](https://github.com/PSLmodels/OG-Core/issues/1152): expose same keys in the steady-state and time path dictionaries. [PR #1185](https://github.com/PSLmodels/OG-Core/pull/1185).
+- Correct payroll tax calculations, resolving Issue [#1023](https://github.com/PSLmodels/OG-Core/issues/1023). [PR #1184](https://github.com/PSLmodels/OG-Core/pull/1184).
 
 ## [0.19.0] - 2026-07-29 12:00:00
 
@@ -732,6 +748,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Any earlier versions of OG-USA can be found in the [`OG-Core`](https://github.com/PSLmodels/OG-Core) repository [release history](https://github.com/PSLmodels/OG-Core/releases) from [v.0.6.4](https://github.com/PSLmodels/OG-Core/releases/tag/v0.6.4) (Jul. 20, 2021) or earlier.
 
 
+[0.19.1]: https://github.com/PSLmodels/OG-Core/compare/v0.19.0...v0.19.1
+[0.19.0]: https://github.com/PSLmodels/OG-Core/compare/v0.18.1...v0.19.0
 [0.18.1]: https://github.com/PSLmodels/OG-Core/compare/v0.18.0...v0.18.1
 [0.18.0]: https://github.com/PSLmodels/OG-Core/compare/v0.17.0...v0.18.0
 [0.17.0]: https://github.com/PSLmodels/OG-Core/compare/v0.16.4...v0.17.0
