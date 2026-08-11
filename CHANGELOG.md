@@ -5,6 +5,16 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Added
+
+- Fixes Issue [#1202](https://github.com/PSLmodels/OG-Core/issues/1202):
+  `get_r_gov` clipped the interest rate on government debt at zero, so a
+  sovereign that genuinely pays a negative real rate could not be modelled.
+  The bound is now a parameter, `r_gov_floor`, with a default of 0.0 that
+  reproduces the previous behaviour exactly.
+
 ## [0.19.1] - 2026-08-10 12:00:00
 
 ### Added

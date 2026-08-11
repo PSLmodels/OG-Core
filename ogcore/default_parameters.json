@@ -1145,6 +1145,27 @@
             }
         }
     },
+    "r_gov_floor": {
+        "title": "Floor on the interest rate on government debt",
+        "section_1": "Fiscal Policy Parameters",
+        "description": "Lower bound applied to the interest rate on government debt after the wedge is computed. The default of 0.0 reproduces the long-standing behavior. Lower it for a sovereign that pays a negative real rate on its debt.",
+        "short_description": "Floor on the government interest rate",
+        "param_notation": "$\\underline{r}_{gov}$",
+        "notes": "",
+        "type": "float",
+        "number_dims": 0,
+        "value": [
+            {
+                "value": 0.0
+            }
+        ],
+        "validators": {
+            "range": {
+                "min": -0.3,
+                "max": 0.3
+            }
+        }
+    },
     "r_gov_DY": {
         "title": "Linear effect of debt to GDP ratio on government interest rate",
         "section_1": "Fiscal Policy Parameters",
