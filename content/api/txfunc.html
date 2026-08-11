@@ -466,6 +466,7 @@
             <nav aria-label="Page">
                 <ul class="pst-show_toc_level nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#module-ogcore.txfunc">ogcore.txfunc</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.txfunc.avg_by_bin_multd"><code class="docutils literal notranslate"><span class="pre">avg_by_bin_multd()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.txfunc.find_outliers"><code class="docutils literal notranslate"><span class="pre">find_outliers()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.txfunc.get_tax_rates"><code class="docutils literal notranslate"><span class="pre">get_tax_rates()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.txfunc.monotone_spline"><code class="docutils literal notranslate"><span class="pre">monotone_spline()</span></code></a></li>
@@ -498,6 +499,39 @@ or the marginal tax rate on capital income, for a given age (s) in a
 particular year (t). x is total labor income, and y is total capital
 income.
 ————————————————————————</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="ogcore.txfunc.avg_by_bin_multd">
+<span class="sig-prename descclassname"><span class="pre">ogcore.txfunc.</span></span><span class="sig-name descname"><span class="pre">avg_by_bin_multd</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bins</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">weights</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogcore/txfunc.html#avg_by_bin_multd"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogcore.txfunc.avg_by_bin_multd" title="Link to this definition">#</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>x</strong> (<em>numpy array</em>) – 2d with dimensions n by m used for binning</p></li>
+<li><p><strong>y</strong> (<em>numpy array</em>) – 1d with length n</p></li>
+<li><p><strong>bins</strong> (<em>numpy array</em>) – 1d with length m, each entry must divide n
+and is number of bins for corresponding column in x</p></li>
+<li><p><strong>weights</strong> (<em>None</em><em> or </em><em>numpy array</em>) – 1d with length n specifying
+weight of each observation. if None then array of ones</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><dl class="simple">
+<dt>2d with second dimension m, first</dt><dd><p>dimension is product of elements in bins, with each entry
+representative of bin across all the features</p>
+</dd>
+<dt>yNew (numpy array): 1d with length same as first dimension</dt><dd><p>of xWeight, weighted average of y’s corresponding to each
+entry of xWeight</p>
+</dd>
+<dt>weightsNew (numpy array): 1d with length same as yNew, weight</dt><dd><p>corresponding to each xNew, yNew row</p>
+</dd>
+</dl>
+</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>xNew (numpy array)</p>
+</dd>
+</dl>
+</dd></dl>
+
 <dl class="py function">
 <dt class="sig sig-object py" id="ogcore.txfunc.find_outliers">
 <span class="sig-prename descclassname"><span class="pre">ogcore.txfunc.</span></span><span class="sig-name descname"><span class="pre">find_outliers</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sse_mat</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">age_vec</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">se_mult</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">start_year</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">varstr</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">graph</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogcore/txfunc.html#find_outliers"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogcore.txfunc.find_outliers" title="Link to this definition">#</a></dt>
@@ -936,6 +970,7 @@ functions that are not estimated</p></li>
   <nav class="bd-toc-nav page-toc">
     <ul class="pst-show_toc_level nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#module-ogcore.txfunc">ogcore.txfunc</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.txfunc.avg_by_bin_multd"><code class="docutils literal notranslate"><span class="pre">avg_by_bin_multd()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.txfunc.find_outliers"><code class="docutils literal notranslate"><span class="pre">find_outliers()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.txfunc.get_tax_rates"><code class="docutils literal notranslate"><span class="pre">get_tax_rates()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.txfunc.monotone_spline"><code class="docutils literal notranslate"><span class="pre">monotone_spline()</span></code></a></li>

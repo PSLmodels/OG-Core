@@ -470,6 +470,7 @@
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#module-ogcore.pensions">ogcore.pensions</a><ul class="nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.pensions.DB_1dim_loop"><code class="docutils literal notranslate"><span class="pre">DB_1dim_loop()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.pensions.DB_2dim_loop"><code class="docutils literal notranslate"><span class="pre">DB_2dim_loop()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.pensions.DB_3dim_loop"><code class="docutils literal notranslate"><span class="pre">DB_3dim_loop()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.pensions.DB_amount"><code class="docutils literal notranslate"><span class="pre">DB_amount()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.pensions.NDC_1dim_loop"><code class="docutils literal notranslate"><span class="pre">NDC_1dim_loop()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.pensions.NDC_2dim_loop"><code class="docutils literal notranslate"><span class="pre">NDC_2dim_loop()</span></code></a></li>
@@ -563,6 +564,47 @@
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>pension amount for each household</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>DB (Numpy array)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="ogcore.pensions.DB_3dim_loop">
+<span class="sig-prename descclassname"><span class="pre">ogcore.pensions.</span></span><span class="sig-name descname"><span class="pre">DB_3dim_loop</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">w_path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">e_ss</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_preTP</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">S_ret</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">S</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">J</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">g_y</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">avg_earn_num_years</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alpha_db</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">yr_contr</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogcore/pensions.html#DB_3dim_loop"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogcore.pensions.DB_3dim_loop" title="Link to this definition">#</a></dt>
+<dd><p>Calculate public pension from a defined benefits system over the
+full time path.</p>
+<p>Used when the TPI solution evaluates taxes for all periods at once
+to compute aggregates. Each retiree’s benefit is computed from their
+own cohort’s wage and labor history: the wage entering the average
+for a household aged u at time t, earned at age s, is the wage at
+time t - (u - s). Histories that predate the time path use the
+period-0 wage (trend growth is handled by the de-trending in the
+benefit formula) and the model’s initial labor supply, so this
+reproduces exactly what the per-cohort household solves compute and
+household behavior and aggregates are consistent. The inner work is
+vectorized rather than looped.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>w_path</strong> (<em>Numpy array</em>) – real wage rate path, length T</p></li>
+<li><p><strong>e_ss</strong> (<em>Numpy array</em>) – effective labor units, size SxJ</p></li>
+<li><p><strong>n</strong> (<em>Numpy array</em>) – labor supply, size TxSxJ</p></li>
+<li><p><strong>n_preTP</strong> (<em>Numpy array</em>) – pre-time-path labor supply, size SxJ</p></li>
+<li><p><strong>S_ret</strong> (<em>int</em>) – retirement age</p></li>
+<li><p><strong>S</strong> (<em>int</em>) – number of periods in the model</p></li>
+<li><p><strong>J</strong> (<em>int</em>) – number of lifetime income groups</p></li>
+<li><p><strong>g_y</strong> (<em>scalar</em>) – growth rate of technology</p></li>
+<li><p><strong>avg_earn_num_years</strong> (<em>int</em>) – number of years earnings are averaged
+over</p></li>
+<li><p><strong>alpha_db</strong> (<em>scalar</em>) – replacement rate per year of contribution</p></li>
+<li><p><strong>yr_contr</strong> (<em>int</em>) – years of contribution</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>pension amount for each household, size TxSxJ</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>DB (Numpy array)</p>
@@ -1292,6 +1334,7 @@ dollars</p></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#module-ogcore.pensions">ogcore.pensions</a><ul class="nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.pensions.DB_1dim_loop"><code class="docutils literal notranslate"><span class="pre">DB_1dim_loop()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.pensions.DB_2dim_loop"><code class="docutils literal notranslate"><span class="pre">DB_2dim_loop()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.pensions.DB_3dim_loop"><code class="docutils literal notranslate"><span class="pre">DB_3dim_loop()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.pensions.DB_amount"><code class="docutils literal notranslate"><span class="pre">DB_amount()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.pensions.NDC_1dim_loop"><code class="docutils literal notranslate"><span class="pre">NDC_1dim_loop()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.pensions.NDC_2dim_loop"><code class="docutils literal notranslate"><span class="pre">NDC_2dim_loop()</span></code></a></li>

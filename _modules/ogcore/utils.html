@@ -1367,6 +1367,8 @@
 
 
 
+<div class="viewcode-block" id="extrapolate_array">
+<a class="viewcode-back" href="../../content/api/utils.html#ogcore.utils.extrapolate_array">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">extrapolate_array</span><span class="p">(</span><span class="n">param_in</span><span class="p">,</span> <span class="n">dims</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">item</span><span class="o">=</span><span class="s2">&quot;Parameter Name&quot;</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Extrapolates input values to fit model dimensions. Using this allows</span>
@@ -1526,9 +1528,12 @@
                     <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
                 <span class="p">)</span>
 
-    <span class="k">return</span> <span class="n">param_out</span>
+    <span class="k">return</span> <span class="n">param_out</span></div>
 
 
+
+<div class="viewcode-block" id="extrapolate_nested_list">
+<a class="viewcode-back" href="../../content/api/utils.html#ogcore.utils.extrapolate_nested_list">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">extrapolate_nested_list</span><span class="p">(</span><span class="n">list_in</span><span class="p">,</span> <span class="n">dims</span><span class="o">=</span><span class="p">(</span><span class="mi">400</span><span class="p">,</span> <span class="mi">80</span><span class="p">,</span> <span class="mi">1</span><span class="p">)):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Function to extrapolate a nested list to a specified size.</span>
@@ -1574,7 +1579,8 @@
             <span class="n">params_to_add</span> <span class="o">=</span> <span class="p">[</span><span class="n">list_in</span><span class="p">[</span><span class="n">t</span><span class="p">][</span><span class="o">-</span><span class="mi">1</span><span class="p">]]</span> <span class="o">*</span> <span class="p">(</span><span class="n">S</span> <span class="o">-</span> <span class="nb">len</span><span class="p">(</span><span class="n">list_in</span><span class="p">[</span><span class="n">t</span><span class="p">]))</span>
             <span class="n">list_in</span><span class="p">[</span><span class="n">t</span><span class="p">]</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">params_to_add</span><span class="p">)</span>
 
-    <span class="k">return</span> <span class="n">list_in</span>
+    <span class="k">return</span> <span class="n">list_in</span></div>
+
 
 
 <div class="viewcode-block" id="CustomHttpAdapter">
@@ -1872,6 +1878,8 @@
 
 
 
+<div class="viewcode-block" id="json_to_dict">
+<a class="viewcode-back" href="../../content/api/utils.html#ogcore.utils.json_to_dict">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">json_to_dict</span><span class="p">(</span><span class="n">json_text</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Convert specified JSON text into an ordered Python dictionary.</span>
@@ -1912,7 +1920,8 @@
             <span class="n">msg</span> <span class="o">+=</span> <span class="s2">&quot;</span><span class="si">{:04d}{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">linenum</span><span class="p">,</span> <span class="n">line</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span>
         <span class="n">msg</span> <span class="o">+=</span> <span class="n">bline</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">ordered_dict</span>
+    <span class="k">return</span> <span class="n">ordered_dict</span></div>
+
 </pre></div>
 
                 </article>

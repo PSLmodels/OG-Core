@@ -474,6 +474,7 @@
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.tax.MTR_income"><code class="docutils literal notranslate"><span class="pre">MTR_income()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.tax.MTR_wealth"><code class="docutils literal notranslate"><span class="pre">MTR_wealth()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.tax.bequest_tax_liab"><code class="docutils literal notranslate"><span class="pre">bequest_tax_liab()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.tax.cons_tax_liab"><code class="docutils literal notranslate"><span class="pre">cons_tax_liab()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.tax.get_biz_tax"><code class="docutils literal notranslate"><span class="pre">get_biz_tax()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.tax.income_tax_liab"><code class="docutils literal notranslate"><span class="pre">income_tax_liab()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.tax.net_taxes"><code class="docutils literal notranslate"><span class="pre">net_taxes()</span></code></a></li>
@@ -640,6 +641,41 @@ parameters or nonparametric function</p></li>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>T_BQ (Numpy array)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="ogcore.tax.cons_tax_liab">
+<span class="sig-prename descclassname"><span class="pre">ogcore.tax.</span></span><span class="sig-name descname"><span class="pre">cons_tax_liab</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">c</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_i</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">method</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'SS'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogcore/tax.html#cons_tax_liab"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogcore.tax.cons_tax_liab" title="Link to this definition">#</a></dt>
+<dd><p>Calculates consumption tax liability for each household.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>c</strong> (<em>numpy.ndarray</em>) – Consumption array. Dimensions depend on the method:
+- If method == “SS”: shape (I, S, J)
+- If method != “SS”: shape (T, I, S, J)</p></li>
+<li><p><strong>p_i</strong> (<em>numpy.ndarray</em>) – Array of consumption tax rates by good.
+Shape (I,) or (T, I).</p></li>
+<li><p><strong>p</strong> (<em>OG-Core Specifications object</em>) – Model parameters, including
+tax rates and dimensions.</p></li>
+<li><p><strong>method</strong> (<em>str</em><em>, </em><em>optional</em>) – Indicates whether calculation is for
+steady-state (‘SS’) or transition path (‘TPI’).
+Default is ‘SS’.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><dl class="simple">
+<dt>Consumption tax liability for each household.</dt><dd><ul class="simple">
+<li><p>If method == “SS”: shape (S, J)</p></li>
+<li><p>If method != “SS”: shape (T, S, J)</p></li>
+</ul>
+</dd>
+</dl>
+</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>c_tax (numpy.ndarray)</p>
 </dd>
 </dl>
 </dd></dl>
@@ -847,6 +883,7 @@ lifetime income group j</p></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.tax.MTR_income"><code class="docutils literal notranslate"><span class="pre">MTR_income()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.tax.MTR_wealth"><code class="docutils literal notranslate"><span class="pre">MTR_wealth()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.tax.bequest_tax_liab"><code class="docutils literal notranslate"><span class="pre">bequest_tax_liab()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.tax.cons_tax_liab"><code class="docutils literal notranslate"><span class="pre">cons_tax_liab()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.tax.get_biz_tax"><code class="docutils literal notranslate"><span class="pre">get_biz_tax()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.tax.income_tax_liab"><code class="docutils literal notranslate"><span class="pre">income_tax_liab()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.tax.net_taxes"><code class="docutils literal notranslate"><span class="pre">net_taxes()</span></code></a></li>

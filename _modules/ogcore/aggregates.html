@@ -889,6 +889,8 @@
 
 
 
+<div class="viewcode-block" id="get_payroll_tax_revenue">
+<a class="viewcode-back" href="../../content/api/aggregates.html#ogcore.aggregates.get_payroll_tax_revenue">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">get_payroll_tax_revenue</span><span class="p">(</span><span class="n">w</span><span class="p">,</span> <span class="n">L</span><span class="p">,</span> <span class="n">iit_payroll_tax_revenue</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">method</span><span class="p">):</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Calculate aggregate payroll tax revenue.</span>
@@ -943,7 +945,8 @@
                 <span class="n">p</span><span class="o">.</span><span class="n">frac_tax_payroll</span><span class="p">[:</span> <span class="n">p</span><span class="o">.</span><span class="n">T</span><span class="p">]</span> <span class="o">*</span> <span class="n">iit_payroll_tax_revenue</span>
             <span class="p">)</span>
 
-    <span class="k">return</span> <span class="n">payroll_tax_revenue</span>
+    <span class="k">return</span> <span class="n">payroll_tax_revenue</span></div>
+
 
 
 <div class="viewcode-block" id="get_r_p">
@@ -1033,6 +1036,8 @@
 
 
 
+<div class="viewcode-block" id="get_capital_outflows">
+<a class="viewcode-back" href="../../content/api/aggregates.html#ogcore.aggregates.get_capital_outflows">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">get_capital_outflows</span><span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="n">K_f</span><span class="p">,</span> <span class="n">new_borrowing_f</span><span class="p">,</span> <span class="n">debt_service_f</span><span class="p">,</span> <span class="n">p</span><span class="p">):</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Compute net capital outflows for open economy parameterizations</span>
@@ -1057,7 +1062,8 @@
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">net_flow</span> <span class="o">=</span> <span class="p">(</span><span class="n">r</span> <span class="o">+</span> <span class="n">p</span><span class="o">.</span><span class="n">delta</span><span class="p">)</span> <span class="o">*</span> <span class="n">K_f</span> <span class="o">-</span> <span class="n">new_borrowing_f</span> <span class="o">+</span> <span class="n">debt_service_f</span>
 
-    <span class="k">return</span> <span class="n">net_flow</span>
+    <span class="k">return</span> <span class="n">net_flow</span></div>
+
 
 
 <div class="viewcode-block" id="get_K_splits">

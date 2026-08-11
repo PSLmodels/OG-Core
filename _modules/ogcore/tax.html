@@ -1024,6 +1024,8 @@
 
 
 
+<div class="viewcode-block" id="cons_tax_liab">
+<a class="viewcode-back" href="../../content/api/tax.html#ogcore.tax.cons_tax_liab">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">cons_tax_liab</span><span class="p">(</span><span class="n">c</span><span class="p">,</span> <span class="n">p_i</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s2">&quot;SS&quot;</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Calculates consumption tax liability for each household.</span>
@@ -1052,7 +1054,8 @@
             <span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">tau_c</span><span class="p">[:</span> <span class="n">p</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="p">:]</span> <span class="o">*</span> <span class="n">p_i</span><span class="p">[:</span> <span class="n">p</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="p">:])</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="n">p</span><span class="o">.</span><span class="n">I</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="n">c</span>
         <span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
 
-    <span class="k">return</span> <span class="n">c_tax</span>
+    <span class="k">return</span> <span class="n">c_tax</span></div>
+
 </pre></div>
 
                 </article>

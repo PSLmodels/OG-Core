@@ -473,6 +473,7 @@
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.solvers.AndersonAccelerator.update"><code class="docutils literal notranslate"><span class="pre">AndersonAccelerator.update()</span></code></a></li>
 </ul>
 </li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.solvers.diagnose_stall"><code class="docutils literal notranslate"><span class="pre">diagnose_stall()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.solvers.make_outer_updater"><code class="docutils literal notranslate"><span class="pre">make_outer_updater()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.solvers.pack_outer_vars"><code class="docutils literal notranslate"><span class="pre">pack_outer_vars()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.solvers.unpack_outer_vars"><code class="docutils literal notranslate"><span class="pre">unpack_outer_vars()</span></code></a></li>
@@ -578,6 +579,49 @@ behavior (and golden outputs) are unchanged.</p>
 via <code class="docutils literal notranslate"><span class="pre">p.TPI_outer_method</span></code>. On its own Anderson can overshoot a strongly
 nonlinear map into infeasible regions; <code class="docutils literal notranslate"><span class="pre">run_TPI</span></code> guards it with a trust
 region anchored to the always-feasible damped point (see <code class="docutils literal notranslate"><span class="pre">run_TPI</span></code>).</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="ogcore.solvers.diagnose_stall">
+<span class="sig-prename descclassname"><span class="pre">ogcore.solvers.</span></span><span class="sig-name descname"><span class="pre">diagnose_stall</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dist_vec</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">iteration</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">window</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tol</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.05</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">deterioration</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2.0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogcore/solvers.html#diagnose_stall"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogcore.solvers.diagnose_stall" title="Link to this definition">#</a></dt>
+<dd><p>Check the TPI outer loop’s distance history for a stall.</p>
+<p>The loop has stalled when the best distance over the most recent
+<code class="docutils literal notranslate"><span class="pre">window</span></code> iterations is no better (by a relative margin <code class="docutils literal notranslate"><span class="pre">tol</span></code>)
+than the best from before that window: the remaining iterations
+repeat the same pattern and cannot reach the tolerance. A recent
+best that is far worse than the earlier best (<code class="docutils literal notranslate"><span class="pre">deterioration</span></code>)
+means the path is drifting away – a diverging economy, typically
+an inconsistent fiscal block; a bounce around the earlier best
+means the outer loop is cycling around the solution, typically
+<code class="docutils literal notranslate"><span class="pre">nu</span></code> too large for the problem.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>dist_vec</strong> (<em>Numpy array</em>) – per-iteration outer-loop distances,
+filled for the first <code class="docutils literal notranslate"><span class="pre">iteration</span></code> entries</p></li>
+<li><p><strong>iteration</strong> (<em>int</em>) – number of completed outer-loop iterations</p></li>
+<li><p><strong>window</strong> (<em>int</em>) – number of trailing iterations that must improve
+on the earlier best; a non-positive value disables the
+check</p></li>
+<li><p><strong>tol</strong> (<em>float</em>) – minimum relative improvement of the recent best
+over the earlier best that counts as progress</p></li>
+<li><p><strong>deterioration</strong> (<em>float</em>) – factor by which the recent best must
+exceed the earlier best to be read as divergence rather
+than cycling</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><dl class="simple">
+<dt>None while the loop is progressing</dt><dd><p>(or the check is disabled), otherwise “diverging” or
+“oscillating”</p>
+</dd>
+</dl>
+</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>diagnosis (str or None)</p>
+</dd>
+</dl>
+</dd></dl>
+
 <dl class="py function">
 <dt class="sig sig-object py" id="ogcore.solvers.make_outer_updater">
 <span class="sig-prename descclassname"><span class="pre">ogcore.solvers.</span></span><span class="sig-name descname"><span class="pre">make_outer_updater</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">method</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogcore/solvers.html#make_outer_updater"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogcore.solvers.make_outer_updater" title="Link to this definition">#</a></dt>
@@ -732,6 +776,7 @@ same order passed to <code class="docutils literal notranslate"><span class="pre
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.solvers.AndersonAccelerator.update"><code class="docutils literal notranslate"><span class="pre">AndersonAccelerator.update()</span></code></a></li>
 </ul>
 </li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.solvers.diagnose_stall"><code class="docutils literal notranslate"><span class="pre">diagnose_stall()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.solvers.make_outer_updater"><code class="docutils literal notranslate"><span class="pre">make_outer_updater()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.solvers.pack_outer_vars"><code class="docutils literal notranslate"><span class="pre">pack_outer_vars()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.solvers.unpack_outer_vars"><code class="docutils literal notranslate"><span class="pre">unpack_outer_vars()</span></code></a></li>

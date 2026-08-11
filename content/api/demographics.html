@@ -467,6 +467,7 @@
                 <ul class="pst-show_toc_level nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#module-ogcore.demographics">ogcore.demographics</a><ul class="nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#abbreviations-is-available-at-https-unstats-un-org-unsd-methodology-m49">abbreviations is available at https://unstats.un.org/unsd/methodology/m49/</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.demographics.expand_pop_obj_J"><code class="docutils literal notranslate"><span class="pre">expand_pop_obj_J()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.demographics.get_fert"><code class="docutils literal notranslate"><span class="pre">get_fert()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.demographics.get_imm_rates"><code class="docutils literal notranslate"><span class="pre">get_imm_rates()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.demographics.get_mort"><code class="docutils literal notranslate"><span class="pre">get_mort()</span></code></a></li>
@@ -496,6 +497,55 @@
 <section id="abbreviations-is-available-at-https-unstats-un-org-unsd-methodology-m49">
 <h3>abbreviations is available at <a class="reference external" href="https://unstats.un.org/unsd/methodology/m49/">https://unstats.un.org/unsd/methodology/m49/</a><a class="headerlink" href="#abbreviations-is-available-at-https-unstats-un-org-unsd-methodology-m49" title="Link to this heading">#</a></h3>
 </section>
+<dl class="py function">
+<dt class="sig sig-object py" id="ogcore.demographics.expand_pop_obj_J">
+<span class="sig-prename descclassname"><span class="pre">ogcore.demographics.</span></span><span class="sig-name descname"><span class="pre">expand_pop_obj_J</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">omega_path_lev</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">omega_path_S</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">omega_SSfx</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fert_rates</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mort_rates</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">infmort_rates</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">imm_rates</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mort_rates_S</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">imm_rates_mat</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">E</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">S</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">g_n_SS</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fixper</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">income_percentiles</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fert_gradient</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mort_gradient</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">infmort_gradient</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">imm_pctiles</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogcore/demographics.html#expand_pop_obj_J"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogcore.demographics.expand_pop_obj_J" title="Link to this definition">#</a></dt>
+<dd><p>Expand aggregate demographic objects to age x income-group objects.</p>
+<p>The aggregate population path and rates are left unchanged. If
+income_percentiles is None and no income-specific inputs are
+provided, the aggregate objects are broadcast across a single
+income group (J=1). Otherwise, income_percentiles gives the initial
+population distribution across J for every age and the income
+shares of newborns in every period.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>omega_path_lev</strong> (<em>Numpy array</em>) – T+S x E+S aggregate population levels.</p></li>
+<li><p><strong>omega_path_S</strong> (<em>Numpy array</em>) – T+S x S aggregate active-age population
+shares.</p></li>
+<li><p><strong>omega_SSfx</strong> (<em>Numpy array</em>) – fixed full-life population distribution.</p></li>
+<li><p><strong>fert_rates</strong> (<em>Numpy array</em>) – T+S x E+S fertility rates.</p></li>
+<li><p><strong>mort_rates</strong> (<em>Numpy array</em>) – T+S x E+S mortality rates.</p></li>
+<li><p><strong>infmort_rates</strong> (<em>Numpy array</em>) – T+S infant mortality rates.</p></li>
+<li><p><strong>imm_rates</strong> (<em>Numpy array</em>) – T+S x E+S immigration rates, including the
+adjusted post-fixper rates.</p></li>
+<li><p><strong>mort_rates_S</strong> (<em>Numpy array</em>) – T+S x S mortality rates for active ages.</p></li>
+<li><p><strong>imm_rates_mat</strong> (<em>Numpy array</em>) – T+S x S immigration rates for active ages.</p></li>
+<li><p><strong>E</strong> (<em>int</em>) – number of non-economically active periods.</p></li>
+<li><p><strong>S</strong> (<em>int</em>) – number of economically active periods.</p></li>
+<li><p><strong>g_n_SS</strong> (<em>float</em>) – steady-state population growth rate.</p></li>
+<li><p><strong>fixper</strong> (<em>int</em>) – period at which the fixed steady-state distribution is
+imposed.</p></li>
+<li><p><strong>income_percentiles</strong> (<em>array_like</em>) – population shares for each J
+group; defaults to a single income group when no
+income-specific inputs are supplied.</p></li>
+<li><p><strong>fert_gradient</strong> (<em>array_like</em>) – log-odds fertility slopes by age.</p></li>
+<li><p><strong>mort_gradient</strong> (<em>array_like</em>) – log-odds mortality slopes by age.</p></li>
+<li><p><strong>infmort_gradient</strong> (<em>array_like</em>) – log-odds infant mortality slopes.</p></li>
+<li><p><strong>imm_pctiles</strong> (<em>array_like</em>) – immigrant income shares by period,</p></li>
+<li><p><strong>age</strong></p></li>
+<li><p><strong>J.</strong> (<em>and</em>)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>demographic objects with the same keys needed by get_pop_objs.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dict</p>
+</dd>
+</dl>
+</dd></dl>
+
 <dl class="py function">
 <dt class="sig sig-object py" id="ogcore.demographics.get_fert">
 <span class="sig-prename descclassname"><span class="pre">ogcore.demographics.</span></span><span class="sig-name descname"><span class="pre">get_fert</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">totpers</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">100</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">min_age</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_age</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">99</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">country_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'840'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">start_year</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2024</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">end_year</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2024</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">graph</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">plot_path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">download_path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogcore/demographics.html#get_fert"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogcore.demographics.get_fert" title="Link to this definition">#</a></dt>
@@ -886,6 +936,7 @@ transforming the population distribution, &gt;= 3</p></li>
     <ul class="pst-show_toc_level nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#module-ogcore.demographics">ogcore.demographics</a><ul class="nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#abbreviations-is-available-at-https-unstats-un-org-unsd-methodology-m49">abbreviations is available at https://unstats.un.org/unsd/methodology/m49/</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.demographics.expand_pop_obj_J"><code class="docutils literal notranslate"><span class="pre">expand_pop_obj_J()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.demographics.get_fert"><code class="docutils literal notranslate"><span class="pre">get_fert()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.demographics.get_imm_rates"><code class="docutils literal notranslate"><span class="pre">get_imm_rates()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.demographics.get_mort"><code class="docutils literal notranslate"><span class="pre">get_mort()</span></code></a></li>

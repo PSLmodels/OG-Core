@@ -483,8 +483,11 @@
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.utils.comp_scalar"><code class="docutils literal notranslate"><span class="pre">comp_scalar()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.utils.convex_combo"><code class="docutils literal notranslate"><span class="pre">convex_combo()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.utils.dict_compare"><code class="docutils literal notranslate"><span class="pre">dict_compare()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.utils.extrapolate_array"><code class="docutils literal notranslate"><span class="pre">extrapolate_array()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.utils.extrapolate_nested_list"><code class="docutils literal notranslate"><span class="pre">extrapolate_nested_list()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.utils.fetch_files_from_web"><code class="docutils literal notranslate"><span class="pre">fetch_files_from_web()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.utils.get_initial_path"><code class="docutils literal notranslate"><span class="pre">get_initial_path()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.utils.json_to_dict"><code class="docutils literal notranslate"><span class="pre">json_to_dict()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.utils.mkdirs"><code class="docutils literal notranslate"><span class="pre">mkdirs()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.utils.not_connected"><code class="docutils literal notranslate"><span class="pre">not_connected()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.utils.params_to_json"><code class="docutils literal notranslate"><span class="pre">params_to_json()</span></code></a></li>
@@ -782,6 +785,55 @@ the L_inf norm. For scalars, they are considered the same if
 </dd></dl>
 
 <dl class="py function">
+<dt class="sig sig-object py" id="ogcore.utils.extrapolate_array">
+<span class="sig-prename descclassname"><span class="pre">ogcore.utils.</span></span><span class="sig-name descname"><span class="pre">extrapolate_array</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">param_in</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dims</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">item</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'Parameter</span> <span class="pre">Name'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogcore/utils.html#extrapolate_array"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogcore.utils.extrapolate_array" title="Link to this definition">#</a></dt>
+<dd><p>Extrapolates input values to fit model dimensions. Using this allows
+users to input smaller dimensional arrays and have the model infer
+that they want these extrapolated.</p>
+<p>Example: User enters a constant for total factor productivity, Z_mt.
+This function will create an array of size TxM where TFP is the same
+for all industries in all years.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>param_in</strong> (<em>array_like</em>) – input parameter value</p></li>
+<li><p><strong>dims</strong> (<em>tuple</em>) – size of each dimension param_out should take, note
+that the first dimension is always T+S</p></li>
+<li><p><strong>item</strong> (<em>str</em>) – parameter name, used to inform user if exception</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>reshape parameter for use in OG-Core</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>param_out (array_like)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="ogcore.utils.extrapolate_nested_list">
+<span class="sig-prename descclassname"><span class="pre">ogcore.utils.</span></span><span class="sig-name descname"><span class="pre">extrapolate_nested_list</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">list_in</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dims</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">(400,</span> <span class="pre">80,</span> <span class="pre">1)</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogcore/utils.html#extrapolate_nested_list"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogcore.utils.extrapolate_nested_list" title="Link to this definition">#</a></dt>
+<dd><p>Function to extrapolate a nested list to a specified size.</p>
+<p>Currently only set up for 3 deep nested lists, but could be
+generalized to deeper or shallower lists.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>list_in</strong> (<em>list</em>) – list to extrapolate</p></li>
+<li><p><strong>dims</strong> (<em>tuple</em>) – dimensions of the output list</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>extrapolated list</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>list_out (list)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
 <dt class="sig sig-object py" id="ogcore.utils.fetch_files_from_web">
 <span class="sig-prename descclassname"><span class="pre">ogcore.utils.</span></span><span class="sig-name descname"><span class="pre">fetch_files_from_web</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">file_urls</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogcore/utils.html#fetch_files_from_web"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogcore.utils.fetch_files_from_web" title="Link to this definition">#</a></dt>
 <dd><p>Fetches zip files from respective web addresses and saves them as
@@ -854,6 +906,26 @@ or “quadratic”</p></li>
 <li><p><cite>xT</cite> is the value at time <cite>t=T-1: xT = a*(T-1)^2 + b*(T-1) + c</cite></p></li>
 <li><p>the slope of the path at <cite>t=T-1</cite> is 0: <cite>0 = 2*a*(T-1) + b</cite></p></li>
 </ol>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="ogcore.utils.json_to_dict">
+<span class="sig-prename descclassname"><span class="pre">ogcore.utils.</span></span><span class="sig-name descname"><span class="pre">json_to_dict</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">json_text</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogcore/utils.html#json_to_dict"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogcore.utils.json_to_dict" title="Link to this definition">#</a></dt>
+<dd><p>Convert specified JSON text into an ordered Python dictionary.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>json_text</strong> (<em>string</em>) – JSON text.</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>ValueError:</strong> – if json_text contains a JSON syntax error.</p>
+</dd>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>dictionary</strong> – JSON data expressed as an ordered Python dictionary.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>collections.OrderedDict</p>
 </dd>
 </dl>
 </dd></dl>
@@ -1231,8 +1303,11 @@ from the baseline run</p></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.utils.comp_scalar"><code class="docutils literal notranslate"><span class="pre">comp_scalar()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.utils.convex_combo"><code class="docutils literal notranslate"><span class="pre">convex_combo()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.utils.dict_compare"><code class="docutils literal notranslate"><span class="pre">dict_compare()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.utils.extrapolate_array"><code class="docutils literal notranslate"><span class="pre">extrapolate_array()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.utils.extrapolate_nested_list"><code class="docutils literal notranslate"><span class="pre">extrapolate_nested_list()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.utils.fetch_files_from_web"><code class="docutils literal notranslate"><span class="pre">fetch_files_from_web()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.utils.get_initial_path"><code class="docutils literal notranslate"><span class="pre">get_initial_path()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.utils.json_to_dict"><code class="docutils literal notranslate"><span class="pre">json_to_dict()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.utils.mkdirs"><code class="docutils literal notranslate"><span class="pre">mkdirs()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.utils.not_connected"><code class="docutils literal notranslate"><span class="pre">not_connected()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.utils.params_to_json"><code class="docutils literal notranslate"><span class="pre">params_to_json()</span></code></a></li>

@@ -14,4 +14,4 @@ ogcore.solvers
   :members: update, reset
 
 .. automodule:: ogcore.solvers
-  :members: make_outer_updater, pack_outer_vars, unpack_outer_vars
+  :members: make_outer_updater, pack_outer_vars, unpack_outer_vars, diagnose_stall

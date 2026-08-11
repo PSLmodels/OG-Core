@@ -468,8 +468,12 @@
             <nav aria-label="Page">
                 <ul class="pst-show_toc_level nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#module-ogcore.firm">ogcore.firm</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.firm.adj_cost"><code class="docutils literal notranslate"><span class="pre">adj_cost()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.firm.get_K"><code class="docutils literal notranslate"><span class="pre">get_K()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.firm.get_KLratio"><code class="docutils literal notranslate"><span class="pre">get_KLratio()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.firm.get_KLratio_KLonly"><code class="docutils literal notranslate"><span class="pre">get_KLratio_KLonly()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.firm.get_KY_ratio"><code class="docutils literal notranslate"><span class="pre">get_KY_ratio()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.firm.get_K_KLonly"><code class="docutils literal notranslate"><span class="pre">get_K_KLonly()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.firm.get_L_from_Y"><code class="docutils literal notranslate"><span class="pre">get_L_from_Y()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.firm.get_MPx"><code class="docutils literal notranslate"><span class="pre">get_MPx()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.firm.get_Y"><code class="docutils literal notranslate"><span class="pre">get_Y()</span></code></a></li>
@@ -497,6 +501,34 @@
 <p><strong>firm.py modules</strong></p>
 <section id="module-ogcore.firm">
 <span id="ogcore-firm"></span><h2>ogcore.firm<a class="headerlink" href="#module-ogcore.firm" title="Link to this heading">#</a></h2>
+<dl class="py function">
+<dt class="sig sig-object py" id="ogcore.firm.adj_cost">
+<span class="sig-prename descclassname"><span class="pre">ogcore.firm.</span></span><span class="sig-name descname"><span class="pre">adj_cost</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">K</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Kp1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">method</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogcore/firm.html#adj_cost"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogcore.firm.adj_cost" title="Link to this definition">#</a></dt>
+<dd><p>Firm capital adjstment costs</p>
+<dl class="simple">
+<dt>..math::</dt><dd><dl class="simple">
+<dt>Psi(K_{t}, K_{t+1}) = frac{psi}{2}biggr(</dt><dd><p>frac{biggr(frac{I_{t}}{K_{t}}-mubiggl)^{2}}
+{frac{I_{t}}{K_{t}}}biggl)</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>K</strong> (<em>array-like</em>) – Current period capital stock</p></li>
+<li><p><strong>Kp1</strong> (<em>array-like</em>) – One-period ahead capital stock</p></li>
+<li><p><strong>p</strong> (<em>OG-USA Parameters class object</em>) – Model parameters</p></li>
+<li><p><strong>method</strong> (<em>str</em>) – ‘SS’ or ‘TPI’</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="simple">
+<dt>Returns</dt><dd><p>Psi (array-like): Capital adjustment costs per unit of investment</p>
+</dd>
+</dl>
+</dd></dl>
+
 <dl class="py function">
 <dt class="sig sig-object py" id="ogcore.firm.get_K">
 <span class="sig-prename descclassname"><span class="pre">ogcore.firm.</span></span><span class="sig-name descname"><span class="pre">get_K</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">r</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">w</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">L</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">method</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">m</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">-1</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogcore/firm.html#get_K"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogcore.firm.get_K" title="Link to this definition">#</a></dt>
@@ -551,6 +583,90 @@ rate r wage w and parameters.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>KLratio (array_like)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="ogcore.firm.get_KLratio_KLonly">
+<span class="sig-prename descclassname"><span class="pre">ogcore.firm.</span></span><span class="sig-name descname"><span class="pre">get_KLratio_KLonly</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">r</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">method</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">m</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">-1</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogcore/firm.html#get_KLratio_KLonly"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogcore.firm.get_KLratio_KLonly" title="Link to this definition">#</a></dt>
+<dd><p>This function solves for the capital-labor ratio given the interest
+rate, r, and parameters when the production function is only a
+function of K and L.  This is used in the get_w_from_r function.</p>
+<div class="math notranslate nohighlight">
+\[\frac{K}{L} = \left(\frac{(1-\gamma)^\frac{1}{\varepsilon}}
+{\left[\frac{r_t + \delta - \tau_t^{corp}\delta_t^\tau}
+{(1 - \tau_t^{corp})\gamma^\frac{1}
+{\varepsilon}Z_t}\right]^{\varepsilon-1} -
+\gamma^\frac{1}{\varepsilon}}\right)^\frac{\varepsilon}{\varepsilon-1}\]</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>r</strong> (<em>array_like</em>) – the real interest rate</p></li>
+<li><p><strong>p</strong> (<em>OG-Core Specifications object</em>) – model parameters</p></li>
+<li><p><strong>method</strong> (<em>str</em>) – adjusts calculation dimensions based on ‘SS’ or
+‘TPI’</p></li>
+<li><p><strong>m</strong> (<em>int</em>) – production industry index</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>the capital-labor ratio</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>KLratio (array_like)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="ogcore.firm.get_KY_ratio">
+<span class="sig-prename descclassname"><span class="pre">ogcore.firm.</span></span><span class="sig-name descname"><span class="pre">get_KY_ratio</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">r</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_m</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">method</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">m</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">-1</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogcore/firm.html#get_KY_ratio"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogcore.firm.get_KY_ratio" title="Link to this definition">#</a></dt>
+<dd><p>Get capital output ratio from FOC for interest rate.</p>
+<div class="math notranslate nohighlight">
+\[\frac{\hat{K}_{m,t}}{\hat{Y}_{m,t}}=\gamma_{m}
+\left(\frac{p_{m,t}Z_{m,t}^{\frac{\varepsilon_m-1}
+{\varepsilon_m}}}{\rho_{m,t}}\right)^{\varepsilon_m}\]</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>r</strong> (<em>array_like</em>) – the real interest rate</p></li>
+<li><p><strong>p_m</strong> (<em>array_like</em>) – output prices for each industry</p></li>
+<li><p><strong>p</strong> (<em>OG-Core Specifications object</em>) – model parameters</p></li>
+<li><p><strong>method</strong> (<em>str</em>) – adjusts calculation dimensions based on ‘SS’ or ‘TPI’</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>capital output ratio</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>KY_ratio (array_like)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="ogcore.firm.get_K_KLonly">
+<span class="sig-prename descclassname"><span class="pre">ogcore.firm.</span></span><span class="sig-name descname"><span class="pre">get_K_KLonly</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">L</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">r</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">method</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">m</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">-1</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogcore/firm.html#get_K_KLonly"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogcore.firm.get_K_KLonly" title="Link to this definition">#</a></dt>
+<dd><p>Generates vector of aggregate capital when the production function
+uses only K and L as inputs. Use with the open economy options.</p>
+<div class="math notranslate nohighlight">
+\[K_{t} = \frac{K_{t}}{L_{t}} \times L_{t}\]</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>L</strong> (<em>array_like</em>) – aggregate labor</p></li>
+<li><p><strong>r</strong> (<em>array_like</em>) – the real interest rate</p></li>
+<li><p><strong>p</strong> (<em>OG-Core Specifications object</em>) – model parameters</p></li>
+<li><p><strong>method</strong> (<em>str</em>) – adjusts calculation dimensions based on ‘SS’ or
+‘TPI’</p></li>
+<li><p><strong>m</strong> (<em>int</em><em> or </em><em>None</em>) – production industry index</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>aggregate capital demand</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>K (array_like)</p>
 </dd>
 </dl>
 </dd></dl>
@@ -895,8 +1011,12 @@ compute L for all industries)</p></li>
   <nav class="bd-toc-nav page-toc">
     <ul class="pst-show_toc_level nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#module-ogcore.firm">ogcore.firm</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.firm.adj_cost"><code class="docutils literal notranslate"><span class="pre">adj_cost()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.firm.get_K"><code class="docutils literal notranslate"><span class="pre">get_K()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.firm.get_KLratio"><code class="docutils literal notranslate"><span class="pre">get_KLratio()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.firm.get_KLratio_KLonly"><code class="docutils literal notranslate"><span class="pre">get_KLratio_KLonly()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.firm.get_KY_ratio"><code class="docutils literal notranslate"><span class="pre">get_KY_ratio()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.firm.get_K_KLonly"><code class="docutils literal notranslate"><span class="pre">get_K_KLonly()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.firm.get_L_from_Y"><code class="docutils literal notranslate"><span class="pre">get_L_from_Y()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.firm.get_MPx"><code class="docutils literal notranslate"><span class="pre">get_MPx()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.firm.get_Y"><code class="docutils literal notranslate"><span class="pre">get_Y()</span></code></a></li>

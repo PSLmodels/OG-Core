@@ -471,6 +471,7 @@
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.output_tables.ineq_table"><code class="docutils literal notranslate"><span class="pre">ineq_table()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.output_tables.macro_table"><code class="docutils literal notranslate"><span class="pre">macro_table()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.output_tables.macro_table_SS"><code class="docutils literal notranslate"><span class="pre">macro_table_SS()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.output_tables.model_fit_table"><code class="docutils literal notranslate"><span class="pre">model_fit_table()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.output_tables.time_series_table"><code class="docutils literal notranslate"><span class="pre">time_series_table()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.output_tables.wealth_moments_table"><code class="docutils literal notranslate"><span class="pre">wealth_moments_table()</span></code></a></li>
 </ul>
@@ -711,6 +712,48 @@ entire budget window as a column in the table</p></li>
 </dd></dl>
 
 <dl class="py function">
+<dt class="sig sig-object py" id="ogcore.output_tables.model_fit_table">
+<span class="sig-prename descclassname"><span class="pre">ogcore.output_tables.</span></span><span class="sig-name descname"><span class="pre">model_fit_table</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">targets_dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">params</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tpi_output</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">t</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">table_format</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogcore/output_tables.html#model_fit_table"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogcore.output_tables.model_fit_table" title="Link to this definition">#</a></dt>
+<dd><p>Creates a table summarizing the model fit.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>targets_dict</strong> (<em>dict</em>) – <p>maps each parameter name to a one-item
+dict <code class="docutils literal notranslate"><span class="pre">{target_description:</span> <span class="pre">data_value}</span></code>, e.g.:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="s1">&#39;Gini coefficient of wealth&#39;</span><span class="p">:</span> <span class="mf">0.82</span><span class="p">,</span>
+    <span class="s1">&#39;Investment rate (I/K)&#39;</span><span class="p">:</span> <span class="mf">0.07</span><span class="p">,</span>
+    <span class="s1">&#39;Gini coefficient of income&#39;</span><span class="p">:</span> <span class="mf">0.55</span><span class="p">,</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</p></li>
+<li><p><strong>params</strong> (<em>OG-Core Specifications class</em>) – model parameters object</p></li>
+<li><p><strong>tpi_output</strong> (<em>dict</em>) – output dictionary returned by <code class="docutils literal notranslate"><span class="pre">TPI.run_TPI</span></code></p></li>
+<li><p><strong>t</strong> (<em>int</em>) – period index used for model moment calculations.
+Defaults to <code class="docutils literal notranslate"><span class="pre">0</span></code> (first period of the transition path).
+Pass <code class="docutils literal notranslate"><span class="pre">-1</span></code> to use the last period, which approximates
+steady-state values.</p></li>
+<li><p><strong>table_format</strong> (<em>string</em>) – format to return table in: <code class="docutils literal notranslate"><span class="pre">'csv'</span></code>,
+<code class="docutils literal notranslate"><span class="pre">'tex'</span></code>, <code class="docutils literal notranslate"><span class="pre">'excel'</span></code>, <code class="docutils literal notranslate"><span class="pre">'json'</span></code>; if <code class="docutils literal notranslate"><span class="pre">None</span></code> a
+DataFrame is returned</p></li>
+<li><p><strong>path</strong> (<em>string</em>) – path to save table to</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><dl class="simple">
+<dt>table as a DataFrame, formatted string, or</dt><dd><p><code class="docutils literal notranslate"><span class="pre">None</span></code> if saved to disk</p>
+</dd>
+</dl>
+</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>table (various)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
 <dt class="sig sig-object py" id="ogcore.output_tables.time_series_table">
 <span class="sig-prename descclassname"><span class="pre">ogcore.output_tables.</span></span><span class="sig-name descname"><span class="pre">time_series_table</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">base_params</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">base_tpi</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">reform_params</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">reform_tpi</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stationarized</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">table_format</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogcore/output_tables.html#time_series_table"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogcore.output_tables.time_series_table" title="Link to this definition">#</a></dt>
 <dd><p>This function dumps many of the macro time series from the
@@ -846,6 +889,7 @@ object</p></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.output_tables.ineq_table"><code class="docutils literal notranslate"><span class="pre">ineq_table()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.output_tables.macro_table"><code class="docutils literal notranslate"><span class="pre">macro_table()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.output_tables.macro_table_SS"><code class="docutils literal notranslate"><span class="pre">macro_table_SS()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.output_tables.model_fit_table"><code class="docutils literal notranslate"><span class="pre">model_fit_table()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.output_tables.time_series_table"><code class="docutils literal notranslate"><span class="pre">time_series_table()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.output_tables.wealth_moments_table"><code class="docutils literal notranslate"><span class="pre">wealth_moments_table()</span></code></a></li>
 </ul>
