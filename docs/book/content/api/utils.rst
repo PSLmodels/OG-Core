@@ -21,5 +21,5 @@ ogcore.utils
     pickle_file_compare, comp_array, comp_scalar, dict_compare,
     to_timepath_shape, get_initial_path, safe_read_pickle, rate_conversion,
     save_return_table, print_progress, fetch_files_from_web, not_connected,
-    avg_by_bin, extrapolate_arrays, get_legacy_session, shift_bio_clock,
-    unstationarize_vars, params_to_json
+    avg_by_bin, extrapolate_array, extrapolate_nested_list, get_legacy_session,
+    shift_bio_clock, unstationarize_vars, params_to_json, json_to_dict
