@@ -5,6 +5,28 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Added
+
+- The UN Data Portal API token can now come from a `un_token` argument to
+  `demographics.get_un_data`, from a `UN_API_TOKEN` environment variable, or
+  from a single per-user file (`$XDG_CONFIG_HOME/og/un_api_token.txt`, or
+  `%APPDATA%\og\un_api_token.txt` on Windows). Sources are tried in that
+  order, then `un_api_token.txt` in the working directory. This gives one
+  token per user instead of one per directory.
+
+### Changed
+
+- Answering the UN API token prompt now saves the token to the per-user file
+  rather than to the current working directory, which used to leave a copy of
+  the token in every directory a model was run from. An existing
+  `un_api_token.txt` in the working directory is still read, with a notice
+  that the location is deprecated.
+- The token prompt is skipped when standard input is not interactive, so
+  scheduled and scripted runs fall back to the Population-Data archive
+  instead of waiting on input.
+
 ## [0.19.1] - 2026-08-10 12:00:00
 
 ### Added
