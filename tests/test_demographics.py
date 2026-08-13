@@ -1032,8 +1032,9 @@ def test_un_token_cli_set_show_rm(isolated_token_env, monkeypatch, capsys):
     assert demographics.un_token_cli(["show"]) == 0
     out = capsys.readouterr().out
     assert path in out
-    assert "1234" in out  # last four only, never the whole token
-    assert "cli_tok" not in out
+    assert "a token is stored" in out
+    assert "cli_tok1234" not in out  # no part of the token is printed
+    assert "1234" not in out
 
     assert demographics.un_token_cli(["rm"]) == 0
     assert not os.path.exists(path)

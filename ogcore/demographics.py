@@ -307,7 +307,7 @@ def un_token_cli(argv=None):
         with open(path, "r") as file:
             stored = _clean_un_token(file.read())
         if stored:
-            print(f"  stored, ending {stored[-4:]}")
+            print("  a token is stored")
         else:
             print("  present but empty, so no token is sent")
     else:
