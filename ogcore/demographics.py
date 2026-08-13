@@ -26,6 +26,8 @@ UN_TOKEN_URL = "https://population.un.org/dataportalapi/index.html"
 UN_DATA_ARCHIVE_URL = "https://github.com/EAPD-DRB/Population-Data"
 # Warn only once per session about a token found in the working directory
 _WARNED_LEGACY_UN_TOKEN = False
+# Say how to register a token only once per session, not on every request
+_HINTED_NO_UN_TOKEN = False
 # create output director for figures
 CUR_PATH = os.path.split(os.path.abspath(__file__))[0]
 OUTPUT_DIR = os.path.join(CUR_PATH, "..", "data", "OUTPUT", "Demographics")
@@ -79,6 +81,49 @@ def _clean_un_token(un_token):
     return un_token
 
 
+def og_token_command():
+    """
+    This function returns the full path of the ``og-token`` command that
+    belongs to the running interpreter, so that a message can tell the
+    user exactly what to type. The command is installed beside the
+    interpreter and is usually not on the shell's PATH, because OG-Core is
+    normally run from a project virtual environment.
+
+    Returns:
+        command (str): full path to og-token, or None when it is not
+            installed alongside this interpreter
+    """
+    name = "og-token.exe" if os.name == "nt" else "og-token"
+    command = os.path.join(os.path.dirname(sys.executable), name)
+
+    return command if os.path.exists(command) else None
+
+
+def _hint_how_to_register_token():
+    """
+    This function prints, once per session, how to register a token. It
+    runs whenever a request falls back to the archived data, so a user who
+    obtains a token later is told what to do without being prompted again
+    on every run.
+    """
+    global _HINTED_NO_UN_TOKEN
+    if _HINTED_NO_UN_TOKEN:
+        return
+    _HINTED_NO_UN_TOKEN = True
+
+    lines = [
+        "No UN API token registered, so the archived data will be used.",
+        f"  Get a free token at {UN_TOKEN_URL}",
+    ]
+    command = og_token_command()
+    if command:
+        lines.append(f"  Then run: {command} set")
+        lines.append(f"  (or save the token to {un_token_path()})")
+    else:
+        lines.append(f"  Then save the token to {un_token_path()}")
+    print("\n".join(lines))
+
+
 def resolve_un_token(un_token=None):
     """
     This function finds the UN Data Portal API token to use for a
@@ -99,6 +144,25 @@ def resolve_un_token(un_token=None):
     Args:
         un_token (str): token supplied by the caller, overrides all other
             sources
+
+    Returns:
+        un_token (str): normalized token, empty string if none was found
+    """
+    un_token = _find_un_token(un_token)
+    if not un_token:
+        _hint_how_to_register_token()
+
+    return un_token
+
+
+def _find_un_token(un_token=None):
+    """
+    This function does the source-by-source lookup described in
+    :func:`resolve_un_token`, which wraps it to add the one-time hint when
+    nothing is found.
+
+    Args:
+        un_token (str): token supplied by the caller
 
     Returns:
         un_token (str): normalized token, empty string if none was found
@@ -163,11 +227,6 @@ def resolve_un_token(un_token=None):
             pass
         if _clean_un_token(un_token):
             print(f"Token saved to {user_path}")
-        else:
-            print(
-                "No token given, so the archived data will be used. Run "
-                "'og-token set' if you get one later."
-            )
 
     return _clean_un_token(un_token)
 

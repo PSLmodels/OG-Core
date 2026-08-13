@@ -31,7 +31,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   that the location is deprecated.
 - The token prompt now names both ways forward: where to generate a free
   token, and that pressing return uses the archived copy of the same data
-  instead. Declining says how to add a token later.
+  instead.
+- A run that falls back to the archived data now says once, not once per
+  series, how to register a token: where to get one, the full path of the
+  `og-token` command belonging to the running interpreter, and the token
+  file to write. The full path matters because `og-token` is installed
+  beside the interpreter and is normally not on the shell's PATH, so
+  someone who obtains a token days later has something they can paste
+  rather than a command that reports "not found".
 - The token prompt is skipped when standard input is not interactive, so
   scheduled and scripted runs fall back to the Population-Data archive
   instead of waiting on input.

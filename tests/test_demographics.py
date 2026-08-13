@@ -843,6 +843,7 @@ def isolated_token_env(monkeypatch, tmp_path):
     monkeypatch.setenv("XDG_CONFIG_HOME", str(home / ".config"))
     monkeypatch.setenv("APPDATA", str(home / "AppData"))
     monkeypatch.setattr(demographics, "_WARNED_LEGACY_UN_TOKEN", False)
+    monkeypatch.setattr(demographics, "_HINTED_NO_UN_TOKEN", False)
     monkeypatch.chdir(cwd)
     return cwd
 
@@ -1085,4 +1086,48 @@ def test_prompt_offers_both_ways_out(isolated_token_env, monkeypatch, capsys):
     out = capsys.readouterr().out
     assert demographics.UN_TOKEN_URL in out
     assert demographics.UN_DATA_ARCHIVE_URL in out
-    assert "og-token set" in out  # how to add one later
+
+
+def test_hint_names_a_runnable_command_and_the_file(
+    isolated_token_env, monkeypatch, capsys
+):
+    """Falling back to the archive tells the user how to register a token.
+    `og-token` is installed beside the interpreter and is normally not on
+    the shell's PATH, so the hint has to give the full path, plus the file
+    as a way that needs no environment at all."""
+    _set_tty(monkeypatch, False)  # no prompt, straight to the fallback
+
+    assert demographics.resolve_un_token() == ""
+    out = capsys.readouterr().out
+    assert demographics.UN_TOKEN_URL in out
+    assert demographics.un_token_path() in out  # always actionable
+
+    command = demographics.og_token_command()
+    if command is not None:
+        assert command in out
+        assert os.path.isabs(command)  # copy-pasteable from any shell
+
+
+def test_hint_is_printed_once_per_session(
+    isolated_token_env, monkeypatch, capsys
+):
+    """get_pop_objs resolves a token once per series, so the hint must not
+    repeat three times in a single run."""
+    _set_tty(monkeypatch, False)
+
+    demographics.resolve_un_token()
+    first = capsys.readouterr().out
+    assert "No UN API token registered" in first
+
+    demographics.resolve_un_token()
+    demographics.resolve_un_token()
+    assert "No UN API token registered" not in capsys.readouterr().out
+
+
+def test_no_hint_when_a_token_is_present(
+    isolated_token_env, monkeypatch, capsys
+):
+    """Users who have a token are not nagged."""
+    monkeypatch.setenv("UN_API_TOKEN", "a_real_token")
+    assert demographics.resolve_un_token() == "a_real_token"
+    assert "No UN API token registered" not in capsys.readouterr().out
