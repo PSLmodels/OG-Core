@@ -12,6 +12,7 @@ There is also a link to the source code for each documented member.
    :maxdepth: 1
 
    aggregates
+   config
    demographics
    elliptical_u_est
    execute
@@ -25,6 +26,8 @@ There is also a link to the source code for each documented member.
    parameters
    pensions
    solvers
+   SS
    tax
+   TPI
    txfunc
    utils
