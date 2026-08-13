@@ -206,7 +206,9 @@ def _find_un_token(un_token=None):
             "  Or press return to use the archived copy of the same data "
             f"at {UN_DATA_ARCHIVE_URL}.\n"
         )
-        un_token = input("UN API token: ")
+        # getpass rather than input so the token is not echoed into the
+        # terminal and its scrollback.
+        un_token = getpass.getpass("UN API token (input is hidden): ")
     except (EOFError, ValueError):  # stdin at end of file or closed
         return ""
 

@@ -945,7 +945,7 @@ def test_empty_user_file_is_authoritative(isolated_token_env, monkeypatch):
     def _fail(*args, **kwargs):
         raise AssertionError("the user should not be prompted again")
 
-    monkeypatch.setattr("builtins.input", _fail)
+    monkeypatch.setattr(demographics.getpass, "getpass", _fail)
     assert demographics.resolve_un_token() == ""
 
 
@@ -967,7 +967,9 @@ def test_prompt_saves_to_the_user_file_not_the_working_directory(
     """This is the behavior change: answering the prompt no longer leaves a
     copy of the token in whatever directory the run started from."""
     _set_tty(monkeypatch, True)
-    monkeypatch.setattr("builtins.input", lambda *a, **k: "typed_token")
+    monkeypatch.setattr(
+        demographics.getpass, "getpass", lambda *a, **k: "typed_token"
+    )
 
     assert demographics.resolve_un_token() == "typed_token"
 
@@ -988,7 +990,7 @@ def test_no_prompt_when_not_interactive(isolated_token_env, monkeypatch):
     def _fail(*args, **kwargs):
         raise AssertionError("a non-interactive session must not prompt")
 
-    monkeypatch.setattr("builtins.input", _fail)
+    monkeypatch.setattr(demographics.getpass, "getpass", _fail)
     assert demographics.resolve_un_token() == ""
     assert not os.path.exists(demographics.un_token_path())
 
@@ -1080,7 +1082,7 @@ def test_prompt_offers_both_ways_out(isolated_token_env, monkeypatch, capsys):
     """The prompt tells the user where to get a token and what happens if
     they decline, rather than leaving them to guess."""
     _set_tty(monkeypatch, True)
-    monkeypatch.setattr("builtins.input", lambda *a, **k: "")
+    monkeypatch.setattr(demographics.getpass, "getpass", lambda *a, **k: "")
 
     assert demographics.resolve_un_token() == ""
     out = capsys.readouterr().out
@@ -1131,3 +1133,23 @@ def test_no_hint_when_a_token_is_present(
     monkeypatch.setenv("UN_API_TOKEN", "a_real_token")
     assert demographics.resolve_un_token() == "a_real_token"
     assert "No UN API token registered" not in capsys.readouterr().out
+
+
+def test_token_is_never_echoed_at_the_prompt(
+    isolated_token_env, monkeypatch, capsys
+):
+    """The token is a secret, so it is read with getpass and never reaches
+    the terminal or its scrollback. Reverting to input() would echo it."""
+    _set_tty(monkeypatch, True)
+
+    def _must_not_be_used(*args, **kwargs):
+        raise AssertionError("input() echoes; the token must use getpass")
+
+    monkeypatch.setattr("builtins.input", _must_not_be_used)
+    monkeypatch.setattr(
+        demographics.getpass, "getpass", lambda *a, **k: "s3cret_token"
+    )
+
+    assert demographics.resolve_un_token() == "s3cret_token"
+    out = capsys.readouterr().out
+    assert "s3cret_token" not in out  # not printed back either

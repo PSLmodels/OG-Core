@@ -32,6 +32,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - The token prompt now names both ways forward: where to generate a free
   token, and that pressing return uses the archived copy of the same data
   instead.
+- The token is read with `getpass` rather than `input`, so it is no longer
+  echoed into the terminal and its scrollback while being typed or pasted.
 - A run that falls back to the archived data now says once, not once per
   series, how to register a token: where to get one, the full path of the
   `og-token` command belonging to the running interpreter, and the token
