@@ -1073,3 +1073,16 @@ def test_un_token_cli_set_handles_an_interrupted_prompt(
     assert demographics.un_token_cli(["set"]) == 1
     assert "Cancelled" in capsys.readouterr().out
     assert not os.path.exists(demographics.un_token_path())
+
+
+def test_prompt_offers_both_ways_out(isolated_token_env, monkeypatch, capsys):
+    """The prompt tells the user where to get a token and what happens if
+    they decline, rather than leaving them to guess."""
+    _set_tty(monkeypatch, True)
+    monkeypatch.setattr("builtins.input", lambda *a, **k: "")
+
+    assert demographics.resolve_un_token() == ""
+    out = capsys.readouterr().out
+    assert demographics.UN_TOKEN_URL in out
+    assert demographics.UN_DATA_ARCHIVE_URL in out
+    assert "og-token set" in out  # how to add one later

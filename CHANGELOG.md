@@ -29,6 +29,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   the token in every directory a model was run from. An existing
   `un_api_token.txt` in the working directory is still read, with a notice
   that the location is deprecated.
+- The token prompt now names both ways forward: where to generate a free
+  token, and that pressing return uses the archived copy of the same data
+  instead. Declining says how to add a token later.
 - The token prompt is skipped when standard input is not interactive, so
   scheduled and scripted runs fall back to the Population-Data archive
   instead of waiting on input.

@@ -22,6 +22,8 @@ START_YEAR = 2024
 END_YEAR = 2024
 UN_COUNTRY_CODE = "840"  # UN code for USA
 UN_TOKEN_FILENAME = "un_api_token.txt"
+UN_TOKEN_URL = "https://population.un.org/dataportalapi/index.html"
+UN_DATA_ARCHIVE_URL = "https://github.com/EAPD-DRB/Population-Data"
 # Warn only once per session about a token found in the working directory
 _WARNED_LEGACY_UN_TOKEN = False
 # create output director for figures
@@ -133,10 +135,14 @@ def resolve_un_token(un_token=None):
     try:
         if not sys.stdin or not sys.stdin.isatty():
             return ""  # not interactive, e.g. a scheduled run
-        un_token = input(
-            "Please enter your UN API token "
-            "(press return if you do not have one): "
+        print(
+            "\nOG-Core can read population data directly from the UN Data "
+            "Portal, which needs a free API token.\n"
+            f"  To get one, open {UN_TOKEN_URL} and click Generate Token.\n"
+            "  Or press return to use the archived copy of the same data "
+            f"at {UN_DATA_ARCHIVE_URL}.\n"
         )
+        un_token = input("UN API token: ")
     except (EOFError, ValueError):  # stdin at end of file or closed
         return ""
 
@@ -155,6 +161,13 @@ def resolve_un_token(un_token=None):
             os.chmod(user_path, 0o600)
         except OSError:  # permissions are not settable on every platform
             pass
+        if _clean_un_token(un_token):
+            print(f"Token saved to {user_path}")
+        else:
+            print(
+                "No token given, so the archived data will be used. Run "
+                "'og-token set' if you get one later."
+            )
 
     return _clean_un_token(un_token)
 
@@ -178,7 +191,9 @@ def un_token_cli(argv=None):
         prog="og-token",
         description=(
             "Manage the UN Data Portal API token used by OG-Core. Get a "
-            "token from https://population.un.org/dataportalapi/index.html"
+            f"free token from {UN_TOKEN_URL} (click Generate Token). "
+            "Without one, OG-Core reads the archived copy of the same data "
+            f"from {UN_DATA_ARCHIVE_URL}."
         ),
     )
     parser.add_argument(
@@ -190,6 +205,7 @@ def un_token_cli(argv=None):
     path = un_token_path()
 
     if args.action == "set":
+        print(f"Get a free token at {UN_TOKEN_URL} (click Generate Token).")
         try:
             un_token = _clean_un_token(getpass.getpass("UN API token: "))
         except (EOFError, KeyboardInterrupt):
