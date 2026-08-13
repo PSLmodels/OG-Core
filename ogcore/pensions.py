@@ -84,6 +84,11 @@ def replacement_rate_adjustment(pension, t, j, method, p):
     Along the time path the multiplier varies with each cohort's own year,
     so it is indexed at t + tt for row tt.
 
+    The multiplier scales the whole pension array, while SS_amount scales
+    only the entries from retirement on. These are equivalent only because
+    DB, NDC, and PS benefits are zero before retirement; a system that
+    pays benefits before retirement would need the SS_amount treatment.
+
     Args:
         pension (Numpy array): pension amount for each household
         t (int): model period
