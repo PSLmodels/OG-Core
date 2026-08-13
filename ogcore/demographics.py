@@ -10,7 +10,10 @@ abbreviations is available at https://unstats.un.org/unsd/methodology/m49/
 import os
 import sys
 import argparse
+import base64
+import datetime
 import getpass
+import json
 import numpy as np
 from io import StringIO
 import scipy.optimize as opt
@@ -28,6 +31,8 @@ UN_DATA_ARCHIVE_URL = "https://github.com/EAPD-DRB/Population-Data"
 _WARNED_LEGACY_UN_TOKEN = False
 # Say how to register a token only once per session, not on every request
 _HINTED_NO_UN_TOKEN = False
+# Say a token has expired only once per session
+_WARNED_EXPIRED_UN_TOKEN = False
 # create output director for figures
 CUR_PATH = os.path.split(os.path.abspath(__file__))[0]
 OUTPUT_DIR = os.path.join(CUR_PATH, "..", "data", "OUTPUT", "Demographics")
@@ -79,6 +84,73 @@ def _clean_un_token(un_token):
         un_token = un_token[len("bearer ") :].strip()
 
     return un_token
+
+
+def un_token_expiry(un_token):
+    """
+    This function reads the expiry date out of a UN Data Portal API token.
+    The portal issues JSON Web Tokens, whose middle segment carries an
+    ``exp`` claim, so the date can be read without a network call. The
+    signature is not checked and is not needed here: the portal remains
+    the authority on whether a token is accepted, and this is only used to
+    tell a user that renewing is due.
+
+    Args:
+        un_token (str): token to inspect
+
+    Returns:
+        expiry (datetime.date): expiry date, or None when the token is not
+            a readable JSON Web Token
+    """
+    try:
+        payload = un_token.split(".")[1]
+        payload += "=" * (-len(payload) % 4)
+        claims = json.loads(base64.urlsafe_b64decode(payload))
+
+        return datetime.datetime.fromtimestamp(
+            claims["exp"], datetime.timezone.utc
+        ).date()
+    except (AttributeError, IndexError, KeyError, TypeError, ValueError):
+        return None  # opaque token, or a format we do not recognize
+
+
+def _utc_today():
+    """Today's date in UTC, to compare against a token's expiry claim."""
+    return datetime.datetime.now(datetime.timezone.utc).date()
+
+
+def _warn_if_un_token_expired(un_token):
+    """
+    This function says, once per session, that a token has expired. An
+    expired token otherwise fails in the same silent-looking way as a
+    missing one: the request is refused and the caller quietly falls back
+    to the archived data.
+
+    Args:
+        un_token (str): the token that was resolved
+
+    Returns:
+        None
+    """
+    global _WARNED_EXPIRED_UN_TOKEN
+    if _WARNED_EXPIRED_UN_TOKEN:
+        return
+    expiry = un_token_expiry(un_token)
+    if expiry is None or expiry >= _utc_today():
+        return
+    _WARNED_EXPIRED_UN_TOKEN = True
+
+    lines = [
+        f"Your UN API token expired on {expiry}, so the archived data "
+        "will be used.",
+        f"  Get a new one at {UN_TOKEN_URL}",
+    ]
+    command = og_token_command()
+    if command:
+        lines.append(f"  Then run: {command} set")
+    else:
+        lines.append(f"  Then save it to {un_token_path()}")
+    print("\n".join(lines))
 
 
 def og_token_command():
@@ -149,7 +221,9 @@ def resolve_un_token(un_token=None):
         un_token (str): normalized token, empty string if none was found
     """
     un_token = _find_un_token(un_token)
-    if not un_token:
+    if un_token:
+        _warn_if_un_token_expired(un_token)
+    else:
         _hint_how_to_register_token()
 
     return un_token
@@ -286,7 +360,14 @@ def un_token_cli(argv=None):
             os.chmod(path, 0o600)
         except OSError:  # permissions are not settable on every platform
             pass
-        print(f"Token saved to {path}")
+        expiry = un_token_expiry(un_token)
+        if expiry is None:
+            print(f"Token saved to {path}")
+        elif expiry < _utc_today():
+            print(f"Token saved to {path}, but it expired on {expiry}.")
+            print(f"Get a current one at {UN_TOKEN_URL}")
+        else:
+            print(f"Token saved to {path}, valid until {expiry}")
         return 0
 
     if args.action == "rm":
@@ -306,10 +387,20 @@ def un_token_cli(argv=None):
     if os.path.exists(path):
         with open(path, "r") as file:
             stored = _clean_un_token(file.read())
-        if stored:
-            print("  a token is stored")
-        else:
+        if not stored:
             print("  present but empty, so no token is sent")
+        else:
+            expiry = un_token_expiry(stored)
+            if expiry is None:
+                print("  a token is stored")
+            elif expiry < _utc_today():
+                print(f"  a token is stored, but it expired on {expiry}")
+                print(f"  get a new one at {UN_TOKEN_URL}")
+            else:
+                days = (expiry - _utc_today()).days
+                print(
+                    f"  a token is stored, valid until {expiry} ({days} days)"
+                )
     else:
         print("  not set, run 'og-token set'")
     if os.environ.get("UN_API_TOKEN", "").strip():

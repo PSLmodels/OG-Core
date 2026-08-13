@@ -34,6 +34,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   instead.
 - The token is read with `getpass` rather than `input`, so it is no longer
   echoed into the terminal and its scrollback while being typed or pasted.
+- An expired token is now named as the reason for falling back to the
+  archived data, instead of failing the same way as a missing one. The
+  portal issues JSON Web Tokens, so the expiry date is read locally with
+  no extra request, and `og-token show` reports whether the stored token
+  is still current. A token that is not a readable JSON Web Token is used
+  as before, with no expiry reported.
 - A run that falls back to the archived data now says once, not once per
   series, how to register a token: where to get one, the full path of the
   `og-token` command belonging to the running interpreter, and the token

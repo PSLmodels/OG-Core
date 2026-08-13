@@ -1,6 +1,9 @@
 import numpy as np
 import pytest
 import os
+import base64
+import datetime
+import json
 from ogcore import demographics
 
 # Read in some test population data to use in select tests below
@@ -1154,3 +1157,93 @@ def test_token_is_never_echoed_at_the_prompt(
     assert demographics.resolve_un_token() == "s3cret_token"
     out = capsys.readouterr().out
     assert "s3cret_token" not in out  # not printed back either
+
+
+def _make_jwt(days_from_today):
+    """Build a token shaped like the portal's: three base64url segments
+    with an `exp` claim. Only the payload matters here; the signature is
+    never checked."""
+    exp = datetime.datetime.now(datetime.timezone.utc) + datetime.timedelta(
+        days=days_from_today
+    )
+
+    def seg(obj):
+        raw = json.dumps(obj).encode()
+        return base64.urlsafe_b64encode(raw).decode().rstrip("=")
+
+    return ".".join(
+        [
+            seg({"alg": "HS256", "typ": "JWT"}),
+            seg({"exp": int(exp.timestamp()), "unique_name": "someone"}),
+            "not_a_real_signature",
+        ]
+    )
+
+
+def test_un_token_expiry_reads_the_claim():
+    """The portal issues JWTs, so the expiry is readable without a call."""
+    expiry = demographics.un_token_expiry(_make_jwt(30))
+    assert (
+        expiry
+        == (
+            datetime.datetime.now(datetime.timezone.utc)
+            + datetime.timedelta(30)
+        ).date()
+    )
+
+
+@pytest.mark.parametrize(
+    "value",
+    ["opaque-token-with-no-dots", "a.b.c", "", None, 12345, "a..c"],
+    ids=["opaque", "not_base64", "empty", "none", "not_a_string", "empty_seg"],
+)
+def test_un_token_expiry_degrades_quietly(value):
+    """Anything not a readable JWT returns None rather than raising, so a
+    model run never dies because the portal changed its token format."""
+    assert demographics.un_token_expiry(value) is None
+
+
+def test_expired_token_is_reported_once(
+    isolated_token_env, monkeypatch, capsys
+):
+    """An expired token otherwise fails the same silent-looking way as a
+    missing one."""
+    monkeypatch.setattr(demographics, "_WARNED_EXPIRED_UN_TOKEN", False)
+    expired = _make_jwt(-5)
+    monkeypatch.setenv("UN_API_TOKEN", expired)
+
+    assert demographics.resolve_un_token() == expired  # still returned
+    out = capsys.readouterr().out
+    assert "expired on" in out
+    assert demographics.UN_TOKEN_URL in out
+    assert expired not in out  # the token itself is never printed
+
+    demographics.resolve_un_token()
+    assert "expired on" not in capsys.readouterr().out  # once per session
+
+
+def test_valid_token_is_not_flagged(isolated_token_env, monkeypatch, capsys):
+    """A token with time left produces no noise."""
+    monkeypatch.setattr(demographics, "_WARNED_EXPIRED_UN_TOKEN", False)
+    monkeypatch.setenv("UN_API_TOKEN", _make_jwt(60))
+
+    demographics.resolve_un_token()
+    assert "expired" not in capsys.readouterr().out
+
+
+@pytest.mark.parametrize(
+    "days,expected", [(-5, "expired on"), (60, "valid until")]
+)
+def test_cli_show_reports_expiry(
+    isolated_token_env, monkeypatch, capsys, days, expected
+):
+    """og-token show says whether the stored token is still usable."""
+    token = _make_jwt(days)
+    monkeypatch.setattr(demographics.getpass, "getpass", lambda *a, **k: token)
+    assert demographics.un_token_cli(["set"]) == 0
+    capsys.readouterr()
+
+    assert demographics.un_token_cli(["show"]) == 0
+    out = capsys.readouterr().out
+    assert expected in out
+    assert token not in out
