@@ -1055,3 +1055,21 @@ def test_un_token_cli_show_flags_the_environment_override(
     monkeypatch.setenv("UN_API_TOKEN", "env_token")
     assert demographics.un_token_cli(["show"]) == 0
     assert "takes precedence" in capsys.readouterr().out
+
+
+@pytest.mark.parametrize(
+    "interrupt", [EOFError, KeyboardInterrupt], ids=["eof", "ctrl_c"]
+)
+def test_un_token_cli_set_handles_an_interrupted_prompt(
+    isolated_token_env, monkeypatch, capsys, interrupt
+):
+    """`og-token set < /dev/null` or Ctrl-C reports cleanly instead of
+    printing a traceback."""
+
+    def _raise(*args, **kwargs):
+        raise interrupt()
+
+    monkeypatch.setattr(demographics.getpass, "getpass", _raise)
+    assert demographics.un_token_cli(["set"]) == 1
+    assert "Cancelled" in capsys.readouterr().out
+    assert not os.path.exists(demographics.un_token_path())

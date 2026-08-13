@@ -5,11 +5,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+## [0.20.0] - 2026-08-13 12:00:00
 
 ### Added
 
-- The UN Data Portal API token can now come from a `un_token` argument to
+- Addresses Issue [#1205](https://github.com/PSLmodels/OG-Core/issues/1205):
+  the UN Data Portal API token can now come from a `un_token` argument to
   `demographics.get_un_data`, from a `UN_API_TOKEN` environment variable, or
   from a single per-user file (`$XDG_CONFIG_HOME/og/un_api_token.txt`, or
   `%APPDATA%\og\un_api_token.txt` on Windows). Sources are tried in that

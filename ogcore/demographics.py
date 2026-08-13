@@ -190,7 +190,11 @@ def un_token_cli(argv=None):
     path = un_token_path()
 
     if args.action == "set":
-        un_token = _clean_un_token(getpass.getpass("UN API token: "))
+        try:
+            un_token = _clean_un_token(getpass.getpass("UN API token: "))
+        except (EOFError, KeyboardInterrupt):
+            print("\nCancelled. Nothing was saved.")
+            return 1
         if not un_token:
             print("No token entered. Nothing was saved.")
             return 1
@@ -212,7 +216,11 @@ def un_token_cli(argv=None):
         if not os.path.exists(path):
             print(f"No token stored at {path}")
             return 1
-        os.remove(path)
+        try:
+            os.remove(path)
+        except OSError as err:
+            print(f"Could not remove {path} ({err}).")
+            return 1
         print(f"Removed {path}")
         return 0
 
