@@ -5,6 +5,19 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Bug Fixes
+
+- Fixes Issue [#1200](https://github.com/PSLmodels/OG-Core/issues/1200):
+  `replacement_rate_adjust` was read only inside `SS_amount`, so it applied
+  to the US-Style Social Security system and was silently ignored under
+  Defined Benefits, Notional Defined Contribution, and Points System. The
+  adjustment is now applied to those three systems in `pension_amount`,
+  via a `replacement_rate_adjustment` helper that mirrors the indexing
+  `SS_amount` already uses, including the per-cohort `t + tt` offset along
+  the time path. `SS_amount` is unchanged, so US-Style results cannot move.
+
 ## [0.19.1] - 2026-08-10 12:00:00
 
 ### Added
