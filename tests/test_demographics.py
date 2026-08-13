@@ -1012,3 +1012,46 @@ def test_get_un_data_sends_the_resolved_token(isolated_token_env, monkeypatch):
     monkeypatch.setenv("UN_API_TOKEN", "env_token")
     demographics.get_un_data("47")
     assert sent["headers"]["Authorization"] == "Bearer env_token"
+
+
+def test_un_token_cli_set_show_rm(isolated_token_env, monkeypatch, capsys):
+    """The og-token command round-trips: save, report, delete."""
+    monkeypatch.setattr(
+        demographics.getpass, "getpass", lambda *a, **k: "Bearer cli_tok1234"
+    )
+
+    assert demographics.un_token_cli(["set"]) == 0
+    path = demographics.un_token_path()
+    with open(path) as f:
+        assert f.read() == "cli_tok1234"  # the Bearer prefix is stripped
+    assert demographics.resolve_un_token() == "cli_tok1234"
+
+    assert demographics.un_token_cli(["show"]) == 0
+    out = capsys.readouterr().out
+    assert path in out
+    assert "1234" in out  # last four only, never the whole token
+    assert "cli_tok" not in out
+
+    assert demographics.un_token_cli(["rm"]) == 0
+    assert not os.path.exists(path)
+    assert demographics.un_token_cli(["rm"]) == 1  # nothing left to remove
+
+
+def test_un_token_cli_set_rejects_an_empty_answer(
+    isolated_token_env, monkeypatch, capsys
+):
+    """Pressing return at the prompt writes nothing and reports failure."""
+    monkeypatch.setattr(demographics.getpass, "getpass", lambda *a, **k: "  ")
+
+    assert demographics.un_token_cli(["set"]) == 1
+    assert not os.path.exists(demographics.un_token_path())
+    assert "Nothing was saved" in capsys.readouterr().out
+
+
+def test_un_token_cli_show_flags_the_environment_override(
+    isolated_token_env, monkeypatch, capsys
+):
+    """show warns when the environment variable will win over the file."""
+    monkeypatch.setenv("UN_API_TOKEN", "env_token")
+    assert demographics.un_token_cli(["show"]) == 0
+    assert "takes precedence" in capsys.readouterr().out

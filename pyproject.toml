@@ -41,6 +41,9 @@ dependencies = [
 Homepage = "https://github.com/PSLmodels/OG-Core/"
 "Issue Tracker" = "https://github.com/PSLmodels/OG-Core/issues"
 
+[project.scripts]
+og-token = "ogcore.demographics:un_token_cli"
+
 [project.optional-dependencies]
 dev = [
     "pytest>=6.0",

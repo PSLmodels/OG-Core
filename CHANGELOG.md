@@ -15,6 +15,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   `%APPDATA%\og\un_api_token.txt` on Windows). Sources are tried in that
   order, then `un_api_token.txt` in the working directory. This gives one
   token per user instead of one per directory.
+- An `og-token` command, OG-Core's first console script, to manage that
+  token without hunting for the file: `og-token set` saves one,
+  `og-token show` reports where it lives and which source wins, and
+  `og-token rm` deletes it. The token is read without echoing and only its
+  last four characters are ever printed.
 
 ### Changed
 

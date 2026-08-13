@@ -9,6 +9,8 @@ abbreviations is available at https://unstats.un.org/unsd/methodology/m49/
 # Import packages
 import os
 import sys
+import argparse
+import getpass
 import numpy as np
 from io import StringIO
 import scipy.optimize as opt
@@ -155,6 +157,85 @@ def resolve_un_token(un_token=None):
             pass
 
     return _clean_un_token(un_token)
+
+
+def un_token_cli(argv=None):
+    """
+    This function is the command line entry point for managing the stored
+    UN Data Portal API token. It is installed as ``og-token`` and takes one
+    of three actions: ``set`` saves a token to the per-user file, ``show``
+    reports where the token lives and which source would be used, and
+    ``rm`` deletes the stored token.
+
+    Args:
+        argv (list): command line arguments, read from sys.argv when not
+            given
+
+    Returns:
+        status (int): process exit status, 0 on success
+    """
+    parser = argparse.ArgumentParser(
+        prog="og-token",
+        description=(
+            "Manage the UN Data Portal API token used by OG-Core. Get a "
+            "token from https://population.un.org/dataportalapi/index.html"
+        ),
+    )
+    parser.add_argument(
+        "action",
+        choices=["set", "show", "rm"],
+        help="save a token, report where it lives, or delete it",
+    )
+    args = parser.parse_args(argv)
+    path = un_token_path()
+
+    if args.action == "set":
+        un_token = _clean_un_token(getpass.getpass("UN API token: "))
+        if not un_token:
+            print("No token entered. Nothing was saved.")
+            return 1
+        try:
+            os.makedirs(os.path.dirname(path), exist_ok=True)
+            with open(path, "w") as file:
+                file.write(un_token)
+        except OSError as err:
+            print(f"Could not write {path} ({err}).")
+            return 1
+        try:
+            os.chmod(path, 0o600)
+        except OSError:  # permissions are not settable on every platform
+            pass
+        print(f"Token saved to {path}")
+        return 0
+
+    if args.action == "rm":
+        if not os.path.exists(path):
+            print(f"No token stored at {path}")
+            return 1
+        os.remove(path)
+        print(f"Removed {path}")
+        return 0
+
+    # show
+    print(f"Token file: {path}")
+    if os.path.exists(path):
+        with open(path, "r") as file:
+            stored = _clean_un_token(file.read())
+        if stored:
+            print(f"  stored, ending {stored[-4:]}")
+        else:
+            print("  present but empty, so no token is sent")
+    else:
+        print("  not set, run 'og-token set'")
+    if os.environ.get("UN_API_TOKEN", "").strip():
+        print("UN_API_TOKEN is set and takes precedence over the file.")
+    if os.path.exists(UN_TOKEN_FILENAME):
+        print(
+            f"A deprecated {UN_TOKEN_FILENAME} is in this directory. It is "
+            "only used when neither of the above is set."
+        )
+
+    return 0
 
 
 def get_un_data(
