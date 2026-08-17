@@ -5,6 +5,22 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Bug Fixes
+
+- Fixes Issue [#1199](https://github.com/PSLmodels/OG-Core/issues/1199):
+  `aggregates.revenue` counted payroll tax revenue twice. Each household's
+  `income_payroll_tax_liab` already includes `T_P = tau_payroll *
+  labor_income`, so payroll revenue is inside `iit_payroll_tax_revenue`;
+  PR #1184 then added `get_payroll_tax_revenue` (the same take, re-derived
+  from the aggregate wage bill) into that total again when `tau_payroll`
+  was nonzero. Revenue was overstated, the government over-spent, and any
+  model with a nonzero `tau_payroll` failed the steady-state resource
+  constraint (OG-USA was unaffected only because its `tau_payroll` is 0).
+  The erroneous addition is removed; `get_payroll_tax_revenue` still
+  provides the income vs payroll reporting split, which is unchanged.
+
 ## [0.19.1] - 2026-08-10 12:00:00
 
 ### Added
