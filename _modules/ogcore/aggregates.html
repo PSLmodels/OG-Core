@@ -852,15 +852,15 @@
         <span class="n">cons_tax_revenue</span> <span class="o">=</span> <span class="p">(</span>
             <span class="p">(</span><span class="n">tax</span><span class="o">.</span><span class="n">cons_tax_liab</span><span class="p">(</span><span class="n">c</span><span class="p">,</span> <span class="n">p_i</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">method</span><span class="p">)</span> <span class="o">*</span> <span class="n">pop_weights</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
         <span class="p">)</span>
+    <span class="c1"># Payroll tax revenue is already inside iit_payroll_tax_revenue: each</span>
+    <span class="c1"># household&#39;s income_payroll_tax_liab includes T_P = tau_payroll *</span>
+    <span class="c1"># labor_income (see tax.income_tax_liab). get_payroll_tax_revenue just</span>
+    <span class="c1"># re-derives that same amount from the aggregate wage bill so the</span>
+    <span class="c1"># income vs payroll split can be reported; it must NOT be added into</span>
+    <span class="c1"># the total again (that double-counted payroll revenue -- Issue #1199).</span>
     <span class="n">payroll_tax_revenue</span> <span class="o">=</span> <span class="n">get_payroll_tax_revenue</span><span class="p">(</span>
         <span class="n">w</span><span class="p">,</span> <span class="n">L</span><span class="p">,</span> <span class="n">iit_payroll_tax_revenue</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">method</span>
     <span class="p">)</span>
-    <span class="c1"># When payroll taxes are modeled explicitly via tau_payroll, they are</span>
-    <span class="c1"># excluded from the income and payroll tax functions, so payroll tax</span>
-    <span class="c1"># revenue must be added into iit_payroll_tax_revenue (which enters</span>
-    <span class="c1"># total revenue) before the income tax portion is separated out.</span>
-    <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">tau_payroll</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">):</span>
-        <span class="n">iit_payroll_tax_revenue</span> <span class="o">+=</span> <span class="n">payroll_tax_revenue</span>
     <span class="n">business_tax_revenue</span> <span class="o">=</span> <span class="n">tax</span><span class="o">.</span><span class="n">get_biz_tax</span><span class="p">(</span><span class="n">w</span><span class="p">,</span> <span class="n">Y</span><span class="p">,</span> <span class="n">L</span><span class="p">,</span> <span class="n">K</span><span class="p">,</span> <span class="n">p_m</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">m</span><span class="p">,</span> <span class="n">method</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span>
         <span class="o">-</span><span class="mi">1</span>
     <span class="p">)</span>
