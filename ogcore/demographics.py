@@ -171,30 +171,6 @@ def og_token_command():
     return command if os.path.exists(command) else None
 
 
-def _write_un_token(path, un_token):
-    """
-    This function saves a token to a file only its owner can read. The
-    mode is set when the file is created, so the token is never briefly
-    on disk world-readable, and chmod runs as well because a creation
-    mode does not apply to a file that is already there.
-
-    Args:
-        path (str): file to write
-        un_token (str): token to save
-
-    Returns:
-        None
-    """
-    os.makedirs(os.path.dirname(path), exist_ok=True)
-    handle = os.open(path, os.O_WRONLY | os.O_CREAT | os.O_TRUNC, 0o600)
-    with os.fdopen(handle, "w") as file:
-        file.write(un_token)
-    try:
-        os.chmod(path, 0o600)
-    except OSError:  # permissions are not settable on every platform
-        pass
-
-
 def _hint_how_to_register_token():
     """
     This function prints, once per session, how to register a token. It
@@ -312,13 +288,19 @@ def _find_un_token(un_token=None):
 
     # Save the answer, empty or not, so the question is asked only once.
     try:
-        _write_un_token(user_path, un_token)
+        os.makedirs(os.path.dirname(user_path), exist_ok=True)
+        with open(user_path, "w") as file:
+            file.write(un_token)
     except OSError as err:  # e.g. a read-only home directory
         print(
             f"Could not save the UN API token to {user_path} ({err}). "
             "It will be used for this session only."
         )
     else:
+        try:
+            os.chmod(user_path, 0o600)
+        except OSError:  # permissions are not settable on every platform
+            pass
         if _clean_un_token(un_token):
             print(f"Token saved to {user_path}")
 
@@ -368,10 +350,16 @@ def un_token_cli(argv=None):
             print("No token entered. Nothing was saved.")
             return 1
         try:
-            _write_un_token(path, un_token)
+            os.makedirs(os.path.dirname(path), exist_ok=True)
+            with open(path, "w") as file:
+                file.write(un_token)
         except OSError as err:
             print(f"Could not write {path} ({err}).")
             return 1
+        try:
+            os.chmod(path, 0o600)
+        except OSError:  # permissions are not settable on every platform
+            pass
         expiry = un_token_expiry(un_token)
         if expiry is None:
             print(f"Token saved to {path}")
