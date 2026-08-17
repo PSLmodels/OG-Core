@@ -5,6 +5,52 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.20.0] - 2026-08-13 12:00:00
+
+### Added
+
+- Addresses Issue [#1205](https://github.com/PSLmodels/OG-Core/issues/1205):
+  the UN Data Portal API token can now come from a `un_token` argument to
+  `demographics.get_un_data`, from a `UN_API_TOKEN` environment variable, or
+  from a single per-user file (`$XDG_CONFIG_HOME/og/un_api_token.txt`, or
+  `%APPDATA%\og\un_api_token.txt` on Windows). Sources are tried in that
+  order, then `un_api_token.txt` in the working directory. This gives one
+  token per user instead of one per directory.
+- An `og-token` command, OG-Core's first console script, to manage that
+  token without hunting for the file: `og-token set` saves one,
+  `og-token show` reports where it lives and which source wins, and
+  `og-token rm` deletes it. The token is read without echoing and is never
+  printed back.
+
+### Changed
+
+- Answering the UN API token prompt now saves the token to the per-user file
+  rather than to the current working directory, which used to leave a copy of
+  the token in every directory a model was run from. An existing
+  `un_api_token.txt` in the working directory is still read, with a notice
+  that the location is deprecated.
+- The token prompt now names both ways forward: where to generate a free
+  token, and that pressing return uses the archived copy of the same data
+  instead.
+- The token is read with `getpass` rather than `input`, so it is no longer
+  echoed into the terminal and its scrollback while being typed or pasted.
+- An expired token is now named as the reason for falling back to the
+  archived data, instead of failing the same way as a missing one. The
+  portal issues JSON Web Tokens, so the expiry date is read locally with
+  no extra request, and `og-token show` reports whether the stored token
+  is still current. A token that is not a readable JSON Web Token is used
+  as before, with no expiry reported.
+- A run that falls back to the archived data now says once, not once per
+  series, how to register a token: where to get one, the full path of the
+  `og-token` command belonging to the running interpreter, and the token
+  file to write. The full path matters because `og-token` is installed
+  beside the interpreter and is normally not on the shell's PATH, so
+  someone who obtains a token days later has something they can paste
+  rather than a command that reports "not found".
+- The token prompt is skipped when standard input is not interactive, so
+  scheduled and scripted runs fall back to the Population-Data archive
+  instead of waiting on input.
+
 ## [0.19.1] - 2026-08-10 12:00:00
 
 ### Added
