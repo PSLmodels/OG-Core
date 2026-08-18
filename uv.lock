@@ -1644,7 +1644,7 @@ requires-dist = [
     { name = "paramtools", specifier = ">=0.20.0" },
     { name = "pydata-sphinx-theme", marker = "extra == 'docs'" },
     { name = "pygam" },
-    { name = "pytest", marker = "extra == 'dev'", specifier = ">=6.0" },
+    { name = "pytest", marker = "extra == 'dev'", specifier = ">=9.1" },
     { name = "pytest-cov", marker = "extra == 'dev'" },
     { name = "pytest-xdist", marker = "extra == 'dev'" },
     { name = "requests" },
