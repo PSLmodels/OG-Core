@@ -30,7 +30,7 @@
 <link href="../../_static/styles/pydata-sphinx-theme.css?digest=55c26ed414f5f8a31ebb" rel="stylesheet" />
 
     <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
-    <link rel="stylesheet" type="text/css" href="../../_static/styles/sphinx-book-theme.css?v=a3416100" />
+    <link rel="stylesheet" type="text/css" href="../../_static/styles/sphinx-book-theme.css?v=3c74b3bc" />
     <link rel="stylesheet" type="text/css" href="../../_static/togglebutton.css?v=9c3e77be" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="../../_static/mystnb.11b39860a7a0cbfd473a3ad8a317855267ff0bd372690045ca344a6b62be495e.css" />
@@ -48,7 +48,7 @@
     <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
     <script src="../../_static/copybutton.js?v=f281be69"></script>
-    <script src="../../_static/scripts/sphinx-book-theme.js?v=887ef09a"></script>
+    <script src="../../_static/scripts/sphinx-book-theme.js?v=fab101a9"></script>
     <script>let toggleHintShow = 'Click to show';</script>
     <script>let toggleHintHide = 'Click to hide';</script>
     <script>let toggleOpenOnPrint = 'true';</script>
@@ -222,6 +222,7 @@
 <ul class="nav bd-sidenav">
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../content/api/public_api.html">API</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../content/api/aggregates.html">Aggregates Equations</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../content/api/config.html">Logging Configuration</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../content/api/demographics.html">Demographics Functions</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../content/api/elliptical_u_est.html">Elliptical Utility Function Estimation</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../content/api/execute.html">Model Execution Functions</a></li>
@@ -235,7 +236,9 @@
 <li class="toctree-l2"><a class="reference internal" href="../../content/api/parameters.html">Parameters Functions</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../content/api/pensions.html">Pension Functions</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../content/api/solvers.html">Solvers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../content/api/SS.html">Steady-State Functions</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../content/api/tax.html">Tax Functions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../content/api/TPI.html">Transition Path Functions</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../content/api/txfunc.html">Tax Function Estimation Functions</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../content/api/utils.html">Utilities Functions</a></li>
 </ul>
@@ -365,7 +368,7 @@
 
 
 <button onclick="toggleFullScreen()"
-  class="btn btn-sm btn-fullscreen-button"
+  class="btn btn-sm btn-fullscreen-button pst-navbar-icon"
   title="Fullscreen mode"
   data-bs-placement="bottom" data-bs-toggle="tooltip"
 >
@@ -438,7 +441,7 @@
 <div class="viewcode-block" id="mkdirs">
 <a class="viewcode-back" href="../../content/api/utils.html#ogcore.utils.mkdirs">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">mkdirs</span><span class="p">(</span><span class="n">path</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Makes directories to save output.</span>
 
 <span class="sd">    Args:</span>
@@ -447,12 +450,12 @@
 <span class="sd">    Returns:</span>
 <span class="sd">        None</span>
 
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="k">try</span><span class="p">:</span>
         <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
     <span class="k">except</span> <span class="ne">OSError</span> <span class="k">as</span> <span class="n">oe</span><span class="p">:</span>
-        <span class="k">if</span> <span class="n">oe</span><span class="o">.</span><span class="n">errno</span> <span class="o">==</span> <span class="mi">17</span><span class="p">:</span>  <span class="c1"># 17 is an error code if can&#39;t make path</span>
+        <span class="k">if</span> <span class="n">oe</span><span class="o">.</span><span class="n">errno</span> <span class="o">==</span> <span class="mi">17</span><span class="p">:</span>  <span class="c1"># 17 is an error code if can't make path</span>
             <span class="k">pass</span></div>
 
 
@@ -460,7 +463,7 @@
 <div class="viewcode-block" id="pct_diff_func">
 <a class="viewcode-back" href="../../content/api/utils.html#ogcore.utils.pct_diff_func">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">pct_diff_func</span><span class="p">(</span><span class="n">simul</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Used to calculate the absolute percent difference between data</span>
 <span class="sd">    moments and model moments.</span>
 
@@ -473,7 +476,7 @@
 <span class="sd">    Returns:</span>
 <span class="sd">        output (array_like): percentage differences between model and</span>
 <span class="sd">            data moments</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">data</span><span class="p">)</span><span class="o">.</span><span class="n">all</span><span class="p">()</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
         <span class="n">frac</span> <span class="o">=</span> <span class="p">(</span><span class="n">simul</span> <span class="o">-</span> <span class="n">data</span><span class="p">)</span> <span class="o">/</span> <span class="n">data</span>
         <span class="n">output</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">frac</span><span class="p">)</span>
@@ -486,7 +489,7 @@
 <div class="viewcode-block" id="convex_combo">
 <a class="viewcode-back" href="../../content/api/utils.html#ogcore.utils.convex_combo">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">convex_combo</span><span class="p">(</span><span class="n">var1</span><span class="p">,</span> <span class="n">var2</span><span class="p">,</span> <span class="n">nu</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Takes the convex combination of two variables, where nu is in [0,1].</span>
 
 <span class="sd">    Args:</span>
@@ -498,7 +501,7 @@
 <span class="sd">        combo (array_like): same shape as var1, convex combination of</span>
 <span class="sd">        var1 and var2</span>
 
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="n">combo</span> <span class="o">=</span> <span class="n">nu</span> <span class="o">*</span> <span class="n">var1</span> <span class="o">+</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">nu</span><span class="p">)</span> <span class="o">*</span> <span class="n">var2</span>
     <span class="k">return</span> <span class="n">combo</span></div>
 
@@ -509,7 +512,7 @@
 <span class="k">def</span><span class="w"> </span><span class="nf">pickle_file_compare</span><span class="p">(</span>
     <span class="n">fname1</span><span class="p">,</span> <span class="n">fname2</span><span class="p">,</span> <span class="n">tol</span><span class="o">=</span><span class="mf">1e-3</span><span class="p">,</span> <span class="n">exceptions</span><span class="o">=</span><span class="p">{},</span> <span class="n">relative</span><span class="o">=</span><span class="kc">False</span>
 <span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Read two pickle files and unpickle each. We assume that each</span>
 <span class="sd">    resulting object is a dictionary. The values of each dict are either</span>
 <span class="sd">    numpy arrays or else types that are comparable with the == operator.</span>
@@ -523,7 +526,7 @@
 
 <span class="sd">    Returns:</span>
 <span class="sd">        comparison (bool): whether therea two dictionaries are the same</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="n">pkl1</span> <span class="o">=</span> <span class="n">safe_read_pickle</span><span class="p">(</span><span class="n">fname1</span><span class="p">)</span>
     <span class="n">pkl2</span> <span class="o">=</span> <span class="n">safe_read_pickle</span><span class="p">(</span><span class="n">fname2</span><span class="p">)</span>
     <span class="n">comparison</span> <span class="o">=</span> <span class="n">dict_compare</span><span class="p">(</span>
@@ -543,7 +546,7 @@
 <div class="viewcode-block" id="comp_array">
 <a class="viewcode-back" href="../../content/api/utils.html#ogcore.utils.comp_array">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">comp_array</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">tol</span><span class="p">,</span> <span class="n">unequal</span><span class="p">,</span> <span class="n">exceptions</span><span class="o">=</span><span class="p">{},</span> <span class="n">relative</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Compare two arrays in the L inifinity norm. Return True if | a - b | &lt; tol,</span>
 <span class="sd">    False otherwise. If not equal, add items to the unequal list name: the name</span>
 <span class="sd">    of the value being compared</span>
@@ -559,13 +562,13 @@
 
 <span class="sd">    Returns:</span>
 <span class="sd">        (bool): whether two arrays are the same or not</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="k">if</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">exceptions</span><span class="p">:</span>
         <span class="n">tol</span> <span class="o">=</span> <span class="n">exceptions</span><span class="p">[</span><span class="n">name</span><span class="p">]</span>
 
     <span class="k">if</span> <span class="ow">not</span> <span class="n">a</span><span class="o">.</span><span class="n">shape</span> <span class="o">==</span> <span class="n">b</span><span class="o">.</span><span class="n">shape</span><span class="p">:</span>
-        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;unequal shapes for </span><span class="si">{0}</span><span class="s2"> comparison &quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">name</span><span class="p">)))</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">"unequal shapes for </span><span class="si">{0}</span><span class="s2"> comparison "</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">name</span><span class="p">)))</span>
         <span class="n">unequal</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="nb">str</span><span class="p">(</span><span class="n">name</span><span class="p">),</span> <span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">))</span>
         <span class="k">return</span> <span class="kc">False</span>
 
@@ -581,11 +584,11 @@
             <span class="n">err</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="nb">abs</span><span class="p">(</span><span class="n">a</span> <span class="o">-</span> <span class="n">b</span><span class="p">))</span>
 
         <span class="k">if</span> <span class="ow">not</span> <span class="n">err</span> <span class="o">&lt;</span> <span class="n">tol</span><span class="p">:</span>
-            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;diff for </span><span class="si">{0}</span><span class="s2"> is </span><span class="si">{1}</span><span class="s2"> which is NOT OK&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">name</span><span class="p">),</span> <span class="n">err</span><span class="p">))</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">"diff for </span><span class="si">{0}</span><span class="s2"> is </span><span class="si">{1}</span><span class="s2"> which is NOT OK"</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">name</span><span class="p">),</span> <span class="n">err</span><span class="p">))</span>
             <span class="n">unequal</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="nb">str</span><span class="p">(</span><span class="n">name</span><span class="p">),</span> <span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">))</span>
             <span class="k">return</span> <span class="kc">False</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;err is </span><span class="si">{0}</span><span class="s2"> which is OK&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">err</span><span class="p">))</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">"err is </span><span class="si">{0}</span><span class="s2"> which is OK"</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">err</span><span class="p">))</span>
             <span class="k">return</span> <span class="kc">True</span></div>
 
 
@@ -593,7 +596,7 @@
 <div class="viewcode-block" id="comp_scalar">
 <a class="viewcode-back" href="../../content/api/utils.html#ogcore.utils.comp_scalar">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">comp_scalar</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">tol</span><span class="p">,</span> <span class="n">unequal</span><span class="p">,</span> <span class="n">exceptions</span><span class="o">=</span><span class="p">{},</span> <span class="n">relative</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Compare two scalars in the L inifinity norm. Return True if</span>
 <span class="sd">    abs(a - b) &lt; tol, False otherwise. If not equal, add items to the unequal</span>
 <span class="sd">    list.</span>
@@ -609,7 +612,7 @@
 
 <span class="sd">    Returns:</span>
 <span class="sd">        (bool): whether two arrays are the same or not</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="k">if</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">exceptions</span><span class="p">:</span>
         <span class="n">tol</span> <span class="o">=</span> <span class="n">exceptions</span><span class="p">[</span><span class="n">name</span><span class="p">]</span>
@@ -623,11 +626,11 @@
         <span class="n">err</span> <span class="o">=</span> <span class="nb">abs</span><span class="p">(</span><span class="n">a</span> <span class="o">-</span> <span class="n">b</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="ow">not</span> <span class="n">err</span> <span class="o">&lt;</span> <span class="n">tol</span><span class="p">:</span>
-        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;err for </span><span class="si">{0}</span><span class="s2"> is </span><span class="si">{1}</span><span class="s2"> which is NOT OK&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">name</span><span class="p">),</span> <span class="n">err</span><span class="p">))</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">"err for </span><span class="si">{0}</span><span class="s2"> is </span><span class="si">{1}</span><span class="s2"> which is NOT OK"</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">name</span><span class="p">),</span> <span class="n">err</span><span class="p">))</span>
         <span class="n">unequal</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="nb">str</span><span class="p">(</span><span class="n">name</span><span class="p">),</span> <span class="nb">str</span><span class="p">(</span><span class="n">a</span><span class="p">),</span> <span class="nb">str</span><span class="p">(</span><span class="n">b</span><span class="p">)))</span>
         <span class="k">return</span> <span class="kc">False</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;err is </span><span class="si">{0}</span><span class="s2"> which is OK&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">err</span><span class="p">))</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">"err is </span><span class="si">{0}</span><span class="s2"> which is OK"</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">err</span><span class="p">))</span>
         <span class="k">return</span> <span class="kc">True</span></div>
 
 
@@ -644,7 +647,7 @@
     <span class="n">exceptions</span><span class="o">=</span><span class="p">{},</span>
     <span class="n">relative</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
 <span class="p">):</span>
-<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">"""</span>
 <span class="sd">    Compare two dictionaries. The values of each dict are either</span>
 <span class="sd">    numpy arrays or else types that are comparable with the `==` operator.</span>
 <span class="sd">    For arrays, they are considered the same if `|x - y| &lt; tol` in</span>
@@ -664,7 +667,7 @@
 <span class="sd">    Returns:</span>
 <span class="sd">        (bool): whether two dictionaries are the same or not</span>
 
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="n">keys1</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">dict1</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
     <span class="n">keys2</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">dict2</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
@@ -673,7 +676,7 @@
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">keys1</span><span class="p">)</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="n">keys2</span><span class="p">):</span>
             <span class="n">extra1</span> <span class="o">=</span> <span class="n">keys1</span> <span class="o">-</span> <span class="n">keys2</span>
             <span class="n">extra2</span> <span class="o">=</span> <span class="n">keys2</span> <span class="o">-</span> <span class="n">keys1</span>
-            <span class="n">msg1</span> <span class="o">=</span> <span class="s2">&quot;extra items in </span><span class="si">{0}</span><span class="s2">: </span><span class="si">{1}</span><span class="s2">&quot;</span>
+            <span class="n">msg1</span> <span class="o">=</span> <span class="s2">"extra items in </span><span class="si">{0}</span><span class="s2">: </span><span class="si">{1}</span><span class="s2">"</span>
             <span class="nb">print</span><span class="p">(</span><span class="n">msg1</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">name1</span><span class="p">,</span> <span class="n">extra1</span><span class="p">))</span>
             <span class="nb">print</span><span class="p">(</span><span class="n">msg1</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">name2</span><span class="p">,</span> <span class="n">extra2</span><span class="p">))</span>
             <span class="k">return</span> <span class="kc">False</span>
@@ -686,7 +689,7 @@
             <span class="n">bigger_file</span> <span class="o">=</span> <span class="n">name2</span>
             <span class="n">smaller</span> <span class="o">=</span> <span class="n">keys1</span>
         <span class="n">res</span> <span class="o">=</span> <span class="n">bigger</span> <span class="o">-</span> <span class="n">smaller</span>
-        <span class="n">msg</span> <span class="o">=</span> <span class="s2">&quot;more items in </span><span class="si">{0}</span><span class="s2">: </span><span class="si">{1}</span><span class="s2">&quot;</span>
+        <span class="n">msg</span> <span class="o">=</span> <span class="s2">"more items in </span><span class="si">{0}</span><span class="s2">: </span><span class="si">{1}</span><span class="s2">"</span>
         <span class="nb">print</span><span class="p">(</span><span class="n">msg</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">bigger_file</span><span class="p">,</span> <span class="n">res</span><span class="p">))</span>
         <span class="k">return</span> <span class="kc">False</span>
     <span class="k">else</span><span class="p">:</span>
@@ -725,9 +728,9 @@
                     <span class="p">)</span>
 
         <span class="k">if</span> <span class="n">verbose</span> <span class="ow">and</span> <span class="n">unequal_items</span><span class="p">:</span>
-            <span class="n">frmt</span> <span class="o">=</span> <span class="s2">&quot;Name </span><span class="si">{0}</span><span class="s2">&quot;</span>
+            <span class="n">frmt</span> <span class="o">=</span> <span class="s2">"Name </span><span class="si">{0}</span><span class="s2">"</span>
             <span class="n">res</span> <span class="o">=</span> <span class="p">[</span><span class="n">frmt</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">unequal_items</span><span class="p">]</span>
-            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Different arrays: &quot;</span><span class="p">,</span> <span class="n">res</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">"Different arrays: "</span><span class="p">,</span> <span class="n">res</span><span class="p">)</span>
             <span class="k">return</span> <span class="kc">False</span>
 
     <span class="k">return</span> <span class="n">check</span></div>
@@ -737,7 +740,7 @@
 <div class="viewcode-block" id="to_timepath_shape">
 <a class="viewcode-back" href="../../content/api/utils.html#ogcore.utils.to_timepath_shape">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">to_timepath_shape</span><span class="p">(</span><span class="n">some_array</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    This function takes an vector of length T and tiles it to fill a</span>
 <span class="sd">    Tx1x1 array for time path computations.</span>
 
@@ -747,7 +750,7 @@
 <span class="sd">    Returns:</span>
 <span class="sd">        tp_array (Numpy  array): reshaped array</span>
 
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="n">tp_array</span> <span class="o">=</span> <span class="n">some_array</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">some_array</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">tp_array</span></div>
 
@@ -756,7 +759,7 @@
 <div class="viewcode-block" id="get_initial_path">
 <a class="viewcode-back" href="../../content/api/utils.html#ogcore.utils.get_initial_path">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">get_initial_path</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">xT</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">shape</span><span class="p">):</span>
-<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">"""</span>
 <span class="sd">    This function generates a path from point x1 to point xT such that</span>
 <span class="sd">    that the path x is a linear or quadratic function of time t.</span>
 
@@ -767,8 +770,8 @@
 <span class="sd">        x1 (scalar): initial value of the function x(t) at t=0</span>
 <span class="sd">        xT (scalar): value of the function x(t) at t=T-1</span>
 <span class="sd">        T (int): number of periods of the path, must be &gt;= 3</span>
-<span class="sd">        shape (str): shape of guess for time path, &quot;linear&quot;, &quot;ratio&quot;,</span>
-<span class="sd">            or &quot;quadratic&quot;</span>
+<span class="sd">        shape (str): shape of guess for time path, "linear", "ratio",</span>
+<span class="sd">            or "quadratic"</span>
 
 <span class="sd">    Returns:</span>
 <span class="sd">        xpath (Numpy array): guess of variable over the time path</span>
@@ -779,14 +782,14 @@
 <span class="sd">            2. `xT` is the value at time `t=T-1: xT = a*(T-1)^2 + b*(T-1) + c`</span>
 <span class="sd">            3. the slope of the path at `t=T-1` is 0: `0 = 2*a*(T-1) + b`</span>
 
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">if</span> <span class="n">shape</span> <span class="o">==</span> <span class="s2">&quot;linear&quot;</span><span class="p">:</span>
+<span class="sd">    """</span>
+    <span class="k">if</span> <span class="n">shape</span> <span class="o">==</span> <span class="s2">"linear"</span><span class="p">:</span>
         <span class="n">xpath</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">xT</span><span class="p">,</span> <span class="n">p</span><span class="o">.</span><span class="n">T</span><span class="p">)</span>
-    <span class="k">elif</span> <span class="n">shape</span> <span class="o">==</span> <span class="s2">&quot;ratio&quot;</span><span class="p">:</span>
+    <span class="k">elif</span> <span class="n">shape</span> <span class="o">==</span> <span class="s2">"ratio"</span><span class="p">:</span>
         <span class="n">domain</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">p</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="n">p</span><span class="o">.</span><span class="n">T</span><span class="p">)</span>
         <span class="n">domain2</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">tile</span><span class="p">(</span><span class="n">domain</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">p</span><span class="o">.</span><span class="n">S</span><span class="p">,</span> <span class="n">p</span><span class="o">.</span><span class="n">J</span><span class="p">))</span>
         <span class="n">xpath</span> <span class="o">=</span> <span class="p">(</span><span class="o">-</span><span class="mi">1</span> <span class="o">/</span> <span class="p">(</span><span class="n">domain2</span> <span class="o">+</span> <span class="mi">1</span><span class="p">))</span> <span class="o">*</span> <span class="p">(</span><span class="n">xT</span> <span class="o">-</span> <span class="n">x1</span><span class="p">)</span> <span class="o">+</span> <span class="n">xT</span>
-    <span class="k">elif</span> <span class="n">shape</span> <span class="o">==</span> <span class="s2">&quot;quadratic&quot;</span><span class="p">:</span>
+    <span class="k">elif</span> <span class="n">shape</span> <span class="o">==</span> <span class="s2">"quadratic"</span><span class="p">:</span>
         <span class="n">cc</span> <span class="o">=</span> <span class="n">x1</span>
         <span class="n">bb</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">*</span> <span class="p">(</span><span class="n">xT</span> <span class="o">-</span> <span class="n">x1</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">T</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
         <span class="n">aa</span> <span class="o">=</span> <span class="p">(</span><span class="n">x1</span> <span class="o">-</span> <span class="n">xT</span><span class="p">)</span> <span class="o">/</span> <span class="p">((</span><span class="n">p</span><span class="o">.</span><span class="n">T</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span>
@@ -805,7 +808,7 @@
 <div class="viewcode-block" id="safe_read_pickle">
 <a class="viewcode-back" href="../../content/api/utils.html#ogcore.utils.safe_read_pickle">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">safe_read_pickle</span><span class="p">(</span><span class="n">file_path</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    This function reads a pickle from Python 2 into Python 2 or Python 3</span>
 
 <span class="sd">    Args:</span>
@@ -814,10 +817,10 @@
 <span class="sd">    Returns:</span>
 <span class="sd">        obj (object): object saved in pickle file</span>
 
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">file_path</span><span class="p">,</span> <span class="s2">&quot;rb&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+<span class="sd">    """</span>
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">file_path</span><span class="p">,</span> <span class="s2">"rb"</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
         <span class="k">try</span><span class="p">:</span>
-            <span class="n">obj</span> <span class="o">=</span> <span class="n">pickle</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">&quot;latin1&quot;</span><span class="p">)</span>
+            <span class="n">obj</span> <span class="o">=</span> <span class="n">pickle</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">"latin1"</span><span class="p">)</span>
         <span class="k">except</span> <span class="ne">TypeError</span><span class="p">:</span>  <span class="c1"># pragma no cover</span>
             <span class="n">obj</span> <span class="o">=</span> <span class="n">pickle</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>  <span class="c1"># pragma no cover</span>
     <span class="k">return</span> <span class="n">obj</span></div>
@@ -827,7 +830,7 @@
 <div class="viewcode-block" id="rate_conversion">
 <a class="viewcode-back" href="../../content/api/utils.html#ogcore.utils.rate_conversion">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">rate_conversion</span><span class="p">(</span><span class="n">annual_rate</span><span class="p">,</span> <span class="n">start_age</span><span class="p">,</span> <span class="n">end_age</span><span class="p">,</span> <span class="n">S</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    This function converts annual rates to model period ratesself.</span>
 
 <span class="sd">    Args:</span>
@@ -839,7 +842,7 @@
 <span class="sd">    Returns:</span>
 <span class="sd">        rate (array_like): model period rates</span>
 
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="n">rate</span> <span class="o">=</span> <span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="n">annual_rate</span><span class="p">)</span> <span class="o">**</span> <span class="p">((</span><span class="n">end_age</span> <span class="o">-</span> <span class="n">start_age</span><span class="p">)</span> <span class="o">/</span> <span class="n">S</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span>
     <span class="k">return</span> <span class="n">rate</span></div>
 
@@ -848,13 +851,13 @@
 <div class="viewcode-block" id="save_return_table">
 <a class="viewcode-back" href="../../content/api/utils.html#ogcore.utils.save_return_table">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">save_return_table</span><span class="p">(</span><span class="n">table_df</span><span class="p">,</span> <span class="n">output_type</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">precision</span><span class="o">=</span><span class="mi">2</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Function to save or return a table of data.</span>
 
 <span class="sd">    Args:</span>
 <span class="sd">        table_df (Pandas DataFrame): table</span>
 <span class="sd">        output_type (string): specifies the type of file to save</span>
-<span class="sd">            table to: &#39;csv&#39;, &#39;tex&#39;, &#39;excel&#39;, &#39;json&#39;, &#39;md&#39;</span>
+<span class="sd">            table to: 'csv', 'tex', 'excel', 'json', 'md'</span>
 <span class="sd">        path (string): specifies path to save file with table to</span>
 <span class="sd">        precision (integer): number of significant digits to print.</span>
 <span class="sd">            Defaults to 0.</span>
@@ -862,38 +865,38 @@
 <span class="sd">    Returns:</span>
 <span class="sd">        table_df (Pandas DataFrame): table</span>
 
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">pd</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">display</span><span class="o">.</span><span class="n">float_format</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;{:,.&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">precision</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;f}&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">format</span>
+<span class="sd">    """</span>
+    <span class="n">pd</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">display</span><span class="o">.</span><span class="n">float_format</span> <span class="o">=</span> <span class="p">(</span><span class="s2">"{:,."</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">precision</span><span class="p">)</span> <span class="o">+</span> <span class="s2">"f}"</span><span class="p">)</span><span class="o">.</span><span class="n">format</span>
     <span class="k">if</span> <span class="n">path</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="k">if</span> <span class="n">output_type</span> <span class="o">==</span> <span class="s2">&quot;tex&quot;</span><span class="p">:</span>
-            <span class="n">tab_str</span> <span class="o">=</span> <span class="n">table_df</span><span class="o">.</span><span class="n">to_latex</span><span class="p">(</span><span class="n">index</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">na_rep</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">output_type</span> <span class="o">==</span> <span class="s2">"tex"</span><span class="p">:</span>
+            <span class="n">tab_str</span> <span class="o">=</span> <span class="n">table_df</span><span class="o">.</span><span class="n">to_latex</span><span class="p">(</span><span class="n">index</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">na_rep</span><span class="o">=</span><span class="s2">""</span><span class="p">)</span>
             <span class="k">return</span> <span class="n">tab_str</span>
-        <span class="k">elif</span> <span class="n">output_type</span> <span class="o">==</span> <span class="s2">&quot;json&quot;</span><span class="p">:</span>
+        <span class="k">elif</span> <span class="n">output_type</span> <span class="o">==</span> <span class="s2">"json"</span><span class="p">:</span>
             <span class="n">tab_str</span> <span class="o">=</span> <span class="n">table_df</span><span class="o">.</span><span class="n">to_json</span><span class="p">(</span><span class="n">double_precision</span><span class="o">=</span><span class="n">precision</span><span class="p">)</span>
             <span class="k">return</span> <span class="n">tab_str</span>
-        <span class="k">elif</span> <span class="n">output_type</span> <span class="o">==</span> <span class="s2">&quot;html&quot;</span><span class="p">:</span>
+        <span class="k">elif</span> <span class="n">output_type</span> <span class="o">==</span> <span class="s2">"html"</span><span class="p">:</span>
             <span class="n">tab_html</span> <span class="o">=</span> <span class="n">table_df</span><span class="o">.</span><span class="n">to_html</span><span class="p">(</span>
-                <span class="n">classes</span><span class="o">=</span><span class="s2">&quot;table table-striped table-hover&quot;</span>
-            <span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
-            <span class="n">tab_html</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
+                <span class="n">classes</span><span class="o">=</span><span class="s2">"table table-striped table-hover"</span>
+            <span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">"</span><span class="se">\n</span><span class="s2">"</span><span class="p">,</span> <span class="s2">""</span><span class="p">)</span>
+            <span class="n">tab_html</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">"</span><span class="se">\n</span><span class="s2">"</span><span class="p">,</span> <span class="s2">""</span><span class="p">)</span>
             <span class="k">return</span> <span class="n">tab_html</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">table_df</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="k">if</span> <span class="n">output_type</span> <span class="o">==</span> <span class="s2">&quot;tex&quot;</span><span class="p">:</span>
-            <span class="n">table_df</span><span class="o">.</span><span class="n">to_latex</span><span class="p">(</span><span class="n">buf</span><span class="o">=</span><span class="n">path</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">na_rep</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">)</span>
-        <span class="k">elif</span> <span class="n">output_type</span> <span class="o">==</span> <span class="s2">&quot;csv&quot;</span><span class="p">:</span>
-            <span class="n">table_df</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="n">path_or_buf</span><span class="o">=</span><span class="n">path</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">na_rep</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">)</span>
-        <span class="k">elif</span> <span class="n">output_type</span> <span class="o">==</span> <span class="s2">&quot;json&quot;</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">output_type</span> <span class="o">==</span> <span class="s2">"tex"</span><span class="p">:</span>
+            <span class="n">table_df</span><span class="o">.</span><span class="n">to_latex</span><span class="p">(</span><span class="n">buf</span><span class="o">=</span><span class="n">path</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">na_rep</span><span class="o">=</span><span class="s2">""</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">output_type</span> <span class="o">==</span> <span class="s2">"csv"</span><span class="p">:</span>
+            <span class="n">table_df</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="n">path_or_buf</span><span class="o">=</span><span class="n">path</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">na_rep</span><span class="o">=</span><span class="s2">""</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">output_type</span> <span class="o">==</span> <span class="s2">"json"</span><span class="p">:</span>
             <span class="n">table_df</span><span class="o">.</span><span class="n">to_json</span><span class="p">(</span><span class="n">path_or_buf</span><span class="o">=</span><span class="n">path</span><span class="p">,</span> <span class="n">double_precision</span><span class="o">=</span><span class="n">precision</span><span class="p">)</span>
-        <span class="k">elif</span> <span class="n">output_type</span> <span class="o">==</span> <span class="s2">&quot;md&quot;</span><span class="p">:</span>
+        <span class="k">elif</span> <span class="n">output_type</span> <span class="o">==</span> <span class="s2">"md"</span><span class="p">:</span>
             <span class="n">table_df</span><span class="o">.</span><span class="n">to_markdown</span><span class="p">(</span>
-                <span class="n">buf</span><span class="o">=</span><span class="n">path</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">floatfmt</span><span class="o">=</span><span class="s2">&quot;.</span><span class="si">{}</span><span class="s2">f&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">precision</span><span class="p">)</span>
+                <span class="n">buf</span><span class="o">=</span><span class="n">path</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">floatfmt</span><span class="o">=</span><span class="s2">".</span><span class="si">{}</span><span class="s2">f"</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">precision</span><span class="p">)</span>
             <span class="p">)</span>
-        <span class="k">elif</span> <span class="n">output_type</span> <span class="o">==</span> <span class="s2">&quot;excel&quot;</span><span class="p">:</span>
-            <span class="n">table_df</span><span class="o">.</span><span class="n">to_excel</span><span class="p">(</span><span class="n">excel_writer</span><span class="o">=</span><span class="n">path</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">na_rep</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">output_type</span> <span class="o">==</span> <span class="s2">"excel"</span><span class="p">:</span>
+            <span class="n">table_df</span><span class="o">.</span><span class="n">to_excel</span><span class="p">(</span><span class="n">excel_writer</span><span class="o">=</span><span class="n">path</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">na_rep</span><span class="o">=</span><span class="s2">""</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Please enter a valid output format&quot;</span><span class="p">)</span>  <span class="c1"># pragma no cover</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">"Please enter a valid output format"</span><span class="p">)</span>  <span class="c1"># pragma no cover</span>
             <span class="k">assert</span> <span class="kc">False</span>  <span class="c1"># pragma no cover</span></div>
 
 
@@ -901,12 +904,12 @@
 <div class="viewcode-block" id="Inequality">
 <a class="viewcode-back" href="../../content/api/utils.html#ogcore.utils.Inequality">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">Inequality</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    A class with methods to compute different measures of inequality.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dist</span><span class="p">,</span> <span class="n">pop_weights</span><span class="p">,</span> <span class="n">ability_weights</span><span class="p">,</span> <span class="n">S</span><span class="p">,</span> <span class="n">J</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Args:</span>
 <span class="sd">            dist (Numpy array): distribution of endogenous variables</span>
 <span class="sd">                over age and lifetime income group, size, SxJ</span>
@@ -920,7 +923,7 @@
 <span class="sd">        Returns:</span>
 <span class="sd">            None</span>
 
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">dist</span> <span class="o">=</span> <span class="n">dist</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">pop_weights</span> <span class="o">=</span> <span class="n">pop_weights</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">ability_weights</span> <span class="o">=</span> <span class="n">ability_weights</span>
@@ -940,8 +943,8 @@
 
 <div class="viewcode-block" id="Inequality.gini">
 <a class="viewcode-back" href="../../content/api/utils.html#ogcore.utils.Inequality.gini">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">gini</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="s2">&quot;overall&quot;</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">gini</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="s2">"overall"</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Compute the Gini coefficient</span>
 
 <span class="sd">        Args:</span>
@@ -949,11 +952,11 @@
 
 <span class="sd">        Returns:</span>
 <span class="sd">            gini_coeff (scalar): Gini coefficient</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="nb">type</span> <span class="o">==</span> <span class="s2">&quot;overall&quot;</span><span class="p">:</span>
+<span class="sd">        """</span>
+        <span class="k">if</span> <span class="nb">type</span> <span class="o">==</span> <span class="s2">"overall"</span><span class="p">:</span>
             <span class="n">p</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">cumsum</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sort_weights</span><span class="p">)</span>
             <span class="n">nu</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">cumsum</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sort_dist</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">sort_weights</span><span class="p">)</span>
-        <span class="k">elif</span> <span class="nb">type</span> <span class="o">==</span> <span class="s2">&quot;age&quot;</span><span class="p">:</span>
+        <span class="k">elif</span> <span class="nb">type</span> <span class="o">==</span> <span class="s2">"age"</span><span class="p">:</span>
             <span class="n">flattened_dist</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dist</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">flatten</span><span class="p">()</span>
             <span class="n">pw</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pop_weights</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">pw</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
@@ -965,7 +968,7 @@
             <span class="n">sort_weights</span> <span class="o">=</span> <span class="n">flattened_weights</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span> <span class="o">/</span> <span class="n">flattened_weights</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
             <span class="n">p</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">cumsum</span><span class="p">(</span><span class="n">sort_weights</span><span class="p">)</span>
             <span class="n">nu</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">cumsum</span><span class="p">(</span><span class="n">sort_dist</span> <span class="o">*</span> <span class="n">sort_weights</span><span class="p">)</span>
-        <span class="k">elif</span> <span class="nb">type</span> <span class="o">==</span> <span class="s2">&quot;ability&quot;</span><span class="p">:</span>
+        <span class="k">elif</span> <span class="nb">type</span> <span class="o">==</span> <span class="s2">"ability"</span><span class="p">:</span>
             <span class="n">flattened_dist</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dist</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">flatten</span><span class="p">()</span>
             <span class="n">flattened_weights</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ability_weights</span><span class="o">.</span><span class="n">flatten</span><span class="p">()</span>
             <span class="n">idx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">argsort</span><span class="p">(</span><span class="n">flattened_dist</span><span class="p">)</span>
@@ -982,7 +985,7 @@
 <div class="viewcode-block" id="Inequality.var_of_logs">
 <a class="viewcode-back" href="../../content/api/utils.html#ogcore.utils.Inequality.var_of_logs">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">var_of_logs</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Compute the variance of logs</span>
 
 <span class="sd">        Args:</span>
@@ -991,7 +994,7 @@
 <span class="sd">        Returns:</span>
 <span class="sd">            var_ln_dist (scalar): variance of logs</span>
 
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="n">ln_dist</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sort_dist</span><span class="p">)</span>
         <span class="n">weight_mean</span> <span class="o">=</span> <span class="p">(</span>
             <span class="n">ln_dist</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">sort_weights</span>
@@ -1006,7 +1009,7 @@
 <div class="viewcode-block" id="Inequality.ratio_pct1_pct2">
 <a class="viewcode-back" href="../../content/api/utils.html#ogcore.utils.Inequality.ratio_pct1_pct2">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">ratio_pct1_pct2</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pct1</span><span class="p">,</span> <span class="n">pct2</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Compute the pct1/pct2 percentile ratio</span>
 
 <span class="sd">        Args:</span>
@@ -1020,7 +1023,7 @@
 
 <span class="sd">        Notes:</span>
 <span class="sd">            usually pct1 &gt; pct 2</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">assert</span> <span class="n">pct1</span> <span class="o">&gt;</span> <span class="mi">0</span>
         <span class="k">assert</span> <span class="n">pct1</span> <span class="o">&lt;</span> <span class="mi">1</span>
         <span class="k">assert</span> <span class="n">pct2</span> <span class="o">&gt;</span> <span class="mi">0</span>
@@ -1035,7 +1038,7 @@
 <div class="viewcode-block" id="Inequality.pct">
 <a class="viewcode-back" href="../../content/api/utils.html#ogcore.utils.Inequality.pct">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">pct</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pct</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Returns value at given percentile</span>
 
 <span class="sd">        Args:</span>
@@ -1045,7 +1048,7 @@
 <span class="sd">        Returns:</span>
 <span class="sd">            value (scalar): value of variable at pct</span>
 
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">assert</span> <span class="n">pct</span> <span class="o">&gt;</span> <span class="mi">0</span>
         <span class="k">assert</span> <span class="n">pct</span> <span class="o">&lt;</span> <span class="mi">1</span>
         <span class="n">loc_pct</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">argmin</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cum_weights</span> <span class="o">-</span> <span class="n">pct</span><span class="p">))</span>
@@ -1057,7 +1060,7 @@
 <div class="viewcode-block" id="Inequality.top_share">
 <a class="viewcode-back" href="../../content/api/utils.html#ogcore.utils.Inequality.top_share">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">top_share</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pctile</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Compute the top X% share</span>
 
 <span class="sd">        Args:</span>
@@ -1067,7 +1070,7 @@
 <span class="sd">        Returns:</span>
 <span class="sd">            pctile_share (scalar): share of variable attributed to the</span>
 <span class="sd">                top pctile group</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">assert</span> <span class="n">pctile</span> <span class="o">&gt;</span> <span class="mi">0</span>
         <span class="k">assert</span> <span class="n">pctile</span> <span class="o">&lt;</span> <span class="mi">1</span>
         <span class="n">loc_pctile</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">argmin</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cum_weights</span> <span class="o">-</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">pctile</span><span class="p">)))</span>
@@ -1085,13 +1088,13 @@
 <span class="k">def</span><span class="w"> </span><span class="nf">print_progress</span><span class="p">(</span>
     <span class="n">iteration</span><span class="p">,</span>
     <span class="n">total</span><span class="p">,</span>
-    <span class="n">source_name</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span>
-    <span class="n">prefix</span><span class="o">=</span><span class="s2">&quot;Progress:&quot;</span><span class="p">,</span>
-    <span class="n">suffix</span><span class="o">=</span><span class="s2">&quot;Complete&quot;</span><span class="p">,</span>
+    <span class="n">source_name</span><span class="o">=</span><span class="s2">""</span><span class="p">,</span>
+    <span class="n">prefix</span><span class="o">=</span><span class="s2">"Progress:"</span><span class="p">,</span>
+    <span class="n">suffix</span><span class="o">=</span><span class="s2">"Complete"</span><span class="p">,</span>
     <span class="n">decimals</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
     <span class="n">bar_length</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span>
 <span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Prints a progress bar to the terminal when completing small tasks</span>
 <span class="sd">    of a larger job.</span>
 
@@ -1114,29 +1117,29 @@
 <span class="sd">        bar (string): progress bar</span>
 
 <span class="sd">    Returns: status</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">status</span> <span class="o">=</span> <span class="s2">&quot;Incomplete&quot;</span>
-    <span class="n">str_format</span> <span class="o">=</span> <span class="s2">&quot;{0:.&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">decimals</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;f}&quot;</span>
+<span class="sd">    """</span>
+    <span class="n">status</span> <span class="o">=</span> <span class="s2">"Incomplete"</span>
+    <span class="n">str_format</span> <span class="o">=</span> <span class="s2">"{0:."</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">decimals</span><span class="p">)</span> <span class="o">+</span> <span class="s2">"f}"</span>
     <span class="n">percents</span> <span class="o">=</span> <span class="n">str_format</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="mi">100</span> <span class="o">*</span> <span class="p">(</span><span class="n">iteration</span> <span class="o">/</span> <span class="nb">float</span><span class="p">(</span><span class="n">total</span><span class="p">)))</span>
     <span class="n">filled_length</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="nb">round</span><span class="p">(</span><span class="n">bar_length</span> <span class="o">*</span> <span class="n">iteration</span> <span class="o">/</span> <span class="nb">float</span><span class="p">(</span><span class="n">total</span><span class="p">)))</span>
-    <span class="n">bar</span> <span class="o">=</span> <span class="s2">&quot;█&quot;</span> <span class="o">*</span> <span class="n">filled_length</span> <span class="o">+</span> <span class="s2">&quot;-&quot;</span> <span class="o">*</span> <span class="p">(</span><span class="n">bar_length</span> <span class="o">-</span> <span class="n">filled_length</span><span class="p">)</span>
+    <span class="n">bar</span> <span class="o">=</span> <span class="s2">"█"</span> <span class="o">*</span> <span class="n">filled_length</span> <span class="o">+</span> <span class="s2">"-"</span> <span class="o">*</span> <span class="p">(</span><span class="n">bar_length</span> <span class="o">-</span> <span class="n">filled_length</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="n">iteration</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
-        <span class="k">if</span> <span class="n">source_name</span> <span class="o">==</span> <span class="s2">&quot;&quot;</span><span class="p">:</span>
-            <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;Accessing data files...</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">source_name</span> <span class="o">==</span> <span class="s2">""</span><span class="p">:</span>
+            <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">"Accessing data files...</span><span class="se">\n</span><span class="s2">"</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;Accessing &quot;</span> <span class="o">+</span> <span class="n">source_name</span> <span class="o">+</span> <span class="s2">&quot; data files...</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">"Accessing "</span> <span class="o">+</span> <span class="n">source_name</span> <span class="o">+</span> <span class="s2">" data files...</span><span class="se">\n</span><span class="s2">"</span><span class="p">)</span>
 
     <span class="p">(</span>
         <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">write</span><span class="p">(</span>
-            <span class="s2">&quot;</span><span class="se">\r</span><span class="si">%s</span><span class="s2"> |</span><span class="si">%s</span><span class="s2">| </span><span class="si">%s%s</span><span class="s2"> </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">prefix</span><span class="p">,</span> <span class="n">bar</span><span class="p">,</span> <span class="n">percents</span><span class="p">,</span> <span class="s2">&quot;%&quot;</span><span class="p">,</span> <span class="n">suffix</span><span class="p">)</span>
+            <span class="s2">"</span><span class="se">\r</span><span class="si">%s</span><span class="s2"> |</span><span class="si">%s</span><span class="s2">| </span><span class="si">%s%s</span><span class="s2"> </span><span class="si">%s</span><span class="s2">"</span> <span class="o">%</span> <span class="p">(</span><span class="n">prefix</span><span class="p">,</span> <span class="n">bar</span><span class="p">,</span> <span class="n">percents</span><span class="p">,</span> <span class="s2">"%"</span><span class="p">,</span> <span class="n">suffix</span><span class="p">)</span>
         <span class="p">),</span>
     <span class="p">)</span>
 
     <span class="k">if</span> <span class="n">iteration</span> <span class="o">==</span> <span class="n">total</span><span class="p">:</span>
-        <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
-        <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;Computing...</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
-        <span class="n">status</span> <span class="o">=</span> <span class="s2">&quot;Complete&quot;</span>
+        <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">"</span><span class="se">\n</span><span class="s2">"</span><span class="p">)</span>
+        <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">"Computing...</span><span class="se">\n</span><span class="s2">"</span><span class="p">)</span>
+        <span class="n">status</span> <span class="o">=</span> <span class="s2">"Complete"</span>
     <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">flush</span><span class="p">()</span>
 
     <span class="k">return</span> <span class="n">status</span></div>
@@ -1146,7 +1149,7 @@
 <div class="viewcode-block" id="fetch_files_from_web">
 <a class="viewcode-back" href="../../content/api/utils.html#ogcore.utils.fetch_files_from_web">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">fetch_files_from_web</span><span class="p">(</span><span class="n">file_urls</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Fetches zip files from respective web addresses and saves them as</span>
 <span class="sd">    temporary files. Prints progress bar as it downloads the files.</span>
 
@@ -1171,16 +1174,16 @@
 <span class="sd">    Returns:</span>
 <span class="sd">        local_paths (list of strings): local paths of temporary data</span>
 <span class="sd">            files</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="n">local_paths</span> <span class="o">=</span> <span class="p">[]</span>
 
     <span class="n">iteration</span> <span class="o">=</span> <span class="mi">0</span>
     <span class="n">total</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">file_urls</span><span class="p">)</span>
-    <span class="n">_</span> <span class="o">=</span> <span class="n">print_progress</span><span class="p">(</span><span class="n">iteration</span><span class="p">,</span> <span class="n">total</span><span class="p">,</span> <span class="n">source_name</span><span class="o">=</span><span class="s2">&quot;SCF&quot;</span><span class="p">)</span>
+    <span class="n">_</span> <span class="o">=</span> <span class="n">print_progress</span><span class="p">(</span><span class="n">iteration</span><span class="p">,</span> <span class="n">total</span><span class="p">,</span> <span class="n">source_name</span><span class="o">=</span><span class="s2">"SCF"</span><span class="p">)</span>
 
     <span class="k">for</span> <span class="n">file_url</span> <span class="ow">in</span> <span class="n">file_urls</span><span class="p">:</span>
         <span class="n">request</span> <span class="o">=</span> <span class="n">urllib</span><span class="o">.</span><span class="n">request</span><span class="o">.</span><span class="n">Request</span><span class="p">(</span><span class="n">file_url</span><span class="p">)</span>
-        <span class="n">request</span><span class="o">.</span><span class="n">add_header</span><span class="p">(</span><span class="s2">&quot;User-Agent&quot;</span><span class="p">,</span> <span class="s2">&quot;Mozilla/5.0&quot;</span><span class="p">)</span>
+        <span class="n">request</span><span class="o">.</span><span class="n">add_header</span><span class="p">(</span><span class="s2">"User-Agent"</span><span class="p">,</span> <span class="s2">"Mozilla/5.0"</span><span class="p">)</span>
         <span class="n">url</span> <span class="o">=</span> <span class="n">urllib</span><span class="o">.</span><span class="n">request</span><span class="o">.</span><span class="n">urlopen</span><span class="p">(</span><span class="n">request</span><span class="p">)</span>
 
         <span class="n">f</span> <span class="o">=</span> <span class="n">NamedTemporaryFile</span><span class="p">(</span><span class="n">delete</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
@@ -1198,7 +1201,7 @@
         <span class="n">f</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
 
         <span class="n">iteration</span> <span class="o">+=</span> <span class="mi">1</span>
-        <span class="n">_</span> <span class="o">=</span> <span class="n">print_progress</span><span class="p">(</span><span class="n">iteration</span><span class="p">,</span> <span class="n">total</span><span class="p">,</span> <span class="n">source_name</span><span class="o">=</span><span class="s2">&quot;SCF&quot;</span><span class="p">)</span>
+        <span class="n">_</span> <span class="o">=</span> <span class="n">print_progress</span><span class="p">(</span><span class="n">iteration</span><span class="p">,</span> <span class="n">total</span><span class="p">,</span> <span class="n">source_name</span><span class="o">=</span><span class="s2">"SCF"</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="n">local_paths</span></div>
 
@@ -1206,8 +1209,8 @@
 
 <div class="viewcode-block" id="not_connected">
 <a class="viewcode-back" href="../../content/api/utils.html#ogcore.utils.not_connected">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">not_connected</span><span class="p">(</span><span class="n">url</span><span class="o">=</span><span class="s2">&quot;http://www.google.com/&quot;</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="mi">5</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">not_connected</span><span class="p">(</span><span class="n">url</span><span class="o">=</span><span class="s2">"http://www.google.com/"</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="mi">5</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Checks for internet connection status of machine.</span>
 
 <span class="sd">    Args:</span>
@@ -1221,7 +1224,7 @@
 
 <span class="sd">    Raises:</span>
 <span class="sd">        ConnectionError: If no response from url withing timeout</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="k">try</span><span class="p">:</span>
         <span class="n">_</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="n">timeout</span><span class="p">)</span>
         <span class="k">return</span> <span class="kc">False</span>
@@ -1233,7 +1236,7 @@
 <div class="viewcode-block" id="avg_by_bin">
 <a class="viewcode-back" href="../../content/api/utils.html#ogcore.utils.avg_by_bin">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">avg_by_bin</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">weights</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">bins</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">eql_pctl</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    For an x series and y series (vectors), this function computes vectors of</span>
 <span class="sd">    weighted average values in specified bins.</span>
 
@@ -1248,7 +1251,7 @@
 <span class="sd">        x_binned(array_like, np.array): weighted average x values in bins</span>
 <span class="sd">        y_binned (array_like, np.array): weighted average y values in bins</span>
 <span class="sd">        weights_binned (array_like, np.array): total weights in bins</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="c1"># If vectors are pandas Series objects, convert to numpy arrays</span>
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">):</span>
         <span class="n">x</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">()</span>
@@ -1280,11 +1283,11 @@
                         <span class="n">weights</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)),</span>
                     <span class="p">)</span>
                 <span class="p">),</span>
-                <span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;x&quot;</span><span class="p">,</span> <span class="s2">&quot;y&quot;</span><span class="p">,</span> <span class="s2">&quot;weights&quot;</span><span class="p">],</span>
-            <span class="p">)</span><span class="o">.</span><span class="n">sort_values</span><span class="p">(</span><span class="n">by</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;x&quot;</span><span class="p">])</span>
-            <span class="n">x</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="s2">&quot;x&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">()</span>
-            <span class="n">y</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="s2">&quot;y&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">()</span>
-            <span class="n">weights</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="s2">&quot;weights&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">()</span>
+                <span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s2">"x"</span><span class="p">,</span> <span class="s2">"y"</span><span class="p">,</span> <span class="s2">"weights"</span><span class="p">],</span>
+            <span class="p">)</span><span class="o">.</span><span class="n">sort_values</span><span class="p">(</span><span class="n">by</span><span class="o">=</span><span class="p">[</span><span class="s2">"x"</span><span class="p">])</span>
+            <span class="n">x</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="s2">"x"</span><span class="p">]</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">()</span>
+            <span class="n">y</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="s2">"y"</span><span class="p">]</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">()</span>
+            <span class="n">weights</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="s2">"weights"</span><span class="p">]</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">()</span>
 
             <span class="n">weights_norm_cum</span> <span class="o">=</span> <span class="n">weights</span><span class="o">.</span><span class="n">cumsum</span><span class="p">()</span> <span class="o">/</span> <span class="n">weights</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
             <span class="n">weights_norm_cum</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="mf">1.0</span>
@@ -1337,9 +1340,9 @@
     <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">bins</span><span class="p">,</span> <span class="nb">list</span><span class="p">)</span> <span class="ow">or</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">bins</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">):</span>
         <span class="k">if</span> <span class="n">eql_pctl</span><span class="p">:</span>
             <span class="n">err_msg</span> <span class="o">=</span> <span class="p">(</span>
-                <span class="s2">&quot;avg_by_bin ERROR: eql_pctl=True with bins given as &quot;</span>
-                <span class="o">+</span> <span class="s2">&quot;list or ndarray. In this case, eql_pctl must be set &quot;</span>
-                <span class="o">+</span> <span class="s2">&quot;to False&quot;</span>
+                <span class="s2">"avg_by_bin ERROR: eql_pctl=True with bins given as "</span>
+                <span class="o">+</span> <span class="s2">"list or ndarray. In this case, eql_pctl must be set "</span>
+                <span class="o">+</span> <span class="s2">"to False"</span>
             <span class="p">)</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">err_msg</span><span class="p">)</span>
         <span class="n">bin_num</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">bins</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span>
@@ -1357,9 +1360,9 @@
 
     <span class="k">else</span><span class="p">:</span>
         <span class="n">err_msg</span> <span class="o">=</span> <span class="p">(</span>
-            <span class="s2">&quot;avg_by_bin ERROR: bins value is type &quot;</span>
+            <span class="s2">"avg_by_bin ERROR: bins value is type "</span>
             <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">bins</span><span class="p">))</span>
-            <span class="o">+</span> <span class="s2">&quot;, but needs to be either scalar, list, or ndarray.&quot;</span>
+            <span class="o">+</span> <span class="s2">", but needs to be either scalar, list, or ndarray."</span>
         <span class="p">)</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">err_msg</span><span class="p">)</span>
 
@@ -1369,8 +1372,8 @@
 
 <div class="viewcode-block" id="extrapolate_array">
 <a class="viewcode-back" href="../../content/api/utils.html#ogcore.utils.extrapolate_array">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">extrapolate_array</span><span class="p">(</span><span class="n">param_in</span><span class="p">,</span> <span class="n">dims</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">item</span><span class="o">=</span><span class="s2">&quot;Parameter Name&quot;</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">extrapolate_array</span><span class="p">(</span><span class="n">param_in</span><span class="p">,</span> <span class="n">dims</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">item</span><span class="o">=</span><span class="s2">"Parameter Name"</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Extrapolates input values to fit model dimensions. Using this allows</span>
 <span class="sd">    users to input smaller dimensional arrays and have the model infer</span>
 <span class="sd">    that they want these extrapolated.</span>
@@ -1387,7 +1390,7 @@
 
 <span class="sd">    Returns:</span>
 <span class="sd">        param_out (array_like): reshape parameter for use in OG-Core</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">dims</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
         <span class="c1"># this is the case for 1D arrays, they vary over the time path</span>
         <span class="k">if</span> <span class="n">param_in</span><span class="o">.</span><span class="n">ndim</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
@@ -1426,15 +1429,15 @@
                     <span class="n">param_out</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">dims</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="mi">1</span><span class="p">),</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">dims</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
                 <span class="p">)</span>
         <span class="k">elif</span> <span class="n">param_in</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
-            <span class="c1"># case where enter values along 2 dimensions, but those aren&#39;t</span>
+            <span class="c1"># case where enter values along 2 dimensions, but those aren't</span>
             <span class="c1"># complete</span>
             <span class="k">if</span> <span class="n">param_in</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">1</span> <span class="ow">and</span> <span class="n">param_in</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">!=</span> <span class="n">dims</span><span class="p">[</span><span class="mi">1</span><span class="p">]:</span>
                 <span class="nb">print</span><span class="p">(</span>
-                    <span class="s2">&quot;please provide values of &quot;</span>
+                    <span class="s2">"please provide values of "</span>
                     <span class="o">+</span> <span class="n">item</span>
-                    <span class="o">+</span> <span class="s2">&quot; for element in the 2nd dimension (or enter a &quot;</span>
-                    <span class="o">+</span> <span class="s2">&quot;constant if the value is common across elements in &quot;</span>
-                    <span class="o">+</span> <span class="s2">&quot;the second dimension}&quot;</span>
+                    <span class="o">+</span> <span class="s2">" for element in the 2nd dimension (or enter a "</span>
+                    <span class="o">+</span> <span class="s2">"constant if the value is common across elements in "</span>
+                    <span class="o">+</span> <span class="s2">"the second dimension}"</span>
                 <span class="p">)</span>
                 <span class="k">assert</span> <span class="kc">False</span>
             <span class="k">if</span> <span class="n">param_in</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
@@ -1509,8 +1512,8 @@
                     <span class="o">/</span> <span class="n">dims</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
                 <span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
-                <span class="nb">print</span><span class="p">(</span><span class="n">item</span> <span class="o">+</span> <span class="s2">&quot; dimensions are: &quot;</span><span class="p">,</span> <span class="n">param_in</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
-                <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;please give an &quot;</span> <span class="o">+</span> <span class="n">item</span> <span class="o">+</span> <span class="s2">&quot; that is either SxJ or TxS&quot;</span><span class="p">)</span>
+                <span class="nb">print</span><span class="p">(</span><span class="n">item</span> <span class="o">+</span> <span class="s2">" dimensions are: "</span><span class="p">,</span> <span class="n">param_in</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+                <span class="nb">print</span><span class="p">(</span><span class="s2">"please give an "</span> <span class="o">+</span> <span class="n">item</span> <span class="o">+</span> <span class="s2">" that is either SxJ or TxS"</span><span class="p">)</span>
                 <span class="k">assert</span> <span class="kc">False</span>
         <span class="k">elif</span> <span class="n">param_in</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">3</span><span class="p">:</span>
             <span class="c1"># this is the case where input varies by T, S, J</span>
@@ -1535,7 +1538,7 @@
 <div class="viewcode-block" id="extrapolate_nested_list">
 <a class="viewcode-back" href="../../content/api/utils.html#ogcore.utils.extrapolate_nested_list">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">extrapolate_nested_list</span><span class="p">(</span><span class="n">list_in</span><span class="p">,</span> <span class="n">dims</span><span class="o">=</span><span class="p">(</span><span class="mi">400</span><span class="p">,</span> <span class="mi">80</span><span class="p">,</span> <span class="mi">1</span><span class="p">)):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Function to extrapolate a nested list to a specified size.</span>
 
 <span class="sd">    Currently only set up for 3 deep nested lists, but could be</span>
@@ -1547,23 +1550,23 @@
 
 <span class="sd">    Returns:</span>
 <span class="sd">        list_out (list): extrapolated list</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="n">T</span><span class="p">,</span> <span class="n">S</span><span class="p">,</span> <span class="n">num_params</span> <span class="o">=</span> <span class="n">dims</span>
     <span class="k">try</span><span class="p">:</span>
         <span class="n">list_in</span> <span class="o">=</span> <span class="n">list_in</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>  <span class="c1"># in case parameters are numpy arrays</span>
     <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>  <span class="c1"># catches if they are lists already</span>
         <span class="k">pass</span>
-    <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">list_in</span><span class="p">,</span> <span class="nb">list</span><span class="p">),</span> <span class="s2">&quot;please give a list&quot;</span>
+    <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">list_in</span><span class="p">,</span> <span class="nb">list</span><span class="p">),</span> <span class="s2">"please give a list"</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">depth</span><span class="p">(</span><span class="n">L</span><span class="p">):</span>
         <span class="k">return</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">L</span><span class="p">,</span> <span class="nb">list</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">max</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="n">depth</span><span class="p">,</span> <span class="n">L</span><span class="p">))</span> <span class="o">+</span> <span class="mi">1</span>
 
     <span class="c1"># for now, just have this work for 3 deep lists since</span>
     <span class="c1"># the only OG-Core use case is for tax function parameters</span>
-    <span class="k">assert</span> <span class="n">depth</span><span class="p">(</span><span class="n">list_in</span><span class="p">)</span> <span class="o">==</span> <span class="mi">3</span><span class="p">,</span> <span class="s2">&quot;please give a list that is three lists deep&quot;</span>
+    <span class="k">assert</span> <span class="n">depth</span><span class="p">(</span><span class="n">list_in</span><span class="p">)</span> <span class="o">==</span> <span class="mi">3</span><span class="p">,</span> <span class="s2">"please give a list that is three lists deep"</span>
     <span class="k">assert</span> <span class="n">depth</span><span class="p">(</span><span class="n">list_in</span><span class="p">)</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="n">dims</span><span class="p">),</span> <span class="p">(</span>
-        <span class="s2">&quot;please make sure the depth of nested list is equal to the&quot;</span>
-        <span class="s2">&quot; length of dims to extrapolate&quot;</span>
+        <span class="s2">"please make sure the depth of nested list is equal to the"</span>
+        <span class="s2">" length of dims to extrapolate"</span>
     <span class="p">)</span>
     <span class="c1"># Extrapolate along the first dimension</span>
     <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">list_in</span><span class="p">)</span> <span class="o">&gt;</span> <span class="n">T</span> <span class="o">+</span> <span class="n">S</span><span class="p">:</span>
@@ -1586,16 +1589,16 @@
 <div class="viewcode-block" id="CustomHttpAdapter">
 <a class="viewcode-back" href="../../content/api/utils.html#ogcore.utils.CustomHttpAdapter">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">CustomHttpAdapter</span><span class="p">(</span><span class="n">requests</span><span class="o">.</span><span class="n">adapters</span><span class="o">.</span><span class="n">HTTPAdapter</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    The UN Data Portal server doesn&#39;t support &quot;RFC 5746 secure</span>
-<span class="sd">    renegotiation&quot;. This causes and error when the client is using</span>
+<span class="w">    </span><span class="sd">"""</span>
+<span class="sd">    The UN Data Portal server doesn't support "RFC 5746 secure</span>
+<span class="sd">    renegotiation". This causes and error when the client is using</span>
 <span class="sd">    OpenSSL 3, which enforces that standard by default.</span>
 <span class="sd">    The fix is to create a custom SSL context that allows for legacy</span>
 <span class="sd">    connections. This defines a function get_legacy_session() that</span>
 <span class="sd">    should be used instead of requests().</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
-    <span class="c1"># &quot;Transport adapter&quot; that allows us to use custom ssl_context.</span>
+    <span class="c1"># "Transport adapter" that allows us to use custom ssl_context.</span>
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ssl_context</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">ssl_context</span> <span class="o">=</span> <span class="n">ssl_context</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
@@ -1619,7 +1622,7 @@
     <span class="c1"># switch from 0x4 to ssl.OP_LEGACY_SERVER_CONNECT.</span>
     <span class="n">ctx</span><span class="o">.</span><span class="n">options</span> <span class="o">|=</span> <span class="mh">0x4</span>
     <span class="n">session</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">session</span><span class="p">()</span>
-    <span class="n">session</span><span class="o">.</span><span class="n">mount</span><span class="p">(</span><span class="s2">&quot;https://&quot;</span><span class="p">,</span> <span class="n">CustomHttpAdapter</span><span class="p">(</span><span class="n">ctx</span><span class="p">))</span>
+    <span class="n">session</span><span class="o">.</span><span class="n">mount</span><span class="p">(</span><span class="s2">"https://"</span><span class="p">,</span> <span class="n">CustomHttpAdapter</span><span class="p">(</span><span class="n">ctx</span><span class="p">))</span>
     <span class="k">return</span> <span class="n">session</span>
 
 
@@ -1635,10 +1638,10 @@
     <span class="n">bound_above</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
     <span class="n">use_spline</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
 <span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    This function takes an initial array of parameters that has a time</span>
 <span class="sd">    dimension and an age dimension. It then applies a shift along the</span>
-<span class="sd">    age dimension (i.e., a change in the &quot;biological clock&quot;) and phases</span>
+<span class="sd">    age dimension (i.e., a change in the "biological clock") and phases</span>
 <span class="sd">    this shift in over some period of time.</span>
 
 <span class="sd">    Args:</span>
@@ -1661,7 +1664,7 @@
 
 <span class="sd">    Returns:</span>
 <span class="sd">        param_out (Numpy array): updated parameter values</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="k">assert</span> <span class="p">(</span>
         <span class="n">total_effect</span> <span class="o">&gt;=</span> <span class="mi">0</span>
     <span class="p">)</span>  <span class="c1"># this code would need to change to accommodate effects &lt; 0</span>
@@ -1740,7 +1743,7 @@
     <span class="n">tpi_vars</span><span class="p">,</span>
     <span class="n">params</span><span class="p">,</span>
 <span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    This function takes a model variable and returns the unstationarized</span>
 <span class="sd">    value by adjusting for underlying growth in labor productivity</span>
 <span class="sd">    and population growth (where necessary).</span>
@@ -1754,67 +1757,67 @@
 
 <span class="sd">    Returns:</span>
 <span class="sd">        pct_changes (array_like): unstationarized values for var</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="c1"># compute non-stationary variables</span>
     <span class="n">T</span> <span class="o">=</span> <span class="n">params</span><span class="o">.</span><span class="n">T</span>
     <span class="n">pop_growth</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">T</span><span class="p">)</span>
     <span class="n">pop_growth</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">cumprod</span><span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="n">params</span><span class="o">.</span><span class="n">g_n</span><span class="p">[:</span> <span class="n">T</span> <span class="o">-</span> <span class="mi">1</span><span class="p">])</span>
     <span class="n">prod_growth</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">params</span><span class="o">.</span><span class="n">g_y</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">params</span><span class="o">.</span><span class="n">T</span><span class="p">))</span>
-    <span class="k">if</span> <span class="p">(</span><span class="s2">&quot;_m&quot;</span> <span class="ow">in</span> <span class="n">var</span><span class="p">)</span> <span class="ow">or</span> <span class="p">(</span><span class="s2">&quot;_i&quot;</span> <span class="ow">in</span> <span class="n">var</span><span class="p">):</span>
+    <span class="k">if</span> <span class="p">(</span><span class="s2">"_m"</span> <span class="ow">in</span> <span class="n">var</span><span class="p">)</span> <span class="ow">or</span> <span class="p">(</span><span class="s2">"_i"</span> <span class="ow">in</span> <span class="n">var</span><span class="p">):</span>
         <span class="n">pop_growth</span> <span class="o">=</span> <span class="n">pop_growth</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">T</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
         <span class="n">prod_growth</span> <span class="o">=</span> <span class="n">prod_growth</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">T</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">var</span> <span class="ow">in</span> <span class="p">[</span>
-        <span class="s2">&quot;Y&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;B&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;K&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;K_f&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;K_d&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;C&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;I&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;K_g&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;I_g&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;Y_m&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;K_m&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;C_i&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;I_total&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;I_d&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;BQ&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;TR&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;total_tax_revenue&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;business_tax_revenue&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;iit_payroll_tax_revenue&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;iit_revenue&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;payroll_tax_revenue&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;agg_pension_outlays&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;bequest_tax_revenue&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;wealth_tax_revenue&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;cons_tax_revenue&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;G&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;D&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;D_f&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;D_d&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;UBI_path&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;new_borrowing_f&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;debt_service_f&quot;</span><span class="p">,</span>
+        <span class="s2">"Y"</span><span class="p">,</span>
+        <span class="s2">"B"</span><span class="p">,</span>
+        <span class="s2">"K"</span><span class="p">,</span>
+        <span class="s2">"K_f"</span><span class="p">,</span>
+        <span class="s2">"K_d"</span><span class="p">,</span>
+        <span class="s2">"C"</span><span class="p">,</span>
+        <span class="s2">"I"</span><span class="p">,</span>
+        <span class="s2">"K_g"</span><span class="p">,</span>
+        <span class="s2">"I_g"</span><span class="p">,</span>
+        <span class="s2">"Y_m"</span><span class="p">,</span>
+        <span class="s2">"K_m"</span><span class="p">,</span>
+        <span class="s2">"C_i"</span><span class="p">,</span>
+        <span class="s2">"I_total"</span><span class="p">,</span>
+        <span class="s2">"I_d"</span><span class="p">,</span>
+        <span class="s2">"BQ"</span><span class="p">,</span>
+        <span class="s2">"TR"</span><span class="p">,</span>
+        <span class="s2">"total_tax_revenue"</span><span class="p">,</span>
+        <span class="s2">"business_tax_revenue"</span><span class="p">,</span>
+        <span class="s2">"iit_payroll_tax_revenue"</span><span class="p">,</span>
+        <span class="s2">"iit_revenue"</span><span class="p">,</span>
+        <span class="s2">"payroll_tax_revenue"</span><span class="p">,</span>
+        <span class="s2">"agg_pension_outlays"</span><span class="p">,</span>
+        <span class="s2">"bequest_tax_revenue"</span><span class="p">,</span>
+        <span class="s2">"wealth_tax_revenue"</span><span class="p">,</span>
+        <span class="s2">"cons_tax_revenue"</span><span class="p">,</span>
+        <span class="s2">"G"</span><span class="p">,</span>
+        <span class="s2">"D"</span><span class="p">,</span>
+        <span class="s2">"D_f"</span><span class="p">,</span>
+        <span class="s2">"D_d"</span><span class="p">,</span>
+        <span class="s2">"UBI_path"</span><span class="p">,</span>
+        <span class="s2">"new_borrowing_f"</span><span class="p">,</span>
+        <span class="s2">"debt_service_f"</span><span class="p">,</span>
     <span class="p">]:</span>
         <span class="n">non_stationary_output</span> <span class="o">=</span> <span class="n">tpi_vars</span><span class="p">[</span><span class="n">var</span><span class="p">][:</span><span class="n">T</span><span class="p">]</span> <span class="o">*</span> <span class="n">pop_growth</span> <span class="o">*</span> <span class="n">prod_growth</span>
     <span class="k">elif</span> <span class="n">var</span> <span class="ow">in</span> <span class="p">[</span>
-        <span class="s2">&quot;L&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;L_m&quot;</span><span class="p">,</span>
+        <span class="s2">"L"</span><span class="p">,</span>
+        <span class="s2">"L_m"</span><span class="p">,</span>
     <span class="p">]:</span>
         <span class="n">non_stationary_output</span> <span class="o">=</span> <span class="n">tpi_vars</span><span class="p">[</span><span class="n">var</span><span class="p">][:</span><span class="n">T</span><span class="p">]</span> <span class="o">*</span> <span class="n">pop_growth</span>
 
     <span class="k">elif</span> <span class="n">var</span> <span class="ow">in</span> <span class="p">[</span>
-        <span class="s2">&quot;w&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;ubi&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;tr&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;bq&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;b_sp1&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;b_s&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;c&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;c_i&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;before_tax_income&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;hh_taxes&quot;</span><span class="p">,</span>
+        <span class="s2">"w"</span><span class="p">,</span>
+        <span class="s2">"ubi"</span><span class="p">,</span>
+        <span class="s2">"tr"</span><span class="p">,</span>
+        <span class="s2">"bq"</span><span class="p">,</span>
+        <span class="s2">"b_sp1"</span><span class="p">,</span>
+        <span class="s2">"b_s"</span><span class="p">,</span>
+        <span class="s2">"c"</span><span class="p">,</span>
+        <span class="s2">"c_i"</span><span class="p">,</span>
+        <span class="s2">"before_tax_income"</span><span class="p">,</span>
+        <span class="s2">"hh_taxes"</span><span class="p">,</span>
     <span class="p">]:</span>
         <span class="n">non_stationary_output</span> <span class="o">=</span> <span class="n">tpi_vars</span><span class="p">[</span><span class="n">var</span><span class="p">][:</span><span class="n">T</span><span class="p">]</span> <span class="o">*</span> <span class="n">prod_growth</span>
     <span class="k">else</span><span class="p">:</span>
@@ -1827,7 +1830,7 @@
 <div class="viewcode-block" id="params_to_json">
 <a class="viewcode-back" href="../../content/api/utils.html#ogcore.utils.params_to_json">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">params_to_json</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">path</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    This function creates a JSON file with the model parameters of the</span>
 <span class="sd">    format used for the default_parameters.json file.</span>
 
@@ -1837,13 +1840,13 @@
 
 <span class="sd">    Returns:</span>
 <span class="sd">        JSON (string): JSON on model parameters</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="n">converted_data</span> <span class="o">=</span> <span class="p">{}</span>
     <span class="n">spec</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">specification</span><span class="p">(</span>
         <span class="n">meta_data</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">include_empty</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">serializable</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">use_state</span><span class="o">=</span><span class="kc">True</span>
     <span class="p">)</span>
     <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">p</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
-        <span class="n">val</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">spec</span><span class="p">[</span><span class="n">key</span><span class="p">][</span><span class="mi">0</span><span class="p">])[</span><span class="s2">&quot;value&quot;</span><span class="p">]</span>
+        <span class="n">val</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">spec</span><span class="p">[</span><span class="n">key</span><span class="p">][</span><span class="mi">0</span><span class="p">])[</span><span class="s2">"value"</span><span class="p">]</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">val</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">):</span>
             <span class="n">converted_data</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">val</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
         <span class="k">else</span><span class="p">:</span>
@@ -1852,15 +1855,15 @@
     <span class="c1"># Parameters that need to be turned into annual rates for</span>
     <span class="c1"># default_parameters.json</span>
     <span class="n">annual_list</span> <span class="o">=</span> <span class="p">[</span>
-        <span class="s2">&quot;g_y_annual&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;beta_annual&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;delta_annual&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;delta_tau_annual&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;delta_g_annual&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;world_int_rate_annual&quot;</span><span class="p">,</span>
+        <span class="s2">"g_y_annual"</span><span class="p">,</span>
+        <span class="s2">"beta_annual"</span><span class="p">,</span>
+        <span class="s2">"delta_annual"</span><span class="p">,</span>
+        <span class="s2">"delta_tau_annual"</span><span class="p">,</span>
+        <span class="s2">"delta_g_annual"</span><span class="p">,</span>
+        <span class="s2">"world_int_rate_annual"</span><span class="p">,</span>
     <span class="p">]</span>
     <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">annual_list</span><span class="p">:</span>
-        <span class="n">val</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">v</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;_annual&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">))</span>
+        <span class="n">val</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">v</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">"_annual"</span><span class="p">,</span> <span class="s2">""</span><span class="p">))</span>
         <span class="n">annual_value</span> <span class="o">=</span> <span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="n">val</span><span class="p">)</span> <span class="o">**</span> <span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">S</span> <span class="o">/</span> <span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">ending_age</span> <span class="o">-</span> <span class="n">p</span><span class="o">.</span><span class="n">starting_age</span><span class="p">))</span> <span class="o">-</span> <span class="mi">1</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">annual_value</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">):</span>
             <span class="n">converted_data</span><span class="p">[</span><span class="n">v</span><span class="p">]</span> <span class="o">=</span> <span class="n">annual_value</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
@@ -1871,7 +1874,7 @@
     <span class="n">json_str</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">converted_data</span><span class="p">,</span> <span class="n">indent</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="n">path</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="s2">"w"</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
             <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">json_str</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">json_str</span></div>
@@ -1881,7 +1884,7 @@
 <div class="viewcode-block" id="json_to_dict">
 <a class="viewcode-back" href="../../content/api/utils.html#ogcore.utils.json_to_dict">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">json_to_dict</span><span class="p">(</span><span class="n">json_text</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Convert specified JSON text into an ordered Python dictionary.</span>
 
 <span class="sd">    Parameters</span>
@@ -1898,27 +1901,27 @@
 <span class="sd">    -------</span>
 <span class="sd">    dictionary: collections.OrderedDict</span>
 <span class="sd">        JSON data expressed as an ordered Python dictionary.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="k">try</span><span class="p">:</span>
         <span class="n">ordered_dict</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span>
             <span class="n">json_text</span><span class="p">,</span> <span class="n">object_pairs_hook</span><span class="o">=</span><span class="n">collections</span><span class="o">.</span><span class="n">OrderedDict</span>
         <span class="p">)</span>
     <span class="k">except</span> <span class="ne">ValueError</span> <span class="k">as</span> <span class="n">valerr</span><span class="p">:</span>
-        <span class="n">text_lines</span> <span class="o">=</span> <span class="n">json_text</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
-        <span class="n">msg</span> <span class="o">=</span> <span class="s2">&quot;Text below contains invalid JSON:</span><span class="se">\n</span><span class="s2">&quot;</span>
-        <span class="n">msg</span> <span class="o">+=</span> <span class="nb">str</span><span class="p">(</span><span class="n">valerr</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span>
-        <span class="n">msg</span> <span class="o">+=</span> <span class="s2">&quot;Above location of the first error may be approximate.</span><span class="se">\n</span><span class="s2">&quot;</span>
-        <span class="n">msg</span> <span class="o">+=</span> <span class="s2">&quot;The invalid JSON text is between the lines:</span><span class="se">\n</span><span class="s2">&quot;</span>
+        <span class="n">text_lines</span> <span class="o">=</span> <span class="n">json_text</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">"</span><span class="se">\n</span><span class="s2">"</span><span class="p">)</span>
+        <span class="n">msg</span> <span class="o">=</span> <span class="s2">"Text below contains invalid JSON:</span><span class="se">\n</span><span class="s2">"</span>
+        <span class="n">msg</span> <span class="o">+=</span> <span class="nb">str</span><span class="p">(</span><span class="n">valerr</span><span class="p">)</span> <span class="o">+</span> <span class="s2">"</span><span class="se">\n</span><span class="s2">"</span>
+        <span class="n">msg</span> <span class="o">+=</span> <span class="s2">"Above location of the first error may be approximate.</span><span class="se">\n</span><span class="s2">"</span>
+        <span class="n">msg</span> <span class="o">+=</span> <span class="s2">"The invalid JSON text is between the lines:</span><span class="se">\n</span><span class="s2">"</span>
         <span class="n">bline</span> <span class="o">=</span> <span class="p">(</span>
-            <span class="s2">&quot;XXXX----.----1----.----2----.----3----.----4&quot;</span>
-            <span class="s2">&quot;----.----5----.----6----.----7&quot;</span>
+            <span class="s2">"XXXX----.----1----.----2----.----3----.----4"</span>
+            <span class="s2">"----.----5----.----6----.----7"</span>
         <span class="p">)</span>
-        <span class="n">msg</span> <span class="o">+=</span> <span class="n">bline</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span>
+        <span class="n">msg</span> <span class="o">+=</span> <span class="n">bline</span> <span class="o">+</span> <span class="s2">"</span><span class="se">\n</span><span class="s2">"</span>
         <span class="n">linenum</span> <span class="o">=</span> <span class="mi">0</span>
         <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">text_lines</span><span class="p">:</span>
             <span class="n">linenum</span> <span class="o">+=</span> <span class="mi">1</span>
-            <span class="n">msg</span> <span class="o">+=</span> <span class="s2">&quot;</span><span class="si">{:04d}{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">linenum</span><span class="p">,</span> <span class="n">line</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span>
-        <span class="n">msg</span> <span class="o">+=</span> <span class="n">bline</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span>
+            <span class="n">msg</span> <span class="o">+=</span> <span class="s2">"</span><span class="si">{:04d}{}</span><span class="s2">"</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">linenum</span><span class="p">,</span> <span class="n">line</span><span class="p">)</span> <span class="o">+</span> <span class="s2">"</span><span class="se">\n</span><span class="s2">"</span>
+        <span class="n">msg</span> <span class="o">+=</span> <span class="n">bline</span> <span class="o">+</span> <span class="s2">"</span><span class="se">\n</span><span class="s2">"</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">ordered_dict</span></div>
 

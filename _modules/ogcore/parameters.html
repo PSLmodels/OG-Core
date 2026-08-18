@@ -30,7 +30,7 @@
 <link href="../../_static/styles/pydata-sphinx-theme.css?digest=55c26ed414f5f8a31ebb" rel="stylesheet" />
 
     <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
-    <link rel="stylesheet" type="text/css" href="../../_static/styles/sphinx-book-theme.css?v=a3416100" />
+    <link rel="stylesheet" type="text/css" href="../../_static/styles/sphinx-book-theme.css?v=3c74b3bc" />
     <link rel="stylesheet" type="text/css" href="../../_static/togglebutton.css?v=9c3e77be" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="../../_static/mystnb.11b39860a7a0cbfd473a3ad8a317855267ff0bd372690045ca344a6b62be495e.css" />
@@ -48,7 +48,7 @@
     <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
     <script src="../../_static/copybutton.js?v=f281be69"></script>
-    <script src="../../_static/scripts/sphinx-book-theme.js?v=887ef09a"></script>
+    <script src="../../_static/scripts/sphinx-book-theme.js?v=fab101a9"></script>
     <script>let toggleHintShow = 'Click to show';</script>
     <script>let toggleHintHide = 'Click to hide';</script>
     <script>let toggleOpenOnPrint = 'true';</script>
@@ -222,6 +222,7 @@
 <ul class="nav bd-sidenav">
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../content/api/public_api.html">API</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../content/api/aggregates.html">Aggregates Equations</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../content/api/config.html">Logging Configuration</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../content/api/demographics.html">Demographics Functions</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../content/api/elliptical_u_est.html">Elliptical Utility Function Estimation</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../content/api/execute.html">Model Execution Functions</a></li>
@@ -235,7 +236,9 @@
 <li class="toctree-l2"><a class="reference internal" href="../../content/api/parameters.html">Parameters Functions</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../content/api/pensions.html">Pension Functions</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../content/api/solvers.html">Solvers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../content/api/SS.html">Steady-State Functions</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../content/api/tax.html">Tax Functions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../content/api/TPI.html">Transition Path Functions</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../content/api/txfunc.html">Tax Function Estimation Functions</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../content/api/utils.html">Utilities Functions</a></li>
 </ul>
@@ -365,7 +368,7 @@
 
 
 <button onclick="toggleFullScreen()"
-  class="btn btn-sm btn-fullscreen-button"
+  class="btn btn-sm btn-fullscreen-button pst-navbar-icon"
   title="Fullscreen mode"
   data-bs-placement="bottom" data-bs-toggle="tooltip"
 >
@@ -434,11 +437,11 @@
 <div class="viewcode-block" id="Specifications">
 <a class="viewcode-back" href="../../content/api/parameters.html#ogcore.parameters.Specifications">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">Specifications</span><span class="p">(</span><span class="n">paramtools</span><span class="o">.</span><span class="n">Parameters</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Inherits ParamTools Parameters abstract base class.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
-    <span class="n">defaults</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">CURRENT_PATH</span><span class="p">,</span> <span class="s2">&quot;default_parameters.json&quot;</span><span class="p">)</span>
+    <span class="n">defaults</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">CURRENT_PATH</span><span class="p">,</span> <span class="s2">"default_parameters.json"</span><span class="p">)</span>
     <span class="n">array_first</span> <span class="o">=</span> <span class="kc">True</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
@@ -461,14 +464,14 @@
         <span class="c1"># does cheap calculations to find parameter values</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">initialize</span><span class="p">()</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">parameter_warnings</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">parameter_errors</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">parameter_warnings</span> <span class="o">=</span> <span class="s2">""</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">parameter_errors</span> <span class="o">=</span> <span class="s2">""</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_ignore_errors</span> <span class="o">=</span> <span class="kc">False</span>
 
 <div class="viewcode-block" id="Specifications.initialize">
 <a class="viewcode-back" href="../../content/api/parameters.html#ogcore.parameters.Specifications.initialize">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">initialize</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        ParametersBase reads JSON file and sets attributes to self</span>
 <span class="sd">        Next call self.compute_default_params for further initialization</span>
 
@@ -478,7 +481,7 @@
 <span class="sd">        Returns:</span>
 <span class="sd">            None</span>
 
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">compute_default_params</span><span class="p">()</span></div>
 
@@ -486,7 +489,7 @@
 <div class="viewcode-block" id="Specifications.compute_default_params">
 <a class="viewcode-back" href="../../content/api/parameters.html#ogcore.parameters.Specifications.compute_default_params">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">compute_default_params</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Does cheap calculations to return parameter values</span>
 
 <span class="sd">        Args:</span>
@@ -495,12 +498,12 @@
 <span class="sd">        Returns:</span>
 <span class="sd">            None</span>
 
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="c1"># Catch error if baseline_spending=True and baseline=True</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">baseline_spending</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">baseline</span><span class="p">:</span>
             <span class="n">err_msg</span> <span class="o">=</span> <span class="p">(</span>
-                <span class="s2">&quot;Parameter baseline_spending=True cannot coincide with &quot;</span>
-                <span class="o">+</span> <span class="s2">&quot;baseline=True.&quot;</span>
+                <span class="s2">"Parameter baseline_spending=True cannot coincide with "</span>
+                <span class="o">+</span> <span class="s2">"baseline=True."</span>
             <span class="p">)</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">err_msg</span><span class="p">)</span>
 
@@ -521,16 +524,16 @@
         <span class="c1"># a uniform vector of any other length is reshaped losslessly</span>
         <span class="c1"># (smaller-J runs that keep the uniform defaults rely on this), and a</span>
         <span class="c1"># non-uniform mismatch raises immediately.</span>
-        <span class="k">for</span> <span class="n">param</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;beta_annual&quot;</span><span class="p">,</span> <span class="s2">&quot;chi_b&quot;</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">param</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">"beta_annual"</span><span class="p">,</span> <span class="s2">"chi_b"</span><span class="p">):</span>
             <span class="n">val</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">param</span><span class="p">))</span><span class="o">.</span><span class="n">ravel</span><span class="p">()</span>
             <span class="k">if</span> <span class="n">val</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">J</span><span class="p">:</span>
                 <span class="k">if</span> <span class="n">val</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="mi">1</span> <span class="ow">or</span> <span class="n">np</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="n">val</span> <span class="o">==</span> <span class="n">val</span><span class="p">[</span><span class="mi">0</span><span class="p">]):</span>
                     <span class="nb">setattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">param</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">full</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">J</span><span class="p">,</span> <span class="n">val</span><span class="p">[</span><span class="mi">0</span><span class="p">]))</span>
                 <span class="k">else</span><span class="p">:</span>
                     <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                        <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">param</span><span class="si">}</span><span class="s2"> must have either 1 value (applied to all &quot;</span>
-                        <span class="sa">f</span><span class="s2">&quot;J groups) or J=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">J</span><span class="si">}</span><span class="s2"> values; got &quot;</span>
-                        <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">val</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="s2"> non-uniform values.&quot;</span>
+                        <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">param</span><span class="si">}</span><span class="s2"> must have either 1 value (applied to all "</span>
+                        <span class="sa">f</span><span class="s2">"J groups) or J=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">J</span><span class="si">}</span><span class="s2"> values; got "</span>
+                        <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">val</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="s2"> non-uniform values."</span>
                     <span class="p">)</span>
 
         <span class="c1"># get parameters of elliptical utility function</span>
@@ -585,13 +588,13 @@
                     <span class="bp">self</span><span class="o">.</span><span class="n">chi_n_interp</span> <span class="o">=</span> <span class="n">si</span><span class="o">.</span><span class="n">interp1d</span><span class="p">(</span>
                         <span class="bp">self</span><span class="o">.</span><span class="n">age_midp_80</span><span class="p">,</span>
                         <span class="n">np</span><span class="o">.</span><span class="n">squeeze</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">chi_n</span><span class="p">),</span>
-                        <span class="n">kind</span><span class="o">=</span><span class="s2">&quot;cubic&quot;</span><span class="p">,</span>
+                        <span class="n">kind</span><span class="o">=</span><span class="s2">"cubic"</span><span class="p">,</span>
                     <span class="p">)</span>
                 <span class="k">else</span><span class="p">:</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">chi_n_interp</span> <span class="o">=</span> <span class="n">si</span><span class="o">.</span><span class="n">interp1d</span><span class="p">(</span>
                         <span class="bp">self</span><span class="o">.</span><span class="n">age_midp_80</span><span class="p">,</span>
                         <span class="n">np</span><span class="o">.</span><span class="n">squeeze</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">chi_n</span><span class="p">[</span><span class="n">t</span><span class="p">,</span> <span class="p">:]),</span>
-                        <span class="n">kind</span><span class="o">=</span><span class="s2">&quot;cubic&quot;</span><span class="p">,</span>
+                        <span class="n">kind</span><span class="o">=</span><span class="s2">"cubic"</span><span class="p">,</span>
                     <span class="p">)</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">newstep</span> <span class="o">=</span> <span class="mf">80.0</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">S</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">age_midp_S</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span>
@@ -602,26 +605,26 @@
 
         <span class="c1"># Extend parameters that may vary over the time path</span>
         <span class="n">tp_param_list</span> <span class="o">=</span> <span class="p">[</span>
-            <span class="s2">&quot;alpha_G&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;alpha_T&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;alpha_I&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;alpha_FA&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;alpha_bs_G&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;alpha_bs_T&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;alpha_bs_I&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;world_int_rate_annual&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;adjustment_factor_for_cit_receipts&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;tau_bq&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;tau_payroll&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;h_wealth&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;m_wealth&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;p_wealth&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;retirement_age&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;zeta_D&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;zeta_K&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;r_gov_scale&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;r_gov_shift&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;g_RM&quot;</span><span class="p">,</span>
+            <span class="s2">"alpha_G"</span><span class="p">,</span>
+            <span class="s2">"alpha_T"</span><span class="p">,</span>
+            <span class="s2">"alpha_I"</span><span class="p">,</span>
+            <span class="s2">"alpha_FA"</span><span class="p">,</span>
+            <span class="s2">"alpha_bs_G"</span><span class="p">,</span>
+            <span class="s2">"alpha_bs_T"</span><span class="p">,</span>
+            <span class="s2">"alpha_bs_I"</span><span class="p">,</span>
+            <span class="s2">"world_int_rate_annual"</span><span class="p">,</span>
+            <span class="s2">"adjustment_factor_for_cit_receipts"</span><span class="p">,</span>
+            <span class="s2">"tau_bq"</span><span class="p">,</span>
+            <span class="s2">"tau_payroll"</span><span class="p">,</span>
+            <span class="s2">"h_wealth"</span><span class="p">,</span>
+            <span class="s2">"m_wealth"</span><span class="p">,</span>
+            <span class="s2">"p_wealth"</span><span class="p">,</span>
+            <span class="s2">"retirement_age"</span><span class="p">,</span>
+            <span class="s2">"zeta_D"</span><span class="p">,</span>
+            <span class="s2">"zeta_K"</span><span class="p">,</span>
+            <span class="s2">"r_gov_scale"</span><span class="p">,</span>
+            <span class="s2">"r_gov_shift"</span><span class="p">,</span>
+            <span class="s2">"g_RM"</span><span class="p">,</span>
         <span class="p">]</span>
         <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">tp_param_list</span><span class="p">:</span>
             <span class="n">param_in</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">)</span>
@@ -631,10 +634,10 @@
             <span class="nb">setattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">,</span> <span class="n">param_out</span><span class="p">)</span>
         <span class="c1"># Deal with parameters that vary across industry and over time</span>
         <span class="n">tp_param_list2</span> <span class="o">=</span> <span class="p">[</span>
-            <span class="s2">&quot;Z&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;delta_tau_annual&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;cit_rate&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;inv_tax_credit&quot;</span><span class="p">,</span>
+            <span class="s2">"Z"</span><span class="p">,</span>
+            <span class="s2">"delta_tau_annual"</span><span class="p">,</span>
+            <span class="s2">"cit_rate"</span><span class="p">,</span>
+            <span class="s2">"inv_tax_credit"</span><span class="p">,</span>
         <span class="p">]</span>
         <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">tp_param_list2</span><span class="p">:</span>
             <span class="n">param_in</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">)</span>
@@ -643,7 +646,7 @@
             <span class="p">)</span>
             <span class="nb">setattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">,</span> <span class="n">param_out</span><span class="p">)</span>
         <span class="c1"># Deal with parameters that vary across consumption good and over time</span>
-        <span class="n">tp_param_list3</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;tau_c&quot;</span><span class="p">]</span>
+        <span class="n">tp_param_list3</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"tau_c"</span><span class="p">]</span>
         <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">tp_param_list3</span><span class="p">:</span>
             <span class="n">param_in</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">)</span>
             <span class="n">param_out</span> <span class="o">=</span> <span class="n">extrapolate_array</span><span class="p">(</span>
@@ -652,11 +655,11 @@
             <span class="nb">setattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">,</span> <span class="n">param_out</span><span class="p">)</span>
         <span class="c1"># Deal with parameters that vary across J and over time</span>
         <span class="n">tp_param_list3</span> <span class="o">=</span> <span class="p">[</span>
-            <span class="s2">&quot;labor_income_tax_noncompliance_rate&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;capital_income_tax_noncompliance_rate&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;replacement_rate_adjust&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;income_tax_filer&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;wealth_tax_filer&quot;</span><span class="p">,</span>
+            <span class="s2">"labor_income_tax_noncompliance_rate"</span><span class="p">,</span>
+            <span class="s2">"capital_income_tax_noncompliance_rate"</span><span class="p">,</span>
+            <span class="s2">"replacement_rate_adjust"</span><span class="p">,</span>
+            <span class="s2">"income_tax_filer"</span><span class="p">,</span>
+            <span class="s2">"wealth_tax_filer"</span><span class="p">,</span>
         <span class="p">]</span>
         <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">tp_param_list3</span><span class="p">:</span>
             <span class="n">param_in</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">)</span>
@@ -667,7 +670,7 @@
         <span class="c1"># Deal with parameters that vary across age and over time</span>
         <span class="c1"># None at the moment - moved to vary by J also</span>
         <span class="c1"># tp_param_list4 = [</span>
-        <span class="c1">#     &quot;rho&quot;,</span>
+        <span class="c1">#     "rho",</span>
         <span class="c1"># ]</span>
         <span class="c1"># for item in tp_param_list4:</span>
         <span class="c1">#     param_in = getattr(self, item)</span>
@@ -677,9 +680,9 @@
         <span class="c1">#     setattr(self, item, param_out)</span>
         <span class="c1"># Deal with tax parameters that maybe age and time specific</span>
         <span class="n">tax_params_to_TP</span> <span class="o">=</span> <span class="p">[</span>
-            <span class="s2">&quot;etr_params&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;mtrx_params&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;mtry_params&quot;</span><span class="p">,</span>
+            <span class="s2">"etr_params"</span><span class="p">,</span>
+            <span class="s2">"mtrx_params"</span><span class="p">,</span>
+            <span class="s2">"mtry_params"</span><span class="p">,</span>
         <span class="p">]</span>
         <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">tax_params_to_TP</span><span class="p">:</span>
             <span class="n">tax_to_set_in</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">)</span>
@@ -687,10 +690,10 @@
                 <span class="nb">len</span><span class="p">(</span><span class="n">tax_to_set_in</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">])</span>
             <span class="k">except</span> <span class="ne">TypeError</span><span class="p">:</span>
                 <span class="nb">print</span><span class="p">(</span>
-                    <span class="s2">&quot;please give a &quot;</span>
+                    <span class="s2">"please give a "</span>
                     <span class="o">+</span> <span class="n">item</span>
-                    <span class="o">+</span> <span class="s2">&quot; that is a nested lists of&quot;</span>
-                    <span class="o">+</span> <span class="s2">&quot; lists that is three lists deep&quot;</span>
+                    <span class="o">+</span> <span class="s2">" that is a nested lists of"</span>
+                    <span class="o">+</span> <span class="s2">" lists that is three lists deep"</span>
                 <span class="p">)</span>
                 <span class="k">assert</span> <span class="kc">False</span>
             <span class="n">tax_to_set_out</span> <span class="o">=</span> <span class="n">extrapolate_nested_list</span><span class="p">(</span>
@@ -701,7 +704,7 @@
         <span class="c1"># Try to deal with size of eta and eta_RM. They may vary by S, J, T,</span>
         <span class="c1"># but want to allow user to enter one that varies by only S, S and J,</span>
         <span class="c1"># S and T, or T and S and J.</span>
-        <span class="n">eta_params_to_TP</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;eta&quot;</span><span class="p">,</span> <span class="s2">&quot;eta_RM&quot;</span><span class="p">,</span> <span class="s2">&quot;omega&quot;</span><span class="p">,</span> <span class="s2">&quot;rho&quot;</span><span class="p">,</span> <span class="s2">&quot;imm_rates&quot;</span><span class="p">]</span>
+        <span class="n">eta_params_to_TP</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"eta"</span><span class="p">,</span> <span class="s2">"eta_RM"</span><span class="p">,</span> <span class="s2">"omega"</span><span class="p">,</span> <span class="s2">"rho"</span><span class="p">,</span> <span class="s2">"imm_rates"</span><span class="p">]</span>
         <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">eta_params_to_TP</span><span class="p">:</span>
             <span class="n">param_in</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">)</span>
             <span class="n">param_out</span> <span class="o">=</span> <span class="n">extrapolate_array</span><span class="p">(</span>
@@ -710,10 +713,10 @@
             <span class="nb">setattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">,</span> <span class="n">param_out</span><span class="p">)</span>
         <span class="c1"># extrapolate SS demog objects</span>
         <span class="n">demog_obj_to_SS</span> <span class="o">=</span> <span class="p">[</span>
-            <span class="s2">&quot;omega_SS&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;omega_S_preTP&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;imm_rates_preTP&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;rho_preTP&quot;</span><span class="p">,</span>
+            <span class="s2">"omega_SS"</span><span class="p">,</span>
+            <span class="s2">"omega_S_preTP"</span><span class="p">,</span>
+            <span class="s2">"imm_rates_preTP"</span><span class="p">,</span>
+            <span class="s2">"rho_preTP"</span><span class="p">,</span>
         <span class="p">]</span>
         <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">demog_obj_to_SS</span><span class="p">:</span>
             <span class="n">param_in</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">)</span>
@@ -722,17 +725,17 @@
             <span class="p">)</span>
             <span class="nb">setattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">,</span> <span class="n">param_out</span><span class="p">)</span>
         <span class="c1"># extrapolate lifetime ability e matrix over time dimension</span>
-        <span class="n">param_in</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;e&quot;</span><span class="p">)</span>
+        <span class="n">param_in</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">"e"</span><span class="p">)</span>
         <span class="n">param_out</span> <span class="o">=</span> <span class="n">extrapolate_array</span><span class="p">(</span>
-            <span class="n">param_in</span><span class="p">,</span> <span class="n">dims</span><span class="o">=</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">S</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">J</span><span class="p">),</span> <span class="n">item</span><span class="o">=</span><span class="s2">&quot;e&quot;</span>
+            <span class="n">param_in</span><span class="p">,</span> <span class="n">dims</span><span class="o">=</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">S</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">J</span><span class="p">),</span> <span class="n">item</span><span class="o">=</span><span class="s2">"e"</span>
         <span class="p">)</span>
-        <span class="nb">setattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;e&quot;</span><span class="p">,</span> <span class="n">param_out</span><span class="p">)</span>
+        <span class="nb">setattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">"e"</span><span class="p">,</span> <span class="n">param_out</span><span class="p">)</span>
         <span class="c1"># Extrapolate chi_n over T + S</span>
-        <span class="n">param_in</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;chi_n&quot;</span><span class="p">)</span>
+        <span class="n">param_in</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">"chi_n"</span><span class="p">)</span>
         <span class="n">param_out</span> <span class="o">=</span> <span class="n">extrapolate_array</span><span class="p">(</span>
-            <span class="n">param_in</span><span class="p">,</span> <span class="n">dims</span><span class="o">=</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">T</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">S</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">S</span><span class="p">),</span> <span class="n">item</span><span class="o">=</span><span class="s2">&quot;chi_n&quot;</span>
+            <span class="n">param_in</span><span class="p">,</span> <span class="n">dims</span><span class="o">=</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">T</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">S</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">S</span><span class="p">),</span> <span class="n">item</span><span class="o">=</span><span class="s2">"chi_n"</span>
         <span class="p">)</span>
-        <span class="nb">setattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;chi_n&quot;</span><span class="p">,</span> <span class="n">param_out</span><span class="p">)</span>
+        <span class="nb">setattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">"chi_n"</span><span class="p">,</span> <span class="n">param_out</span><span class="p">)</span>
 
         <span class="c1"># make sure zeta matrix sums to one (e.g., default off due to rounding)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">zeta</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">zeta</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">zeta</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
@@ -804,7 +807,7 @@
 <div class="viewcode-block" id="Specifications.get_ubi_nom_objs">
 <a class="viewcode-back" href="../../content/api/parameters.html#ogcore.parameters.Specifications.get_ubi_nom_objs">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">get_ubi_nom_objs</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Generate time series of nominal SxJ UBI household matrix and aggregate</span>
 <span class="sd">        UBI expenditure over necessary time periods. Also generate steady-state</span>
 <span class="sd">        versions</span>
@@ -816,7 +819,7 @@
 <span class="sd">            ubi_nom_array (array): T+S x S x J array time series of UBI</span>
 <span class="sd">                transfers in dollars for each type-j age-s household in every</span>
 <span class="sd">                period t</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="c1"># Get matrices of number of children 0-17, number of dependents 18-20,</span>
         <span class="c1"># number of adults 21-64, and number of seniors &gt;= 65 from</span>
         <span class="c1"># OG-Core-Calibration package</span>
@@ -866,7 +869,7 @@
 <div class="viewcode-block" id="Specifications.update_specifications">
 <a class="viewcode-back" href="../../content/api/parameters.html#ogcore.parameters.Specifications.update_specifications">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">update_specifications</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">revision</span><span class="p">,</span> <span class="n">raise_errors</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Updates parameter specification with values in revision</span>
 <span class="sd">        dictionary.</span>
 
@@ -899,23 +902,23 @@
 <span class="sd">                    frisch: [0.03]</span>
 <span class="sd">                }</span>
 
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="nb">isinstance</span><span class="p">(</span><span class="n">revision</span><span class="p">,</span> <span class="nb">dict</span><span class="p">)</span> <span class="ow">or</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">revision</span><span class="p">,</span> <span class="nb">str</span><span class="p">)):</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;ERROR: revision is not a dictionary or string&quot;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"ERROR: revision is not a dictionary or string"</span><span class="p">)</span>
         <span class="c1"># Skip over the adjust method if the tax parameters passed in</span>
         <span class="c1"># are functions (e.g., in the case of tax_func_type = mono)</span>
         <span class="n">tax_update_dict</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="n">tax_func_params_functions</span> <span class="o">=</span> <span class="kc">False</span>
         <span class="k">try</span><span class="p">:</span>
-            <span class="k">if</span> <span class="n">revision</span><span class="p">[</span><span class="s2">&quot;tax_func_type&quot;</span><span class="p">]</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;mono&quot;</span><span class="p">,</span> <span class="s2">&quot;mono2D&quot;</span><span class="p">]:</span>
+            <span class="k">if</span> <span class="n">revision</span><span class="p">[</span><span class="s2">"tax_func_type"</span><span class="p">]</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">"mono"</span><span class="p">,</span> <span class="s2">"mono2D"</span><span class="p">]:</span>
                 <span class="n">tax_func_params_functions</span> <span class="o">=</span> <span class="kc">True</span>
         <span class="k">except</span> <span class="p">(</span><span class="ne">KeyError</span><span class="p">,</span> <span class="ne">TypeError</span><span class="p">):</span>
             <span class="k">pass</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">tax_func_type</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;mono&quot;</span><span class="p">,</span> <span class="s2">&quot;mono2D&quot;</span><span class="p">]:</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">tax_func_type</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">"mono"</span><span class="p">,</span> <span class="s2">"mono2D"</span><span class="p">]:</span>
             <span class="n">tax_func_params_functions</span> <span class="o">=</span> <span class="kc">True</span>
         <span class="k">if</span> <span class="n">tax_func_params_functions</span><span class="p">:</span>
             <span class="k">try</span><span class="p">:</span>
-                <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;etr_params&quot;</span><span class="p">,</span> <span class="s2">&quot;mtrx_params&quot;</span><span class="p">,</span> <span class="s2">&quot;mtry_params&quot;</span><span class="p">]:</span>
+                <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">"etr_params"</span><span class="p">,</span> <span class="s2">"mtrx_params"</span><span class="p">,</span> <span class="s2">"mtry_params"</span><span class="p">]:</span>
                     <span class="k">if</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">revision</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
                         <span class="n">tax_update_dict</span><span class="p">[</span><span class="n">item</span><span class="p">]</span> <span class="o">=</span> <span class="n">revision</span><span class="p">[</span><span class="n">item</span><span class="p">]</span>
                         <span class="k">del</span> <span class="n">revision</span><span class="p">[</span><span class="n">item</span><span class="p">]</span>
@@ -935,7 +938,7 @@
 <div class="viewcode-block" id="revision_warnings_errors">
 <a class="viewcode-back" href="../../content/api/parameters.html#ogcore.parameters.revision_warnings_errors">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">revision_warnings_errors</span><span class="p">(</span><span class="n">spec_revision</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Generate warnings and errors for OG-Core parameter specifications</span>
 
 <span class="sd">    Args:</span>
@@ -945,12 +948,12 @@
 <span class="sd">    Returns:</span>
 <span class="sd">        rtn_dict (dict): with endpoint specific warning and error messages</span>
 
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">rtn_dict</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;warnings&quot;</span><span class="p">:</span> <span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="s2">&quot;errors&quot;</span><span class="p">:</span> <span class="s2">&quot;&quot;</span><span class="p">}</span>
+<span class="sd">    """</span>
+    <span class="n">rtn_dict</span> <span class="o">=</span> <span class="p">{</span><span class="s2">"warnings"</span><span class="p">:</span> <span class="s2">""</span><span class="p">,</span> <span class="s2">"errors"</span><span class="p">:</span> <span class="s2">""</span><span class="p">}</span>
     <span class="n">spec</span> <span class="o">=</span> <span class="n">Specifications</span><span class="p">()</span>
     <span class="n">spec</span><span class="o">.</span><span class="n">update_specifications</span><span class="p">(</span><span class="n">spec_revision</span><span class="p">,</span> <span class="n">raise_errors</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">spec</span><span class="o">.</span><span class="n">_errors</span><span class="p">:</span>
-        <span class="n">rtn_dict</span><span class="p">[</span><span class="s2">&quot;errors&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">spec</span><span class="o">.</span><span class="n">_errors</span>
+        <span class="n">rtn_dict</span><span class="p">[</span><span class="s2">"errors"</span><span class="p">]</span> <span class="o">=</span> <span class="n">spec</span><span class="o">.</span><span class="n">_errors</span>
     <span class="k">return</span> <span class="n">rtn_dict</span></div>
 
 </pre></div>

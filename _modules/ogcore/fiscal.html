@@ -30,7 +30,7 @@
 <link href="../../_static/styles/pydata-sphinx-theme.css?digest=55c26ed414f5f8a31ebb" rel="stylesheet" />
 
     <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
-    <link rel="stylesheet" type="text/css" href="../../_static/styles/sphinx-book-theme.css?v=a3416100" />
+    <link rel="stylesheet" type="text/css" href="../../_static/styles/sphinx-book-theme.css?v=3c74b3bc" />
     <link rel="stylesheet" type="text/css" href="../../_static/togglebutton.css?v=9c3e77be" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="../../_static/mystnb.11b39860a7a0cbfd473a3ad8a317855267ff0bd372690045ca344a6b62be495e.css" />
@@ -48,7 +48,7 @@
     <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
     <script src="../../_static/copybutton.js?v=f281be69"></script>
-    <script src="../../_static/scripts/sphinx-book-theme.js?v=887ef09a"></script>
+    <script src="../../_static/scripts/sphinx-book-theme.js?v=fab101a9"></script>
     <script>let toggleHintShow = 'Click to show';</script>
     <script>let toggleHintHide = 'Click to hide';</script>
     <script>let toggleOpenOnPrint = 'true';</script>
@@ -222,6 +222,7 @@
 <ul class="nav bd-sidenav">
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../content/api/public_api.html">API</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../content/api/aggregates.html">Aggregates Equations</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../content/api/config.html">Logging Configuration</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../content/api/demographics.html">Demographics Functions</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../content/api/elliptical_u_est.html">Elliptical Utility Function Estimation</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../content/api/execute.html">Model Execution Functions</a></li>
@@ -235,7 +236,9 @@
 <li class="toctree-l2"><a class="reference internal" href="../../content/api/parameters.html">Parameters Functions</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../content/api/pensions.html">Pension Functions</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../content/api/solvers.html">Solvers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../content/api/SS.html">Steady-State Functions</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../content/api/tax.html">Tax Functions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../content/api/TPI.html">Transition Path Functions</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../content/api/txfunc.html">Tax Function Estimation Functions</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../content/api/utils.html">Utilities Functions</a></li>
 </ul>
@@ -365,7 +368,7 @@
 
 
 <button onclick="toggleFullScreen()"
-  class="btn btn-sm btn-fullscreen-button"
+  class="btn btn-sm btn-fullscreen-button pst-navbar-icon"
   title="Fullscreen mode"
   data-bs-placement="bottom" data-bs-toggle="tooltip"
 >
@@ -415,29 +418,29 @@
                 <article class="bd-article">
                   
   <h1>Source code for ogcore.fiscal</h1><div class="highlight"><pre>
-<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span></span><span class="sd">"""</span>
 <span class="sd">------------------------------------------------------------------------</span>
 
 <span class="sd">Fiscal policy functions for unbalanced budgeting. In particular, some</span>
 <span class="sd">functions require time-path calculation.</span>
 
 <span class="sd">------------------------------------------------------------------------</span>
-<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">"""</span>
 
 <span class="c1"># Packages</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 
-<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">"""</span>
 <span class="sd">------------------------------------------------------------------------</span>
 <span class="sd">    Functions</span>
 <span class="sd">------------------------------------------------------------------------</span>
-<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">"""</span>
 
 
 <div class="viewcode-block" id="D_G_path">
 <a class="viewcode-back" href="../../content/api/fiscal.html#ogcore.fiscal.D_G_path">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">D_G_path</span><span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="n">dg_fixed_values</span><span class="p">,</span> <span class="n">p</span><span class="p">):</span>
-<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">"""</span>
 <span class="sd">    Calculate the time paths of debt and government spending</span>
 
 <span class="sd">    .. math::</span>
@@ -488,7 +491,7 @@
 <span class="sd">                time path</span>
 <span class="sd">            * new_borrowing_f: new borrowing from foreigners</span>
 
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="p">(</span>
         <span class="n">Y</span><span class="p">,</span>
         <span class="n">total_tax_revenue</span><span class="p">,</span>
@@ -521,14 +524,14 @@
         <span class="n">G</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">alpha_G</span><span class="p">[:</span> <span class="n">p</span><span class="o">.</span><span class="n">T</span><span class="p">]</span> <span class="o">*</span> <span class="n">Y</span><span class="p">[:</span> <span class="n">p</span><span class="o">.</span><span class="n">T</span><span class="p">]</span>
         <span class="n">D_f</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">T</span><span class="p">)</span>
         <span class="n">D_d</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">T</span><span class="p">)</span>
-        <span class="n">r_gov</span> <span class="o">=</span> <span class="n">get_r_gov</span><span class="p">(</span><span class="n">r</span><span class="p">[:</span> <span class="n">p</span><span class="o">.</span><span class="n">T</span><span class="p">],</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">T</span><span class="p">),</span> <span class="n">p</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s2">&quot;TPI&quot;</span><span class="p">)</span>
+        <span class="n">r_gov</span> <span class="o">=</span> <span class="n">get_r_gov</span><span class="p">(</span><span class="n">r</span><span class="p">[:</span> <span class="n">p</span><span class="o">.</span><span class="n">T</span><span class="p">],</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">T</span><span class="p">),</span> <span class="n">p</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s2">"TPI"</span><span class="p">)</span>
         <span class="n">new_borrowing</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">T</span><span class="p">)</span>
         <span class="n">debt_service</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">T</span><span class="p">)</span>
         <span class="n">new_borrowing_f</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">T</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="n">t</span> <span class="o">=</span> <span class="mi">1</span>
         <span class="n">r_gov</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">r</span><span class="p">)</span>
-        <span class="n">r_gov</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">get_r_gov</span><span class="p">(</span><span class="n">r</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">D</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">/</span> <span class="n">Y</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">p</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s2">&quot;scalar&quot;</span><span class="p">,</span> <span class="n">t</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+        <span class="n">r_gov</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">get_r_gov</span><span class="p">(</span><span class="n">r</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">D</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">/</span> <span class="n">Y</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">p</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s2">"scalar"</span><span class="p">,</span> <span class="n">t</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
         <span class="k">while</span> <span class="n">t</span> <span class="o">&lt;</span> <span class="n">p</span><span class="o">.</span><span class="n">T</span> <span class="o">-</span> <span class="mi">1</span><span class="p">:</span>
             <span class="n">D</span><span class="p">[</span><span class="n">t</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="mi">1</span> <span class="o">/</span> <span class="n">growth</span><span class="p">[</span><span class="n">t</span><span class="p">])</span> <span class="o">*</span> <span class="p">(</span>
                 <span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="n">r_gov</span><span class="p">[</span><span class="n">t</span> <span class="o">-</span> <span class="mi">1</span><span class="p">])</span> <span class="o">*</span> <span class="n">D</span><span class="p">[</span><span class="n">t</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span>
@@ -540,7 +543,7 @@
                 <span class="o">-</span> <span class="n">total_tax_revenue</span><span class="p">[</span><span class="n">t</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span>
                 <span class="o">-</span> <span class="n">foreign_aid</span><span class="p">[</span><span class="n">t</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span>
             <span class="p">)</span>
-            <span class="n">r_gov</span><span class="p">[</span><span class="n">t</span><span class="p">]</span> <span class="o">=</span> <span class="n">get_r_gov</span><span class="p">(</span><span class="n">r</span><span class="p">[</span><span class="n">t</span><span class="p">],</span> <span class="n">D</span><span class="p">[</span><span class="n">t</span><span class="p">]</span> <span class="o">/</span> <span class="n">Y</span><span class="p">[</span><span class="n">t</span><span class="p">],</span> <span class="n">p</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s2">&quot;scalar&quot;</span><span class="p">,</span> <span class="n">t</span><span class="o">=</span><span class="n">t</span><span class="p">)</span>
+            <span class="n">r_gov</span><span class="p">[</span><span class="n">t</span><span class="p">]</span> <span class="o">=</span> <span class="n">get_r_gov</span><span class="p">(</span><span class="n">r</span><span class="p">[</span><span class="n">t</span><span class="p">],</span> <span class="n">D</span><span class="p">[</span><span class="n">t</span><span class="p">]</span> <span class="o">/</span> <span class="n">Y</span><span class="p">[</span><span class="n">t</span><span class="p">],</span> <span class="n">p</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s2">"scalar"</span><span class="p">,</span> <span class="n">t</span><span class="o">=</span><span class="n">t</span><span class="p">)</span>
             <span class="k">if</span> <span class="p">(</span><span class="n">t</span> <span class="o">&gt;=</span> <span class="n">p</span><span class="o">.</span><span class="n">tG1</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="n">t</span> <span class="o">&lt;</span> <span class="n">p</span><span class="o">.</span><span class="n">tG2</span><span class="p">):</span>
                 <span class="n">G</span><span class="p">[</span><span class="n">t</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
                     <span class="n">growth</span><span class="p">[</span><span class="n">t</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span>
@@ -579,7 +582,7 @@
             <span class="o">-</span> <span class="n">total_tax_revenue</span><span class="p">[</span><span class="n">t</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span>
             <span class="o">-</span> <span class="n">foreign_aid</span><span class="p">[</span><span class="n">t</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span>
         <span class="p">)</span>
-        <span class="n">r_gov</span><span class="p">[</span><span class="n">t</span><span class="p">]</span> <span class="o">=</span> <span class="n">get_r_gov</span><span class="p">(</span><span class="n">r</span><span class="p">[</span><span class="n">t</span><span class="p">],</span> <span class="n">D</span><span class="p">[</span><span class="n">t</span><span class="p">]</span> <span class="o">/</span> <span class="n">Y</span><span class="p">[</span><span class="n">t</span><span class="p">],</span> <span class="n">p</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s2">&quot;scalar&quot;</span><span class="p">,</span> <span class="n">t</span><span class="o">=</span><span class="n">t</span><span class="p">)</span>
+        <span class="n">r_gov</span><span class="p">[</span><span class="n">t</span><span class="p">]</span> <span class="o">=</span> <span class="n">get_r_gov</span><span class="p">(</span><span class="n">r</span><span class="p">[</span><span class="n">t</span><span class="p">],</span> <span class="n">D</span><span class="p">[</span><span class="n">t</span><span class="p">]</span> <span class="o">/</span> <span class="n">Y</span><span class="p">[</span><span class="n">t</span><span class="p">],</span> <span class="n">p</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s2">"scalar"</span><span class="p">,</span> <span class="n">t</span><span class="o">=</span><span class="n">t</span><span class="p">)</span>
         <span class="n">G</span><span class="p">[</span><span class="n">t</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
             <span class="n">growth</span><span class="p">[</span><span class="n">t</span><span class="p">]</span> <span class="o">*</span> <span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">debt_ratio_ss</span> <span class="o">*</span> <span class="n">Y</span><span class="p">[</span><span class="n">t</span><span class="p">])</span>
             <span class="o">-</span> <span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="n">r_gov</span><span class="p">[</span><span class="n">t</span><span class="p">])</span> <span class="o">*</span> <span class="n">D</span><span class="p">[</span><span class="n">t</span><span class="p">]</span>
@@ -601,7 +604,7 @@
             <span class="o">-</span> <span class="n">foreign_aid</span><span class="p">[</span><span class="n">t</span><span class="p">]</span>
         <span class="p">)</span>
         <span class="n">D_ratio_max</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">amax</span><span class="p">(</span><span class="n">D</span><span class="p">[:</span> <span class="n">p</span><span class="o">.</span><span class="n">T</span><span class="p">]</span> <span class="o">/</span> <span class="n">Y</span><span class="p">[:</span> <span class="n">p</span><span class="o">.</span><span class="n">T</span><span class="p">])</span>
-        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Maximum debt ratio: &quot;</span><span class="p">,</span> <span class="n">D_ratio_max</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">"Maximum debt ratio: "</span><span class="p">,</span> <span class="n">D_ratio_max</span><span class="p">)</span>
 
         <span class="c1"># Find foreign and domestic debt holding</span>
         <span class="c1"># Fix initial amount of foreign debt holding</span>
@@ -636,7 +639,7 @@
 <div class="viewcode-block" id="get_D_ss">
 <a class="viewcode-back" href="../../content/api/fiscal.html#ogcore.fiscal.get_D_ss">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">get_D_ss</span><span class="p">(</span><span class="n">r_gov</span><span class="p">,</span> <span class="n">Y</span><span class="p">,</span> <span class="n">p</span><span class="p">):</span>
-<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">"""</span>
 <span class="sd">    Calculate the steady-state values of government spending and debt</span>
 
 <span class="sd">    .. math::</span>
@@ -666,7 +669,7 @@
 <span class="sd">            * debt_service: steady-state debt service costs</span>
 <span class="sd">            * new_borrowing_f: steady-state borrowing from foreigners</span>
 
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="k">if</span> <span class="n">p</span><span class="o">.</span><span class="n">budget_balance</span><span class="p">:</span>
         <span class="n">D</span> <span class="o">=</span> <span class="mf">0.0</span>
     <span class="k">else</span><span class="p">:</span>
@@ -694,7 +697,7 @@
     <span class="n">debt_service</span><span class="p">,</span>
     <span class="n">p</span><span class="p">,</span>
 <span class="p">):</span>
-<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">"""</span>
 <span class="sd">    Calculate the steady-state values of government spending.</span>
 
 <span class="sd">    .. math::</span>
@@ -715,7 +718,7 @@
 <span class="sd">    Returns:</span>
 <span class="sd">        G (tuple): steady-state government spending</span>
 
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="n">foreign_aid</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">alpha_FA</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="n">Y</span>
     <span class="k">if</span> <span class="n">p</span><span class="o">.</span><span class="n">budget_balance</span><span class="p">:</span>
         <span class="n">G</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">alpha_G</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="n">Y</span>
@@ -734,7 +737,7 @@
 <div class="viewcode-block" id="get_debt_service_f">
 <a class="viewcode-back" href="../../content/api/fiscal.html#ogcore.fiscal.get_debt_service_f">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">get_debt_service_f</span><span class="p">(</span><span class="n">r_p</span><span class="p">,</span> <span class="n">D_f</span><span class="p">):</span>
-<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">"""</span>
 <span class="sd">    Function to compute foreign debt service payments.</span>
 
 <span class="sd">    .. math::</span>
@@ -745,7 +748,7 @@
 <span class="sd">    Returns:</span>
 <span class="sd">        debt_service_f (array_like): foreign debt service payment amount</span>
 
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="n">debt_service_f</span> <span class="o">=</span> <span class="n">r_p</span> <span class="o">*</span> <span class="n">D_f</span>
 
     <span class="k">return</span> <span class="n">debt_service_f</span></div>
@@ -765,12 +768,12 @@
     <span class="n">p</span><span class="p">,</span>
     <span class="n">method</span><span class="p">,</span>
 <span class="p">):</span>
-<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">"""</span>
 <span class="sd">    Function to compute aggregate transfers.  Note that this excludes</span>
 <span class="sd">    transfer spending through the public pension system.</span>
 
 <span class="sd">    .. math::</span>
-<span class="sd">        TR^{&#39;}_{t}=</span>
+<span class="sd">        TR^{'}_{t}=</span>
 <span class="sd">        \begin{cases}</span>
 <span class="sd">            Revenue,&amp; \text{if balanced budget} \\</span>
 <span class="sd">            TR^{baseline}, &amp; \text{if baseline spending}\\</span>
@@ -793,9 +796,9 @@
 <span class="sd">    Returns:</span>
 <span class="sd">        new_TR (array_like): new value of aggregate government transfers</span>
 
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="k">if</span> <span class="n">p</span><span class="o">.</span><span class="n">budget_balance</span><span class="p">:</span>
-        <span class="k">if</span> <span class="n">method</span> <span class="o">==</span> <span class="s2">&quot;SS&quot;</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">method</span> <span class="o">==</span> <span class="s2">"SS"</span><span class="p">:</span>
             <span class="n">foreign_aid</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">alpha_FA</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="n">Y</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">foreign_aid</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">alpha_FA</span><span class="p">[:</span> <span class="n">p</span><span class="o">.</span><span class="n">T</span><span class="p">]</span> <span class="o">*</span> <span class="n">Y</span><span class="p">[:</span> <span class="n">p</span><span class="o">.</span><span class="n">T</span><span class="p">]</span>
@@ -810,7 +813,7 @@
     <span class="k">elif</span> <span class="n">p</span><span class="o">.</span><span class="n">baseline_spending</span><span class="p">:</span>
         <span class="n">new_TR</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">alpha_bs_T</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="n">TR</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="k">if</span> <span class="n">method</span> <span class="o">==</span> <span class="s2">&quot;SS&quot;</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">method</span> <span class="o">==</span> <span class="s2">"SS"</span><span class="p">:</span>
             <span class="n">new_TR</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">alpha_T</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="n">Y</span>
         <span class="k">else</span><span class="p">:</span>  <span class="c1"># time path case</span>
             <span class="n">new_TR</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">alpha_T</span><span class="p">[:</span> <span class="n">p</span><span class="o">.</span><span class="n">T</span><span class="p">]</span> <span class="o">*</span> <span class="n">Y</span><span class="p">[:</span> <span class="n">p</span><span class="o">.</span><span class="n">T</span><span class="p">]</span>
@@ -822,7 +825,7 @@
 <div class="viewcode-block" id="get_r_gov">
 <a class="viewcode-back" href="../../content/api/fiscal.html#ogcore.fiscal.get_r_gov">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">get_r_gov</span><span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="n">DY_ratio</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">method</span><span class="p">,</span> <span class="n">t</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
-<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">"""</span>
 <span class="sd">    Determine the interest rate on government debt</span>
 
 <span class="sd">    .. math::</span>
@@ -835,16 +838,16 @@
 <span class="sd">            time path or in the steady state</span>
 <span class="sd">        DY_ratio (array_like): ratio of government debt to GDP</span>
 <span class="sd">        p (OG-Core Specifications object): model parameters</span>
-<span class="sd">        method (str): either &#39;scalar&#39; for one period or &#39;TPI&#39; for</span>
+<span class="sd">        method (str): either 'scalar' for one period or 'TPI' for</span>
 <span class="sd">            transition path</span>
-<span class="sd">        t (int): time period index, used only if method is &#39;scalar&#39;</span>
+<span class="sd">        t (int): time period index, used only if method is 'scalar'</span>
 
 <span class="sd">    Returns:</span>
 <span class="sd">        r_gov (array_like): interest rate on government debt over the</span>
 <span class="sd">            time path or in the steady-state</span>
 
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">if</span> <span class="n">method</span> <span class="o">==</span> <span class="s2">&quot;scalar&quot;</span><span class="p">:</span>
+<span class="sd">    """</span>
+    <span class="k">if</span> <span class="n">method</span> <span class="o">==</span> <span class="s2">"scalar"</span><span class="p">:</span>
         <span class="n">r_gov</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">maximum</span><span class="p">(</span>
             <span class="n">p</span><span class="o">.</span><span class="n">r_gov_scale</span><span class="p">[</span><span class="n">t</span><span class="p">]</span> <span class="o">*</span> <span class="n">r</span>
             <span class="o">-</span> <span class="n">p</span><span class="o">.</span><span class="n">r_gov_shift</span><span class="p">[</span><span class="n">t</span><span class="p">]</span>
@@ -867,8 +870,8 @@
 
 <div class="viewcode-block" id="get_I_g">
 <a class="viewcode-back" href="../../content/api/fiscal.html#ogcore.fiscal.get_I_g">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">get_I_g</span><span class="p">(</span><span class="n">Y</span><span class="p">,</span> <span class="n">Ig_baseline</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s2">&quot;SS&quot;</span><span class="p">):</span>
-<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">get_I_g</span><span class="p">(</span><span class="n">Y</span><span class="p">,</span> <span class="n">Ig_baseline</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s2">"SS"</span><span class="p">):</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">"""</span>
 <span class="sd">    Find investment in public capital</span>
 
 <span class="sd">    .. math::</span>
@@ -879,18 +882,18 @@
 <span class="sd">        Ig_baseline (array_like): public infrastructure investment in</span>
 <span class="sd">            the baseline simulation</span>
 <span class="sd">        p (OG-Core Specifications object): model parameters</span>
-<span class="sd">        method (str): either &#39;SS&#39; for steady-state or &#39;TPI&#39; for transition path</span>
+<span class="sd">        method (str): either 'SS' for steady-state or 'TPI' for transition path</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">        I_g (array_like): investment in public capital</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="k">if</span> <span class="n">p</span><span class="o">.</span><span class="n">baseline_spending</span><span class="p">:</span>
-        <span class="k">if</span> <span class="n">method</span> <span class="o">==</span> <span class="s2">&quot;SS&quot;</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">method</span> <span class="o">==</span> <span class="s2">"SS"</span><span class="p">:</span>
             <span class="n">I_g</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">alpha_bs_I</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="n">Ig_baseline</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">I_g</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">alpha_bs_I</span><span class="p">[:</span> <span class="n">p</span><span class="o">.</span><span class="n">T</span><span class="p">]</span> <span class="o">*</span> <span class="n">Ig_baseline</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="k">if</span> <span class="n">method</span> <span class="o">==</span> <span class="s2">&quot;SS&quot;</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">method</span> <span class="o">==</span> <span class="s2">"SS"</span><span class="p">:</span>
             <span class="n">I_g</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">alpha_I</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="n">Y</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">I_g</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">alpha_I</span><span class="p">[:</span> <span class="n">p</span><span class="o">.</span><span class="n">T</span><span class="p">]</span> <span class="o">*</span> <span class="n">Y</span>
@@ -902,7 +905,7 @@
 <div class="viewcode-block" id="get_K_g">
 <a class="viewcode-back" href="../../content/api/fiscal.html#ogcore.fiscal.get_K_g">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">get_K_g</span><span class="p">(</span><span class="n">K_g0</span><span class="p">,</span> <span class="n">I_g</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">method</span><span class="p">):</span>
-<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">"""</span>
 <span class="sd">    Law of motion for the government capital stock</span>
 
 <span class="sd">    .. math::</span>
@@ -917,14 +920,14 @@
 <span class="sd">        K_g0 (scalar): initial stock of public capital</span>
 <span class="sd">        I_g (array_like): government infrastructure investment</span>
 <span class="sd">        p (ParamTools object): model parameters</span>
-<span class="sd">        method (str): either &#39;SS&#39; for steady-state or &#39;TPI&#39; for transition path</span>
+<span class="sd">        method (str): either 'SS' for steady-state or 'TPI' for transition path</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">        K_g (array_like): stock of public capital</span>
 
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="n">phi_g</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">infra_investment_leakage_rate</span>
-    <span class="k">if</span> <span class="n">method</span> <span class="o">==</span> <span class="s2">&quot;TPI&quot;</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">method</span> <span class="o">==</span> <span class="s2">"TPI"</span><span class="p">:</span>
         <span class="n">K_g</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">T</span><span class="p">)</span>
         <span class="n">K_g</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">K_g0</span>
         <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">T</span> <span class="o">-</span> <span class="mi">1</span><span class="p">):</span>  <span class="c1"># TODO: numba jit this</span>

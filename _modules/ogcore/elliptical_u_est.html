@@ -30,7 +30,7 @@
 <link href="../../_static/styles/pydata-sphinx-theme.css?digest=55c26ed414f5f8a31ebb" rel="stylesheet" />
 
     <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
-    <link rel="stylesheet" type="text/css" href="../../_static/styles/sphinx-book-theme.css?v=a3416100" />
+    <link rel="stylesheet" type="text/css" href="../../_static/styles/sphinx-book-theme.css?v=3c74b3bc" />
     <link rel="stylesheet" type="text/css" href="../../_static/togglebutton.css?v=9c3e77be" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="../../_static/mystnb.11b39860a7a0cbfd473a3ad8a317855267ff0bd372690045ca344a6b62be495e.css" />
@@ -48,7 +48,7 @@
     <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
     <script src="../../_static/copybutton.js?v=f281be69"></script>
-    <script src="../../_static/scripts/sphinx-book-theme.js?v=887ef09a"></script>
+    <script src="../../_static/scripts/sphinx-book-theme.js?v=fab101a9"></script>
     <script>let toggleHintShow = 'Click to show';</script>
     <script>let toggleHintHide = 'Click to hide';</script>
     <script>let toggleOpenOnPrint = 'true';</script>
@@ -222,6 +222,7 @@
 <ul class="nav bd-sidenav">
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../content/api/public_api.html">API</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../content/api/aggregates.html">Aggregates Equations</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../content/api/config.html">Logging Configuration</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../content/api/demographics.html">Demographics Functions</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../content/api/elliptical_u_est.html">Elliptical Utility Function Estimation</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../content/api/execute.html">Model Execution Functions</a></li>
@@ -235,7 +236,9 @@
 <li class="toctree-l2"><a class="reference internal" href="../../content/api/parameters.html">Parameters Functions</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../content/api/pensions.html">Pension Functions</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../content/api/solvers.html">Solvers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../content/api/SS.html">Steady-State Functions</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../content/api/tax.html">Tax Functions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../content/api/TPI.html">Transition Path Functions</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../content/api/txfunc.html">Tax Function Estimation Functions</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../content/api/utils.html">Utilities Functions</a></li>
 </ul>
@@ -365,7 +368,7 @@
 
 
 <button onclick="toggleFullScreen()"
-  class="btn btn-sm btn-fullscreen-button"
+  class="btn btn-sm btn-fullscreen-button pst-navbar-icon"
   title="Fullscreen mode"
   data-bs-placement="bottom" data-bs-toggle="tooltip"
 >
@@ -415,13 +418,13 @@
                 <article class="bd-article">
                   
   <h1>Source code for ogcore.elliptical_u_est</h1><div class="highlight"><pre>
-<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span></span><span class="sd">"""</span>
 <span class="sd">------------------------------------------------------------------------</span>
 <span class="sd">This script takes a Frisch elasticity parameter and then estimates the</span>
 <span class="sd">parameters of the elliptical utility fuction that correspond to a</span>
 <span class="sd">constant Frisch elasticity function with the input Frisch elasticity.</span>
 <span class="sd">------------------------------------------------------------------------</span>
-<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">"""</span>
 
 <span class="c1"># Import packages</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
@@ -431,7 +434,7 @@
 <div class="viewcode-block" id="CFE_u">
 <a class="viewcode-back" href="../../content/api/elliptical_u_est.html#ogcore.elliptical_u_est.CFE_u">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">CFE_u</span><span class="p">(</span><span class="n">theta</span><span class="p">,</span> <span class="n">l_tilde</span><span class="p">,</span> <span class="n">n</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Disutility of labor supply from the constant Frisch elasticity</span>
 <span class="sd">    utility function.</span>
 
@@ -443,7 +446,7 @@
 <span class="sd">    Returns:</span>
 <span class="sd">        u (array_like): disutility of labor supply</span>
 
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="n">u</span> <span class="o">=</span> <span class="p">((</span><span class="n">n</span> <span class="o">/</span> <span class="n">l_tilde</span><span class="p">)</span> <span class="o">**</span> <span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="n">theta</span><span class="p">))</span> <span class="o">/</span> <span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="n">theta</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="n">u</span></div>
@@ -453,7 +456,7 @@
 <div class="viewcode-block" id="CFE_mu">
 <a class="viewcode-back" href="../../content/api/elliptical_u_est.html#ogcore.elliptical_u_est.CFE_mu">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">CFE_mu</span><span class="p">(</span><span class="n">theta</span><span class="p">,</span> <span class="n">l_tilde</span><span class="p">,</span> <span class="n">n</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Marginal disutility of labor supply from the constant Frisch</span>
 <span class="sd">    elasticity utility function</span>
 
@@ -465,7 +468,7 @@
 <span class="sd">    Returns:</span>
 <span class="sd">        mu (array_like): marginal disutility of labor supply</span>
 
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="n">mu</span> <span class="o">=</span> <span class="p">(</span><span class="mf">1.0</span> <span class="o">/</span> <span class="n">l_tilde</span><span class="p">)</span> <span class="o">*</span> <span class="p">((</span><span class="n">n</span> <span class="o">/</span> <span class="n">l_tilde</span><span class="p">)</span> <span class="o">**</span> <span class="n">theta</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="n">mu</span></div>
@@ -475,7 +478,7 @@
 <div class="viewcode-block" id="elliptical_u">
 <a class="viewcode-back" href="../../content/api/elliptical_u_est.html#ogcore.elliptical_u_est.elliptical_u">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">elliptical_u</span><span class="p">(</span><span class="n">b</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="n">upsilon</span><span class="p">,</span> <span class="n">l_tilde</span><span class="p">,</span> <span class="n">n</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Disutility of labor supply from the elliptical utility function</span>
 
 <span class="sd">    Args:</span>
@@ -489,7 +492,7 @@
 <span class="sd">    Returns:</span>
 <span class="sd">        u (array_like): disutility of labor supply</span>
 
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="n">u</span> <span class="o">=</span> <span class="n">b</span> <span class="o">*</span> <span class="p">((</span><span class="mi">1</span> <span class="o">-</span> <span class="p">((</span><span class="n">n</span> <span class="o">/</span> <span class="n">l_tilde</span><span class="p">)</span> <span class="o">**</span> <span class="n">upsilon</span><span class="p">))</span> <span class="o">**</span> <span class="p">(</span><span class="mi">1</span> <span class="o">/</span> <span class="n">upsilon</span><span class="p">))</span> <span class="o">+</span> <span class="n">k</span>
 
     <span class="k">return</span> <span class="n">u</span></div>
@@ -499,7 +502,7 @@
 <div class="viewcode-block" id="elliptical_mu">
 <a class="viewcode-back" href="../../content/api/elliptical_u_est.html#ogcore.elliptical_u_est.elliptical_mu">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">elliptical_mu</span><span class="p">(</span><span class="n">b</span><span class="p">,</span> <span class="n">upsilon</span><span class="p">,</span> <span class="n">l_tilde</span><span class="p">,</span> <span class="n">n</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Marginal disutility of labor supply from the elliptical utility</span>
 <span class="sd">    function</span>
 
@@ -513,7 +516,7 @@
 <span class="sd">    Returns:</span>
 <span class="sd">        mu (array_like): marginal disutility of labor supply</span>
 
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="n">mu</span> <span class="o">=</span> <span class="p">(</span>
         <span class="n">b</span>
         <span class="o">*</span> <span class="p">(</span><span class="mf">1.0</span> <span class="o">/</span> <span class="n">l_tilde</span><span class="p">)</span>
@@ -528,7 +531,7 @@
 <div class="viewcode-block" id="sumsq">
 <a class="viewcode-back" href="../../content/api/elliptical_u_est.html#ogcore.elliptical_u_est.sumsq">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">sumsq</span><span class="p">(</span><span class="n">params</span><span class="p">,</span> <span class="o">*</span><span class="n">objs</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    This function generates the sum of squared deviations between the</span>
 <span class="sd">    constant Frisch elasticity function and the elliptical utility</span>
 <span class="sd">    function.</span>
@@ -541,7 +544,7 @@
 <span class="sd">    Returns:</span>
 <span class="sd">        ssqdev (scalar): sum of squared errors</span>
 
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="n">theta</span><span class="p">,</span> <span class="n">l_tilde</span><span class="p">,</span> <span class="n">n_grid</span> <span class="o">=</span> <span class="n">objs</span>
     <span class="n">b</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="n">upsilon</span> <span class="o">=</span> <span class="n">params</span>
     <span class="n">CFE</span> <span class="o">=</span> <span class="n">CFE_u</span><span class="p">(</span><span class="n">theta</span><span class="p">,</span> <span class="n">l_tilde</span><span class="p">,</span> <span class="n">n_grid</span><span class="p">)</span>
@@ -555,7 +558,7 @@
 <div class="viewcode-block" id="sumsq_MU">
 <a class="viewcode-back" href="../../content/api/elliptical_u_est.html#ogcore.elliptical_u_est.sumsq_MU">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">sumsq_MU</span><span class="p">(</span><span class="n">params</span><span class="p">,</span> <span class="o">*</span><span class="n">objs</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    This function generates the sum of squared deviations between the</span>
 <span class="sd">    marginals of the constant Frisch elasticity function and the</span>
 <span class="sd">    elliptical utility function</span>
@@ -568,7 +571,7 @@
 <span class="sd">    Returns:</span>
 <span class="sd">        ssqdev (scalar): sum of squared errors</span>
 
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="n">theta</span><span class="p">,</span> <span class="n">l_tilde</span><span class="p">,</span> <span class="n">n_grid</span> <span class="o">=</span> <span class="n">objs</span>
     <span class="n">b</span><span class="p">,</span> <span class="n">upsilon</span> <span class="o">=</span> <span class="n">params</span>
     <span class="n">CFE_MU</span> <span class="o">=</span> <span class="n">CFE_mu</span><span class="p">(</span><span class="n">theta</span><span class="p">,</span> <span class="n">l_tilde</span><span class="p">,</span> <span class="n">n_grid</span><span class="p">)</span>
@@ -587,7 +590,7 @@
 <div class="viewcode-block" id="estimation">
 <a class="viewcode-back" href="../../content/api/elliptical_u_est.html#ogcore.elliptical_u_est.estimation">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">estimation</span><span class="p">(</span><span class="n">frisch</span><span class="p">,</span> <span class="n">l_tilde</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    This function estimates the parameters of an elliptical utility</span>
 <span class="sd">    function that fits a constant frisch elasticity function.</span>
 
@@ -600,7 +603,7 @@
 <span class="sd">        upsilon_MU_til (scalar): estimated upsilon from elliptical</span>
 <span class="sd">            utility function</span>
 
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="c1"># Set parameters</span>
     <span class="n">theta</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">/</span> <span class="n">frisch</span>
     <span class="n">N</span> <span class="o">=</span> <span class="mi">101</span>
@@ -610,7 +613,7 @@
     <span class="n">b_init</span> <span class="o">=</span> <span class="mf">0.6701</span>
     <span class="c1"># k_init = -.6548</span>
     <span class="n">upsilon_init</span> <span class="o">=</span> <span class="mf">2.3499</span>
-    <span class="c1"># don&#39;t estimate near edge of range of labor supply</span>
+    <span class="c1"># don't estimate near edge of range of labor supply</span>
     <span class="n">n_grid</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mf">0.01</span><span class="p">,</span> <span class="mf">0.8</span><span class="p">,</span> <span class="n">num</span><span class="o">=</span><span class="n">N</span><span class="p">)</span>
 
     <span class="c1"># Estimate params using marginal utilities</span>
@@ -621,7 +624,7 @@
         <span class="n">sumsq_MU</span><span class="p">,</span>
         <span class="n">ellipse_MU_params_init</span><span class="p">,</span>
         <span class="n">args</span><span class="o">=</span><span class="p">(</span><span class="n">ellipse_MU_objs</span><span class="p">),</span>
-        <span class="n">method</span><span class="o">=</span><span class="s2">&quot;L-BFGS-B&quot;</span><span class="p">,</span>
+        <span class="n">method</span><span class="o">=</span><span class="s2">"L-BFGS-B"</span><span class="p">,</span>
         <span class="n">bounds</span><span class="o">=</span><span class="n">bnds_MU</span><span class="p">,</span>
         <span class="n">tol</span><span class="o">=</span><span class="mf">1e-15</span><span class="p">,</span>
     <span class="p">)</span>

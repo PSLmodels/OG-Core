@@ -30,7 +30,7 @@
 <link href="../../_static/styles/pydata-sphinx-theme.css?digest=55c26ed414f5f8a31ebb" rel="stylesheet" />
 
     <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
-    <link rel="stylesheet" type="text/css" href="../../_static/styles/sphinx-book-theme.css?v=a3416100" />
+    <link rel="stylesheet" type="text/css" href="../../_static/styles/sphinx-book-theme.css?v=3c74b3bc" />
     <link rel="stylesheet" type="text/css" href="../../_static/togglebutton.css?v=9c3e77be" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="../../_static/mystnb.11b39860a7a0cbfd473a3ad8a317855267ff0bd372690045ca344a6b62be495e.css" />
@@ -48,7 +48,7 @@
     <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
     <script src="../../_static/copybutton.js?v=f281be69"></script>
-    <script src="../../_static/scripts/sphinx-book-theme.js?v=887ef09a"></script>
+    <script src="../../_static/scripts/sphinx-book-theme.js?v=fab101a9"></script>
     <script>let toggleHintShow = 'Click to show';</script>
     <script>let toggleHintHide = 'Click to hide';</script>
     <script>let toggleOpenOnPrint = 'true';</script>
@@ -222,6 +222,7 @@
 <ul class="nav bd-sidenav">
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../content/api/public_api.html">API</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../content/api/aggregates.html">Aggregates Equations</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../content/api/config.html">Logging Configuration</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../content/api/demographics.html">Demographics Functions</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../content/api/elliptical_u_est.html">Elliptical Utility Function Estimation</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../content/api/execute.html">Model Execution Functions</a></li>
@@ -235,7 +236,9 @@
 <li class="toctree-l2"><a class="reference internal" href="../../content/api/parameters.html">Parameters Functions</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../content/api/pensions.html">Pension Functions</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../content/api/solvers.html">Solvers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../content/api/SS.html">Steady-State Functions</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../content/api/tax.html">Tax Functions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../content/api/TPI.html">Transition Path Functions</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../content/api/txfunc.html">Tax Function Estimation Functions</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../content/api/utils.html">Utilities Functions</a></li>
 </ul>
@@ -365,7 +368,7 @@
 
 
 <button onclick="toggleFullScreen()"
-  class="btn btn-sm btn-fullscreen-button"
+  class="btn btn-sm btn-fullscreen-button pst-navbar-icon"
   title="Fullscreen mode"
   data-bs-placement="bottom" data-bs-toggle="tooltip"
 >
@@ -418,28 +421,28 @@
 <span></span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">ogcore</span><span class="w"> </span><span class="kn">import</span> <span class="n">aggregates</span> <span class="k">as</span> <span class="n">aggr</span>
 
-<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">"""</span>
 <span class="sd">------------------------------------------------------------------------</span>
 <span class="sd">Firm functions for firms in the steady state and along the transition</span>
 <span class="sd">path</span>
 <span class="sd">------------------------------------------------------------------------</span>
-<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">"""</span>
 
 <span class="c1"># Floor for quantities raised to potentially negative powers in CES.</span>
 <span class="c1"># Prevents 0^(negative) → inf/NaN when epsilon != 1.</span>
 <span class="n">_FLOOR</span> <span class="o">=</span> <span class="mf">1e-12</span>
 
-<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">"""</span>
 <span class="sd">------------------------------------------------------------------------</span>
 <span class="sd">    Functions</span>
 <span class="sd">------------------------------------------------------------------------</span>
-<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">"""</span>
 
 
 <div class="viewcode-block" id="get_Y">
 <a class="viewcode-back" href="../../content/api/firm.html#ogcore.firm.get_Y">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">get_Y</span><span class="p">(</span><span class="n">K</span><span class="p">,</span> <span class="n">K_g</span><span class="p">,</span> <span class="n">L</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">method</span><span class="p">,</span> <span class="n">m</span><span class="o">=-</span><span class="mi">1</span><span class="p">):</span>
-<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">"""</span>
 <span class="sd">    Generates aggregate output (GDP) from aggregate capital stock,</span>
 <span class="sd">    aggregate labor, and CES production function parameters.</span>
 
@@ -460,16 +463,16 @@
 <span class="sd">        K_g (array_like): aggregate government capital</span>
 <span class="sd">        L (array_like): aggregate labor</span>
 <span class="sd">        p (OG-Core Specifications object): model parameters</span>
-<span class="sd">        method (str): adjusts calculation dimensions based on &#39;SS&#39; or</span>
-<span class="sd">            &#39;TPI&#39;</span>
+<span class="sd">        method (str): adjusts calculation dimensions based on 'SS' or</span>
+<span class="sd">            'TPI'</span>
 <span class="sd">        m (int or None): industry index</span>
 
 <span class="sd">    Returns:</span>
 <span class="sd">        Y (array_like): aggregate output</span>
 
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
-    <span class="k">if</span> <span class="n">method</span> <span class="o">==</span> <span class="s2">&quot;SS&quot;</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">method</span> <span class="o">==</span> <span class="s2">"SS"</span><span class="p">:</span>
         <span class="k">if</span> <span class="n">m</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="c1"># Set gamma_g to 0 when K_g=0 and eps=1 to remove K_g</span>
             <span class="c1"># from prod func</span>
@@ -606,9 +609,9 @@
 <div class="viewcode-block" id="get_r">
 <a class="viewcode-back" href="../../content/api/firm.html#ogcore.firm.get_r">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">get_r</span><span class="p">(</span><span class="n">Y</span><span class="p">,</span> <span class="n">K</span><span class="p">,</span> <span class="n">p_m</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">method</span><span class="p">,</span> <span class="n">m</span><span class="o">=-</span><span class="mi">1</span><span class="p">):</span>
-<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">"""</span>
 <span class="sd">    This function computes the interest rate as a function of Y, K, and</span>
-<span class="sd">    parameters using the firm&#39;s first order condition for capital</span>
+<span class="sd">    parameters using the firm's first order condition for capital</span>
 <span class="sd">    demand.</span>
 
 <span class="sd">    .. math::</span>
@@ -621,15 +624,15 @@
 <span class="sd">        K (array_like): aggregate capital</span>
 <span class="sd">        p_m (array_like): output prices</span>
 <span class="sd">        p (OG-Core Specifications object): model parameters</span>
-<span class="sd">        method (str): adjusts calculation dimensions based on &#39;SS&#39; or</span>
-<span class="sd">            &#39;TPI&#39;</span>
+<span class="sd">        method (str): adjusts calculation dimensions based on 'SS' or</span>
+<span class="sd">            'TPI'</span>
 <span class="sd">        m (int): index of the production industry</span>
 
 <span class="sd">    Returns:</span>
 <span class="sd">        r (array_like): the real interest rate</span>
 
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">if</span> <span class="n">method</span> <span class="o">==</span> <span class="s2">&quot;SS&quot;</span><span class="p">:</span>
+<span class="sd">    """</span>
+    <span class="k">if</span> <span class="n">method</span> <span class="o">==</span> <span class="s2">"SS"</span><span class="p">:</span>
         <span class="n">delta_tau</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">delta_tau</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">m</span><span class="p">]</span>
         <span class="n">tau_b</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">tau_b</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">m</span><span class="p">]</span>
         <span class="n">tau_inv</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">inv_tax_credit</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">m</span><span class="p">]</span>
@@ -654,9 +657,9 @@
 <div class="viewcode-block" id="get_w">
 <a class="viewcode-back" href="../../content/api/firm.html#ogcore.firm.get_w">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">get_w</span><span class="p">(</span><span class="n">Y</span><span class="p">,</span> <span class="n">L</span><span class="p">,</span> <span class="n">p_m</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">method</span><span class="p">,</span> <span class="n">m</span><span class="o">=-</span><span class="mi">1</span><span class="p">):</span>
-<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">"""</span>
 <span class="sd">    This function computes the wage as a function of Y, L, and</span>
-<span class="sd">    parameters using the firm&#39;s first order condition for labor demand.</span>
+<span class="sd">    parameters using the firm's first order condition for labor demand.</span>
 
 <span class="sd">    .. math::</span>
 <span class="sd">        w_t = Z_t^\frac{\varepsilon-1}{\varepsilon}\left[(1-\gamma-\gamma_g)</span>
@@ -667,15 +670,15 @@
 <span class="sd">        L (array_like): aggregate labor</span>
 <span class="sd">        p_m (array_like): output prices</span>
 <span class="sd">        p (OG-Core Specifications object): model parameters</span>
-<span class="sd">        method (str): adjusts calculation dimensions based on &#39;SS&#39; or</span>
-<span class="sd">            &#39;TPI&#39;</span>
+<span class="sd">        method (str): adjusts calculation dimensions based on 'SS' or</span>
+<span class="sd">            'TPI'</span>
 <span class="sd">        m (int): index of the production industry</span>
 
 <span class="sd">    Returns:</span>
 <span class="sd">        w (array_like): the real wage rate</span>
 
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">if</span> <span class="n">method</span> <span class="o">==</span> <span class="s2">&quot;SS&quot;</span><span class="p">:</span>
+<span class="sd">    """</span>
+    <span class="k">if</span> <span class="n">method</span> <span class="o">==</span> <span class="s2">"SS"</span><span class="p">:</span>
         <span class="n">p_mm</span> <span class="o">=</span> <span class="n">p_m</span><span class="p">[</span><span class="n">m</span><span class="p">]</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="n">p_mm</span> <span class="o">=</span> <span class="n">p_m</span><span class="p">[:,</span> <span class="n">m</span><span class="p">]</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
@@ -688,7 +691,7 @@
 <div class="viewcode-block" id="get_KLratio_KLonly">
 <a class="viewcode-back" href="../../content/api/firm.html#ogcore.firm.get_KLratio_KLonly">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">get_KLratio_KLonly</span><span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">method</span><span class="p">,</span> <span class="n">m</span><span class="o">=-</span><span class="mi">1</span><span class="p">):</span>
-<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">"""</span>
 <span class="sd">    This function solves for the capital-labor ratio given the interest</span>
 <span class="sd">    rate, r, and parameters when the production function is only a</span>
 <span class="sd">    function of K and L.  This is used in the get_w_from_r function.</span>
@@ -703,15 +706,15 @@
 <span class="sd">    Args:</span>
 <span class="sd">        r (array_like): the real interest rate</span>
 <span class="sd">        p (OG-Core Specifications object): model parameters</span>
-<span class="sd">        method (str): adjusts calculation dimensions based on &#39;SS&#39; or</span>
-<span class="sd">            &#39;TPI&#39;</span>
+<span class="sd">        method (str): adjusts calculation dimensions based on 'SS' or</span>
+<span class="sd">            'TPI'</span>
 <span class="sd">        m (int): production industry index</span>
 
 <span class="sd">    Returns:</span>
 <span class="sd">        KLratio (array_like): the capital-labor ratio</span>
 
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">if</span> <span class="n">method</span> <span class="o">==</span> <span class="s2">&quot;SS&quot;</span><span class="p">:</span>
+<span class="sd">    """</span>
+    <span class="k">if</span> <span class="n">method</span> <span class="o">==</span> <span class="s2">"SS"</span><span class="p">:</span>
         <span class="n">Z</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">Z</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">m</span><span class="p">]</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="n">length</span> <span class="o">=</span> <span class="n">r</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
@@ -745,7 +748,7 @@
 <div class="viewcode-block" id="get_KLratio">
 <a class="viewcode-back" href="../../content/api/firm.html#ogcore.firm.get_KLratio">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">get_KLratio</span><span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="n">w</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">method</span><span class="p">,</span> <span class="n">m</span><span class="o">=-</span><span class="mi">1</span><span class="p">):</span>
-<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">"""</span>
 <span class="sd">    This function solves for the capital-labor ratio given the interest</span>
 <span class="sd">    rate r wage w and parameters.</span>
 
@@ -759,14 +762,14 @@
 <span class="sd">        r (array_like): the real interest rate</span>
 <span class="sd">        w (array_like): the wage rate</span>
 <span class="sd">        p (OG-Core Specifications object): model parameters</span>
-<span class="sd">        method (str): adjusts calculation dimensions based on &#39;SS&#39; or</span>
-<span class="sd">            &#39;TPI&#39;</span>
+<span class="sd">        method (str): adjusts calculation dimensions based on 'SS' or</span>
+<span class="sd">            'TPI'</span>
 <span class="sd">        m (int): production industry index</span>
 
 <span class="sd">    Returns:</span>
 <span class="sd">        KLratio (array_like): the capital-labor ratio</span>
 
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="n">cost_of_capital</span> <span class="o">=</span> <span class="n">get_cost_of_capital</span><span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">method</span><span class="p">,</span> <span class="n">m</span><span class="p">)</span>
     <span class="n">KLratio</span> <span class="o">=</span> <span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">gamma</span><span class="p">[</span><span class="n">m</span><span class="p">]</span> <span class="o">/</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">p</span><span class="o">.</span><span class="n">gamma</span><span class="p">[</span><span class="n">m</span><span class="p">]</span> <span class="o">-</span> <span class="n">p</span><span class="o">.</span><span class="n">gamma_g</span><span class="p">[</span><span class="n">m</span><span class="p">]))</span> <span class="o">*</span> <span class="p">(</span>
         <span class="n">w</span> <span class="o">/</span> <span class="n">cost_of_capital</span>
@@ -778,7 +781,7 @@
 <div class="viewcode-block" id="get_MPx">
 <a class="viewcode-back" href="../../content/api/firm.html#ogcore.firm.get_MPx">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">get_MPx</span><span class="p">(</span><span class="n">Y</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">share</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">method</span><span class="p">,</span> <span class="n">m</span><span class="o">=-</span><span class="mi">1</span><span class="p">):</span>
-<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">"""</span>
 <span class="sd">    Compute the marginal product of x (where x is K, L, or K_g)</span>
 
 <span class="sd">    .. math::</span>
@@ -790,14 +793,14 @@
 <span class="sd">        x (array_like): input to production function</span>
 <span class="sd">        share (scalar): share of output paid to factor x</span>
 <span class="sd">        p (OG-Core Specifications object): model parameters</span>
-<span class="sd">        method (str): adjusts calculation dimensions based on &#39;SS&#39; or</span>
-<span class="sd">            &#39;TPI&#39;</span>
+<span class="sd">        method (str): adjusts calculation dimensions based on 'SS' or</span>
+<span class="sd">            'TPI'</span>
 <span class="sd">        m (int): production industry index</span>
 
 <span class="sd">    Returns:</span>
 <span class="sd">        MPx (array_like): the marginal product of x</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">if</span> <span class="n">method</span> <span class="o">==</span> <span class="s2">&quot;SS&quot;</span><span class="p">:</span>
+<span class="sd">    """</span>
+    <span class="k">if</span> <span class="n">method</span> <span class="o">==</span> <span class="s2">"SS"</span><span class="p">:</span>
         <span class="n">Z</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">Z</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">m</span><span class="p">]</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="n">Z</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">Z</span><span class="p">[:</span> <span class="n">p</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="n">m</span><span class="p">]</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
@@ -818,7 +821,7 @@
 <div class="viewcode-block" id="get_w_from_r">
 <a class="viewcode-back" href="../../content/api/firm.html#ogcore.firm.get_w_from_r">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">get_w_from_r</span><span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">method</span><span class="p">,</span> <span class="n">m</span><span class="o">=-</span><span class="mi">1</span><span class="p">):</span>
-<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">"""</span>
 <span class="sd">    Solve for a wage rate from a given interest rate.  N.B. this is only</span>
 <span class="sd">    appropriate if the production function only uses capital and labor</span>
 <span class="sd">    as inputs.  As such, this is not used for determining the domestic</span>
@@ -837,17 +840,17 @@
 <span class="sd">    Args:</span>
 <span class="sd">        r (array_like): the real interest rate</span>
 <span class="sd">        p (OG-Core Specifications object): model parameters</span>
-<span class="sd">        method (str): adjusts calculation dimensions based on &#39;SS&#39; or</span>
-<span class="sd">            &#39;TPI&#39;</span>
+<span class="sd">        method (str): adjusts calculation dimensions based on 'SS' or</span>
+<span class="sd">            'TPI'</span>
 <span class="sd">        m (int or None): production industry index</span>
 
 <span class="sd">    Returns:</span>
 <span class="sd">        w (array_like): the real wage rate</span>
 
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="n">KLratio</span> <span class="o">=</span> <span class="n">get_KLratio_KLonly</span><span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">method</span><span class="p">,</span> <span class="n">m</span><span class="p">)</span>
 
-    <span class="k">if</span> <span class="n">method</span> <span class="o">==</span> <span class="s2">&quot;TPI&quot;</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">method</span> <span class="o">==</span> <span class="s2">"TPI"</span><span class="p">:</span>
         <span class="n">Z</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">Z</span><span class="p">[:</span> <span class="n">p</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="n">m</span><span class="p">]</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="n">Z</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">Z</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">m</span><span class="p">]</span>
@@ -878,7 +881,7 @@
 <div class="viewcode-block" id="get_K_KLonly">
 <a class="viewcode-back" href="../../content/api/firm.html#ogcore.firm.get_K_KLonly">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">get_K_KLonly</span><span class="p">(</span><span class="n">L</span><span class="p">,</span> <span class="n">r</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">method</span><span class="p">,</span> <span class="n">m</span><span class="o">=-</span><span class="mi">1</span><span class="p">):</span>
-<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">"""</span>
 <span class="sd">    Generates vector of aggregate capital when the production function</span>
 <span class="sd">    uses only K and L as inputs. Use with the open economy options.</span>
 
@@ -889,14 +892,14 @@
 <span class="sd">        L (array_like): aggregate labor</span>
 <span class="sd">        r (array_like): the real interest rate</span>
 <span class="sd">        p (OG-Core Specifications object): model parameters</span>
-<span class="sd">        method (str): adjusts calculation dimensions based on &#39;SS&#39; or</span>
-<span class="sd">            &#39;TPI&#39;</span>
+<span class="sd">        method (str): adjusts calculation dimensions based on 'SS' or</span>
+<span class="sd">            'TPI'</span>
 <span class="sd">        m (int or None): production industry index</span>
 
 <span class="sd">    Returns:</span>
 <span class="sd">        K (array_like): aggregate capital demand</span>
 
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="n">KLratio</span> <span class="o">=</span> <span class="n">get_KLratio_KLonly</span><span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">method</span><span class="p">,</span> <span class="n">m</span><span class="p">)</span>
     <span class="n">K</span> <span class="o">=</span> <span class="n">KLratio</span> <span class="o">*</span> <span class="n">L</span>
 
@@ -907,7 +910,7 @@
 <div class="viewcode-block" id="get_L_from_Y">
 <a class="viewcode-back" href="../../content/api/firm.html#ogcore.firm.get_L_from_Y">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">get_L_from_Y</span><span class="p">(</span><span class="n">w</span><span class="p">,</span> <span class="n">Y</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">method</span><span class="p">):</span>
-<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">"""</span>
 <span class="sd">    Find aggregate labor L from output Y and wages w</span>
 
 <span class="sd">    .. math::</span>
@@ -918,14 +921,14 @@
 <span class="sd">        w (array_like): the wage rate</span>
 <span class="sd">        Y (array_like): aggregate output</span>
 <span class="sd">        p (OG-Core Specifications object): model parameters</span>
-<span class="sd">        method (str): adjusts calculation dimensions based on &#39;SS&#39; or</span>
-<span class="sd">            &#39;TPI&#39;</span>
+<span class="sd">        method (str): adjusts calculation dimensions based on 'SS' or</span>
+<span class="sd">            'TPI'</span>
 
 <span class="sd">    Returns:</span>
 <span class="sd">        L (array_like): firm labor demand</span>
 
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">if</span> <span class="n">method</span> <span class="o">==</span> <span class="s2">&quot;SS&quot;</span><span class="p">:</span>
+<span class="sd">    """</span>
+    <span class="k">if</span> <span class="n">method</span> <span class="o">==</span> <span class="s2">"SS"</span><span class="p">:</span>
         <span class="n">Z</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">Z</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="n">Z</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">Z</span><span class="p">[:</span> <span class="n">p</span><span class="o">.</span><span class="n">T</span><span class="p">]</span>
@@ -938,7 +941,7 @@
 <div class="viewcode-block" id="get_K">
 <a class="viewcode-back" href="../../content/api/firm.html#ogcore.firm.get_K">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">get_K</span><span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="n">w</span><span class="p">,</span> <span class="n">L</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">method</span><span class="p">,</span> <span class="n">m</span><span class="o">=-</span><span class="mi">1</span><span class="p">):</span>
-<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">"""</span>
 <span class="sd">    Get K from r, w, L.  For determining capital demand for open</span>
 <span class="sd">    economy case.</span>
 
@@ -950,14 +953,14 @@
 <span class="sd">        w (array_like): the wage rate</span>
 <span class="sd">        L (array_like): aggregate labor</span>
 <span class="sd">        p (OG-Core Specifications object): model parameters</span>
-<span class="sd">        method (str): adjusts calculation dimensions based on &#39;SS&#39; or</span>
-<span class="sd">            &#39;TPI&#39;</span>
+<span class="sd">        method (str): adjusts calculation dimensions based on 'SS' or</span>
+<span class="sd">            'TPI'</span>
 <span class="sd">        m (int or None): production industry index</span>
 
 <span class="sd">    Returns:</span>
 <span class="sd">        K (array_like): aggregate capital demand</span>
 
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="n">KLratio</span> <span class="o">=</span> <span class="n">get_KLratio</span><span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="n">w</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">method</span><span class="p">,</span> <span class="n">m</span><span class="p">)</span>
     <span class="n">K</span> <span class="o">=</span> <span class="n">KLratio</span> <span class="o">*</span> <span class="n">L</span>
 
@@ -968,7 +971,7 @@
 <div class="viewcode-block" id="get_cost_of_capital">
 <a class="viewcode-back" href="../../content/api/firm.html#ogcore.firm.get_cost_of_capital">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">get_cost_of_capital</span><span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">method</span><span class="p">,</span> <span class="n">m</span><span class="o">=-</span><span class="mi">1</span><span class="p">):</span>
-<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">"""</span>
 <span class="sd">    Compute the cost of capital.</span>
 
 <span class="sd">    .. math::</span>
@@ -978,14 +981,14 @@
 <span class="sd">    Args:</span>
 <span class="sd">        r (array_like): the real interest rate</span>
 <span class="sd">        p (OG-Core Specifications object): model parameters</span>
-<span class="sd">        method (str): adjusts calculation dimensions based on &#39;SS&#39; or &#39;TPI&#39;</span>
+<span class="sd">        method (str): adjusts calculation dimensions based on 'SS' or 'TPI'</span>
 <span class="sd">        m (int or None): production industry index</span>
 
 <span class="sd">    Returns:</span>
 <span class="sd">        cost_of_capital (array_like): cost of capital</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="k">if</span> <span class="n">m</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="k">if</span> <span class="n">method</span> <span class="o">==</span> <span class="s2">&quot;SS&quot;</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">method</span> <span class="o">==</span> <span class="s2">"SS"</span><span class="p">:</span>
             <span class="n">tau_b</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">tau_b</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="p">:]</span>
             <span class="n">delta_tau</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">delta_tau</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="p">:]</span>
             <span class="n">tau_inv</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">inv_tax_credit</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="p">:]</span>
@@ -995,7 +998,7 @@
             <span class="n">tau_inv</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">inv_tax_credit</span><span class="p">[:</span> <span class="n">p</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="p">:]</span>
             <span class="n">r</span> <span class="o">=</span> <span class="n">r</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="k">if</span> <span class="n">method</span> <span class="o">==</span> <span class="s2">&quot;SS&quot;</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">method</span> <span class="o">==</span> <span class="s2">"SS"</span><span class="p">:</span>
             <span class="n">tau_b</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">tau_b</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">m</span><span class="p">]</span>
             <span class="n">delta_tau</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">delta_tau</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">m</span><span class="p">]</span>
             <span class="n">tau_inv</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">inv_tax_credit</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">m</span><span class="p">]</span>
@@ -1016,7 +1019,7 @@
 <div class="viewcode-block" id="get_pm">
 <a class="viewcode-back" href="../../content/api/firm.html#ogcore.firm.get_pm">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">get_pm</span><span class="p">(</span><span class="n">w</span><span class="p">,</span> <span class="n">Y_vec</span><span class="p">,</span> <span class="n">L_vec</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">method</span><span class="p">):</span>
-<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">"""</span>
 <span class="sd">    Find prices for outputs from each industry.</span>
 
 <span class="sd">    .. math::</span>
@@ -1028,12 +1031,12 @@
 <span class="sd">        Y_vec (array_like): output for each industry</span>
 <span class="sd">        L_vec (array_like): labor demand for each industry</span>
 <span class="sd">        p (OG-Core Specifications object): model parameters</span>
-<span class="sd">        method (str): adjusts calculation dimensions based on &#39;SS&#39; or &#39;TPI&#39;</span>
+<span class="sd">        method (str): adjusts calculation dimensions based on 'SS' or 'TPI'</span>
 
 <span class="sd">    Returns:</span>
 <span class="sd">        p_m (array_like): output prices for each industry</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">if</span> <span class="n">method</span> <span class="o">==</span> <span class="s2">&quot;SS&quot;</span><span class="p">:</span>
+<span class="sd">    """</span>
+    <span class="k">if</span> <span class="n">method</span> <span class="o">==</span> <span class="s2">"SS"</span><span class="p">:</span>
         <span class="n">Y</span> <span class="o">=</span> <span class="n">Y_vec</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">p</span><span class="o">.</span><span class="n">M</span><span class="p">)</span>
         <span class="n">L</span> <span class="o">=</span> <span class="n">L_vec</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">p</span><span class="o">.</span><span class="n">M</span><span class="p">)</span>
         <span class="n">T</span> <span class="o">=</span> <span class="mi">1</span>
@@ -1047,7 +1050,7 @@
             <span class="n">Y</span><span class="p">[:,</span> <span class="n">m</span><span class="p">],</span> <span class="n">L</span><span class="p">[:,</span> <span class="n">m</span><span class="p">],</span> <span class="mi">1</span> <span class="o">-</span> <span class="n">p</span><span class="o">.</span><span class="n">gamma</span><span class="p">[</span><span class="n">m</span><span class="p">]</span> <span class="o">-</span> <span class="n">p</span><span class="o">.</span><span class="n">gamma_g</span><span class="p">[</span><span class="n">m</span><span class="p">],</span> <span class="n">p</span><span class="p">,</span> <span class="n">method</span><span class="p">,</span> <span class="n">m</span>
         <span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">T</span><span class="p">)</span>
         <span class="n">p_m</span><span class="p">[:,</span> <span class="n">m</span><span class="p">]</span> <span class="o">=</span> <span class="n">w</span> <span class="o">/</span> <span class="n">MPL</span>
-    <span class="k">if</span> <span class="n">method</span> <span class="o">==</span> <span class="s2">&quot;SS&quot;</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">method</span> <span class="o">==</span> <span class="s2">"SS"</span><span class="p">:</span>
         <span class="n">p_m</span> <span class="o">=</span> <span class="n">p_m</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">M</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">p_m</span></div>
 
@@ -1056,7 +1059,7 @@
 <div class="viewcode-block" id="get_KY_ratio">
 <a class="viewcode-back" href="../../content/api/firm.html#ogcore.firm.get_KY_ratio">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">get_KY_ratio</span><span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="n">p_m</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">method</span><span class="p">,</span> <span class="n">m</span><span class="o">=-</span><span class="mi">1</span><span class="p">):</span>
-<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">"""</span>
 <span class="sd">    Get capital output ratio from FOC for interest rate.</span>
 
 <span class="sd">    .. math::</span>
@@ -1068,13 +1071,13 @@
 <span class="sd">        r (array_like): the real interest rate</span>
 <span class="sd">        p_m (array_like): output prices for each industry</span>
 <span class="sd">        p (OG-Core Specifications object): model parameters</span>
-<span class="sd">        method (str): adjusts calculation dimensions based on &#39;SS&#39; or &#39;TPI&#39;</span>
+<span class="sd">        method (str): adjusts calculation dimensions based on 'SS' or 'TPI'</span>
 
 <span class="sd">    Returns:</span>
 <span class="sd">        KY_ratio (array_like): capital output ratio</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="n">cost_of_capital</span> <span class="o">=</span> <span class="n">get_cost_of_capital</span><span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">method</span><span class="p">,</span> <span class="n">m</span><span class="p">)</span>
-    <span class="k">if</span> <span class="n">method</span> <span class="o">==</span> <span class="s2">&quot;SS&quot;</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">method</span> <span class="o">==</span> <span class="s2">"SS"</span><span class="p">:</span>
         <span class="n">KY_ratio</span> <span class="o">=</span> <span class="p">(</span>
             <span class="n">p</span><span class="o">.</span><span class="n">gamma</span><span class="p">[</span><span class="n">m</span><span class="p">]</span>
             <span class="o">*</span> <span class="p">(</span>
@@ -1103,7 +1106,7 @@
 <div class="viewcode-block" id="solve_L">
 <a class="viewcode-back" href="../../content/api/firm.html#ogcore.firm.solve_L">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">solve_L</span><span class="p">(</span><span class="n">Y</span><span class="p">,</span> <span class="n">K</span><span class="p">,</span> <span class="n">K_g</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">method</span><span class="p">,</span> <span class="n">m</span><span class="o">=-</span><span class="mi">1</span><span class="p">):</span>
-<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">"""</span>
 <span class="sd">    Solve for labor supply from the production function</span>
 
 <span class="sd">    .. math::</span>
@@ -1121,18 +1124,18 @@
 <span class="sd">        K_vec (array_like): capital demand for each industry</span>
 <span class="sd">        K_g (array_like): public capital stock</span>
 <span class="sd">        p (OG-Core Specifications object): model parameters</span>
-<span class="sd">        method (str): adjusts calculation dimensions based on &#39;SS&#39; or &#39;TPI&#39;</span>
+<span class="sd">        method (str): adjusts calculation dimensions based on 'SS' or 'TPI'</span>
 <span class="sd">        m (int or None): index of industry to compute L for (None will</span>
 <span class="sd">            compute L for all industries)</span>
 
 <span class="sd">    Returns:</span>
 <span class="sd">        L (array_like): labor demand each industry</span>
 
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="n">gamma</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">gamma</span><span class="p">[</span><span class="n">m</span><span class="p">]</span>
     <span class="n">gamma_g</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">gamma_g</span><span class="p">[</span><span class="n">m</span><span class="p">]</span>
     <span class="n">epsilon</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">epsilon</span><span class="p">[</span><span class="n">m</span><span class="p">]</span>
-    <span class="k">if</span> <span class="n">method</span> <span class="o">==</span> <span class="s2">&quot;SS&quot;</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">method</span> <span class="o">==</span> <span class="s2">"SS"</span><span class="p">:</span>
         <span class="n">Z</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">Z</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">m</span><span class="p">]</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="n">Z</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">Z</span><span class="p">[:</span> <span class="n">p</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="n">m</span><span class="p">]</span>
@@ -1167,7 +1170,7 @@
 <div class="viewcode-block" id="adj_cost">
 <a class="viewcode-back" href="../../content/api/firm.html#ogcore.firm.adj_cost">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">adj_cost</span><span class="p">(</span><span class="n">K</span><span class="p">,</span> <span class="n">Kp1</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">method</span><span class="p">):</span>
-<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">"""</span>
 <span class="sd">    Firm capital adjstment costs</span>
 
 <span class="sd">    ..math::</span>
@@ -1179,15 +1182,15 @@
 <span class="sd">        K (array-like): Current period capital stock</span>
 <span class="sd">        Kp1 (array-like): One-period ahead capital stock</span>
 <span class="sd">        p (OG-USA Parameters class object): Model parameters</span>
-<span class="sd">        method (str): &#39;SS&#39; or &#39;TPI&#39;</span>
+<span class="sd">        method (str): 'SS' or 'TPI'</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">        Psi (array-like): Capital adjustment costs per unit of investment</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">if</span> <span class="n">method</span> <span class="o">==</span> <span class="s2">&quot;SS&quot;</span><span class="p">:</span>
-        <span class="n">ac_method</span> <span class="o">=</span> <span class="s2">&quot;total_ss&quot;</span>
+<span class="sd">    """</span>
+    <span class="k">if</span> <span class="n">method</span> <span class="o">==</span> <span class="s2">"SS"</span><span class="p">:</span>
+        <span class="n">ac_method</span> <span class="o">=</span> <span class="s2">"total_ss"</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="n">ac_method</span> <span class="o">=</span> <span class="s2">&quot;total_tpi&quot;</span>
+        <span class="n">ac_method</span> <span class="o">=</span> <span class="s2">"total_tpi"</span>
     <span class="n">Inv</span> <span class="o">=</span> <span class="n">aggr</span><span class="o">.</span><span class="n">get_I</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">Kp1</span><span class="p">,</span> <span class="n">K</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">ac_method</span><span class="p">)</span>
 
     <span class="n">Psi</span> <span class="o">=</span> <span class="p">((</span><span class="n">p</span><span class="o">.</span><span class="n">psi</span> <span class="o">/</span> <span class="mi">2</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="n">Inv</span> <span class="o">/</span> <span class="n">K</span> <span class="o">-</span> <span class="n">p</span><span class="o">.</span><span class="n">mu</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="n">Inv</span> <span class="o">/</span> <span class="n">K</span><span class="p">)</span>

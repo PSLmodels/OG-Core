@@ -30,7 +30,7 @@
 <link href="_static/styles/pydata-sphinx-theme.css?digest=55c26ed414f5f8a31ebb" rel="stylesheet" />
 
     <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=03e43079" />
-    <link rel="stylesheet" type="text/css" href="_static/styles/sphinx-book-theme.css?v=a3416100" />
+    <link rel="stylesheet" type="text/css" href="_static/styles/sphinx-book-theme.css?v=3c74b3bc" />
     <link rel="stylesheet" type="text/css" href="_static/togglebutton.css?v=9c3e77be" />
     <link rel="stylesheet" type="text/css" href="_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="_static/mystnb.11b39860a7a0cbfd473a3ad8a317855267ff0bd372690045ca344a6b62be495e.css" />
@@ -48,7 +48,7 @@
     <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="_static/clipboard.min.js?v=a7894cd8"></script>
     <script src="_static/copybutton.js?v=f281be69"></script>
-    <script src="_static/scripts/sphinx-book-theme.js?v=887ef09a"></script>
+    <script src="_static/scripts/sphinx-book-theme.js?v=fab101a9"></script>
     <script>let toggleHintShow = 'Click to show';</script>
     <script>let toggleHintHide = 'Click to hide';</script>
     <script>let toggleOpenOnPrint = 'true';</script>
@@ -222,6 +222,7 @@
 <ul class="nav bd-sidenav">
 <li class="toctree-l1 has-children"><a class="reference internal" href="content/api/public_api.html">API</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l2"><a class="reference internal" href="content/api/aggregates.html">Aggregates Equations</a></li>
+<li class="toctree-l2"><a class="reference internal" href="content/api/config.html">Logging Configuration</a></li>
 <li class="toctree-l2"><a class="reference internal" href="content/api/demographics.html">Demographics Functions</a></li>
 <li class="toctree-l2"><a class="reference internal" href="content/api/elliptical_u_est.html">Elliptical Utility Function Estimation</a></li>
 <li class="toctree-l2"><a class="reference internal" href="content/api/execute.html">Model Execution Functions</a></li>
@@ -235,7 +236,9 @@
 <li class="toctree-l2"><a class="reference internal" href="content/api/parameters.html">Parameters Functions</a></li>
 <li class="toctree-l2"><a class="reference internal" href="content/api/pensions.html">Pension Functions</a></li>
 <li class="toctree-l2"><a class="reference internal" href="content/api/solvers.html">Solvers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="content/api/SS.html">Steady-State Functions</a></li>
 <li class="toctree-l2"><a class="reference internal" href="content/api/tax.html">Tax Functions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="content/api/TPI.html">Transition Path Functions</a></li>
 <li class="toctree-l2"><a class="reference internal" href="content/api/txfunc.html">Tax Function Estimation Functions</a></li>
 <li class="toctree-l2"><a class="reference internal" href="content/api/utils.html">Utilities Functions</a></li>
 </ul>
@@ -365,7 +368,7 @@
 
 
 <button onclick="toggleFullScreen()"
-  class="btn btn-sm btn-fullscreen-button"
+  class="btn btn-sm btn-fullscreen-button pst-navbar-icon"
   title="Fullscreen mode"
   data-bs-placement="bottom" data-bs-toggle="tooltip"
 >
@@ -555,6 +558,8 @@
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="content/api/tax.html#ogcore.tax.ETR_wealth">ETR_wealth() (in module ogcore.tax)</a>
 </li>
+      <li><a href="content/api/SS.html#ogcore.SS.euler_equation_solver">euler_equation_solver() (in module ogcore.SS)</a>
+</li>
       <li><a href="content/api/demographics.html#ogcore.demographics.expand_pop_obj_J">expand_pop_obj_J() (in module ogcore.demographics)</a>
 </li>
       <li><a href="content/api/utils.html#ogcore.utils.extrapolate_array">extrapolate_array() (in module ogcore.utils)</a>
@@ -573,6 +578,8 @@
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="content/api/TPI.html#ogcore.TPI.firstdoughnutring">firstdoughnutring() (in module ogcore.TPI)</a>
+</li>
       <li><a href="content/api/household.html#ogcore.household.FOC_labor">FOC_labor() (in module ogcore.household)</a>
 </li>
       <li><a href="content/api/household.html#ogcore.household.FOC_savings">FOC_savings() (in module ogcore.household)</a>
@@ -623,6 +630,8 @@
 </li>
       <li><a href="content/api/utils.html#ogcore.utils.get_initial_path">get_initial_path() (in module ogcore.utils)</a>
 </li>
+      <li><a href="content/api/TPI.html#ogcore.TPI.get_initial_SS_values">get_initial_SS_values() (in module ogcore.TPI)</a>
+</li>
       <li><a href="content/api/firm.html#ogcore.firm.get_K">get_K() (in module ogcore.firm)</a>
 </li>
       <li><a href="content/api/fiscal.html#ogcore.fiscal.get_K_g">get_K_g() (in module ogcore.fiscal)</a>
@@ -633,10 +642,10 @@
 </li>
       <li><a href="content/api/firm.html#ogcore.firm.get_KLratio">get_KLratio() (in module ogcore.firm)</a>
 </li>
-      <li><a href="content/api/firm.html#ogcore.firm.get_KLratio_KLonly">get_KLratio_KLonly() (in module ogcore.firm)</a>
-</li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="content/api/firm.html#ogcore.firm.get_KLratio_KLonly">get_KLratio_KLonly() (in module ogcore.firm)</a>
+</li>
       <li><a href="content/api/firm.html#ogcore.firm.get_KY_ratio">get_KY_ratio() (in module ogcore.firm)</a>
 </li>
       <li><a href="content/api/aggregates.html#ogcore.aggregates.get_L">get_L() (in module ogcore.aggregates)</a>
@@ -701,16 +710,22 @@
 </li>
       <li><a href="content/api/output_tables.html#ogcore.output_tables.ineq_table">ineq_table() (in module ogcore.output_tables)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="content/api/utils.html#ogcore.utils.Inequality">Inequality (class in ogcore.utils)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="content/api/output_plots.html#ogcore.output_plots.inequality_plot">inequality_plot() (in module ogcore.output_plots)</a>
 </li>
       <li><a href="content/api/utils.html#ogcore.utils.CustomHttpAdapter.init_poolmanager">init_poolmanager() (ogcore.utils.CustomHttpAdapter method)</a>
 </li>
       <li><a href="content/api/parameters.html#ogcore.parameters.Specifications.initialize">initialize() (ogcore.parameters.Specifications method)</a>
 </li>
+      <li><a href="content/api/SS.html#ogcore.SS.inner_loop">inner_loop() (in module ogcore.SS)</a>
+
+      <ul>
+        <li><a href="content/api/TPI.html#ogcore.TPI.inner_loop">(in module ogcore.TPI)</a>
+</li>
+      </ul></li>
   </ul></td>
 </tr></table>
 
@@ -753,6 +768,8 @@
       <ul>
         <li><a href="content/api/aggregates.html#module-ogcore.aggregates">ogcore.aggregates</a>
 </li>
+        <li><a href="content/api/config.html#module-ogcore.config">ogcore.config</a>
+</li>
         <li><a href="content/api/demographics.html#module-ogcore.demographics">ogcore.demographics</a>
 </li>
         <li><a href="content/api/elliptical_u_est.html#module-ogcore.elliptical_u_est">ogcore.elliptical_u_est</a>
@@ -779,7 +796,11 @@
 </li>
         <li><a href="content/api/solvers.html#module-ogcore.solvers">ogcore.solvers</a>
 </li>
+        <li><a href="content/api/SS.html#module-ogcore.SS">ogcore.SS</a>
+</li>
         <li><a href="content/api/tax.html#module-ogcore.tax">ogcore.tax</a>
+</li>
+        <li><a href="content/api/TPI.html#module-ogcore.TPI">ogcore.TPI</a>
 </li>
         <li><a href="content/api/txfunc.html#module-ogcore.txfunc">ogcore.txfunc</a>
 </li>
@@ -823,6 +844,13 @@
 
       <ul>
         <li><a href="content/api/aggregates.html#module-ogcore.aggregates">module</a>
+</li>
+      </ul></li>
+      <li>
+    ogcore.config
+
+      <ul>
+        <li><a href="content/api/config.html#module-ogcore.config">module</a>
 </li>
       </ul></li>
       <li>
@@ -919,10 +947,24 @@
 </li>
       </ul></li>
       <li>
+    ogcore.SS
+
+      <ul>
+        <li><a href="content/api/SS.html#module-ogcore.SS">module</a>
+</li>
+      </ul></li>
+      <li>
     ogcore.tax
 
       <ul>
         <li><a href="content/api/tax.html#module-ogcore.tax">module</a>
+</li>
+      </ul></li>
+      <li>
+    ogcore.TPI
+
+      <ul>
+        <li><a href="content/api/TPI.html#module-ogcore.TPI">module</a>
 </li>
       </ul></li>
       <li>
@@ -1023,15 +1065,19 @@
 </li>
       <li><a href="content/api/pensions.html#ogcore.pensions.replacement_rate_vals">replacement_rate_vals() (in module ogcore.pensions)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="content/api/solvers.html#ogcore.solvers.AndersonAccelerator.reset">reset() (ogcore.solvers.AndersonAccelerator method)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="content/api/aggregates.html#ogcore.aggregates.resource_constraint">resource_constraint() (in module ogcore.aggregates)</a>
 </li>
       <li><a href="content/api/aggregates.html#ogcore.aggregates.revenue">revenue() (in module ogcore.aggregates)</a>
 </li>
       <li><a href="content/api/parameters.html#ogcore.parameters.revision_warnings_errors">revision_warnings_errors() (in module ogcore.parameters)</a>
+</li>
+      <li><a href="content/api/SS.html#ogcore.SS.run_SS">run_SS() (in module ogcore.SS)</a>
+</li>
+      <li><a href="content/api/TPI.html#ogcore.TPI.run_TPI">run_TPI() (in module ogcore.TPI)</a>
 </li>
       <li><a href="content/api/execute.html#ogcore.execute.runner">runner() (in module ogcore.execute)</a>
 </li>
@@ -1045,7 +1091,11 @@
 </li>
       <li><a href="content/api/utils.html#ogcore.utils.save_return_table">save_return_table() (in module ogcore.utils)</a>
 </li>
+      <li><a href="content/api/config.html#ogcore.config.set_logging_level">set_logging_level() (in module ogcore.config)</a>
+</li>
       <li><a href="content/api/utils.html#ogcore.utils.shift_bio_clock">shift_bio_clock() (in module ogcore.utils)</a>
+</li>
+      <li><a href="content/api/SS.html#ogcore.SS.solve_for_j">solve_for_j() (in module ogcore.SS)</a>
 </li>
       <li><a href="content/api/firm.html#ogcore.firm.solve_L">solve_L() (in module ogcore.firm)</a>
 </li>
@@ -1057,7 +1107,13 @@
 </li>
       <li><a href="content/api/pensions.html#ogcore.pensions.SS_amount">SS_amount() (in module ogcore.pensions)</a>
 </li>
+      <li><a href="content/api/SS.html#ogcore.SS.SS_fsolve">SS_fsolve() (in module ogcore.SS)</a>
+</li>
+      <li><a href="content/api/SS.html#ogcore.SS.SS_initial_guesses">SS_initial_guesses() (in module ogcore.SS)</a>
+</li>
       <li><a href="content/api/output_plots.html#ogcore.output_plots.ss_profiles">ss_profiles() (in module ogcore.output_plots)</a>
+</li>
+      <li><a href="content/api/SS.html#ogcore.SS.SS_solver">SS_solver() (in module ogcore.SS)</a>
 </li>
       <li><a href="content/api/elliptical_u_est.html#ogcore.elliptical_u_est.sumsq">sumsq() (in module ogcore.elliptical_u_est)</a>
 </li>
@@ -1079,13 +1135,15 @@
 </li>
       <li><a href="content/api/output_tables.html#ogcore.output_tables.time_series_table">time_series_table() (in module ogcore.output_tables)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="content/api/utils.html#ogcore.utils.to_timepath_shape">to_timepath_shape() (in module ogcore.utils)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="content/api/utils.html#ogcore.utils.Inequality.top_share">top_share() (ogcore.utils.Inequality method)</a>
 </li>
       <li><a href="content/api/output_plots.html#ogcore.output_plots.tpi_profiles">tpi_profiles() (in module ogcore.output_plots)</a>
+</li>
+      <li><a href="content/api/TPI.html#ogcore.TPI.twist_doughnut">twist_doughnut() (in module ogcore.TPI)</a>
 </li>
       <li><a href="content/api/txfunc.html#ogcore.txfunc.txfunc_est">txfunc_est() (in module ogcore.txfunc)</a>
 </li>

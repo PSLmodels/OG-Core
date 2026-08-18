@@ -30,7 +30,7 @@
 <link href="../../_static/styles/pydata-sphinx-theme.css?digest=55c26ed414f5f8a31ebb" rel="stylesheet" />
 
     <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
-    <link rel="stylesheet" type="text/css" href="../../_static/styles/sphinx-book-theme.css?v=a3416100" />
+    <link rel="stylesheet" type="text/css" href="../../_static/styles/sphinx-book-theme.css?v=3c74b3bc" />
     <link rel="stylesheet" type="text/css" href="../../_static/togglebutton.css?v=9c3e77be" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="../../_static/mystnb.11b39860a7a0cbfd473a3ad8a317855267ff0bd372690045ca344a6b62be495e.css" />
@@ -48,7 +48,7 @@
     <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
     <script src="../../_static/copybutton.js?v=f281be69"></script>
-    <script src="../../_static/scripts/sphinx-book-theme.js?v=887ef09a"></script>
+    <script src="../../_static/scripts/sphinx-book-theme.js?v=fab101a9"></script>
     <script>let toggleHintShow = 'Click to show';</script>
     <script>let toggleHintHide = 'Click to hide';</script>
     <script>let toggleOpenOnPrint = 'true';</script>
@@ -222,6 +222,7 @@
 <ul class="nav bd-sidenav">
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../content/api/public_api.html">API</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../content/api/aggregates.html">Aggregates Equations</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../content/api/config.html">Logging Configuration</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../content/api/demographics.html">Demographics Functions</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../content/api/elliptical_u_est.html">Elliptical Utility Function Estimation</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../content/api/execute.html">Model Execution Functions</a></li>
@@ -235,7 +236,9 @@
 <li class="toctree-l2"><a class="reference internal" href="../../content/api/parameters.html">Parameters Functions</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../content/api/pensions.html">Pension Functions</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../content/api/solvers.html">Solvers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../content/api/SS.html">Steady-State Functions</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../content/api/tax.html">Tax Functions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../content/api/TPI.html">Transition Path Functions</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../content/api/txfunc.html">Tax Function Estimation Functions</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../content/api/utils.html">Utilities Functions</a></li>
 </ul>
@@ -365,7 +368,7 @@
 
 
 <button onclick="toggleFullScreen()"
-  class="btn btn-sm btn-fullscreen-button"
+  class="btn btn-sm btn-fullscreen-button pst-navbar-icon"
   title="Fullscreen mode"
   data-bs-placement="bottom" data-bs-toggle="tooltip"
 >
@@ -433,8 +436,8 @@
     <span class="n">base_params</span><span class="p">,</span>
     <span class="n">reform_tpi</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="n">reform_params</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-    <span class="n">var_list</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;Y&quot;</span><span class="p">,</span> <span class="s2">&quot;C&quot;</span><span class="p">,</span> <span class="s2">&quot;K&quot;</span><span class="p">,</span> <span class="s2">&quot;L&quot;</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">],</span>
-    <span class="n">output_type</span><span class="o">=</span><span class="s2">&quot;pct_diff&quot;</span><span class="p">,</span>
+    <span class="n">var_list</span><span class="o">=</span><span class="p">[</span><span class="s2">"Y"</span><span class="p">,</span> <span class="s2">"C"</span><span class="p">,</span> <span class="s2">"K"</span><span class="p">,</span> <span class="s2">"L"</span><span class="p">,</span> <span class="s2">"r"</span><span class="p">,</span> <span class="s2">"w"</span><span class="p">],</span>
+    <span class="n">output_type</span><span class="o">=</span><span class="s2">"pct_diff"</span><span class="p">,</span>
     <span class="n">stationarized</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
     <span class="n">num_years</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span>
     <span class="n">include_SS</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
@@ -443,7 +446,7 @@
     <span class="n">table_format</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="n">path</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
 <span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Create a table of macro aggregates.</span>
 
 <span class="sd">    Args:</span>
@@ -455,10 +458,10 @@
 <span class="sd">            object</span>
 <span class="sd">        var_list (list): names of variable to use in table</span>
 <span class="sd">        output_type (string): type of plot, can be:</span>
-<span class="sd">            &#39;pct_diff&#39;: plots percentage difference between baselien</span>
+<span class="sd">            'pct_diff': plots percentage difference between baselien</span>
 <span class="sd">                and reform ((reform-base)/base)</span>
-<span class="sd">            &#39;diff&#39;: plots difference between baseline and reform (reform-base)</span>
-<span class="sd">            &#39;levels&#39;: variables in model units</span>
+<span class="sd">            'diff': plots difference between baseline and reform (reform-base)</span>
+<span class="sd">            'levels': variables in model units</span>
 <span class="sd">        stationarized (bool): whether used stationarized variables (False</span>
 <span class="sd">            only affects pct_diff right now)</span>
 <span class="sd">        num_years (integer): number of years to include in table</span>
@@ -467,15 +470,15 @@
 <span class="sd">        include_overall (bool): whether to include results over the</span>
 <span class="sd">            entire budget window as a column in the table</span>
 <span class="sd">        start_year (integer): year to start table</span>
-<span class="sd">        table_format (string): format to return table in: &#39;csv&#39;, &#39;tex&#39;,</span>
-<span class="sd">            &#39;excel&#39;, &#39;json&#39;, if None, a DataFrame is returned</span>
+<span class="sd">        table_format (string): format to return table in: 'csv', 'tex',</span>
+<span class="sd">            'excel', 'json', if None, a DataFrame is returned</span>
 <span class="sd">        path (string): path to save table to</span>
 
 <span class="sd">    Returns:</span>
 <span class="sd">        table (various): table in DataFrame or string format or `None`</span>
 <span class="sd">            if saved to disk</span>
 
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">start_year</span><span class="p">,</span> <span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">integer</span><span class="p">))</span>
     <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">num_years</span><span class="p">,</span> <span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">integer</span><span class="p">))</span>
     <span class="c1"># Make sure both runs cover same time period</span>
@@ -491,16 +494,16 @@
                     <span class="n">v</span><span class="p">,</span> <span class="n">reform_tpi</span><span class="p">,</span> <span class="n">reform_params</span>
                 <span class="p">)</span>
     <span class="c1"># Check that reform included if doing pct_diff or diff plot</span>
-    <span class="k">if</span> <span class="n">output_type</span> <span class="o">==</span> <span class="s2">&quot;pct_diff&quot;</span> <span class="ow">or</span> <span class="n">output_type</span> <span class="o">==</span> <span class="s2">&quot;diff&quot;</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">output_type</span> <span class="o">==</span> <span class="s2">"pct_diff"</span> <span class="ow">or</span> <span class="n">output_type</span> <span class="o">==</span> <span class="s2">"diff"</span><span class="p">:</span>
         <span class="k">assert</span> <span class="n">reform_tpi</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
     <span class="n">year_list</span> <span class="o">=</span> <span class="n">year_vec</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
     <span class="k">if</span> <span class="n">include_overall</span><span class="p">:</span>
-        <span class="n">year_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">year_vec</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">+</span> <span class="s2">&quot;-&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">year_vec</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]))</span>
+        <span class="n">year_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">year_vec</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">+</span> <span class="s2">"-"</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">year_vec</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]))</span>
     <span class="k">if</span> <span class="n">include_SS</span><span class="p">:</span>
-        <span class="n">year_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;SS&quot;</span><span class="p">)</span>
-    <span class="n">table_dict</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;Year&quot;</span><span class="p">:</span> <span class="n">year_list</span><span class="p">}</span>
+        <span class="n">year_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">"SS"</span><span class="p">)</span>
+    <span class="n">table_dict</span> <span class="o">=</span> <span class="p">{</span><span class="s2">"Year"</span><span class="p">:</span> <span class="n">year_list</span><span class="p">}</span>
     <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">var_list</span><span class="p">):</span>
-        <span class="k">if</span> <span class="n">output_type</span> <span class="o">==</span> <span class="s2">&quot;pct_diff&quot;</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">output_type</span> <span class="o">==</span> <span class="s2">"pct_diff"</span><span class="p">:</span>
             <span class="c1"># multiple by 100 so in percentage points</span>
             <span class="n">results</span> <span class="o">=</span> <span class="p">((</span><span class="n">reform_tpi</span><span class="p">[</span><span class="n">v</span><span class="p">]</span> <span class="o">-</span> <span class="n">base_tpi</span><span class="p">[</span><span class="n">v</span><span class="p">])</span> <span class="o">/</span> <span class="n">base_tpi</span><span class="p">[</span><span class="n">v</span><span class="p">])</span> <span class="o">*</span> <span class="mi">100</span>
             <span class="n">results_years</span> <span class="o">=</span> <span class="n">results</span><span class="p">[</span><span class="n">start_index</span> <span class="p">:</span> <span class="n">start_index</span> <span class="o">+</span> <span class="n">num_years</span><span class="p">]</span>
@@ -520,7 +523,7 @@
             <span class="k">if</span> <span class="n">include_SS</span><span class="p">:</span>
                 <span class="n">results_for_table</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">results_for_table</span><span class="p">,</span> <span class="n">results_SS</span><span class="p">)</span>
             <span class="n">table_dict</span><span class="p">[</span><span class="n">VAR_LABELS</span><span class="p">[</span><span class="n">v</span><span class="p">]]</span> <span class="o">=</span> <span class="n">results_for_table</span>
-        <span class="k">elif</span> <span class="n">output_type</span> <span class="o">==</span> <span class="s2">&quot;diff&quot;</span><span class="p">:</span>
+        <span class="k">elif</span> <span class="n">output_type</span> <span class="o">==</span> <span class="s2">"diff"</span><span class="p">:</span>
             <span class="n">results</span> <span class="o">=</span> <span class="n">reform_tpi</span><span class="p">[</span><span class="n">v</span><span class="p">]</span> <span class="o">-</span> <span class="n">base_tpi</span><span class="p">[</span><span class="n">v</span><span class="p">]</span>
             <span class="n">results_years</span> <span class="o">=</span> <span class="n">results</span><span class="p">[</span><span class="n">start_index</span> <span class="p">:</span> <span class="n">start_index</span> <span class="o">+</span> <span class="n">num_years</span><span class="p">]</span>
             <span class="n">results_overall</span> <span class="o">=</span> <span class="p">(</span>
@@ -547,7 +550,7 @@
                 <span class="p">)</span>
             <span class="k">if</span> <span class="n">include_SS</span><span class="p">:</span>
                 <span class="n">results_for_table</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">results_for_table</span><span class="p">,</span> <span class="n">results_SS</span><span class="p">)</span>
-            <span class="n">table_dict</span><span class="p">[</span><span class="n">VAR_LABELS</span><span class="p">[</span><span class="n">v</span><span class="p">]</span> <span class="o">+</span> <span class="s2">&quot; Baseline&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">results_for_table</span>
+            <span class="n">table_dict</span><span class="p">[</span><span class="n">VAR_LABELS</span><span class="p">[</span><span class="n">v</span><span class="p">]</span> <span class="o">+</span> <span class="s2">" Baseline"</span><span class="p">]</span> <span class="o">=</span> <span class="n">results_for_table</span>
             <span class="k">if</span> <span class="n">reform_tpi</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
                 <span class="n">results_years</span> <span class="o">=</span> <span class="n">reform_tpi</span><span class="p">[</span><span class="n">v</span><span class="p">][</span>
                     <span class="n">start_index</span> <span class="p">:</span> <span class="n">start_index</span> <span class="o">+</span> <span class="n">num_years</span>
@@ -563,15 +566,15 @@
                     <span class="n">results_for_table</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
                         <span class="n">results_for_table</span><span class="p">,</span> <span class="n">results_SS</span>
                     <span class="p">)</span>
-                <span class="n">table_dict</span><span class="p">[</span><span class="n">VAR_LABELS</span><span class="p">[</span><span class="n">v</span><span class="p">]</span> <span class="o">+</span> <span class="s2">&quot; Reform&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">results_for_table</span>
+                <span class="n">table_dict</span><span class="p">[</span><span class="n">VAR_LABELS</span><span class="p">[</span><span class="n">v</span><span class="p">]</span> <span class="o">+</span> <span class="s2">" Reform"</span><span class="p">]</span> <span class="o">=</span> <span class="n">results_for_table</span>
         <span class="c1"># Make df with dict so can use pandas functions</span>
         <span class="n">table_df</span> <span class="o">=</span> <span class="p">(</span>
-            <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="o">.</span><span class="n">from_dict</span><span class="p">(</span><span class="n">table_dict</span><span class="p">,</span> <span class="n">orient</span><span class="o">=</span><span class="s2">&quot;columns&quot;</span><span class="p">)</span>
-            <span class="o">.</span><span class="n">set_index</span><span class="p">(</span><span class="s2">&quot;Year&quot;</span><span class="p">)</span>
+            <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="o">.</span><span class="n">from_dict</span><span class="p">(</span><span class="n">table_dict</span><span class="p">,</span> <span class="n">orient</span><span class="o">=</span><span class="s2">"columns"</span><span class="p">)</span>
+            <span class="o">.</span><span class="n">set_index</span><span class="p">(</span><span class="s2">"Year"</span><span class="p">)</span>
             <span class="o">.</span><span class="n">transpose</span><span class="p">()</span>
         <span class="p">)</span>
         <span class="n">table_df</span><span class="o">.</span><span class="n">reset_index</span><span class="p">(</span><span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-        <span class="n">table_df</span><span class="o">.</span><span class="n">rename</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;index&quot;</span><span class="p">:</span> <span class="s2">&quot;Variable&quot;</span><span class="p">},</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">table_df</span><span class="o">.</span><span class="n">rename</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="p">{</span><span class="s2">"index"</span><span class="p">:</span> <span class="s2">"Variable"</span><span class="p">},</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
         <span class="n">table</span> <span class="o">=</span> <span class="n">save_return_table</span><span class="p">(</span><span class="n">table_df</span><span class="p">,</span> <span class="n">table_format</span><span class="p">,</span> <span class="n">path</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="n">table</span></div>
@@ -583,47 +586,47 @@
 <span class="k">def</span><span class="w"> </span><span class="nf">macro_table_SS</span><span class="p">(</span>
     <span class="n">base_ss</span><span class="p">,</span>
     <span class="n">reform_ss</span><span class="p">,</span>
-    <span class="n">var_list</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;Y&quot;</span><span class="p">,</span> <span class="s2">&quot;C&quot;</span><span class="p">,</span> <span class="s2">&quot;K&quot;</span><span class="p">,</span> <span class="s2">&quot;L&quot;</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">],</span>
+    <span class="n">var_list</span><span class="o">=</span><span class="p">[</span><span class="s2">"Y"</span><span class="p">,</span> <span class="s2">"C"</span><span class="p">,</span> <span class="s2">"K"</span><span class="p">,</span> <span class="s2">"L"</span><span class="p">,</span> <span class="s2">"r"</span><span class="p">,</span> <span class="s2">"w"</span><span class="p">],</span>
     <span class="n">table_format</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="n">path</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
 <span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Create a table of macro aggregates from the steady-state solutions.</span>
 
 <span class="sd">    Args:</span>
 <span class="sd">        base_ss (dictionary): SS output from baseline run</span>
 <span class="sd">        reform_ss (dictionary): SS output from reform run</span>
 <span class="sd">        var_list (list): names of variable to use in table</span>
-<span class="sd">        table_format (string): format to return table in: &#39;csv&#39;, &#39;tex&#39;,</span>
-<span class="sd">            &#39;excel&#39;, &#39;json&#39;, if None, a DataFrame is returned</span>
+<span class="sd">        table_format (string): format to return table in: 'csv', 'tex',</span>
+<span class="sd">            'excel', 'json', if None, a DataFrame is returned</span>
 <span class="sd">        path (string): path to save table to</span>
 
 <span class="sd">    Returns:</span>
 <span class="sd">        table (various): table in DataFrame or string format or `None`</span>
 <span class="sd">            if saved to disk</span>
 
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="n">table_dict</span> <span class="o">=</span> <span class="p">{</span>
-        <span class="s2">&quot;Variable&quot;</span><span class="p">:</span> <span class="p">[],</span>
-        <span class="s2">&quot;Baseline&quot;</span><span class="p">:</span> <span class="p">[],</span>
-        <span class="s2">&quot;Reform&quot;</span><span class="p">:</span> <span class="p">[],</span>
-        <span class="s2">&quot;% Change (or pp diff)&quot;</span><span class="p">:</span> <span class="p">[],</span>
+        <span class="s2">"Variable"</span><span class="p">:</span> <span class="p">[],</span>
+        <span class="s2">"Baseline"</span><span class="p">:</span> <span class="p">[],</span>
+        <span class="s2">"Reform"</span><span class="p">:</span> <span class="p">[],</span>
+        <span class="s2">"% Change (or pp diff)"</span><span class="p">:</span> <span class="p">[],</span>
     <span class="p">}</span>
     <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">var_list</span><span class="p">):</span>
-        <span class="n">table_dict</span><span class="p">[</span><span class="s2">&quot;Variable&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">VAR_LABELS</span><span class="p">[</span><span class="n">v</span><span class="p">])</span>
-        <span class="n">table_dict</span><span class="p">[</span><span class="s2">&quot;Baseline&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">base_ss</span><span class="p">[</span><span class="n">v</span><span class="p">])</span>
-        <span class="n">table_dict</span><span class="p">[</span><span class="s2">&quot;Reform&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">reform_ss</span><span class="p">[</span><span class="n">v</span><span class="p">])</span>
-        <span class="k">if</span> <span class="n">v</span> <span class="o">!=</span> <span class="s2">&quot;D/Y&quot;</span><span class="p">:</span>
+        <span class="n">table_dict</span><span class="p">[</span><span class="s2">"Variable"</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">VAR_LABELS</span><span class="p">[</span><span class="n">v</span><span class="p">])</span>
+        <span class="n">table_dict</span><span class="p">[</span><span class="s2">"Baseline"</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">base_ss</span><span class="p">[</span><span class="n">v</span><span class="p">])</span>
+        <span class="n">table_dict</span><span class="p">[</span><span class="s2">"Reform"</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">reform_ss</span><span class="p">[</span><span class="n">v</span><span class="p">])</span>
+        <span class="k">if</span> <span class="n">v</span> <span class="o">!=</span> <span class="s2">"D/Y"</span><span class="p">:</span>
             <span class="n">diff</span> <span class="o">=</span> <span class="p">((</span><span class="n">reform_ss</span><span class="p">[</span><span class="n">v</span><span class="p">]</span> <span class="o">-</span> <span class="n">base_ss</span><span class="p">[</span><span class="n">v</span><span class="p">])</span> <span class="o">/</span> <span class="n">base_ss</span><span class="p">[</span><span class="n">v</span><span class="p">])</span> <span class="o">*</span> <span class="mi">100</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">diff</span> <span class="o">=</span> <span class="p">(</span>
-                <span class="n">reform_ss</span><span class="p">[</span><span class="s2">&quot;D&quot;</span><span class="p">]</span> <span class="o">/</span> <span class="n">reform_ss</span><span class="p">[</span><span class="s2">&quot;Y&quot;</span><span class="p">]</span> <span class="o">-</span> <span class="n">base_ss</span><span class="p">[</span><span class="s2">&quot;D&quot;</span><span class="p">]</span> <span class="o">/</span> <span class="n">base_ss</span><span class="p">[</span><span class="s2">&quot;Y&quot;</span><span class="p">]</span>
+                <span class="n">reform_ss</span><span class="p">[</span><span class="s2">"D"</span><span class="p">]</span> <span class="o">/</span> <span class="n">reform_ss</span><span class="p">[</span><span class="s2">"Y"</span><span class="p">]</span> <span class="o">-</span> <span class="n">base_ss</span><span class="p">[</span><span class="s2">"D"</span><span class="p">]</span> <span class="o">/</span> <span class="n">base_ss</span><span class="p">[</span><span class="s2">"Y"</span><span class="p">]</span>
             <span class="p">)</span>
-        <span class="n">table_dict</span><span class="p">[</span><span class="s2">&quot;% Change (or pp diff)&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">diff</span><span class="p">)</span>
+        <span class="n">table_dict</span><span class="p">[</span><span class="s2">"% Change (or pp diff)"</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">diff</span><span class="p">)</span>
         <span class="c1"># Make df with dict so can use pandas functions</span>
         <span class="n">table_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="o">.</span><span class="n">from_dict</span><span class="p">(</span>
-            <span class="n">table_dict</span><span class="p">,</span> <span class="n">orient</span><span class="o">=</span><span class="s2">&quot;columns&quot;</span>
-        <span class="p">)</span><span class="o">.</span><span class="n">set_index</span><span class="p">(</span><span class="s2">&quot;Variable&quot;</span><span class="p">)</span>
+            <span class="n">table_dict</span><span class="p">,</span> <span class="n">orient</span><span class="o">=</span><span class="s2">"columns"</span>
+        <span class="p">)</span><span class="o">.</span><span class="n">set_index</span><span class="p">(</span><span class="s2">"Variable"</span><span class="p">)</span>
         <span class="n">table</span> <span class="o">=</span> <span class="n">save_return_table</span><span class="p">(</span><span class="n">table_df</span><span class="p">,</span> <span class="n">table_format</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">precision</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="n">table</span></div>
@@ -637,11 +640,11 @@
     <span class="n">base_params</span><span class="p">,</span>
     <span class="n">reform_ss</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="n">reform_params</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-    <span class="n">var_list</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;c&quot;</span><span class="p">],</span>
+    <span class="n">var_list</span><span class="o">=</span><span class="p">[</span><span class="s2">"c"</span><span class="p">],</span>
     <span class="n">table_format</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="n">path</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
 <span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Creates table with various inequality measures in the model</span>
 <span class="sd">    steady-state.</span>
 
@@ -653,23 +656,23 @@
 <span class="sd">        reform_params (OG-Core Specifications class): reform parameters</span>
 <span class="sd">            object</span>
 <span class="sd">        var_list (list): names of variable to use in table</span>
-<span class="sd">        table_format (string): format to return table in: &#39;csv&#39;, &#39;tex&#39;,</span>
-<span class="sd">            &#39;excel&#39;, &#39;json&#39;, if None, a DataFrame is returned</span>
+<span class="sd">        table_format (string): format to return table in: 'csv', 'tex',</span>
+<span class="sd">            'excel', 'json', if None, a DataFrame is returned</span>
 <span class="sd">        path (string): path to save table to</span>
 
 <span class="sd">    Returns:</span>
 <span class="sd">        table (various): table in DataFrame or string format or `None`</span>
 <span class="sd">            if saved to disk</span>
 
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="n">table_dict</span> <span class="o">=</span> <span class="p">{</span>
-        <span class="s2">&quot;Steady-State Variable&quot;</span><span class="p">:</span> <span class="p">[],</span>
-        <span class="s2">&quot;Inequality Measure&quot;</span><span class="p">:</span> <span class="p">[],</span>
-        <span class="s2">&quot;Baseline&quot;</span><span class="p">:</span> <span class="p">[],</span>
+        <span class="s2">"Steady-State Variable"</span><span class="p">:</span> <span class="p">[],</span>
+        <span class="s2">"Inequality Measure"</span><span class="p">:</span> <span class="p">[],</span>
+        <span class="s2">"Baseline"</span><span class="p">:</span> <span class="p">[],</span>
     <span class="p">}</span>
     <span class="k">if</span> <span class="n">reform_ss</span><span class="p">:</span>
-        <span class="n">table_dict</span><span class="p">[</span><span class="s2">&quot;Reform&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
-        <span class="n">table_dict</span><span class="p">[</span><span class="s2">&quot;% Change&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">table_dict</span><span class="p">[</span><span class="s2">"Reform"</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">table_dict</span><span class="p">[</span><span class="s2">"% Change"</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">var_list</span><span class="p">):</span>
         <span class="n">base_ineq</span> <span class="o">=</span> <span class="n">Inequality</span><span class="p">(</span>
             <span class="n">base_ss</span><span class="p">[</span><span class="n">v</span><span class="p">],</span>
@@ -686,16 +689,16 @@
                 <span class="n">reform_params</span><span class="o">.</span><span class="n">S</span><span class="p">,</span>
                 <span class="n">reform_params</span><span class="o">.</span><span class="n">J</span><span class="p">,</span>
             <span class="p">)</span>
-        <span class="n">table_dict</span><span class="p">[</span><span class="s2">&quot;Steady-State Variable&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span>
-            <span class="p">[</span><span class="n">VAR_LABELS</span><span class="p">[</span><span class="n">v</span><span class="p">],</span> <span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">]</span>
+        <span class="n">table_dict</span><span class="p">[</span><span class="s2">"Steady-State Variable"</span><span class="p">]</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span>
+            <span class="p">[</span><span class="n">VAR_LABELS</span><span class="p">[</span><span class="n">v</span><span class="p">],</span> <span class="s2">""</span><span class="p">,</span> <span class="s2">""</span><span class="p">,</span> <span class="s2">""</span><span class="p">,</span> <span class="s2">""</span><span class="p">]</span>
         <span class="p">)</span>
-        <span class="n">table_dict</span><span class="p">[</span><span class="s2">&quot;Inequality Measure&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span>
+        <span class="n">table_dict</span><span class="p">[</span><span class="s2">"Inequality Measure"</span><span class="p">]</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span>
             <span class="p">[</span>
-                <span class="s2">&quot;Gini Coefficient&quot;</span><span class="p">,</span>
-                <span class="s2">&quot;Var of Logs&quot;</span><span class="p">,</span>
-                <span class="s2">&quot;90/10 Ratio&quot;</span><span class="p">,</span>
-                <span class="s2">&quot;Top 10% Share&quot;</span><span class="p">,</span>
-                <span class="s2">&quot;Top 1% Share&quot;</span><span class="p">,</span>
+                <span class="s2">"Gini Coefficient"</span><span class="p">,</span>
+                <span class="s2">"Var of Logs"</span><span class="p">,</span>
+                <span class="s2">"90/10 Ratio"</span><span class="p">,</span>
+                <span class="s2">"Top 10% Share"</span><span class="p">,</span>
+                <span class="s2">"Top 1% Share"</span><span class="p">,</span>
             <span class="p">]</span>
         <span class="p">)</span>
         <span class="n">base_values</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span>
@@ -707,7 +710,7 @@
                 <span class="n">base_ineq</span><span class="o">.</span><span class="n">top_share</span><span class="p">(</span><span class="mf">0.01</span><span class="p">),</span>
             <span class="p">]</span>
         <span class="p">)</span>
-        <span class="n">table_dict</span><span class="p">[</span><span class="s2">&quot;Baseline&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">base_values</span><span class="p">))</span>
+        <span class="n">table_dict</span><span class="p">[</span><span class="s2">"Baseline"</span><span class="p">]</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">base_values</span><span class="p">))</span>
         <span class="k">if</span> <span class="n">reform_ss</span><span class="p">:</span>
             <span class="n">reform_values</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span>
                 <span class="p">[</span>
@@ -718,8 +721,8 @@
                     <span class="n">reform_ineq</span><span class="o">.</span><span class="n">top_share</span><span class="p">(</span><span class="mf">0.01</span><span class="p">),</span>
                 <span class="p">]</span>
             <span class="p">)</span>
-            <span class="n">table_dict</span><span class="p">[</span><span class="s2">&quot;Reform&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">reform_values</span><span class="p">))</span>
-            <span class="n">table_dict</span><span class="p">[</span><span class="s2">&quot;% Change&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span>
+            <span class="n">table_dict</span><span class="p">[</span><span class="s2">"Reform"</span><span class="p">]</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">reform_values</span><span class="p">))</span>
+            <span class="n">table_dict</span><span class="p">[</span><span class="s2">"% Change"</span><span class="p">]</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span>
                 <span class="nb">list</span><span class="p">(((</span><span class="n">reform_values</span> <span class="o">-</span> <span class="n">base_values</span><span class="p">)</span> <span class="o">/</span> <span class="n">base_values</span><span class="p">)</span> <span class="o">*</span> <span class="mi">100</span><span class="p">)</span>
             <span class="p">)</span>
     <span class="c1"># Make df with dict so can use pandas functions</span>
@@ -737,11 +740,11 @@
     <span class="n">base_params</span><span class="p">,</span>
     <span class="n">reform_ss</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="n">reform_params</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-    <span class="n">var_list</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;c&quot;</span><span class="p">],</span>
+    <span class="n">var_list</span><span class="o">=</span><span class="p">[</span><span class="s2">"c"</span><span class="p">],</span>
     <span class="n">table_format</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="n">path</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
 <span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Creates table with measures of the Gini coefficient: overall,</span>
 <span class="sd">    across lifetime earnings group, and across age.</span>
 
@@ -753,19 +756,19 @@
 <span class="sd">        reform_params (OG-Core Specifications class): reform parameters</span>
 <span class="sd">            object</span>
 <span class="sd">        var_list (list): names of variable to use in table</span>
-<span class="sd">        table_format (string): format to return table in: &#39;csv&#39;, &#39;tex&#39;,</span>
-<span class="sd">            &#39;excel&#39;, &#39;json&#39;, if None, a DataFrame is returned</span>
+<span class="sd">        table_format (string): format to return table in: 'csv', 'tex',</span>
+<span class="sd">            'excel', 'json', if None, a DataFrame is returned</span>
 <span class="sd">        path (string): path to save table to</span>
 
 <span class="sd">    Returns:</span>
 <span class="sd">        table (various): table in DataFrame or string format or `None`</span>
 <span class="sd">            if saved to disk</span>
 
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">table_dict</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;Steady-State Variable&quot;</span><span class="p">:</span> <span class="p">[],</span> <span class="s2">&quot;Gini Type&quot;</span><span class="p">:</span> <span class="p">[],</span> <span class="s2">&quot;Baseline&quot;</span><span class="p">:</span> <span class="p">[]}</span>
+<span class="sd">    """</span>
+    <span class="n">table_dict</span> <span class="o">=</span> <span class="p">{</span><span class="s2">"Steady-State Variable"</span><span class="p">:</span> <span class="p">[],</span> <span class="s2">"Gini Type"</span><span class="p">:</span> <span class="p">[],</span> <span class="s2">"Baseline"</span><span class="p">:</span> <span class="p">[]}</span>
     <span class="k">if</span> <span class="n">reform_ss</span><span class="p">:</span>
-        <span class="n">table_dict</span><span class="p">[</span><span class="s2">&quot;Reform&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
-        <span class="n">table_dict</span><span class="p">[</span><span class="s2">&quot;% Change&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">table_dict</span><span class="p">[</span><span class="s2">"Reform"</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">table_dict</span><span class="p">[</span><span class="s2">"% Change"</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">var_list</span><span class="p">):</span>
         <span class="n">base_ineq</span> <span class="o">=</span> <span class="n">Inequality</span><span class="p">(</span>
             <span class="n">base_ss</span><span class="p">[</span><span class="n">v</span><span class="p">],</span>
@@ -782,28 +785,28 @@
                 <span class="n">reform_params</span><span class="o">.</span><span class="n">S</span><span class="p">,</span>
                 <span class="n">reform_params</span><span class="o">.</span><span class="n">J</span><span class="p">,</span>
             <span class="p">)</span>
-        <span class="n">table_dict</span><span class="p">[</span><span class="s2">&quot;Steady-State Variable&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">extend</span><span class="p">([</span><span class="n">VAR_LABELS</span><span class="p">[</span><span class="n">v</span><span class="p">],</span> <span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">])</span>
-        <span class="n">table_dict</span><span class="p">[</span><span class="s2">&quot;Gini Type&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span>
-            <span class="p">[</span><span class="s2">&quot;Overall&quot;</span><span class="p">,</span> <span class="s2">&quot;Lifetime Income Group, $j$&quot;</span><span class="p">,</span> <span class="s2">&quot;Age , $s$&quot;</span><span class="p">]</span>
+        <span class="n">table_dict</span><span class="p">[</span><span class="s2">"Steady-State Variable"</span><span class="p">]</span><span class="o">.</span><span class="n">extend</span><span class="p">([</span><span class="n">VAR_LABELS</span><span class="p">[</span><span class="n">v</span><span class="p">],</span> <span class="s2">""</span><span class="p">,</span> <span class="s2">""</span><span class="p">])</span>
+        <span class="n">table_dict</span><span class="p">[</span><span class="s2">"Gini Type"</span><span class="p">]</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span>
+            <span class="p">[</span><span class="s2">"Overall"</span><span class="p">,</span> <span class="s2">"Lifetime Income Group, $j$"</span><span class="p">,</span> <span class="s2">"Age , $s$"</span><span class="p">]</span>
         <span class="p">)</span>
         <span class="n">base_values</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span>
             <span class="p">[</span>
                 <span class="n">base_ineq</span><span class="o">.</span><span class="n">gini</span><span class="p">(),</span>
-                <span class="n">base_ineq</span><span class="o">.</span><span class="n">gini</span><span class="p">(</span><span class="nb">type</span><span class="o">=</span><span class="s2">&quot;ability&quot;</span><span class="p">),</span>
-                <span class="n">base_ineq</span><span class="o">.</span><span class="n">gini</span><span class="p">(</span><span class="nb">type</span><span class="o">=</span><span class="s2">&quot;age&quot;</span><span class="p">),</span>
+                <span class="n">base_ineq</span><span class="o">.</span><span class="n">gini</span><span class="p">(</span><span class="nb">type</span><span class="o">=</span><span class="s2">"ability"</span><span class="p">),</span>
+                <span class="n">base_ineq</span><span class="o">.</span><span class="n">gini</span><span class="p">(</span><span class="nb">type</span><span class="o">=</span><span class="s2">"age"</span><span class="p">),</span>
             <span class="p">]</span>
         <span class="p">)</span>
-        <span class="n">table_dict</span><span class="p">[</span><span class="s2">&quot;Baseline&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">base_values</span><span class="p">))</span>
+        <span class="n">table_dict</span><span class="p">[</span><span class="s2">"Baseline"</span><span class="p">]</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">base_values</span><span class="p">))</span>
         <span class="k">if</span> <span class="n">reform_ss</span><span class="p">:</span>
             <span class="n">reform_values</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span>
                 <span class="p">[</span>
                     <span class="n">reform_ineq</span><span class="o">.</span><span class="n">gini</span><span class="p">(),</span>
-                    <span class="n">reform_ineq</span><span class="o">.</span><span class="n">gini</span><span class="p">(</span><span class="nb">type</span><span class="o">=</span><span class="s2">&quot;ability&quot;</span><span class="p">),</span>
-                    <span class="n">reform_ineq</span><span class="o">.</span><span class="n">gini</span><span class="p">(</span><span class="nb">type</span><span class="o">=</span><span class="s2">&quot;age&quot;</span><span class="p">),</span>
+                    <span class="n">reform_ineq</span><span class="o">.</span><span class="n">gini</span><span class="p">(</span><span class="nb">type</span><span class="o">=</span><span class="s2">"ability"</span><span class="p">),</span>
+                    <span class="n">reform_ineq</span><span class="o">.</span><span class="n">gini</span><span class="p">(</span><span class="nb">type</span><span class="o">=</span><span class="s2">"age"</span><span class="p">),</span>
                 <span class="p">]</span>
             <span class="p">)</span>
-            <span class="n">table_dict</span><span class="p">[</span><span class="s2">&quot;Reform&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">reform_values</span><span class="p">))</span>
-            <span class="n">table_dict</span><span class="p">[</span><span class="s2">&quot;% Change&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span>
+            <span class="n">table_dict</span><span class="p">[</span><span class="s2">"Reform"</span><span class="p">]</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">reform_values</span><span class="p">))</span>
+            <span class="n">table_dict</span><span class="p">[</span><span class="s2">"% Change"</span><span class="p">]</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span>
                 <span class="nb">list</span><span class="p">(((</span><span class="n">reform_values</span> <span class="o">-</span> <span class="n">base_values</span><span class="p">)</span> <span class="o">/</span> <span class="n">base_values</span><span class="p">)</span> <span class="o">*</span> <span class="mi">100</span><span class="p">)</span>
             <span class="p">)</span>
     <span class="c1"># Make df with dict so can use pandas functions</span>
@@ -819,7 +822,7 @@
 <span class="k">def</span><span class="w"> </span><span class="nf">wealth_moments_table</span><span class="p">(</span>
     <span class="n">base_ss</span><span class="p">,</span> <span class="n">base_params</span><span class="p">,</span> <span class="n">data_moments</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">table_format</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">path</span><span class="o">=</span><span class="kc">None</span>
 <span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Creates table with moments of the wealth distribution from the model</span>
 <span class="sd">    and SCF data.</span>
 
@@ -827,32 +830,32 @@
 <span class="sd">        base_ss (dictionary): SS output from baseline run</span>
 <span class="sd">        base_params (OG-Core Specifications class): baseline parameters</span>
 <span class="sd">            object</span>
-<span class="sd">        table_format (string): format to return table in: &#39;csv&#39;, &#39;tex&#39;,</span>
-<span class="sd">            &#39;excel&#39;, &#39;json&#39;, if None, a DataFrame is returned</span>
+<span class="sd">        table_format (string): format to return table in: 'csv', 'tex',</span>
+<span class="sd">            'excel', 'json', if None, a DataFrame is returned</span>
 <span class="sd">        path (string): path to save table to</span>
 
 <span class="sd">    Returns:</span>
 <span class="sd">        table (various): table in DataFrame or string format or `None`</span>
 <span class="sd">            if saved to disk</span>
 
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="n">table_dict</span> <span class="o">=</span> <span class="p">{</span>
-        <span class="s2">&quot;Moment&quot;</span><span class="p">:</span> <span class="p">[</span>
-            <span class="s2">&quot;Share 0-25%&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;Share 25-50%&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;Share 50-70%&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;Share 70-80%&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;Share 80-90%&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;Share 90-99%&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;Share 99-100%&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;Gini Coefficient&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;var(ln(Wealth))&quot;</span><span class="p">,</span>
+        <span class="s2">"Moment"</span><span class="p">:</span> <span class="p">[</span>
+            <span class="s2">"Share 0-25%"</span><span class="p">,</span>
+            <span class="s2">"Share 25-50%"</span><span class="p">,</span>
+            <span class="s2">"Share 50-70%"</span><span class="p">,</span>
+            <span class="s2">"Share 70-80%"</span><span class="p">,</span>
+            <span class="s2">"Share 80-90%"</span><span class="p">,</span>
+            <span class="s2">"Share 90-99%"</span><span class="p">,</span>
+            <span class="s2">"Share 99-100%"</span><span class="p">,</span>
+            <span class="s2">"Gini Coefficient"</span><span class="p">,</span>
+            <span class="s2">"var(ln(Wealth))"</span><span class="p">,</span>
         <span class="p">],</span>
-        <span class="s2">&quot;Data&quot;</span><span class="p">:</span> <span class="p">[],</span>
-        <span class="s2">&quot;Model&quot;</span><span class="p">:</span> <span class="p">[],</span>
+        <span class="s2">"Data"</span><span class="p">:</span> <span class="p">[],</span>
+        <span class="s2">"Model"</span><span class="p">:</span> <span class="p">[],</span>
     <span class="p">}</span>
     <span class="n">base_ineq</span> <span class="o">=</span> <span class="n">Inequality</span><span class="p">(</span>
-        <span class="n">base_ss</span><span class="p">[</span><span class="s2">&quot;b_sp1&quot;</span><span class="p">],</span>
+        <span class="n">base_ss</span><span class="p">[</span><span class="s2">"b_sp1"</span><span class="p">],</span>
         <span class="n">base_params</span><span class="o">.</span><span class="n">omega_SS</span><span class="p">,</span>
         <span class="n">base_params</span><span class="o">.</span><span class="n">lambdas</span><span class="p">,</span>
         <span class="n">base_params</span><span class="o">.</span><span class="n">S</span><span class="p">,</span>
@@ -869,10 +872,10 @@
         <span class="n">base_ineq</span><span class="o">.</span><span class="n">gini</span><span class="p">(),</span>
         <span class="n">base_ineq</span><span class="o">.</span><span class="n">var_of_logs</span><span class="p">(),</span>
     <span class="p">]</span>
-    <span class="n">table_dict</span><span class="p">[</span><span class="s2">&quot;Model&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">base_values</span><span class="p">)</span>
+    <span class="n">table_dict</span><span class="p">[</span><span class="s2">"Model"</span><span class="p">]</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">base_values</span><span class="p">)</span>
     <span class="c1"># Add moments from the data</span>
     <span class="k">if</span> <span class="n">data_moments</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="n">table_dict</span><span class="p">[</span><span class="s2">&quot;Data&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">data_moments</span>
+        <span class="n">table_dict</span><span class="p">[</span><span class="s2">"Data"</span><span class="p">]</span> <span class="o">=</span> <span class="n">data_moments</span>
     <span class="c1"># Make df with dict so can use pandas functions</span>
     <span class="n">table_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="o">.</span><span class="n">from_dict</span><span class="p">(</span><span class="n">table_dict</span><span class="p">)</span>
     <span class="n">table</span> <span class="o">=</span> <span class="n">save_return_table</span><span class="p">(</span><span class="n">table_df</span><span class="p">,</span> <span class="n">table_format</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">precision</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
@@ -892,7 +895,7 @@
     <span class="n">table_format</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="n">path</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
 <span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    This function dumps many of the macro time series from the</span>
 <span class="sd">    transition path into an output table.</span>
 
@@ -904,35 +907,35 @@
 <span class="sd">            object</span>
 <span class="sd">        reform_tpi (dictionary): TP output from reform run</span>
 <span class="sd">        stationarized (bool): whether to report stationarized output</span>
-<span class="sd">        table_format (string): format to return table in: &#39;csv&#39;, &#39;tex&#39;,</span>
-<span class="sd">            &#39;excel&#39;, &#39;json&#39;, if None, a DataFrame is returned</span>
+<span class="sd">        table_format (string): format to return table in: 'csv', 'tex',</span>
+<span class="sd">            'excel', 'json', if None, a DataFrame is returned</span>
 <span class="sd">        path (string): path to save table to</span>
 
 <span class="sd">    Returns:</span>
 <span class="sd">        table (various): table in DataFrame or string format or `None`</span>
 <span class="sd">            if saved to disk</span>
 
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="n">T</span> <span class="o">=</span> <span class="n">base_params</span><span class="o">.</span><span class="n">T</span>
     <span class="c1"># keep just items of interest for final table</span>
     <span class="n">vars_to_keep</span> <span class="o">=</span> <span class="p">[</span>
-        <span class="s2">&quot;Y&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;L&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;G&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;TR&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;B&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;K&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;K_d&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;K_f&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;D&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;D_d&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;D_f&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;r&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;r_gov&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;r_p&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;w&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;total_tax_revenue&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;business_tax_revenue&quot;</span><span class="p">,</span>
+        <span class="s2">"Y"</span><span class="p">,</span>
+        <span class="s2">"L"</span><span class="p">,</span>
+        <span class="s2">"G"</span><span class="p">,</span>
+        <span class="s2">"TR"</span><span class="p">,</span>
+        <span class="s2">"B"</span><span class="p">,</span>
+        <span class="s2">"K"</span><span class="p">,</span>
+        <span class="s2">"K_d"</span><span class="p">,</span>
+        <span class="s2">"K_f"</span><span class="p">,</span>
+        <span class="s2">"D"</span><span class="p">,</span>
+        <span class="s2">"D_d"</span><span class="p">,</span>
+        <span class="s2">"D_f"</span><span class="p">,</span>
+        <span class="s2">"r"</span><span class="p">,</span>
+        <span class="s2">"r_gov"</span><span class="p">,</span>
+        <span class="s2">"r_p"</span><span class="p">,</span>
+        <span class="s2">"w"</span><span class="p">,</span>
+        <span class="s2">"total_tax_revenue"</span><span class="p">,</span>
+        <span class="s2">"business_tax_revenue"</span><span class="p">,</span>
     <span class="p">]</span>
     <span class="c1"># unstationarize variables if needed</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">stationarized</span><span class="p">:</span>
@@ -945,7 +948,7 @@
     <span class="n">base_dict</span> <span class="o">=</span> <span class="p">{</span><span class="n">k</span><span class="p">:</span> <span class="n">base_tpi</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">vars_to_keep</span><span class="p">}</span>
     <span class="c1"># update key names</span>
     <span class="n">base_dict_final</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
-        <span class="p">(</span><span class="n">VAR_LABELS</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">+</span> <span class="s2">&quot;: Baseline&quot;</span><span class="p">,</span> <span class="n">v</span><span class="p">[:</span><span class="n">T</span><span class="p">])</span> <span class="k">for</span> <span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span> <span class="ow">in</span> <span class="n">base_dict</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
+        <span class="p">(</span><span class="n">VAR_LABELS</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">+</span> <span class="s2">": Baseline"</span><span class="p">,</span> <span class="n">v</span><span class="p">[:</span><span class="n">T</span><span class="p">])</span> <span class="k">for</span> <span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span> <span class="ow">in</span> <span class="n">base_dict</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
     <span class="p">)</span>
     <span class="c1"># create df</span>
     <span class="n">table_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="o">.</span><span class="n">from_dict</span><span class="p">(</span><span class="n">base_dict_final</span><span class="p">)</span>
@@ -955,7 +958,7 @@
         <span class="n">reform_dict</span> <span class="o">=</span> <span class="p">{</span><span class="n">k</span><span class="p">:</span> <span class="n">reform_tpi</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">vars_to_keep</span><span class="p">}</span>
         <span class="c1"># update key names</span>
         <span class="n">reform_dict_final</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
-            <span class="p">(</span><span class="n">VAR_LABELS</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">+</span> <span class="s2">&quot;: Reform&quot;</span><span class="p">,</span> <span class="n">v</span><span class="p">[:</span><span class="n">T</span><span class="p">])</span>
+            <span class="p">(</span><span class="n">VAR_LABELS</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">+</span> <span class="s2">": Reform"</span><span class="p">,</span> <span class="n">v</span><span class="p">[:</span><span class="n">T</span><span class="p">])</span>
             <span class="k">for</span> <span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span> <span class="ow">in</span> <span class="n">reform_dict</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
         <span class="p">)</span>
         <span class="n">df_reform</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="o">.</span><span class="n">from_dict</span><span class="p">(</span><span class="n">reform_dict_final</span><span class="p">)</span>
@@ -963,9 +966,9 @@
         <span class="n">table_df</span> <span class="o">=</span> <span class="n">table_df</span><span class="o">.</span><span class="n">merge</span><span class="p">(</span><span class="n">df_reform</span><span class="p">,</span> <span class="n">left_index</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">right_index</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
     <span class="c1"># rename index to year</span>
     <span class="n">table_df</span><span class="o">.</span><span class="n">reset_index</span><span class="p">(</span><span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-    <span class="n">table_df</span><span class="o">.</span><span class="n">rename</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;index&quot;</span><span class="p">:</span> <span class="s2">&quot;Year&quot;</span><span class="p">},</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">table_df</span><span class="o">.</span><span class="n">rename</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="p">{</span><span class="s2">"index"</span><span class="p">:</span> <span class="s2">"Year"</span><span class="p">},</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
     <span class="c1"># update index to reflect years</span>
-    <span class="n">table_df</span><span class="p">[</span><span class="s2">&quot;Year&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">table_df</span><span class="p">[</span><span class="s2">&quot;Year&quot;</span><span class="p">]</span> <span class="o">+</span> <span class="n">base_params</span><span class="o">.</span><span class="n">start_year</span>
+    <span class="n">table_df</span><span class="p">[</span><span class="s2">"Year"</span><span class="p">]</span> <span class="o">=</span> <span class="n">table_df</span><span class="p">[</span><span class="s2">"Year"</span><span class="p">]</span> <span class="o">+</span> <span class="n">base_params</span><span class="o">.</span><span class="n">start_year</span>
 
     <span class="n">table</span> <span class="o">=</span> <span class="n">save_return_table</span><span class="p">(</span><span class="n">table_df</span><span class="p">,</span> <span class="n">table_format</span><span class="p">,</span> <span class="n">path</span><span class="p">)</span>
 
@@ -991,7 +994,7 @@
     <span class="n">table_format</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="n">path</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
 <span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    This function decomposes the source of changes in tax revenues to</span>
 <span class="sd">    determine the percentage change in tax revenues that can be</span>
 <span class="sd">    attributed to macroeconomic feedback effects.</span>
@@ -1015,8 +1018,8 @@
 <span class="sd">        full_break_out (bool): whether to break out behavioral and macro</span>
 <span class="sd">            effects</span>
 <span class="sd">        start_year (integer): year to start table</span>
-<span class="sd">        table_format (string): format to return table in: &#39;csv&#39;, &#39;tex&#39;,</span>
-<span class="sd">            &#39;excel&#39;, &#39;json&#39;, if None, a DataFrame is returned</span>
+<span class="sd">        table_format (string): format to return table in: 'csv', 'tex',</span>
+<span class="sd">            'excel', 'json', if None, a DataFrame is returned</span>
 <span class="sd">        path (string): path to save table to</span>
 
 <span class="sd">    Returns:</span>
@@ -1038,17 +1041,17 @@
 <span class="sd">           the macro variables (`tr`, `bq`, `r`, `w`) from the baseline.</span>
 <span class="sd">           Call this series C.</span>
 <span class="sd">        3. Calculate the percentage difference between B and A -- call</span>
-<span class="sd">           this the &quot;static&quot; change from the macro model.  Calculate the</span>
+<span class="sd">           this the "static" change from the macro model.  Calculate the</span>
 <span class="sd">           percentage difference between C and B -- call this the</span>
 <span class="sd">           behavioral effects.  Calculate the percentage difference</span>
 <span class="sd">           between D and C -- call this the macroeconomic effect.  The</span>
 <span class="sd">           full dynamic effect is difference between C and A.</span>
 
 <span class="sd">        One can apply the percentage difference from the macro feedback</span>
-<span class="sd">        effect to (&quot;static&quot;) revenue estimates from the policy change</span>
+<span class="sd">        effect to ("static") revenue estimates from the policy change</span>
 <span class="sd">        to produce an estimate of the revenue including macro feedback.</span>
 
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">start_year</span><span class="p">,</span> <span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">integer</span><span class="p">))</span>
     <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">num_years</span><span class="p">,</span> <span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">integer</span><span class="p">))</span>
     <span class="c1"># Make sure both runs cover same time period</span>
@@ -1057,10 +1060,10 @@
     <span class="n">start_index</span> <span class="o">=</span> <span class="n">start_year</span> <span class="o">-</span> <span class="n">base_params</span><span class="o">.</span><span class="n">start_year</span>
     <span class="n">year_list</span> <span class="o">=</span> <span class="n">year_vec</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
     <span class="k">if</span> <span class="n">include_overall</span><span class="p">:</span>
-        <span class="n">year_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">year_vec</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">+</span> <span class="s2">&quot;-&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">year_vec</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]))</span>
+        <span class="n">year_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">year_vec</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">+</span> <span class="s2">"-"</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">year_vec</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]))</span>
     <span class="k">if</span> <span class="n">include_SS</span><span class="p">:</span>
-        <span class="n">year_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;SS&quot;</span><span class="p">)</span>
-    <span class="n">table_dict</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;Year&quot;</span><span class="p">:</span> <span class="n">year_list</span><span class="p">}</span>
+        <span class="n">year_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">"SS"</span><span class="p">)</span>
+    <span class="n">table_dict</span> <span class="o">=</span> <span class="p">{</span><span class="s2">"Year"</span><span class="p">:</span> <span class="n">year_list</span><span class="p">}</span>
     <span class="n">T</span><span class="p">,</span> <span class="n">S</span><span class="p">,</span> <span class="n">J</span> <span class="o">=</span> <span class="n">base_params</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="n">base_params</span><span class="o">.</span><span class="n">S</span><span class="p">,</span> <span class="n">base_params</span><span class="o">.</span><span class="n">J</span>
     <span class="n">num_params</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">base_params</span><span class="o">.</span><span class="n">etr_params</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">])</span>
     <span class="n">base_etr_params_4D</span> <span class="o">=</span> <span class="p">[</span>
@@ -1083,207 +1086,207 @@
         <span class="p">]</span>
         <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">T</span><span class="p">)</span>
     <span class="p">]</span>
-    <span class="n">tax_rev_dict</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;indiv&quot;</span><span class="p">:</span> <span class="p">{},</span> <span class="s2">&quot;biz&quot;</span><span class="p">:</span> <span class="p">{},</span> <span class="s2">&quot;total&quot;</span><span class="p">:</span> <span class="p">{}}</span>
+    <span class="n">tax_rev_dict</span> <span class="o">=</span> <span class="p">{</span><span class="s2">"indiv"</span><span class="p">:</span> <span class="p">{},</span> <span class="s2">"biz"</span><span class="p">:</span> <span class="p">{},</span> <span class="s2">"total"</span><span class="p">:</span> <span class="p">{}}</span>
     <span class="n">indiv_liab</span> <span class="o">=</span> <span class="p">{}</span>
     <span class="c1"># Baseline IIT + payroll tax liability</span>
-    <span class="n">indiv_liab</span><span class="p">[</span><span class="s2">&quot;A&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">tax</span><span class="o">.</span><span class="n">income_tax_liab</span><span class="p">(</span>
-        <span class="n">base_tpi</span><span class="p">[</span><span class="s2">&quot;r_p&quot;</span><span class="p">][:</span><span class="n">T</span><span class="p">],</span>
-        <span class="n">base_tpi</span><span class="p">[</span><span class="s2">&quot;w&quot;</span><span class="p">][:</span><span class="n">T</span><span class="p">],</span>
-        <span class="n">base_tpi</span><span class="p">[</span><span class="s2">&quot;b_s&quot;</span><span class="p">],</span>
-        <span class="n">base_tpi</span><span class="p">[</span><span class="s2">&quot;n&quot;</span><span class="p">][:</span><span class="n">T</span><span class="p">,</span> <span class="p">:,</span> <span class="p">:],</span>
-        <span class="n">base_ss</span><span class="p">[</span><span class="s2">&quot;factor&quot;</span><span class="p">],</span>
+    <span class="n">indiv_liab</span><span class="p">[</span><span class="s2">"A"</span><span class="p">]</span> <span class="o">=</span> <span class="n">tax</span><span class="o">.</span><span class="n">income_tax_liab</span><span class="p">(</span>
+        <span class="n">base_tpi</span><span class="p">[</span><span class="s2">"r_p"</span><span class="p">][:</span><span class="n">T</span><span class="p">],</span>
+        <span class="n">base_tpi</span><span class="p">[</span><span class="s2">"w"</span><span class="p">][:</span><span class="n">T</span><span class="p">],</span>
+        <span class="n">base_tpi</span><span class="p">[</span><span class="s2">"b_s"</span><span class="p">],</span>
+        <span class="n">base_tpi</span><span class="p">[</span><span class="s2">"n"</span><span class="p">][:</span><span class="n">T</span><span class="p">,</span> <span class="p">:,</span> <span class="p">:],</span>
+        <span class="n">base_ss</span><span class="p">[</span><span class="s2">"factor"</span><span class="p">],</span>
         <span class="mi">0</span><span class="p">,</span>
         <span class="kc">None</span><span class="p">,</span>
-        <span class="s2">&quot;TPI&quot;</span><span class="p">,</span>
+        <span class="s2">"TPI"</span><span class="p">,</span>
         <span class="n">base_params</span><span class="o">.</span><span class="n">e</span><span class="p">,</span>
         <span class="n">base_etr_params_4D</span><span class="p">,</span>
         <span class="n">base_params</span><span class="p">,</span>
     <span class="p">)</span>
     <span class="c1"># IIT + payroll tax liability using baseline behavior and macros</span>
     <span class="c1"># with the reform tax functions (this is the OG-Core static estimate)</span>
-    <span class="n">indiv_liab</span><span class="p">[</span><span class="s2">&quot;B&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">tax</span><span class="o">.</span><span class="n">income_tax_liab</span><span class="p">(</span>
-        <span class="n">base_tpi</span><span class="p">[</span><span class="s2">&quot;r_p&quot;</span><span class="p">][:</span><span class="n">T</span><span class="p">],</span>
-        <span class="n">base_tpi</span><span class="p">[</span><span class="s2">&quot;w&quot;</span><span class="p">][:</span><span class="n">T</span><span class="p">],</span>
-        <span class="n">base_tpi</span><span class="p">[</span><span class="s2">&quot;b_s&quot;</span><span class="p">],</span>
-        <span class="n">base_tpi</span><span class="p">[</span><span class="s2">&quot;n&quot;</span><span class="p">][:</span><span class="n">T</span><span class="p">,</span> <span class="p">:,</span> <span class="p">:],</span>
-        <span class="n">base_ss</span><span class="p">[</span><span class="s2">&quot;factor&quot;</span><span class="p">],</span>
+    <span class="n">indiv_liab</span><span class="p">[</span><span class="s2">"B"</span><span class="p">]</span> <span class="o">=</span> <span class="n">tax</span><span class="o">.</span><span class="n">income_tax_liab</span><span class="p">(</span>
+        <span class="n">base_tpi</span><span class="p">[</span><span class="s2">"r_p"</span><span class="p">][:</span><span class="n">T</span><span class="p">],</span>
+        <span class="n">base_tpi</span><span class="p">[</span><span class="s2">"w"</span><span class="p">][:</span><span class="n">T</span><span class="p">],</span>
+        <span class="n">base_tpi</span><span class="p">[</span><span class="s2">"b_s"</span><span class="p">],</span>
+        <span class="n">base_tpi</span><span class="p">[</span><span class="s2">"n"</span><span class="p">][:</span><span class="n">T</span><span class="p">,</span> <span class="p">:,</span> <span class="p">:],</span>
+        <span class="n">base_ss</span><span class="p">[</span><span class="s2">"factor"</span><span class="p">],</span>
         <span class="mi">0</span><span class="p">,</span>
         <span class="kc">None</span><span class="p">,</span>
-        <span class="s2">&quot;TPI&quot;</span><span class="p">,</span>
+        <span class="s2">"TPI"</span><span class="p">,</span>
         <span class="n">base_params</span><span class="o">.</span><span class="n">e</span><span class="p">,</span>
         <span class="n">reform_etr_params_4D</span><span class="p">,</span>
         <span class="n">base_params</span><span class="p">,</span>
     <span class="p">)</span>
     <span class="c1"># IIT + payroll tax liability using reform behavior and baseline</span>
     <span class="c1"># macros</span>
-    <span class="n">indiv_liab</span><span class="p">[</span><span class="s2">&quot;C&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">tax</span><span class="o">.</span><span class="n">income_tax_liab</span><span class="p">(</span>
-        <span class="n">base_tpi</span><span class="p">[</span><span class="s2">&quot;r_p&quot;</span><span class="p">][:</span><span class="n">T</span><span class="p">],</span>
-        <span class="n">base_tpi</span><span class="p">[</span><span class="s2">&quot;w&quot;</span><span class="p">][:</span><span class="n">T</span><span class="p">],</span>
-        <span class="n">reform_tpi</span><span class="p">[</span><span class="s2">&quot;b_s&quot;</span><span class="p">],</span>
-        <span class="n">reform_tpi</span><span class="p">[</span><span class="s2">&quot;n&quot;</span><span class="p">][:</span><span class="n">T</span><span class="p">,</span> <span class="p">:,</span> <span class="p">:],</span>
-        <span class="n">base_ss</span><span class="p">[</span><span class="s2">&quot;factor&quot;</span><span class="p">],</span>
+    <span class="n">indiv_liab</span><span class="p">[</span><span class="s2">"C"</span><span class="p">]</span> <span class="o">=</span> <span class="n">tax</span><span class="o">.</span><span class="n">income_tax_liab</span><span class="p">(</span>
+        <span class="n">base_tpi</span><span class="p">[</span><span class="s2">"r_p"</span><span class="p">][:</span><span class="n">T</span><span class="p">],</span>
+        <span class="n">base_tpi</span><span class="p">[</span><span class="s2">"w"</span><span class="p">][:</span><span class="n">T</span><span class="p">],</span>
+        <span class="n">reform_tpi</span><span class="p">[</span><span class="s2">"b_s"</span><span class="p">],</span>
+        <span class="n">reform_tpi</span><span class="p">[</span><span class="s2">"n"</span><span class="p">][:</span><span class="n">T</span><span class="p">,</span> <span class="p">:,</span> <span class="p">:],</span>
+        <span class="n">base_ss</span><span class="p">[</span><span class="s2">"factor"</span><span class="p">],</span>
         <span class="mi">0</span><span class="p">,</span>
         <span class="kc">None</span><span class="p">,</span>
-        <span class="s2">&quot;TPI&quot;</span><span class="p">,</span>
+        <span class="s2">"TPI"</span><span class="p">,</span>
         <span class="n">reform_params</span><span class="o">.</span><span class="n">e</span><span class="p">,</span>
         <span class="n">reform_etr_params_4D</span><span class="p">,</span>
         <span class="n">reform_params</span><span class="p">,</span>
     <span class="p">)</span>
     <span class="c1"># IIT + payroll tax liability from the reform simulation</span>
-    <span class="n">indiv_liab</span><span class="p">[</span><span class="s2">&quot;D&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">tax</span><span class="o">.</span><span class="n">income_tax_liab</span><span class="p">(</span>
-        <span class="n">reform_tpi</span><span class="p">[</span><span class="s2">&quot;r_p&quot;</span><span class="p">][:</span><span class="n">T</span><span class="p">],</span>
-        <span class="n">reform_tpi</span><span class="p">[</span><span class="s2">&quot;w&quot;</span><span class="p">][:</span><span class="n">T</span><span class="p">],</span>
-        <span class="n">reform_tpi</span><span class="p">[</span><span class="s2">&quot;b_s&quot;</span><span class="p">],</span>
-        <span class="n">reform_tpi</span><span class="p">[</span><span class="s2">&quot;n&quot;</span><span class="p">][:</span><span class="n">T</span><span class="p">,</span> <span class="p">:,</span> <span class="p">:],</span>
-        <span class="n">base_ss</span><span class="p">[</span><span class="s2">&quot;factor&quot;</span><span class="p">],</span>
+    <span class="n">indiv_liab</span><span class="p">[</span><span class="s2">"D"</span><span class="p">]</span> <span class="o">=</span> <span class="n">tax</span><span class="o">.</span><span class="n">income_tax_liab</span><span class="p">(</span>
+        <span class="n">reform_tpi</span><span class="p">[</span><span class="s2">"r_p"</span><span class="p">][:</span><span class="n">T</span><span class="p">],</span>
+        <span class="n">reform_tpi</span><span class="p">[</span><span class="s2">"w"</span><span class="p">][:</span><span class="n">T</span><span class="p">],</span>
+        <span class="n">reform_tpi</span><span class="p">[</span><span class="s2">"b_s"</span><span class="p">],</span>
+        <span class="n">reform_tpi</span><span class="p">[</span><span class="s2">"n"</span><span class="p">][:</span><span class="n">T</span><span class="p">,</span> <span class="p">:,</span> <span class="p">:],</span>
+        <span class="n">base_ss</span><span class="p">[</span><span class="s2">"factor"</span><span class="p">],</span>
         <span class="mi">0</span><span class="p">,</span>
         <span class="kc">None</span><span class="p">,</span>
-        <span class="s2">&quot;TPI&quot;</span><span class="p">,</span>
+        <span class="s2">"TPI"</span><span class="p">,</span>
         <span class="n">reform_params</span><span class="o">.</span><span class="n">e</span><span class="p">,</span>
         <span class="n">reform_etr_params_4D</span><span class="p">,</span>
         <span class="n">reform_params</span><span class="p">,</span>
     <span class="p">)</span>
     <span class="c1"># Business tax revenue from the baseline simulation</span>
-    <span class="n">tax_rev_dict</span><span class="p">[</span><span class="s2">&quot;biz&quot;</span><span class="p">][</span><span class="s2">&quot;A&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">tax</span><span class="o">.</span><span class="n">get_biz_tax</span><span class="p">(</span>
-        <span class="n">base_tpi</span><span class="p">[</span><span class="s2">&quot;w&quot;</span><span class="p">][:</span><span class="n">T</span><span class="p">],</span>
-        <span class="n">base_tpi</span><span class="p">[</span><span class="s2">&quot;Y_m&quot;</span><span class="p">][:</span><span class="n">T</span><span class="p">,</span> <span class="p">:],</span>
-        <span class="n">base_tpi</span><span class="p">[</span><span class="s2">&quot;L_m&quot;</span><span class="p">][:</span><span class="n">T</span><span class="p">,</span> <span class="p">:],</span>
-        <span class="n">base_tpi</span><span class="p">[</span><span class="s2">&quot;K_m&quot;</span><span class="p">][:</span><span class="n">T</span><span class="p">,</span> <span class="p">:],</span>
-        <span class="n">base_tpi</span><span class="p">[</span><span class="s2">&quot;p_m&quot;</span><span class="p">][:</span><span class="n">T</span><span class="p">],</span>
+    <span class="n">tax_rev_dict</span><span class="p">[</span><span class="s2">"biz"</span><span class="p">][</span><span class="s2">"A"</span><span class="p">]</span> <span class="o">=</span> <span class="n">tax</span><span class="o">.</span><span class="n">get_biz_tax</span><span class="p">(</span>
+        <span class="n">base_tpi</span><span class="p">[</span><span class="s2">"w"</span><span class="p">][:</span><span class="n">T</span><span class="p">],</span>
+        <span class="n">base_tpi</span><span class="p">[</span><span class="s2">"Y_m"</span><span class="p">][:</span><span class="n">T</span><span class="p">,</span> <span class="p">:],</span>
+        <span class="n">base_tpi</span><span class="p">[</span><span class="s2">"L_m"</span><span class="p">][:</span><span class="n">T</span><span class="p">,</span> <span class="p">:],</span>
+        <span class="n">base_tpi</span><span class="p">[</span><span class="s2">"K_m"</span><span class="p">][:</span><span class="n">T</span><span class="p">,</span> <span class="p">:],</span>
+        <span class="n">base_tpi</span><span class="p">[</span><span class="s2">"p_m"</span><span class="p">][:</span><span class="n">T</span><span class="p">],</span>
         <span class="n">base_params</span><span class="p">,</span>
         <span class="kc">None</span><span class="p">,</span>
-        <span class="s2">&quot;TPI&quot;</span><span class="p">,</span>
+        <span class="s2">"TPI"</span><span class="p">,</span>
     <span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">axis</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span>
     <span class="c1"># Business tax revenue found using baseline behavior and macros with</span>
     <span class="c1"># the reform tax rates</span>
-    <span class="n">tax_rev_dict</span><span class="p">[</span><span class="s2">&quot;biz&quot;</span><span class="p">][</span><span class="s2">&quot;B&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">tax</span><span class="o">.</span><span class="n">get_biz_tax</span><span class="p">(</span>
-        <span class="n">base_tpi</span><span class="p">[</span><span class="s2">&quot;w&quot;</span><span class="p">][:</span><span class="n">T</span><span class="p">],</span>
-        <span class="n">base_tpi</span><span class="p">[</span><span class="s2">&quot;Y_m&quot;</span><span class="p">][:</span><span class="n">T</span><span class="p">,</span> <span class="p">:],</span>
-        <span class="n">base_tpi</span><span class="p">[</span><span class="s2">&quot;L_m&quot;</span><span class="p">][:</span><span class="n">T</span><span class="p">,</span> <span class="p">:],</span>
-        <span class="n">base_tpi</span><span class="p">[</span><span class="s2">&quot;K_m&quot;</span><span class="p">][:</span><span class="n">T</span><span class="p">,</span> <span class="p">:],</span>
-        <span class="n">base_tpi</span><span class="p">[</span><span class="s2">&quot;p_m&quot;</span><span class="p">][:</span><span class="n">T</span><span class="p">],</span>
+    <span class="n">tax_rev_dict</span><span class="p">[</span><span class="s2">"biz"</span><span class="p">][</span><span class="s2">"B"</span><span class="p">]</span> <span class="o">=</span> <span class="n">tax</span><span class="o">.</span><span class="n">get_biz_tax</span><span class="p">(</span>
+        <span class="n">base_tpi</span><span class="p">[</span><span class="s2">"w"</span><span class="p">][:</span><span class="n">T</span><span class="p">],</span>
+        <span class="n">base_tpi</span><span class="p">[</span><span class="s2">"Y_m"</span><span class="p">][:</span><span class="n">T</span><span class="p">,</span> <span class="p">:],</span>
+        <span class="n">base_tpi</span><span class="p">[</span><span class="s2">"L_m"</span><span class="p">][:</span><span class="n">T</span><span class="p">,</span> <span class="p">:],</span>
+        <span class="n">base_tpi</span><span class="p">[</span><span class="s2">"K_m"</span><span class="p">][:</span><span class="n">T</span><span class="p">,</span> <span class="p">:],</span>
+        <span class="n">base_tpi</span><span class="p">[</span><span class="s2">"p_m"</span><span class="p">][:</span><span class="n">T</span><span class="p">],</span>
         <span class="n">reform_params</span><span class="p">,</span>
         <span class="kc">None</span><span class="p">,</span>
-        <span class="s2">&quot;TPI&quot;</span><span class="p">,</span>
+        <span class="s2">"TPI"</span><span class="p">,</span>
     <span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">axis</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span>
     <span class="c1"># Business tax revenue found using the reform behavior and baseline</span>
     <span class="c1"># macros with the reform tax rates</span>
-    <span class="n">tax_rev_dict</span><span class="p">[</span><span class="s2">&quot;biz&quot;</span><span class="p">][</span><span class="s2">&quot;C&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">tax</span><span class="o">.</span><span class="n">get_biz_tax</span><span class="p">(</span>
-        <span class="n">base_tpi</span><span class="p">[</span><span class="s2">&quot;w&quot;</span><span class="p">][:</span><span class="n">T</span><span class="p">],</span>
-        <span class="n">reform_tpi</span><span class="p">[</span><span class="s2">&quot;Y_m&quot;</span><span class="p">][:</span><span class="n">T</span><span class="p">,</span> <span class="p">:],</span>
-        <span class="n">reform_tpi</span><span class="p">[</span><span class="s2">&quot;L_m&quot;</span><span class="p">][:</span><span class="n">T</span><span class="p">,</span> <span class="p">:],</span>
-        <span class="n">reform_tpi</span><span class="p">[</span><span class="s2">&quot;K_m&quot;</span><span class="p">][:</span><span class="n">T</span><span class="p">,</span> <span class="p">:],</span>
-        <span class="n">reform_tpi</span><span class="p">[</span><span class="s2">&quot;p_m&quot;</span><span class="p">][:</span><span class="n">T</span><span class="p">],</span>
+    <span class="n">tax_rev_dict</span><span class="p">[</span><span class="s2">"biz"</span><span class="p">][</span><span class="s2">"C"</span><span class="p">]</span> <span class="o">=</span> <span class="n">tax</span><span class="o">.</span><span class="n">get_biz_tax</span><span class="p">(</span>
+        <span class="n">base_tpi</span><span class="p">[</span><span class="s2">"w"</span><span class="p">][:</span><span class="n">T</span><span class="p">],</span>
+        <span class="n">reform_tpi</span><span class="p">[</span><span class="s2">"Y_m"</span><span class="p">][:</span><span class="n">T</span><span class="p">,</span> <span class="p">:],</span>
+        <span class="n">reform_tpi</span><span class="p">[</span><span class="s2">"L_m"</span><span class="p">][:</span><span class="n">T</span><span class="p">,</span> <span class="p">:],</span>
+        <span class="n">reform_tpi</span><span class="p">[</span><span class="s2">"K_m"</span><span class="p">][:</span><span class="n">T</span><span class="p">,</span> <span class="p">:],</span>
+        <span class="n">reform_tpi</span><span class="p">[</span><span class="s2">"p_m"</span><span class="p">][:</span><span class="n">T</span><span class="p">],</span>
         <span class="n">reform_params</span><span class="p">,</span>
         <span class="kc">None</span><span class="p">,</span>
-        <span class="s2">&quot;TPI&quot;</span><span class="p">,</span>
+        <span class="s2">"TPI"</span><span class="p">,</span>
     <span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">axis</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span>
     <span class="c1"># Business tax revenue from the reform</span>
-    <span class="n">tax_rev_dict</span><span class="p">[</span><span class="s2">&quot;biz&quot;</span><span class="p">][</span><span class="s2">&quot;D&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">tax</span><span class="o">.</span><span class="n">get_biz_tax</span><span class="p">(</span>
-        <span class="n">reform_tpi</span><span class="p">[</span><span class="s2">&quot;w&quot;</span><span class="p">][:</span><span class="n">T</span><span class="p">],</span>
-        <span class="n">reform_tpi</span><span class="p">[</span><span class="s2">&quot;Y_m&quot;</span><span class="p">][:</span><span class="n">T</span><span class="p">,</span> <span class="p">:],</span>
-        <span class="n">reform_tpi</span><span class="p">[</span><span class="s2">&quot;L_m&quot;</span><span class="p">][:</span><span class="n">T</span><span class="p">,</span> <span class="p">:],</span>
-        <span class="n">reform_tpi</span><span class="p">[</span><span class="s2">&quot;K_m&quot;</span><span class="p">][:</span><span class="n">T</span><span class="p">,</span> <span class="p">:],</span>
-        <span class="n">reform_tpi</span><span class="p">[</span><span class="s2">&quot;p_m&quot;</span><span class="p">][:</span><span class="n">T</span><span class="p">],</span>
+    <span class="n">tax_rev_dict</span><span class="p">[</span><span class="s2">"biz"</span><span class="p">][</span><span class="s2">"D"</span><span class="p">]</span> <span class="o">=</span> <span class="n">tax</span><span class="o">.</span><span class="n">get_biz_tax</span><span class="p">(</span>
+        <span class="n">reform_tpi</span><span class="p">[</span><span class="s2">"w"</span><span class="p">][:</span><span class="n">T</span><span class="p">],</span>
+        <span class="n">reform_tpi</span><span class="p">[</span><span class="s2">"Y_m"</span><span class="p">][:</span><span class="n">T</span><span class="p">,</span> <span class="p">:],</span>
+        <span class="n">reform_tpi</span><span class="p">[</span><span class="s2">"L_m"</span><span class="p">][:</span><span class="n">T</span><span class="p">,</span> <span class="p">:],</span>
+        <span class="n">reform_tpi</span><span class="p">[</span><span class="s2">"K_m"</span><span class="p">][:</span><span class="n">T</span><span class="p">,</span> <span class="p">:],</span>
+        <span class="n">reform_tpi</span><span class="p">[</span><span class="s2">"p_m"</span><span class="p">][:</span><span class="n">T</span><span class="p">],</span>
         <span class="n">reform_params</span><span class="p">,</span>
         <span class="kc">None</span><span class="p">,</span>
-        <span class="s2">&quot;TPI&quot;</span><span class="p">,</span>
+        <span class="s2">"TPI"</span><span class="p">,</span>
     <span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">axis</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span>
     <span class="n">pop_weights</span> <span class="o">=</span> <span class="n">base_params</span><span class="o">.</span><span class="n">omega</span><span class="p">[:</span><span class="n">T</span><span class="p">,</span> <span class="p">:,</span> <span class="p">:]</span>
     <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">indiv_liab</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
-        <span class="n">tax_rev_dict</span><span class="p">[</span><span class="s2">&quot;indiv&quot;</span><span class="p">][</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">indiv_liab</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">*</span> <span class="n">pop_weights</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
-        <span class="n">tax_rev_dict</span><span class="p">[</span><span class="s2">&quot;total&quot;</span><span class="p">][</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
-            <span class="n">tax_rev_dict</span><span class="p">[</span><span class="s2">&quot;indiv&quot;</span><span class="p">][</span><span class="n">k</span><span class="p">]</span> <span class="o">+</span> <span class="n">tax_rev_dict</span><span class="p">[</span><span class="s2">&quot;biz&quot;</span><span class="p">][</span><span class="n">k</span><span class="p">]</span>
+        <span class="n">tax_rev_dict</span><span class="p">[</span><span class="s2">"indiv"</span><span class="p">][</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">indiv_liab</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">*</span> <span class="n">pop_weights</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">tax_rev_dict</span><span class="p">[</span><span class="s2">"total"</span><span class="p">][</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="n">tax_rev_dict</span><span class="p">[</span><span class="s2">"indiv"</span><span class="p">][</span><span class="n">k</span><span class="p">]</span> <span class="o">+</span> <span class="n">tax_rev_dict</span><span class="p">[</span><span class="s2">"biz"</span><span class="p">][</span><span class="n">k</span><span class="p">]</span>
         <span class="p">)</span>
-    <span class="n">results_for_table</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;indiv&quot;</span><span class="p">:</span> <span class="p">{},</span> <span class="s2">&quot;biz&quot;</span><span class="p">:</span> <span class="p">{},</span> <span class="s2">&quot;total&quot;</span><span class="p">:</span> <span class="p">{}}</span>
-    <span class="k">for</span> <span class="nb">type</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;indiv&quot;</span><span class="p">,</span> <span class="s2">&quot;biz&quot;</span><span class="p">,</span> <span class="s2">&quot;total&quot;</span><span class="p">]:</span>
+    <span class="n">results_for_table</span> <span class="o">=</span> <span class="p">{</span><span class="s2">"indiv"</span><span class="p">:</span> <span class="p">{},</span> <span class="s2">"biz"</span><span class="p">:</span> <span class="p">{},</span> <span class="s2">"total"</span><span class="p">:</span> <span class="p">{}}</span>
+    <span class="k">for</span> <span class="nb">type</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">"indiv"</span><span class="p">,</span> <span class="s2">"biz"</span><span class="p">,</span> <span class="s2">"total"</span><span class="p">]:</span>
         <span class="c1"># Rate change effect</span>
         <span class="n">pct_change1</span> <span class="o">=</span> <span class="p">(</span>
-            <span class="p">(</span><span class="n">tax_rev_dict</span><span class="p">[</span><span class="nb">type</span><span class="p">][</span><span class="s2">&quot;B&quot;</span><span class="p">]</span> <span class="o">-</span> <span class="n">tax_rev_dict</span><span class="p">[</span><span class="nb">type</span><span class="p">][</span><span class="s2">&quot;A&quot;</span><span class="p">])</span>
-            <span class="o">/</span> <span class="n">tax_rev_dict</span><span class="p">[</span><span class="nb">type</span><span class="p">][</span><span class="s2">&quot;A&quot;</span><span class="p">]</span>
+            <span class="p">(</span><span class="n">tax_rev_dict</span><span class="p">[</span><span class="nb">type</span><span class="p">][</span><span class="s2">"B"</span><span class="p">]</span> <span class="o">-</span> <span class="n">tax_rev_dict</span><span class="p">[</span><span class="nb">type</span><span class="p">][</span><span class="s2">"A"</span><span class="p">])</span>
+            <span class="o">/</span> <span class="n">tax_rev_dict</span><span class="p">[</span><span class="nb">type</span><span class="p">][</span><span class="s2">"A"</span><span class="p">]</span>
         <span class="p">)</span> <span class="o">*</span> <span class="mi">100</span>
         <span class="c1"># Behavior effect</span>
         <span class="n">pct_change2</span> <span class="o">=</span> <span class="p">(</span>
-            <span class="p">(</span><span class="n">tax_rev_dict</span><span class="p">[</span><span class="nb">type</span><span class="p">][</span><span class="s2">&quot;C&quot;</span><span class="p">]</span> <span class="o">-</span> <span class="n">tax_rev_dict</span><span class="p">[</span><span class="nb">type</span><span class="p">][</span><span class="s2">&quot;B&quot;</span><span class="p">])</span>
-            <span class="o">/</span> <span class="n">tax_rev_dict</span><span class="p">[</span><span class="nb">type</span><span class="p">][</span><span class="s2">&quot;A&quot;</span><span class="p">]</span>
+            <span class="p">(</span><span class="n">tax_rev_dict</span><span class="p">[</span><span class="nb">type</span><span class="p">][</span><span class="s2">"C"</span><span class="p">]</span> <span class="o">-</span> <span class="n">tax_rev_dict</span><span class="p">[</span><span class="nb">type</span><span class="p">][</span><span class="s2">"B"</span><span class="p">])</span>
+            <span class="o">/</span> <span class="n">tax_rev_dict</span><span class="p">[</span><span class="nb">type</span><span class="p">][</span><span class="s2">"A"</span><span class="p">]</span>
         <span class="p">)</span> <span class="o">*</span> <span class="mi">100</span>
         <span class="c1"># Macro effect</span>
         <span class="n">pct_change3</span> <span class="o">=</span> <span class="p">(</span>
-            <span class="p">(</span><span class="n">tax_rev_dict</span><span class="p">[</span><span class="nb">type</span><span class="p">][</span><span class="s2">&quot;D&quot;</span><span class="p">]</span> <span class="o">-</span> <span class="n">tax_rev_dict</span><span class="p">[</span><span class="nb">type</span><span class="p">][</span><span class="s2">&quot;C&quot;</span><span class="p">])</span>
-            <span class="o">/</span> <span class="n">tax_rev_dict</span><span class="p">[</span><span class="nb">type</span><span class="p">][</span><span class="s2">&quot;A&quot;</span><span class="p">]</span>
+            <span class="p">(</span><span class="n">tax_rev_dict</span><span class="p">[</span><span class="nb">type</span><span class="p">][</span><span class="s2">"D"</span><span class="p">]</span> <span class="o">-</span> <span class="n">tax_rev_dict</span><span class="p">[</span><span class="nb">type</span><span class="p">][</span><span class="s2">"C"</span><span class="p">])</span>
+            <span class="o">/</span> <span class="n">tax_rev_dict</span><span class="p">[</span><span class="nb">type</span><span class="p">][</span><span class="s2">"A"</span><span class="p">]</span>
         <span class="p">)</span> <span class="o">*</span> <span class="mi">100</span>
         <span class="c1"># Dynamic effect (behavior + macro)</span>
         <span class="n">pct_change4</span> <span class="o">=</span> <span class="p">(</span>
-            <span class="p">(</span><span class="n">tax_rev_dict</span><span class="p">[</span><span class="nb">type</span><span class="p">][</span><span class="s2">&quot;D&quot;</span><span class="p">]</span> <span class="o">-</span> <span class="n">tax_rev_dict</span><span class="p">[</span><span class="nb">type</span><span class="p">][</span><span class="s2">&quot;B&quot;</span><span class="p">])</span>
-            <span class="o">/</span> <span class="n">tax_rev_dict</span><span class="p">[</span><span class="nb">type</span><span class="p">][</span><span class="s2">&quot;A&quot;</span><span class="p">]</span>
+            <span class="p">(</span><span class="n">tax_rev_dict</span><span class="p">[</span><span class="nb">type</span><span class="p">][</span><span class="s2">"D"</span><span class="p">]</span> <span class="o">-</span> <span class="n">tax_rev_dict</span><span class="p">[</span><span class="nb">type</span><span class="p">][</span><span class="s2">"B"</span><span class="p">])</span>
+            <span class="o">/</span> <span class="n">tax_rev_dict</span><span class="p">[</span><span class="nb">type</span><span class="p">][</span><span class="s2">"A"</span><span class="p">]</span>
         <span class="p">)</span> <span class="o">*</span> <span class="mi">100</span>
         <span class="c1"># Total change in tax revenue (rates + behavior + macro)</span>
         <span class="n">pct_change5</span> <span class="o">=</span> <span class="p">(</span>
-            <span class="p">(</span><span class="n">tax_rev_dict</span><span class="p">[</span><span class="nb">type</span><span class="p">][</span><span class="s2">&quot;D&quot;</span><span class="p">]</span> <span class="o">-</span> <span class="n">tax_rev_dict</span><span class="p">[</span><span class="nb">type</span><span class="p">][</span><span class="s2">&quot;A&quot;</span><span class="p">])</span>
-            <span class="o">/</span> <span class="n">tax_rev_dict</span><span class="p">[</span><span class="nb">type</span><span class="p">][</span><span class="s2">&quot;A&quot;</span><span class="p">]</span>
+            <span class="p">(</span><span class="n">tax_rev_dict</span><span class="p">[</span><span class="nb">type</span><span class="p">][</span><span class="s2">"D"</span><span class="p">]</span> <span class="o">-</span> <span class="n">tax_rev_dict</span><span class="p">[</span><span class="nb">type</span><span class="p">][</span><span class="s2">"A"</span><span class="p">])</span>
+            <span class="o">/</span> <span class="n">tax_rev_dict</span><span class="p">[</span><span class="nb">type</span><span class="p">][</span><span class="s2">"A"</span><span class="p">]</span>
         <span class="p">)</span> <span class="o">*</span> <span class="mi">100</span>
         <span class="n">pct_change_overall1</span> <span class="o">=</span> <span class="p">(</span>
             <span class="p">(</span>
-                <span class="n">tax_rev_dict</span><span class="p">[</span><span class="nb">type</span><span class="p">][</span><span class="s2">&quot;B&quot;</span><span class="p">][</span>
+                <span class="n">tax_rev_dict</span><span class="p">[</span><span class="nb">type</span><span class="p">][</span><span class="s2">"B"</span><span class="p">][</span>
                     <span class="n">start_index</span> <span class="p">:</span> <span class="n">start_index</span> <span class="o">+</span> <span class="n">num_years</span>
                 <span class="p">]</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
-                <span class="o">-</span> <span class="n">tax_rev_dict</span><span class="p">[</span><span class="nb">type</span><span class="p">][</span><span class="s2">&quot;A&quot;</span><span class="p">][</span>
+                <span class="o">-</span> <span class="n">tax_rev_dict</span><span class="p">[</span><span class="nb">type</span><span class="p">][</span><span class="s2">"A"</span><span class="p">][</span>
                     <span class="n">start_index</span> <span class="p">:</span> <span class="n">start_index</span> <span class="o">+</span> <span class="n">num_years</span>
                 <span class="p">]</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
             <span class="p">)</span>
-            <span class="o">/</span> <span class="n">tax_rev_dict</span><span class="p">[</span><span class="nb">type</span><span class="p">][</span><span class="s2">&quot;A&quot;</span><span class="p">][</span>
+            <span class="o">/</span> <span class="n">tax_rev_dict</span><span class="p">[</span><span class="nb">type</span><span class="p">][</span><span class="s2">"A"</span><span class="p">][</span>
                 <span class="n">start_index</span> <span class="p">:</span> <span class="n">start_index</span> <span class="o">+</span> <span class="n">num_years</span>
             <span class="p">]</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
         <span class="p">)</span> <span class="o">*</span> <span class="mi">100</span>
         <span class="n">pct_change_overall2</span> <span class="o">=</span> <span class="p">(</span>
             <span class="p">(</span>
-                <span class="n">tax_rev_dict</span><span class="p">[</span><span class="nb">type</span><span class="p">][</span><span class="s2">&quot;C&quot;</span><span class="p">][</span>
+                <span class="n">tax_rev_dict</span><span class="p">[</span><span class="nb">type</span><span class="p">][</span><span class="s2">"C"</span><span class="p">][</span>
                     <span class="n">start_index</span> <span class="p">:</span> <span class="n">start_index</span> <span class="o">+</span> <span class="n">num_years</span>
                 <span class="p">]</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
-                <span class="o">-</span> <span class="n">tax_rev_dict</span><span class="p">[</span><span class="nb">type</span><span class="p">][</span><span class="s2">&quot;B&quot;</span><span class="p">][</span>
+                <span class="o">-</span> <span class="n">tax_rev_dict</span><span class="p">[</span><span class="nb">type</span><span class="p">][</span><span class="s2">"B"</span><span class="p">][</span>
                     <span class="n">start_index</span> <span class="p">:</span> <span class="n">start_index</span> <span class="o">+</span> <span class="n">num_years</span>
                 <span class="p">]</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
             <span class="p">)</span>
-            <span class="o">/</span> <span class="n">tax_rev_dict</span><span class="p">[</span><span class="nb">type</span><span class="p">][</span><span class="s2">&quot;A&quot;</span><span class="p">][</span>
+            <span class="o">/</span> <span class="n">tax_rev_dict</span><span class="p">[</span><span class="nb">type</span><span class="p">][</span><span class="s2">"A"</span><span class="p">][</span>
                 <span class="n">start_index</span> <span class="p">:</span> <span class="n">start_index</span> <span class="o">+</span> <span class="n">num_years</span>
             <span class="p">]</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
         <span class="p">)</span> <span class="o">*</span> <span class="mi">100</span>
         <span class="n">pct_change_overall3</span> <span class="o">=</span> <span class="p">(</span>
             <span class="p">(</span>
-                <span class="n">tax_rev_dict</span><span class="p">[</span><span class="nb">type</span><span class="p">][</span><span class="s2">&quot;D&quot;</span><span class="p">][</span>
+                <span class="n">tax_rev_dict</span><span class="p">[</span><span class="nb">type</span><span class="p">][</span><span class="s2">"D"</span><span class="p">][</span>
                     <span class="n">start_index</span> <span class="p">:</span> <span class="n">start_index</span> <span class="o">+</span> <span class="n">num_years</span>
                 <span class="p">]</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
-                <span class="o">-</span> <span class="n">tax_rev_dict</span><span class="p">[</span><span class="nb">type</span><span class="p">][</span><span class="s2">&quot;C&quot;</span><span class="p">][</span>
+                <span class="o">-</span> <span class="n">tax_rev_dict</span><span class="p">[</span><span class="nb">type</span><span class="p">][</span><span class="s2">"C"</span><span class="p">][</span>
                     <span class="n">start_index</span> <span class="p">:</span> <span class="n">start_index</span> <span class="o">+</span> <span class="n">num_years</span>
                 <span class="p">]</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
             <span class="p">)</span>
-            <span class="o">/</span> <span class="n">tax_rev_dict</span><span class="p">[</span><span class="nb">type</span><span class="p">][</span><span class="s2">&quot;A&quot;</span><span class="p">][</span>
+            <span class="o">/</span> <span class="n">tax_rev_dict</span><span class="p">[</span><span class="nb">type</span><span class="p">][</span><span class="s2">"A"</span><span class="p">][</span>
                 <span class="n">start_index</span> <span class="p">:</span> <span class="n">start_index</span> <span class="o">+</span> <span class="n">num_years</span>
             <span class="p">]</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
         <span class="p">)</span> <span class="o">*</span> <span class="mi">100</span>
         <span class="n">pct_change_overall4</span> <span class="o">=</span> <span class="p">(</span>
             <span class="p">(</span>
-                <span class="n">tax_rev_dict</span><span class="p">[</span><span class="nb">type</span><span class="p">][</span><span class="s2">&quot;D&quot;</span><span class="p">][</span>
+                <span class="n">tax_rev_dict</span><span class="p">[</span><span class="nb">type</span><span class="p">][</span><span class="s2">"D"</span><span class="p">][</span>
                     <span class="n">start_index</span> <span class="p">:</span> <span class="n">start_index</span> <span class="o">+</span> <span class="n">num_years</span>
                 <span class="p">]</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
-                <span class="o">-</span> <span class="n">tax_rev_dict</span><span class="p">[</span><span class="nb">type</span><span class="p">][</span><span class="s2">&quot;B&quot;</span><span class="p">][</span>
+                <span class="o">-</span> <span class="n">tax_rev_dict</span><span class="p">[</span><span class="nb">type</span><span class="p">][</span><span class="s2">"B"</span><span class="p">][</span>
                     <span class="n">start_index</span> <span class="p">:</span> <span class="n">start_index</span> <span class="o">+</span> <span class="n">num_years</span>
                 <span class="p">]</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
             <span class="p">)</span>
-            <span class="o">/</span> <span class="n">tax_rev_dict</span><span class="p">[</span><span class="nb">type</span><span class="p">][</span><span class="s2">&quot;A&quot;</span><span class="p">][</span>
+            <span class="o">/</span> <span class="n">tax_rev_dict</span><span class="p">[</span><span class="nb">type</span><span class="p">][</span><span class="s2">"A"</span><span class="p">][</span>
                 <span class="n">start_index</span> <span class="p">:</span> <span class="n">start_index</span> <span class="o">+</span> <span class="n">num_years</span>
             <span class="p">]</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
         <span class="p">)</span> <span class="o">*</span> <span class="mi">100</span>
         <span class="n">pct_change_overall5</span> <span class="o">=</span> <span class="p">(</span>
             <span class="p">(</span>
-                <span class="n">tax_rev_dict</span><span class="p">[</span><span class="nb">type</span><span class="p">][</span><span class="s2">&quot;D&quot;</span><span class="p">][</span>
+                <span class="n">tax_rev_dict</span><span class="p">[</span><span class="nb">type</span><span class="p">][</span><span class="s2">"D"</span><span class="p">][</span>
                     <span class="n">start_index</span> <span class="p">:</span> <span class="n">start_index</span> <span class="o">+</span> <span class="n">num_years</span>
                 <span class="p">]</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
-                <span class="o">-</span> <span class="n">tax_rev_dict</span><span class="p">[</span><span class="nb">type</span><span class="p">][</span><span class="s2">&quot;A&quot;</span><span class="p">][</span>
+                <span class="o">-</span> <span class="n">tax_rev_dict</span><span class="p">[</span><span class="nb">type</span><span class="p">][</span><span class="s2">"A"</span><span class="p">][</span>
                     <span class="n">start_index</span> <span class="p">:</span> <span class="n">start_index</span> <span class="o">+</span> <span class="n">num_years</span>
                 <span class="p">]</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
             <span class="p">)</span>
-            <span class="o">/</span> <span class="n">tax_rev_dict</span><span class="p">[</span><span class="nb">type</span><span class="p">][</span><span class="s2">&quot;A&quot;</span><span class="p">][</span>
+            <span class="o">/</span> <span class="n">tax_rev_dict</span><span class="p">[</span><span class="nb">type</span><span class="p">][</span><span class="s2">"A"</span><span class="p">][</span>
                 <span class="n">start_index</span> <span class="p">:</span> <span class="n">start_index</span> <span class="o">+</span> <span class="n">num_years</span>
             <span class="p">]</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
         <span class="p">)</span> <span class="o">*</span> <span class="mi">100</span>
@@ -1327,98 +1330,98 @@
     <span class="k">if</span> <span class="n">full_break_out</span><span class="p">:</span>
         <span class="k">if</span> <span class="n">include_business_tax</span><span class="p">:</span>
             <span class="n">table_dict</span> <span class="o">=</span> <span class="p">{</span>
-                <span class="s2">&quot;Year&quot;</span><span class="p">:</span> <span class="n">year_list</span><span class="p">,</span>
+                <span class="s2">"Year"</span><span class="p">:</span> <span class="n">year_list</span><span class="p">,</span>
                 <span class="c1"># IIT and Payroll Taxes</span>
-                <span class="s2">&quot;IIT: Pct Change due to tax rates&quot;</span><span class="p">:</span> <span class="n">results_for_table</span><span class="p">[</span><span class="s2">&quot;indiv&quot;</span><span class="p">][</span>
+                <span class="s2">"IIT: Pct Change due to tax rates"</span><span class="p">:</span> <span class="n">results_for_table</span><span class="p">[</span><span class="s2">"indiv"</span><span class="p">][</span>
                     <span class="mi">1</span>
                 <span class="p">],</span>
-                <span class="s2">&quot;IIT: Pct Change due to behavior&quot;</span><span class="p">:</span> <span class="n">results_for_table</span><span class="p">[</span><span class="s2">&quot;indiv&quot;</span><span class="p">][</span>
+                <span class="s2">"IIT: Pct Change due to behavior"</span><span class="p">:</span> <span class="n">results_for_table</span><span class="p">[</span><span class="s2">"indiv"</span><span class="p">][</span>
                     <span class="mi">2</span>
                 <span class="p">],</span>
-                <span class="s2">&quot;IIT: Pct Change due to macro&quot;</span><span class="p">:</span> <span class="n">results_for_table</span><span class="p">[</span><span class="s2">&quot;indiv&quot;</span><span class="p">][</span><span class="mi">3</span><span class="p">],</span>
-                <span class="s2">&quot;IIT: Overall Pct Change in taxes&quot;</span><span class="p">:</span> <span class="n">results_for_table</span><span class="p">[</span><span class="s2">&quot;indiv&quot;</span><span class="p">][</span>
+                <span class="s2">"IIT: Pct Change due to macro"</span><span class="p">:</span> <span class="n">results_for_table</span><span class="p">[</span><span class="s2">"indiv"</span><span class="p">][</span><span class="mi">3</span><span class="p">],</span>
+                <span class="s2">"IIT: Overall Pct Change in taxes"</span><span class="p">:</span> <span class="n">results_for_table</span><span class="p">[</span><span class="s2">"indiv"</span><span class="p">][</span>
                     <span class="mi">5</span>
                 <span class="p">],</span>
                 <span class="c1"># Business Taxes</span>
-                <span class="s2">&quot;CIT: Pct Change due to tax rates&quot;</span><span class="p">:</span> <span class="n">results_for_table</span><span class="p">[</span><span class="s2">&quot;biz&quot;</span><span class="p">][</span>
+                <span class="s2">"CIT: Pct Change due to tax rates"</span><span class="p">:</span> <span class="n">results_for_table</span><span class="p">[</span><span class="s2">"biz"</span><span class="p">][</span>
                     <span class="mi">1</span>
                 <span class="p">],</span>
-                <span class="s2">&quot;CIT: Pct Change due to behavior&quot;</span><span class="p">:</span> <span class="n">results_for_table</span><span class="p">[</span><span class="s2">&quot;biz&quot;</span><span class="p">][</span><span class="mi">2</span><span class="p">],</span>
-                <span class="s2">&quot;CIT: Pct Change due to macro&quot;</span><span class="p">:</span> <span class="n">results_for_table</span><span class="p">[</span><span class="s2">&quot;biz&quot;</span><span class="p">][</span><span class="mi">3</span><span class="p">],</span>
-                <span class="s2">&quot;CIT: Overall Pct Change in taxes&quot;</span><span class="p">:</span> <span class="n">results_for_table</span><span class="p">[</span><span class="s2">&quot;biz&quot;</span><span class="p">][</span>
+                <span class="s2">"CIT: Pct Change due to behavior"</span><span class="p">:</span> <span class="n">results_for_table</span><span class="p">[</span><span class="s2">"biz"</span><span class="p">][</span><span class="mi">2</span><span class="p">],</span>
+                <span class="s2">"CIT: Pct Change due to macro"</span><span class="p">:</span> <span class="n">results_for_table</span><span class="p">[</span><span class="s2">"biz"</span><span class="p">][</span><span class="mi">3</span><span class="p">],</span>
+                <span class="s2">"CIT: Overall Pct Change in taxes"</span><span class="p">:</span> <span class="n">results_for_table</span><span class="p">[</span><span class="s2">"biz"</span><span class="p">][</span>
                     <span class="mi">5</span>
                 <span class="p">],</span>
                 <span class="c1"># All Taxes</span>
-                <span class="s2">&quot;All: Pct Change due to tax rates&quot;</span><span class="p">:</span> <span class="n">results_for_table</span><span class="p">[</span><span class="s2">&quot;total&quot;</span><span class="p">][</span>
+                <span class="s2">"All: Pct Change due to tax rates"</span><span class="p">:</span> <span class="n">results_for_table</span><span class="p">[</span><span class="s2">"total"</span><span class="p">][</span>
                     <span class="mi">1</span>
                 <span class="p">],</span>
-                <span class="s2">&quot;All: Pct Change due to behavior&quot;</span><span class="p">:</span> <span class="n">results_for_table</span><span class="p">[</span><span class="s2">&quot;total&quot;</span><span class="p">][</span>
+                <span class="s2">"All: Pct Change due to behavior"</span><span class="p">:</span> <span class="n">results_for_table</span><span class="p">[</span><span class="s2">"total"</span><span class="p">][</span>
                     <span class="mi">2</span>
                 <span class="p">],</span>
-                <span class="s2">&quot;All: Pct Change due to macro&quot;</span><span class="p">:</span> <span class="n">results_for_table</span><span class="p">[</span><span class="s2">&quot;total&quot;</span><span class="p">][</span><span class="mi">3</span><span class="p">],</span>
-                <span class="s2">&quot;All: Overall Pct Change in taxes&quot;</span><span class="p">:</span> <span class="n">results_for_table</span><span class="p">[</span><span class="s2">&quot;total&quot;</span><span class="p">][</span>
+                <span class="s2">"All: Pct Change due to macro"</span><span class="p">:</span> <span class="n">results_for_table</span><span class="p">[</span><span class="s2">"total"</span><span class="p">][</span><span class="mi">3</span><span class="p">],</span>
+                <span class="s2">"All: Overall Pct Change in taxes"</span><span class="p">:</span> <span class="n">results_for_table</span><span class="p">[</span><span class="s2">"total"</span><span class="p">][</span>
                     <span class="mi">5</span>
                 <span class="p">],</span>
             <span class="p">}</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">table_dict</span> <span class="o">=</span> <span class="p">{</span>
-                <span class="s2">&quot;Year&quot;</span><span class="p">:</span> <span class="n">year_list</span><span class="p">,</span>
-                <span class="s2">&quot;Pct Change due to tax rates&quot;</span><span class="p">:</span> <span class="n">results_for_table</span><span class="p">[</span><span class="s2">&quot;indiv&quot;</span><span class="p">][</span><span class="mi">1</span><span class="p">],</span>
-                <span class="s2">&quot;Pct Change due to behavior&quot;</span><span class="p">:</span> <span class="n">results_for_table</span><span class="p">[</span><span class="s2">&quot;indiv&quot;</span><span class="p">][</span><span class="mi">2</span><span class="p">],</span>
-                <span class="s2">&quot;Pct Change due to macro&quot;</span><span class="p">:</span> <span class="n">results_for_table</span><span class="p">[</span><span class="s2">&quot;indiv&quot;</span><span class="p">][</span><span class="mi">3</span><span class="p">],</span>
-                <span class="s2">&quot;Overall Pct Change in taxes&quot;</span><span class="p">:</span> <span class="n">results_for_table</span><span class="p">[</span><span class="s2">&quot;indiv&quot;</span><span class="p">][</span><span class="mi">5</span><span class="p">],</span>
+                <span class="s2">"Year"</span><span class="p">:</span> <span class="n">year_list</span><span class="p">,</span>
+                <span class="s2">"Pct Change due to tax rates"</span><span class="p">:</span> <span class="n">results_for_table</span><span class="p">[</span><span class="s2">"indiv"</span><span class="p">][</span><span class="mi">1</span><span class="p">],</span>
+                <span class="s2">"Pct Change due to behavior"</span><span class="p">:</span> <span class="n">results_for_table</span><span class="p">[</span><span class="s2">"indiv"</span><span class="p">][</span><span class="mi">2</span><span class="p">],</span>
+                <span class="s2">"Pct Change due to macro"</span><span class="p">:</span> <span class="n">results_for_table</span><span class="p">[</span><span class="s2">"indiv"</span><span class="p">][</span><span class="mi">3</span><span class="p">],</span>
+                <span class="s2">"Overall Pct Change in taxes"</span><span class="p">:</span> <span class="n">results_for_table</span><span class="p">[</span><span class="s2">"indiv"</span><span class="p">][</span><span class="mi">5</span><span class="p">],</span>
             <span class="p">}</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="k">if</span> <span class="n">include_business_tax</span><span class="p">:</span>
             <span class="n">table_dict</span> <span class="o">=</span> <span class="p">{</span>
-                <span class="s2">&quot;Year&quot;</span><span class="p">:</span> <span class="n">year_list</span><span class="p">,</span>
-                <span class="c1"># &#39;IIT and Payroll Taxes:&#39;:</span>
-                <span class="c1"># np.ones(results_for_table[&#39;indiv&#39;][1].shape[0]) * np.nan,</span>
-                <span class="s2">&quot;IIT: Pct Change due to tax rates&quot;</span><span class="p">:</span> <span class="n">results_for_table</span><span class="p">[</span><span class="s2">&quot;indiv&quot;</span><span class="p">][</span>
+                <span class="s2">"Year"</span><span class="p">:</span> <span class="n">year_list</span><span class="p">,</span>
+                <span class="c1"># 'IIT and Payroll Taxes:':</span>
+                <span class="c1"># np.ones(results_for_table['indiv'][1].shape[0]) * np.nan,</span>
+                <span class="s2">"IIT: Pct Change due to tax rates"</span><span class="p">:</span> <span class="n">results_for_table</span><span class="p">[</span><span class="s2">"indiv"</span><span class="p">][</span>
                     <span class="mi">1</span>
                 <span class="p">],</span>
-                <span class="s2">&quot;IIT: Pct Change due to dynamics&quot;</span><span class="p">:</span> <span class="n">results_for_table</span><span class="p">[</span><span class="s2">&quot;indiv&quot;</span><span class="p">][</span>
+                <span class="s2">"IIT: Pct Change due to dynamics"</span><span class="p">:</span> <span class="n">results_for_table</span><span class="p">[</span><span class="s2">"indiv"</span><span class="p">][</span>
                     <span class="mi">4</span>
                 <span class="p">],</span>
-                <span class="s2">&quot;IIT: Overall Pct Change in taxes&quot;</span><span class="p">:</span> <span class="n">results_for_table</span><span class="p">[</span><span class="s2">&quot;indiv&quot;</span><span class="p">][</span>
+                <span class="s2">"IIT: Overall Pct Change in taxes"</span><span class="p">:</span> <span class="n">results_for_table</span><span class="p">[</span><span class="s2">"indiv"</span><span class="p">][</span>
                     <span class="mi">5</span>
                 <span class="p">],</span>
-                <span class="c1"># &#39;Business Taxes:&#39;:</span>
-                <span class="c1"># np.ones(results_for_table[&#39;biz&#39;][1].shape[0]) * np.nan,</span>
-                <span class="s2">&quot;CIT: Pct Change due to tax rates&quot;</span><span class="p">:</span> <span class="n">results_for_table</span><span class="p">[</span><span class="s2">&quot;biz&quot;</span><span class="p">][</span>
+                <span class="c1"># 'Business Taxes:':</span>
+                <span class="c1"># np.ones(results_for_table['biz'][1].shape[0]) * np.nan,</span>
+                <span class="s2">"CIT: Pct Change due to tax rates"</span><span class="p">:</span> <span class="n">results_for_table</span><span class="p">[</span><span class="s2">"biz"</span><span class="p">][</span>
                     <span class="mi">1</span>
                 <span class="p">],</span>
-                <span class="s2">&quot;CIT: Pct Change due to dynamics&quot;</span><span class="p">:</span> <span class="n">results_for_table</span><span class="p">[</span><span class="s2">&quot;biz&quot;</span><span class="p">][</span><span class="mi">4</span><span class="p">],</span>
-                <span class="s2">&quot;CIT: Overall Pct Change in taxes&quot;</span><span class="p">:</span> <span class="n">results_for_table</span><span class="p">[</span><span class="s2">&quot;biz&quot;</span><span class="p">][</span>
+                <span class="s2">"CIT: Pct Change due to dynamics"</span><span class="p">:</span> <span class="n">results_for_table</span><span class="p">[</span><span class="s2">"biz"</span><span class="p">][</span><span class="mi">4</span><span class="p">],</span>
+                <span class="s2">"CIT: Overall Pct Change in taxes"</span><span class="p">:</span> <span class="n">results_for_table</span><span class="p">[</span><span class="s2">"biz"</span><span class="p">][</span>
                     <span class="mi">5</span>
                 <span class="p">],</span>
-                <span class="c1"># &#39;All Taxes:&#39;:</span>
-                <span class="c1"># np.ones(results_for_table[&#39;total&#39;][1].shape[0]) * np.nan,</span>
-                <span class="s2">&quot;All: Pct Change due to tax rates&quot;</span><span class="p">:</span> <span class="n">results_for_table</span><span class="p">[</span><span class="s2">&quot;total&quot;</span><span class="p">][</span>
+                <span class="c1"># 'All Taxes:':</span>
+                <span class="c1"># np.ones(results_for_table['total'][1].shape[0]) * np.nan,</span>
+                <span class="s2">"All: Pct Change due to tax rates"</span><span class="p">:</span> <span class="n">results_for_table</span><span class="p">[</span><span class="s2">"total"</span><span class="p">][</span>
                     <span class="mi">1</span>
                 <span class="p">],</span>
-                <span class="s2">&quot;All: Pct Change due to dynamics&quot;</span><span class="p">:</span> <span class="n">results_for_table</span><span class="p">[</span><span class="s2">&quot;total&quot;</span><span class="p">][</span>
+                <span class="s2">"All: Pct Change due to dynamics"</span><span class="p">:</span> <span class="n">results_for_table</span><span class="p">[</span><span class="s2">"total"</span><span class="p">][</span>
                     <span class="mi">4</span>
                 <span class="p">],</span>
-                <span class="s2">&quot;All: Overall Pct Change in taxes&quot;</span><span class="p">:</span> <span class="n">results_for_table</span><span class="p">[</span><span class="s2">&quot;total&quot;</span><span class="p">][</span>
+                <span class="s2">"All: Overall Pct Change in taxes"</span><span class="p">:</span> <span class="n">results_for_table</span><span class="p">[</span><span class="s2">"total"</span><span class="p">][</span>
                     <span class="mi">5</span>
                 <span class="p">],</span>
             <span class="p">}</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">table_dict</span> <span class="o">=</span> <span class="p">{</span>
-                <span class="s2">&quot;Year&quot;</span><span class="p">:</span> <span class="n">year_list</span><span class="p">,</span>
-                <span class="s2">&quot;Pct Change due to tax rates&quot;</span><span class="p">:</span> <span class="n">results_for_table</span><span class="p">[</span><span class="s2">&quot;indiv&quot;</span><span class="p">][</span><span class="mi">1</span><span class="p">],</span>
-                <span class="s2">&quot;Pct Change due to dynamics&quot;</span><span class="p">:</span> <span class="n">results_for_table</span><span class="p">[</span><span class="s2">&quot;indiv&quot;</span><span class="p">][</span><span class="mi">4</span><span class="p">],</span>
-                <span class="s2">&quot;Overall Pct Change in taxes&quot;</span><span class="p">:</span> <span class="n">results_for_table</span><span class="p">[</span><span class="s2">&quot;indiv&quot;</span><span class="p">][</span><span class="mi">5</span><span class="p">],</span>
+                <span class="s2">"Year"</span><span class="p">:</span> <span class="n">year_list</span><span class="p">,</span>
+                <span class="s2">"Pct Change due to tax rates"</span><span class="p">:</span> <span class="n">results_for_table</span><span class="p">[</span><span class="s2">"indiv"</span><span class="p">][</span><span class="mi">1</span><span class="p">],</span>
+                <span class="s2">"Pct Change due to dynamics"</span><span class="p">:</span> <span class="n">results_for_table</span><span class="p">[</span><span class="s2">"indiv"</span><span class="p">][</span><span class="mi">4</span><span class="p">],</span>
+                <span class="s2">"Overall Pct Change in taxes"</span><span class="p">:</span> <span class="n">results_for_table</span><span class="p">[</span><span class="s2">"indiv"</span><span class="p">][</span><span class="mi">5</span><span class="p">],</span>
             <span class="p">}</span>
     <span class="c1"># Make df with dict so can use pandas functions</span>
     <span class="n">table_df</span> <span class="o">=</span> <span class="p">(</span>
-        <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="o">.</span><span class="n">from_dict</span><span class="p">(</span><span class="n">table_dict</span><span class="p">,</span> <span class="n">orient</span><span class="o">=</span><span class="s2">&quot;columns&quot;</span><span class="p">)</span>
-        <span class="o">.</span><span class="n">set_index</span><span class="p">(</span><span class="s2">&quot;Year&quot;</span><span class="p">)</span>
+        <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="o">.</span><span class="n">from_dict</span><span class="p">(</span><span class="n">table_dict</span><span class="p">,</span> <span class="n">orient</span><span class="o">=</span><span class="s2">"columns"</span><span class="p">)</span>
+        <span class="o">.</span><span class="n">set_index</span><span class="p">(</span><span class="s2">"Year"</span><span class="p">)</span>
         <span class="o">.</span><span class="n">transpose</span><span class="p">()</span>
     <span class="p">)</span>
     <span class="n">table_df</span><span class="o">.</span><span class="n">reset_index</span><span class="p">(</span><span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-    <span class="n">table_df</span><span class="o">.</span><span class="n">rename</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;index&quot;</span><span class="p">:</span> <span class="s2">&quot;Variable&quot;</span><span class="p">},</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">table_df</span><span class="o">.</span><span class="n">rename</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="p">{</span><span class="s2">"index"</span><span class="p">:</span> <span class="s2">"Variable"</span><span class="p">},</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
     <span class="n">table</span> <span class="o">=</span> <span class="n">save_return_table</span><span class="p">(</span><span class="n">table_df</span><span class="p">,</span> <span class="n">table_format</span><span class="p">,</span> <span class="n">path</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="n">table</span></div>
@@ -1435,7 +1438,7 @@
     <span class="n">table_format</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="n">path</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
 <span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Creates a table summarizing the model fit.</span>
 
 <span class="sd">    Args:</span>
@@ -1443,9 +1446,9 @@
 <span class="sd">            dict ``{target_description: data_value}``, e.g.::</span>
 
 <span class="sd">                {</span>
-<span class="sd">                    &#39;Gini coefficient of wealth&#39;: 0.82,</span>
-<span class="sd">                    &#39;Investment rate (I/K)&#39;: 0.07,</span>
-<span class="sd">                    &#39;Gini coefficient of income&#39;: 0.55,</span>
+<span class="sd">                    'Gini coefficient of wealth': 0.82,</span>
+<span class="sd">                    'Investment rate (I/K)': 0.07,</span>
+<span class="sd">                    'Gini coefficient of income': 0.55,</span>
 <span class="sd">                }</span>
 
 <span class="sd">        params (OG-Core Specifications class): model parameters object</span>
@@ -1454,8 +1457,8 @@
 <span class="sd">            Defaults to ``0`` (first period of the transition path).</span>
 <span class="sd">            Pass ``-1`` to use the last period, which approximates</span>
 <span class="sd">            steady-state values.</span>
-<span class="sd">        table_format (string): format to return table in: ``&#39;csv&#39;``,</span>
-<span class="sd">            ``&#39;tex&#39;``, ``&#39;excel&#39;``, ``&#39;json&#39;``; if ``None`` a</span>
+<span class="sd">        table_format (string): format to return table in: ``'csv'``,</span>
+<span class="sd">            ``'tex'``, ``'excel'``, ``'json'``; if ``None`` a</span>
 <span class="sd">            DataFrame is returned</span>
 <span class="sd">        path (string): path to save table to</span>
 
@@ -1463,44 +1466,44 @@
 <span class="sd">        table (various): table as a DataFrame, formatted string, or</span>
 <span class="sd">            ``None`` if saved to disk</span>
 
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="c1"># Ordered groups and the moment descriptions belonging to each</span>
     <span class="n">MOMENT_GROUPS</span> <span class="o">=</span> <span class="p">[</span>
         <span class="p">(</span>
-            <span class="s2">&quot;Macroeconomic moments&quot;</span><span class="p">,</span>
+            <span class="s2">"Macroeconomic moments"</span><span class="p">,</span>
             <span class="p">[</span>
-                <span class="sa">r</span><span class="s2">&quot;Investment rate $(I/K)$&quot;</span><span class="p">,</span>
-                <span class="sa">r</span><span class="s2">&quot;Capital-Output ratio $(K/Y)$&quot;</span><span class="p">,</span>
-                <span class="sa">r</span><span class="s2">&quot;Consumption-Output ratio $(C/Y)$&quot;</span><span class="p">,</span>
-                <span class="sa">r</span><span class="s2">&quot;Savings rate $(B/Y)$&quot;</span><span class="p">,</span>
-                <span class="sa">r</span><span class="s2">&quot;Interest rate $(r)$&quot;</span><span class="p">,</span>
-                <span class="sa">r</span><span class="s2">&quot;Capital share of output&quot;</span><span class="p">,</span>
-                <span class="sa">r</span><span class="s2">&quot;Labor share of output&quot;</span><span class="p">,</span>
+                <span class="sa">r</span><span class="s2">"Investment rate $(I/K)$"</span><span class="p">,</span>
+                <span class="sa">r</span><span class="s2">"Capital-Output ratio $(K/Y)$"</span><span class="p">,</span>
+                <span class="sa">r</span><span class="s2">"Consumption-Output ratio $(C/Y)$"</span><span class="p">,</span>
+                <span class="sa">r</span><span class="s2">"Savings rate $(B/Y)$"</span><span class="p">,</span>
+                <span class="sa">r</span><span class="s2">"Interest rate $(r)$"</span><span class="p">,</span>
+                <span class="sa">r</span><span class="s2">"Capital share of output"</span><span class="p">,</span>
+                <span class="sa">r</span><span class="s2">"Labor share of output"</span><span class="p">,</span>
             <span class="p">],</span>
         <span class="p">),</span>
         <span class="p">(</span>
-            <span class="s2">&quot;Fiscal moments&quot;</span><span class="p">,</span>
+            <span class="s2">"Fiscal moments"</span><span class="p">,</span>
             <span class="p">[</span>
-                <span class="sa">r</span><span class="s2">&quot;Revenue to GDP ratio $(T/Y)$&quot;</span><span class="p">,</span>
-                <span class="sa">r</span><span class="s2">&quot;Gov&#39;t consumption to GDP ratio $(G/Y)$&quot;</span><span class="p">,</span>
-                <span class="sa">r</span><span class="s2">&quot;Pension outlays to GDP ratio $(Pension/Y)$&quot;</span><span class="p">,</span>
-                <span class="sa">r</span><span class="s2">&quot;Infrastructure spending to GDP ratio $(I_g/Y)$&quot;</span><span class="p">,</span>
-                <span class="sa">r</span><span class="s2">&quot;Debt to GDP ratio $(D/Y)$&quot;</span><span class="p">,</span>
+                <span class="sa">r</span><span class="s2">"Revenue to GDP ratio $(T/Y)$"</span><span class="p">,</span>
+                <span class="sa">r</span><span class="s2">"Gov't consumption to GDP ratio $(G/Y)$"</span><span class="p">,</span>
+                <span class="sa">r</span><span class="s2">"Pension outlays to GDP ratio $(Pension/Y)$"</span><span class="p">,</span>
+                <span class="sa">r</span><span class="s2">"Infrastructure spending to GDP ratio $(I_g/Y)$"</span><span class="p">,</span>
+                <span class="sa">r</span><span class="s2">"Debt to GDP ratio $(D/Y)$"</span><span class="p">,</span>
             <span class="p">],</span>
         <span class="p">),</span>
         <span class="p">(</span>
-            <span class="s2">&quot;Distributional moments&quot;</span><span class="p">,</span>
+            <span class="s2">"Distributional moments"</span><span class="p">,</span>
             <span class="p">[</span>
-                <span class="s2">&quot;Gini coefficient, wealth&quot;</span><span class="p">,</span>
-                <span class="s2">&quot;Gini coefficient, income&quot;</span><span class="p">,</span>
-                <span class="s2">&quot;Gini coefficient, after-tax income&quot;</span><span class="p">,</span>
+                <span class="s2">"Gini coefficient, wealth"</span><span class="p">,</span>
+                <span class="s2">"Gini coefficient, income"</span><span class="p">,</span>
+                <span class="s2">"Gini coefficient, after-tax income"</span><span class="p">,</span>
             <span class="p">],</span>
         <span class="p">),</span>
         <span class="p">(</span>
-            <span class="s2">&quot;Demographic moments&quot;</span><span class="p">,</span>
+            <span class="s2">"Demographic moments"</span><span class="p">,</span>
             <span class="p">[</span>
-                <span class="sa">r</span><span class="s2">&quot;Fraction 65+&quot;</span><span class="p">,</span>
-                <span class="sa">r</span><span class="s2">&quot;Pop growth rate&quot;</span><span class="p">,</span>
+                <span class="sa">r</span><span class="s2">"Fraction 65+"</span><span class="p">,</span>
+                <span class="sa">r</span><span class="s2">"Pop growth rate"</span><span class="p">,</span>
             <span class="p">],</span>
         <span class="p">),</span>
     <span class="p">]</span>
@@ -1511,59 +1514,59 @@
         <span class="n">target_desc</span> <span class="o">=</span> <span class="n">moment</span>
 
         <span class="c1"># Macroeconomic moments</span>
-        <span class="k">if</span> <span class="n">target_desc</span> <span class="o">==</span> <span class="sa">r</span><span class="s2">&quot;Investment rate $(I/K)$&quot;</span><span class="p">:</span>
-            <span class="n">model_val</span> <span class="o">=</span> <span class="n">tpi_output</span><span class="p">[</span><span class="s2">&quot;I&quot;</span><span class="p">][</span><span class="n">t</span><span class="p">]</span> <span class="o">/</span> <span class="n">tpi_output</span><span class="p">[</span><span class="s2">&quot;K&quot;</span><span class="p">][</span><span class="n">t</span><span class="p">]</span>
-        <span class="k">elif</span> <span class="n">target_desc</span> <span class="o">==</span> <span class="sa">r</span><span class="s2">&quot;Capital-Output ratio $(K/Y)$&quot;</span><span class="p">:</span>
-            <span class="n">model_val</span> <span class="o">=</span> <span class="n">tpi_output</span><span class="p">[</span><span class="s2">&quot;K&quot;</span><span class="p">][</span><span class="n">t</span><span class="p">]</span> <span class="o">/</span> <span class="n">tpi_output</span><span class="p">[</span><span class="s2">&quot;Y&quot;</span><span class="p">][</span><span class="n">t</span><span class="p">]</span>
-        <span class="k">elif</span> <span class="n">target_desc</span> <span class="o">==</span> <span class="sa">r</span><span class="s2">&quot;Consumption-Output ratio $(C/Y)$&quot;</span><span class="p">:</span>
-            <span class="n">model_val</span> <span class="o">=</span> <span class="n">tpi_output</span><span class="p">[</span><span class="s2">&quot;C&quot;</span><span class="p">][</span><span class="n">t</span><span class="p">]</span> <span class="o">/</span> <span class="n">tpi_output</span><span class="p">[</span><span class="s2">&quot;Y&quot;</span><span class="p">][</span><span class="n">t</span><span class="p">]</span>
-        <span class="k">elif</span> <span class="n">target_desc</span> <span class="o">==</span> <span class="sa">r</span><span class="s2">&quot;Savings rate $(B/Y)$&quot;</span><span class="p">:</span>
-            <span class="n">model_val</span> <span class="o">=</span> <span class="n">tpi_output</span><span class="p">[</span><span class="s2">&quot;B&quot;</span><span class="p">][</span><span class="n">t</span><span class="p">]</span> <span class="o">/</span> <span class="n">tpi_output</span><span class="p">[</span><span class="s2">&quot;Y&quot;</span><span class="p">][</span><span class="n">t</span><span class="p">]</span>
-        <span class="k">elif</span> <span class="n">target_desc</span> <span class="o">==</span> <span class="sa">r</span><span class="s2">&quot;Interest rate $(r)$&quot;</span><span class="p">:</span>
-            <span class="n">model_val</span> <span class="o">=</span> <span class="n">tpi_output</span><span class="p">[</span><span class="s2">&quot;r&quot;</span><span class="p">][</span><span class="n">t</span><span class="p">]</span>
-        <span class="k">elif</span> <span class="n">target_desc</span> <span class="o">==</span> <span class="sa">r</span><span class="s2">&quot;Capital share of output&quot;</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">target_desc</span> <span class="o">==</span> <span class="sa">r</span><span class="s2">"Investment rate $(I/K)$"</span><span class="p">:</span>
+            <span class="n">model_val</span> <span class="o">=</span> <span class="n">tpi_output</span><span class="p">[</span><span class="s2">"I"</span><span class="p">][</span><span class="n">t</span><span class="p">]</span> <span class="o">/</span> <span class="n">tpi_output</span><span class="p">[</span><span class="s2">"K"</span><span class="p">][</span><span class="n">t</span><span class="p">]</span>
+        <span class="k">elif</span> <span class="n">target_desc</span> <span class="o">==</span> <span class="sa">r</span><span class="s2">"Capital-Output ratio $(K/Y)$"</span><span class="p">:</span>
+            <span class="n">model_val</span> <span class="o">=</span> <span class="n">tpi_output</span><span class="p">[</span><span class="s2">"K"</span><span class="p">][</span><span class="n">t</span><span class="p">]</span> <span class="o">/</span> <span class="n">tpi_output</span><span class="p">[</span><span class="s2">"Y"</span><span class="p">][</span><span class="n">t</span><span class="p">]</span>
+        <span class="k">elif</span> <span class="n">target_desc</span> <span class="o">==</span> <span class="sa">r</span><span class="s2">"Consumption-Output ratio $(C/Y)$"</span><span class="p">:</span>
+            <span class="n">model_val</span> <span class="o">=</span> <span class="n">tpi_output</span><span class="p">[</span><span class="s2">"C"</span><span class="p">][</span><span class="n">t</span><span class="p">]</span> <span class="o">/</span> <span class="n">tpi_output</span><span class="p">[</span><span class="s2">"Y"</span><span class="p">][</span><span class="n">t</span><span class="p">]</span>
+        <span class="k">elif</span> <span class="n">target_desc</span> <span class="o">==</span> <span class="sa">r</span><span class="s2">"Savings rate $(B/Y)$"</span><span class="p">:</span>
+            <span class="n">model_val</span> <span class="o">=</span> <span class="n">tpi_output</span><span class="p">[</span><span class="s2">"B"</span><span class="p">][</span><span class="n">t</span><span class="p">]</span> <span class="o">/</span> <span class="n">tpi_output</span><span class="p">[</span><span class="s2">"Y"</span><span class="p">][</span><span class="n">t</span><span class="p">]</span>
+        <span class="k">elif</span> <span class="n">target_desc</span> <span class="o">==</span> <span class="sa">r</span><span class="s2">"Interest rate $(r)$"</span><span class="p">:</span>
+            <span class="n">model_val</span> <span class="o">=</span> <span class="n">tpi_output</span><span class="p">[</span><span class="s2">"r"</span><span class="p">][</span><span class="n">t</span><span class="p">]</span>
+        <span class="k">elif</span> <span class="n">target_desc</span> <span class="o">==</span> <span class="sa">r</span><span class="s2">"Capital share of output"</span><span class="p">:</span>
             <span class="n">model_val</span> <span class="o">=</span> <span class="p">(</span>
                 <span class="mi">1</span>
-                <span class="o">-</span> <span class="n">tpi_output</span><span class="p">[</span><span class="s2">&quot;w&quot;</span><span class="p">][</span><span class="n">t</span><span class="p">]</span> <span class="o">*</span> <span class="n">tpi_output</span><span class="p">[</span><span class="s2">&quot;L&quot;</span><span class="p">][</span><span class="n">t</span><span class="p">]</span> <span class="o">/</span> <span class="n">tpi_output</span><span class="p">[</span><span class="s2">&quot;Y&quot;</span><span class="p">][</span><span class="n">t</span><span class="p">]</span>
+                <span class="o">-</span> <span class="n">tpi_output</span><span class="p">[</span><span class="s2">"w"</span><span class="p">][</span><span class="n">t</span><span class="p">]</span> <span class="o">*</span> <span class="n">tpi_output</span><span class="p">[</span><span class="s2">"L"</span><span class="p">][</span><span class="n">t</span><span class="p">]</span> <span class="o">/</span> <span class="n">tpi_output</span><span class="p">[</span><span class="s2">"Y"</span><span class="p">][</span><span class="n">t</span><span class="p">]</span>
             <span class="p">)</span>
-        <span class="k">elif</span> <span class="n">target_desc</span> <span class="o">==</span> <span class="sa">r</span><span class="s2">&quot;Labor share of output&quot;</span><span class="p">:</span>
+        <span class="k">elif</span> <span class="n">target_desc</span> <span class="o">==</span> <span class="sa">r</span><span class="s2">"Labor share of output"</span><span class="p">:</span>
             <span class="n">model_val</span> <span class="o">=</span> <span class="p">(</span>
-                <span class="n">tpi_output</span><span class="p">[</span><span class="s2">&quot;w&quot;</span><span class="p">][</span><span class="n">t</span><span class="p">]</span> <span class="o">*</span> <span class="n">tpi_output</span><span class="p">[</span><span class="s2">&quot;L&quot;</span><span class="p">][</span><span class="n">t</span><span class="p">]</span> <span class="o">/</span> <span class="n">tpi_output</span><span class="p">[</span><span class="s2">&quot;Y&quot;</span><span class="p">][</span><span class="n">t</span><span class="p">]</span>
+                <span class="n">tpi_output</span><span class="p">[</span><span class="s2">"w"</span><span class="p">][</span><span class="n">t</span><span class="p">]</span> <span class="o">*</span> <span class="n">tpi_output</span><span class="p">[</span><span class="s2">"L"</span><span class="p">][</span><span class="n">t</span><span class="p">]</span> <span class="o">/</span> <span class="n">tpi_output</span><span class="p">[</span><span class="s2">"Y"</span><span class="p">][</span><span class="n">t</span><span class="p">]</span>
             <span class="p">)</span>
         <span class="c1"># Fiscal moments</span>
-        <span class="k">elif</span> <span class="n">target_desc</span> <span class="o">==</span> <span class="sa">r</span><span class="s2">&quot;Revenue to GDP ratio $(T/Y)$&quot;</span><span class="p">:</span>
-            <span class="n">model_val</span> <span class="o">=</span> <span class="n">tpi_output</span><span class="p">[</span><span class="s2">&quot;total_tax_revenue&quot;</span><span class="p">][</span><span class="n">t</span><span class="p">]</span> <span class="o">/</span> <span class="n">tpi_output</span><span class="p">[</span><span class="s2">&quot;Y&quot;</span><span class="p">][</span><span class="n">t</span><span class="p">]</span>
-        <span class="k">elif</span> <span class="n">target_desc</span> <span class="o">==</span> <span class="sa">r</span><span class="s2">&quot;Gov&#39;t consumption to GDP ratio $(G/Y)$&quot;</span><span class="p">:</span>
-            <span class="n">model_val</span> <span class="o">=</span> <span class="n">tpi_output</span><span class="p">[</span><span class="s2">&quot;G&quot;</span><span class="p">][</span><span class="n">t</span><span class="p">]</span> <span class="o">/</span> <span class="n">tpi_output</span><span class="p">[</span><span class="s2">&quot;Y&quot;</span><span class="p">][</span><span class="n">t</span><span class="p">]</span>
-        <span class="k">elif</span> <span class="n">target_desc</span> <span class="o">==</span> <span class="sa">r</span><span class="s2">&quot;Pension outlays to GDP ratio $(Pension/Y)$&quot;</span><span class="p">:</span>
+        <span class="k">elif</span> <span class="n">target_desc</span> <span class="o">==</span> <span class="sa">r</span><span class="s2">"Revenue to GDP ratio $(T/Y)$"</span><span class="p">:</span>
+            <span class="n">model_val</span> <span class="o">=</span> <span class="n">tpi_output</span><span class="p">[</span><span class="s2">"total_tax_revenue"</span><span class="p">][</span><span class="n">t</span><span class="p">]</span> <span class="o">/</span> <span class="n">tpi_output</span><span class="p">[</span><span class="s2">"Y"</span><span class="p">][</span><span class="n">t</span><span class="p">]</span>
+        <span class="k">elif</span> <span class="n">target_desc</span> <span class="o">==</span> <span class="sa">r</span><span class="s2">"Gov't consumption to GDP ratio $(G/Y)$"</span><span class="p">:</span>
+            <span class="n">model_val</span> <span class="o">=</span> <span class="n">tpi_output</span><span class="p">[</span><span class="s2">"G"</span><span class="p">][</span><span class="n">t</span><span class="p">]</span> <span class="o">/</span> <span class="n">tpi_output</span><span class="p">[</span><span class="s2">"Y"</span><span class="p">][</span><span class="n">t</span><span class="p">]</span>
+        <span class="k">elif</span> <span class="n">target_desc</span> <span class="o">==</span> <span class="sa">r</span><span class="s2">"Pension outlays to GDP ratio $(Pension/Y)$"</span><span class="p">:</span>
             <span class="n">model_val</span> <span class="o">=</span> <span class="p">(</span>
-                <span class="n">tpi_output</span><span class="p">[</span><span class="s2">&quot;agg_pension_outlays&quot;</span><span class="p">][</span><span class="n">t</span><span class="p">]</span> <span class="o">/</span> <span class="n">tpi_output</span><span class="p">[</span><span class="s2">&quot;Y&quot;</span><span class="p">][</span><span class="n">t</span><span class="p">]</span>
+                <span class="n">tpi_output</span><span class="p">[</span><span class="s2">"agg_pension_outlays"</span><span class="p">][</span><span class="n">t</span><span class="p">]</span> <span class="o">/</span> <span class="n">tpi_output</span><span class="p">[</span><span class="s2">"Y"</span><span class="p">][</span><span class="n">t</span><span class="p">]</span>
             <span class="p">)</span>
-        <span class="k">elif</span> <span class="n">target_desc</span> <span class="o">==</span> <span class="sa">r</span><span class="s2">&quot;Infrastructure spending to GDP ratio $(I_g/Y)$&quot;</span><span class="p">:</span>
-            <span class="n">model_val</span> <span class="o">=</span> <span class="n">tpi_output</span><span class="p">[</span><span class="s2">&quot;I_g&quot;</span><span class="p">][</span><span class="n">t</span><span class="p">]</span> <span class="o">/</span> <span class="n">tpi_output</span><span class="p">[</span><span class="s2">&quot;Y&quot;</span><span class="p">][</span><span class="n">t</span><span class="p">]</span>
-        <span class="k">elif</span> <span class="n">target_desc</span> <span class="o">==</span> <span class="sa">r</span><span class="s2">&quot;Debt to GDP ratio $(D/Y)$&quot;</span><span class="p">:</span>
-            <span class="n">model_val</span> <span class="o">=</span> <span class="n">tpi_output</span><span class="p">[</span><span class="s2">&quot;D&quot;</span><span class="p">][</span><span class="n">t</span><span class="p">]</span> <span class="o">/</span> <span class="n">tpi_output</span><span class="p">[</span><span class="s2">&quot;Y&quot;</span><span class="p">][</span><span class="n">t</span><span class="p">]</span>
+        <span class="k">elif</span> <span class="n">target_desc</span> <span class="o">==</span> <span class="sa">r</span><span class="s2">"Infrastructure spending to GDP ratio $(I_g/Y)$"</span><span class="p">:</span>
+            <span class="n">model_val</span> <span class="o">=</span> <span class="n">tpi_output</span><span class="p">[</span><span class="s2">"I_g"</span><span class="p">][</span><span class="n">t</span><span class="p">]</span> <span class="o">/</span> <span class="n">tpi_output</span><span class="p">[</span><span class="s2">"Y"</span><span class="p">][</span><span class="n">t</span><span class="p">]</span>
+        <span class="k">elif</span> <span class="n">target_desc</span> <span class="o">==</span> <span class="sa">r</span><span class="s2">"Debt to GDP ratio $(D/Y)$"</span><span class="p">:</span>
+            <span class="n">model_val</span> <span class="o">=</span> <span class="n">tpi_output</span><span class="p">[</span><span class="s2">"D"</span><span class="p">][</span><span class="n">t</span><span class="p">]</span> <span class="o">/</span> <span class="n">tpi_output</span><span class="p">[</span><span class="s2">"Y"</span><span class="p">][</span><span class="n">t</span><span class="p">]</span>
         <span class="c1"># Distributional moments</span>
-        <span class="k">elif</span> <span class="n">target_desc</span> <span class="o">==</span> <span class="s2">&quot;Gini coefficient, wealth&quot;</span><span class="p">:</span>
-            <span class="n">dist</span> <span class="o">=</span> <span class="n">tpi_output</span><span class="p">[</span><span class="s2">&quot;b_sp1&quot;</span><span class="p">][</span><span class="n">t</span><span class="p">]</span>
+        <span class="k">elif</span> <span class="n">target_desc</span> <span class="o">==</span> <span class="s2">"Gini coefficient, wealth"</span><span class="p">:</span>
+            <span class="n">dist</span> <span class="o">=</span> <span class="n">tpi_output</span><span class="p">[</span><span class="s2">"b_sp1"</span><span class="p">][</span><span class="n">t</span><span class="p">]</span>
             <span class="n">pop_weights</span> <span class="o">=</span> <span class="n">params</span><span class="o">.</span><span class="n">omega</span><span class="p">[</span><span class="n">t</span><span class="p">]</span>
             <span class="n">pop_weights</span> <span class="o">=</span> <span class="n">pop_weights</span> <span class="o">/</span> <span class="n">pop_weights</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
             <span class="n">ineq</span> <span class="o">=</span> <span class="n">Inequality</span><span class="p">(</span>
                 <span class="n">dist</span><span class="p">,</span> <span class="n">pop_weights</span><span class="p">,</span> <span class="n">params</span><span class="o">.</span><span class="n">lambdas</span><span class="p">,</span> <span class="n">params</span><span class="o">.</span><span class="n">S</span><span class="p">,</span> <span class="n">params</span><span class="o">.</span><span class="n">J</span>
             <span class="p">)</span>
             <span class="n">model_val</span> <span class="o">=</span> <span class="n">ineq</span><span class="o">.</span><span class="n">gini</span><span class="p">()</span>
-        <span class="k">elif</span> <span class="n">target_desc</span> <span class="o">==</span> <span class="s2">&quot;Gini coefficient, income&quot;</span><span class="p">:</span>
-            <span class="n">dist</span> <span class="o">=</span> <span class="n">tpi_output</span><span class="p">[</span><span class="s2">&quot;before_tax_income&quot;</span><span class="p">][</span><span class="n">t</span><span class="p">]</span>
+        <span class="k">elif</span> <span class="n">target_desc</span> <span class="o">==</span> <span class="s2">"Gini coefficient, income"</span><span class="p">:</span>
+            <span class="n">dist</span> <span class="o">=</span> <span class="n">tpi_output</span><span class="p">[</span><span class="s2">"before_tax_income"</span><span class="p">][</span><span class="n">t</span><span class="p">]</span>
             <span class="n">pop_weights</span> <span class="o">=</span> <span class="n">params</span><span class="o">.</span><span class="n">omega</span><span class="p">[</span><span class="n">t</span><span class="p">]</span>
             <span class="n">pop_weights</span> <span class="o">=</span> <span class="n">pop_weights</span> <span class="o">/</span> <span class="n">pop_weights</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
             <span class="n">ineq</span> <span class="o">=</span> <span class="n">Inequality</span><span class="p">(</span>
                 <span class="n">dist</span><span class="p">,</span> <span class="n">pop_weights</span><span class="p">,</span> <span class="n">params</span><span class="o">.</span><span class="n">lambdas</span><span class="p">,</span> <span class="n">params</span><span class="o">.</span><span class="n">S</span><span class="p">,</span> <span class="n">params</span><span class="o">.</span><span class="n">J</span>
             <span class="p">)</span>
             <span class="n">model_val</span> <span class="o">=</span> <span class="n">ineq</span><span class="o">.</span><span class="n">gini</span><span class="p">()</span>
-        <span class="k">elif</span> <span class="n">target_desc</span> <span class="o">==</span> <span class="s2">&quot;Gini coefficient, after-tax income&quot;</span><span class="p">:</span>
+        <span class="k">elif</span> <span class="n">target_desc</span> <span class="o">==</span> <span class="s2">"Gini coefficient, after-tax income"</span><span class="p">:</span>
             <span class="n">dist</span> <span class="o">=</span> <span class="p">(</span>
-                <span class="n">tpi_output</span><span class="p">[</span><span class="s2">&quot;before_tax_income&quot;</span><span class="p">][</span><span class="n">t</span><span class="p">]</span>
-                <span class="o">-</span> <span class="n">tpi_output</span><span class="p">[</span><span class="s2">&quot;hh_net_taxes&quot;</span><span class="p">][</span><span class="n">t</span><span class="p">]</span>
+                <span class="n">tpi_output</span><span class="p">[</span><span class="s2">"before_tax_income"</span><span class="p">][</span><span class="n">t</span><span class="p">]</span>
+                <span class="o">-</span> <span class="n">tpi_output</span><span class="p">[</span><span class="s2">"hh_net_taxes"</span><span class="p">][</span><span class="n">t</span><span class="p">]</span>
             <span class="p">)</span>
             <span class="n">pop_weights</span> <span class="o">=</span> <span class="n">params</span><span class="o">.</span><span class="n">omega</span><span class="p">[</span><span class="n">t</span><span class="p">]</span>
             <span class="n">pop_weights</span> <span class="o">=</span> <span class="n">pop_weights</span> <span class="o">/</span> <span class="n">pop_weights</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
@@ -1572,11 +1575,11 @@
             <span class="p">)</span>
             <span class="n">model_val</span> <span class="o">=</span> <span class="n">ineq</span><span class="o">.</span><span class="n">gini</span><span class="p">()</span>
         <span class="c1"># Demographic moments</span>
-        <span class="k">elif</span> <span class="n">target_desc</span> <span class="o">==</span> <span class="sa">r</span><span class="s2">&quot;Fraction 65+&quot;</span><span class="p">:</span>
+        <span class="k">elif</span> <span class="n">target_desc</span> <span class="o">==</span> <span class="sa">r</span><span class="s2">"Fraction 65+"</span><span class="p">:</span>
             <span class="n">idx_65</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">65</span> <span class="o">-</span> <span class="n">params</span><span class="o">.</span><span class="n">starting_age</span><span class="p">)</span>
             <span class="n">omega_t</span> <span class="o">=</span> <span class="n">params</span><span class="o">.</span><span class="n">omega</span><span class="p">[</span><span class="n">t</span><span class="p">]</span>
             <span class="n">model_val</span> <span class="o">=</span> <span class="n">omega_t</span><span class="p">[</span><span class="n">idx_65</span><span class="p">:]</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span> <span class="o">/</span> <span class="n">omega_t</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
-        <span class="k">elif</span> <span class="n">target_desc</span> <span class="o">==</span> <span class="sa">r</span><span class="s2">&quot;Pop growth rate&quot;</span><span class="p">:</span>
+        <span class="k">elif</span> <span class="n">target_desc</span> <span class="o">==</span> <span class="sa">r</span><span class="s2">"Pop growth rate"</span><span class="p">:</span>
             <span class="c1"># g_n[t] is now growth from period t to t+1; the boundary</span>
             <span class="c1"># growth into period 0 lives in g_n_preTP. Report the growth</span>
             <span class="c1"># into period t so this stays calendar-aligned with the</span>
@@ -1589,29 +1592,29 @@
 
     <span class="c1"># Build the grouped table; skip any group with no matching moments</span>
     <span class="n">all_grouped</span> <span class="o">=</span> <span class="p">{</span><span class="n">m</span> <span class="k">for</span> <span class="n">_</span><span class="p">,</span> <span class="n">moments</span> <span class="ow">in</span> <span class="n">MOMENT_GROUPS</span> <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="n">moments</span><span class="p">}</span>
-    <span class="n">table_dict</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;Moment&quot;</span><span class="p">:</span> <span class="p">[],</span> <span class="s2">&quot;Data&quot;</span><span class="p">:</span> <span class="p">[],</span> <span class="s2">&quot;Model&quot;</span><span class="p">:</span> <span class="p">[]}</span>
+    <span class="n">table_dict</span> <span class="o">=</span> <span class="p">{</span><span class="s2">"Moment"</span><span class="p">:</span> <span class="p">[],</span> <span class="s2">"Data"</span><span class="p">:</span> <span class="p">[],</span> <span class="s2">"Model"</span><span class="p">:</span> <span class="p">[]}</span>
 
     <span class="k">for</span> <span class="n">group_name</span><span class="p">,</span> <span class="n">group_moments</span> <span class="ow">in</span> <span class="n">MOMENT_GROUPS</span><span class="p">:</span>
         <span class="n">group_entries</span> <span class="o">=</span> <span class="p">[</span><span class="n">m</span> <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="n">group_moments</span> <span class="k">if</span> <span class="n">m</span> <span class="ow">in</span> <span class="n">computed</span><span class="p">]</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">group_entries</span><span class="p">:</span>
             <span class="k">continue</span>
         <span class="c1"># Group header row (no data values)</span>
-        <span class="n">table_dict</span><span class="p">[</span><span class="s2">&quot;Moment&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">group_name</span><span class="p">)</span>
-        <span class="n">table_dict</span><span class="p">[</span><span class="s2">&quot;Data&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">)</span>
-        <span class="n">table_dict</span><span class="p">[</span><span class="s2">&quot;Model&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">)</span>
+        <span class="n">table_dict</span><span class="p">[</span><span class="s2">"Moment"</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">group_name</span><span class="p">)</span>
+        <span class="n">table_dict</span><span class="p">[</span><span class="s2">"Data"</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">)</span>
+        <span class="n">table_dict</span><span class="p">[</span><span class="s2">"Model"</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">)</span>
         <span class="c1"># Indented moment rows</span>
         <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="n">group_entries</span><span class="p">:</span>
             <span class="n">data_val</span><span class="p">,</span> <span class="n">model_val</span> <span class="o">=</span> <span class="n">computed</span><span class="p">[</span><span class="n">m</span><span class="p">]</span>
-            <span class="n">table_dict</span><span class="p">[</span><span class="s2">&quot;Moment&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  </span><span class="si">{</span><span class="n">m</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-            <span class="n">table_dict</span><span class="p">[</span><span class="s2">&quot;Data&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">data_val</span><span class="p">)</span>
-            <span class="n">table_dict</span><span class="p">[</span><span class="s2">&quot;Model&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">model_val</span><span class="p">)</span>
+            <span class="n">table_dict</span><span class="p">[</span><span class="s2">"Moment"</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">"  </span><span class="si">{</span><span class="n">m</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+            <span class="n">table_dict</span><span class="p">[</span><span class="s2">"Data"</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">data_val</span><span class="p">)</span>
+            <span class="n">table_dict</span><span class="p">[</span><span class="s2">"Model"</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">model_val</span><span class="p">)</span>
 
     <span class="c1"># Append any moments not belonging to a known group</span>
     <span class="k">for</span> <span class="n">target_desc</span><span class="p">,</span> <span class="p">(</span><span class="n">data_val</span><span class="p">,</span> <span class="n">model_val</span><span class="p">)</span> <span class="ow">in</span> <span class="n">computed</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
         <span class="k">if</span> <span class="n">target_desc</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">all_grouped</span><span class="p">:</span>
-            <span class="n">table_dict</span><span class="p">[</span><span class="s2">&quot;Moment&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">target_desc</span><span class="p">)</span>
-            <span class="n">table_dict</span><span class="p">[</span><span class="s2">&quot;Data&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">data_val</span><span class="p">)</span>
-            <span class="n">table_dict</span><span class="p">[</span><span class="s2">&quot;Model&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">model_val</span><span class="p">)</span>
+            <span class="n">table_dict</span><span class="p">[</span><span class="s2">"Moment"</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">target_desc</span><span class="p">)</span>
+            <span class="n">table_dict</span><span class="p">[</span><span class="s2">"Data"</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">data_val</span><span class="p">)</span>
+            <span class="n">table_dict</span><span class="p">[</span><span class="s2">"Model"</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">model_val</span><span class="p">)</span>
 
     <span class="n">table_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="o">.</span><span class="n">from_dict</span><span class="p">(</span><span class="n">table_dict</span><span class="p">)</span>
     <span class="n">table</span> <span class="o">=</span> <span class="n">save_return_table</span><span class="p">(</span><span class="n">table_df</span><span class="p">,</span> <span class="n">table_format</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">precision</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span>

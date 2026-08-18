@@ -30,7 +30,7 @@
 <link href="../../_static/styles/pydata-sphinx-theme.css?digest=55c26ed414f5f8a31ebb" rel="stylesheet" />
 
     <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
-    <link rel="stylesheet" type="text/css" href="../../_static/styles/sphinx-book-theme.css?v=a3416100" />
+    <link rel="stylesheet" type="text/css" href="../../_static/styles/sphinx-book-theme.css?v=3c74b3bc" />
     <link rel="stylesheet" type="text/css" href="../../_static/togglebutton.css?v=9c3e77be" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="../../_static/mystnb.11b39860a7a0cbfd473a3ad8a317855267ff0bd372690045ca344a6b62be495e.css" />
@@ -48,7 +48,7 @@
     <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
     <script src="../../_static/copybutton.js?v=f281be69"></script>
-    <script src="../../_static/scripts/sphinx-book-theme.js?v=887ef09a"></script>
+    <script src="../../_static/scripts/sphinx-book-theme.js?v=fab101a9"></script>
     <script>let toggleHintShow = 'Click to show';</script>
     <script>let toggleHintHide = 'Click to hide';</script>
     <script>let toggleOpenOnPrint = 'true';</script>
@@ -222,6 +222,7 @@
 <ul class="nav bd-sidenav">
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../content/api/public_api.html">API</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../content/api/aggregates.html">Aggregates Equations</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../content/api/config.html">Logging Configuration</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../content/api/demographics.html">Demographics Functions</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../content/api/elliptical_u_est.html">Elliptical Utility Function Estimation</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../content/api/execute.html">Model Execution Functions</a></li>
@@ -235,7 +236,9 @@
 <li class="toctree-l2"><a class="reference internal" href="../../content/api/parameters.html">Parameters Functions</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../content/api/pensions.html">Pension Functions</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../content/api/solvers.html">Solvers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../content/api/SS.html">Steady-State Functions</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../content/api/tax.html">Tax Functions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../content/api/TPI.html">Transition Path Functions</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../content/api/txfunc.html">Tax Function Estimation Functions</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../content/api/utils.html">Utilities Functions</a></li>
 </ul>
@@ -365,7 +368,7 @@
 
 
 <button onclick="toggleFullScreen()"
-  class="btn btn-sm btn-fullscreen-button"
+  class="btn btn-sm btn-fullscreen-button pst-navbar-icon"
   title="Fullscreen mode"
   data-bs-placement="bottom" data-bs-toggle="tooltip"
 >
@@ -415,11 +418,11 @@
                 <article class="bd-article">
                   
   <h1>Source code for ogcore.household</h1><div class="highlight"><pre>
-<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span></span><span class="sd">"""</span>
 <span class="sd">------------------------------------------------------------------------</span>
 <span class="sd">Household functions.</span>
 <span class="sd">------------------------------------------------------------------------</span>
-<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">"""</span>
 
 <span class="c1"># Packages</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
@@ -428,23 +431,23 @@
 
 <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 
-<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">"""</span>
 <span class="sd">------------------------------------------------------------------------</span>
 <span class="sd">    Functions</span>
 <span class="sd">------------------------------------------------------------------------</span>
-<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">"""</span>
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">_get_e_long</span><span class="p">(</span><span class="n">p</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Return ``p.e`` extended for the TPI transition window.</span>
+<span class="w">    </span><span class="sd">"""Return ``p.e`` extended for the TPI transition window.</span>
 
 <span class="sd">    ``e_long`` is a pure function of ``p.e`` / ``p.S`` / ``p.J`` -- none of</span>
 <span class="sd">    which change during a solve -- so it is built once and cached on the</span>
 <span class="sd">    parameters object. ``FOC_savings`` and ``FOC_labor`` previously rebuilt</span>
 <span class="sd">    this array on every call, which profiling identified as the single most</span>
 <span class="sd">    expensive operation in a TPI run.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">e_long</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="s2">&quot;_e_long_cache&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+<span class="sd">    """</span>
+    <span class="n">e_long</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="s2">"_e_long_cache"</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">e_long</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">e_long</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">(</span>
             <span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">e</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">tile</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">e</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="p">:,</span> <span class="p">:]</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">p</span><span class="o">.</span><span class="n">S</span><span class="p">,</span> <span class="n">p</span><span class="o">.</span><span class="n">J</span><span class="p">),</span> <span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">S</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">))),</span>
@@ -457,7 +460,7 @@
 <div class="viewcode-block" id="marg_ut_cons">
 <a class="viewcode-back" href="../../content/api/household.html#ogcore.household.marg_ut_cons">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">marg_ut_cons</span><span class="p">(</span><span class="n">c</span><span class="p">,</span> <span class="n">sigma</span><span class="p">):</span>
-<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">"""</span>
 <span class="sd">    Compute the marginal utility of consumption.</span>
 
 <span class="sd">    .. math::</span>
@@ -470,7 +473,7 @@
 <span class="sd">    Returns:</span>
 <span class="sd">        output (array_like): marginal utility of consumption</span>
 
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">ndim</span><span class="p">(</span><span class="n">c</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
         <span class="n">c</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">c</span><span class="p">])</span>
     <span class="n">epsilon</span> <span class="o">=</span> <span class="mf">0.003</span>
@@ -490,7 +493,7 @@
 <div class="viewcode-block" id="marg_ut_labor">
 <a class="viewcode-back" href="../../content/api/household.html#ogcore.household.marg_ut_labor">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">marg_ut_labor</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">chi_n</span><span class="p">,</span> <span class="n">p</span><span class="p">):</span>
-<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">"""</span>
 <span class="sd">    Compute the marginal disutility of labor.</span>
 
 <span class="sd">    .. math::</span>
@@ -507,7 +510,7 @@
 <span class="sd">    Returns:</span>
 <span class="sd">        output (array_like): marginal disutility of labor supply</span>
 
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="n">nvec</span> <span class="o">=</span> <span class="n">n</span>
     <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">ndim</span><span class="p">(</span><span class="n">nvec</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
         <span class="n">nvec</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">nvec</span><span class="p">])</span>
@@ -580,7 +583,7 @@
 <div class="viewcode-block" id="get_bq">
 <a class="viewcode-back" href="../../content/api/household.html#ogcore.household.get_bq">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">get_bq</span><span class="p">(</span><span class="n">BQ</span><span class="p">,</span> <span class="n">j</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">method</span><span class="p">):</span>
-<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">"""</span>
 <span class="sd">    Calculate bequests to each household.</span>
 
 <span class="sd">    .. math::</span>
@@ -591,16 +594,16 @@
 <span class="sd">        BQ (array_like): aggregate bequests</span>
 <span class="sd">        j (int): index of lifetime ability group</span>
 <span class="sd">        p (OG-Core Specifications object): model parameters</span>
-<span class="sd">        method (str): adjusts calculation dimensions based on &#39;SS&#39; or</span>
-<span class="sd">            &#39;TPI&#39;</span>
+<span class="sd">        method (str): adjusts calculation dimensions based on 'SS' or</span>
+<span class="sd">            'TPI'</span>
 
 <span class="sd">    Returns:</span>
 <span class="sd">        bq (array_like): bequests received by each household</span>
 
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="k">if</span> <span class="n">p</span><span class="o">.</span><span class="n">use_zeta</span><span class="p">:</span>
         <span class="k">if</span> <span class="n">j</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="k">if</span> <span class="n">method</span> <span class="o">==</span> <span class="s2">&quot;SS&quot;</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">method</span> <span class="o">==</span> <span class="s2">"SS"</span><span class="p">:</span>
                 <span class="n">bq</span> <span class="o">=</span> <span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">zeta</span><span class="p">[:,</span> <span class="n">j</span><span class="p">]</span> <span class="o">*</span> <span class="n">BQ</span><span class="p">)</span> <span class="o">/</span> <span class="n">p</span><span class="o">.</span><span class="n">omega_SS</span><span class="p">[:,</span> <span class="n">j</span><span class="p">]</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="n">len_T</span> <span class="o">=</span> <span class="n">BQ</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
@@ -608,7 +611,7 @@
                     <span class="n">np</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">zeta</span><span class="p">[:,</span> <span class="n">j</span><span class="p">],</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">p</span><span class="o">.</span><span class="n">S</span><span class="p">))</span> <span class="o">*</span> <span class="n">BQ</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="n">len_T</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
                 <span class="p">)</span> <span class="o">/</span> <span class="n">p</span><span class="o">.</span><span class="n">omega</span><span class="p">[:</span><span class="n">len_T</span><span class="p">,</span> <span class="p">:,</span> <span class="n">j</span><span class="p">]</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="k">if</span> <span class="n">method</span> <span class="o">==</span> <span class="s2">&quot;SS&quot;</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">method</span> <span class="o">==</span> <span class="s2">"SS"</span><span class="p">:</span>
                 <span class="n">bq</span> <span class="o">=</span> <span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">zeta</span> <span class="o">*</span> <span class="n">BQ</span><span class="p">)</span> <span class="o">/</span> <span class="n">p</span><span class="o">.</span><span class="n">omega_SS</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="n">len_T</span> <span class="o">=</span> <span class="n">BQ</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
@@ -617,27 +620,27 @@
                     <span class="o">*</span> <span class="n">utils</span><span class="o">.</span><span class="n">to_timepath_shape</span><span class="p">(</span><span class="n">BQ</span><span class="p">)</span>
                 <span class="p">)</span> <span class="o">/</span> <span class="n">p</span><span class="o">.</span><span class="n">omega</span><span class="p">[:</span><span class="n">len_T</span><span class="p">,</span> <span class="p">:,</span> <span class="p">:]</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="c1"># Divide each group&#39;s bequest pool by its actual population share</span>
+        <span class="c1"># Divide each group's bequest pool by its actual population share</span>
         <span class="c1"># rather than its birth share (lambdas): with demographic gradients</span>
         <span class="c1"># across income groups (PR #1165), survivorship differs by group and</span>
         <span class="c1"># the two are no longer equal. With common demographics they</span>
         <span class="c1"># coincide, so results are unchanged in that case.</span>
         <span class="k">if</span> <span class="n">j</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="k">if</span> <span class="n">method</span> <span class="o">==</span> <span class="s2">&quot;SS&quot;</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">method</span> <span class="o">==</span> <span class="s2">"SS"</span><span class="p">:</span>
                 <span class="n">pop_j</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">omega_SS</span><span class="p">[:,</span> <span class="n">j</span><span class="p">]</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
                 <span class="n">bq</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">tile</span><span class="p">(</span><span class="n">BQ</span><span class="p">[</span><span class="n">j</span><span class="p">],</span> <span class="n">p</span><span class="o">.</span><span class="n">S</span><span class="p">)</span> <span class="o">/</span> <span class="n">pop_j</span>
-            <span class="k">if</span> <span class="n">method</span> <span class="o">==</span> <span class="s2">&quot;TPI&quot;</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">method</span> <span class="o">==</span> <span class="s2">"TPI"</span><span class="p">:</span>
                 <span class="n">len_T</span> <span class="o">=</span> <span class="n">BQ</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
                 <span class="n">pop_j</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">omega</span><span class="p">[:</span><span class="n">len_T</span><span class="p">,</span> <span class="p">:,</span> <span class="n">j</span><span class="p">]</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
                 <span class="n">bq</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">tile</span><span class="p">(</span>
                     <span class="n">np</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">BQ</span><span class="p">[:,</span> <span class="n">j</span><span class="p">]</span> <span class="o">/</span> <span class="n">pop_j</span><span class="p">,</span> <span class="p">(</span><span class="n">len_T</span><span class="p">,</span> <span class="mi">1</span><span class="p">)),</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">p</span><span class="o">.</span><span class="n">S</span><span class="p">)</span>
                 <span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="k">if</span> <span class="n">method</span> <span class="o">==</span> <span class="s2">&quot;SS&quot;</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">method</span> <span class="o">==</span> <span class="s2">"SS"</span><span class="p">:</span>
                 <span class="n">pop</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">omega_SS</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
                 <span class="n">BQ_per</span> <span class="o">=</span> <span class="n">BQ</span> <span class="o">/</span> <span class="n">pop</span>
                 <span class="n">bq</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">tile</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">BQ_per</span><span class="p">,</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">p</span><span class="o">.</span><span class="n">J</span><span class="p">)),</span> <span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">S</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
-            <span class="k">if</span> <span class="n">method</span> <span class="o">==</span> <span class="s2">&quot;TPI&quot;</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">method</span> <span class="o">==</span> <span class="s2">"TPI"</span><span class="p">:</span>
                 <span class="n">len_T</span> <span class="o">=</span> <span class="n">BQ</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
                 <span class="n">pop</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">omega</span><span class="p">[:</span><span class="n">len_T</span><span class="p">,</span> <span class="p">:,</span> <span class="p">:]</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
                 <span class="n">BQ_per</span> <span class="o">=</span> <span class="n">BQ</span> <span class="o">/</span> <span class="n">pop</span>
@@ -649,7 +652,7 @@
 <div class="viewcode-block" id="get_tr">
 <a class="viewcode-back" href="../../content/api/household.html#ogcore.household.get_tr">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">get_tr</span><span class="p">(</span><span class="n">TR</span><span class="p">,</span> <span class="n">j</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">method</span><span class="p">):</span>
-<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">"""</span>
 <span class="sd">    Calculate transfers to each household.</span>
 
 <span class="sd">    .. math::</span>
@@ -660,15 +663,15 @@
 <span class="sd">        TR (array_like): aggregate transfers</span>
 <span class="sd">        j (int): index of lifetime ability group</span>
 <span class="sd">        p (OG-Core Specifications object): model parameters</span>
-<span class="sd">        method (str): adjusts calculation dimensions based on &#39;SS&#39; or</span>
-<span class="sd">            &#39;TPI&#39;</span>
+<span class="sd">        method (str): adjusts calculation dimensions based on 'SS' or</span>
+<span class="sd">            'TPI'</span>
 
 <span class="sd">    Returns:</span>
 <span class="sd">        tr (array_like): transfers received by household</span>
 
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="k">if</span> <span class="n">j</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="k">if</span> <span class="n">method</span> <span class="o">==</span> <span class="s2">&quot;SS&quot;</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">method</span> <span class="o">==</span> <span class="s2">"SS"</span><span class="p">:</span>
             <span class="n">tr</span> <span class="o">=</span> <span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">eta</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="p">:,</span> <span class="n">j</span><span class="p">]</span> <span class="o">*</span> <span class="n">TR</span><span class="p">)</span> <span class="o">/</span> <span class="n">p</span><span class="o">.</span><span class="n">omega_SS</span><span class="p">[:,</span> <span class="n">j</span><span class="p">]</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">len_T</span> <span class="o">=</span> <span class="n">TR</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
@@ -676,7 +679,7 @@
                 <span class="n">p</span><span class="o">.</span><span class="n">omega</span><span class="p">[:</span><span class="n">len_T</span><span class="p">,</span> <span class="p">:,</span> <span class="n">j</span><span class="p">]</span>
             <span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="k">if</span> <span class="n">method</span> <span class="o">==</span> <span class="s2">&quot;SS&quot;</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">method</span> <span class="o">==</span> <span class="s2">"SS"</span><span class="p">:</span>
             <span class="n">tr</span> <span class="o">=</span> <span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">eta</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="p">:,</span> <span class="p">:]</span> <span class="o">*</span> <span class="n">TR</span><span class="p">)</span> <span class="o">/</span> <span class="n">p</span><span class="o">.</span><span class="n">omega_SS</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">len_T</span> <span class="o">=</span> <span class="n">TR</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
@@ -691,7 +694,7 @@
 <div class="viewcode-block" id="get_rm">
 <a class="viewcode-back" href="../../content/api/household.html#ogcore.household.get_rm">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">get_rm</span><span class="p">(</span><span class="n">RM</span><span class="p">,</span> <span class="n">j</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">method</span><span class="p">):</span>
-<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">"""</span>
 <span class="sd">    Calculate remittances to each household.</span>
 
 <span class="sd">    .. math::</span>
@@ -702,15 +705,15 @@
 <span class="sd">        RM (array_like): aggregate remittances</span>
 <span class="sd">        j (int): index of lifetime ability group</span>
 <span class="sd">        p (OG-Core Specifications object): model parameters</span>
-<span class="sd">        method (str): adjusts calculation dimensions based on &#39;SS&#39; or</span>
-<span class="sd">            &#39;TPI&#39;</span>
+<span class="sd">        method (str): adjusts calculation dimensions based on 'SS' or</span>
+<span class="sd">            'TPI'</span>
 
 <span class="sd">    Returns:</span>
 <span class="sd">        rm (array_like): remittances received by household</span>
 
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="k">if</span> <span class="n">j</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="k">if</span> <span class="n">method</span> <span class="o">==</span> <span class="s2">&quot;SS&quot;</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">method</span> <span class="o">==</span> <span class="s2">"SS"</span><span class="p">:</span>
             <span class="n">rm</span> <span class="o">=</span> <span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">eta_RM</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="p">:,</span> <span class="n">j</span><span class="p">]</span> <span class="o">*</span> <span class="n">RM</span><span class="p">)</span> <span class="o">/</span> <span class="n">p</span><span class="o">.</span><span class="n">omega_SS</span><span class="p">[:,</span> <span class="n">j</span><span class="p">]</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">len_T</span> <span class="o">=</span> <span class="n">RM</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
@@ -718,7 +721,7 @@
                 <span class="n">p</span><span class="o">.</span><span class="n">omega</span><span class="p">[:</span><span class="n">len_T</span><span class="p">,</span> <span class="p">:,</span> <span class="n">j</span><span class="p">]</span>
             <span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="k">if</span> <span class="n">method</span> <span class="o">==</span> <span class="s2">&quot;SS&quot;</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">method</span> <span class="o">==</span> <span class="s2">"SS"</span><span class="p">:</span>
             <span class="n">rm</span> <span class="o">=</span> <span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">eta_RM</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="p">:,</span> <span class="p">:]</span> <span class="o">*</span> <span class="n">RM</span><span class="p">)</span> <span class="o">/</span> <span class="n">p</span><span class="o">.</span><span class="n">omega_SS</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">len_T</span> <span class="o">=</span> <span class="n">RM</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
@@ -746,9 +749,9 @@
     <span class="n">e</span><span class="p">,</span>
     <span class="n">tau_c</span><span class="p">,</span>
     <span class="n">p</span><span class="p">,</span>
-    <span class="n">method</span><span class="o">=</span><span class="s2">&quot;SS&quot;</span><span class="p">,</span>
+    <span class="n">method</span><span class="o">=</span><span class="s2">"SS"</span><span class="p">,</span>
 <span class="p">):</span>
-<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">"""</span>
 <span class="sd">    Calculate household composite consumption.</span>
 
 <span class="sd">    .. math::</span>
@@ -776,15 +779,15 @@
 <span class="sd">        e (Numpy array): effective labor units</span>
 <span class="sd">        tau_c (Numpy array): consumption tax rates</span>
 <span class="sd">        p (OG-Core Specifications object): model parameters</span>
-<span class="sd">        method (str): adjusts calculation dimensions based on &#39;SS&#39; or &#39;TPI&#39;</span>
+<span class="sd">        method (str): adjusts calculation dimensions based on 'SS' or 'TPI'</span>
 
 <span class="sd">    Returns:</span>
 <span class="sd">        cons (Numpy array): household consumption</span>
 
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">if</span> <span class="n">method</span> <span class="o">==</span> <span class="s2">&quot;SS&quot;</span><span class="p">:</span>
+<span class="sd">    """</span>
+    <span class="k">if</span> <span class="n">method</span> <span class="o">==</span> <span class="s2">"SS"</span><span class="p">:</span>
         <span class="n">min_cons_expenditure</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">((</span><span class="mi">1</span> <span class="o">+</span> <span class="n">tau_c</span><span class="p">)</span> <span class="o">*</span> <span class="n">p_i</span> <span class="o">*</span> <span class="n">p</span><span class="o">.</span><span class="n">c_min</span><span class="p">)</span>
-    <span class="k">elif</span> <span class="n">method</span> <span class="o">==</span> <span class="s2">&quot;TPI_scalar&quot;</span><span class="p">:</span>
+    <span class="k">elif</span> <span class="n">method</span> <span class="o">==</span> <span class="s2">"TPI_scalar"</span><span class="p">:</span>
         <span class="n">min_cons_expenditure</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">((</span><span class="mi">1</span> <span class="o">+</span> <span class="n">tau_c</span><span class="p">)</span> <span class="o">*</span> <span class="n">p_i</span> <span class="o">*</span> <span class="n">p</span><span class="o">.</span><span class="n">c_min</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>  <span class="c1"># TPI case</span>
         <span class="n">min_cons_expenditure</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span>
@@ -816,8 +819,8 @@
 
 <div class="viewcode-block" id="get_ci">
 <a class="viewcode-back" href="../../content/api/household.html#ogcore.household.get_ci">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">get_ci</span><span class="p">(</span><span class="n">c_s</span><span class="p">,</span> <span class="n">p_i</span><span class="p">,</span> <span class="n">p_tilde</span><span class="p">,</span> <span class="n">tau_c</span><span class="p">,</span> <span class="n">alpha_c</span><span class="p">,</span> <span class="n">c_min</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s2">&quot;SS&quot;</span><span class="p">):</span>
-<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">get_ci</span><span class="p">(</span><span class="n">c_s</span><span class="p">,</span> <span class="n">p_i</span><span class="p">,</span> <span class="n">p_tilde</span><span class="p">,</span> <span class="n">tau_c</span><span class="p">,</span> <span class="n">alpha_c</span><span class="p">,</span> <span class="n">c_min</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s2">"SS"</span><span class="p">):</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">"""</span>
 <span class="sd">    Compute consumption of good i given amount of composite consumption</span>
 <span class="sd">    and prices.</span>
 
@@ -831,12 +834,12 @@
 <span class="sd">        tau_c (array_like): consumption tax rate</span>
 <span class="sd">        alpha_c (array_like): consumption share parameters</span>
 <span class="sd">        c_min (array_like): minimum consumption levels for each good i</span>
-<span class="sd">        method (str): adjusts calculation dimensions based on &#39;SS&#39; or &#39;TPI&#39;</span>
+<span class="sd">        method (str): adjusts calculation dimensions based on 'SS' or 'TPI'</span>
 
 <span class="sd">    Returns:</span>
 <span class="sd">        c_si (array_like): consumption of good i</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">if</span> <span class="n">method</span> <span class="o">==</span> <span class="s2">&quot;SS&quot;</span><span class="p">:</span>
+<span class="sd">    """</span>
+    <span class="k">if</span> <span class="n">method</span> <span class="o">==</span> <span class="s2">"SS"</span><span class="p">:</span>
         <span class="n">I</span> <span class="o">=</span> <span class="n">alpha_c</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>  <span class="c1"># noqa: E741</span>
         <span class="n">S</span> <span class="o">=</span> <span class="n">c_s</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
         <span class="n">J</span> <span class="o">=</span> <span class="n">c_s</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
@@ -887,7 +890,7 @@
     <span class="n">p</span><span class="p">,</span>
     <span class="n">method</span><span class="p">,</span>
 <span class="p">):</span>
-<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">"""</span>
 <span class="sd">    Computes Euler errors for the FOC for savings in the steady state.</span>
 <span class="sd">    This function is usually looped through over J, so it does one</span>
 <span class="sd">    lifetime income group at a time.</span>
@@ -923,22 +926,22 @@
 <span class="sd">        t (int): model period</span>
 <span class="sd">        j (int): index of ability type</span>
 <span class="sd">        p (OG-Core Specifications object): model parameters</span>
-<span class="sd">        method (str): adjusts calculation dimensions based on &#39;SS&#39; or</span>
-<span class="sd">            &#39;TPI&#39;</span>
+<span class="sd">        method (str): adjusts calculation dimensions based on 'SS' or</span>
+<span class="sd">            'TPI'</span>
 
 <span class="sd">    Returns:</span>
 <span class="sd">        euler (Numpy array): Euler error from FOC for savings</span>
 
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="k">if</span> <span class="n">j</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">chi_b</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">chi_b</span><span class="p">[</span><span class="n">j</span><span class="p">]</span>
         <span class="n">beta</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">beta</span><span class="p">[</span><span class="n">j</span><span class="p">]</span>
-        <span class="k">if</span> <span class="n">method</span> <span class="o">==</span> <span class="s2">&quot;SS&quot;</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">method</span> <span class="o">==</span> <span class="s2">"SS"</span><span class="p">:</span>
             <span class="n">tax_noncompliance</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">capital_income_tax_noncompliance_rate</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span>
             <span class="n">income_tax_filer</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">income_tax_filer</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span>
             <span class="n">wealth_tax_filer</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">wealth_tax_filer</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span>
             <span class="n">e</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">squeeze</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">e</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="p">:,</span> <span class="n">j</span><span class="p">])</span>
-        <span class="k">elif</span> <span class="n">method</span> <span class="o">==</span> <span class="s2">&quot;TPI_scalar&quot;</span><span class="p">:</span>
+        <span class="k">elif</span> <span class="n">method</span> <span class="o">==</span> <span class="s2">"TPI_scalar"</span><span class="p">:</span>
             <span class="n">tax_noncompliance</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">capital_income_tax_noncompliance_rate</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span>
             <span class="n">income_tax_filer</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">income_tax_filer</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span>
             <span class="n">wealth_tax_filer</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">wealth_tax_filer</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span>
@@ -955,12 +958,12 @@
     <span class="k">else</span><span class="p">:</span>
         <span class="n">chi_b</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">chi_b</span>
         <span class="n">beta</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">beta</span>
-        <span class="k">if</span> <span class="n">method</span> <span class="o">==</span> <span class="s2">&quot;SS&quot;</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">method</span> <span class="o">==</span> <span class="s2">"SS"</span><span class="p">:</span>
             <span class="n">tax_noncompliance</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">capital_income_tax_noncompliance_rate</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="p">:]</span>
             <span class="n">income_tax_filer</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">income_tax_filer</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="p">:]</span>
             <span class="n">wealth_tax_filer</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">wealth_tax_filer</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="p">:]</span>
             <span class="n">e</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">squeeze</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">e</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="p">:,</span> <span class="p">:])</span>
-        <span class="k">elif</span> <span class="n">method</span> <span class="o">==</span> <span class="s2">&quot;TPI_scalar&quot;</span><span class="p">:</span>
+        <span class="k">elif</span> <span class="n">method</span> <span class="o">==</span> <span class="s2">"TPI_scalar"</span><span class="p">:</span>
             <span class="n">tax_noncompliance</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">capital_income_tax_noncompliance_rate</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="p">:]</span>
             <span class="n">income_tax_filer</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">income_tax_filer</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="p">:]</span>
             <span class="n">wealth_tax_filer</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">wealth_tax_filer</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="p">:]</span>
@@ -975,13 +978,13 @@
             <span class="n">e_long</span> <span class="o">=</span> <span class="n">_get_e_long</span><span class="p">(</span><span class="n">p</span><span class="p">)</span>
             <span class="n">e</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">diag</span><span class="p">(</span><span class="n">e_long</span><span class="p">[</span><span class="n">t</span> <span class="p">:</span> <span class="n">t</span> <span class="o">+</span> <span class="n">p</span><span class="o">.</span><span class="n">S</span><span class="p">,</span> <span class="p">:,</span> <span class="p">:],</span> <span class="nb">max</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">S</span> <span class="o">-</span> <span class="n">length</span><span class="p">,</span> <span class="mi">0</span><span class="p">))</span>
     <span class="n">e</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">squeeze</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
-    <span class="k">if</span> <span class="n">method</span> <span class="o">==</span> <span class="s2">&quot;SS&quot;</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">method</span> <span class="o">==</span> <span class="s2">"SS"</span><span class="p">:</span>
         <span class="n">h_wealth</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">h_wealth</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
         <span class="n">m_wealth</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">m_wealth</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
         <span class="n">p_wealth</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">p_wealth</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
         <span class="n">p_tilde</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones_like</span><span class="p">(</span><span class="n">rho</span><span class="p">)</span> <span class="o">*</span> <span class="n">p_tilde</span>
         <span class="n">tau_c</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">tau_c</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="p">:]</span>
-    <span class="k">elif</span> <span class="n">method</span> <span class="o">==</span> <span class="s2">&quot;TPI_scalar&quot;</span><span class="p">:</span>
+    <span class="k">elif</span> <span class="n">method</span> <span class="o">==</span> <span class="s2">"TPI_scalar"</span><span class="p">:</span>
         <span class="n">h_wealth</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">h_wealth</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
         <span class="n">m_wealth</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">m_wealth</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
         <span class="n">p_wealth</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">p_wealth</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
@@ -1086,7 +1089,7 @@
     <span class="n">p</span><span class="p">,</span>
     <span class="n">method</span><span class="p">,</span>
 <span class="p">):</span>
-<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">"""</span>
 <span class="sd">    Computes errors for the FOC for labor supply in the steady</span>
 <span class="sd">    state.  This function is usually looped through over J, so it does</span>
 <span class="sd">    one lifetime income group at a time.</span>
@@ -1124,17 +1127,17 @@
 <span class="sd">        t (int): model period</span>
 <span class="sd">        j (int): index of ability type</span>
 <span class="sd">        p (OG-Core Specifications object): model parameters</span>
-<span class="sd">        method (str): adjusts calculation dimensions based on &#39;SS&#39; or</span>
-<span class="sd">            &#39;TPI&#39;</span>
+<span class="sd">        method (str): adjusts calculation dimensions based on 'SS' or</span>
+<span class="sd">            'TPI'</span>
 
 <span class="sd">    Returns:</span>
 <span class="sd">        FOC_error (Numpy array): error from FOC for labor supply</span>
 
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">if</span> <span class="n">method</span> <span class="o">==</span> <span class="s2">&quot;SS&quot;</span><span class="p">:</span>
+<span class="sd">    """</span>
+    <span class="k">if</span> <span class="n">method</span> <span class="o">==</span> <span class="s2">"SS"</span><span class="p">:</span>
         <span class="n">tau_payroll</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">tau_payroll</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
         <span class="n">tau_c</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">tau_c</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="p">:]</span>
-    <span class="k">elif</span> <span class="n">method</span> <span class="o">==</span> <span class="s2">&quot;TPI_scalar&quot;</span><span class="p">:</span>  <span class="c1"># for 1st donut ring only</span>
+    <span class="k">elif</span> <span class="n">method</span> <span class="o">==</span> <span class="s2">"TPI_scalar"</span><span class="p">:</span>  <span class="c1"># for 1st donut ring only</span>
         <span class="n">tau_payroll</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">tau_payroll</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
         <span class="n">tau_c</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">tau_c</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="p">:]</span>
     <span class="k">else</span><span class="p">:</span>
@@ -1142,11 +1145,11 @@
         <span class="n">tau_payroll</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">tau_payroll</span><span class="p">[</span><span class="n">t</span> <span class="p">:</span> <span class="n">t</span> <span class="o">+</span> <span class="n">length</span><span class="p">]</span>
         <span class="n">tau_c</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">tau_c</span><span class="p">[</span><span class="n">t</span> <span class="p">:</span> <span class="n">t</span> <span class="o">+</span> <span class="n">length</span><span class="p">,</span> <span class="p">:]</span>
     <span class="k">if</span> <span class="n">j</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="k">if</span> <span class="n">method</span> <span class="o">==</span> <span class="s2">&quot;SS&quot;</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">method</span> <span class="o">==</span> <span class="s2">"SS"</span><span class="p">:</span>
             <span class="n">tax_noncompliance</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">labor_income_tax_noncompliance_rate</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span>
             <span class="n">income_tax_filer</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">income_tax_filer</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span>
             <span class="n">e</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">squeeze</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">e</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="p">:,</span> <span class="n">j</span><span class="p">])</span>
-        <span class="k">elif</span> <span class="n">method</span> <span class="o">==</span> <span class="s2">&quot;TPI_scalar&quot;</span><span class="p">:</span>
+        <span class="k">elif</span> <span class="n">method</span> <span class="o">==</span> <span class="s2">"TPI_scalar"</span><span class="p">:</span>
             <span class="n">tax_noncompliance</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">labor_income_tax_noncompliance_rate</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span>
             <span class="n">income_tax_filer</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">income_tax_filer</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span>
             <span class="n">e</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">squeeze</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">e</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">j</span><span class="p">])</span>
@@ -1158,11 +1161,11 @@
             <span class="n">e_long</span> <span class="o">=</span> <span class="n">_get_e_long</span><span class="p">(</span><span class="n">p</span><span class="p">)</span>
             <span class="n">e</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">diag</span><span class="p">(</span><span class="n">e_long</span><span class="p">[</span><span class="n">t</span> <span class="p">:</span> <span class="n">t</span> <span class="o">+</span> <span class="n">p</span><span class="o">.</span><span class="n">S</span><span class="p">,</span> <span class="p">:,</span> <span class="n">j</span><span class="p">],</span> <span class="nb">max</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">S</span> <span class="o">-</span> <span class="n">length</span><span class="p">,</span> <span class="mi">0</span><span class="p">))</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="k">if</span> <span class="n">method</span> <span class="o">==</span> <span class="s2">&quot;SS&quot;</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">method</span> <span class="o">==</span> <span class="s2">"SS"</span><span class="p">:</span>
             <span class="n">tax_noncompliance</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">labor_income_tax_noncompliance_rate</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="p">:]</span>
             <span class="n">income_tax_filer</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">income_tax_filer</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="p">:]</span>
             <span class="n">e</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">squeeze</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">e</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="p">:,</span> <span class="p">:])</span>
-        <span class="k">elif</span> <span class="n">method</span> <span class="o">==</span> <span class="s2">&quot;TPI_scalar&quot;</span><span class="p">:</span>
+        <span class="k">elif</span> <span class="n">method</span> <span class="o">==</span> <span class="s2">"TPI_scalar"</span><span class="p">:</span>
             <span class="n">tax_noncompliance</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">labor_income_tax_noncompliance_rate</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="p">:]</span>
             <span class="n">income_tax_filer</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">income_tax_filer</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="p">:]</span>
             <span class="n">e</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">squeeze</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">e</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="p">:])</span>
@@ -1173,7 +1176,7 @@
             <span class="n">income_tax_filer</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">income_tax_filer</span><span class="p">[</span><span class="n">t</span> <span class="p">:</span> <span class="n">t</span> <span class="o">+</span> <span class="n">length</span><span class="p">,</span> <span class="p">:]</span>
             <span class="n">e_long</span> <span class="o">=</span> <span class="n">_get_e_long</span><span class="p">(</span><span class="n">p</span><span class="p">)</span>
             <span class="n">e</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">diag</span><span class="p">(</span><span class="n">e_long</span><span class="p">[</span><span class="n">t</span> <span class="p">:</span> <span class="n">t</span> <span class="o">+</span> <span class="n">p</span><span class="o">.</span><span class="n">S</span><span class="p">,</span> <span class="p">:,</span> <span class="n">j</span><span class="p">],</span> <span class="nb">max</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">S</span> <span class="o">-</span> <span class="n">length</span><span class="p">,</span> <span class="mi">0</span><span class="p">))</span>
-    <span class="k">if</span> <span class="n">method</span> <span class="o">==</span> <span class="s2">&quot;TPI&quot;</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">method</span> <span class="o">==</span> <span class="s2">"TPI"</span><span class="p">:</span>
         <span class="k">if</span> <span class="n">b</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
             <span class="n">r</span> <span class="o">=</span> <span class="n">r</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">r</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="mi">1</span><span class="p">)</span>
             <span class="n">w</span> <span class="o">=</span> <span class="n">w</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">w</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="mi">1</span><span class="p">)</span>
@@ -1229,7 +1232,7 @@
 <div class="viewcode-block" id="get_y">
 <a class="viewcode-back" href="../../content/api/household.html#ogcore.household.get_y">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">get_y</span><span class="p">(</span><span class="n">r_p</span><span class="p">,</span> <span class="n">w</span><span class="p">,</span> <span class="n">b_s</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">method</span><span class="p">):</span>
-<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">"""</span>
 <span class="sd">    Compute household income before taxes.</span>
 
 <span class="sd">    .. math::</span>
@@ -1241,15 +1244,15 @@
 <span class="sd">        b_s (Numpy array): household savings coming into the period</span>
 <span class="sd">        n (Numpy array): household labor supply</span>
 <span class="sd">        p (OG-Core Specifications object): model parameters</span>
-<span class="sd">        method (str): adjusts calculation dimensions based on &#39;SS&#39; or &#39;TPI&#39;</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">if</span> <span class="n">method</span> <span class="o">==</span> <span class="s2">&quot;SS&quot;</span><span class="p">:</span>
+<span class="sd">        method (str): adjusts calculation dimensions based on 'SS' or 'TPI'</span>
+<span class="sd">    """</span>
+    <span class="k">if</span> <span class="n">method</span> <span class="o">==</span> <span class="s2">"SS"</span><span class="p">:</span>
         <span class="c1"># NOTE: do not np.squeeze here -- for J=1 it collapses p.e[-1, :, :]</span>
         <span class="c1"># from (S, 1) to (S,), which then broadcasts against the (S, 1) b_s/n</span>
         <span class="c1"># into an (S, S) outer product, giving wrong before-tax income. The</span>
         <span class="c1"># array is already (S, J).</span>
         <span class="n">e</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">e</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="p">:,</span> <span class="p">:]</span>
-    <span class="k">elif</span> <span class="n">method</span> <span class="o">==</span> <span class="s2">&quot;TPI&quot;</span><span class="p">:</span>
+    <span class="k">elif</span> <span class="n">method</span> <span class="o">==</span> <span class="s2">"TPI"</span><span class="p">:</span>
         <span class="n">e</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">e</span>
     <span class="n">y</span> <span class="o">=</span> <span class="n">r_p</span> <span class="o">*</span> <span class="n">b_s</span> <span class="o">+</span> <span class="n">w</span> <span class="o">*</span> <span class="n">e</span> <span class="o">*</span> <span class="n">n</span>
 
@@ -1260,7 +1263,7 @@
 <div class="viewcode-block" id="constraint_checker_SS">
 <a class="viewcode-back" href="../../content/api/household.html#ogcore.household.constraint_checker_SS">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">constraint_checker_SS</span><span class="p">(</span><span class="n">bssmat</span><span class="p">,</span> <span class="n">nssmat</span><span class="p">,</span> <span class="n">cssmat</span><span class="p">,</span> <span class="n">ltilde</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Checks constraints on consumption, savings, and labor supply in the</span>
 <span class="sd">    steady state.</span>
 
@@ -1276,29 +1279,29 @@
 <span class="sd">    Raises:</span>
 <span class="sd">        Warnings: if constraints are violated, warnings printed</span>
 
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Checking constraints on capital, labor, and consumption.&quot;</span><span class="p">)</span>
+<span class="sd">    """</span>
+    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">"Checking constraints on capital, labor, and consumption."</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="p">(</span><span class="n">bssmat</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">any</span><span class="p">():</span>
-        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;WARNING: There is negative capital stock&quot;</span><span class="p">)</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">"WARNING: There is negative capital stock"</span><span class="p">)</span>
     <span class="n">flag2</span> <span class="o">=</span> <span class="kc">False</span>
     <span class="k">if</span> <span class="p">(</span><span class="n">nssmat</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">any</span><span class="p">():</span>
         <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
-            <span class="s2">&quot;WARNING: Labor supply violates nonnegativity constraints.&quot;</span>
+            <span class="s2">"WARNING: Labor supply violates nonnegativity constraints."</span>
         <span class="p">)</span>
         <span class="n">flag2</span> <span class="o">=</span> <span class="kc">True</span>
     <span class="k">if</span> <span class="p">(</span><span class="n">nssmat</span> <span class="o">&gt;</span> <span class="n">ltilde</span><span class="p">)</span><span class="o">.</span><span class="n">any</span><span class="p">():</span>
-        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;WARNING: Labor supply violates the ltilde constraint.&quot;</span><span class="p">)</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">"WARNING: Labor supply violates the ltilde constraint."</span><span class="p">)</span>
         <span class="n">flag2</span> <span class="o">=</span> <span class="kc">True</span>
     <span class="k">if</span> <span class="n">flag2</span> <span class="ow">is</span> <span class="kc">False</span><span class="p">:</span>
         <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
-            <span class="s2">&quot;There were no violations of the constraints on labor supply.&quot;</span><span class="p">,</span>
+            <span class="s2">"There were no violations of the constraints on labor supply."</span><span class="p">,</span>
         <span class="p">)</span>
     <span class="k">if</span> <span class="p">(</span><span class="n">cssmat</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">any</span><span class="p">():</span>
-        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;WARNING: Consumption violates nonnegativity constraints.&quot;</span><span class="p">)</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">"WARNING: Consumption violates nonnegativity constraints."</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
-            <span class="s2">&quot;There were no violations of the constraints on consumption.&quot;</span>
+            <span class="s2">"There were no violations of the constraints on consumption."</span>
         <span class="p">)</span></div>
 
 
@@ -1306,7 +1309,7 @@
 <div class="viewcode-block" id="constraint_checker_TPI">
 <a class="viewcode-back" href="../../content/api/household.html#ogcore.household.constraint_checker_TPI">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">constraint_checker_TPI</span><span class="p">(</span><span class="n">b_dist</span><span class="p">,</span> <span class="n">n_dist</span><span class="p">,</span> <span class="n">c_dist</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="n">ltilde</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Checks constraints on consumption, savings, and labor supply along</span>
 <span class="sd">    the transition path. Does this for each period t separately.</span>
 
@@ -1323,26 +1326,26 @@
 <span class="sd">    Raises:</span>
 <span class="sd">        Warnings: if constraints are violated, warnings printed</span>
 
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="k">if</span> <span class="p">(</span><span class="n">b_dist</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">any</span><span class="p">():</span>
         <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
-            <span class="s2">&quot;WARNING: Aggregate capital is less than or equal to&quot;</span>
-            <span class="sa">f</span><span class="s2">&quot; zero in period </span><span class="si">{</span><span class="n">t</span><span class="si">}</span><span class="s2">.&quot;</span>
+            <span class="s2">"WARNING: Aggregate capital is less than or equal to"</span>
+            <span class="sa">f</span><span class="s2">" zero in period </span><span class="si">{</span><span class="n">t</span><span class="si">}</span><span class="s2">."</span>
         <span class="p">)</span>
     <span class="k">if</span> <span class="p">(</span><span class="n">n_dist</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">any</span><span class="p">():</span>
         <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
-            <span class="s2">&quot;WARNING: Labor supply violates nonnegativity&quot;</span>
-            <span class="sa">f</span><span class="s2">&quot; constraints in period </span><span class="si">{</span><span class="n">t</span><span class="si">}</span><span class="s2">.&quot;</span>
+            <span class="s2">"WARNING: Labor supply violates nonnegativity"</span>
+            <span class="sa">f</span><span class="s2">" constraints in period </span><span class="si">{</span><span class="n">t</span><span class="si">}</span><span class="s2">."</span>
         <span class="p">)</span>
     <span class="k">if</span> <span class="p">(</span><span class="n">n_dist</span> <span class="o">&gt;</span> <span class="n">ltilde</span><span class="p">)</span><span class="o">.</span><span class="n">any</span><span class="p">():</span>
         <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
-            <span class="s2">&quot;</span><span class="se">\t</span><span class="s2">WARNING: Labor suppy violates the ltilde constraint&quot;</span><span class="p">,</span>
-            <span class="s2">&quot; in period %.f.&quot;</span> <span class="o">%</span> <span class="n">t</span><span class="p">,</span>
+            <span class="s2">"</span><span class="se">\t</span><span class="s2">WARNING: Labor suppy violates the ltilde constraint"</span>
+            <span class="sa">f</span><span class="s2">" in period </span><span class="si">{</span><span class="n">t</span><span class="si">}</span><span class="s2">."</span>
         <span class="p">)</span>
     <span class="k">if</span> <span class="p">(</span><span class="n">c_dist</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">any</span><span class="p">():</span>
         <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
-            <span class="s2">&quot;</span><span class="se">\t</span><span class="s2">WARNING: Consumption violates nonnegativity&quot;</span><span class="p">,</span>
-            <span class="s2">&quot; constraints in period %.f.&quot;</span> <span class="o">%</span> <span class="n">t</span><span class="p">,</span>
+            <span class="s2">"</span><span class="se">\t</span><span class="s2">WARNING: Consumption violates nonnegativity"</span>
+            <span class="sa">f</span><span class="s2">" constraints in period </span><span class="si">{</span><span class="n">t</span><span class="si">}</span><span class="s2">."</span>
         <span class="p">)</span></div>
 
 </pre></div>
