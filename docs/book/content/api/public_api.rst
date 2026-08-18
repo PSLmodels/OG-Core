@@ -8,26 +8,4 @@ make up the `OG-Core` model. Below is a list of these modules (in alphabetical
 order) with documentation about how to call each class method and function.
 There is also a link to the source code for each documented member.
 
-.. toctree::
-   :maxdepth: 1
-
-   aggregates
-   config
-   demographics
-   elliptical_u_est
-   execute
-   firm
-   fiscal
-   household
-   output_plots
-   output_tables
-   parameter_plots
-   parameter_tables
-   parameters
-   pensions
-   solvers
-   SS
-   tax
-   TPI
-   txfunc
-   utils
+.. tableofcontents::
