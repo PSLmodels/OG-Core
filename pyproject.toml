@@ -43,7 +43,7 @@ Homepage = "https://github.com/PSLmodels/OG-Core/"
 
 [project.optional-dependencies]
 dev = [
-    "pytest>=6.0",
+    "pytest>=9.1",
     "pytest-cov",
     "pytest-xdist",
     "coverage",
@@ -91,12 +91,11 @@ ignore = ["F841"]
 max-doc-length = 120
 
 [tool.pytest.ini_options]
-minversion = "6.0"
+minversion = "9.1"
 testpaths = ["tests"]
 filterwarnings = [
-    "ignore::RuntimeWarning:.*invalid value encountered.*",
-    "ignore::RuntimeWarning:.*divide by zero encountered in divide.*",
-    "ignore::RuntimeWarning:.*invalid value encountered in power.*",
+    "ignore:invalid value encountered:RuntimeWarning",
+    "ignore:divide by zero encountered:RuntimeWarning",
 ]
 markers = [
     "local: marks tests that run locally and not on GH Actions (mostly due to run time)",
