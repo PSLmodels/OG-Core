@@ -29,7 +29,7 @@ install:
 
 .PHONY: pytest_all
 pytest_all:
-	@cd ogcore ; uv run python -m pytest
+	uv run python -m pytest
 
 .PHONY: pytest_ci
 pytest_ci:
