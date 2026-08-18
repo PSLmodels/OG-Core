@@ -8,7 +8,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [0.19.2] - 2026-08-18 17:00:00
 
 ### Adds
-
+- Updates `.gitignore` to include a line `.claude/`.
+- Updates the `uv.lock` file to include upgraded `pillow` package version 12.3.0. This satisfies the dependabot PR update in PR #1176. I updated all the packages in the environment. This resulted in an update of the `pytest` package, which caused errors that led to the changes below.
+- Updated the version in `pyproject.toml`, `ogcore/__init__.py` and `CHANGELOG.md`.
+- Updated the version of `pytest` in `pyproject.toml` to `pytest>=9.1`. Some changes to logging happened in versions 9.1+, that are not backward compatible. All our testing started throwing errors once I updated that package. I changed the `pytest` miniversion in line 94 of `pyproject.toml` to 9.1, and I updated the `filterwarnings` in lines 94-98.
+- I updated all the `Makefile` commands to fit with standard GNU formatting and to work with our updated usage of the `uv` package. I also got rid of some compute studio commands, the objects of which had no targets.
+- I updated the format of the `logger.info()` warnings in `household.py` which was a source of errors from the updated `pytest` package.
+- I fixed some errors that were happening in the building of our Jupyter Book documentation. There was a fight going on between our `make_params.py` and `make_vars.py` scripts and the Sphinx `_toc.yml` table of contents script. And we were missing `config.rst`, `SS.rst`, and `TPI.rst` files. I explicitly put the API chapters in the `_toc.yml` file. And I built an updated `parameters.md` file.
+- We had some Jupyter Book warnings for headings that go from H2 to H4 in parameters.md and variables.md. However, this is what we want. So  I added the `_ext/supress_header_warnings.py` file and referenced it in `_config.py` in order to surpress only those warnings associated with only the `parameters.md` and `variables.md` files.
 
 ### Bug Fixes
 
