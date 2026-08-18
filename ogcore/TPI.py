@@ -233,6 +233,31 @@ def get_initial_SS_values(p):
     return initial_values, ss_vars, theta, baseline_values
 
 
+def scale_initial_wealth(initial_b_shape, B0_shape, target_B0, p):
+    """
+    Rescale the initial wealth distribution to a target aggregate.
+
+    Args:
+        initial_b_shape (Numpy array): SxJ unscaled initial wealth profile
+        B0_shape (scalar): aggregate of initial_b_shape over the initial
+            population
+        target_B0 (scalar): target aggregate initial wealth
+        p (OG-Core Specifications object): model parameters
+
+    Returns:
+        (tuple): rescaled initial period wealth values,
+            (b_sinit, b_splus1init, initial_b)
+
+    """
+    scale = target_B0 / B0_shape
+    initial_b = initial_b_shape * scale
+    b_sinit = np.array(
+        list(np.zeros(p.J).reshape(1, p.J)) + list(initial_b[:-1])
+    )
+    b_splus1init = initial_b
+    return (b_sinit, b_splus1init, initial_b)
+
+
 def firstdoughnutring(
     guesses,
     r,
@@ -758,6 +783,40 @@ def run_TPI(p, client=None):
         Kg0_baseline,
     ) = baseline_values
 
+    # Anchor baseline initial household wealth when initial_wealth_ratio is
+    # set (> 0), and always clone that initial wealth in reform runs.
+    # Initial wealth is a predetermined state, so the anchor is STATIC within
+    # the solve (rescaling it between outer-loop iterations -- even damped --
+    # drives the initial cohorts' root-finding into infeasible negative-
+    # consumption roots that satisfy the extended FOCs). A baseline run sets
+    # aggregate initial wealth to initial_wealth_ratio times steady-state
+    # GDP, which the steady-state solve has already pinned down exactly; a
+    # reform run clones the baseline's initial wealth outright (the initial
+    # state is history -- policy cannot change what households start with).
+    target_B0 = None
+    if p.baseline:
+        if p.initial_wealth_ratio > 0:
+            target_B0 = p.initial_wealth_ratio * ss_vars["Y"]
+    else:
+        baseline_tpi = os.path.join(p.baseline_dir, "TPI", "TPI_vars.pkl")
+        tpi_baseline_vars = utils.safe_read_pickle(baseline_tpi)
+        target_B0 = tpi_baseline_vars["B"][0]
+    if target_B0 is not None:
+        b_sinit, b_splus1init, initial_b = scale_initial_wealth(
+            initial_b, B0, target_B0, p
+        )
+        B0 = target_B0
+        # Rebuild the initial_values tuple consumed by inner_loop with the
+        # anchored wealth objects; factor and initial_n are unaffected.
+        initial_values = (
+            B0,
+            b_sinit,
+            b_splus1init,
+            factor,
+            initial_b,
+            initial_n,
+        )
+
     # Create time path of UBI household benefits and aggregate UBI outlays
     ubi = p.ubi_nom_array / factor
     UBI = aggr.get_L(ubi[: p.T], p, "TPI")
@@ -1181,6 +1240,11 @@ def run_TPI(p, client=None):
         )
         # Update aggregate variables
         L[: p.T] = aggr.get_L(n_mat[: p.T], p, "TPI")
+        # B[0] is predetermined (set before the loop, anchored when
+        # initial_wealth_ratio > 0) and nothing in the loop writes to it, so
+        # this re-assert is a no-op today. It guards B[0] in case the update
+        # below is ever refactored to write the full B[: p.T] slice.
+        B[0] = B0
         B[1 : p.T] = aggr.get_B(bmat_splus1[: p.T], p, "TPI", False)[: p.T - 1]
         w_open = firm.get_w_from_r(p.world_int_rate[: p.T], p, "TPI")
 

@@ -258,6 +258,81 @@ def test_get_initial_SS_values(baseline, param_updates, filename, tmpdir):
         )
 
 
+def test_scale_initial_wealth():
+    """scale_initial_wealth rescales the wealth profile uniformly to a target
+    aggregate, keeping the profile's shape and rebuilding the beginning- and
+    end-of-period views consistently."""
+    p = Specifications(baseline=True, num_workers=NUM_WORKERS)
+    rng = np.random.default_rng(5)
+    initial_b_shape = rng.uniform(0.1, 2.0, (p.S, p.J))
+    B0_shape = 3.0
+    target_B0 = 4.5
+    b_sinit, b_splus1init, initial_b = TPI.scale_initial_wealth(
+        initial_b_shape, B0_shape, target_B0, p
+    )
+    assert np.allclose(initial_b, initial_b_shape * (target_B0 / B0_shape))
+    assert np.allclose(b_splus1init, initial_b)
+    assert np.allclose(b_sinit[0, :], np.zeros(p.J))
+    assert np.allclose(b_sinit[1:, :], initial_b[:-1, :])
+
+
+def test_initial_wealth_ratio_default_is_off():
+    """The default of 0.0 leaves the baseline anchor disabled."""
+    p = Specifications(baseline=True, num_workers=NUM_WORKERS)
+    assert p.initial_wealth_ratio == 0.0
+
+
+@pytest.mark.local
+def test_run_TPI_initial_wealth_anchor(tmpdir, dask_client):
+    """
+    A baseline solve delivers aggregate initial wealth equal to
+    initial_wealth_ratio * steady-state Y, and a reform solve clones the
+    baseline's initial wealth when its own ratio remains at the default 0.0.
+    """
+    baseline_dir = os.path.join(tmpdir, "baseline")
+    p = Specifications(
+        baseline=True,
+        baseline_dir=baseline_dir,
+        output_base=baseline_dir,
+        num_workers=NUM_WORKERS,
+    )
+    SS.ENFORCE_SOLUTION_CHECKS = True
+    ss_outputs = SS.run_SS(p, client=dask_client)
+    utils.mkdirs(os.path.join(baseline_dir, "SS"))
+    with open(os.path.join(baseline_dir, "SS", "SS_vars.pkl"), "wb") as f:
+        pickle.dump(ss_outputs, f)
+    # Anchor mildly below the steady-state wealth-to-GDP ratio so the
+    # target is feasible for any test calibration while still moving B[0]
+    # away from its legacy value.
+    p.initial_wealth_ratio = 0.95 * ss_outputs["B"] / ss_outputs["Y"]
+    tpi_baseline = TPI.run_TPI(p, client=dask_client)
+    assert np.allclose(
+        tpi_baseline["B"][0],
+        p.initial_wealth_ratio * ss_outputs["Y"],
+        rtol=1e-10,
+    )
+    utils.mkdirs(os.path.join(baseline_dir, "TPI"))
+    with open(os.path.join(baseline_dir, "TPI", "TPI_vars.pkl"), "wb") as f:
+        pickle.dump(tpi_baseline, f)
+
+    # Reform: leave the ratio at its default 0.0. The clone-baseline design
+    # must still use the baseline's B[0].
+    reform_dir = os.path.join(tmpdir, "reform")
+    p2 = Specifications(
+        baseline=False,
+        baseline_dir=baseline_dir,
+        output_base=reform_dir,
+        num_workers=NUM_WORKERS,
+    )
+    assert p2.initial_wealth_ratio == 0.0
+    ss_reform = SS.run_SS(p2, client=dask_client)
+    utils.mkdirs(os.path.join(reform_dir, "SS"))
+    with open(os.path.join(reform_dir, "SS", "SS_vars.pkl"), "wb") as f:
+        pickle.dump(ss_reform, f)
+    tpi_reform = TPI.run_TPI(p2, client=dask_client)
+    assert np.allclose(tpi_reform["B"][0], tpi_baseline["B"][0], rtol=1e-12)
+
+
 def test_firstdoughnutring():
     # Test TPI.firstdoughnutring function.  Provide inputs to function and
     # ensure that output returned matches what it has been before.
