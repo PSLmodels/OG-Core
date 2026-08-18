@@ -5,75 +5,70 @@
 #              to work in that environment (and not on Windows).
 # USAGE: OG-Core$ make [TARGET]
 
-.PHONY=help
+.PHONY: help
 help:
 	@echo "USAGE: make [TARGET]"
 	@echo "TARGETS:"
 	@echo "help       : show help message"
 	@echo "clean      : remove .pyc files and local ogcore package"
 	@echo "install    : build and install local package"
-	@echo "pytest     : generate report for and cleanup after"
-	@echo "             pytest -W ignore -m ''"
-	@echo "cstest     : generate coding-style errors using the"
-	@echo "             pycodestyle (nee pep8) tool"
+	@echo "pytest_all : run all tests"
+	@echo "pytest_ci  : run same set of tests as GitHub Actions CI"
 	@echo "coverage   : generate test coverage report"
-	@echo "git-sync   : synchronize local, origin, and upstream Git repos"
-	@echo "git-pr N=n : create local pr-n branch containing upstream PR"
 	@echo "documentation  : build new Jupyter Book documentation files"
+	@echo "format     : format code using ruff and linecheck"
 
-.PHONY=clean
+.PHONY: clean
 clean:
-	@find . -name *pyc -exec rm {} \;
-	@find . -name *cache -maxdepth 1 -exec rm -r {} \;
-	@conda uninstall ogcore --yes --quiet 2>&1 > /dev/null
+	@find . -name '*.pyc' -delete
+	@find . -maxdepth 1 -name '*cache' -exec rm -r {} +
 
-.PHONY=install
+.PHONY: install
 install:
-	pip install -e .[dev]
+	uv sync --extra dev --extra docs
 
-.PHONY=pytest
-pytest:
-	@cd ogcore ; pytest -W ignore
+.PHONY: pytest_all
+pytest_all:
+	uv run python -m pytest
+
+.PHONY: pytest_ci
+pytest_ci:
+	uv run python -m pytest -m "not local and not benchmark"
 
 ogcore_JSON_FILES := $(shell ls -l ./ogcore/*json | awk '{print $$9}')
-
-.PHONY=cstest
-cstest:
-	-pycodestyle ogcore
-	-pycodestyle --ignore=E501,E121 $(ogcore_JSON_FILES)
 
 define coverage-cleanup
 rm -f .coverage htmlcov/*
 endef
 
-COVMARK = ""
+COVMARK = "not local and not benchmark"
 
 OS := $(shell uname -s)
 
-.PHONY=coverage
+.PHONY: coverage
 coverage:
 	@$(coverage-cleanup)
-	@coverage run -m pytest -v -m $(COVMARK) > /dev/null
-	@coverage html --ignore-errors
+	uv run python -m pytest -m $(COVMARK) -n 4 --cov=ogcore --cov-report=html --cov-report=term
 ifeq ($(OS), Darwin) # on Mac OS X
 	@open htmlcov/index.html
 else
 	@echo "Open htmlcov/index.html in browser to view report"
 endif
-	@$(pytest-cleanup)
 
-.PHONY=documentation
+.PHONY: documentation
 documentation:
-	uv run python -m ipykernel install --user --name=ogcore-dev
-	uv run jb clean docs
-	uv run python ./docs/make_params.py
-	uv run python ./docs/make_vars.py
-	uv run jb build ./docs/book
+	uv run --extra docs python -m ipykernel install --user --name=ogcore-dev
+	uv run --extra docs jb clean docs
+	uv run --extra docs python ./docs/make_params.py
+	uv run --extra docs python ./docs/make_vars.py
+	uv run --extra docs jb build ./docs/book
 
+.PHONY: format
 format:
 	uv run ruff format .
 	uv run ruff check . --fix
 	uv run linecheck . --fix
 
+.PHONY: pip-package
 pip-package:
 	uv build

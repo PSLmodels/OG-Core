@@ -51,5 +51,6 @@ ogcore/tests/OUTPUT_REFORM/*
 regression/OUTPUT_BASELINE/*
 regression/OUTPUT_REFORM*
 .vscode/
+.claude/
 *default.profraw
 *un_api_token.txt
