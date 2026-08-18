@@ -25,6 +25,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- `npv_table` in `output_tables.py` (Issue #1131): builds a table of the
+  net present value of the reform-minus-baseline change in flow variables
+  (e.g. `Y`) over a horizon, evaluated at a list of discount rates. Values
+  are un-stationarized by default so the NPV is taken over the actual
+  (trend-inclusive) level path.
 - Stall detection for the TPI outer loop (Issue #1177): when the best
   distance has not improved over the last `TPI_stall_window` iterations
   (default 50; 0 disables), `run_TPI` logs a diagnosis distinguishing a
