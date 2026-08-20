@@ -107,17 +107,17 @@
     C_{i,t} \equiv \sum_{s=E+1}^{E+S}\sum_{j=1}^{J}\omega_{s,t}\lambda_j c_{i,j,s,t} \quad\forall i,t
   ```
 
-  Because we make a simplifying assumption that only the $M$th industry output can be used as investment, government spending, or government debt, consumption demand equals total output of good $m$ in the first $M-1$ industries.
+  Government consumption and infrastructure investment are also fixed-coefficient composites. Let $\pi_{I+1,m}$ and $\pi_{I+2,m}$ be the shares of industry $m$ used in one unit of those goods. Because private capital goods and net international financial flows remain assigned to industry $M$, the first $M-1$ goods-market conditions are
   ```{math}
   :label: EqMarkClrGoods_Mm1
-    Y_{m,t} = C_{m,t} \quad\forall t \quad\text{and}\quad m=1,2,...M-1
+    Y_{m,t} = C_{m,t} + \pi_{I+1,m}G_t + \pi_{I+2,m}I_{g,t} \quad\forall t \quad\text{and}\quad m=1,2,...M-1
   ```
 
-  The output of the $M$th industry can be used for private investment, infrastructure investment, government spending, and government debt.[^M_ind] As such, the market clearing condition in the $M$th industry will look more like the traditional $Y=C+I+G+NX$ expression.[^RCrates_note]
+  Industry $M$ additionally produces all private capital goods and absorbs the modeled net international financial flows.[^M_ind]
 
   ```{math}
   :label: EqMarkClrGoods_M
-    Y_{M,t} = C_{M,t} + I_{M,t} + I_{g,t} + G_t + r_{p,t} K^f_t + r_{p,t}D^f_t - (K^f_{t+1} - K^f_t) - \bigl(D^f_{t+1} - D^f_t\bigr) - RM_t \quad\forall t
+    Y_{M,t} = C_{M,t} + \pi_{I+1,M}G_t + \pi_{I+2,M}I_{g,t} + I_{M,t} + r_{p,t} K^f_t + r_{p,t}D^f_t - (K^f_{t+1} - K^f_t) - \bigl(D^f_{t+1} - D^f_t\bigr) - RM_t \quad\forall t
   ```
   where
   ```{math}

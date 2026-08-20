@@ -3,7 +3,7 @@
 Output Table Functions
 =================================================
 
-**output_tabls.py modules*
+**output_tables.py modules**
 
 ogcore.output_tables
 ------------------------------------------

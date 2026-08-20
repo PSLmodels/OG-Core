@@ -524,10 +524,7 @@ def inner_loop(guesses, outer_loop_vars, initial_values, ubi, j, ind, p):
     r_p, r, w, p_m, BQ, RM, TR, theta = outer_loop_vars
 
     # compute composite good price
-    p_i = (
-        np.tile(p.io_matrix.reshape(1, p.I, p.M), (p.T + p.S, 1, 1))
-        * np.tile(p_m.reshape(p.T + p.S, 1, p.M), (1, p.I, 1))
-    ).sum(axis=2)
+    p_i, _, _ = aggr.get_io_prices(p_m, p, "TPI")
     p_tilde = aggr.get_ptilde(p_i[:, :], p.tau_c[:, :], p.alpha_c, "TPI")
     # compute bq
     bq = household.get_bq(BQ, None, p, "TPI")
@@ -804,10 +801,7 @@ def run_TPI(p, client=None):
     p_m = p_m / p_m[:, -1].reshape(
         p.T + p.S, 1
     )  # normalize prices by industry M
-    p_i = (
-        np.tile(p.io_matrix.reshape(1, p.I, p.M), (p.T + p.S, 1, 1))
-        * np.tile(p_m.reshape(p.T + p.S, 1, p.M), (1, p.I, 1))
-    ).sum(axis=2)
+    p_i, p_g, p_Ig = aggr.get_io_prices(p_m, p, "TPI")
     p_tilde = aggr.get_ptilde(p_i[:, :], p.tau_c[:, :], p.alpha_c, "TPI")
     if not any(p.zeta_K == 1):
         w[: p.T] = np.squeeze(
@@ -820,10 +814,7 @@ def run_TPI(p, client=None):
     p_m = p_m / p_m[:, -1].reshape(
         p.T + p.S, 1
     )  # normalize prices by industry M
-    p_i = (
-        np.tile(p.io_matrix.reshape(1, p.I, p.M), (p.T + p.S, 1, 1))
-        * np.tile(p_m.reshape(p.T + p.S, 1, p.M), (1, p.I, 1))
-    ).sum(axis=2)
+    p_i, p_g, p_Ig = aggr.get_io_prices(p_m, p, "TPI")
     p_tilde = aggr.get_ptilde(p_i[:, :], p.tau_c[:, :], p.alpha_c, "TPI")
     # path for interest rates
     r = np.zeros_like(Y)
@@ -979,10 +970,7 @@ def run_TPI(p, client=None):
     while (TPIiter < p.maxiter) and (TPIdist >= p.mindist_TPI):
         outer_loop_vars = (r_p, r, w, p_m, BQ, RM, TR, theta)
         # compute composite good price
-        p_i = (
-            np.tile(p.io_matrix.reshape(1, p.I, p.M), (p.T + p.S, 1, 1))
-            * np.tile(p_m.reshape(p.T + p.S, 1, p.M), (1, p.I, 1))
-        ).sum(axis=2)
+        p_i, p_g, p_Ig = aggr.get_io_prices(p_m, p, "TPI")
         p_tilde = aggr.get_ptilde(p_i[:, :], p.tau_c[:, :], p.alpha_c, "TPI")
 
         # Initialize Euler errors
@@ -1192,9 +1180,11 @@ def run_TPI(p, client=None):
         for i_ind in range(p.I):
             C_vec[:, i_ind] = aggr.get_C(c_i[: p.T, i_ind, :, :], p, "TPI")
         Y_vec = (
-            np.tile(p.io_matrix.reshape(1, p.I, p.M), (p.T, 1, 1))
+            np.tile(p.io_matrix[: p.I, :].reshape(1, p.I, p.M), (p.T, 1, 1))
             * np.tile(C_vec[: p.T, :].reshape(p.T, p.I, 1), (1, 1, p.M))
         ).sum(axis=1)
+        Y_vec += G[: p.T, None] * p.io_matrix[p.I, :]
+        Y_vec += I_g[: p.T, None] * p.io_matrix[p.I + 1, :]
         for m_ind in range(p.M - 1):
             KYrat_m = firm.get_KY_ratio(
                 r[: p.T], p_m[: p.T, :], p, "TPI", m_ind
@@ -1281,9 +1271,12 @@ def run_TPI(p, client=None):
             UBI_outlays,
             TR,
             I_g,
+            p_g,
+            p_Ig,
             Gbaseline,
             D0_baseline,
         )
+        G_old = G[: p.T].copy()
         (
             Dnew,
             G[: p.T],
@@ -1294,6 +1287,9 @@ def run_TPI(p, client=None):
             debt_service,
             new_borrowing_f,
         ) = fiscal.D_G_path(r, dg_fixed_values, p)
+        G_dist = np.abs(G[: p.T] - G_old) / np.maximum.reduce(
+            [np.abs(G[: p.T]), np.abs(G_old), np.ones(p.T)]
+        )
 
         rnew = r.copy()
         rnew[: p.T] = np.squeeze(
@@ -1341,6 +1337,7 @@ def run_TPI(p, client=None):
         new_p_m = new_p_m / new_p_m[:, -1].reshape(
             p.T, 1
         )  # normalize prices by industry M
+        _, new_p_g, new_p_Ig = aggr.get_io_prices(new_p_m, p, "TPI")
 
         b_mat_shift = np.append(
             np.reshape(initial_b, (1, p.S, p.J)),
@@ -1389,6 +1386,8 @@ def run_TPI(p, client=None):
             agg_pension_outlays[: p.T],
             UBI_outlays[: p.T],
             I_g[: p.T],
+            new_p_g[: p.T],
+            new_p_Ig[: p.T],
             p,
             "TPI",
         )
@@ -1427,7 +1426,10 @@ def run_TPI(p, client=None):
             # post-update TPIdist below is spuriously ~0 for steps that set
             # x_next ~= gx (e.g. Anderson's undamped first step), so it is
             # overridden with this to avoid declaring false convergence.
-            accel_dist = float(np.max(utils.pct_diff_func(gx, x)))
+            accel_dist = max(
+                float(np.max(utils.pct_diff_func(gx, x))),
+                float(np.max(G_dist)),
+            )
             # Anchored/trust-region control: grow the radius after an improving
             # accelerated step and shrink it (resetting the memory) after a
             # worsening one, using the residual trend as the accept/reject
@@ -1506,6 +1508,7 @@ def run_TPI(p, client=None):
             )
             + list(utils.pct_diff_func(BQnew[: p.T], BQ[: p.T]).flatten())
             + list(utils.pct_diff_func(TR_new[: p.T], TR[: p.T]))
+            + list(G_dist)
         ).max()
         if outer_updater is not None:
             # accelerated methods: use the true residual accel_dist, computed
@@ -1665,18 +1668,16 @@ def run_TPI(p, client=None):
         debt_service_f[: p.T],
         p,
     )
-    # Fill in arrays, noting that M-1 industries only produce consumption goods
-    G_vec = np.zeros((p.T, p.M))
-    G_vec[:, -1] = G[: p.T]
+    # Map government composite quantities into their industry inputs.
+    G_vec = G[: p.T, None] * p.io_matrix[p.I, :]
     # Map consumption goods back to demands for production goods
     C_m_vec = (
-        np.tile(p.io_matrix.reshape(1, p.I, p.M), (p.T, 1, 1))
+        np.tile(p.io_matrix[: p.I, :].reshape(1, p.I, p.M), (p.T, 1, 1))
         * np.tile(C_vec[: p.T, :].reshape(p.T, p.I, 1), (1, 1, p.M))
     ).sum(axis=1)
     I_d_vec = np.zeros((p.T, p.M))
     I_d_vec[:, -1] = I_d[: p.T]
-    I_g_vec = np.zeros((p.T, p.M))
-    I_g_vec[:, -1] = I_g[: p.T]
+    I_g_vec = I_g[: p.T, None] * p.io_matrix[p.I + 1, :]
     net_capital_outflows_vec = np.zeros((p.T, p.M))
     net_capital_outflows_vec[:, -1] = net_capital_outflows[: p.T]
     RM_vec = np.zeros((p.T, p.M))
@@ -1746,8 +1747,8 @@ def run_TPI(p, client=None):
         "total_government_outlays": (
             TR[: p.T, ...]
             + UBI[: p.T, ...]
-            + G[: p.T, ...]
-            + I_g[: p.T, ...]
+            + p_g[: p.T, ...] * G[: p.T, ...]
+            + p_Ig[: p.T, ...] * I_g[: p.T, ...]
             + debt_service[: p.T, ...]
             + agg_pension_outlays[: p.T, ...]
         ),
@@ -1755,8 +1756,8 @@ def run_TPI(p, client=None):
             agg_pension_outlays[: p.T, ...]
             + TR[: p.T, ...]
             + UBI[: p.T, ...]
-            + G[: p.T, ...]
-            + I_g[: p.T, ...]
+            + p_g[: p.T, ...] * G[: p.T, ...]
+            + p_Ig[: p.T, ...] * I_g[: p.T, ...]
         ),
         "total_tax_revenue": total_tax_revenue[: p.T, ...],
         "business_tax_revenue": business_tax_revenue[: p.T, ...],
@@ -1779,6 +1780,8 @@ def run_TPI(p, client=None):
         "w": w[: p.T, ...],
         "p_m": p_m[: p.T, ...],
         "p_i": p_i[: p.T, ...],
+        "p_g": p_g[: p.T, ...],
+        "p_Ig": p_Ig[: p.T, ...],
         "p_tilde": p_tilde[: p.T, ...],
         "b_sp1": bmat_splus1[: p.T, ...],
         "b_s": bmat_s[: p.T, ...],

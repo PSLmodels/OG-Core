@@ -87,6 +87,16 @@ class Specifications(paramtools.Parameters):
         self.T = int(self.T)
         self.J = len(self.lambdas)
 
+        io_matrix = np.asarray(self.io_matrix)
+        expected_io_shape = (self.I + 2, self.M)
+        if io_matrix.shape != expected_io_shape:
+            raise ValueError(
+                "io_matrix must have shape "
+                f"(I + 2, M)={expected_io_shape}; got {io_matrix.shape}."
+            )
+        if not np.allclose(io_matrix.sum(axis=1), 1.0):
+            raise ValueError("Each row of io_matrix must sum to 1.")
+
         # beta_annual and chi_b carry one value per lifetime-income group, but
         # paramtools validates values and nesting depth, not list length, so a
         # wrong-length vector used to flow through silently: a short one

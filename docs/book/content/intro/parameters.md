@@ -221,7 +221,7 @@ _Out-of-Range Action:_ error
 
 
 ####  `io_matrix`  
-_Description:_ Input-output matrix used to map production outputs into consumption goods using a fixed coefficient model.  This matrix has dimensions I x M, where I is the number of distinct consumption goods and M is the number of distinct production goods.  The sum each row of this matrix must be 1.  
+_Description:_ Input-output matrix used to map production outputs into consumption and government goods using a fixed coefficient model. This matrix has dimensions (I + 2) x M. The first I rows map consumption goods, row I maps government consumption, and row I + 1 maps infrastructure investment. The sum of each row must be 1.  
 _Value Type:_ float  
 _Valid Range:_ min = 0.0 and max = 1.0  
 _Out-of-Range Action:_ error  
@@ -933,6 +933,8 @@ _Valid Range:_ min = 0.0 and max = 100.0
 _Out-of-Range Action:_ error  
 
 
+<<<<<<< HEAD
+=======
 ####  `TPI_stall_window`  
 _Description:_ Number of trailing TPI outer-loop iterations over which the best distance must improve on the best from before the window. When it does not, the loop has stalled (cycling or diverging) and a diagnosis is logged; see TPI_stall_action for whether the loop also stops. A value of 0 disables stall detection.  
 _Value Type:_ int  
@@ -946,6 +948,7 @@ _Value Type:_ str
 _Valid Choices:_['warn', 'stop']  
 
 
+>>>>>>> upstream/master
 ####  `SS_root_method`  
 _Description:_ Root finding algorithm for outer loop of the SS solution.  
 _Notes:_ Uses scipy.optimize.root, please see scipy documentation for description of methods. Note that some methods may require more arguments than are in the function calls in SS.py and TPI.py and will therefore break without modifications of the source code.  
