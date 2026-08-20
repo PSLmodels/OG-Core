@@ -545,7 +545,7 @@
         "type": "array-like",
         "TPI dimensions": "",
         "SS dimensions": "J",
-        "label": "Replacement rate ($\theta_j$)",
+        "label": "Replacement rate ($\\theta_j$)",
         "toGDP_label": ""
     },
     "factor": {

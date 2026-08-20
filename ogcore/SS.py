@@ -998,7 +998,7 @@ def SS_solver(
         r_p_ss,
         wss,
         bssmat_s,
-        bqssmat,
+        nssmat,
         factor_ss,
         0,
         None,
@@ -1053,6 +1053,10 @@ def SS_solver(
     yss_before_tax_mat = household.get_y(
         r_p_ss, wss, bssmat_s, nssmat, p, "SS"
     )
+    labor_income_ss = (
+        wss * nssmat * np.squeeze(p.e[-1, :, :]).reshape((p.S, p.J))
+    )
+    capital_income_ss = r_p_ss * bssmat_s
     Css = aggr.get_C(cssmat, p, "SS")
     c_i_ss_mat = household.get_ci(
         cssmat, p_i_ss, p_tilde_ss, p.tau_c[-1, :], p.alpha_c, p.c_min
@@ -1246,7 +1250,10 @@ def SS_solver(
         "tr": trssmat,
         "ubi": ubissmat,
         "before_tax_income": yss_before_tax_mat,
+        "labor_income": labor_income_ss,
+        "capital_income": capital_income_ss,
         "hh_net_taxes": taxss,
+        "income_payroll_taxes": income_tax_ss,
         "sales_tax": sales_tax_ss[: p.T, ...],
         "wealth_tax": wealth_tax_ss[: p.T, ...],
         "bequest_tax": bq_tax_ss[: p.T, ...],

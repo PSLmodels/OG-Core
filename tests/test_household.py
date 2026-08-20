@@ -179,6 +179,38 @@ def test_get_bq(BQ, j, p, method, expected):
     assert np.allclose(test_value, expected)
 
 
+def test_get_bq_conserves_with_income_varying_demographics():
+    """
+    Bequests received must equal bequests left when group population
+    shares differ from lambdas, as they do with demographic gradients
+    across lifetime income groups (mortality varying by j).
+    """
+    p = Specifications()
+    p.S = 3
+    p.J = 2
+    p.T = 3
+    p.lambdas = np.array([0.6, 0.4])
+    p.use_zeta = False
+    # non-separable omega: group 0 has relatively fewer old survivors
+    p.omega_SS = np.array([[0.18, 0.08], [0.15, 0.10], [0.22, 0.27]])
+    assert not np.allclose(p.omega_SS.sum(axis=0), p.lambdas)
+    p.omega = np.tile(p.omega_SS.reshape((1, p.S, p.J)), (p.T, 1, 1))
+    BQ = np.array([1.7, 3.1])
+    # SS, all j
+    bq = household.get_bq(BQ, None, p, "SS")
+    received = (bq * p.omega_SS).sum()
+    assert np.allclose(received, BQ.sum())
+    # SS, each j
+    for j in range(p.J):
+        bq_j = household.get_bq(BQ, j, p, "SS")
+        assert np.allclose((bq_j * p.omega_SS[:, j]).sum(), BQ[j])
+    # TPI, all j
+    BQ_path = np.tile(BQ.reshape((1, p.J)), (p.T, 1))
+    bq_path = household.get_bq(BQ_path, None, p, "TPI")
+    received_path = (bq_path * p.omega[: p.T]).sum(axis=(1, 2))
+    assert np.allclose(received_path, BQ_path.sum(axis=1))
+
+
 p1 = Specifications()
 p1.eta = np.tile(
     np.array([[0.1, 0.3], [0.15, 0.4], [0.05, 0.0]]).reshape(1, p2.S, p2.J),

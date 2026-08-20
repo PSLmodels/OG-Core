@@ -922,6 +922,8 @@ def run_TPI(p, client=None):
     TPIdist = 10
     euler_errors = np.zeros((p.T, 2 * p.S, p.J))
     TPIdist_vec = np.zeros(p.maxiter)
+    stall = None
+    stall_reported = None
     # Pluggable outer-loop update rule. Default "picard" -> None -> the native
     # damped functional-iteration path below (unchanged, so golden outputs
     # are preserved); "anderson" accelerates using the residual history. See
@@ -1528,6 +1530,37 @@ def run_TPI(p, client=None):
         TPIiter += 1
         logger.info(f"Iteration: {TPIiter}")
         logger.info(f"Distance: {TPIdist}")
+        # Stall detection: when the best distance has stopped improving
+        # over a window of iterations, further iterations repeat the same
+        # pattern and cannot reach the tolerance -- diagnose the cause and,
+        # if TPI_stall_action="stop", end the loop early (the solution
+        # checks after the loop then fail the run as any non-convergence).
+        # In the default warn mode the diagnosis is logged once per stall,
+        # and again only if it changes (e.g. escalates to diverging).
+        stall = solvers.diagnose_stall(
+            TPIdist_vec, TPIiter, p.TPI_stall_window
+        )
+        if stall != stall_reported:
+            stall_reported = stall
+            if stall == "diverging":
+                logger.error(
+                    "TPI stalled and diverging: the best distance over "
+                    f"the last {p.TPI_stall_window} iterations is far "
+                    "above the earlier best. This usually signals an "
+                    "inconsistent fiscal block (spending, revenue, and "
+                    "debt_ratio_ss), not a solver problem."
+                )
+            elif stall == "oscillating":
+                logger.error(
+                    "TPI stalled: the best distance has not improved "
+                    f"over the last {p.TPI_stall_window} iterations "
+                    f"(current {TPIdist:.2e}, tolerance "
+                    f"{p.mindist_TPI}). The outer loop is cycling; try "
+                    "a lower nu, or TPI_outer_method='anderson' if not "
+                    "already enabled."
+                )
+        if stall is not None and p.TPI_stall_action == "stop":
+            break
 
     # Compute effective and marginal tax rates for all agents
     num_params = len(p.mtrx_params[0][0])
@@ -1771,6 +1804,8 @@ def run_TPI(p, client=None):
         "etr": etr_path[: p.T, ...],
         "mtrx": mtrx_path[: p.T, ...],
         "mtry": mtry_path[: p.T, ...],
+        "theta": theta,
+        "factor": factor,
         "euler_savings": eul_savings[: p.T, ...],
         "euler_labor_leisure": eul_laborleisure[: p.T, ...],
         "resource_constraint_error": RC_error[: p.T, ...],
@@ -1791,9 +1826,18 @@ def run_TPI(p, client=None):
     if (
         (TPIiter >= p.maxiter) or (np.absolute(TPIdist) > p.mindist_TPI)
     ) and ENFORCE_SOLUTION_CHECKS:
-        raise RuntimeError(
-            "Transition path equlibrium not found" + " (TPIdist)"
-        )
+        msg = "Transition path equlibrium not found (TPIdist)"
+        if stall == "oscillating":
+            msg += (
+                "; the outer loop stalled cycling -- try a lower nu, or "
+                "TPI_outer_method='anderson'"
+            )
+        elif stall == "diverging":
+            msg += (
+                "; the outer loop stalled diverging -- check the fiscal "
+                "block (spending, revenue, debt_ratio_ss)"
+            )
+        raise RuntimeError(msg)
 
     if (np.any(np.absolute(RC_error) >= p.RC_TPI)) and ENFORCE_SOLUTION_CHECKS:
         raise RuntimeError(

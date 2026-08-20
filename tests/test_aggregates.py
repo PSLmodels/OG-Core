@@ -1745,6 +1745,45 @@ def test_revenue(
     assert np.allclose(revenue, expected)
 
 
+def test_get_payroll_tax_revenue():
+    """
+    Test of the aggregates.get_payroll_tax_revenue function.
+
+    Checks both ways of representing payroll taxes: embedded in the
+    income and payroll tax functions (tau_payroll == 0, the default) and
+    modeled explicitly via the tau_payroll parameter.
+    """
+    p = Specifications()
+    p.T = 3
+    iit_payroll_ss = 10.0
+    iit_payroll_tpi = np.array([10.0, 11.0, 12.0])
+    w_ss = 1.2
+    L_ss = np.array([2.0, 3.0])  # labor by industry
+    w_tpi = np.array([1.0, 1.1, 1.2])
+    L_tpi = np.array([[1.0, 2.0], [1.5, 2.5], [2.0, 3.0]])  # (T, M)
+
+    # Payroll taxes embedded in the tax functions (tau_payroll == 0)
+    p.tau_payroll = np.zeros(p.T)
+    p.frac_tax_payroll = np.array([0.5, 0.5, 0.5])
+    pr_ss = aggr.get_payroll_tax_revenue(w_ss, L_ss, iit_payroll_ss, p, "SS")
+    assert np.allclose(pr_ss, 0.5 * iit_payroll_ss)
+    pr_tpi = aggr.get_payroll_tax_revenue(
+        w_tpi, L_tpi, iit_payroll_tpi, p, "TPI"
+    )
+    assert np.allclose(pr_tpi, 0.5 * iit_payroll_tpi)
+
+    # Payroll taxes modeled explicitly via tau_payroll
+    p.tau_payroll = np.array([0.1, 0.2, 0.3])
+    pr_ss = aggr.get_payroll_tax_revenue(w_ss, L_ss, iit_payroll_ss, p, "SS")
+    assert np.allclose(pr_ss, 0.3 * w_ss * L_ss.sum())
+    pr_tpi = aggr.get_payroll_tax_revenue(
+        w_tpi, L_tpi, iit_payroll_tpi, p, "TPI"
+    )
+    assert np.allclose(
+        pr_tpi, np.array([0.1, 0.2, 0.3]) * w_tpi * L_tpi.sum(-1)
+    )
+
+
 test_data = [
     (
         0.04,

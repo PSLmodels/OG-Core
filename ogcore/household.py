@@ -192,21 +192,30 @@ def get_bq(BQ, j, p, method):
                     * utils.to_timepath_shape(BQ)
                 ) / p.omega[:len_T, :, :]
     else:
+        # Divide each group's bequest pool by its actual population share
+        # rather than its birth share (lambdas): with demographic gradients
+        # across income groups (PR #1165), survivorship differs by group and
+        # the two are no longer equal. With common demographics they
+        # coincide, so results are unchanged in that case.
         if j is not None:
             if method == "SS":
-                bq = np.tile(BQ[j], p.S) / p.lambdas[j]
+                pop_j = p.omega_SS[:, j].sum()
+                bq = np.tile(BQ[j], p.S) / pop_j
             if method == "TPI":
                 len_T = BQ.shape[0]
+                pop_j = p.omega[:len_T, :, j].sum(axis=1)
                 bq = np.tile(
-                    np.reshape(BQ[:, j] / p.lambdas[j], (len_T, 1)), (1, p.S)
+                    np.reshape(BQ[:, j] / pop_j, (len_T, 1)), (1, p.S)
                 )
         else:
             if method == "SS":
-                BQ_per = BQ / np.squeeze(p.lambdas)
+                pop = p.omega_SS.sum(axis=0)
+                BQ_per = BQ / pop
                 bq = np.tile(np.reshape(BQ_per, (1, p.J)), (p.S, 1))
             if method == "TPI":
                 len_T = BQ.shape[0]
-                BQ_per = BQ / p.lambdas.reshape(1, p.J)
+                pop = p.omega[:len_T, :, :].sum(axis=1)
+                BQ_per = BQ / pop
                 bq = np.tile(np.reshape(BQ_per, (len_T, 1, p.J)), (1, p.S, 1))
     return bq
 
@@ -875,11 +884,11 @@ def constraint_checker_TPI(b_dist, n_dist, c_dist, t, ltilde):
         )
     if (n_dist > ltilde).any():
         logger.info(
-            "\tWARNING: Labor suppy violates the ltilde constraint",
-            " in period %.f." % t,
+            "\tWARNING: Labor suppy violates the ltilde constraint"
+            f" in period {t}."
         )
     if (c_dist < 0).any():
         logger.info(
-            "\tWARNING: Consumption violates nonnegativity",
-            " constraints in period %.f." % t,
+            "\tWARNING: Consumption violates nonnegativity"
+            f" constraints in period {t}."
         )
