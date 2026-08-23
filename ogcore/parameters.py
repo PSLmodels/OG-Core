@@ -303,6 +303,11 @@ class Specifications(paramtools.Parameters):
             param_in, dims=(self.T, self.S, self.J), item="e"
         )
         setattr(self, "e", param_out)
+        # shape the supplied initial wealth distribution to (S, J); when it is
+        # not used (use_initial_b_dist is False) this is the harmless default
+        self.initial_b_dist = extrapolate_array(
+            self.initial_b_dist, dims=(self.S, self.J), item="initial_b_dist"
+        )
         # Extrapolate chi_n over T + S
         param_in = getattr(self, "chi_n")
         param_out = extrapolate_array(

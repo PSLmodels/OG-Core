@@ -1085,6 +1085,41 @@
             }
         }
     },
+    "use_initial_b_dist": {
+        "title": "Flag to use a supplied initial distribution of wealth",
+        "description": "If true, the initial (t=0) distribution of wealth across ages and ability types is taken from initial_b_dist rather than from the steady-state distribution. Useful when the model start-year age structure is far from its steady state.",
+        "short_description": "Whether to use a supplied initial wealth distribution",
+        "param_notation": "$\\texttt{use_initial_b_dist}$",
+        "section_1": "Household Parameters",
+        "section_2": "Endowments",
+        "notes": "",
+        "type": "bool",
+        "value": [
+            {
+                "value": false
+            }
+        ]
+    },
+    "initial_b_dist": {
+        "title": "Initial distribution of wealth over ages and ability types",
+        "description": "Shape of the initial (t=0) distribution of household wealth across ages (S) and ability types (J), used only when use_initial_b_dist is true. Only the shape matters: the aggregate is rescaled to the steady-state level inside the transition solver, so units are arbitrary.",
+        "short_description": "Supplied initial wealth distribution by age and type",
+        "param_notation": "$b_{j,s,0}$",
+        "section_1": "Household Parameters",
+        "section_2": "Endowments",
+        "notes": "",
+        "type": "float",
+        "number_dims": 2,
+        "value": [
+            {
+                "value": [
+                    [
+                        0.0
+                    ]
+                ]
+            }
+        ]
+    },
     "initial_Kg_ratio": {
         "title": "Government capital (public capital) to GDP ratio in the initial period",
         "description": "Government capital (aka infrastructure) to GDP ratio in the initial period.",

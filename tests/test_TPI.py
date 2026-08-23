@@ -258,6 +258,48 @@ def test_get_initial_SS_values(baseline, param_updates, filename, tmpdir):
         )
 
 
+def test_get_initial_SS_values_custom_dist(tmpdir):
+    """
+    A supplied initial wealth distribution (use_initial_b_dist) overrides the
+    shape of initial_b but leaves its aggregate scaled to the steady-state B,
+    and leaving the flag off reproduces the default behavior exactly.
+    """
+    old_baseline_dir = os.path.join(CUR_PATH, "test_io_data", "OUTPUT")
+    ss_vars = utils.safe_read_pickle(
+        os.path.join(old_baseline_dir, "SS", "SS_vars.pkl")
+    )
+    ss_vars_new = {SS_VAR_NAME_MAPPING[k]: v for k, v in ss_vars.items()}
+    baseline_dir = os.path.join(tmpdir, "baseline")
+    utils.mkdirs(os.path.join(baseline_dir, "SS"))
+    with open(os.path.join(baseline_dir, "SS", "SS_vars.pkl"), "wb") as f:
+        pickle.dump(ss_vars_new, f)
+
+    # default (flag off)
+    p_off = Specifications(baseline=True, num_workers=NUM_WORKERS)
+    p_off.baseline_dir = p_off.output_base = baseline_dir
+    iv_off = TPI.get_initial_SS_values(p_off)[0]
+    B0_off, initial_b_off = iv_off[0], iv_off[4]
+
+    # supplied distribution (flag on)
+    rng = np.random.default_rng(1)
+    custom = rng.random((p_off.S, p_off.J)) + 0.05
+    p_on = Specifications(baseline=True, num_workers=NUM_WORKERS)
+    p_on.update_specifications(
+        {"use_initial_b_dist": True, "initial_b_dist": custom.tolist()}
+    )
+    p_on.baseline_dir = p_on.output_base = baseline_dir
+    iv_on = TPI.get_initial_SS_values(p_on)[0]
+    B0_on, initial_b_on = iv_on[0], iv_on[4]
+
+    # aggregate is preserved (both scaled to the same steady-state B)
+    assert np.isclose(B0_on, B0_off, rtol=1e-10)
+    # the shape is actually overridden
+    assert not np.allclose(initial_b_on, initial_b_off)
+    # and the resulting per-capita distribution is proportional to the input
+    ratio = initial_b_on / custom
+    assert np.allclose(ratio, ratio.flat[0], rtol=1e-9)
+
+
 def test_firstdoughnutring():
     # Test TPI.firstdoughnutring function.  Provide inputs to function and
     # ensure that output returned matches what it has been before.
