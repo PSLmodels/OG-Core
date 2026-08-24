@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "ogcore"
-version = "0.19.2"
+version = "0.20.0"
 authors = [
     {name = "Jason DeBacker and Richard W. Evans"},
 ]
@@ -40,6 +40,9 @@ dependencies = [
 [project.urls]
 Homepage = "https://github.com/PSLmodels/OG-Core/"
 "Issue Tracker" = "https://github.com/PSLmodels/OG-Core/issues"
+
+[project.scripts]
+og-token = "ogcore.demographics:un_token_cli"
 
 [project.optional-dependencies]
 dev = [

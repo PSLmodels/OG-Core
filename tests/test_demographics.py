@@ -1,6 +1,9 @@
 import numpy as np
 import pytest
 import os
+import base64
+import datetime
+import json
 from ogcore import demographics
 
 # Read in some test population data to use in select tests below
@@ -820,3 +823,427 @@ def test_expand_pop_obj_J_preserves_aggregate_mortality_with_gradients():
     assert np.allclose(omega.sum(axis=2), omega_path_S)
     assert np.allclose((within_age_weights * rho).sum(axis=2), mort_rates_S)
     assert np.all((rho >= 0) & (rho <= 1))
+
+
+"""
+------------------------------------------------------------------------
+Tests of the UN Data Portal API token resolution
+------------------------------------------------------------------------
+"""
+
+
+@pytest.fixture
+def isolated_token_env(monkeypatch, tmp_path):
+    """
+    Point token resolution at a temporary home and working directory so
+    the tests never read or write the developer's real token.
+    """
+    home = tmp_path / "home"
+    cwd = tmp_path / "cwd"
+    home.mkdir()
+    cwd.mkdir()
+    monkeypatch.delenv("UN_API_TOKEN", raising=False)
+    monkeypatch.setenv("XDG_CONFIG_HOME", str(home / ".config"))
+    monkeypatch.setenv("APPDATA", str(home / "AppData"))
+    monkeypatch.setattr(demographics, "_WARNED_LEGACY_UN_TOKEN", False)
+    monkeypatch.setattr(demographics, "_HINTED_NO_UN_TOKEN", False)
+    monkeypatch.chdir(cwd)
+    return cwd
+
+
+class _Stdin:
+    """Stand-in for sys.stdin with a controllable isatty()."""
+
+    def __init__(self, interactive):
+        self.interactive = interactive
+
+    def isatty(self):
+        return self.interactive
+
+
+def _set_tty(monkeypatch, interactive):
+    """
+    Control whether resolution believes the session is interactive.
+    pytest captures stdin, so isatty() is False by default and the prompt
+    path has to be switched on explicitly.
+    """
+    monkeypatch.setattr("sys.stdin", _Stdin(interactive))
+
+
+def test_un_token_path_follows_platform_convention(monkeypatch, tmp_path):
+    """The token file sits under the user's config directory."""
+    monkeypatch.setenv("XDG_CONFIG_HOME", str(tmp_path / "cfg"))
+    monkeypatch.setenv("APPDATA", str(tmp_path / "cfg"))
+    path = demographics.un_token_path()
+    assert path.startswith(str(tmp_path / "cfg"))
+    assert path.endswith(demographics.UN_TOKEN_FILENAME)
+
+
+@pytest.mark.parametrize(
+    "raw,expected",
+    [
+        ("abc", "abc"),
+        ("  abc  ", "abc"),
+        ("Bearer abc", "abc"),
+        ("bearer  abc ", "abc"),
+        (None, ""),
+        ("", ""),
+    ],
+    ids=["plain", "padded", "bearer", "lower_bearer", "none", "empty"],
+)
+def test_clean_un_token(raw, expected):
+    """Whitespace and any 'Bearer ' prefix are removed."""
+    assert demographics._clean_un_token(raw) == expected
+
+
+def test_argument_wins_over_every_other_source(
+    isolated_token_env, monkeypatch
+):
+    """An explicit token beats the environment and both files."""
+    monkeypatch.setenv("UN_API_TOKEN", "from_env")
+    (isolated_token_env / demographics.UN_TOKEN_FILENAME).write_text(
+        "from_cwd"
+    )
+    assert demographics.resolve_un_token("from_arg") == "from_arg"
+
+
+def test_env_var_wins_over_files(isolated_token_env, monkeypatch):
+    """The environment variable beats both the user file and the cwd file."""
+    monkeypatch.setenv("UN_API_TOKEN", "Bearer from_env")
+    user_path = demographics.un_token_path()
+    os.makedirs(os.path.dirname(user_path), exist_ok=True)
+    with open(user_path, "w") as f:
+        f.write("from_user_file")
+    (isolated_token_env / demographics.UN_TOKEN_FILENAME).write_text(
+        "from_cwd"
+    )
+    assert demographics.resolve_un_token() == "from_env"
+
+
+def test_user_file_wins_over_cwd_file(isolated_token_env):
+    """The per-user file beats the deprecated working-directory file."""
+    user_path = demographics.un_token_path()
+    os.makedirs(os.path.dirname(user_path), exist_ok=True)
+    with open(user_path, "w") as f:
+        f.write("from_user_file\n")
+    (isolated_token_env / demographics.UN_TOKEN_FILENAME).write_text(
+        "from_cwd"
+    )
+    assert demographics.resolve_un_token() == "from_user_file"
+
+
+def test_empty_user_file_is_authoritative(isolated_token_env, monkeypatch):
+    """
+    A user who declined the prompt is not asked again, and the cwd file is
+    not consulted behind their back.
+    """
+    user_path = demographics.un_token_path()
+    os.makedirs(os.path.dirname(user_path), exist_ok=True)
+    with open(user_path, "w") as f:
+        f.write("")
+    (isolated_token_env / demographics.UN_TOKEN_FILENAME).write_text(
+        "from_cwd"
+    )
+
+    def _fail(*args, **kwargs):
+        raise AssertionError("the user should not be prompted again")
+
+    monkeypatch.setattr(demographics.getpass, "getpass", _fail)
+    assert demographics.resolve_un_token() == ""
+
+
+def test_cwd_file_still_works_and_warns(isolated_token_env, capsys):
+    """The old location keeps working, with a one-time deprecation notice."""
+    (isolated_token_env / demographics.UN_TOKEN_FILENAME).write_text(
+        "from_cwd"
+    )
+    assert demographics.resolve_un_token() == "from_cwd"
+    assert "deprecated" in capsys.readouterr().out
+    # the notice is not repeated on later calls in the same session
+    assert demographics.resolve_un_token() == "from_cwd"
+    assert "deprecated" not in capsys.readouterr().out
+
+
+def test_prompt_saves_to_the_user_file_not_the_working_directory(
+    isolated_token_env, monkeypatch
+):
+    """This is the behavior change: answering the prompt no longer leaves a
+    copy of the token in whatever directory the run started from."""
+    _set_tty(monkeypatch, True)
+    monkeypatch.setattr(
+        demographics.getpass, "getpass", lambda *a, **k: "typed_token"
+    )
+
+    assert demographics.resolve_un_token() == "typed_token"
+
+    user_path = demographics.un_token_path()
+    assert os.path.exists(user_path)
+    with open(user_path) as f:
+        assert f.read() == "typed_token"
+    assert not os.path.exists(
+        isolated_token_env / demographics.UN_TOKEN_FILENAME
+    )
+
+
+def test_no_prompt_when_not_interactive(isolated_token_env, monkeypatch):
+    """A scheduled run gets an empty token instead of hanging, and writes
+    nothing to disk."""
+    _set_tty(monkeypatch, False)
+
+    def _fail(*args, **kwargs):
+        raise AssertionError("a non-interactive session must not prompt")
+
+    monkeypatch.setattr(demographics.getpass, "getpass", _fail)
+    assert demographics.resolve_un_token() == ""
+    assert not os.path.exists(demographics.un_token_path())
+
+
+def test_get_un_data_sends_the_resolved_token(isolated_token_env, monkeypatch):
+    """The token reaches the request header, so the wiring from argument to
+    Authorization is covered and not just the resolver in isolation."""
+    sent = {}
+
+    class _Response:
+        status_code = 401  # short-circuits before any parsing
+
+    class _Session:
+        def get(self, target, headers=None, data=None):
+            sent["headers"] = headers
+            return _Response()
+
+    monkeypatch.setattr(demographics, "get_legacy_session", lambda: _Session())
+    demographics.get_un_data("47", un_token="Bearer explicit_token")
+    assert sent["headers"]["Authorization"] == "Bearer explicit_token"
+
+    monkeypatch.setenv("UN_API_TOKEN", "env_token")
+    demographics.get_un_data("47")
+    assert sent["headers"]["Authorization"] == "Bearer env_token"
+
+
+def test_un_token_cli_set_show_rm(isolated_token_env, monkeypatch, capsys):
+    """The og-token command round-trips: save, report, delete."""
+    monkeypatch.setattr(
+        demographics.getpass, "getpass", lambda *a, **k: "Bearer cli_tok1234"
+    )
+
+    assert demographics.un_token_cli(["set"]) == 0
+    path = demographics.un_token_path()
+    with open(path) as f:
+        assert f.read() == "cli_tok1234"  # the Bearer prefix is stripped
+    assert demographics.resolve_un_token() == "cli_tok1234"
+
+    assert demographics.un_token_cli(["show"]) == 0
+    out = capsys.readouterr().out
+    assert path in out
+    assert "a token is stored" in out
+    assert "cli_tok1234" not in out  # no part of the token is printed
+    assert "1234" not in out
+
+    assert demographics.un_token_cli(["rm"]) == 0
+    assert not os.path.exists(path)
+    assert demographics.un_token_cli(["rm"]) == 1  # nothing left to remove
+
+
+def test_un_token_cli_set_rejects_an_empty_answer(
+    isolated_token_env, monkeypatch, capsys
+):
+    """Pressing return at the prompt writes nothing and reports failure."""
+    monkeypatch.setattr(demographics.getpass, "getpass", lambda *a, **k: "  ")
+
+    assert demographics.un_token_cli(["set"]) == 1
+    assert not os.path.exists(demographics.un_token_path())
+    assert "Nothing was saved" in capsys.readouterr().out
+
+
+def test_un_token_cli_show_flags_the_environment_override(
+    isolated_token_env, monkeypatch, capsys
+):
+    """show warns when the environment variable will win over the file."""
+    monkeypatch.setenv("UN_API_TOKEN", "env_token")
+    assert demographics.un_token_cli(["show"]) == 0
+    assert "takes precedence" in capsys.readouterr().out
+
+
+@pytest.mark.parametrize(
+    "interrupt", [EOFError, KeyboardInterrupt], ids=["eof", "ctrl_c"]
+)
+def test_un_token_cli_set_handles_an_interrupted_prompt(
+    isolated_token_env, monkeypatch, capsys, interrupt
+):
+    """`og-token set < /dev/null` or Ctrl-C reports cleanly instead of
+    printing a traceback."""
+
+    def _raise(*args, **kwargs):
+        raise interrupt()
+
+    monkeypatch.setattr(demographics.getpass, "getpass", _raise)
+    assert demographics.un_token_cli(["set"]) == 1
+    assert "Cancelled" in capsys.readouterr().out
+    assert not os.path.exists(demographics.un_token_path())
+
+
+def test_prompt_offers_both_ways_out(isolated_token_env, monkeypatch, capsys):
+    """The prompt tells the user where to get a token and what happens if
+    they decline, rather than leaving them to guess."""
+    _set_tty(monkeypatch, True)
+    monkeypatch.setattr(demographics.getpass, "getpass", lambda *a, **k: "")
+
+    assert demographics.resolve_un_token() == ""
+    out = capsys.readouterr().out
+    assert demographics.UN_TOKEN_URL in out
+    assert demographics.UN_DATA_ARCHIVE_URL in out
+
+
+def test_hint_names_a_runnable_command_and_the_file(
+    isolated_token_env, monkeypatch, capsys
+):
+    """Falling back to the archive tells the user how to register a token.
+    `og-token` is installed beside the interpreter and is normally not on
+    the shell's PATH, so the hint has to give the full path, plus the file
+    as a way that needs no environment at all."""
+    _set_tty(monkeypatch, False)  # no prompt, straight to the fallback
+
+    assert demographics.resolve_un_token() == ""
+    out = capsys.readouterr().out
+    assert demographics.UN_TOKEN_URL in out
+    assert demographics.un_token_path() in out  # always actionable
+
+    command = demographics.og_token_command()
+    if command is not None:
+        assert command in out
+        assert os.path.isabs(command)  # copy-pasteable from any shell
+
+
+def test_hint_is_printed_once_per_session(
+    isolated_token_env, monkeypatch, capsys
+):
+    """get_pop_objs resolves a token once per series, so the hint must not
+    repeat three times in a single run."""
+    _set_tty(monkeypatch, False)
+
+    demographics.resolve_un_token()
+    first = capsys.readouterr().out
+    assert "No UN API token registered" in first
+
+    demographics.resolve_un_token()
+    demographics.resolve_un_token()
+    assert "No UN API token registered" not in capsys.readouterr().out
+
+
+def test_no_hint_when_a_token_is_present(
+    isolated_token_env, monkeypatch, capsys
+):
+    """Users who have a token are not nagged."""
+    monkeypatch.setenv("UN_API_TOKEN", "a_real_token")
+    assert demographics.resolve_un_token() == "a_real_token"
+    assert "No UN API token registered" not in capsys.readouterr().out
+
+
+def test_token_is_never_echoed_at_the_prompt(
+    isolated_token_env, monkeypatch, capsys
+):
+    """The token is a secret, so it is read with getpass and never reaches
+    the terminal or its scrollback. Reverting to input() would echo it."""
+    _set_tty(monkeypatch, True)
+
+    def _must_not_be_used(*args, **kwargs):
+        raise AssertionError("input() echoes; the token must use getpass")
+
+    monkeypatch.setattr("builtins.input", _must_not_be_used)
+    monkeypatch.setattr(
+        demographics.getpass, "getpass", lambda *a, **k: "s3cret_token"
+    )
+
+    assert demographics.resolve_un_token() == "s3cret_token"
+    out = capsys.readouterr().out
+    assert "s3cret_token" not in out  # not printed back either
+
+
+def _make_jwt(days_from_today):
+    """Build a token shaped like the portal's: three base64url segments
+    with an `exp` claim. Only the payload matters here; the signature is
+    never checked."""
+    exp = datetime.datetime.now(datetime.timezone.utc) + datetime.timedelta(
+        days=days_from_today
+    )
+
+    def seg(obj):
+        raw = json.dumps(obj).encode()
+        return base64.urlsafe_b64encode(raw).decode().rstrip("=")
+
+    return ".".join(
+        [
+            seg({"alg": "HS256", "typ": "JWT"}),
+            seg({"exp": int(exp.timestamp()), "unique_name": "someone"}),
+            "not_a_real_signature",
+        ]
+    )
+
+
+def test_un_token_expiry_reads_the_claim():
+    """The portal issues JWTs, so the expiry is readable without a call."""
+    expiry = demographics.un_token_expiry(_make_jwt(30))
+    assert (
+        expiry
+        == (
+            datetime.datetime.now(datetime.timezone.utc)
+            + datetime.timedelta(30)
+        ).date()
+    )
+
+
+@pytest.mark.parametrize(
+    "value",
+    ["opaque-token-with-no-dots", "a.b.c", "", None, 12345, "a..c"],
+    ids=["opaque", "not_base64", "empty", "none", "not_a_string", "empty_seg"],
+)
+def test_un_token_expiry_degrades_quietly(value):
+    """Anything not a readable JWT returns None rather than raising, so a
+    model run never dies because the portal changed its token format."""
+    assert demographics.un_token_expiry(value) is None
+
+
+def test_expired_token_is_reported_once(
+    isolated_token_env, monkeypatch, capsys
+):
+    """An expired token otherwise fails the same silent-looking way as a
+    missing one."""
+    monkeypatch.setattr(demographics, "_WARNED_EXPIRED_UN_TOKEN", False)
+    expired = _make_jwt(-5)
+    monkeypatch.setenv("UN_API_TOKEN", expired)
+
+    assert demographics.resolve_un_token() == expired  # still returned
+    out = capsys.readouterr().out
+    assert "expired on" in out
+    assert demographics.UN_TOKEN_URL in out
+    assert expired not in out  # the token itself is never printed
+
+    demographics.resolve_un_token()
+    assert "expired on" not in capsys.readouterr().out  # once per session
+
+
+def test_valid_token_is_not_flagged(isolated_token_env, monkeypatch, capsys):
+    """A token with time left produces no noise."""
+    monkeypatch.setattr(demographics, "_WARNED_EXPIRED_UN_TOKEN", False)
+    monkeypatch.setenv("UN_API_TOKEN", _make_jwt(60))
+
+    demographics.resolve_un_token()
+    assert "expired" not in capsys.readouterr().out
+
+
+@pytest.mark.parametrize(
+    "days,expected", [(-5, "expired on"), (60, "valid until")]
+)
+def test_cli_show_reports_expiry(
+    isolated_token_env, monkeypatch, capsys, days, expected
+):
+    """og-token show says whether the stored token is still usable."""
+    token = _make_jwt(days)
+    monkeypatch.setattr(demographics.getpass, "getpass", lambda *a, **k: token)
+    assert demographics.un_token_cli(["set"]) == 0
+    capsys.readouterr()
+
+    assert demographics.un_token_cli(["show"]) == 0
+    out = capsys.readouterr().out
+    assert expected in out
+    assert token not in out
