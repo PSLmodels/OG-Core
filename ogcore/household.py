@@ -884,11 +884,11 @@ def constraint_checker_TPI(b_dist, n_dist, c_dist, t, ltilde):
         )
     if (n_dist > ltilde).any():
         logger.info(
-            "\tWARNING: Labor suppy violates the ltilde constraint",
-            " in period %.f." % t,
+            "\tWARNING: Labor suppy violates the ltilde constraint"
+            f" in period {t}."
         )
     if (c_dist < 0).any():
         logger.info(
-            "\tWARNING: Consumption violates nonnegativity",
-            " constraints in period %.f." % t,
+            "\tWARNING: Consumption violates nonnegativity"
+            f" constraints in period {t}."
         )
