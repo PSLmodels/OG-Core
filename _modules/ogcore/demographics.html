@@ -428,6 +428,12 @@
 
 <span class="c1"># Import packages</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">sys</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">argparse</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">base64</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">datetime</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">getpass</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">json</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">io</span><span class="w"> </span><span class="kn">import</span> <span class="n">StringIO</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">scipy.optimize</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">opt</span>
@@ -438,6 +444,15 @@
 <span class="n">START_YEAR</span> <span class="o">=</span> <span class="mi">2024</span>
 <span class="n">END_YEAR</span> <span class="o">=</span> <span class="mi">2024</span>
 <span class="n">UN_COUNTRY_CODE</span> <span class="o">=</span> <span class="s2">"840"</span>  <span class="c1"># UN code for USA</span>
+<span class="n">UN_TOKEN_FILENAME</span> <span class="o">=</span> <span class="s2">"un_api_token.txt"</span>
+<span class="n">UN_TOKEN_URL</span> <span class="o">=</span> <span class="s2">"https://population.un.org/dataportalapi/index.html"</span>
+<span class="n">UN_DATA_ARCHIVE_URL</span> <span class="o">=</span> <span class="s2">"https://github.com/EAPD-DRB/Population-Data"</span>
+<span class="c1"># Warn only once per session about a token found in the working directory</span>
+<span class="n">_WARNED_LEGACY_UN_TOKEN</span> <span class="o">=</span> <span class="kc">False</span>
+<span class="c1"># Say how to register a token only once per session, not on every request</span>
+<span class="n">_HINTED_NO_UN_TOKEN</span> <span class="o">=</span> <span class="kc">False</span>
+<span class="c1"># Say a token has expired only once per session</span>
+<span class="n">_WARNED_EXPIRED_UN_TOKEN</span> <span class="o">=</span> <span class="kc">False</span>
 <span class="c1"># create output director for figures</span>
 <span class="n">CUR_PATH</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="vm">__file__</span><span class="p">))[</span><span class="mi">0</span><span class="p">]</span>
 <span class="n">OUTPUT_DIR</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">CUR_PATH</span><span class="p">,</span> <span class="s2">".."</span><span class="p">,</span> <span class="s2">"data"</span><span class="p">,</span> <span class="s2">"OUTPUT"</span><span class="p">,</span> <span class="s2">"Demographics"</span><span class="p">)</span>
@@ -452,6 +467,385 @@
 <span class="sd">"""</span>
 
 
+<div class="viewcode-block" id="un_token_path">
+<a class="viewcode-back" href="../../content/api/demographics.html#ogcore.demographics.un_token_path">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">un_token_path</span><span class="p">():</span>
+<span class="w">    </span><span class="sd">"""</span>
+<span class="sd">    This function returns the path of the per-user file that holds the UN</span>
+<span class="sd">    Data Portal API token. The location follows the platform convention</span>
+<span class="sd">    for user configuration files: ``$XDG_CONFIG_HOME`` (or ``~/.config``</span>
+<span class="sd">    when that is unset) on macOS and Linux, and ``%APPDATA%`` on Windows.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        path (str): full path to the user's UN API token file</span>
+<span class="sd">    """</span>
+    <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="s2">"nt"</span><span class="p">:</span>
+        <span class="n">base</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"APPDATA"</span><span class="p">)</span> <span class="ow">or</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">expanduser</span><span class="p">(</span><span class="s2">"~"</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">base</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"XDG_CONFIG_HOME"</span><span class="p">)</span> <span class="ow">or</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+            <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">expanduser</span><span class="p">(</span><span class="s2">"~"</span><span class="p">),</span> <span class="s2">".config"</span>
+        <span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">base</span><span class="p">,</span> <span class="s2">"og"</span><span class="p">,</span> <span class="n">UN_TOKEN_FILENAME</span><span class="p">)</span></div>
+
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_clean_un_token</span><span class="p">(</span><span class="n">un_token</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""</span>
+<span class="sd">    This function normalizes a UN Data Portal API token by removing</span>
+<span class="sd">    surrounding whitespace and any leading "Bearer " prefix, so that the</span>
+<span class="sd">    request header is not doubled into "Bearer Bearer &lt;token&gt;".</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        un_token (str): raw token, may be None</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        un_token (str): normalized token, empty string if none was given</span>
+<span class="sd">    """</span>
+    <span class="n">un_token</span> <span class="o">=</span> <span class="p">(</span><span class="n">un_token</span> <span class="ow">or</span> <span class="s2">""</span><span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+    <span class="k">if</span> <span class="n">un_token</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">"bearer "</span><span class="p">):</span>
+        <span class="n">un_token</span> <span class="o">=</span> <span class="n">un_token</span><span class="p">[</span><span class="nb">len</span><span class="p">(</span><span class="s2">"bearer "</span><span class="p">)</span> <span class="p">:]</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+
+    <span class="k">return</span> <span class="n">un_token</span>
+
+
+<div class="viewcode-block" id="un_token_expiry">
+<a class="viewcode-back" href="../../content/api/demographics.html#ogcore.demographics.un_token_expiry">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">un_token_expiry</span><span class="p">(</span><span class="n">un_token</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""</span>
+<span class="sd">    This function reads the expiry date out of a UN Data Portal API token.</span>
+<span class="sd">    The portal issues JSON Web Tokens, whose middle segment carries an</span>
+<span class="sd">    ``exp`` claim, so the date can be read without a network call. The</span>
+<span class="sd">    signature is not checked and is not needed here: the portal remains</span>
+<span class="sd">    the authority on whether a token is accepted, and this is only used to</span>
+<span class="sd">    tell a user that renewing is due.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        un_token (str): token to inspect</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        expiry (datetime.date): expiry date, or None when the token is not</span>
+<span class="sd">            a readable JSON Web Token</span>
+<span class="sd">    """</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">payload</span> <span class="o">=</span> <span class="n">un_token</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">"."</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span>
+        <span class="n">payload</span> <span class="o">+=</span> <span class="s2">"="</span> <span class="o">*</span> <span class="p">(</span><span class="o">-</span><span class="nb">len</span><span class="p">(</span><span class="n">payload</span><span class="p">)</span> <span class="o">%</span> <span class="mi">4</span><span class="p">)</span>
+        <span class="n">claims</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">base64</span><span class="o">.</span><span class="n">urlsafe_b64decode</span><span class="p">(</span><span class="n">payload</span><span class="p">))</span>
+
+        <span class="k">return</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">fromtimestamp</span><span class="p">(</span>
+            <span class="n">claims</span><span class="p">[</span><span class="s2">"exp"</span><span class="p">],</span> <span class="n">datetime</span><span class="o">.</span><span class="n">timezone</span><span class="o">.</span><span class="n">utc</span>
+        <span class="p">)</span><span class="o">.</span><span class="n">date</span><span class="p">()</span>
+    <span class="k">except</span> <span class="p">(</span><span class="ne">AttributeError</span><span class="p">,</span> <span class="ne">IndexError</span><span class="p">,</span> <span class="ne">KeyError</span><span class="p">,</span> <span class="ne">TypeError</span><span class="p">,</span> <span class="ne">ValueError</span><span class="p">):</span>
+        <span class="k">return</span> <span class="kc">None</span>  <span class="c1"># opaque token, or a format we do not recognize</span></div>
+
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_utc_today</span><span class="p">():</span>
+<span class="w">    </span><span class="sd">"""Today's date in UTC, to compare against a token's expiry claim."""</span>
+    <span class="k">return</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">(</span><span class="n">datetime</span><span class="o">.</span><span class="n">timezone</span><span class="o">.</span><span class="n">utc</span><span class="p">)</span><span class="o">.</span><span class="n">date</span><span class="p">()</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_warn_if_un_token_expired</span><span class="p">(</span><span class="n">un_token</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""</span>
+<span class="sd">    This function says, once per session, that a token has expired. An</span>
+<span class="sd">    expired token otherwise fails in the same silent-looking way as a</span>
+<span class="sd">    missing one: the request is refused and the caller quietly falls back</span>
+<span class="sd">    to the archived data.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        un_token (str): the token that was resolved</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        None</span>
+<span class="sd">    """</span>
+    <span class="k">global</span> <span class="n">_WARNED_EXPIRED_UN_TOKEN</span>
+    <span class="k">if</span> <span class="n">_WARNED_EXPIRED_UN_TOKEN</span><span class="p">:</span>
+        <span class="k">return</span>
+    <span class="n">expiry</span> <span class="o">=</span> <span class="n">un_token_expiry</span><span class="p">(</span><span class="n">un_token</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">expiry</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">expiry</span> <span class="o">&gt;=</span> <span class="n">_utc_today</span><span class="p">():</span>
+        <span class="k">return</span>
+    <span class="n">_WARNED_EXPIRED_UN_TOKEN</span> <span class="o">=</span> <span class="kc">True</span>
+
+    <span class="n">lines</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="sa">f</span><span class="s2">"Your UN API token expired on </span><span class="si">{</span><span class="n">expiry</span><span class="si">}</span><span class="s2">, so the archived data "</span>
+        <span class="s2">"will be used."</span><span class="p">,</span>
+        <span class="sa">f</span><span class="s2">"  Get a new one at </span><span class="si">{</span><span class="n">UN_TOKEN_URL</span><span class="si">}</span><span class="s2">"</span><span class="p">,</span>
+    <span class="p">]</span>
+    <span class="n">command</span> <span class="o">=</span> <span class="n">og_token_command</span><span class="p">()</span>
+    <span class="k">if</span> <span class="n">command</span><span class="p">:</span>
+        <span class="n">lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">"  Then run: </span><span class="si">{</span><span class="n">command</span><span class="si">}</span><span class="s2"> set"</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">"  Then save it to </span><span class="si">{</span><span class="n">un_token_path</span><span class="p">()</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">"</span><span class="se">\n</span><span class="s2">"</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">lines</span><span class="p">))</span>
+
+
+<div class="viewcode-block" id="og_token_command">
+<a class="viewcode-back" href="../../content/api/demographics.html#ogcore.demographics.og_token_command">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">og_token_command</span><span class="p">():</span>
+<span class="w">    </span><span class="sd">"""</span>
+<span class="sd">    This function returns the full path of the ``og-token`` command that</span>
+<span class="sd">    belongs to the running interpreter, so that a message can tell the</span>
+<span class="sd">    user exactly what to type. The command is installed beside the</span>
+<span class="sd">    interpreter and is usually not on the shell's PATH, because OG-Core is</span>
+<span class="sd">    normally run from a project virtual environment.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        command (str): full path to og-token, or None when it is not</span>
+<span class="sd">            installed alongside this interpreter</span>
+<span class="sd">    """</span>
+    <span class="n">name</span> <span class="o">=</span> <span class="s2">"og-token.exe"</span> <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="s2">"nt"</span> <span class="k">else</span> <span class="s2">"og-token"</span>
+    <span class="n">command</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">executable</span><span class="p">),</span> <span class="n">name</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">command</span> <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">command</span><span class="p">)</span> <span class="k">else</span> <span class="kc">None</span></div>
+
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_hint_how_to_register_token</span><span class="p">():</span>
+<span class="w">    </span><span class="sd">"""</span>
+<span class="sd">    This function prints, once per session, how to register a token. It</span>
+<span class="sd">    runs whenever a request falls back to the archived data, so a user who</span>
+<span class="sd">    obtains a token later is told what to do without being prompted again</span>
+<span class="sd">    on every run.</span>
+<span class="sd">    """</span>
+    <span class="k">global</span> <span class="n">_HINTED_NO_UN_TOKEN</span>
+    <span class="k">if</span> <span class="n">_HINTED_NO_UN_TOKEN</span><span class="p">:</span>
+        <span class="k">return</span>
+    <span class="n">_HINTED_NO_UN_TOKEN</span> <span class="o">=</span> <span class="kc">True</span>
+
+    <span class="n">lines</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="s2">"No UN API token registered, so the archived data will be used."</span><span class="p">,</span>
+        <span class="sa">f</span><span class="s2">"  Get a free token at </span><span class="si">{</span><span class="n">UN_TOKEN_URL</span><span class="si">}</span><span class="s2">"</span><span class="p">,</span>
+    <span class="p">]</span>
+    <span class="n">command</span> <span class="o">=</span> <span class="n">og_token_command</span><span class="p">()</span>
+    <span class="k">if</span> <span class="n">command</span><span class="p">:</span>
+        <span class="n">lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">"  Then run: </span><span class="si">{</span><span class="n">command</span><span class="si">}</span><span class="s2"> set"</span><span class="p">)</span>
+        <span class="n">lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">"  (or save the token to </span><span class="si">{</span><span class="n">un_token_path</span><span class="p">()</span><span class="si">}</span><span class="s2">)"</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">"  Then save the token to </span><span class="si">{</span><span class="n">un_token_path</span><span class="p">()</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">"</span><span class="se">\n</span><span class="s2">"</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">lines</span><span class="p">))</span>
+
+
+<div class="viewcode-block" id="resolve_un_token">
+<a class="viewcode-back" href="../../content/api/demographics.html#ogcore.demographics.resolve_un_token">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">resolve_un_token</span><span class="p">(</span><span class="n">un_token</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""</span>
+<span class="sd">    This function finds the UN Data Portal API token to use for a</span>
+<span class="sd">    request. Sources are tried in order and the first one that is present</span>
+<span class="sd">    wins:</span>
+
+<span class="sd">    1. the ``un_token`` argument</span>
+<span class="sd">    2. the ``UN_API_TOKEN`` environment variable</span>
+<span class="sd">    3. the per-user file at :func:`un_token_path`</span>
+<span class="sd">    4. ``un_api_token.txt`` in the current working directory (deprecated)</span>
+
+<span class="sd">    When no source holds a token the user is asked for one and the answer</span>
+<span class="sd">    is saved to the per-user file, so a token is entered once per machine</span>
+<span class="sd">    rather than once per directory. The prompt is skipped when standard</span>
+<span class="sd">    input is not interactive, in which case an empty token is returned and</span>
+<span class="sd">    the caller falls back to the Population-Data archive.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        un_token (str): token supplied by the caller, overrides all other</span>
+<span class="sd">            sources</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        un_token (str): normalized token, empty string if none was found</span>
+<span class="sd">    """</span>
+    <span class="n">un_token</span> <span class="o">=</span> <span class="n">_find_un_token</span><span class="p">(</span><span class="n">un_token</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">un_token</span><span class="p">:</span>
+        <span class="n">_warn_if_un_token_expired</span><span class="p">(</span><span class="n">un_token</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">_hint_how_to_register_token</span><span class="p">()</span>
+
+    <span class="k">return</span> <span class="n">un_token</span></div>
+
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_find_un_token</span><span class="p">(</span><span class="n">un_token</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""</span>
+<span class="sd">    This function does the source-by-source lookup described in</span>
+<span class="sd">    :func:`resolve_un_token`, which wraps it to add the one-time hint when</span>
+<span class="sd">    nothing is found.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        un_token (str): token supplied by the caller</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        un_token (str): normalized token, empty string if none was found</span>
+<span class="sd">    """</span>
+    <span class="k">global</span> <span class="n">_WARNED_LEGACY_UN_TOKEN</span>
+
+    <span class="k">if</span> <span class="n">un_token</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">_clean_un_token</span><span class="p">(</span><span class="n">un_token</span><span class="p">)</span>
+
+    <span class="c1"># .strip() so a variable set to blank space falls through to the files</span>
+    <span class="c1"># rather than silently resolving to no token at all.</span>
+    <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"UN_API_TOKEN"</span><span class="p">,</span> <span class="s2">""</span><span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">():</span>
+        <span class="k">return</span> <span class="n">_clean_un_token</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s2">"UN_API_TOKEN"</span><span class="p">])</span>
+
+    <span class="c1"># An existing per-user file is authoritative even when empty, so that</span>
+    <span class="c1"># a user who declined the prompt is not asked again on every call.</span>
+    <span class="n">user_path</span> <span class="o">=</span> <span class="n">un_token_path</span><span class="p">()</span>
+    <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">user_path</span><span class="p">):</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">user_path</span><span class="p">,</span> <span class="s2">"r"</span><span class="p">)</span> <span class="k">as</span> <span class="n">file</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">_clean_un_token</span><span class="p">(</span><span class="n">file</span><span class="o">.</span><span class="n">read</span><span class="p">())</span>
+
+    <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">UN_TOKEN_FILENAME</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">_WARNED_LEGACY_UN_TOKEN</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">"Using the UN API token in </span><span class="si">{</span><span class="n">UN_TOKEN_FILENAME</span><span class="si">}</span><span class="s2"> in the "</span>
+                <span class="s2">"current directory. This location is deprecated because it "</span>
+                <span class="s2">"leaves a copy of the token in every directory you run "</span>
+                <span class="sa">f</span><span class="s2">"from. Move it to </span><span class="si">{</span><span class="n">user_path</span><span class="si">}</span><span class="s2"> to keep one token per user."</span>
+            <span class="p">)</span>
+            <span class="n">_WARNED_LEGACY_UN_TOKEN</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">UN_TOKEN_FILENAME</span><span class="p">,</span> <span class="s2">"r"</span><span class="p">)</span> <span class="k">as</span> <span class="n">file</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">_clean_un_token</span><span class="p">(</span><span class="n">file</span><span class="o">.</span><span class="n">read</span><span class="p">())</span>
+
+    <span class="k">try</span><span class="p">:</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">sys</span><span class="o">.</span><span class="n">stdin</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">sys</span><span class="o">.</span><span class="n">stdin</span><span class="o">.</span><span class="n">isatty</span><span class="p">():</span>
+            <span class="k">return</span> <span class="s2">""</span>  <span class="c1"># not interactive, e.g. a scheduled run</span>
+        <span class="nb">print</span><span class="p">(</span>
+            <span class="s2">"</span><span class="se">\n</span><span class="s2">OG-Core can read population data directly from the UN Data "</span>
+            <span class="s2">"Portal, which needs a free API token.</span><span class="se">\n</span><span class="s2">"</span>
+            <span class="sa">f</span><span class="s2">"  To get one, open </span><span class="si">{</span><span class="n">UN_TOKEN_URL</span><span class="si">}</span><span class="s2"> and click Generate Token.</span><span class="se">\n</span><span class="s2">"</span>
+            <span class="s2">"  Or press return to use the archived copy of the same data "</span>
+            <span class="sa">f</span><span class="s2">"at </span><span class="si">{</span><span class="n">UN_DATA_ARCHIVE_URL</span><span class="si">}</span><span class="s2">.</span><span class="se">\n</span><span class="s2">"</span>
+        <span class="p">)</span>
+        <span class="c1"># getpass rather than input so the token is not echoed into the</span>
+        <span class="c1"># terminal and its scrollback.</span>
+        <span class="n">un_token</span> <span class="o">=</span> <span class="n">getpass</span><span class="o">.</span><span class="n">getpass</span><span class="p">(</span><span class="s2">"UN API token (input is hidden): "</span><span class="p">)</span>
+    <span class="k">except</span> <span class="p">(</span><span class="ne">EOFError</span><span class="p">,</span> <span class="ne">ValueError</span><span class="p">):</span>  <span class="c1"># stdin at end of file or closed</span>
+        <span class="k">return</span> <span class="s2">""</span>
+
+    <span class="c1"># Save the answer, empty or not, so the question is asked only once.</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">user_path</span><span class="p">),</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">user_path</span><span class="p">,</span> <span class="s2">"w"</span><span class="p">)</span> <span class="k">as</span> <span class="n">file</span><span class="p">:</span>
+            <span class="n">file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">un_token</span><span class="p">)</span>
+    <span class="k">except</span> <span class="ne">OSError</span> <span class="k">as</span> <span class="n">err</span><span class="p">:</span>  <span class="c1"># e.g. a read-only home directory</span>
+        <span class="nb">print</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">"Could not save the UN API token to </span><span class="si">{</span><span class="n">user_path</span><span class="si">}</span><span class="s2"> (</span><span class="si">{</span><span class="n">err</span><span class="si">}</span><span class="s2">). "</span>
+            <span class="s2">"It will be used for this session only."</span>
+        <span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">os</span><span class="o">.</span><span class="n">chmod</span><span class="p">(</span><span class="n">user_path</span><span class="p">,</span> <span class="mo">0o600</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">OSError</span><span class="p">:</span>  <span class="c1"># permissions are not settable on every platform</span>
+            <span class="k">pass</span>
+        <span class="k">if</span> <span class="n">_clean_un_token</span><span class="p">(</span><span class="n">un_token</span><span class="p">):</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Token saved to </span><span class="si">{</span><span class="n">user_path</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">_clean_un_token</span><span class="p">(</span><span class="n">un_token</span><span class="p">)</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">un_token_cli</span><span class="p">(</span><span class="n">argv</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""</span>
+<span class="sd">    This function is the command line entry point for managing the stored</span>
+<span class="sd">    UN Data Portal API token. It is installed as ``og-token`` and takes one</span>
+<span class="sd">    of three actions: ``set`` saves a token to the per-user file, ``show``</span>
+<span class="sd">    reports where the token lives and which source would be used, and</span>
+<span class="sd">    ``rm`` deletes the stored token.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        argv (list): command line arguments, read from sys.argv when not</span>
+<span class="sd">            given</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        status (int): process exit status, 0 on success</span>
+<span class="sd">    """</span>
+    <span class="n">parser</span> <span class="o">=</span> <span class="n">argparse</span><span class="o">.</span><span class="n">ArgumentParser</span><span class="p">(</span>
+        <span class="n">prog</span><span class="o">=</span><span class="s2">"og-token"</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="p">(</span>
+            <span class="s2">"Manage the UN Data Portal API token used by OG-Core. Get a "</span>
+            <span class="sa">f</span><span class="s2">"free token from </span><span class="si">{</span><span class="n">UN_TOKEN_URL</span><span class="si">}</span><span class="s2"> (click Generate Token). "</span>
+            <span class="s2">"Without one, OG-Core reads the archived copy of the same data "</span>
+            <span class="sa">f</span><span class="s2">"from </span><span class="si">{</span><span class="n">UN_DATA_ARCHIVE_URL</span><span class="si">}</span><span class="s2">."</span>
+        <span class="p">),</span>
+    <span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s2">"action"</span><span class="p">,</span>
+        <span class="n">choices</span><span class="o">=</span><span class="p">[</span><span class="s2">"set"</span><span class="p">,</span> <span class="s2">"show"</span><span class="p">,</span> <span class="s2">"rm"</span><span class="p">],</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">"save a token, report where it lives, or delete it"</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">args</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">parse_args</span><span class="p">(</span><span class="n">argv</span><span class="p">)</span>
+    <span class="n">path</span> <span class="o">=</span> <span class="n">un_token_path</span><span class="p">()</span>
+
+    <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">action</span> <span class="o">==</span> <span class="s2">"set"</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Get a free token at </span><span class="si">{</span><span class="n">UN_TOKEN_URL</span><span class="si">}</span><span class="s2"> (click Generate Token)."</span><span class="p">)</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">un_token</span> <span class="o">=</span> <span class="n">_clean_un_token</span><span class="p">(</span><span class="n">getpass</span><span class="o">.</span><span class="n">getpass</span><span class="p">(</span><span class="s2">"UN API token: "</span><span class="p">))</span>
+        <span class="k">except</span> <span class="p">(</span><span class="ne">EOFError</span><span class="p">,</span> <span class="ne">KeyboardInterrupt</span><span class="p">):</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">"</span><span class="se">\n</span><span class="s2">Cancelled. Nothing was saved."</span><span class="p">)</span>
+            <span class="k">return</span> <span class="mi">1</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">un_token</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">"No token entered. Nothing was saved."</span><span class="p">)</span>
+            <span class="k">return</span> <span class="mi">1</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">path</span><span class="p">),</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+            <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="s2">"w"</span><span class="p">)</span> <span class="k">as</span> <span class="n">file</span><span class="p">:</span>
+                <span class="n">file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">un_token</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">OSError</span> <span class="k">as</span> <span class="n">err</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Could not write </span><span class="si">{</span><span class="n">path</span><span class="si">}</span><span class="s2"> (</span><span class="si">{</span><span class="n">err</span><span class="si">}</span><span class="s2">)."</span><span class="p">)</span>
+            <span class="k">return</span> <span class="mi">1</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">os</span><span class="o">.</span><span class="n">chmod</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="mo">0o600</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">OSError</span><span class="p">:</span>  <span class="c1"># permissions are not settable on every platform</span>
+            <span class="k">pass</span>
+        <span class="n">expiry</span> <span class="o">=</span> <span class="n">un_token_expiry</span><span class="p">(</span><span class="n">un_token</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">expiry</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Token saved to </span><span class="si">{</span><span class="n">path</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">expiry</span> <span class="o">&lt;</span> <span class="n">_utc_today</span><span class="p">():</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Token saved to </span><span class="si">{</span><span class="n">path</span><span class="si">}</span><span class="s2">, but it expired on </span><span class="si">{</span><span class="n">expiry</span><span class="si">}</span><span class="s2">."</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Get a current one at </span><span class="si">{</span><span class="n">UN_TOKEN_URL</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Token saved to </span><span class="si">{</span><span class="n">path</span><span class="si">}</span><span class="s2">, valid until </span><span class="si">{</span><span class="n">expiry</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+        <span class="k">return</span> <span class="mi">0</span>
+
+    <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">action</span> <span class="o">==</span> <span class="s2">"rm"</span><span class="p">:</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">path</span><span class="p">):</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"No token stored at </span><span class="si">{</span><span class="n">path</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+            <span class="k">return</span> <span class="mi">1</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">os</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">OSError</span> <span class="k">as</span> <span class="n">err</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Could not remove </span><span class="si">{</span><span class="n">path</span><span class="si">}</span><span class="s2"> (</span><span class="si">{</span><span class="n">err</span><span class="si">}</span><span class="s2">)."</span><span class="p">)</span>
+            <span class="k">return</span> <span class="mi">1</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Removed </span><span class="si">{</span><span class="n">path</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+        <span class="k">return</span> <span class="mi">0</span>
+
+    <span class="c1"># show</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Token file: </span><span class="si">{</span><span class="n">path</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">path</span><span class="p">):</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="s2">"r"</span><span class="p">)</span> <span class="k">as</span> <span class="n">file</span><span class="p">:</span>
+            <span class="n">stored</span> <span class="o">=</span> <span class="n">_clean_un_token</span><span class="p">(</span><span class="n">file</span><span class="o">.</span><span class="n">read</span><span class="p">())</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">stored</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">"  present but empty, so no token is sent"</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">expiry</span> <span class="o">=</span> <span class="n">un_token_expiry</span><span class="p">(</span><span class="n">stored</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">expiry</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="s2">"  a token is stored"</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="n">expiry</span> <span class="o">&lt;</span> <span class="n">_utc_today</span><span class="p">():</span>
+                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"  a token is stored, but it expired on </span><span class="si">{</span><span class="n">expiry</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"  get a new one at </span><span class="si">{</span><span class="n">UN_TOKEN_URL</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">days</span> <span class="o">=</span> <span class="p">(</span><span class="n">expiry</span> <span class="o">-</span> <span class="n">_utc_today</span><span class="p">())</span><span class="o">.</span><span class="n">days</span>
+                <span class="nb">print</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">"  a token is stored, valid until </span><span class="si">{</span><span class="n">expiry</span><span class="si">}</span><span class="s2"> (</span><span class="si">{</span><span class="n">days</span><span class="si">}</span><span class="s2"> days)"</span>
+                <span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">"  not set, run 'og-token set'"</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"UN_API_TOKEN"</span><span class="p">,</span> <span class="s2">""</span><span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">():</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">"UN_API_TOKEN is set and takes precedence over the file."</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">UN_TOKEN_FILENAME</span><span class="p">):</span>
+        <span class="nb">print</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">"A deprecated </span><span class="si">{</span><span class="n">UN_TOKEN_FILENAME</span><span class="si">}</span><span class="s2"> is in this directory. It is "</span>
+            <span class="s2">"only used when neither of the above is set."</span>
+        <span class="p">)</span>
+
+    <span class="k">return</span> <span class="mi">0</span>
+
+
 <div class="viewcode-block" id="get_un_data">
 <a class="viewcode-back" href="../../content/api/demographics.html#ogcore.demographics.get_un_data">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">get_un_data</span><span class="p">(</span>
@@ -459,6 +853,7 @@
     <span class="n">country_id</span><span class="o">=</span><span class="n">UN_COUNTRY_CODE</span><span class="p">,</span>
     <span class="n">start_year</span><span class="o">=</span><span class="n">START_YEAR</span><span class="p">,</span>
     <span class="n">end_year</span><span class="o">=</span><span class="n">END_YEAR</span><span class="p">,</span>
+    <span class="n">un_token</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
 <span class="p">):</span>
 <span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    This function retrieves data from the United Nations Data Portal API</span>
@@ -470,6 +865,8 @@
 <span class="sd">        country_id (str): country id for UN data</span>
 <span class="sd">        start_year (int): start year for UN data</span>
 <span class="sd">        end_year (int): end year for UN data</span>
+<span class="sd">        un_token (str): UN Data Portal API token, resolved from the</span>
+<span class="sd">            environment or the user's token file when not given</span>
 
 <span class="sd">    Returns:</span>
 <span class="sd">        df (Pandas DataFrame): DataFrame of UN data</span>
@@ -486,30 +883,9 @@
         <span class="o">+</span> <span class="s2">"?format=csv"</span>
     <span class="p">)</span>
 
-    <span class="c1"># Check for a file named "un_api_token.txt" in the current directory</span>
-    <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="s2">"un_api_token.txt"</span><span class="p">)):</span>
-        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="s2">"un_api_token.txt"</span><span class="p">),</span> <span class="s2">"r"</span><span class="p">)</span> <span class="k">as</span> <span class="n">file</span><span class="p">:</span>
-            <span class="n">UN_TOKEN</span> <span class="o">=</span> <span class="n">file</span><span class="o">.</span><span class="n">read</span><span class="p">()</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
-    <span class="k">else</span><span class="p">:</span>  <span class="c1"># if file not exist, prompt user for token</span>
-        <span class="k">try</span><span class="p">:</span>
-            <span class="n">UN_TOKEN</span> <span class="o">=</span> <span class="nb">input</span><span class="p">(</span>
-                <span class="s2">"Please enter your UN API token "</span>
-                <span class="s2">"(press return if you do not have one): "</span>
-            <span class="p">)</span>
-            <span class="c1"># write the UN_TOKEN to a file to find in the future</span>
-            <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="s2">"un_api_token.txt"</span><span class="p">),</span> <span class="s2">"w"</span><span class="p">)</span> <span class="k">as</span> <span class="n">file</span><span class="p">:</span>
-                <span class="n">file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">UN_TOKEN</span><span class="p">)</span>
-        <span class="k">except</span> <span class="ne">EOFError</span><span class="p">:</span>
-            <span class="n">UN_TOKEN</span> <span class="o">=</span> <span class="s2">""</span>
-
     <span class="c1"># get data from url</span>
     <span class="n">payload</span> <span class="o">=</span> <span class="p">{}</span>
-    <span class="c1"># Accept a token with or without a leading "Bearer " prefix so the</span>
-    <span class="c1"># header isn't doubled into "Bearer Bearer &lt;token&gt;".</span>
-    <span class="n">UN_TOKEN</span> <span class="o">=</span> <span class="n">UN_TOKEN</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
-    <span class="k">if</span> <span class="n">UN_TOKEN</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">"bearer "</span><span class="p">):</span>
-        <span class="n">UN_TOKEN</span> <span class="o">=</span> <span class="n">UN_TOKEN</span><span class="p">[</span><span class="nb">len</span><span class="p">(</span><span class="s2">"bearer "</span><span class="p">)</span> <span class="p">:]</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
-    <span class="n">headers</span> <span class="o">=</span> <span class="p">{</span><span class="s2">"Authorization"</span><span class="p">:</span> <span class="s2">"Bearer "</span> <span class="o">+</span> <span class="n">UN_TOKEN</span><span class="p">}</span>
+    <span class="n">headers</span> <span class="o">=</span> <span class="p">{</span><span class="s2">"Authorization"</span><span class="p">:</span> <span class="s2">"Bearer "</span> <span class="o">+</span> <span class="n">resolve_un_token</span><span class="p">(</span><span class="n">un_token</span><span class="p">)}</span>
     <span class="n">response</span> <span class="o">=</span> <span class="n">get_legacy_session</span><span class="p">()</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="n">headers</span><span class="o">=</span><span class="n">headers</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">payload</span><span class="p">)</span>
     <span class="c1"># Check if the request was successful before processing</span>
     <span class="k">if</span> <span class="n">response</span><span class="o">.</span><span class="n">status_code</span> <span class="o">==</span> <span class="mi">200</span><span class="p">:</span>

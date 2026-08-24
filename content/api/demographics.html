@@ -478,7 +478,11 @@
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.demographics.get_pop_objs"><code class="docutils literal notranslate"><span class="pre">get_pop_objs()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.demographics.get_un_data"><code class="docutils literal notranslate"><span class="pre">get_un_data()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.demographics.immsolve"><code class="docutils literal notranslate"><span class="pre">immsolve()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.demographics.og_token_command"><code class="docutils literal notranslate"><span class="pre">og_token_command()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.demographics.pop_rebin"><code class="docutils literal notranslate"><span class="pre">pop_rebin()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.demographics.resolve_un_token"><code class="docutils literal notranslate"><span class="pre">resolve_un_token()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.demographics.un_token_expiry"><code class="docutils literal notranslate"><span class="pre">un_token_expiry()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.demographics.un_token_path"><code class="docutils literal notranslate"><span class="pre">un_token_path()</span></code></a></li>
 </ul>
 </li>
 </ul>
@@ -787,7 +791,7 @@ omega_SS (Numpy array): normalized steady-state population</p>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="ogcore.demographics.get_un_data">
-<span class="sig-prename descclassname"><span class="pre">ogcore.demographics.</span></span><span class="sig-name descname"><span class="pre">get_un_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">variable_code</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">country_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'840'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">start_year</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2024</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">end_year</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2024</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogcore/demographics.html#get_un_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogcore.demographics.get_un_data" title="Link to this definition">#</a></dt>
+<span class="sig-prename descclassname"><span class="pre">ogcore.demographics.</span></span><span class="sig-name descname"><span class="pre">get_un_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">variable_code</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">country_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'840'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">start_year</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2024</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">end_year</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2024</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">un_token</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogcore/demographics.html#get_un_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogcore.demographics.get_un_data" title="Link to this definition">#</a></dt>
 <dd><p>This function retrieves data from the United Nations Data Portal API
 for UN population data (see
 <a class="reference external" href="https://population.un.org/dataportal/about/dataapi">https://population.un.org/dataportal/about/dataapi</a>)</p>
@@ -798,6 +802,8 @@ for UN population data (see
 <li><p><strong>country_id</strong> (<em>str</em>) – country id for UN data</p></li>
 <li><p><strong>start_year</strong> (<em>int</em>) – start year for UN data</p></li>
 <li><p><strong>end_year</strong> (<em>int</em>) – end year for UN data</p></li>
+<li><p><strong>un_token</strong> (<em>str</em>) – UN Data Portal API token, resolved from the
+environment or the user’s token file when not given</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -842,6 +848,28 @@ g_n_SS)</p></li>
 </dd></dl>
 
 <dl class="py function">
+<dt class="sig sig-object py" id="ogcore.demographics.og_token_command">
+<span class="sig-prename descclassname"><span class="pre">ogcore.demographics.</span></span><span class="sig-name descname"><span class="pre">og_token_command</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogcore/demographics.html#og_token_command"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogcore.demographics.og_token_command" title="Link to this definition">#</a></dt>
+<dd><p>This function returns the full path of the <code class="docutils literal notranslate"><span class="pre">og-token</span></code> command that
+belongs to the running interpreter, so that a message can tell the
+user exactly what to type. The command is installed beside the
+interpreter and is usually not on the shell’s PATH, because OG-Core is
+normally run from a project virtual environment.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p><dl class="simple">
+<dt>full path to og-token, or None when it is not</dt><dd><p>installed alongside this interpreter</p>
+</dd>
+</dl>
+</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>command (str)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
 <dt class="sig sig-object py" id="ogcore.demographics.pop_rebin">
 <span class="sig-prename descclassname"><span class="pre">ogcore.demographics.</span></span><span class="sig-name descname"><span class="pre">pop_rebin</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">curr_pop_dist</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">totpers_new</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogcore/demographics.html#pop_rebin"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogcore.demographics.pop_rebin" title="Link to this definition">#</a></dt>
 <dd><p>For cases in which totpers (E+S) is less than the number of periods
@@ -865,6 +893,80 @@ transforming the population distribution, &gt;= 3</p></li>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>curr_pop_new (Numpy array)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="ogcore.demographics.resolve_un_token">
+<span class="sig-prename descclassname"><span class="pre">ogcore.demographics.</span></span><span class="sig-name descname"><span class="pre">resolve_un_token</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">un_token</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogcore/demographics.html#resolve_un_token"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogcore.demographics.resolve_un_token" title="Link to this definition">#</a></dt>
+<dd><p>This function finds the UN Data Portal API token to use for a
+request. Sources are tried in order and the first one that is present
+wins:</p>
+<ol class="arabic simple">
+<li><p>the <code class="docutils literal notranslate"><span class="pre">un_token</span></code> argument</p></li>
+<li><p>the <code class="docutils literal notranslate"><span class="pre">UN_API_TOKEN</span></code> environment variable</p></li>
+<li><p>the per-user file at <a class="reference internal" href="#ogcore.demographics.un_token_path" title="ogcore.demographics.un_token_path"><code class="xref py py-func docutils literal notranslate"><span class="pre">un_token_path()</span></code></a></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">un_api_token.txt</span></code> in the current working directory (deprecated)</p></li>
+</ol>
+<p>When no source holds a token the user is asked for one and the answer
+is saved to the per-user file, so a token is entered once per machine
+rather than once per directory. The prompt is skipped when standard
+input is not interactive, in which case an empty token is returned and
+the caller falls back to the Population-Data archive.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>un_token</strong> (<em>str</em>) – token supplied by the caller, overrides all other
+sources</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>normalized token, empty string if none was found</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>un_token (str)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="ogcore.demographics.un_token_expiry">
+<span class="sig-prename descclassname"><span class="pre">ogcore.demographics.</span></span><span class="sig-name descname"><span class="pre">un_token_expiry</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">un_token</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogcore/demographics.html#un_token_expiry"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogcore.demographics.un_token_expiry" title="Link to this definition">#</a></dt>
+<dd><p>This function reads the expiry date out of a UN Data Portal API token.
+The portal issues JSON Web Tokens, whose middle segment carries an
+<code class="docutils literal notranslate"><span class="pre">exp</span></code> claim, so the date can be read without a network call. The
+signature is not checked and is not needed here: the portal remains
+the authority on whether a token is accepted, and this is only used to
+tell a user that renewing is due.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>un_token</strong> (<em>str</em>) – token to inspect</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><dl class="simple">
+<dt>expiry date, or None when the token is not</dt><dd><p>a readable JSON Web Token</p>
+</dd>
+</dl>
+</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>expiry (datetime.date)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="ogcore.demographics.un_token_path">
+<span class="sig-prename descclassname"><span class="pre">ogcore.demographics.</span></span><span class="sig-name descname"><span class="pre">un_token_path</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogcore/demographics.html#un_token_path"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogcore.demographics.un_token_path" title="Link to this definition">#</a></dt>
+<dd><p>This function returns the path of the per-user file that holds the UN
+Data Portal API token. The location follows the platform convention
+for user configuration files: <code class="docutils literal notranslate"><span class="pre">$XDG_CONFIG_HOME</span></code> (or <code class="docutils literal notranslate"><span class="pre">~/.config</span></code>
+when that is unset) on macOS and Linux, and <code class="docutils literal notranslate"><span class="pre">%APPDATA%</span></code> on Windows.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>full path to the user’s UN API token file</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>path (str)</p>
 </dd>
 </dl>
 </dd></dl>
@@ -948,7 +1050,11 @@ transforming the population distribution, &gt;= 3</p></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.demographics.get_pop_objs"><code class="docutils literal notranslate"><span class="pre">get_pop_objs()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.demographics.get_un_data"><code class="docutils literal notranslate"><span class="pre">get_un_data()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.demographics.immsolve"><code class="docutils literal notranslate"><span class="pre">immsolve()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.demographics.og_token_command"><code class="docutils literal notranslate"><span class="pre">og_token_command()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.demographics.pop_rebin"><code class="docutils literal notranslate"><span class="pre">pop_rebin()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.demographics.resolve_un_token"><code class="docutils literal notranslate"><span class="pre">resolve_un_token()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.demographics.un_token_expiry"><code class="docutils literal notranslate"><span class="pre">un_token_expiry()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.demographics.un_token_path"><code class="docutils literal notranslate"><span class="pre">un_token_path()</span></code></a></li>
 </ul>
 </li>
 </ul>
