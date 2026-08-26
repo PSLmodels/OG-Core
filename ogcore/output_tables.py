@@ -216,6 +216,7 @@ def npv_table(
     discount_rates=[0.01, 0.02, 0.03, 0.04, 0.06],
     num_years=10,
     stationarized=False,
+    factor=None,
     start_year=DEFAULT_START_YEAR,
     table_format=None,
     path=None,
@@ -236,8 +237,11 @@ def npv_table(
     the NPV is taken over the actual (trend-inclusive) level path, which
     is the economically meaningful object to discount; pass
     `stationarized=True` to discount the stationarized model values
-    instead. Results are in the same units as the variable (model
-    units); to express them in dollars, scale by the model's `factor`.
+    instead. Results are in model units unless a `factor` is supplied,
+    in which case the change in each variable is scaled by `factor`
+    (the model's units-to-currency scaling factor, ``factor_ss`` in the
+    steady-state output) so the NPV is reported in the local currency
+    units of the model's calibration rather than model units.
 
     Args:
         base_tpi (dictionary): TPI output from baseline run
@@ -253,6 +257,11 @@ def npv_table(
         stationarized (bool): whether to use the stationarized model
             values; if False (default) the variables are un-stationarized
             before discounting
+        factor (scalar or None): the model's units-to-currency scaling
+            factor (``factor_ss`` from the steady-state output). If
+            given, the change in each variable is multiplied by `factor`
+            so the NPV is expressed in the calibration's local currency
+            units; if None (default) the NPV is in model units
         start_year (integer): first year of the NPV window
         table_format (string): format to return table in: 'csv', 'tex',
             'excel', 'json', if None, a DataFrame is returned
@@ -285,6 +294,9 @@ def npv_table(
             base_v = unstationarize_vars(v, base_tpi, base_params)
             reform_v = unstationarize_vars(v, reform_tpi, reform_params)
         diffs[v] = (reform_v - base_v)[start_index : start_index + num_years]
+        if factor is not None:
+            # scale model units to the calibration's local currency units
+            diffs[v] = diffs[v] * factor
     table_dict = {"Variable": [VAR_LABELS[v] for v in var_list]}
     for r in discount_rates:
         discount = (1 + r) ** periods

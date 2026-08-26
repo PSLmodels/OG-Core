@@ -136,6 +136,30 @@ def test_npv_table_values():
     assert np.isclose(df["10.0%"][0], expected)
 
 
+def test_npv_table_currency():
+    """Passing a factor scales the NPV to currency units, and leaving it
+    off returns model units, so the two differ by exactly the factor."""
+    p = Specifications()
+    b_tpi = {"Y": np.zeros(p.T)}
+    r_tpi = {"Y": np.zeros(p.T)}
+    r_tpi["Y"][:3] = np.array([100.0, 110.0, 120.0])
+    factor = 75000.0
+    kwargs = dict(
+        var_list=["Y"],
+        discount_rates=[0.0],
+        num_years=3,
+        stationarized=True,
+        start_year=int(p.start_year),
+    )
+    model_units = output_tables.npv_table(b_tpi, p, r_tpi, p, **kwargs)
+    currency = output_tables.npv_table(
+        b_tpi, p, r_tpi, p, factor=factor, **kwargs
+    )
+    # model units unchanged, currency is exactly factor times model units
+    assert np.isclose(model_units["0.0%"][0], 330.0)
+    assert np.isclose(currency["0.0%"][0], 330.0 * factor)
+
+
 def test_ineq_table():
     df = output_tables.ineq_table(base_ss, base_params)
     assert isinstance(df, pd.DataFrame)
