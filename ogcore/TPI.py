@@ -161,8 +161,20 @@ def get_initial_SS_values(p):
     baseline_ss = os.path.join(p.baseline_dir, "SS", "SS_vars.pkl")
     ss_baseline_vars = utils.safe_read_pickle(baseline_ss)
     factor = ss_baseline_vars["factor"]
-    B0 = aggr.get_B(ss_baseline_vars["b_sp1"], p, "SS", True)
-    initial_b = ss_baseline_vars["b_sp1"] * (ss_baseline_vars["B"] / B0)
+    # Shape of the initial (t=0) distribution of wealth across ages and
+    # ability types. By default this is the steady-state distribution
+    # (ss_baseline_vars["b_sp1"]), which assumes the economy begins already
+    # at its steady-state age-wealth profile. A country model whose starting
+    # age structure is far from its steady state (e.g., a rapidly aging
+    # population) can instead supply an observed distribution via
+    # initial_b_dist and use_initial_b_dist; either way the aggregate is
+    # scaled to the steady-state B below, so only the shape is overridden.
+    if p.use_initial_b_dist:
+        b_dist = p.initial_b_dist
+    else:
+        b_dist = ss_baseline_vars["b_sp1"]
+    B0 = aggr.get_B(b_dist, p, "SS", True)
+    initial_b = b_dist * (ss_baseline_vars["B"] / B0)
     initial_n = ss_baseline_vars["n"]
     # The DB/NDC/PS pension formulas need the labor supplied before the
     # time path begins by cohorts alive at t=0. Use the model's initial
