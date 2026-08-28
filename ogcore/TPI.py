@@ -955,25 +955,26 @@ def run_TPI(p, client=None):
     trust_radius_max = getattr(p, "TPI_trust_radius_max", 10.0)
     prev_accel_dist = np.inf
 
-    # Before scattering, temporarily remove unpicklable schema objects
-    schema_backup = {}
-    for attr in ["_defaults_schema", "_validator_schema", "sel"]:
-        if hasattr(p, attr):
-            schema_backup[attr] = getattr(p, attr)
+    if client:
+        # Before scattering, temporarily remove unpicklable schema objects
+        schema_backup = {}
+        for attr in ["_defaults_schema", "_validator_schema", "sel"]:
+            if hasattr(p, attr):
+                schema_backup[attr] = getattr(p, attr)
+                try:
+                    delattr(p, attr)
+                except Exception:
+                    pass
+
+        # Scatter the parameters
+        scattered_p_future = client.scatter(p, broadcast=True)
+
+        # Restore the schema objects (they're not needed by workers anyway)
+        for attr, value in schema_backup.items():
             try:
-                delattr(p, attr)
+                setattr(p, attr, value)
             except Exception:
                 pass
-
-    # Scatter the parameters
-    scattered_p_future = client.scatter(p, broadcast=True)
-
-    # Restore the schema objects (they're not needed by workers anyway)
-    for attr, value in schema_backup.items():
-        try:
-            setattr(p, attr, value)
-        except Exception:
-            pass
 
     # TPI loop
     while (TPIiter < p.maxiter) and (TPIdist >= p.mindist_TPI):
