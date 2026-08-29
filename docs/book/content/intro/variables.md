@@ -275,6 +275,18 @@ _TPI dimensions:_ TxI
 _SS dimensions:_ I  
 
 
+####  `p_g`  
+_Description:_ Price of the government consumption composite good  
+_TPI dimensions:_ T  
+_SS dimensions:_ scalar  
+
+
+####  `p_Ig`  
+_Description:_ Price of the infrastructure investment composite good  
+_TPI dimensions:_ T  
+_SS dimensions:_ scalar  
+
+
 ####  `p_tilde`  
 _Description:_ Price of composite output good  
 _TPI dimensions:_ T  

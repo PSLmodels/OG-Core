@@ -67,7 +67,7 @@ In this section, we describe what is arguably the most important economic agent 
     \tilde{p}_{t} = \prod_{i=1}^I\left(\frac{[1 + \tau^{c}_{i,t}]\tilde{p}_{i,t}}{\alpha_i}\right)^{\alpha_i} \quad\forall t
   ```
 
-  Consumption goods are determined from production goods through a fixed $I\times M$ coefficient matrix, $\Pi^I$. Each element, $\pi_{i,m}$, of $\Pi^I$ represents the fraction of good $i$ that is made up of output from industry $m$. It follows that the prices of consumption goods can be expressed as a function of the prices of production goods and the fixed coefficient matrix $\Pi^I$.
+  Household consumption goods, government consumption, and infrastructure investment are determined from production goods through a fixed $(I+2)\times M$ input-output matrix, $\Pi$. The first $I$ rows map output from the $M$ industries into the $I$ household consumption goods. For $1\leq i\leq I$, each element $\pi_{i,m}$ is the share of consumption good $i$ produced by industry $m$. Row $I+1$ contains the industry shares used to produce the government consumption good, and row $I+2$ contains the industry shares used to produce the infrastructure investment good. The elements in each row sum to one. It follows that the prices of household consumption goods can be expressed as functions of production-good prices and the first $I$ rows of $\Pi$.
   ```{math}
   :label: EqHH_pi
     \tilde{p}_{i,t} = \sum_{m=1}^M \pi_{i,m}\tilde{p}_{m,t} \quad\forall i,t

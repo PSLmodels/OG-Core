@@ -68,7 +68,9 @@ def main():
         "debt_ratio_ss": 1.5,
         "alpha_T": alpha_T.tolist(),
         "alpha_G": alpha_G.tolist(),
-        "io_matrix": np.eye(3).tolist(),
+        "io_matrix": np.vstack(
+            [np.eye(3), np.array([[0.0, 0.0, 1.0]] * 2)]
+        ).tolist(),
         "tau_c": [[0]],
     }
 

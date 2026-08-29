@@ -35,7 +35,7 @@ base_params.update_specifications(
         "epsilon": [0.5, 0.5, 0.5],
         "I": 3,
         "alpha_c": [0.3, 0.4, 0.3],
-        "io_matrix": np.eye(3),
+        "io_matrix": np.vstack([np.eye(3), np.eye(1, 3, 2), np.eye(1, 3, 2)]),
     }
 )
 reform_params = Specifications()
@@ -47,7 +47,7 @@ reform_params.update_specifications(
         "epsilon": [0.5, 0.5, 0.5],
         "I": 3,
         "alpha_c": [0.3, 0.4, 0.3],
-        "io_matrix": np.eye(3),
+        "io_matrix": np.vstack([np.eye(3), np.eye(1, 3, 2), np.eye(1, 3, 2)]),
     }
 )
 reform_taxfunctions = utils.safe_read_pickle(

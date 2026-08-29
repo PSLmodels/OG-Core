@@ -528,7 +528,7 @@
     },
     "io_matrix": {
         "title": "Input-output matrix",
-        "description": "Input-output matrix used to map production outputs into consumption goods using a fixed coefficient model.  This matrix has dimensions I x M, where I is the number of distinct consumption goods and M is the number of distinct production goods.  The sum each row of this matrix must be 1.",
+        "description": "Input-output matrix used to map production outputs into consumption and government goods using a fixed coefficient model. This matrix has dimensions (I + 2) x M. The first I rows map consumption goods, row I maps government consumption, and row I + 1 maps infrastructure investment. The sum of each row must be 1.",
         "short_description": "Input-output matrix",
         "param_notation": "$\\Pi^I$",
         "section_1": "Firm Parameters",
@@ -539,6 +539,10 @@
         "value": [
             {
                 "value": [[
+                    1.0
+                ], [
+                    1.0
+                ], [
                     1.0
                 ]]
             }
