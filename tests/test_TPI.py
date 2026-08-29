@@ -258,6 +258,18 @@ def test_get_initial_SS_values(baseline, param_updates, filename, tmpdir):
         )
 
 
+def test_rc_error_message():
+    """The resource-constraint failure message names the largest violation,
+    the period it occurs in, and the tolerance."""
+    T, M = 320, 2
+    RC_error = np.full((T, M), 1e-8)
+    RC_error[T - 1, 1] = -0.05  # a terminal-boundary spike (signed)
+    msg = TPI._rc_error_message(RC_error, 1e-4)
+    assert "5.00e-02" in msg  # the max absolute error, reported
+    assert f"period {T - 1}" in msg  # the period it occurs in
+    assert "1e-04" in msg or "0.0001" in msg  # the tolerance
+
+
 def test_firstdoughnutring():
     # Test TPI.firstdoughnutring function.  Provide inputs to function and
     # ensure that output returned matches what it has been before.
