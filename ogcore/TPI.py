@@ -1837,8 +1837,21 @@ def run_TPI(p, client=None):
         raise RuntimeError(msg)
 
     if (np.any(np.absolute(RC_error) >= p.RC_TPI)) and ENFORCE_SOLUTION_CHECKS:
+        # report where and how large the violation is: a residual confined
+        # to the first or last periods is usually an initial- or terminal-
+        # boundary artifact, while one spread across the path points to an
+        # inconsistent calibration.
+        abs_rc = np.absolute(RC_error)
+        rc_by_period = abs_rc.reshape(abs_rc.shape[0], -1).max(axis=1)
+        t_worst = int(np.argmax(rc_by_period))
         raise RuntimeError(
-            "Transition path equlibrium not found " + "(RC_error)"
+            "Transition path equilibrium not found (RC_error): max "
+            f"|resource constraint error| = {rc_by_period[t_worst]:.2e} at "
+            f"period {t_worst} of {rc_by_period.shape[0]} (tolerance "
+            f"RC_TPI = {p.RC_TPI}). A violation confined to the first or "
+            "last periods is usually an initial- or terminal-boundary "
+            "artifact; one spread across the path points to an inconsistent "
+            "calibration (spending, revenue, debt_ratio_ss)."
         )
 
     if (
