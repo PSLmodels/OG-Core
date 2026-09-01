@@ -1410,3 +1410,136 @@ def test_initial_guesses(tmpdir, use_zeta):
         assert len(guesses) == 7 + p.J
     assert n_guess.shape == (p.S, p.J)
     assert b_guess.shape == (p.S, p.J)
+
+
+class ScatterCountingClient:
+    """
+    Minimal fake Dask client that counts calls to `scatter` and runs
+    submitted tasks synchronously.  Used to check that model parameters
+    are scattered once per SS solve rather than once per residual
+    evaluation (see OG-Core issue #1211).
+    """
+
+    def __init__(self):
+        self.scatter_calls = 0
+
+    def scatter(self, obj, broadcast=False):
+        self.scatter_calls += 1
+        return obj
+
+    def submit(self, func, *args, **kwargs):
+        return func(*args)
+
+    def gather(self, futures):
+        return list(futures)
+
+    def __bool__(self):
+        return True
+
+
+@pytest.fixture(scope="module")
+def scatter_test_params():
+    """Small (J=1) parameters object plus inner loop inputs."""
+    _p = Specifications()
+    j1_updates = {
+        "J": 1,
+        "lambdas": np.array([1.0]),
+        "e": np.ones((80, 1)),
+        "beta_annual": [0.96],
+        "chi_b": [80],
+        "labor_income_tax_noncompliance_rate": [[0.0]],
+        "capital_income_tax_noncompliance_rate": [[0.0]],
+        "income_tax_filer": [[1]],
+        "wealth_tax_filer": [[1]],
+        "eta": np.ones((80, 1)) * (1 / 80),
+        "eta_RM": np.ones((80, 1)) * (1 / 80),
+        "replacement_rate_adjust": [[1.0]],
+        "omega": _p.omega.sum(axis=2, keepdims=True),
+        "omega_SS": _p.omega_SS.sum(axis=1, keepdims=True),
+        "omega_S_preTP": _p.omega_S_preTP.sum(axis=1, keepdims=True),
+        "rho": _p.rho[:, :, :1],
+        "rho_preTP": _p.rho_preTP[:, :1],
+        "imm_rates": _p.imm_rates[:, :, :1],
+        "imm_rates_preTP": _p.imm_rates_preTP[:, :1],
+    }
+    p = Specifications(baseline=True, num_workers=1)
+    p.update_specifications(j1_updates)
+    bssmat = np.ones((p.S, p.J)) * 0.07
+    nssmat = np.ones((p.S, p.J)) * 0.4 * p.ltilde
+    r = 0.04
+    w = firm.get_w_from_r(r, p, "SS")
+    outer_loop_vars = (
+        bssmat,
+        nssmat,
+        r,
+        r,
+        w,
+        np.ones(p.M),
+        1.3,
+        np.ones(p.J) * 0.00019646295986015257,
+        0.12,
+        None,
+        100000,
+    )
+    return p, outer_loop_vars
+
+
+def test_inner_loop_reuses_scattered_p(scatter_test_params):
+    """
+    inner_loop should not re-scatter the parameters when the caller has
+    already scattered them, but must still scatter when called with the
+    legacy (outer_loop_vars, p, client) signature.
+    """
+    p, outer_loop_vars = scatter_test_params
+
+    # Legacy signature: scatters once per call
+    client = ScatterCountingClient()
+    SS.inner_loop(outer_loop_vars, p, client)
+    SS.inner_loop(outer_loop_vars, p, client)
+    assert client.scatter_calls == 2
+
+    # New signature: parameters scattered by the caller, never again
+    client = ScatterCountingClient()
+    scattered_p = SS.scatter_params(p, client)
+    assert client.scatter_calls == 1
+    for _ in range(3):
+        SS.inner_loop(outer_loop_vars, p, client, scattered_p)
+    assert client.scatter_calls == 1
+
+    # No client => no scatter and no future
+    assert SS.scatter_params(p, None) is None
+
+
+def test_SS_fsolve_scatters_once(scatter_test_params):
+    """
+    Repeated residual evaluations (as done by the root finder) must not
+    re-scatter the parameters when a scattered future is passed through.
+    """
+    p, outer_loop_vars = scatter_test_params
+    bssmat, nssmat = outer_loop_vars[0], outer_loop_vars[1]
+    r = outer_loop_vars[3]
+    w = outer_loop_vars[4]
+    guesses = (
+        [r, r, w]
+        + list(np.ones(p.M))
+        + [1.3]
+        + list(np.ones(p.J) * 0.00019646295986015257)
+        + [0.12, 100000]
+    )
+
+    # With a scattered future threaded through: one scatter total,
+    # regardless of the number of residual evaluations
+    client = ScatterCountingClient()
+    scattered_p = SS.scatter_params(p, client)
+    for _ in range(3):
+        SS.SS_fsolve(
+            guesses, bssmat, nssmat, None, None, None, p, client, scattered_p
+        )
+    assert client.scatter_calls == 1
+
+    # Backwards compatible 7-element args tuple still works (and scatters
+    # once per evaluation, the old behavior)
+    client = ScatterCountingClient()
+    for _ in range(2):
+        SS.SS_fsolve(guesses, bssmat, nssmat, None, None, None, p, client)
+    assert client.scatter_calls == 2

@@ -74,6 +74,45 @@ def replacement_rate_vals(nssmat, wss, factor_ss, j, p):
     return theta
 
 
+def replacement_rate_adjustment(pension, t, j, method, p):
+    """
+    Return the replacement rate adjustment, shaped to broadcast against
+    pension.
+
+    US-Style Social Security applies this itself inside SS_amount. The
+    other three systems do not, so pension_amount applies it for them.
+    Along the time path the multiplier varies with each cohort's own year,
+    so it is indexed at t + tt for row tt.
+
+    The multiplier scales the whole pension array, while SS_amount scales
+    only the entries from retirement on. These are equivalent only because
+    DB, NDC, and PS benefits are zero before retirement; a system that
+    pays benefits before retirement would need the SS_amount treatment.
+
+    Args:
+        pension (Numpy array): pension amount for each household
+        t (int): model period
+        j (int): index of lifetime income group, None if all groups
+        method (str): 'SS', 'TPI', or 'TPI_scalar'
+        p (OG-Core Specifications object): model parameters
+
+    Returns:
+        adjustment (array_like): multiplier on the replacement rate
+
+    """
+    adjust = p.replacement_rate_adjust
+    if method == "SS":
+        return adjust[-1, :] if j is None else adjust[-1, j]
+    if method == "TPI_scalar":
+        return adjust[0, j]
+    if pension.ndim == 1:
+        return adjust[t, j]
+    length = pension.shape[0]
+    if pension.ndim == 2:
+        return adjust[t : t + length, j].reshape(length, 1)
+    return adjust[t : t + length, :].reshape(length, 1, p.J)
+
+
 def pension_amount(r, w, n, Y, theta, t, j, shift, method, e, factor, p):
     """
     Calculate public pension benefit amounts for each household.
@@ -102,10 +141,19 @@ def pension_amount(r, w, n, Y, theta, t, j, shift, method, e, factor, p):
         pension = SS_amount(w, n, theta, t, j, shift, method, e, p)
     elif p.pension_system == "Defined Benefits":
         pension = DB_amount(w, e, n, j, p)
+        pension = pension * replacement_rate_adjustment(
+            pension, t, j, method, p
+        )
     elif p.pension_system == "Notional Defined Contribution":
         pension = NDC_amount(w, e, n, r, Y, j, p)
+        pension = pension * replacement_rate_adjustment(
+            pension, t, j, method, p
+        )
     elif p.pension_system == "Points System":
         pension = PS_amount(w, e, n, j, factor, p)
+        pension = pension * replacement_rate_adjustment(
+            pension, t, j, method, p
+        )
     else:
         raise ValueError(
             "pension_system must be one of the following: "

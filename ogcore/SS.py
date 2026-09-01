@@ -220,7 +220,51 @@ def solve_for_j(
     )
 
 
-def inner_loop(outer_loop_vars, p, client):
+def scatter_params(p, client):
+    """
+    Scatter the model parameters object to the Dask workers once.
+
+    The Specifications object does not change over the course of a
+    steady-state solve, so it only needs to be serialized and
+    broadcast to the workers a single time.  The resulting Future can
+    then be reused across all calls to `inner_loop`.
+
+    Args:
+        p (OG-Core Specifications object): model parameters
+        client (Dask client object): client
+
+    Returns:
+        scattered_p (Dask Future or None): future pointing to `p` on
+            the workers, or None if there is no client
+
+    """
+    if not client:
+        return None
+
+    # Before scattering, temporarily remove unpicklable schema objects
+    schema_backup = {}
+    for attr in ["_defaults_schema", "_validator_schema", "sel"]:
+        if hasattr(p, attr):
+            schema_backup[attr] = getattr(p, attr)
+            try:
+                delattr(p, attr)
+            except Exception:
+                pass
+
+    # Scatter the parameters
+    scattered_p = client.scatter(p, broadcast=True)
+
+    # Restore the schema objects (they're not needed by workers anyway)
+    for attr, value in schema_backup.items():
+        try:
+            setattr(p, attr, value)
+        except Exception:
+            pass
+
+    return scattered_p
+
+
+def inner_loop(outer_loop_vars, p, client, scattered_p=None):
     """
     This function solves for the inner loop of the SS.  That is, given
     the guesses of the outer loop variables (r, w, TR, factor) this
@@ -242,6 +286,9 @@ def inner_loop(outer_loop_vars, p, client):
         factor (scalar): scaling factor converting model units to dollars
         p (OG-Core Specifications object): model parameters
         client (Dask client object): client
+        scattered_p (Dask Future or None): future pointing to the
+            model parameters already scattered to the workers.  If
+            None and a client is provided, `p` is scattered here.
 
     Returns:
         (tuple): results from household solution:
@@ -290,25 +337,12 @@ def inner_loop(outer_loop_vars, p, client):
     # from dask.base import dask_sizeof
 
     if client:
-        # Before scattering, temporarily remove unpicklable schema objects
-        schema_backup = {}
-        for attr in ["_defaults_schema", "_validator_schema", "sel"]:
-            if hasattr(p, attr):
-                schema_backup[attr] = getattr(p, attr)
-                try:
-                    delattr(p, attr)
-                except Exception:
-                    pass
-
-        # Scatter the parameters
-        scattered_p_future = client.scatter(p, broadcast=True)
-
-        # Restore the schema objects (they're not needed by workers anyway)
-        for attr, value in schema_backup.items():
-            try:
-                setattr(p, attr, value)
-            except Exception:
-                pass
+        # Scatter the parameters only if they have not already been
+        # scattered by the caller (run_SS scatters once per solve).
+        if scattered_p is None:
+            scattered_p_future = scatter_params(p, client)
+        else:
+            scattered_p_future = scattered_p
 
         # Launch in parallel with submit (or map)
         futures = []
@@ -684,6 +718,7 @@ def SS_solver(
     p,
     client,
     fsolve_flag=False,
+    scattered_p=None,
 ):
     """
     Solves for the steady state distribution of capital, labor, as well
@@ -702,6 +737,9 @@ def SS_solver(
         factor (scalar): scaling factor converting model units to dollars
         p (OG-Core Specifications object): model parameters
         client (Dask client object): client
+        fsolve_flag (bool): flag for whether solution came from fsolve
+        scattered_p (Dask Future or None): future pointing to the model
+            parameters already scattered to the Dask workers
 
     Returns:
         output (dictionary): dictionary with steady state solution
@@ -759,7 +797,7 @@ def SS_solver(
             new_factor,
             new_BQ,
             average_income_model,
-        ) = inner_loop(outer_loop_vars, p, client)
+        ) = inner_loop(outer_loop_vars, p, client, scattered_p)
 
         # update guesses for next iteration
         bmat = utils.convex_combo(new_bmat, bmat, nu_ss)
@@ -1265,13 +1303,29 @@ def SS_fsolve(guesses, *args):
         factor_ss (scalar): scaling factor converting model units to dollars
         p (OG-Core Specifications object): model parameters
         client (Dask client object): client
+        scattered_p (Dask Future or None): optional eighth element of
+            args, a future pointing to the model parameters already
+            scattered to the Dask workers
 
     Returns:
         errors (list): errors from differences between guessed and
             implied outer loop variables
 
     """
-    bssmat, nssmat, TR_ss, Ig_baseline, factor_ss, p, client = args
+    if len(args) == 8:
+        (
+            bssmat,
+            nssmat,
+            TR_ss,
+            Ig_baseline,
+            factor_ss,
+            p,
+            client,
+            scattered_p,
+        ) = args
+    else:
+        bssmat, nssmat, TR_ss, Ig_baseline, factor_ss, p, client = args
+        scattered_p = None
 
     # Rename the inputs
     r_p = guesses[0]
@@ -1326,7 +1380,7 @@ def SS_fsolve(guesses, *args):
         new_factor,
         new_BQ,
         average_income_model,
-    ) = inner_loop(outer_loop_vars, p, client)
+    ) = inner_loop(outer_loop_vars, p, client, scattered_p)
 
     # Create list of errors in general equilibrium variables
     error_r_p = float(new_r_p - r_p)
@@ -1438,6 +1492,7 @@ def run_SS(p, client=None):
     # Use the baseline solution to get starting values for the reform
     use_new_guesses = False  # initialize this flag, switches to true
     # if baseline solution not work for reform
+    scattered_p = None  # future for parameters scattered to Dask workers
     if p.baseline is False:
         baseline_ss_path = os.path.join(p.baseline_dir, "SS", "SS_vars.pkl")
         ss_solutions = utils.safe_read_pickle(baseline_ss_path)
@@ -1489,6 +1544,10 @@ def run_SS(p, client=None):
                     + BQ_items
                     + [TRguess]
                 )
+                # Scatter the parameters to the workers once, rather
+                # than once per residual evaluation
+                scattered_p = scatter_params(p, client)
+
                 # Now solve for the steady state of the reform
                 ss_params = (
                     b_guess,
@@ -1498,6 +1557,7 @@ def run_SS(p, client=None):
                     factor_ss,
                     p,
                     client,
+                    scattered_p,
                 )
 
                 # Solve for steady state using root finder
@@ -1554,6 +1614,9 @@ def run_SS(p, client=None):
                 else:
                     TR_baseline = None
                     Ig_baseline = None
+                # Scatter the parameters to the workers once, rather
+                # than once per residual evaluation
+                scattered_p = scatter_params(p, client)
                 ss_params = (
                     b_guess,
                     n_guess,
@@ -1562,6 +1625,7 @@ def run_SS(p, client=None):
                     factor_ss,
                     p,
                     client,
+                    scattered_p,
                 )
                 # Solve for steady state using root finder
                 sol = opt.root(
@@ -1616,6 +1680,7 @@ def run_SS(p, client=None):
         p,
         client,
         fsolve_flag,
+        scattered_p,
     )
     if output["G"] < 0.0:
         warnings.warn(

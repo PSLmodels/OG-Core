@@ -9,6 +9,7 @@ module contains the following tests:
     - test_run_TPI_full_run(), 11 parameterizations, local only
     - test_run_TPI(), 2 parameterizations, local only
     - test_run_TPI_extra(), 8 parameterizations, local only
+    - test_run_TPI_serial_no_client(), 1 parameterization
 """
 
 import multiprocessing
@@ -256,6 +257,18 @@ def test_get_initial_SS_values(baseline, param_updates, filename, tmpdir):
         assert np.allclose(
             test_ss_vars[SS_VAR_NAME_MAPPING[k]], v, equal_nan=True
         )
+
+
+def test_rc_error_message():
+    """The resource-constraint failure message names the largest violation,
+    the period it occurs in, and the tolerance."""
+    T, M = 320, 2
+    RC_error = np.full((T, M), 1e-8)
+    RC_error[T - 1, 1] = -0.05  # a terminal-boundary spike (signed)
+    msg = TPI._rc_error_message(RC_error, 1e-4)
+    assert "5.00e-02" in msg  # the max absolute error, reported
+    assert f"period {T - 1}" in msg  # the period it occurs in
+    assert "1e-04" in msg or "0.0001" in msg  # the tolerance
 
 
 def test_firstdoughnutring():
@@ -1206,3 +1219,49 @@ def test_run_TPI_extra(baseline, param_updates, filename, tmpdir, dask_client):
                 rtol=1e-04,
                 atol=1e-04,
             )
+
+
+class _ReachedTPILoop(Exception):
+    """Sentinel raised in place of the household inner loop."""
+
+
+def test_run_TPI_serial_no_client(tmpdir, monkeypatch):
+    """
+    Regression test: TPI.run_TPI(p, client=None) must reach the TPI loop.
+
+    run_TPI used to call ``client.scatter(p, broadcast=True)``
+    unconditionally, so passing ``client=None`` raised an
+    ``AttributeError`` before the TPI loop was ever entered, making the
+    serial fallback inside the loop unreachable.  This test does not
+    solve a transition path: it seeds the baseline SS results from the
+    cached pickles in ``test_io_data`` and monkeypatches
+    ``TPI.inner_loop`` to raise a sentinel, so it asserts only that
+    execution gets as far as the first serial household solve.
+    """
+    # Seed cached baseline SS results so no SS solve is needed
+    old_baseline_dir = os.path.join(CUR_PATH, "test_io_data", "OUTPUT2")
+    ss_vars = utils.safe_read_pickle(
+        os.path.join(old_baseline_dir, "SS", "SS_vars.pkl")
+    )
+    ss_vars_new = {SS_VAR_NAME_MAPPING[k]: v for k, v in ss_vars.items()}
+    baseline_dir = os.path.join(tmpdir, "baseline")
+    utils.mkdirs(os.path.join(baseline_dir, "SS"))
+    with open(os.path.join(baseline_dir, "SS", "SS_vars.pkl"), "wb") as f:
+        pickle.dump(ss_vars_new, f)
+
+    p = Specifications(
+        baseline=True,
+        baseline_dir=baseline_dir,
+        output_base=baseline_dir,
+        num_workers=1,
+    )
+    p.update_specifications(TEST_PARAM_DICT.copy())
+    p.maxiter = 1
+
+    def mock_inner_loop(*args, **kwargs):
+        raise _ReachedTPILoop()
+
+    monkeypatch.setattr(TPI, "inner_loop", mock_inner_loop)
+
+    with pytest.raises(_ReachedTPILoop):
+        TPI.run_TPI(p, client=None)
