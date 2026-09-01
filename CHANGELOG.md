@@ -14,41 +14,81 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   sovereign that genuinely pays a negative real rate could not be modelled.
   The bound is now a parameter, `r_gov_floor`, with a default of 0.0 that
   reproduces the previous behaviour exactly.
+- `npv_table` in `output_tables.py` (Issue #1131): builds a table of the net present value of the reform-minus-baseline change in flow variables (e.g. `Y`) over a horizon, evaluated at a list of discount rates. Values are un-stationarized by default so the NPV is taken over the actual (trend-inclusive) level path.
+
+## [0.20.0] - 2026-08-13 12:00:00
+
+### Added
+
+- Addresses Issue [#1205](https://github.com/PSLmodels/OG-Core/issues/1205):
+  the UN Data Portal API token can now come from a `un_token` argument to
+  `demographics.get_un_data`, from a `UN_API_TOKEN` environment variable, or
+  from a single per-user file (`$XDG_CONFIG_HOME/og/un_api_token.txt`, or
+  `%APPDATA%\og\un_api_token.txt` on Windows). Sources are tried in that
+  order, then `un_api_token.txt` in the working directory. This gives one
+  token per user instead of one per directory.
+- An `og-token` command, OG-Core's first console script, to manage that
+  token without hunting for the file: `og-token set` saves one,
+  `og-token show` reports where it lives and which source wins, and
+  `og-token rm` deletes it. The token is read without echoing and is never
+  printed back.
+
+### Changed
+
+- Answering the UN API token prompt now saves the token to the per-user file
+  rather than to the current working directory, which used to leave a copy of
+  the token in every directory a model was run from. An existing
+  `un_api_token.txt` in the working directory is still read, with a notice
+  that the location is deprecated.
+- The token prompt now names both ways forward: where to generate a free
+  token, and that pressing return uses the archived copy of the same data
+  instead.
+- The token is read with `getpass` rather than `input`, so it is no longer
+  echoed into the terminal and its scrollback while being typed or pasted.
+- An expired token is now named as the reason for falling back to the
+  archived data, instead of failing the same way as a missing one. The
+  portal issues JSON Web Tokens, so the expiry date is read locally with
+  no extra request, and `og-token show` reports whether the stored token
+  is still current. A token that is not a readable JSON Web Token is used
+  as before, with no expiry reported.
+- A run that falls back to the archived data now says once, not once per
+  series, how to register a token: where to get one, the full path of the
+  `og-token` command belonging to the running interpreter, and the token
+  file to write. The full path matters because `og-token` is installed
+  beside the interpreter and is normally not on the shell's PATH, so
+  someone who obtains a token days later has something they can paste
+  rather than a command that reports "not found".
+- The token prompt is skipped when standard input is not interactive, so
+  scheduled and scripted runs fall back to the Population-Data archive
+  instead of waiting on input.
+
+## [0.19.2] - 2026-08-18 17:00:00
+
+### Adds
+- Updates `.gitignore` to include a line `.claude/`.
+- Updates the `uv.lock` file to include upgraded `pillow` package version 12.3.0. This satisfies the dependabot PR update in PR #1176. I updated all the packages in the environment. This resulted in an update of the `pytest` package, which caused errors that led to the changes below.
+- Updated the version in `pyproject.toml`, `ogcore/__init__.py` and `CHANGELOG.md`.
+- Updated the version of `pytest` in `pyproject.toml` to `pytest>=9.1`. Some changes to logging happened in versions 9.1+, that are not backward compatible. All our testing started throwing errors once I updated that package. I changed the `pytest` miniversion in line 94 of `pyproject.toml` to 9.1, and I updated the `filterwarnings` in lines 94-98.
+- I updated all the `Makefile` commands to fit with standard GNU formatting and to work with our updated usage of the `uv` package. I also got rid of some compute studio commands, the objects of which had no targets.
+- I updated the format of the `logger.info()` warnings in `household.py` which was a source of errors from the updated `pytest` package.
+- I fixed some errors that were happening in the building of our Jupyter Book documentation. There was a fight going on between our `make_params.py` and `make_vars.py` scripts and the Sphinx `_toc.yml` table of contents script. And we were missing `config.rst`, `SS.rst`, and `TPI.rst` files. I explicitly put the API chapters in the `_toc.yml` file. And I built an updated `parameters.md` file.
+- We had some Jupyter Book warnings for headings that go from H2 to H4 in parameters.md and variables.md. However, this is what we want. So  I added the `_ext/supress_header_warnings.py` file and referenced it in `_config.py` in order to surpress only those warnings associated with only the `parameters.md` and `variables.md` files.
+
+### Bug Fixes
+
+- Fixes Issue [#1199](https://github.com/PSLmodels/OG-Core/issues/1199): `aggregates.revenue` counted payroll tax revenue twice. Each household's `income_payroll_tax_liab` already includes `T_P = tau_payroll * labor_income`, so payroll revenue is inside `iit_payroll_tax_revenue`; PR #1184 then added `get_payroll_tax_revenue` (the same take, re-derived from the aggregate wage bill) into that total again when `tau_payroll` was nonzero. Revenue was overstated, the government over-spent, and any model with a nonzero `tau_payroll` failed the steady-state resource constraint (OG-USA was unaffected only because its `tau_payroll` is 0). The erroneous addition is removed; `get_payroll_tax_revenue` still provides the income vs payroll reporting split, which is unchanged. (See [PR #1204](https://github.com/PSLmodels/OG-Core/pull/1204) and [PR #1199](https://github.com/PSLmodels/OG-Core/pull/1199).)
 
 ## [0.19.1] - 2026-08-10 12:00:00
 
 ### Added
 
-- Stall detection for the TPI outer loop (Issue #1177): when the best
-  distance has not improved over the last `TPI_stall_window` iterations
-  (default 50; 0 disables), `run_TPI` logs a diagnosis distinguishing a
-  cycling outer loop (suggesting a lower `nu` or
-  `TPI_outer_method="anderson"`) from a diverging economy (usually an
-  inconsistent fiscal block, which solver settings cannot fix). The
-  default `TPI_stall_action="warn"` only logs, leaving model solutions
-  unchanged; `"stop"` also ends the loop early, so a hopeless run fails
-  through the existing non-convergence checks instead of spending the
-  rest of `maxiter`. The window check lives in
-  `ogcore.solvers.diagnose_stall` and works for both the picard and
-  anderson update rules. The diagnosis is re-logged if it changes (e.g.
-  escalates from cycling to diverging), and a run that ends unconverged
-  while stalled carries the diagnosis in the `RuntimeError` message, so
-  it reaches users who only see the traceback.
-  [PR #1178](https://github.com/PSLmodels/OG-Core/pull/1178).
+- Stall detection for the TPI outer loop (Issue #1177): when the best distance has not improved over the last `TPI_stall_window` iterations (default 50; 0 disables), `run_TPI` logs a diagnosis distinguishing a cycling outer loop (suggesting a lower `nu` or `TPI_outer_method="anderson"`) from a diverging economy (usually an inconsistent fiscal block, which solver settings cannot fix). The default `TPI_stall_action="warn"` only logs, leaving model solutions unchanged; `"stop"` also ends the loop early, so a hopeless run fails through the existing non-convergence checks instead of spending the rest of `maxiter`. The window check lives in `ogcore.solvers.diagnose_stall` and works for both the picard and anderson update rules. The diagnosis is re-logged if it changes (e.g. escalates from cycling to diverging), and a run that ends unconverged while stalled carries the diagnosis in the `RuntimeError` message, so it reaches users who only see the traceback. [PR #1178](https://github.com/PSLmodels/OG-Core/pull/1178).
 - Changes the default of `stationarized` to `False` in `output_plots.plot_aggregates` and `output_plots.plot_industry_aggregates`, so unstationarized values are plotted by default, resolving Issue [#1133](https://github.com/PSLmodels/OG-Core/issues/1133). [PR #1183](https://github.com/PSLmodels/OG-Core/pull/1183).
 
 ### Bug Fixes
 
-- Fixes Issue [#1186](https://github.com/PSLmodels/OG-Core/issues/1186):
-  with demographics that vary across lifetime income groups (introduced in
-  PR #1165), the `use_zeta = False` branch of `household.get_bq` divided
-  each group's bequest pool by its birth share (`lambdas[j]`) rather than
-  its actual population share, so bequests received did not sum to bequests
-  left and the steady-state resource constraint failed. Receipts are now
-  divided by the group's actual population (from `omega_SS` / `omega`),
-  matching the `use_zeta = True` branch. Results are unchanged when
-  demographics are common across groups. [PR #1187](https://github.com/PSLmodels/OG-Core/pull/1187).
-- Fixes Issue [#1015](https://github.com/PSLmodels/OG-Core/issues/1015): fixes escape with special characters in parameter names that caused failures when reading from JSON files.  Adds a test to prevent this in the future.  [PR #1193](https://github.com/PSLmodels/OG-Core/pull/1193).
+- Fixes Issue [#1186](https://github.com/PSLmodels/OG-Core/issues/1186): with demographics that vary across lifetime income groups (introduced in PR #1165), the `use_zeta = False` branch of `household.get_bq` divided each group's bequest pool by its birth share (`lambdas[j]`) rather than its actual population share, so bequests received did not sum to bequests left and the steady-state resource constraint failed. Receipts are now divided by the group's actual population (from `omega_SS` / `omega`), matching the `use_zeta = True` branch. Results are unchanged when demographics are common across groups. [PR #1187](https://github.com/PSLmodels/OG-Core/pull/1187).
+- Fixes Issue [#1015](https://github.com/PSLmodels/OG-Core/issues/1015): fixes escape with special characters in parameter names that caused failures when reading from JSON files. Adds a test to prevent this in the future. [PR #1193](https://github.com/PSLmodels/OG-Core/pull/1193).
 - Resolve Issue [#1152](https://github.com/PSLmodels/OG-Core/issues/1152): expose same keys in the steady-state and time path dictionaries. [PR #1185](https://github.com/PSLmodels/OG-Core/pull/1185).
 - Correct payroll tax calculations, resolving Issue [#1023](https://github.com/PSLmodels/OG-Core/issues/1023). [PR #1184](https://github.com/PSLmodels/OG-Core/pull/1184).
 
@@ -56,87 +96,30 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- Fixes Issue [#1169](https://github.com/PSLmodels/OG-Core/issues/1169):
-  the Notional Defined Contribution pension system could not run against
-  a real `Specifications` object because its growth-rate settings were
-  not parameters. `ndc_growth_rate`, `dir_growth_rate`, and
-  `points_growth_rate` are now parameters in `default_parameters.json`
-  (choices `"r"`, `"Curr GDP"`, `"LR GDP"`; default `"LR GDP"`, matching
-  the previous fallback behavior). `g_ndc` and `g_dir` now handle the
-  scalar `r` and `g_y` of the steady state, and `delta_ret` falls back
-  to the steady-state mortality rates implied by `rho` (averaged over
-  lifetime income groups) when no `mort_rates_SS` attribute is set. The
-  NDC system is added to the real-`Specifications` pension test.
+- Fixes Issue [#1169](https://github.com/PSLmodels/OG-Core/issues/1169): the Notional Defined Contribution pension system could not run against a real `Specifications` object because its growth-rate settings were not parameters. `ndc_growth_rate`, `dir_growth_rate`, and `points_growth_rate` are now parameters in `default_parameters.json` (choices `"r"`, `"Curr GDP"`, `"LR GDP"`; default `"LR GDP"`, matching the previous fallback behavior). `g_ndc` and `g_dir` now handle the scalar `r` and `g_y` of the steady state, and `delta_ret` falls back to the steady-state mortality rates implied by `rho` (averaged over lifetime income groups) when no `mort_rates_SS` attribute is set. The NDC system is added to the real-`Specifications` pension test.
 
 ## [0.18.1] - 2026-07-22 12:00:00
 
 ### Bug Fixes
 
-- Fixes Issue [#1180](https://github.com/PSLmodels/OG-Core/issues/1180):
-  `get_pop_objs` raised an `AssertionError` for the homogeneous case
-  (`income_percentiles=None` with no income-specific inputs), because
-  `expand_pop_obj_J` asserted before reaching its homogeneous branch.
-  `income_percentiles` now defaults to a single income group (J=1) when
-  no income-specific inputs are supplied, restoring the pre-0.18 call
-  signature; it remains required whenever gradients or immigrant income
-  shares are provided. Also removes a stray debug `print` from that
-  branch.
+- Fixes Issue [#1180](https://github.com/PSLmodels/OG-Core/issues/1180): `get_pop_objs` raised an `AssertionError` for the homogeneous case (`income_percentiles=None` with no income-specific inputs), because `expand_pop_obj_J` asserted before reaching its homogeneous branch. `income_percentiles` now defaults to a single income group (J=1) when no income-specific inputs are supplied, restoring the pre-0.18 call signature; it remains required whenever gradients or immigrant income shares are provided. Also removes a stray debug `print` from that branch.
 
 ## [0.18.0] - 2026-07-20 12:00:00
 
 ### Added
 
-- Demographic parameters (`rho`, `omega`, `imm_rates`) are now allowed to
-  vary across lifetime income groups, `J`. See PR [#1165](https://github.com/PSLmodels/OG-Core/pull/1165)
+- Demographic parameters (`rho`, `omega`, `imm_rates`) are now allowed to vary across lifetime income groups, `J`. See PR [#1165](https://github.com/PSLmodels/OG-Core/pull/1165)
 
 ## [0.17.0] - 2026-07-16 12:00:00
 
 ### Bug Fixes
 
-- Fixes the Defined Benefits and Points System pension paths so they run
-  against a real `Specifications` object (Issues #1014 and #1075):
-  `p.retire` (an array since PR #433) was passed as the scalar `S_ret`
-  into the numba loops, the scalar `p.g_y` was indexed as an array inside
-  the loops, the scalar steady-state wage was indexed as a path, and the
-  time-varying 3-D `e` matrix (PR #895) was sliced as 2-D. The systems
-  use the steady-state retirement age and earnings profile for now; full
-  time variation remains open in Issue #1014. The same coercions are
-  applied to the NDC path, but the NDC system additionally requires
-  growth-rate settings (`ndc_growth_rate`, `dir_growth_rate`) that are
-  not yet parameters in `default_parameters.json`, so it still cannot
-  run against a real `Specifications` object (see Issue #1169).
-- Wires the pre-time-path inputs the DB/NDC/PS benefit formulas need
-  into the TPI: labor supplied before the time path begins comes from
-  the model's initial condition (the same baseline object that
-  initializes wealth), and pre-time-path wages are anchored to the
-  period-0 wage of the current path. Adds the full time-path (T x S x J)
-  evaluation of Defined Benefits amounts (`DB_3dim_loop`) used when the
-  TPI computes aggregate revenues, built from each cohort's own wage and
-  labor history so aggregates are consistent with household behavior.
-  With these changes a country model using the Defined Benefits system
-  solves both the steady state and the transition path.
-- Adds regression tests that call `pension_amount` with a real
-  `Specifications` object per pension system (the existing tests
-  pre-scalarized the inputs and so never exercised the real interface)
-  and a local-marked steady-state solve test with the Defined Benefits
-  system. See PR [#1167](https://github.com/PSLmodels/OG-Core/pull/1167).
-- Fixes the tax-liability revenue calculation using the first year's tax
-  noncompliance and filer rates for every period, even when those rates
-  are set to vary over time (Issue #1168): households responded to the
-  changing rates while government revenue, the budget, and debt stayed on
-  the first-year values. `income_tax_liab` now slices the rates over the
-  transition path. See PR [#1174](https://github.com/PSLmodels/OG-Core/pull/1174).
-- Fixes the steady-state `etr_ss` and `mtry_ss` diagnostics using the
-  labor-income tax noncompliance rate in place of the capital-income rate
-  (`capital_noncompliance_rate_2D` in `SS.py`, Issue #1170). This affects
-  only the post-solve SS diagnostics -- the solution itself already used
-  the correct rates -- and is a no-op when the two rates are equal (the
-  default). See PR [#1171](https://github.com/PSLmodels/OG-Core/pull/1171).
-- Fixes `alpha_FA` (direct foreign aid, added in 0.16.0) not being
-  extended over the model time path: it was never registered in
-  `tp_param_list`, so a multi-year path stayed short and broke the
-  transition solve. It now extends to `T + S` with the last value carried
-  forward, like `alpha_G`/`alpha_T`/`alpha_I`. See PR [#1166](https://github.com/PSLmodels/OG-Core/pull/1166).
+- Fixes the Defined Benefits and Points System pension paths so they run against a real `Specifications` object (Issues #1014 and #1075): `p.retire` (an array since PR #433) was passed as the scalar `S_ret` into the numba loops, the scalar `p.g_y` was indexed as an array inside the loops, the scalar steady-state wage was indexed as a path, and the time-varying 3-D `e` matrix (PR #895) was sliced as 2-D. The systems use the steady-state retirement age and earnings profile for now; full time variation remains open in Issue #1014. The same coercions are applied to the NDC path, but the NDC system additionally requires growth-rate settings (`ndc_growth_rate`, `dir_growth_rate`) that are not yet parameters in `default_parameters.json`, so it still cannot run against a real `Specifications` object (see Issue #1169).
+- Wires the pre-time-path inputs the DB/NDC/PS benefit formulas need into the TPI: labor supplied before the time path begins comes from the model's initial condition (the same baseline object that initializes wealth), and pre-time-path wages are anchored to the period-0 wage of the current path. Adds the full time-path (T x S x J) evaluation of Defined Benefits amounts (`DB_3dim_loop`) used when the TPI computes aggregate revenues, built from each cohort's own wage and labor history so aggregates are consistent with household behavior. With these changes a country model using the Defined Benefits system solves both the steady state and the transition path.
+- Adds regression tests that call `pension_amount` with a real `Specifications` object per pension system (the existing tests pre-scalarized the inputs and so never exercised the real interface) and a local-marked steady-state solve test with the Defined Benefits system. See PR [#1167](https://github.com/PSLmodels/OG-Core/pull/1167).
+- Fixes the tax-liability revenue calculation using the first year's tax noncompliance and filer rates for every period, even when those rates are set to vary over time (Issue #1168): households responded to the changing rates while government revenue, the budget, and debt stayed on the first-year values. `income_tax_liab` now slices the rates over the transition path. See PR [#1174](https://github.com/PSLmodels/OG-Core/pull/1174).
+- Fixes the steady-state `etr_ss` and `mtry_ss` diagnostics using the labor-income tax noncompliance rate in place of the capital-income rate (`capital_noncompliance_rate_2D` in `SS.py`, Issue #1170). This affects only the post-solve SS diagnostics -- the solution itself already used the correct rates -- and is a no-op when the two rates are equal (the default). See PR [#1171](https://github.com/PSLmodels/OG-Core/pull/1171).
+- Fixes `alpha_FA` (direct foreign aid, added in 0.16.0) not being extended over the model time path: it was never registered in `tp_param_list`, so a multi-year path stayed short and broke the transition solve. It now extends to `T + S` with the last value carried forward, like `alpha_G`/`alpha_T`/`alpha_I`. See PR [#1166](https://github.com/PSLmodels/OG-Core/pull/1166).
 
 ## [0.16.4] - 2026-07-02 12:00:00
 
@@ -748,6 +731,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Any earlier versions of OG-USA can be found in the [`OG-Core`](https://github.com/PSLmodels/OG-Core) repository [release history](https://github.com/PSLmodels/OG-Core/releases) from [v.0.6.4](https://github.com/PSLmodels/OG-Core/releases/tag/v0.6.4) (Jul. 20, 2021) or earlier.
 
 
+[0.20.0]: https://github.com/PSLmodels/OG-Core/compare/v0.19.2...v0.20.0
+[0.19.2]: https://github.com/PSLmodels/OG-Core/compare/v0.19.1...v0.19.2
 [0.19.1]: https://github.com/PSLmodels/OG-Core/compare/v0.19.0...v0.19.1
 [0.19.0]: https://github.com/PSLmodels/OG-Core/compare/v0.18.1...v0.19.0
 [0.18.1]: https://github.com/PSLmodels/OG-Core/compare/v0.18.0...v0.18.1
