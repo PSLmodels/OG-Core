@@ -96,6 +96,46 @@ def test_macro_table_SS():
     assert isinstance(df, pd.DataFrame)
 
 
+def test_npv_table():
+    df = output_tables.npv_table(
+        base_tpi,
+        base_params,
+        reform_tpi,
+        reform_params,
+        var_list=["Y", "C"],
+        num_years=10,
+        start_year=int(base_params.start_year),
+    )
+    assert isinstance(df, pd.DataFrame)
+    # one row per variable, plus a "Variable" column and one column per
+    # discount rate (5 by default)
+    assert df.shape == (2, 6)
+
+
+def test_npv_table_values():
+    """NPV of the reform-minus-baseline change matches a hand calculation."""
+    p = Specifications()
+    b_tpi = {"Y": np.zeros(p.T)}
+    r_tpi = {"Y": np.zeros(p.T)}
+    r_tpi["Y"][:3] = np.array([100.0, 110.0, 120.0])
+    df = output_tables.npv_table(
+        b_tpi,
+        p,
+        r_tpi,
+        p,
+        var_list=["Y"],
+        discount_rates=[0.0, 0.1],
+        num_years=3,
+        stationarized=True,
+        start_year=int(p.start_year),
+    )
+    # r = 0 is just the undiscounted sum of the change
+    assert np.isclose(df["0.0%"][0], 330.0)
+    # r = 0.1: 100 + 110 / 1.1 + 120 / 1.1**2
+    expected = 100.0 + 110.0 / 1.1 + 120.0 / 1.1**2
+    assert np.isclose(df["10.0%"][0], expected)
+
+
 def test_ineq_table():
     df = output_tables.ineq_table(base_ss, base_params)
     assert isinstance(df, pd.DataFrame)

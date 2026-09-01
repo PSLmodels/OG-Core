@@ -207,6 +207,96 @@ def macro_table_SS(
     return table
 
 
+def npv_table(
+    base_tpi,
+    base_params,
+    reform_tpi,
+    reform_params,
+    var_list=["Y"],
+    discount_rates=[0.01, 0.02, 0.03, 0.04, 0.06],
+    num_years=10,
+    stationarized=False,
+    start_year=DEFAULT_START_YEAR,
+    table_format=None,
+    path=None,
+):
+    """
+    Create a table of the net present value (NPV) of the change
+    (reform minus baseline) in flow variables over a horizon, computed
+    at several discount rates.
+
+    For each variable the NPV is
+
+    .. math::
+        NPV = \\sum_{t=0}^{num\\_years-1}
+        \\frac{x^{reform}_{t} - x^{base}_{t}}{(1 + r)^{t}}
+
+    where :math:`x_{t}` is the value of the variable in period `t` and
+    `r` is the discount rate. Values are un-stationarized by default so
+    the NPV is taken over the actual (trend-inclusive) level path, which
+    is the economically meaningful object to discount; pass
+    `stationarized=True` to discount the stationarized model values
+    instead. Results are in the same units as the variable (model
+    units); to express them in dollars, scale by the model's `factor`.
+
+    Args:
+        base_tpi (dictionary): TPI output from baseline run
+        base_params (OG-Core Specifications class): baseline parameters
+            object
+        reform_tpi (dictionary): TPI output from reform run
+        reform_params (OG-Core Specifications class): reform parameters
+            object
+        var_list (list): names of variables to include in the table
+        discount_rates (list): annual discount rates to compute the NPV
+            at, each expressed as a decimal (e.g. 0.03 for 3%)
+        num_years (integer): number of years to include in the NPV sum
+        stationarized (bool): whether to use the stationarized model
+            values; if False (default) the variables are un-stationarized
+            before discounting
+        start_year (integer): first year of the NPV window
+        table_format (string): format to return table in: 'csv', 'tex',
+            'excel', 'json', if None, a DataFrame is returned
+        path (string): path to save table to
+
+    Returns:
+        table (various): table in DataFrame or string format or `None`
+            if saved to disk
+
+    """
+    assert reform_tpi is not None, (
+        "npv_table computes the NPV of the reform-minus-baseline change, "
+        "so a reform run is required."
+    )
+    assert isinstance(start_year, (int, np.integer))
+    assert isinstance(num_years, (int, np.integer))
+    assert num_years <= base_params.T
+    # Make sure both runs cover the same time period
+    assert base_params.start_year == reform_params.start_year
+    start_index = start_year - base_params.start_year
+    periods = np.arange(num_years)
+    # Difference in each variable over the NPV window, un-stationarized
+    # unless the caller asks for the stationarized values
+    diffs = {}
+    for v in var_list:
+        if stationarized:
+            base_v = base_tpi[v]
+            reform_v = reform_tpi[v]
+        else:
+            base_v = unstationarize_vars(v, base_tpi, base_params)
+            reform_v = unstationarize_vars(v, reform_tpi, reform_params)
+        diffs[v] = (reform_v - base_v)[start_index : start_index + num_years]
+    table_dict = {"Variable": [VAR_LABELS[v] for v in var_list]}
+    for r in discount_rates:
+        discount = (1 + r) ** periods
+        table_dict["{:.1%}".format(r)] = [
+            (diffs[v] / discount).sum() for v in var_list
+        ]
+    table_df = pd.DataFrame.from_dict(table_dict, orient="columns")
+    table = save_return_table(table_df, table_format, path)
+
+    return table
+
+
 def ineq_table(
     base_ss,
     base_params,
