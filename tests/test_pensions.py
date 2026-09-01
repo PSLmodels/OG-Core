@@ -1022,6 +1022,62 @@ def test_pension_amount_with_real_specifications(system, updates):
     assert np.all(pension[S_ret:] > 0.0)
 
 
+@pytest.mark.parametrize(
+    "system,updates",
+    [
+        ("US-Style Social Security", {}),
+        ("Defined Benefits", {"alpha_db": 0.01, "yr_contrib": 40}),
+        (
+            "Points System",
+            {"vpoint": 0.4, "points_growth_rate": "LR GDP"},
+        ),
+        (
+            "Notional Defined Contribution",
+            {
+                "tau_p": 0.1,
+                "ndc_growth_rate": "LR GDP",
+                "dir_growth_rate": "r",
+            },
+        ),
+    ],
+    ids=["SS", "DB", "PS", "NDC"],
+)
+def test_replacement_rate_adjust_applies_to_every_system(system, updates):
+    """
+    replacement_rate_adjust must scale benefits under every pension system.
+
+    It was previously read only inside SS_amount, so setting it under any
+    system other than US-Style Social Security was silently ignored.
+    """
+
+    def pension_for(adjust):
+        p = Specifications()
+        p.update_specifications(dict(updates, pension_system=system))
+        adjust_arr = np.asarray(p.replacement_rate_adjust).copy()
+        adjust_arr[:, :] = adjust
+        p.replacement_rate_adjust = adjust_arr
+        j = 0
+        return pensions.pension_amount(
+            0.05,
+            1.2,
+            0.4 * np.ones(p.S),
+            1.0,
+            0.1,
+            None,
+            j,
+            False,
+            "SS",
+            p.e[-1, :, j],
+            100000.0,
+            p,
+        )
+
+    full = pension_for(1.0)
+    halved = pension_for(0.5)
+    assert np.any(full > 0.0), "test would be vacuous with a zero benefit"
+    assert np.allclose(halved, 0.5 * full)
+
+
 @pytest.mark.local
 def test_SS_solve_defined_benefits(tmp_path):
     """
@@ -1048,6 +1104,36 @@ def test_SS_solve_defined_benefits(tmp_path):
     Y = np.asarray(ss["Y"]).sum()
     assert ss["agg_pension_outlays"] > 0.0
     assert 0.0 < ss["agg_pension_outlays"] / Y < 1.0
+
+
+def test_replacement_rate_adjustment_indexes_by_cohort_year():
+    """
+    On the time path the adjustment must vary with each cohort's own year.
+
+    A single adjust[t] applied to the whole path would pass a constant-
+    adjustment test and silently flatten a glide, so this checks the
+    per-row offset directly.
+    """
+    p = Specifications()
+    j, t, length = 0, 3, 5
+    adjust = np.ones((p.T + p.S, p.J))
+    adjust[:, j] = np.arange(p.T + p.S) + 1.0
+    p.replacement_rate_adjust = adjust
+    expected = np.arange(t, t + length) + 1.0
+
+    two_d = pensions.replacement_rate_adjustment(
+        np.ones((length, p.S)), t, j, "TPI", p
+    )
+    assert np.allclose(two_d.flatten(), expected)
+
+    three_d = pensions.replacement_rate_adjustment(
+        np.ones((length, p.S, p.J)), t, None, "TPI", p
+    )
+    assert np.allclose(three_d[:, 0, j], expected)
+
+    # the steady state takes the terminal value
+    ss = pensions.replacement_rate_adjustment(np.ones(p.S), None, j, "SS", p)
+    assert np.isclose(ss, adjust[-1, j])
 
 
 @pytest.mark.local

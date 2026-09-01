@@ -7,6 +7,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Bug Fixes
+
+- Fixes Issue [#1200](https://github.com/PSLmodels/OG-Core/issues/1200):
+  `replacement_rate_adjust` was read only inside `SS_amount`, so it applied
+  to the US-Style Social Security system and was silently ignored under
+  Defined Benefits, Notional Defined Contribution, and Points System. The
+  adjustment is now applied to those three systems in `pension_amount`,
+  via a `replacement_rate_adjustment` helper that mirrors the indexing
+  `SS_amount` already uses, including the per-cohort `t + tt` offset along
+  the time path. `SS_amount` is unchanged, so US-Style results cannot move.
+  
+### Added
 - `npv_table` in `output_tables.py` (Issue #1131): builds a table of the net present value of the reform-minus-baseline change in flow variables (e.g. `Y`) over a horizon, evaluated at a list of discount rates. Values are un-stationarized by default so the NPV is taken over the actual (trend-inclusive) level path.
 
 ## [0.20.0] - 2026-08-13 12:00:00
