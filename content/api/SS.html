@@ -512,6 +512,9 @@ factor_ss, p, client)</p></li>
 <li><p><strong>factor_ss</strong> (<em>scalar</em>) – scaling factor converting model units to dollars</p></li>
 <li><p><strong>p</strong> (<em>OG-Core Specifications object</em>) – model parameters</p></li>
 <li><p><strong>client</strong> (<em>Dask client object</em>) – client</p></li>
+<li><p><strong>scattered_p</strong> (<em>Dask Future</em><em> or </em><em>None</em>) – optional eighth element of
+args, a future pointing to the model parameters already
+scattered to the Dask workers</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -554,7 +557,7 @@ n_guess (ndarray): initial guess for labor supply</p>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="ogcore.SS.SS_solver">
-<span class="sig-prename descclassname"><span class="pre">ogcore.SS.</span></span><span class="sig-name descname"><span class="pre">SS_solver</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">bmat</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nmat</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">r_p</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">r</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">w</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_m</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Y</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">BQ</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">TR</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Ig_baseline</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">factor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">client</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fsolve_flag</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogcore/SS.html#SS_solver"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogcore.SS.SS_solver" title="Link to this definition">#</a></dt>
+<span class="sig-prename descclassname"><span class="pre">ogcore.SS.</span></span><span class="sig-name descname"><span class="pre">SS_solver</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">bmat</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nmat</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">r_p</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">r</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">w</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_m</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Y</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">BQ</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">TR</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Ig_baseline</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">factor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">client</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fsolve_flag</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scattered_p</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogcore/SS.html#SS_solver"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogcore.SS.SS_solver" title="Link to this definition">#</a></dt>
 <dd><p>Solves for the steady state distribution of capital, labor, as well
 as w, r, TR and the scaling factor, using functional iteration.</p>
 <dl class="field-list simple">
@@ -572,6 +575,9 @@ as w, r, TR and the scaling factor, using functional iteration.</p>
 <li><p><strong>factor</strong> (<em>scalar</em>) – scaling factor converting model units to dollars</p></li>
 <li><p><strong>p</strong> (<em>OG-Core Specifications object</em>) – model parameters</p></li>
 <li><p><strong>client</strong> (<em>Dask client object</em>) – client</p></li>
+<li><p><strong>fsolve_flag</strong> (<em>bool</em>) – flag for whether solution came from fsolve</p></li>
+<li><p><strong>scattered_p</strong> (<em>Dask Future</em><em> or </em><em>None</em>) – future pointing to the model
+parameters already scattered to the Dask workers</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -620,7 +626,7 @@ factor, j, p)</p></li>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="ogcore.SS.inner_loop">
-<span class="sig-prename descclassname"><span class="pre">ogcore.SS.</span></span><span class="sig-name descname"><span class="pre">inner_loop</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">outer_loop_vars</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">client</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogcore/SS.html#inner_loop"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogcore.SS.inner_loop" title="Link to this definition">#</a></dt>
+<span class="sig-prename descclassname"><span class="pre">ogcore.SS.</span></span><span class="sig-name descname"><span class="pre">inner_loop</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">outer_loop_vars</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">client</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scattered_p</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogcore/SS.html#inner_loop"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogcore.SS.inner_loop" title="Link to this definition">#</a></dt>
 <dd><p>This function solves for the inner loop of the SS.  That is, given
 the guesses of the outer loop variables (r, w, TR, factor) this
 function solves the households’ problems in the SS.</p>
@@ -642,6 +648,9 @@ function solves the households’ problems in the SS.</p>
 <li><p><strong>factor</strong> (<em>scalar</em>) – scaling factor converting model units to dollars</p></li>
 <li><p><strong>p</strong> (<em>OG-Core Specifications object</em>) – model parameters</p></li>
 <li><p><strong>client</strong> (<em>Dask client object</em>) – client</p></li>
+<li><p><strong>scattered_p</strong> (<em>Dask Future</em><em> or </em><em>None</em>) – future pointing to the
+model parameters already scattered to the workers.  If
+None and a client is provided, <cite>p</cite> is scattered here.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>

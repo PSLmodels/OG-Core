@@ -646,9 +646,53 @@
 
 
 
+<span class="k">def</span><span class="w"> </span><span class="nf">scatter_params</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">client</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""</span>
+<span class="sd">    Scatter the model parameters object to the Dask workers once.</span>
+
+<span class="sd">    The Specifications object does not change over the course of a</span>
+<span class="sd">    steady-state solve, so it only needs to be serialized and</span>
+<span class="sd">    broadcast to the workers a single time.  The resulting Future can</span>
+<span class="sd">    then be reused across all calls to `inner_loop`.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        p (OG-Core Specifications object): model parameters</span>
+<span class="sd">        client (Dask client object): client</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        scattered_p (Dask Future or None): future pointing to `p` on</span>
+<span class="sd">            the workers, or None if there is no client</span>
+
+<span class="sd">    """</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">client</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">None</span>
+
+    <span class="c1"># Before scattering, temporarily remove unpicklable schema objects</span>
+    <span class="n">schema_backup</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="k">for</span> <span class="n">attr</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">"_defaults_schema"</span><span class="p">,</span> <span class="s2">"_validator_schema"</span><span class="p">,</span> <span class="s2">"sel"</span><span class="p">]:</span>
+        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">attr</span><span class="p">):</span>
+            <span class="n">schema_backup</span><span class="p">[</span><span class="n">attr</span><span class="p">]</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">attr</span><span class="p">)</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="nb">delattr</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">attr</span><span class="p">)</span>
+            <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+                <span class="k">pass</span>
+
+    <span class="c1"># Scatter the parameters</span>
+    <span class="n">scattered_p</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">broadcast</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+    <span class="c1"># Restore the schema objects (they're not needed by workers anyway)</span>
+    <span class="k">for</span> <span class="n">attr</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">schema_backup</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="nb">setattr</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">attr</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+            <span class="k">pass</span>
+
+    <span class="k">return</span> <span class="n">scattered_p</span>
+
+
 <div class="viewcode-block" id="inner_loop">
 <a class="viewcode-back" href="../../content/api/SS.html#ogcore.SS.inner_loop">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">inner_loop</span><span class="p">(</span><span class="n">outer_loop_vars</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">client</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">inner_loop</span><span class="p">(</span><span class="n">outer_loop_vars</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">client</span><span class="p">,</span> <span class="n">scattered_p</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    This function solves for the inner loop of the SS.  That is, given</span>
 <span class="sd">    the guesses of the outer loop variables (r, w, TR, factor) this</span>
@@ -670,6 +714,9 @@
 <span class="sd">        factor (scalar): scaling factor converting model units to dollars</span>
 <span class="sd">        p (OG-Core Specifications object): model parameters</span>
 <span class="sd">        client (Dask client object): client</span>
+<span class="sd">        scattered_p (Dask Future or None): future pointing to the</span>
+<span class="sd">            model parameters already scattered to the workers.  If</span>
+<span class="sd">            None and a client is provided, `p` is scattered here.</span>
 
 <span class="sd">    Returns:</span>
 <span class="sd">        (tuple): results from household solution:</span>
@@ -718,25 +765,12 @@
     <span class="c1"># from dask.base import dask_sizeof</span>
 
     <span class="k">if</span> <span class="n">client</span><span class="p">:</span>
-        <span class="c1"># Before scattering, temporarily remove unpicklable schema objects</span>
-        <span class="n">schema_backup</span> <span class="o">=</span> <span class="p">{}</span>
-        <span class="k">for</span> <span class="n">attr</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">"_defaults_schema"</span><span class="p">,</span> <span class="s2">"_validator_schema"</span><span class="p">,</span> <span class="s2">"sel"</span><span class="p">]:</span>
-            <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">attr</span><span class="p">):</span>
-                <span class="n">schema_backup</span><span class="p">[</span><span class="n">attr</span><span class="p">]</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">attr</span><span class="p">)</span>
-                <span class="k">try</span><span class="p">:</span>
-                    <span class="nb">delattr</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">attr</span><span class="p">)</span>
-                <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
-                    <span class="k">pass</span>
-
-        <span class="c1"># Scatter the parameters</span>
-        <span class="n">scattered_p_future</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">broadcast</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-
-        <span class="c1"># Restore the schema objects (they're not needed by workers anyway)</span>
-        <span class="k">for</span> <span class="n">attr</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">schema_backup</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-            <span class="k">try</span><span class="p">:</span>
-                <span class="nb">setattr</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">attr</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
-            <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
-                <span class="k">pass</span>
+        <span class="c1"># Scatter the parameters only if they have not already been</span>
+        <span class="c1"># scattered by the caller (run_SS scatters once per solve).</span>
+        <span class="k">if</span> <span class="n">scattered_p</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">scattered_p_future</span> <span class="o">=</span> <span class="n">scatter_params</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">client</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">scattered_p_future</span> <span class="o">=</span> <span class="n">scattered_p</span>
 
         <span class="c1"># Launch in parallel with submit (or map)</span>
         <span class="n">futures</span> <span class="o">=</span> <span class="p">[]</span>
@@ -1115,6 +1149,7 @@
     <span class="n">p</span><span class="p">,</span>
     <span class="n">client</span><span class="p">,</span>
     <span class="n">fsolve_flag</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="n">scattered_p</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
 <span class="p">):</span>
 <span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Solves for the steady state distribution of capital, labor, as well</span>
@@ -1133,6 +1168,9 @@
 <span class="sd">        factor (scalar): scaling factor converting model units to dollars</span>
 <span class="sd">        p (OG-Core Specifications object): model parameters</span>
 <span class="sd">        client (Dask client object): client</span>
+<span class="sd">        fsolve_flag (bool): flag for whether solution came from fsolve</span>
+<span class="sd">        scattered_p (Dask Future or None): future pointing to the model</span>
+<span class="sd">            parameters already scattered to the Dask workers</span>
 
 <span class="sd">    Returns:</span>
 <span class="sd">        output (dictionary): dictionary with steady state solution</span>
@@ -1190,7 +1228,7 @@
             <span class="n">new_factor</span><span class="p">,</span>
             <span class="n">new_BQ</span><span class="p">,</span>
             <span class="n">average_income_model</span><span class="p">,</span>
-        <span class="p">)</span> <span class="o">=</span> <span class="n">inner_loop</span><span class="p">(</span><span class="n">outer_loop_vars</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">client</span><span class="p">)</span>
+        <span class="p">)</span> <span class="o">=</span> <span class="n">inner_loop</span><span class="p">(</span><span class="n">outer_loop_vars</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">client</span><span class="p">,</span> <span class="n">scattered_p</span><span class="p">)</span>
 
         <span class="c1"># update guesses for next iteration</span>
         <span class="n">bmat</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">convex_combo</span><span class="p">(</span><span class="n">new_bmat</span><span class="p">,</span> <span class="n">bmat</span><span class="p">,</span> <span class="n">nu_ss</span><span class="p">)</span>
@@ -1699,13 +1737,29 @@
 <span class="sd">        factor_ss (scalar): scaling factor converting model units to dollars</span>
 <span class="sd">        p (OG-Core Specifications object): model parameters</span>
 <span class="sd">        client (Dask client object): client</span>
+<span class="sd">        scattered_p (Dask Future or None): optional eighth element of</span>
+<span class="sd">            args, a future pointing to the model parameters already</span>
+<span class="sd">            scattered to the Dask workers</span>
 
 <span class="sd">    Returns:</span>
 <span class="sd">        errors (list): errors from differences between guessed and</span>
 <span class="sd">            implied outer loop variables</span>
 
 <span class="sd">    """</span>
-    <span class="n">bssmat</span><span class="p">,</span> <span class="n">nssmat</span><span class="p">,</span> <span class="n">TR_ss</span><span class="p">,</span> <span class="n">Ig_baseline</span><span class="p">,</span> <span class="n">factor_ss</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">client</span> <span class="o">=</span> <span class="n">args</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">args</span><span class="p">)</span> <span class="o">==</span> <span class="mi">8</span><span class="p">:</span>
+        <span class="p">(</span>
+            <span class="n">bssmat</span><span class="p">,</span>
+            <span class="n">nssmat</span><span class="p">,</span>
+            <span class="n">TR_ss</span><span class="p">,</span>
+            <span class="n">Ig_baseline</span><span class="p">,</span>
+            <span class="n">factor_ss</span><span class="p">,</span>
+            <span class="n">p</span><span class="p">,</span>
+            <span class="n">client</span><span class="p">,</span>
+            <span class="n">scattered_p</span><span class="p">,</span>
+        <span class="p">)</span> <span class="o">=</span> <span class="n">args</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">bssmat</span><span class="p">,</span> <span class="n">nssmat</span><span class="p">,</span> <span class="n">TR_ss</span><span class="p">,</span> <span class="n">Ig_baseline</span><span class="p">,</span> <span class="n">factor_ss</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">client</span> <span class="o">=</span> <span class="n">args</span>
+        <span class="n">scattered_p</span> <span class="o">=</span> <span class="kc">None</span>
 
     <span class="c1"># Rename the inputs</span>
     <span class="n">r_p</span> <span class="o">=</span> <span class="n">guesses</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
@@ -1760,7 +1814,7 @@
         <span class="n">new_factor</span><span class="p">,</span>
         <span class="n">new_BQ</span><span class="p">,</span>
         <span class="n">average_income_model</span><span class="p">,</span>
-    <span class="p">)</span> <span class="o">=</span> <span class="n">inner_loop</span><span class="p">(</span><span class="n">outer_loop_vars</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">client</span><span class="p">)</span>
+    <span class="p">)</span> <span class="o">=</span> <span class="n">inner_loop</span><span class="p">(</span><span class="n">outer_loop_vars</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">client</span><span class="p">,</span> <span class="n">scattered_p</span><span class="p">)</span>
 
     <span class="c1"># Create list of errors in general equilibrium variables</span>
     <span class="n">error_r_p</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">new_r_p</span> <span class="o">-</span> <span class="n">r_p</span><span class="p">)</span>
@@ -1878,6 +1932,7 @@
     <span class="c1"># Use the baseline solution to get starting values for the reform</span>
     <span class="n">use_new_guesses</span> <span class="o">=</span> <span class="kc">False</span>  <span class="c1"># initialize this flag, switches to true</span>
     <span class="c1"># if baseline solution not work for reform</span>
+    <span class="n">scattered_p</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># future for parameters scattered to Dask workers</span>
     <span class="k">if</span> <span class="n">p</span><span class="o">.</span><span class="n">baseline</span> <span class="ow">is</span> <span class="kc">False</span><span class="p">:</span>
         <span class="n">baseline_ss_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">baseline_dir</span><span class="p">,</span> <span class="s2">"SS"</span><span class="p">,</span> <span class="s2">"SS_vars.pkl"</span><span class="p">)</span>
         <span class="n">ss_solutions</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">safe_read_pickle</span><span class="p">(</span><span class="n">baseline_ss_path</span><span class="p">)</span>
@@ -1929,6 +1984,10 @@
                     <span class="o">+</span> <span class="n">BQ_items</span>
                     <span class="o">+</span> <span class="p">[</span><span class="n">TRguess</span><span class="p">]</span>
                 <span class="p">)</span>
+                <span class="c1"># Scatter the parameters to the workers once, rather</span>
+                <span class="c1"># than once per residual evaluation</span>
+                <span class="n">scattered_p</span> <span class="o">=</span> <span class="n">scatter_params</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">client</span><span class="p">)</span>
+
                 <span class="c1"># Now solve for the steady state of the reform</span>
                 <span class="n">ss_params</span> <span class="o">=</span> <span class="p">(</span>
                     <span class="n">b_guess</span><span class="p">,</span>
@@ -1938,6 +1997,7 @@
                     <span class="n">factor_ss</span><span class="p">,</span>
                     <span class="n">p</span><span class="p">,</span>
                     <span class="n">client</span><span class="p">,</span>
+                    <span class="n">scattered_p</span><span class="p">,</span>
                 <span class="p">)</span>
 
                 <span class="c1"># Solve for steady state using root finder</span>
@@ -1994,6 +2054,9 @@
                 <span class="k">else</span><span class="p">:</span>
                     <span class="n">TR_baseline</span> <span class="o">=</span> <span class="kc">None</span>
                     <span class="n">Ig_baseline</span> <span class="o">=</span> <span class="kc">None</span>
+                <span class="c1"># Scatter the parameters to the workers once, rather</span>
+                <span class="c1"># than once per residual evaluation</span>
+                <span class="n">scattered_p</span> <span class="o">=</span> <span class="n">scatter_params</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">client</span><span class="p">)</span>
                 <span class="n">ss_params</span> <span class="o">=</span> <span class="p">(</span>
                     <span class="n">b_guess</span><span class="p">,</span>
                     <span class="n">n_guess</span><span class="p">,</span>
@@ -2002,6 +2065,7 @@
                     <span class="n">factor_ss</span><span class="p">,</span>
                     <span class="n">p</span><span class="p">,</span>
                     <span class="n">client</span><span class="p">,</span>
+                    <span class="n">scattered_p</span><span class="p">,</span>
                 <span class="p">)</span>
                 <span class="c1"># Solve for steady state using root finder</span>
                 <span class="n">sol</span> <span class="o">=</span> <span class="n">opt</span><span class="o">.</span><span class="n">root</span><span class="p">(</span>
@@ -2056,6 +2120,7 @@
         <span class="n">p</span><span class="p">,</span>
         <span class="n">client</span><span class="p">,</span>
         <span class="n">fsolve_flag</span><span class="p">,</span>
+        <span class="n">scattered_p</span><span class="p">,</span>
     <span class="p">)</span>
     <span class="k">if</span> <span class="n">output</span><span class="p">[</span><span class="s2">"G"</span><span class="p">]</span> <span class="o">&lt;</span> <span class="mf">0.0</span><span class="p">:</span>
         <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>

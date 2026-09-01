@@ -497,6 +497,45 @@
 
 
 
+<span class="k">def</span><span class="w"> </span><span class="nf">replacement_rate_adjustment</span><span class="p">(</span><span class="n">pension</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="n">j</span><span class="p">,</span> <span class="n">method</span><span class="p">,</span> <span class="n">p</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""</span>
+<span class="sd">    Return the replacement rate adjustment, shaped to broadcast against</span>
+<span class="sd">    pension.</span>
+
+<span class="sd">    US-Style Social Security applies this itself inside SS_amount. The</span>
+<span class="sd">    other three systems do not, so pension_amount applies it for them.</span>
+<span class="sd">    Along the time path the multiplier varies with each cohort's own year,</span>
+<span class="sd">    so it is indexed at t + tt for row tt.</span>
+
+<span class="sd">    The multiplier scales the whole pension array, while SS_amount scales</span>
+<span class="sd">    only the entries from retirement on. These are equivalent only because</span>
+<span class="sd">    DB, NDC, and PS benefits are zero before retirement; a system that</span>
+<span class="sd">    pays benefits before retirement would need the SS_amount treatment.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        pension (Numpy array): pension amount for each household</span>
+<span class="sd">        t (int): model period</span>
+<span class="sd">        j (int): index of lifetime income group, None if all groups</span>
+<span class="sd">        method (str): 'SS', 'TPI', or 'TPI_scalar'</span>
+<span class="sd">        p (OG-Core Specifications object): model parameters</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        adjustment (array_like): multiplier on the replacement rate</span>
+
+<span class="sd">    """</span>
+    <span class="n">adjust</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">replacement_rate_adjust</span>
+    <span class="k">if</span> <span class="n">method</span> <span class="o">==</span> <span class="s2">"SS"</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">adjust</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="p">:]</span> <span class="k">if</span> <span class="n">j</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">adjust</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span>
+    <span class="k">if</span> <span class="n">method</span> <span class="o">==</span> <span class="s2">"TPI_scalar"</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">adjust</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span>
+    <span class="k">if</span> <span class="n">pension</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">adjust</span><span class="p">[</span><span class="n">t</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span>
+    <span class="n">length</span> <span class="o">=</span> <span class="n">pension</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="k">if</span> <span class="n">pension</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">adjust</span><span class="p">[</span><span class="n">t</span> <span class="p">:</span> <span class="n">t</span> <span class="o">+</span> <span class="n">length</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">length</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">adjust</span><span class="p">[</span><span class="n">t</span> <span class="p">:</span> <span class="n">t</span> <span class="o">+</span> <span class="n">length</span><span class="p">,</span> <span class="p">:]</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">length</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">p</span><span class="o">.</span><span class="n">J</span><span class="p">)</span>
+
+
 <div class="viewcode-block" id="pension_amount">
 <a class="viewcode-back" href="../../content/api/pensions.html#ogcore.pensions.pension_amount">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">pension_amount</span><span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="n">w</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">Y</span><span class="p">,</span> <span class="n">theta</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="n">j</span><span class="p">,</span> <span class="n">shift</span><span class="p">,</span> <span class="n">method</span><span class="p">,</span> <span class="n">e</span><span class="p">,</span> <span class="n">factor</span><span class="p">,</span> <span class="n">p</span><span class="p">):</span>
@@ -527,10 +566,19 @@
         <span class="n">pension</span> <span class="o">=</span> <span class="n">SS_amount</span><span class="p">(</span><span class="n">w</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">theta</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="n">j</span><span class="p">,</span> <span class="n">shift</span><span class="p">,</span> <span class="n">method</span><span class="p">,</span> <span class="n">e</span><span class="p">,</span> <span class="n">p</span><span class="p">)</span>
     <span class="k">elif</span> <span class="n">p</span><span class="o">.</span><span class="n">pension_system</span> <span class="o">==</span> <span class="s2">"Defined Benefits"</span><span class="p">:</span>
         <span class="n">pension</span> <span class="o">=</span> <span class="n">DB_amount</span><span class="p">(</span><span class="n">w</span><span class="p">,</span> <span class="n">e</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">j</span><span class="p">,</span> <span class="n">p</span><span class="p">)</span>
+        <span class="n">pension</span> <span class="o">=</span> <span class="n">pension</span> <span class="o">*</span> <span class="n">replacement_rate_adjustment</span><span class="p">(</span>
+            <span class="n">pension</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="n">j</span><span class="p">,</span> <span class="n">method</span><span class="p">,</span> <span class="n">p</span>
+        <span class="p">)</span>
     <span class="k">elif</span> <span class="n">p</span><span class="o">.</span><span class="n">pension_system</span> <span class="o">==</span> <span class="s2">"Notional Defined Contribution"</span><span class="p">:</span>
         <span class="n">pension</span> <span class="o">=</span> <span class="n">NDC_amount</span><span class="p">(</span><span class="n">w</span><span class="p">,</span> <span class="n">e</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">r</span><span class="p">,</span> <span class="n">Y</span><span class="p">,</span> <span class="n">j</span><span class="p">,</span> <span class="n">p</span><span class="p">)</span>
+        <span class="n">pension</span> <span class="o">=</span> <span class="n">pension</span> <span class="o">*</span> <span class="n">replacement_rate_adjustment</span><span class="p">(</span>
+            <span class="n">pension</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="n">j</span><span class="p">,</span> <span class="n">method</span><span class="p">,</span> <span class="n">p</span>
+        <span class="p">)</span>
     <span class="k">elif</span> <span class="n">p</span><span class="o">.</span><span class="n">pension_system</span> <span class="o">==</span> <span class="s2">"Points System"</span><span class="p">:</span>
         <span class="n">pension</span> <span class="o">=</span> <span class="n">PS_amount</span><span class="p">(</span><span class="n">w</span><span class="p">,</span> <span class="n">e</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">j</span><span class="p">,</span> <span class="n">factor</span><span class="p">,</span> <span class="n">p</span><span class="p">)</span>
+        <span class="n">pension</span> <span class="o">=</span> <span class="n">pension</span> <span class="o">*</span> <span class="n">replacement_rate_adjustment</span><span class="p">(</span>
+            <span class="n">pension</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="n">j</span><span class="p">,</span> <span class="n">method</span><span class="p">,</span> <span class="n">p</span>
+        <span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
             <span class="s2">"pension_system must be one of the following: "</span>
