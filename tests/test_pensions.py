@@ -1134,6 +1134,8 @@ def test_replacement_rate_adjustment_indexes_by_cohort_year():
     # the steady state takes the terminal value
     ss = pensions.replacement_rate_adjustment(np.ones(p.S), None, j, "SS", p)
     assert np.isclose(ss, adjust[-1, j])
+
+
 @pytest.mark.local
 def test_SS_solve_notional_defined_contribution(tmp_path):
     """
