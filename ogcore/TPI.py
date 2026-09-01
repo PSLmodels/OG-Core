@@ -731,6 +731,36 @@ def inner_loop(guesses, outer_loop_vars, initial_values, ubi, j, ind, p):
     return euler_errors, b_mat, n_mat
 
 
+def _rc_error_message(RC_error, RC_TPI):
+    """
+    Build the message for a transition resource-constraint failure.
+
+    Reports the maximum absolute resource-constraint error, the period it
+    occurs in, and how to read it: a violation confined to the first or last
+    periods is usually an initial- or terminal-boundary artifact, while one
+    spread across the path points to an inconsistent calibration.
+
+    Args:
+        RC_error (array_like): resource constraint error, time on axis 0
+        RC_TPI (scalar): the tolerance the error is checked against
+
+    Returns:
+        msg (str): the diagnostic error message
+    """
+    abs_rc = np.absolute(RC_error)
+    rc_by_period = abs_rc.reshape(abs_rc.shape[0], -1).max(axis=1)
+    t_worst = int(np.argmax(rc_by_period))
+    return (
+        "Transition path equilibrium not found (RC_error): max "
+        f"|resource constraint error| = {rc_by_period[t_worst]:.2e} at "
+        f"period {t_worst} of {rc_by_period.shape[0]} (tolerance "
+        f"RC_TPI = {RC_TPI}). A violation confined to the first or last "
+        "periods is usually an initial- or terminal-boundary artifact; one "
+        "spread across the path points to an inconsistent calibration "
+        "(spending, revenue, debt_ratio_ss)."
+    )
+
+
 def run_TPI(p, client=None):
     """
     Solve for transition path equilibrium of OG-Core.
@@ -1838,9 +1868,7 @@ def run_TPI(p, client=None):
         raise RuntimeError(msg)
 
     if (np.any(np.absolute(RC_error) >= p.RC_TPI)) and ENFORCE_SOLUTION_CHECKS:
-        raise RuntimeError(
-            "Transition path equlibrium not found " + "(RC_error)"
-        )
+        raise RuntimeError(_rc_error_message(RC_error, p.RC_TPI))
 
     if (
         np.any(np.absolute(eul_savings) >= p.mindist_TPI)
