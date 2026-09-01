@@ -8,6 +8,12 @@ abbreviations is available at https://unstats.un.org/unsd/methodology/m49/
 
 # Import packages
 import os
+import sys
+import argparse
+import base64
+import datetime
+import getpass
+import json
 import numpy as np
 from io import StringIO
 import scipy.optimize as opt
@@ -18,6 +24,15 @@ from ogcore import parameter_plots as pp
 START_YEAR = 2024
 END_YEAR = 2024
 UN_COUNTRY_CODE = "840"  # UN code for USA
+UN_TOKEN_FILENAME = "un_api_token.txt"
+UN_TOKEN_URL = "https://population.un.org/dataportalapi/index.html"
+UN_DATA_ARCHIVE_URL = "https://github.com/EAPD-DRB/Population-Data"
+# Warn only once per session about a token found in the working directory
+_WARNED_LEGACY_UN_TOKEN = False
+# Say how to register a token only once per session, not on every request
+_HINTED_NO_UN_TOKEN = False
+# Say a token has expired only once per session
+_WARNED_EXPIRED_UN_TOKEN = False
 # create output director for figures
 CUR_PATH = os.path.split(os.path.abspath(__file__))[0]
 OUTPUT_DIR = os.path.join(CUR_PATH, "..", "data", "OUTPUT", "Demographics")
@@ -32,11 +47,379 @@ Define functions
 """
 
 
+def un_token_path():
+    """
+    This function returns the path of the per-user file that holds the UN
+    Data Portal API token. The location follows the platform convention
+    for user configuration files: ``$XDG_CONFIG_HOME`` (or ``~/.config``
+    when that is unset) on macOS and Linux, and ``%APPDATA%`` on Windows.
+
+    Returns:
+        path (str): full path to the user's UN API token file
+    """
+    if os.name == "nt":
+        base = os.environ.get("APPDATA") or os.path.expanduser("~")
+    else:
+        base = os.environ.get("XDG_CONFIG_HOME") or os.path.join(
+            os.path.expanduser("~"), ".config"
+        )
+
+    return os.path.join(base, "og", UN_TOKEN_FILENAME)
+
+
+def _clean_un_token(un_token):
+    """
+    This function normalizes a UN Data Portal API token by removing
+    surrounding whitespace and any leading "Bearer " prefix, so that the
+    request header is not doubled into "Bearer Bearer <token>".
+
+    Args:
+        un_token (str): raw token, may be None
+
+    Returns:
+        un_token (str): normalized token, empty string if none was given
+    """
+    un_token = (un_token or "").strip()
+    if un_token.lower().startswith("bearer "):
+        un_token = un_token[len("bearer ") :].strip()
+
+    return un_token
+
+
+def un_token_expiry(un_token):
+    """
+    This function reads the expiry date out of a UN Data Portal API token.
+    The portal issues JSON Web Tokens, whose middle segment carries an
+    ``exp`` claim, so the date can be read without a network call. The
+    signature is not checked and is not needed here: the portal remains
+    the authority on whether a token is accepted, and this is only used to
+    tell a user that renewing is due.
+
+    Args:
+        un_token (str): token to inspect
+
+    Returns:
+        expiry (datetime.date): expiry date, or None when the token is not
+            a readable JSON Web Token
+    """
+    try:
+        payload = un_token.split(".")[1]
+        payload += "=" * (-len(payload) % 4)
+        claims = json.loads(base64.urlsafe_b64decode(payload))
+
+        return datetime.datetime.fromtimestamp(
+            claims["exp"], datetime.timezone.utc
+        ).date()
+    except (AttributeError, IndexError, KeyError, TypeError, ValueError):
+        return None  # opaque token, or a format we do not recognize
+
+
+def _utc_today():
+    """Today's date in UTC, to compare against a token's expiry claim."""
+    return datetime.datetime.now(datetime.timezone.utc).date()
+
+
+def _warn_if_un_token_expired(un_token):
+    """
+    This function says, once per session, that a token has expired. An
+    expired token otherwise fails in the same silent-looking way as a
+    missing one: the request is refused and the caller quietly falls back
+    to the archived data.
+
+    Args:
+        un_token (str): the token that was resolved
+
+    Returns:
+        None
+    """
+    global _WARNED_EXPIRED_UN_TOKEN
+    if _WARNED_EXPIRED_UN_TOKEN:
+        return
+    expiry = un_token_expiry(un_token)
+    if expiry is None or expiry >= _utc_today():
+        return
+    _WARNED_EXPIRED_UN_TOKEN = True
+
+    lines = [
+        f"Your UN API token expired on {expiry}, so the archived data "
+        "will be used.",
+        f"  Get a new one at {UN_TOKEN_URL}",
+    ]
+    command = og_token_command()
+    if command:
+        lines.append(f"  Then run: {command} set")
+    else:
+        lines.append(f"  Then save it to {un_token_path()}")
+    print("\n".join(lines))
+
+
+def og_token_command():
+    """
+    This function returns the full path of the ``og-token`` command that
+    belongs to the running interpreter, so that a message can tell the
+    user exactly what to type. The command is installed beside the
+    interpreter and is usually not on the shell's PATH, because OG-Core is
+    normally run from a project virtual environment.
+
+    Returns:
+        command (str): full path to og-token, or None when it is not
+            installed alongside this interpreter
+    """
+    name = "og-token.exe" if os.name == "nt" else "og-token"
+    command = os.path.join(os.path.dirname(sys.executable), name)
+
+    return command if os.path.exists(command) else None
+
+
+def _hint_how_to_register_token():
+    """
+    This function prints, once per session, how to register a token. It
+    runs whenever a request falls back to the archived data, so a user who
+    obtains a token later is told what to do without being prompted again
+    on every run.
+    """
+    global _HINTED_NO_UN_TOKEN
+    if _HINTED_NO_UN_TOKEN:
+        return
+    _HINTED_NO_UN_TOKEN = True
+
+    lines = [
+        "No UN API token registered, so the archived data will be used.",
+        f"  Get a free token at {UN_TOKEN_URL}",
+    ]
+    command = og_token_command()
+    if command:
+        lines.append(f"  Then run: {command} set")
+        lines.append(f"  (or save the token to {un_token_path()})")
+    else:
+        lines.append(f"  Then save the token to {un_token_path()}")
+    print("\n".join(lines))
+
+
+def resolve_un_token(un_token=None):
+    """
+    This function finds the UN Data Portal API token to use for a
+    request. Sources are tried in order and the first one that is present
+    wins:
+
+    1. the ``un_token`` argument
+    2. the ``UN_API_TOKEN`` environment variable
+    3. the per-user file at :func:`un_token_path`
+    4. ``un_api_token.txt`` in the current working directory (deprecated)
+
+    When no source holds a token the user is asked for one and the answer
+    is saved to the per-user file, so a token is entered once per machine
+    rather than once per directory. The prompt is skipped when standard
+    input is not interactive, in which case an empty token is returned and
+    the caller falls back to the Population-Data archive.
+
+    Args:
+        un_token (str): token supplied by the caller, overrides all other
+            sources
+
+    Returns:
+        un_token (str): normalized token, empty string if none was found
+    """
+    un_token = _find_un_token(un_token)
+    if un_token:
+        _warn_if_un_token_expired(un_token)
+    else:
+        _hint_how_to_register_token()
+
+    return un_token
+
+
+def _find_un_token(un_token=None):
+    """
+    This function does the source-by-source lookup described in
+    :func:`resolve_un_token`, which wraps it to add the one-time hint when
+    nothing is found.
+
+    Args:
+        un_token (str): token supplied by the caller
+
+    Returns:
+        un_token (str): normalized token, empty string if none was found
+    """
+    global _WARNED_LEGACY_UN_TOKEN
+
+    if un_token:
+        return _clean_un_token(un_token)
+
+    # .strip() so a variable set to blank space falls through to the files
+    # rather than silently resolving to no token at all.
+    if os.environ.get("UN_API_TOKEN", "").strip():
+        return _clean_un_token(os.environ["UN_API_TOKEN"])
+
+    # An existing per-user file is authoritative even when empty, so that
+    # a user who declined the prompt is not asked again on every call.
+    user_path = un_token_path()
+    if os.path.exists(user_path):
+        with open(user_path, "r") as file:
+            return _clean_un_token(file.read())
+
+    if os.path.exists(UN_TOKEN_FILENAME):
+        if not _WARNED_LEGACY_UN_TOKEN:
+            print(
+                f"Using the UN API token in {UN_TOKEN_FILENAME} in the "
+                "current directory. This location is deprecated because it "
+                "leaves a copy of the token in every directory you run "
+                f"from. Move it to {user_path} to keep one token per user."
+            )
+            _WARNED_LEGACY_UN_TOKEN = True
+        with open(UN_TOKEN_FILENAME, "r") as file:
+            return _clean_un_token(file.read())
+
+    try:
+        if not sys.stdin or not sys.stdin.isatty():
+            return ""  # not interactive, e.g. a scheduled run
+        print(
+            "\nOG-Core can read population data directly from the UN Data "
+            "Portal, which needs a free API token.\n"
+            f"  To get one, open {UN_TOKEN_URL} and click Generate Token.\n"
+            "  Or press return to use the archived copy of the same data "
+            f"at {UN_DATA_ARCHIVE_URL}.\n"
+        )
+        # getpass rather than input so the token is not echoed into the
+        # terminal and its scrollback.
+        un_token = getpass.getpass("UN API token (input is hidden): ")
+    except (EOFError, ValueError):  # stdin at end of file or closed
+        return ""
+
+    # Save the answer, empty or not, so the question is asked only once.
+    try:
+        os.makedirs(os.path.dirname(user_path), exist_ok=True)
+        with open(user_path, "w") as file:
+            file.write(un_token)
+    except OSError as err:  # e.g. a read-only home directory
+        print(
+            f"Could not save the UN API token to {user_path} ({err}). "
+            "It will be used for this session only."
+        )
+    else:
+        try:
+            os.chmod(user_path, 0o600)
+        except OSError:  # permissions are not settable on every platform
+            pass
+        if _clean_un_token(un_token):
+            print(f"Token saved to {user_path}")
+
+    return _clean_un_token(un_token)
+
+
+def un_token_cli(argv=None):
+    """
+    This function is the command line entry point for managing the stored
+    UN Data Portal API token. It is installed as ``og-token`` and takes one
+    of three actions: ``set`` saves a token to the per-user file, ``show``
+    reports where the token lives and which source would be used, and
+    ``rm`` deletes the stored token.
+
+    Args:
+        argv (list): command line arguments, read from sys.argv when not
+            given
+
+    Returns:
+        status (int): process exit status, 0 on success
+    """
+    parser = argparse.ArgumentParser(
+        prog="og-token",
+        description=(
+            "Manage the UN Data Portal API token used by OG-Core. Get a "
+            f"free token from {UN_TOKEN_URL} (click Generate Token). "
+            "Without one, OG-Core reads the archived copy of the same data "
+            f"from {UN_DATA_ARCHIVE_URL}."
+        ),
+    )
+    parser.add_argument(
+        "action",
+        choices=["set", "show", "rm"],
+        help="save a token, report where it lives, or delete it",
+    )
+    args = parser.parse_args(argv)
+    path = un_token_path()
+
+    if args.action == "set":
+        print(f"Get a free token at {UN_TOKEN_URL} (click Generate Token).")
+        try:
+            un_token = _clean_un_token(getpass.getpass("UN API token: "))
+        except (EOFError, KeyboardInterrupt):
+            print("\nCancelled. Nothing was saved.")
+            return 1
+        if not un_token:
+            print("No token entered. Nothing was saved.")
+            return 1
+        try:
+            os.makedirs(os.path.dirname(path), exist_ok=True)
+            with open(path, "w") as file:
+                file.write(un_token)
+        except OSError as err:
+            print(f"Could not write {path} ({err}).")
+            return 1
+        try:
+            os.chmod(path, 0o600)
+        except OSError:  # permissions are not settable on every platform
+            pass
+        expiry = un_token_expiry(un_token)
+        if expiry is None:
+            print(f"Token saved to {path}")
+        elif expiry < _utc_today():
+            print(f"Token saved to {path}, but it expired on {expiry}.")
+            print(f"Get a current one at {UN_TOKEN_URL}")
+        else:
+            print(f"Token saved to {path}, valid until {expiry}")
+        return 0
+
+    if args.action == "rm":
+        if not os.path.exists(path):
+            print(f"No token stored at {path}")
+            return 1
+        try:
+            os.remove(path)
+        except OSError as err:
+            print(f"Could not remove {path} ({err}).")
+            return 1
+        print(f"Removed {path}")
+        return 0
+
+    # show
+    print(f"Token file: {path}")
+    if os.path.exists(path):
+        with open(path, "r") as file:
+            stored = _clean_un_token(file.read())
+        if not stored:
+            print("  present but empty, so no token is sent")
+        else:
+            expiry = un_token_expiry(stored)
+            if expiry is None:
+                print("  a token is stored")
+            elif expiry < _utc_today():
+                print(f"  a token is stored, but it expired on {expiry}")
+                print(f"  get a new one at {UN_TOKEN_URL}")
+            else:
+                days = (expiry - _utc_today()).days
+                print(
+                    f"  a token is stored, valid until {expiry} ({days} days)"
+                )
+    else:
+        print("  not set, run 'og-token set'")
+    if os.environ.get("UN_API_TOKEN", "").strip():
+        print("UN_API_TOKEN is set and takes precedence over the file.")
+    if os.path.exists(UN_TOKEN_FILENAME):
+        print(
+            f"A deprecated {UN_TOKEN_FILENAME} is in this directory. It is "
+            "only used when neither of the above is set."
+        )
+
+    return 0
+
+
 def get_un_data(
     variable_code,
     country_id=UN_COUNTRY_CODE,
     start_year=START_YEAR,
     end_year=END_YEAR,
+    un_token=None,
 ):
     """
     This function retrieves data from the United Nations Data Portal API
@@ -48,6 +431,8 @@ def get_un_data(
         country_id (str): country id for UN data
         start_year (int): start year for UN data
         end_year (int): end year for UN data
+        un_token (str): UN Data Portal API token, resolved from the
+            environment or the user's token file when not given
 
     Returns:
         df (Pandas DataFrame): DataFrame of UN data
@@ -64,30 +449,9 @@ def get_un_data(
         + "?format=csv"
     )
 
-    # Check for a file named "un_api_token.txt" in the current directory
-    if os.path.exists(os.path.join("un_api_token.txt")):
-        with open(os.path.join("un_api_token.txt"), "r") as file:
-            UN_TOKEN = file.read().strip()
-    else:  # if file not exist, prompt user for token
-        try:
-            UN_TOKEN = input(
-                "Please enter your UN API token "
-                "(press return if you do not have one): "
-            )
-            # write the UN_TOKEN to a file to find in the future
-            with open(os.path.join("un_api_token.txt"), "w") as file:
-                file.write(UN_TOKEN)
-        except EOFError:
-            UN_TOKEN = ""
-
     # get data from url
     payload = {}
-    # Accept a token with or without a leading "Bearer " prefix so the
-    # header isn't doubled into "Bearer Bearer <token>".
-    UN_TOKEN = UN_TOKEN.strip()
-    if UN_TOKEN.lower().startswith("bearer "):
-        UN_TOKEN = UN_TOKEN[len("bearer ") :].strip()
-    headers = {"Authorization": "Bearer " + UN_TOKEN}
+    headers = {"Authorization": "Bearer " + resolve_un_token(un_token)}
     response = get_legacy_session().get(target, headers=headers, data=payload)
     # Check if the request was successful before processing
     if response.status_code == 200:
@@ -130,6 +494,8 @@ def get_un_data(
             "076": "BRA",
             "410": "KOR",
             "231": "ETH",
+            "392": "JPN",
+            "242": "FJI",
         }
         un_variable_dict = {
             "68": "fertility_rates",
