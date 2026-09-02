@@ -756,6 +756,13 @@ _Valid Range:_ min = -0.3 and max = 0.3
 _Out-of-Range Action:_ error  
 
 
+####  `r_gov_floor`  
+_Description:_ Lower bound applied to the interest rate on government debt after the wedge is computed. The default of 0.0 reproduces the long-standing behavior. Lower it for a sovereign that pays a negative real rate on its debt.  
+_Value Type:_ float  
+_Valid Range:_ min = -0.3 and max = 0.3  
+_Out-of-Range Action:_ error  
+
+
 ####  `r_gov_DY`  
 _Description:_ Parameter summarizing the linear effect of the debt to GDP ratio on the government interest rate.  
 _Value Type:_ float  
