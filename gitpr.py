@@ -24,7 +24,8 @@ def current_branch() -> str:
 def main() -> int:
     if len(sys.argv) != 2 or not sys.argv[1].isdigit() or int(sys.argv[1]) < 1:
         print(
-            "ERROR: specify one positive pull-request number: make git-pr N=123",
+            "ERROR: specify one positive pull-request number: make "
+            "git-pr N=123",
             file=sys.stderr,
         )
         return 1
@@ -56,7 +57,8 @@ def main() -> int:
         result = git("merge", "--ff-only", "FETCH_HEAD", check=False)
         if result.returncode:
             print(
-                f"STOP: {pr_branch} cannot fast-forward to upstream PR #{number}. "
+                "STOP: {pr_branch} cannot fast-forward to upstream "
+                f"PR #{number}. "
                 "Delete or reconcile the local branch, then try again.",
                 file=sys.stderr,
             )
