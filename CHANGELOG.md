@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- Fixes Issue [#1202](https://github.com/PSLmodels/OG-Core/issues/1202):
+  `get_r_gov` clipped the interest rate on government debt at zero, so a
+  sovereign that genuinely pays a negative real rate could not be modelled.
+  The bound is now a parameter, `r_gov_floor`, with a default of 0.0 that
+  reproduces the previous behaviour exactly.
 ### Bug Fixes
 
 - Fixes Issue [#1200](https://github.com/PSLmodels/OG-Core/issues/1200):
