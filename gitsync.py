@@ -6,7 +6,9 @@ import subprocess
 import sys
 
 
-def git(*args: str, capture_output: bool = False) -> subprocess.CompletedProcess[str]:
+def git(
+    *args: str, capture_output: bool = False
+) -> subprocess.CompletedProcess[str]:
     return subprocess.run(
         ("git", *args),
         check=True,
@@ -22,7 +24,10 @@ def current_branch() -> str:
 def main() -> int:
     branch = current_branch()
     if branch not in {"master", "main"}:
-        print("STOP: switch to your local master or main branch first.", file=sys.stderr)
+        print(
+            "STOP: switch to your local master or main branch first.",
+            file=sys.stderr,
+        )
         return 1
 
     git("fetch", "upstream")
