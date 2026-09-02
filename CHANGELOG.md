@@ -9,70 +9,30 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- Fixes Issue [#1202](https://github.com/PSLmodels/OG-Core/issues/1202):
-  `get_r_gov` clipped the interest rate on government debt at zero, so a
-  sovereign that genuinely pays a negative real rate could not be modelled.
-  The bound is now a parameter, `r_gov_floor`, with a default of 0.0 that
-  reproduces the previous behaviour exactly.
+- Fixes Issue [#1202](https://github.com/PSLmodels/OG-Core/issues/1202): `get_r_gov` clipped the interest rate on government debt at zero, so a sovereign that genuinely pays a negative real rate could not be modelled. The bound is now a parameter, `r_gov_floor`, with a default of 0.0 that reproduces the previous behaviour exactly.
+- `npv_table` in `output_tables.py` (Issue #1131): builds a table of the net present value of the reform-minus-baseline change in flow variables (e.g. `Y`) over a horizon, evaluated at a list of discount rates. Values are un-stationarized by default so the NPV is taken over the actual (trend-inclusive) level path.
+- New resource constraint error message, noting the maximum absolute resource-constraint error, the period it occurs in, and the tolerance, plus a one-line note on how to read it
+- Scatter parameters object once per SS solve instead of one per residual evaluation. Pure overhead removal on any Dask-backed SS solve; the larger the Specifications object and the more workers, the more it saves. No numerical change — same solves, same results.
+
 ### Bug Fixes
 
-- Fixes Issue [#1200](https://github.com/PSLmodels/OG-Core/issues/1200):
-  `replacement_rate_adjust` was read only inside `SS_amount`, so it applied
-  to the US-Style Social Security system and was silently ignored under
-  Defined Benefits, Notional Defined Contribution, and Points System. The
-  adjustment is now applied to those three systems in `pension_amount`,
-  via a `replacement_rate_adjustment` helper that mirrors the indexing
-  `SS_amount` already uses, including the per-cohort `t + tt` offset along
-  the time path. `SS_amount` is unchanged, so US-Style results cannot move.
-  
-### Added
-- `npv_table` in `output_tables.py` (Issue #1131): builds a table of the net present value of the reform-minus-baseline change in flow variables (e.g. `Y`) over a horizon, evaluated at a list of discount rates. Values are un-stationarized by default so the NPV is taken over the actual (trend-inclusive) level path.
+- Fixes Issue [#1200](https://github.com/PSLmodels/OG-Core/issues/1200): `replacement_rate_adjust` was read only inside `SS_amount`, so it applied to the US-Style Social Security system and was silently ignored under Defined Benefits, Notional Defined Contribution, and Points System. The adjustment is now applied to those three systems in `pension_amount`, via a `replacement_rate_adjustment` helper that mirrors the indexing `SS_amount` already uses, including the per-cohort `t + tt` offset along the time path. `SS_amount` is unchanged, so US-Style results cannot move.
 
 ## [0.20.0] - 2026-08-13 12:00:00
 
 ### Added
 
-- Addresses Issue [#1205](https://github.com/PSLmodels/OG-Core/issues/1205):
-  the UN Data Portal API token can now come from a `un_token` argument to
-  `demographics.get_un_data`, from a `UN_API_TOKEN` environment variable, or
-  from a single per-user file (`$XDG_CONFIG_HOME/og/un_api_token.txt`, or
-  `%APPDATA%\og\un_api_token.txt` on Windows). Sources are tried in that
-  order, then `un_api_token.txt` in the working directory. This gives one
-  token per user instead of one per directory.
-- An `og-token` command, OG-Core's first console script, to manage that
-  token without hunting for the file: `og-token set` saves one,
-  `og-token show` reports where it lives and which source wins, and
-  `og-token rm` deletes it. The token is read without echoing and is never
-  printed back.
+- Addresses Issue [#1205](https://github.com/PSLmodels/OG-Core/issues/1205): the UN Data Portal API token can now come from a `un_token` argument to `demographics.get_un_data`, from a `UN_API_TOKEN` environment variable, or from a single per-user file (`$XDG_CONFIG_HOME/og/un_api_token.txt`, or `%APPDATA%\og\un_api_token.txt` on Windows). Sources are tried in that order, then `un_api_token.txt` in the working directory. This gives one token per user instead of one per directory.
+- An `og-token` command, OG-Core's first console script, to manage that token without hunting for the file: `og-token set` saves one, `og-token show` reports where it lives and which source wins, and `og-token rm` deletes it. The token is read without echoing and is never printed back.
 
 ### Changed
 
-- Answering the UN API token prompt now saves the token to the per-user file
-  rather than to the current working directory, which used to leave a copy of
-  the token in every directory a model was run from. An existing
-  `un_api_token.txt` in the working directory is still read, with a notice
-  that the location is deprecated.
-- The token prompt now names both ways forward: where to generate a free
-  token, and that pressing return uses the archived copy of the same data
-  instead.
-- The token is read with `getpass` rather than `input`, so it is no longer
-  echoed into the terminal and its scrollback while being typed or pasted.
-- An expired token is now named as the reason for falling back to the
-  archived data, instead of failing the same way as a missing one. The
-  portal issues JSON Web Tokens, so the expiry date is read locally with
-  no extra request, and `og-token show` reports whether the stored token
-  is still current. A token that is not a readable JSON Web Token is used
-  as before, with no expiry reported.
-- A run that falls back to the archived data now says once, not once per
-  series, how to register a token: where to get one, the full path of the
-  `og-token` command belonging to the running interpreter, and the token
-  file to write. The full path matters because `og-token` is installed
-  beside the interpreter and is normally not on the shell's PATH, so
-  someone who obtains a token days later has something they can paste
-  rather than a command that reports "not found".
-- The token prompt is skipped when standard input is not interactive, so
-  scheduled and scripted runs fall back to the Population-Data archive
-  instead of waiting on input.
+- Answering the UN API token prompt now saves the token to the per-user file rather than to the current working directory, which used to leave a copy of the token in every directory a model was run from. An existing `un_api_token.txt` in the working directory is still read, with a notice that the location is deprecated.
+- The token prompt now names both ways forward: where to generate a free token, and that pressing return uses the archived copy of the same data instead.
+- The token is read with `getpass` rather than `input`, so it is no longer echoed into the terminal and its scrollback while being typed or pasted.
+- An expired token is now named as the reason for falling back to the archived data, instead of failing the same way as a missing one. The portal issues JSON Web Tokens, so the expiry date is read locally with no extra request, and `og-token show` reports whether the stored token is still current. A token that is not a readable JSON Web Token is used as before, with no expiry reported.
+- A run that falls back to the archived data now says once, not once per series, how to register a token: where to get one, the full path of the `og-token` command belonging to the running interpreter, and the token file to write. The full path matters because `og-token` is installed beside the interpreter and is normally not on the shell's PATH, so someone who obtains a token days later has something they can paste rather than a command that reports "not found".
+- The token prompt is skipped when standard input is not interactive, so scheduled and scripted runs fall back to the Population-Data archive instead of waiting on input.
 
 ## [0.19.2] - 2026-08-18 17:00:00
 
