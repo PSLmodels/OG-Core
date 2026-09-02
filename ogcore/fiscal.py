@@ -394,7 +394,7 @@ def get_r_gov(r, DY_ratio, p, method, t=0):
     .. math::
         r_{gov,t} = \max\{(1-\tau_{d,t}r_{t} - \mu_d
         + \beta_1 \frac{D_t}{Y_t}
-        + \beta_2 \left(\frac{D_t}{Y_t}\right)^2, 0.0\}
+        + \beta_2 \left(\frac{D_t}{Y_t}\right)^2, \underline{r}_{gov}\}
 
     Args:
         r (array_like): interest rate on private capital debt over the
@@ -416,7 +416,7 @@ def get_r_gov(r, DY_ratio, p, method, t=0):
             - p.r_gov_shift[t]
             + p.r_gov_DY * DY_ratio
             + p.r_gov_DY2 * DY_ratio**2,
-            0.00,
+            p.r_gov_floor,
         )
     else:
         r_gov = np.maximum(
@@ -424,7 +424,7 @@ def get_r_gov(r, DY_ratio, p, method, t=0):
             - p.r_gov_shift[: p.T]
             + p.r_gov_DY * DY_ratio[: p.T]
             + p.r_gov_DY2 * DY_ratio[: p.T] ** 2,
-            0.00,
+            p.r_gov_floor,
         )
 
     return r_gov
