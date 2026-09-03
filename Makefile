@@ -1,8 +1,8 @@
 # GNU Makefile that documents and automates common development operations
 #              using the GNU make tool (version >= 3.81)
-# Development is typically conducted on Linux or Max OS X (with the Xcode
-#              command-line tools installed), so this Makefile is designed
-#              to work in that environment (and not on Windows).
+# Development is typically conducted on Linux or Mac OS X (with the Xcode
+#              command-line tools installed).  The Git helper targets also
+#              work on Windows when GNU Make and uv are available.
 # USAGE: OG-Core$ make [TARGET]
 
 .PHONY: help
@@ -17,6 +17,8 @@ help:
 	@echo "coverage   : generate test coverage report"
 	@echo "documentation  : build new Jupyter Book documentation files"
 	@echo "format     : format code using ruff and linecheck"
+	@echo "git-sync   : synchronize local, origin, and upstream Git repos"
+	@echo "git-pr N=n : create local pr-n branch containing upstream PR"
 
 .PHONY: clean
 clean:
@@ -72,3 +74,11 @@ format:
 .PHONY: pip-package
 pip-package:
 	uv build
+
+.PHONY: git-sync
+git-sync:
+	@uv run python ./gitsync
+
+.PHONY: git-pr
+git-pr:
+	@uv run python ./gitpr $(N)
