@@ -1370,7 +1370,7 @@ def run_TPI(p, client=None):
         )  # normalize prices by industry M
 
         b_mat_shift = np.append(
-            np.reshape(initial_b, (1, p.S, p.J)),
+            np.reshape(b_splus1init, (1, p.S, p.J)),
             b_mat[: p.T - 1, :, :],
             axis=0,
         )
@@ -1499,6 +1499,14 @@ def run_TPI(p, client=None):
         D[: p.T] = Dnew[: p.T]
         guesses_b = utils.convex_combo(b_mat, guesses_b, p.nu)
         guesses_n = utils.convex_combo(n_mat, guesses_n, p.nu)
+
+        # Update the initial distribution of household wealth and initial
+        # aggregate household wealth if use_initial_BY_ratio=True
+        if p.use_initial_BY_ratio:
+            B0 = p.initial_BY_ratio * Y[0]
+            b_splus1init = (p.initial_BY_ratio / (B[0] / Y[0])) * b_splus1init
+            b_sinit = np.append(0, b_splus1init[:-1])
+
         logger.info(
             f"w diff: {(wnew[: p.T] - w[: p.T]).max()}, "
             + f"{(wnew[: p.T] - w[: p.T]).min()}"
