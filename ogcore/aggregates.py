@@ -105,7 +105,10 @@ def get_B(b, p, method, preTP):
     Calculate aggregate savings
 
     .. math::
-        B_{t} = \frac{1}{1 + \tilde{g}_{n,t}}\sum_{s=E+2}^{E+S+1}\sum_{j=1}^{J}\Bigl(\hat{\omega}_{s-1,t-1}\lambda_{j}\hat{b}_{j,s,t} + i_{s,t}\hat{\omega}_{s,t-1}\lambda_{j}\hat{b}_{j,s,t}\Bigr) \quad\forall t
+        B_{t} = \frac{1}{1 + \tilde{g}_{n,t}}\sum_{s=E+2}^{E+S+1}\sum_{j=1}^{J}
+        \Bigl(\hat{\omega}_{s-1,t-1}\lambda_{j}\hat{b}_{j,s,t} +
+        i_{s,t}\hat{\omega}_{s,t-1}\lambda_{j}\hat{b}_{j,s,t}\Bigr)
+        \quad\forall t
 
     Args:
         b (Numpy array): savings of households
