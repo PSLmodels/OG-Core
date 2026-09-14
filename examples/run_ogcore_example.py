@@ -124,9 +124,7 @@ def main():
     )
 
     # create plots of output
-    op.plot_all(
-        base_dir, reform_dir, os.path.join(save_dir, "example_plots")
-    )
+    op.plot_all(base_dir, reform_dir, os.path.join(save_dir, "example_plots"))
 
     print("total time was ", (time.time() - run_start_time))
     print("Percentage changes in aggregates:", ans)
