@@ -5,12 +5,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [0.20.1] - 2026-09-03 12:00:00
+## [0.20.1] - 2026-09-14 12:00:00
 
 ### Added
 
-- Added new parameter `initial_wealth_ratio` (default `1.0 => B0=B_ss`) that sets aggregate household wealth in the initial period of the transition path: B(0) = initial_wealth_ratio x steady-state B_SS. Steady-state aggregate household wealth B_SS is the anchor base because it is pinned down exactly before the transition solves, making the anchor static (initial wealth is a predetermined state). If `baseline_init_wealth_ratio==True`, then reform runs ignore the parameter and clone the baseline run's initial wealth, so baseline and reform always share the same initial condition. If `baseline_init_wealth_ratio==False`, the initial aggregate household wealth in the reform is based off of the new parameter `initial_wealth_ratio_ref` value. When the initial age distribution is far from the stationary one this hands every initial household a large uniform wealth windfall (younger population) or confiscation (older population), producing artificial consumption/investment swings in the first years of any baseline transition. The new parameter makes initial wealth calibratable to data; the default reproduces the previous behavior exactly.
-- Adds documentation in new last section of `calibration.md` on how to calibrate `initial_wealth_ratio` parameter.
+- Added three new parameters for calibrating the initial distribution of household wealth: `initial_wealth_factor_mat`, `use_initial_BY_ratio`, and `initial_BY_ratio`. The `initial_wealth_factor_mat` adjusts the initial distribution of household wealth relative to the steady-state distribution of household wealth. The other two parameters let the modeler adjust the initial distribution of household wealth by a factor that is based on a target value for the initial aggregate household wealth to GDP ratio.
+- Adds documentation in new last section of `calibration.md` on how to calibrate `initial_wealth_factor_mat`, `use_initial_BY_ratio`, and `initial_BY_ratio` parameters.
 - Removes the extraneous `requirements.txt` file. This file is clearly out-of-date, and I can't see anything that is calling it or using it. `os` is not a PyPI package, it is Python standard library. `taxcalc` is not a dependency of OG-Core. It omits the important dependencies listed in `pyproject.toml`. `requirements.txt` was added in commit `36727c7c` (Aug 2019) as part of "add readthedocs files," and there's no `.readthedocs.yaml` in the repo anymore — docs now build via the Makefile and workflows. It's been touched twice since, last in `f44266f2` (Jul 2024, "Added numba to requirements.txt"), which looks like someone updating it out of habit rather than because anything consumed it.
 - Fixed typos in `output_talbes.py`, `pensions.py`.
 - Updates the `uv.lock`.
