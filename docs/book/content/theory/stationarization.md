@@ -447,7 +447,7 @@ Stationarized pension amount derivative:
 
   ```{math}
   :label: EqStnrz_Bt
-    \hat{B}_t \equiv \frac{1}{1 + \tilde{g}_{n,t}}\sum_{s=E+2}^{E+S+1}\sum_{j=1}^{J}\Bigl(\hat{\omega}_{s-1,t-1}\lambda_j b_{j,s,t} + i_s\hat{\omega}_{s,t-1}\lambda_j \hat{b}_{j,s,t}\Bigr) \quad \forall t
+    \hat{B}_t \equiv \frac{1}{1 + \tilde{g}_{n,t}}\sum_{s=E+2}^{E+S+1}\sum_{j=1}^{J}\Bigl(\hat{\omega}_{s-1,t-1}\lambda_j\hat{b}_{j,s,t} + i_s\hat{\omega}_{s,t-1}\lambda_j\hat{b}_{j,s,t}\Bigr) \quad \forall t
   ```
 
   And the total domestic savings constraint {eq}`EqMarkClr_DomCapCnstr` is stationarized by dividing both sides by $e^{g_y t}\tilde{N}_t$.

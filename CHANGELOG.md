@@ -5,10 +5,15 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+## [0.20.1] - 2026-09-14 12:00:00
 
 ### Added
 
+- Added three new parameters for calibrating the initial distribution of household wealth: `initial_wealth_factor_mat`, `use_initial_BY_ratio`, and `initial_BY_ratio`. The `initial_wealth_factor_mat` adjusts the initial distribution of household wealth relative to the steady-state distribution of household wealth. The other two parameters let the modeler adjust the initial distribution of household wealth by a factor that is based on a target value for the initial aggregate household wealth to GDP ratio.
+- Adds documentation in new last section of `calibration.md` on how to calibrate `initial_wealth_factor_mat`, `use_initial_BY_ratio`, and `initial_BY_ratio` parameters.
+- Removes the extraneous `requirements.txt` file. This file is clearly out-of-date, and I can't see anything that is calling it or using it. `os` is not a PyPI package, it is Python standard library. `taxcalc` is not a dependency of OG-Core. It omits the important dependencies listed in `pyproject.toml`. `requirements.txt` was added in commit `36727c7c` (Aug 2019) as part of "add readthedocs files," and there's no `.readthedocs.yaml` in the repo anymore — docs now build via the Makefile and workflows. It's been touched twice since, last in `f44266f2` (Jul 2024, "Added numba to requirements.txt"), which looks like someone updating it out of habit rather than because anything consumed it.
+- Fixed typos in `output_talbes.py`, `pensions.py`.
+- Updates the `uv.lock`.
 - Fixes Issue [#1202](https://github.com/PSLmodels/OG-Core/issues/1202): `get_r_gov` clipped the interest rate on government debt at zero, so a sovereign that genuinely pays a negative real rate could not be modelled. The bound is now a parameter, `r_gov_floor`, with a default of 0.0 that reproduces the previous behaviour exactly.
 - `npv_table` in `output_tables.py` (Issue #1131): builds a table of the net present value of the reform-minus-baseline change in flow variables (e.g. `Y`) over a horizon, evaluated at a list of discount rates. Values are un-stationarized by default so the NPV is taken over the actual (trend-inclusive) level path.
 - New resource constraint error message, noting the maximum absolute resource-constraint error, the period it occurs in, and the tolerance, plus a one-line note on how to read it
@@ -703,6 +708,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Any earlier versions of OG-USA can be found in the [`OG-Core`](https://github.com/PSLmodels/OG-Core) repository [release history](https://github.com/PSLmodels/OG-Core/releases) from [v.0.6.4](https://github.com/PSLmodels/OG-Core/releases/tag/v0.6.4) (Jul. 20, 2021) or earlier.
 
 
+[0.20.1]: https://github.com/PSLmodels/OG-Core/compare/v0.20.0...v0.20.1
 [0.20.0]: https://github.com/PSLmodels/OG-Core/compare/v0.19.2...v0.20.0
 [0.19.2]: https://github.com/PSLmodels/OG-Core/compare/v0.19.1...v0.19.2
 [0.19.1]: https://github.com/PSLmodels/OG-Core/compare/v0.19.0...v0.19.1

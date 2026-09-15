@@ -1,7 +1,0 @@
-taxcalc
-scipy
-pandas
-numpy
-numba
-os
-numpydoc

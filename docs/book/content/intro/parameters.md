@@ -176,6 +176,28 @@ _Valid Range:_ min = starting_age and max = 120
 _Out-of-Range Action:_ error  
 
 
+####  `initial_wealth_factor_mat`  
+_Description:_ Matrix (S x J) of factors setting initial household wealth for every s and j equal to a factor of steady-state household wealth.  
+_Notes:_ The default value for this object is a matrix of ones, thereby setting the initial distribution of household wealth equal to the steady-state distribution of household wealth.  
+_Value Type:_ float  
+_Valid Range:_ min = 0.4 and max = 2.0  
+_Out-of-Range Action:_ error  
+
+
+####  `use_initial_BY_ratio`  
+_Description:_ Boolean whether to target initial aggregate household wealth B/Y as a percent of GDP.  
+_Value Type:_ bool  
+_Valid Choices:_[True, False]  
+
+
+####  `initial_BY_ratio`  
+_Description:_ Target value for initil period aggregate household wealth to GDP ratio.  
+_Notes:_ Should be calibrated based on the current value of aggregate household wealth as a percent of GDP.  
+_Value Type:_ float  
+_Valid Range:_ min = 0.8 and max = 7.0  
+_Out-of-Range Action:_ error  
+
+
 ## Firm Parameters
 
 ### Capital Accumulation
@@ -751,6 +773,13 @@ _Out-of-Range Action:_ error
 
 ####  `r_gov_shift`  
 _Description:_ Parameter to shift the market interest rate to find interest rate on government debt.  
+_Value Type:_ float  
+_Valid Range:_ min = -0.3 and max = 0.3  
+_Out-of-Range Action:_ error  
+
+
+####  `r_gov_floor`  
+_Description:_ Lower bound applied to the interest rate on government debt after the wedge is computed. The default of 0.0 reproduces the long-standing behavior. Lower it for a sovereign that pays a negative real rate on its debt.  
 _Value Type:_ float  
 _Valid Range:_ min = -0.3 and max = 0.3  
 _Out-of-Range Action:_ error  

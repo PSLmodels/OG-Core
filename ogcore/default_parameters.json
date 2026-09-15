@@ -1103,6 +1103,60 @@
             }
         }
     },
+    "initial_wealth_factor_mat": {
+        "title": "Initial household wealth factor matrix",
+        "description": "Matrix (S x J) of factors setting initial household wealth for every s and j equal to a factor of steady-state household wealth.",
+        "section_1": "Household Parameters",
+        "notes": "The default value for this object is a matrix of ones, thereby setting the initial distribution of household wealth equal to the steady-state distribution of household wealth.",
+        "type": "float",
+        "number_dims": 2,
+        "value": [
+            {
+                "value": [[
+                    1.0
+                ]]
+            }
+        ],
+        "validators": {
+            "range": {
+                "min": 0.4,
+                "max": 2.0
+            }
+        }
+    },
+    "use_initial_BY_ratio": {
+        "title": "Whether to target initial aggregate household wealth as a percent of GDP",
+        "description": "Boolean whether to target initial aggregate household wealth B/Y as a percent of GDP.",
+        "section_1": "Household Parameters",
+        "notes": "",
+        "type": "bool",
+        "value": [
+            {
+                "value": false
+            }
+        ],
+        "validators": {
+           "choice": {"choices": [true, false]}
+        }
+    },
+    "initial_BY_ratio": {
+        "title": "Target for initial period aggregate household wealth to GDP ratio",
+        "description": "Target value for initil period aggregate household wealth to GDP ratio.",
+        "section_1": "Household Parameters",
+        "notes": "Should be calibrated based on the current value of aggregate household wealth as a percent of GDP.",
+        "type": "float",
+        "value": [
+            {
+                "value": 5.594
+            }
+        ],
+        "validators": {
+            "range": {
+                "min": 0.8,
+                "max": 7.0
+            }
+        }
+    },
     "r_gov_scale": {
         "title": "Scale parameter to determine government interest rate",
         "description": "Parameter to scale the market interest rate to find interest rate on government debt.",
@@ -3926,7 +3980,7 @@
         ],
         "validators": {
            "choice": {"choices": [true, false]}
-            }
+        }
     },
     "constant_rates": {
         "title": "Flag to use linear tax functions",
