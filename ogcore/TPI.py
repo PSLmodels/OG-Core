@@ -162,12 +162,11 @@ def get_initial_SS_values(p):
     ss_baseline_vars = utils.safe_read_pickle(baseline_ss)
     factor = ss_baseline_vars["factor"]
     b_sp1_ss = ss_baseline_vars["b_sp1"]
-    initial_b = p.initial_wealth_factor_mat * b_sp1_ss
-    B0 = aggr.get_B(initial_b, p, "SS", True)
+    b_splus1init = p.initial_wealth_factor_mat * b_sp1_ss
+    B0 = aggr.get_B(b_splus1init, p, "SS", True)
     b_sinit = np.array(
-        list(np.zeros(p.J).reshape(1, p.J)) + list(initial_b[:-1])
+        list(np.zeros(p.J).reshape(1, p.J)) + list(b_splus1init[:-1])
     )
-    b_splus1init = initial_b
     initial_n = ss_baseline_vars["n"]
     # The DB/NDC/PS pension formulas need the labor supplied before the
     # time path begins by cohorts alive at t=0. Use the model's initial
@@ -208,10 +207,14 @@ def get_initial_SS_values(p):
     if not p.baseline:
         baseline_tpi = os.path.join(p.baseline_dir, "TPI", "TPI_vars.pkl")
         tpi_baseline_vars = utils.safe_read_pickle(baseline_tpi)
+        b_splus1init_baseline = tpi_baseline_vars["b_splus1init"]
+        B0_baseline = tpi_baseline_vars["B"][0]
         D0_baseline = tpi_baseline_vars["D"][0]
         Kg0_baseline = tpi_baseline_vars["K_g"][0]
     else:
         RM0_baseline = None
+        b_splus1init_baseline = None
+        B0_baseline = None
         D0_baseline = None
         Kg0_baseline = None
 
@@ -221,6 +224,8 @@ def get_initial_SS_values(p):
         TRbaseline,
         Gbaseline,
         Ig_baseline,
+        b_splus1init_baseline,
+        B0_baseline,
         D0_baseline,
         Kg0_baseline,
     )
@@ -778,6 +783,8 @@ def run_TPI(p, client=None):
         TRbaseline,
         Gbaseline,
         Ig_baseline,
+        b_splus1init_baseline,
+        B0_baseline,
         D0_baseline,
         Kg0_baseline,
     ) = baseline_values

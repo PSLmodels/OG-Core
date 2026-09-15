@@ -368,26 +368,24 @@ def revenue(
 
     Returns:
         (tuple): aggregate tax revenue and outlay components:
-
-            * total_tax_revenue (array_like): aggregate tax revenue
-            * iit_payroll_tax_revenue (array_like): aggregate income and
+            total_tax_revenue (array_like): aggregate tax revenue
+            iit_payroll_tax_revenue (array_like): aggregate income and
                 payroll tax revenue
-            * agg_pension_outlays (array_like): aggregate outlays for
+            agg_pension_outlays (array_like): aggregate outlays for
                 gov't pensions
-            * UBI_outlays (array_like): aggregate universal basic income
+            UBI_outlays (array_like): aggregate universal basic income
                 (UBI) outlays
-            * bequest_tax_revenue (array_like): aggregate bequest tax
+            bequest_tax_revenue (array_like): aggregate bequest tax
                 revenue
-            * wealth_tax_revenue (array_like): aggregate wealth tax
+            wealth_tax_revenue (array_like): aggregate wealth tax
                 revenue
-            * cons_tax_revenue (array_like): aggregate consumption tax
+            cons_tax_revenue (array_like): aggregate consumption tax
                 revenue
-            * business_tax_revenue (array_like): aggregate business tax
+            business_tax_revenue (array_like): aggregate business tax
                 revenue
-            * payroll_tax_revenue (array_like): aggregate payroll tax
+            payroll_tax_revenue (array_like): aggregate payroll tax
                 revenue
-            * iit_tax_revenue (array_like): aggregate income tax revenue
-
+            iit_tax_revenue (array_like): aggregate income tax revenue
     """
     inc_pay_tax_liab = tax.income_tax_liab(
         r, w, b, n, factor, 0, None, method, e, etr_params, p
