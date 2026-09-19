@@ -386,6 +386,24 @@
         "label": "Consumption good prices ($p_{i,t}$)",
         "toGDP_label": ""
     },
+    "p_g": {
+        "desc": "Price of the government consumption composite good",
+        "section": "Prices",
+        "type": "array-like",
+        "TPI dimensions": "T",
+        "SS dimensions": "scalar",
+        "label": "Government consumption good price ($p_{g,t}$)",
+        "toGDP_label": ""
+    },
+    "p_Ig": {
+        "desc": "Price of the infrastructure investment composite good",
+        "section": "Prices",
+        "type": "array-like",
+        "TPI dimensions": "T",
+        "SS dimensions": "scalar",
+        "label": "Infrastructure investment good price ($p_{I_g,t}$)",
+        "toGDP_label": ""
+    },
     "p_tilde": {
         "desc": "Price of composite output good",
         "section": "Prices",

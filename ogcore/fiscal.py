@@ -24,7 +24,8 @@ def D_G_path(r, dg_fixed_values, p):
     .. math::
         \begin{split}
             &e^{g_y}\left(1 + \tilde{g}_{n,t+1}\right)\hat{D}_{t+1}
-            + \hat{Rev}_t = (1 + r_{gov,t})\hat{D}_t + \hat{G}_t
+            + \hat{Rev}_t = (1 + r_{gov,t})\hat{D}_t
+            + p_{g,t}\hat{G}_t + p_{I_g,t}\hat{I}_{g,t}
             + \hat{TR}_t + \hat{UBI}_t \quad\forall t \\
             &\hat{G}_t = g_{g,t}\:\alpha_{g}\: \hat{Y}_t \\
             &\text{where}\quad g_{g,t} =
@@ -50,12 +51,10 @@ def D_G_path(r, dg_fixed_values, p):
     Args:
         r_gov (Numpy array): interest rate on government debt over the
             time path
-        dg_fixed_values (tuple): (Y, total_tax_revenue,
-            agg_pension_outlays, UBI_outlays,TR, D0, G0) values of variables
-            that are taken as given in the government budget constraint
-        Gbaseline (Numpy array): government spending over the time path
-            in the baseline equilibrium, used only if
-            baseline_spending=True
+        dg_fixed_values (tuple): ``(Y, total_tax_revenue,
+            agg_pension_outlays, UBI_outlays, TR, I_g, p_g, p_Ig,
+            Gbaseline, D0_baseline)`` values taken as given in the
+            government budget constraint
         p (OG-Core Specifications object): model parameters
 
     Returns:
@@ -77,6 +76,8 @@ def D_G_path(r, dg_fixed_values, p):
         UBI_outlays,
         TR,
         I_g,
+        p_g,
+        p_Ig,
         Gbaseline,
         D0_baseline,
     ) = dg_fixed_values
@@ -113,8 +114,8 @@ def D_G_path(r, dg_fixed_values, p):
         while t < p.T - 1:
             D[t] = (1 / growth[t]) * (
                 (1 + r_gov[t - 1]) * D[t - 1]
-                + G[t - 1]
-                + I_g[t - 1]
+                + p_g[t - 1] * G[t - 1]
+                + p_Ig[t - 1] * I_g[t - 1]
                 + TR[t - 1]
                 + UBI_outlays[t - 1]
                 + agg_pension_outlays[t - 1]
@@ -130,10 +131,10 @@ def D_G_path(r, dg_fixed_values, p):
                     + total_tax_revenue[t]
                     + foreign_aid[t]
                     - agg_pension_outlays[t]
-                    - I_g[t - 1]
+                    - p_Ig[t - 1] * I_g[t - 1]
                     - TR[t]
                     - UBI_outlays[t]
-                )
+                ) / p_g[t]
             elif t >= p.tG2:
                 G[t] = (
                     growth[t + 1] * (p.debt_ratio_ss * Y[t])
@@ -141,10 +142,10 @@ def D_G_path(r, dg_fixed_values, p):
                     + total_tax_revenue[t]
                     + foreign_aid[t]
                     - agg_pension_outlays[t]
-                    - I_g[t - 1]
+                    - p_Ig[t - 1] * I_g[t - 1]
                     - TR[t]
                     - UBI_outlays[t]
-                )
+                ) / p_g[t]
             t += 1
 
         # in final period, growth rate has stabilized, so we can replace
@@ -152,8 +153,8 @@ def D_G_path(r, dg_fixed_values, p):
         t = p.T - 1
         D[t] = (1 / growth[t]) * (
             (1 + r_gov[t - 1]) * D[t - 1]
-            + G[t - 1]
-            + I_g[t - 1]
+            + p_g[t - 1] * G[t - 1]
+            + p_Ig[t - 1] * I_g[t - 1]
             + TR[t - 1]
             + UBI_outlays[t - 1]
             + agg_pension_outlays[t - 1]
@@ -167,14 +168,14 @@ def D_G_path(r, dg_fixed_values, p):
             + total_tax_revenue[t]
             + foreign_aid[t]
             - agg_pension_outlays[t]
-            - I_g[t - 1]
+            - p_Ig[t - 1] * I_g[t - 1]
             - TR[t]
             - UBI_outlays[t]
-        )
+        ) / p_g[t]
         D[t + 1] = (1 / growth[t + 1]) * (
             (1 + r_gov[t]) * D[t]
-            + G[t]
-            + I_g[t - 1]
+            + p_g[t] * G[t]
+            + p_Ig[t - 1] * I_g[t - 1]
             + TR[t]
             + UBI_outlays[t]
             + agg_pension_outlays[t]
@@ -265,6 +266,8 @@ def get_G_ss(
     TR,
     UBI_outlays,
     I_g,
+    p_g,
+    p_Ig,
     new_borrowing,
     debt_service,
     p,
@@ -273,8 +276,9 @@ def get_G_ss(
     Calculate the steady-state values of government spending.
 
     .. math::
-            \bar{G} = \bar{Rev} + \bar{D}\bigl[(1 + \bar{g}_n)e^{g_y} -
-            (1 + \bar{r}_{gov})\bigr] - \bar{I}_g - \bar{TR} - \overline{UBI}
+            p_g\bar{G} = \bar{Rev} + \bar{D}\bigl[(1 + \bar{g}_n)e^{g_y} -
+            (1 + \bar{r}_{gov})\bigr] - p_{I_g}\bar{I}_g - \bar{TR}
+            - \overline{UBI}
 
     Args:
         Y (scalar): aggregate output
@@ -283,6 +287,8 @@ def get_G_ss(
         TR (scalar): steady-state transfer spending
         UBI_outlays (scalar): steady-state total UBI outlays
         I_g (scalar): steady-state public infrastructure investment
+        p_g (scalar): price of the government consumption composite
+        p_Ig (scalar): price of the infrastructure investment composite
         new_borrowing (scalar): steady-state amount of new borrowing
         debt_service (scalar): steady-state debt service costs
         p (OG-Core Specifications object): model parameters
@@ -299,8 +305,14 @@ def get_G_ss(
             total_tax_revenue
             + new_borrowing
             + foreign_aid
-            - (agg_pension_outlays + TR + debt_service + UBI_outlays + I_g)
-        )
+            - (
+                agg_pension_outlays
+                + TR
+                + debt_service
+                + UBI_outlays
+                + p_Ig * I_g
+            )
+        ) / p_g
 
     return G
 
@@ -331,6 +343,8 @@ def get_TR(
     agg_pension_outlays,
     UBI_outlays,
     I_g,
+    p_g,
+    p_Ig,
     p,
     method,
 ):
@@ -356,6 +370,8 @@ def get_TR(
             outlays
         UBI_outlays (array_like): total universal basic income (UBI) outlays
         I_g (array_like): public infrastructure investment
+        p_g (array_like): price of the government consumption composite
+        p_Ig (array_like): price of the infrastructure investment composite
         p (OG-Core Specifications object): model parameters
         method (str): whether doing SS or TP calculation
 
@@ -372,9 +388,9 @@ def get_TR(
             total_tax_revenue
             + foreign_aid
             - agg_pension_outlays
-            - G
+            - p_g * G
             - UBI_outlays
-            - I_g
+            - p_Ig * I_g
         )
     elif p.baseline_spending:
         new_TR = p.alpha_bs_T[-1] * TR

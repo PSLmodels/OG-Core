@@ -117,6 +117,8 @@ def test_D_G_path(
     D0_baseline = 0.59
     Gbaseline[0] = 0.05
     I_g = np.zeros_like(TR)
+    p_g = np.ones_like(TR)
+    p_Ig = np.ones_like(TR)
     net_revenue = Revenue
     pension_amount = np.zeros_like(net_revenue)
     UBI_outlays = np.zeros_like(net_revenue)
@@ -127,6 +129,8 @@ def test_D_G_path(
         UBI_outlays,
         TR,
         I_g,
+        p_g,
+        p_Ig,
         Gbaseline,
         D0_baseline,
     )
@@ -205,12 +209,21 @@ def test_get_G_ss(budget_balance, expected_G):
         TR,
         UBI,
         I_g,
+        1.0,
+        1.0,
         new_borrowing,
         debt_service,
         p,
     )
 
     assert np.allclose(test_G, expected_G)
+
+
+def test_get_G_ss_prices_government_goods():
+    p = Specifications()
+    p.budget_balance = False
+    G = fiscal.get_G_ss(2.0, 10.0, 1.0, 2.0, 0.5, 3.0, 2.0, 4.0, 1.0, 0.5, p)
+    assert np.isclose(G, -2.5)
 
 
 def test_get_debt_service_f():
@@ -272,6 +285,8 @@ def test_get_TR(
         agg_pension_outlays,
         UBI_outlays,
         I_g,
+        1.0,
+        1.0,
         p,
         method,
     )

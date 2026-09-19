@@ -26,7 +26,7 @@ The production side of the `OG-Core` model is populated by $M$ industries indexe
     Y_{m,t} = Z_{m,t} (K_{m,t})^{\gamma_m} (K_{g,m,t})^{\gamma_{g,m}}(e^{g_y t}L_{m,t})^{1-\gamma_m-\gamma_{g,m}} \quad\forall m,t \quad\text{for}\quad \varepsilon_m=1
   ```
 
-Industry $M$ in the model is unique in two respects.  First, we will define industry $M$ goods as the numeraire in OG_Core.  Therefore, all quantities are in terms of industry $M$ goods and all prices are relative to the price of a unit of industry $M$ goods.  Second, the model solution is greatly simplified if just one production industry produces capital goods.  The assumption in OG-Core is that industry $M$ is the only industry producing capital goods (though industry $M$ goods can also be used for consumption).
+Industry $M$ in the model is unique in two respects. First, we define industry $M$ goods as the numeraire in OG-Core. Therefore, all prices are relative to the price of a unit of industry $M$ goods. Second, industry $M$ is the only industry producing private capital goods. Household consumption goods, government consumption goods, and infrastructure investment goods may each combine output from all $M$ industries through the input-output matrix.
 
 (EqFirmsFOC)=
 ## Optimality Conditions

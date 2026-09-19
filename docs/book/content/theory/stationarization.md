@@ -244,7 +244,7 @@ The usual definition of equilibrium would be allocations and prices such that ho
 
   ```{math}
   :label: EqStnrzGovBC
-    e^{g_y}\left(1 + \tilde{g}_{n,t+1}\right)\hat{D}_{t+1} + \hat{Rev}_t + \hat{FA}_t = (1 + r_{gov,t})\hat{D}_t + \hat{G}_t + \hat{I}_{g,t} + \hat{Pensions}_t + \hat{TR}_t + \hat{UBI}_t \quad\forall t
+    e^{g_y}\left(1 + \tilde{g}_{n,t+1}\right)\hat{D}_{t+1} + \hat{Rev}_t + \hat{FA}_t = (1 + r_{gov,t})\hat{D}_t + p_{g,t}\hat{G}_t + p_{I_g,t}\hat{I}_{g,t} + \hat{Pensions}_t + \hat{TR}_t + \hat{UBI}_t \quad\forall t
   ```
 
   The stationarized versions of the rule for total government infrastructure investment spending $I_{g,t}$ in {eq}`EqUnbalGBC_Igt` and the rule for government investment spending in each industry in {eq}`EqUnbalGBC_Igt` are found by dividing both sides of the respective equations by $e^{g_y t}\tilde{N}_t$.

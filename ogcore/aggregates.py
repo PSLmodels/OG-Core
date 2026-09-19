@@ -15,6 +15,17 @@ from ogcore import tax, pensions
 """
 
 
+def get_io_prices(p_m, p, method):
+    """Map industry prices into household and government-good prices."""
+    if method == "SS":
+        prices = np.dot(p.io_matrix, p_m)
+        return prices[: p.I], prices[p.I], prices[p.I + 1]
+    if method == "TPI":
+        prices = np.einsum("im,tm->ti", p.io_matrix, p_m)
+        return prices[:, : p.I], prices[:, p.I], prices[:, p.I + 1]
+    raise ValueError("method must be 'SS' or 'TPI'")
+
+
 def get_L(n, p, method):
     r"""
     Calculate aggregate labor supply.
@@ -389,7 +400,7 @@ def revenue(
     bq_tax_liab = tax.bequest_tax_liab(r, b, bq, 0, None, method, p)
     w_tax_liab = tax.wealth_tax_liab(r, b, 0, None, method, p)
     if method == "SS":
-        p_i = np.dot(p.io_matrix, p_m)
+        p_i, _, _ = get_io_prices(p_m, p, "SS")
         pop_weights = p.omega_SS
         iit_payroll_tax_revenue = (inc_pay_tax_liab * pop_weights).sum()
         agg_pension_outlays = (pension_benefits * pop_weights).sum()
@@ -400,10 +411,7 @@ def revenue(
             tax.cons_tax_liab(c, p_i, p, method) * pop_weights
         ).sum()
     elif method == "TPI":
-        p_i = (
-            np.tile(p.io_matrix.reshape(1, p.I, p.M), (p.T, 1, 1))
-            * np.tile(p_m[: p.T, :].reshape(p.T, 1, p.M), (1, p.I, 1))
-        ).sum(axis=2)
+        p_i, _, _ = get_io_prices(p_m[: p.T, :], p, "TPI")
         pop_weights = p.omega[: p.T, :, :]
         iit_payroll_tax_revenue = (
             (inc_pay_tax_liab * pop_weights).sum(1).sum(1)
