@@ -49,6 +49,15 @@ The previous chapters derive all the equations necessary to solve for the steady
   -
   - $\hat{D}_t\equiv\frac{D_t}{e^{g_y t}\tilde{N}_t}$
   - $p_{m,t} \equiv \frac{\tilde{p}_{m,t}}{\tilde{p}_{M,t}}$
+<<<<<<< HEAD
+* -
+  -
+  - $\hat{I}_{m,t}\equiv\frac{I_{m,t}}{e^{g_y t}\tilde{N}_t}$
+  -
+* -
+  -
+  - $\hat{K}^{\tau}_{m,t}\equiv\frac{K^{\tau}_{m,t}}{e^{g_y t}\tilde{N}_t}$
+=======
 * - $\hat{rm}_{j,s,t} \equiv \frac{rm_{j,s,t}}{e^{g_y t}}$
   -
   - $\hat{RM}_t \equiv \frac{RM_t}{e^{g_y t}\tilde{N}_t}$
@@ -56,6 +65,7 @@ The previous chapters derive all the equations necessary to solve for the steady
 * - $\hat{pensions}_{j,s,t} \equiv \frac{pensions_{j,s,t}}{e^{g_y t}}$
   -
   -
+>>>>>>> upstream/master
   -
 ```
 
@@ -160,8 +170,41 @@ The usual definition of equilibrium would be allocations and prices such that ho
 
   ```{math}
   :label: EqStnrzProfit
-    \hat{PR}_{m,t} &= (1 - \tau^{corp}_{m,t})\Bigl[F(\hat{K}_{m,t},\hat{K}_{g,m,t},\hat{L}_{m,t}) - \hat{w}_t \hat{L}_{m,t}\Bigr] - ... \\
-    &\qquad\qquad\quad \bigl(r_t + \delta_{M,t}\bigr)\hat{K}_{m,t} + \tau^{corp}_{m,t}\delta^\tau_{m,t}\hat{K}_{m,t} + \tau^{inv}_{m,t}\delta_{M,t}\hat{K}_{m,t} \quad\forall m,t
+    \pi(\hat{K}_{m,t}, \hat{L}_{m,t}) &= (1 - \tau^{corp}_{m,t})\Bigl[p_{m,t}F(\hat{K}_{m,t},\hat{K}_{g,m,t},\hat{L}_{m,t}) - w_t \hat{L}_{m,t} - \Psi(\hat{I}_{m,t}, \hat{K}_{m,t})\Bigr] -  \\
+    &\qquad\qquad\quad \hat{I}_{m,t+1} + \tau^{corp}_{m,t}\delta^\tau_{m,t}\hat{K}^{\tau}_{m,t} + \tau^{inv}_{m,t}\hat{I}_{m,t} \quad\forall m,t
+  ```
+
+  The stationarized version of the law of motion for the capital stock for industry $m$ is given by:
+
+  ```{math}
+  :label: EqStnrz_Kgm
+    \hat{K}_{m,t+1} = \frac{(1 - \delta_M)\hat{K}_{m,t} + \hat{I}_{m,t}}{e^{g_y}(1 + \tilde{g}_{n,t+1})}  \quad\forall m,t
+  ```
+
+  And the analogous stationarized version of the law of motion for the tax basis of the capital stock is given by:
+
+  ```{math}
+  :label: EqStnrz_Ktaum
+    \hat{K}^{\tau}_{m,} = \frac{(1 - \delta^{\tau}_{m,t})\hat{K}^{\tau}_{m,t-1} + (1-\tau^{inv}_{m,t})\hat{I}_{m,t}}{e^{g_y}(1 + \tilde{g}_{n,t+1})}  \quad\forall m,t
+  ```
+
+The stationarized version of the capital adjustment cost function and it's first derivatives are given by:
+
+  ```{math}
+    :label: EqStnrzAdjCosts
+    \Psi(\hat{I}_{m,t}, \hat{K}_{m,t}) = \frac{\psi}{2}\frac{\left(\frac{\hat{I}_{m,t}}{\hat{K}_{m,t}} - \mu_m \right)^2}{\frac{\hat{I}_{m,t}}{\hat{K}_{m,t}}} \quad\forall m,t
+  ```
+
+  ```{math}
+  :label: EqStnrzAdjCost_dKp1
+    \frac{\partial \Psi(\hat{I}_{m,t},\hat{K}_{m,t})}{\partial \hat{K}_{m,t+1}} = \frac{\psi}{2}\frac{\left(\frac{\hat{I}_{m,t}}{\hat{K}_{m,t}}- \mu_{m}\right)}{\hat{I}_{t}}\left[1 -\mu\frac{\hat{K}_{m,t}}{\hat{I}_{m,t}}\right] \forall m,t
+  ```
+
+  and
+
+  ```{math}
+  :label: EqStnrzAdjCost_dK
+    \frac{\partial \Psi(\hat{I}_{m,t},\hat{K}_{m,t})}{\partial \hat{K}_{m,t}} = \frac{-\psi}{2}\left(\frac{\hat{K}_{m,t+1}}{e^{g_y}(1+g_{n,t+1})\hat{I}^2_{m,t}}\right)\left(\frac{\hat{I}_{m,t}}{\hat{K}_{m,t}}-\mu\right)\left(\frac{\hat{I}_{m,t}}{\hat{K}_{m,t}}+\mu\right) \forall m,t
   ```
 
   The firms' first order equation for labor demand {eq}`EqFirmFOC_L` is stationarized by dividing both sides by $e^{g_y t}$. This stationarizes the wage $\hat{w}_t$ on the left-hand-side and cancels out the $e^{g_y t}$ term in front of the right-hand-side. To complete the stationarization, we multiply and divide the $\frac{Y_{m,t}}{e^{g_y t}L_{m,t}}$ term on the right-hand-side by $\tilde{N}_t$.
@@ -175,7 +218,7 @@ The usual definition of equilibrium would be allocations and prices such that ho
 
   ```{math}
   :label: EqStnrzFOC_K
-    r_t = (1 - \tau^{corp}_{m,t})p_{m,t}(Z_{m,t})^\frac{\varepsilon_m-1}{\varepsilon_m}\left[\gamma_m\frac{\hat{Y}_{m,t}}{\hat{K}_{m,t}}\right]^\frac{1}{\varepsilon_m} - \delta_{M,t} + \tau^{corp}_{m,t}\delta^\tau_{m,t} + \tau^{inv}_{m,t}\delta_{M,t} \quad\forall m,t
+    r_{t+1} = \frac{(1 - \tau^{corp}_{m,t+1})\left(p_{m,t+1}(Z_{m,t+1})^\frac{\varepsilon_m-1}{\varepsilon_m}\left[\gamma_m\frac{\hat{Y}_{m,t+1}}{\hat{K}_{m,t+1}}\right]^\frac{1}{\varepsilon_m} - \frac{\partial \Psi(\hat{I}_{m,t+1},\hat{K}_{m,t+1})}{\partial \hat{K}_{m,t+1}}\right) + 1 - \delta_{m} + \tau^{corp}_{m,t+1}\delta^\tau_{m,t+1}\left[(1-\tau^{inv}_{m,t})(1-\delta^\tau_{m,t})-(1-\delta_m)(1-\tau^{inv}_{m,t+1})\right] - \tau^{inv}_{m,t+1}(1-\delta_{m})}{(1-\tau^{corp}_{m,t})\frac{\partial \Psi(\hat{I}_{m,t},\hat{K}_{m,t})}{\partial \hat{K}_{m,t+1}}+1 -\tau^{inv}_{m,t}-\tau^{corp}_{m,t}\delta^{\tau}_{m,t}(1-\tau^{inv}_{m,t})} - 1 \quad\forall m,t
   ```
 
   A stationary version of the firms' gross revenue attributed to each factor of production {eq}`EqFirmsMargRevEq` is found by dividing both sides of the equation by $e^{g_y t}\tilde{N}_t$.
@@ -472,18 +515,18 @@ Stationarized pension amount derivative:
   The private capital market clearing equation {eq}`EqMarkClr_KtKdKf` is stationarized by dividing both sides by $e^{g_y t}\tilde{N}_t$, as is the expression for excess demand at the world interest rate {eq}`EqMarkClr_ExDemK` and the exogenous expression for foreign private capital flows {eq}`EqMarkClr_zetaK`.
 
   ```{math}
-  :label: EqStnrz_KtKdKf
-    \hat{K}_t = \hat{K}^d_t + \hat{K}^f_t \quad\forall t \quad\text{where}\quad \hat{K_t} \equiv \sum_{m=1}^M \hat{K}_{m,t}
+  :label: EqStnrz_VtVdVf
+    \hat{V}_t = \hat{V}^d_t + \hat{V}^f_t \quad\forall t \quad\text{where}\quad \hat{V_t} \equiv \sum_{m=1}^M \hat{V}_{m,t}
   ```
 
   ```{math}
   :label: EqStnrz_ExDemK
-    \hat{ED}^{K,r^*}_t \equiv \hat{K}^{r^*}_t - \hat{K}^d_t \quad\forall t \quad\text{where}\quad \hat{K}^{r^*}_t \equiv \sum_{m=1}^M \hat{K}^{r^*}_{m,t}
+    \hat{ES}^{V,r^*}_t \equiv \hat{V}^{r^*}_t - \hat{V}^d_t \quad\forall t \quad\text{where}\quad \hat{V}^{r^*}_t \equiv \sum_{m=1}^M \hat{V}^{r^*}_{m,t}
   ```
 
   ```{math}
   :label: EqStnrz_zetaK
-    \hat{K}^{f}_t = \zeta_{K}\hat{ED}^{K,r^*}_t \quad\forall t
+    \hat{V}^{f}_t = \zeta_{K}\hat{ES}^{V,r^*}_t \quad\forall t
   ```
 
   We stationarize the goods market clearing equations for the first $M-1$ industries {eq}`EqMarkClrGoods_Mm1` and for the $M$th industry {eq}`EqMarkClrGoods_M` by dividing both sides by $e^{g_y t}\tilde{N}_t$. On the right-hand-side, we must multiply and divide the $K^d_{t+1}$ term and the $D^f_{t+1}$ term, respectively, by $e^{g_y(t+1)}\tilde{N}_{t+1}$ leaving the coefficient $e^{g_y}(1+\tilde{g}_{n,t+1})$.
@@ -494,7 +537,11 @@ Stationarized pension amount derivative:
   ```{math}
   :label: EqStnrzMarkClrGoods_M
     \hat{Y}_{M,t} &= \hat{C}_{M,t} + \hat{I}_{M,t} + \hat{I}_{g,t} + \hat{G}_t + r_{p,t} \hat{K}^f_t + r_{p,t}\hat{D}^f_t ... \\
+<<<<<<< HEAD
+    &\quad - \Bigl(e^{g_y}\bigl[1 + \tilde{g}_{n,t+1}\bigr]\hat{K}^f_{t+1} - \hat{K}^f_t\Bigr) - \Bigl(e^{g_y}\bigl[1 + \tilde{g}_{n,t+1}\bigr]\hat{D}^f_{t+1} - \hat{D}^f_t\Bigr) + \hat{\Psi}_{M,t} \quad\forall t
+=======
     &\quad - \Bigl(e^{g_y}\bigl[1 + \tilde{g}_{n,t+1}\bigr]\hat{K}^f_{t+1} - \hat{K}^f_t\Bigr) - \Bigl(e^{g_y}\bigl[1 + \tilde{g}_{n,t+1}\bigr]\hat{D}^f_{t+1} - \hat{D}^f_t\Bigr) - \hat{RM}_t \quad\forall t
+>>>>>>> upstream/master
   ```
   where
   ```{math}
@@ -507,6 +554,11 @@ Stationarized pension amount derivative:
     \hat{I}_{M,t} &\equiv e^{g_y}\bigl(1 + \tilde{g}_{n,t+1}\bigr)\sum_{m=1}^M \hat{K}_{m,t+1} - (1 - \delta_{M,t})\sum_{m=1}^M \hat{K}_{m,t} \quad\forall t \\
     &= e^{g_y}\bigl(1 + \tilde{g}_{n,t+1}\bigr)\hat{K}_{t+1} - (1 - \delta_{M,t})\hat{K}_t \\
     &= e^{g_y}\bigl(1 + \tilde{g}_{n,t+1}\bigr)(\hat{K}^d_{t+1} + \hat{K}^f_{t+1}) - (1 - \delta_{M,t})(\hat{K}^d_t + \hat{K}^f_t)
+  ```
+  and
+  ```{math}
+  :label: EqStnrzMarkClrGoods_IMt
+    \hat{\Psi}_{M,t} &\equiv \sum_{m=1}^M \Psi(\hat{I}_{m,t},\hat{K}_{m,t}) \quad\forall t \\
   ```
 
   We stationarize the law of motion for total bequests $BQ_t$ in {eq}`EqMarkClrBQ` by dividing both sides by $e^{g_y t}\tilde{N}_t$. Because the population levels in the summation are from period $t-1$, we must multiply and divide the summed term by $\tilde{N}_{t-1}$ leaving the term in the denominator of $1+\tilde{g}_{n,t}$.
