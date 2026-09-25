@@ -336,7 +336,8 @@
     "maxiter": 35,
     "mindist_SS": 1e-06,
     "mindist_TPI": 0.001,
-    "nu": 0.4,
+    "xi_ss": 0.4,
+    "xi_tpi": 0.4,
     "beta_annual": [
         0.96,
         0.96
