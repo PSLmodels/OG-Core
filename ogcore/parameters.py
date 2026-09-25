@@ -205,6 +205,12 @@ class Specifications(paramtools.Parameters):
                 param_in, dims=(self.T + self.S,), item=item
             )
             setattr(self, item, param_out)
+        # retirement_age is a whole number of years (bounded well under the
+        # int16 range), so store it as int16 rather than float64 to reduce
+        # the memory footprint of the parameters object (see issue #1080).
+        # Rounding first keeps behavior identical to how it is already
+        # consumed in `retire`.
+        self.retirement_age = np.round(self.retirement_age).astype(np.int16)
         # Deal with parameters that vary across industry and over time
         tp_param_list2 = [
             "Z",
