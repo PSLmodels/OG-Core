@@ -898,16 +898,23 @@ _Value Type:_ bool
 _Valid Choices:_[True, False]  
 
 
-####  `nu`  
-_Description:_ Parameter for convergence rate of functional iteration.  
+####  `xi_ss`  
+_Description:_ Parameter for the convergence rate of functional iteration in the steady-state solution.  
+_Value Type:_ float  
+_Valid Range:_ min = 0.01 and max = 0.5  
+_Out-of-Range Action:_ error  
+
+
+####  `xi_tpi`  
+_Description:_ Parameter for the convergence rate of functional iteration in the transition-path solution.  
 _Value Type:_ float  
 _Valid Range:_ min = 0.01 and max = 0.5  
 _Out-of-Range Action:_ error  
 
 
 ####  `TPI_outer_method`  
-_Description:_ Update rule for the transition-path outer loop. 'picard' (default) is the model's historical damped functional iteration x <- (1-nu) x + nu G(x) (see nu), which leaves model solutions unchanged. 'anderson' uses limited-memory Anderson acceleration on the residual history to take larger, better-directed steps, guarded by a trust region anchored to the damped point (TPI_trust_radius).  
-_Notes:_ Opt-in solver acceleration. The default ('picard') reproduces the constant-nu behavior exactly.  
+_Description:_ Update rule for the transition-path outer loop. 'picard' (default) is the model's historical damped functional iteration x <- (1-xi_tpi) x + xi_tpi G(x) (see xi_tpi), which leaves model solutions unchanged. 'anderson' uses limited-memory Anderson acceleration on the residual history to take larger, better-directed steps, guarded by a trust region anchored to the damped point (TPI_trust_radius).  
+_Notes:_ Opt-in solver acceleration. The default ('picard') reproduces the constant-xi_tpi behavior exactly.  
 _Value Type:_ str  
 _Valid Choices:_['picard', 'anderson']  
 
