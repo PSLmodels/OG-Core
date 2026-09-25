@@ -45,6 +45,39 @@ def get_L(n, p, method):
     return L
 
 
+def get_N(n, p, method):
+    r"""
+    Calculate aggregate hours worked.
+
+    Unlike aggregate labor supply :math:`L`, this measure does not weight
+    hours by the effective-labor-units profile :math:`e_{j,s,t}`, so it
+    reports raw hours rather than productivity-adjusted labor:
+
+    .. math::
+        N_{t} = \sum_{s=E}^{E+S}\sum_{j=0}^{J}\omega_{s,t}\lambda_{j}n_{j,s,t}
+
+    Args:
+        n (Numpy array): labor supply of households
+        p (OG-Core Specifications object): model parameters
+        method (str): adjusts calculation dimensions based on 'SS' or
+            'TPI'
+
+    Returns:
+        N (array_like): aggregate hours worked
+
+    """
+    if method == "SS":
+        # p.omega_SS is the (S, J) population weight and already carries the
+        # lambda_j type shares (its columns sum to lambdas), so no separate
+        # lambda multiplication is needed, mirroring get_L.
+        N_presum = p.omega_SS * n
+        N = N_presum.sum()
+    elif method == "TPI":
+        N_presum = n * p.omega[: p.T, :, :]
+        N = N_presum.sum(1).sum(1)
+    return N
+
+
 def get_I(b_splus1, K_p1, K, p, method):
     r"""
     Calculate aggregate investment.

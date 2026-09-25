@@ -877,6 +877,7 @@ def SS_solver(
     I_g_ss = fiscal.get_I_g(Yss, Ig_baseline, p, "SS")
     K_g_ss = fiscal.get_K_g(0, I_g_ss, p, "SS")
     Lss = aggr.get_L(nssmat, p, "SS")
+    Nss = aggr.get_N(nssmat, p, "SS")
     Bss = aggr.get_B(bssmat_splus1, p, "SS", False)
     (
         Dss,
@@ -1207,6 +1208,7 @@ def SS_solver(
         "K_f": K_f_ss,
         "K_d": K_d_ss,
         "L": Lss,
+        "N": Nss,
         "C": Css,
         "I": Iss,
         "I_total": Iss_total,
