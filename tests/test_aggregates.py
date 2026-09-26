@@ -57,6 +57,30 @@ def test_get_L(n, p, method, expected):
     assert np.allclose(L, expected)
 
 
+# Aggregate hours worked is the same population-weighted sum as get_L but
+# without the effective-labor-units (p.e) weighting.
+N_loop = np.ones(p.T * p.S * p.J).reshape(p.T, p.S, p.J)
+for t in range(p.T):
+    for i in range(p.S):
+        for k in range(p.J):
+            N_loop[t, i, k] *= p.omega[t, i, k].item() * n[t, i, k].item()
+expected_N_SS = N_loop[-1, :, :].sum()
+expected_N_TPI = N_loop.sum(1).sum(1)
+test_data_N = [
+    (n[-1, :, :], p, "SS", expected_N_SS),
+    (n, p, "TPI", expected_N_TPI),
+]
+
+
+@pytest.mark.parametrize("n,p,method,expected", test_data_N, ids=["SS", "TPI"])
+def test_get_N(n, p, method, expected):
+    """
+    Test aggregate hours-worked function.
+    """
+    N = aggr.get_N(n, p, method)
+    assert np.allclose(N, expected)
+
+
 def test_get_L_J1_regression():
     """
     Regression test for issue #1143: aggregate labor for J=1 must use a

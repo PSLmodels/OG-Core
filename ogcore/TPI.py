@@ -1745,6 +1745,9 @@ def run_TPI(p, client=None):
         f"Max Euler error labor supply: {np.abs(eul_laborleisure).max()}"
     )
 
+    # Aggregate hours worked (not weighted by effective-labor units).
+    N = aggr.get_N(n_mat[: p.T], p, "TPI")
+
     """
     ------------------------------------------------------------------------
     Save variables/values so they can be used in other modules
@@ -1758,6 +1761,7 @@ def run_TPI(p, client=None):
         "K_f": K_f[: p.T],
         "K_d": K_d[: p.T, ...],
         "L": L[: p.T, ...],
+        "N": N[: p.T, ...],
         "C": C[: p.T, ...],
         "I": I[: p.T, ...],
         "I_total": I_total[: p.T, ...],
