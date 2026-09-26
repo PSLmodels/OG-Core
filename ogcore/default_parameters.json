@@ -5016,6 +5016,86 @@
             }
         }
     },
+    "initial_guess_b_SS": {
+        "title": "Initial guess for household savings in the SS solution when use_zeta is True",
+        "description": "Constant used as the initial guess for the household savings distribution in the steady-state solution when use_zeta is True.",
+        "short_description": "Initial guess for SS savings (use_zeta True)",
+        "param_notation": "\\texttt{initial\\_guess\\_b\\_SS}",
+        "section_1": "Model Solution Parameters",
+        "notes": "",
+        "type": "float",
+        "value": [
+            {
+                "value": 0.0055
+            }
+        ],
+        "validators": {
+            "range": {
+                "min": 1e-13,
+                "max": 100.0
+            }
+        }
+    },
+    "initial_guess_n_SS": {
+        "title": "Initial guess for household labor supply in the SS solution when use_zeta is True",
+        "description": "Constant (as a fraction of the labor endowment ltilde) used as the initial guess for the household labor-supply distribution in the steady-state solution when use_zeta is True.",
+        "short_description": "Initial guess for SS labor supply (use_zeta True)",
+        "param_notation": "\\texttt{initial\\_guess\\_n\\_SS}",
+        "section_1": "Model Solution Parameters",
+        "notes": "",
+        "type": "float",
+        "value": [
+            {
+                "value": 0.4
+            }
+        ],
+        "validators": {
+            "range": {
+                "min": 1e-13,
+                "max": 1.0
+            }
+        }
+    },
+    "initial_guess_b_SS_no_zeta": {
+        "title": "Initial guess for household savings in the SS solution when use_zeta is False",
+        "description": "Constant used as the initial guess for the household savings distribution in the steady-state solution when use_zeta is False.",
+        "short_description": "Initial guess for SS savings (use_zeta False)",
+        "param_notation": "\\texttt{initial\\_guess\\_b\\_SS\\_no\\_zeta}",
+        "section_1": "Model Solution Parameters",
+        "notes": "",
+        "type": "float",
+        "value": [
+            {
+                "value": 0.07
+            }
+        ],
+        "validators": {
+            "range": {
+                "min": 1e-13,
+                "max": 100.0
+            }
+        }
+    },
+    "initial_guess_n_SS_no_zeta": {
+        "title": "Initial guess for household labor supply in the SS solution when use_zeta is False",
+        "description": "Constant (as a fraction of the labor endowment ltilde) used as the initial guess for the household labor-supply distribution in the steady-state solution when use_zeta is False.",
+        "short_description": "Initial guess for SS labor supply (use_zeta False)",
+        "param_notation": "\\texttt{initial\\_guess\\_n\\_SS\\_no\\_zeta}",
+        "section_1": "Model Solution Parameters",
+        "notes": "",
+        "type": "float",
+        "value": [
+            {
+                "value": 0.35
+            }
+        ],
+        "validators": {
+            "range": {
+                "min": 1e-13,
+                "max": 1.0
+            }
+        }
+    },
     "omega": {
         "title": "Population distribution (fraction at each age) over the time path.",
         "description": "Population distribution (fraction at each age) over the time path.",

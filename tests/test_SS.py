@@ -1412,6 +1412,39 @@ def test_initial_guesses(tmpdir, use_zeta):
     assert b_guess.shape == (p.S, p.J)
 
 
+@pytest.mark.parametrize(
+    "use_zeta", [True, False], ids=["use_zeta=True", "use_zeta=False"]
+)
+def test_initial_guesses_from_params(tmpdir, use_zeta):
+    """The b and n initial guesses come from the model parameters and can be
+    changed without touching the solver code (OG-Core issue #1007)."""
+    baseline_dir = os.path.join(tmpdir, "OUTPUT_BASELINE")
+    p = Specifications(
+        output_base=baseline_dir,
+        baseline_dir=baseline_dir,
+        baseline=True,
+        num_workers=NUM_WORKERS,
+    )
+    p.use_zeta = use_zeta
+    # SS_initial_guesses returns (guesses, b_guess, n_guess).
+    _, b_guess, n_guess = SS.SS_initial_guesses(p)
+    if use_zeta:
+        b_param, n_param = p.initial_guess_b_SS, p.initial_guess_n_SS
+    else:
+        b_param = p.initial_guess_b_SS_no_zeta
+        n_param = p.initial_guess_n_SS_no_zeta
+    assert np.allclose(b_guess, b_param)
+    assert np.allclose(n_guess, n_param * p.ltilde)
+
+    # Changing the parameter changes the guess.
+    if use_zeta:
+        p.initial_guess_b_SS = 0.02
+    else:
+        p.initial_guess_b_SS_no_zeta = 0.02
+    _, b_guess2, _ = SS.SS_initial_guesses(p)
+    assert np.allclose(b_guess2, 0.02)
+
+
 class ScatterCountingClient:
     """
     Minimal fake Dask client that counts calls to `scatter` and runs

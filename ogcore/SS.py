@@ -1426,15 +1426,20 @@ def SS_fsolve(guesses, *args):
     return errors
 
 
-def SS_initial_guesses(p, b_val=0.0055, n_val=0.4, r_tr_scalars=[1.0, 1.0]):
+def SS_initial_guesses(p, b_val=None, n_val=None, r_tr_scalars=[1.0, 1.0]):
     """
     Finds the initial guesses for b, n and for the steady state outer
     loop variables.
 
     Args:
         p (OG-Core Specifications object): model parameters
-        b_val (float): initial guess value for savings
-        n_val (float): initial guess value for labor supply
+        b_val (float): initial guess value for savings; if None, the value
+            is taken from the model parameters (``initial_guess_b_SS`` when
+            ``use_zeta`` is True, ``initial_guess_b_SS_no_zeta`` otherwise)
+        n_val (float): initial guess value for labor supply; if None, the
+            value is taken from the model parameters (``initial_guess_n_SS``
+            when ``use_zeta`` is True, ``initial_guess_n_SS_no_zeta``
+            otherwise)
         r_tr_scalars (list): scalars to adjust initial guesses for r and TR
 
     Returns:
@@ -1452,14 +1457,16 @@ def SS_initial_guesses(p, b_val=0.0055, n_val=0.4, r_tr_scalars=[1.0, 1.0]):
     # create guesses list
     # Note that BQ is an vector of lenght J if use_zeta=False
     if p.use_zeta:
-        b_guess = np.ones((p.S, p.J)) * b_val
-        n_guess = np.ones((p.S, p.J)) * n_val * p.ltilde
+        b0 = p.initial_guess_b_SS if b_val is None else b_val
+        n0 = p.initial_guess_n_SS if n_val is None else n_val
+        b_guess = np.ones((p.S, p.J)) * b0
+        n_guess = np.ones((p.S, p.J)) * n0 * p.ltilde
         BQguess = 0.12231465279007188
     else:
-        b_guess = (
-            np.ones((p.S, p.J)) * 0.07
-        )  # TODO: remove hardcode here and next line
-        n_guess = np.ones((p.S, p.J)) * 0.35 * p.ltilde
+        b0 = p.initial_guess_b_SS_no_zeta if b_val is None else b_val
+        n0 = p.initial_guess_n_SS_no_zeta if n_val is None else n_val
+        b_guess = np.ones((p.S, p.J)) * b0
+        n_guess = np.ones((p.S, p.J)) * n0 * p.ltilde
         BQguess = aggr.get_BQ(rguess, b_guess, None, p, "SS", False)
         # append factor guess if baseline
     BQ_items = [BQguess] if p.use_zeta else list(BQguess)
