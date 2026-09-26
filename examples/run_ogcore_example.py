@@ -14,7 +14,15 @@ from ogcore.execute import runner
 from ogcore.parameters import Specifications
 from ogcore.constants import REFORM_DIR, BASELINE_DIR
 from ogcore.utils import safe_read_pickle
+from ogcore.config import set_logging_level
 import matplotlib.pyplot as plt
+
+# Show the steady-state root-finding distances and the transition-path
+# distance measures while the model solves. Note that when the model is run
+# with a distributed Client (num_workers > 1, as below), the per-iteration
+# logs are emitted on the Dask worker processes and do not stream back to
+# this console; run serially to see the full per-iteration output.
+set_logging_level(verbose=True)
 
 # Use a custom matplotlib style file for plots
 plt.style.use("ogcore.OGcorePlots")
