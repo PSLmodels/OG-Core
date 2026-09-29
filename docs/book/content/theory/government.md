@@ -372,12 +372,12 @@ Under the U.S.-style social security system, households over age $R$ received a 
     PIAbase_{j,R,t+R} =
       \begin{cases}
         PIArate_1 \times AIME_{j,R,t+R}, \text{for } AIME_{j,R,t+R} \leq AIMEbkt_1 \\
-        PIArate_2 \times AIME_{j,R,t+R}, \text{for } AIMEbkt_1 < AIME_{j,R,t+R} \leq AIMEbkt_2 \\
-        PIArate_3 \times AIME_{j,R,t+R}, \text{for } AIMEbkt_2 < AIME_{j,R,t+R} \\
+        PIArate_1 \times AIMEbkt_1 + PIArate_2 \times (AIME_{j,R,t+R} - AIMEbkt_1), \text{for } AIMEbkt_1 < AIME_{j,R,t+R} \leq AIMEbkt_2 \\
+        PIArate_1 \times AIMEbkt_1 + PIArate_2 \times (AIMEbkt_2 - AIMEbkt_1) + PIArate_3 \times (AIME_{j,R,t+R} - AIMEbkt_2), \text{for } AIMEbkt_2 < AIME_{j,R,t+R} \\
       \end{cases}
   ```
 
- The PIA is then capped at a maximum, set by the parameter `PIA_maxpayment`, $PIA_{j,R,t+R} = \max\{PIAbase_{j,R,t+R}, \text{ PIA max payment amount}\}$.
+ The PIA is then capped at a maximum, set by the parameter `PIA_maxpayment`, and, when the parameter `PIA_minpayment` is nonzero, floored at that minimum: $PIA_{j,R,t+R} = \max\{\min\{PIAbase_{j,R,t+R}, \text{ PIA max payment amount}\}, \text{ PIA min payment amount}\}$.
 
   The replacement rate, $\theta_j$ is then calculated as annual earnings, with an adjustment for the wage rate.:
 
