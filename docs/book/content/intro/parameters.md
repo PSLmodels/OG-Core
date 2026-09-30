@@ -756,6 +756,13 @@ _Valid Range:_ min = -0.3 and max = 0.3
 _Out-of-Range Action:_ error  
 
 
+####  `r_gov_floor`  
+_Description:_ Lower bound applied to the interest rate on government debt after the wedge is computed. The default of 0.0 reproduces the long-standing behavior. Lower it for a sovereign that pays a negative real rate on its debt.  
+_Value Type:_ float  
+_Valid Range:_ min = -0.3 and max = 0.3  
+_Out-of-Range Action:_ error  
+
+
 ####  `r_gov_DY`  
 _Description:_ Parameter summarizing the linear effect of the debt to GDP ratio on the government interest rate.  
 _Value Type:_ float  
@@ -1019,6 +1026,34 @@ _Out-of-Range Action:_ error
 _Description:_ Initial guess of factor for the SS solution.  
 _Value Type:_ float  
 _Valid Range:_ min = 1.0 and max = 500000  
+_Out-of-Range Action:_ error  
+
+
+####  `initial_guess_b_SS`  
+_Description:_ Constant used as the initial guess for the household savings distribution in the steady-state solution when use_zeta is True.  
+_Value Type:_ float  
+_Valid Range:_ min = 1e-13 and max = 100.0  
+_Out-of-Range Action:_ error  
+
+
+####  `initial_guess_n_SS`  
+_Description:_ Constant (as a fraction of the labor endowment ltilde) used as the initial guess for the household labor-supply distribution in the steady-state solution when use_zeta is True.  
+_Value Type:_ float  
+_Valid Range:_ min = 1e-13 and max = 1.0  
+_Out-of-Range Action:_ error  
+
+
+####  `initial_guess_b_SS_no_zeta`  
+_Description:_ Constant used as the initial guess for the household savings distribution in the steady-state solution when use_zeta is False.  
+_Value Type:_ float  
+_Valid Range:_ min = 1e-13 and max = 100.0  
+_Out-of-Range Action:_ error  
+
+
+####  `initial_guess_n_SS_no_zeta`  
+_Description:_ Constant (as a fraction of the labor endowment ltilde) used as the initial guess for the household labor-supply distribution in the steady-state solution when use_zeta is False.  
+_Value Type:_ float  
+_Valid Range:_ min = 1e-13 and max = 1.0  
 _Out-of-Range Action:_ error  
 
 
