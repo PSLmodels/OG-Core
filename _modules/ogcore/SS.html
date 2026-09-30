@@ -1308,6 +1308,7 @@
     <span class="n">I_g_ss</span> <span class="o">=</span> <span class="n">fiscal</span><span class="o">.</span><span class="n">get_I_g</span><span class="p">(</span><span class="n">Yss</span><span class="p">,</span> <span class="n">Ig_baseline</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="s2">"SS"</span><span class="p">)</span>
     <span class="n">K_g_ss</span> <span class="o">=</span> <span class="n">fiscal</span><span class="o">.</span><span class="n">get_K_g</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">I_g_ss</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="s2">"SS"</span><span class="p">)</span>
     <span class="n">Lss</span> <span class="o">=</span> <span class="n">aggr</span><span class="o">.</span><span class="n">get_L</span><span class="p">(</span><span class="n">nssmat</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="s2">"SS"</span><span class="p">)</span>
+    <span class="n">Nss</span> <span class="o">=</span> <span class="n">aggr</span><span class="o">.</span><span class="n">get_N</span><span class="p">(</span><span class="n">nssmat</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="s2">"SS"</span><span class="p">)</span>
     <span class="n">Bss</span> <span class="o">=</span> <span class="n">aggr</span><span class="o">.</span><span class="n">get_B</span><span class="p">(</span><span class="n">bssmat_splus1</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="s2">"SS"</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
     <span class="p">(</span>
         <span class="n">Dss</span><span class="p">,</span>
@@ -1638,6 +1639,7 @@
         <span class="s2">"K_f"</span><span class="p">:</span> <span class="n">K_f_ss</span><span class="p">,</span>
         <span class="s2">"K_d"</span><span class="p">:</span> <span class="n">K_d_ss</span><span class="p">,</span>
         <span class="s2">"L"</span><span class="p">:</span> <span class="n">Lss</span><span class="p">,</span>
+        <span class="s2">"N"</span><span class="p">:</span> <span class="n">Nss</span><span class="p">,</span>
         <span class="s2">"C"</span><span class="p">:</span> <span class="n">Css</span><span class="p">,</span>
         <span class="s2">"I"</span><span class="p">:</span> <span class="n">Iss</span><span class="p">,</span>
         <span class="s2">"I_total"</span><span class="p">:</span> <span class="n">Iss_total</span><span class="p">,</span>
@@ -1861,15 +1863,20 @@
 
 <div class="viewcode-block" id="SS_initial_guesses">
 <a class="viewcode-back" href="../../content/api/SS.html#ogcore.SS.SS_initial_guesses">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">SS_initial_guesses</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">b_val</span><span class="o">=</span><span class="mf">0.0055</span><span class="p">,</span> <span class="n">n_val</span><span class="o">=</span><span class="mf">0.4</span><span class="p">,</span> <span class="n">r_tr_scalars</span><span class="o">=</span><span class="p">[</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">]):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">SS_initial_guesses</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">b_val</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">n_val</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">r_tr_scalars</span><span class="o">=</span><span class="p">[</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">]):</span>
 <span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Finds the initial guesses for b, n and for the steady state outer</span>
 <span class="sd">    loop variables.</span>
 
 <span class="sd">    Args:</span>
 <span class="sd">        p (OG-Core Specifications object): model parameters</span>
-<span class="sd">        b_val (float): initial guess value for savings</span>
-<span class="sd">        n_val (float): initial guess value for labor supply</span>
+<span class="sd">        b_val (float): initial guess value for savings; if None, the value</span>
+<span class="sd">            is taken from the model parameters (``initial_guess_b_SS`` when</span>
+<span class="sd">            ``use_zeta`` is True, ``initial_guess_b_SS_no_zeta`` otherwise)</span>
+<span class="sd">        n_val (float): initial guess value for labor supply; if None, the</span>
+<span class="sd">            value is taken from the model parameters (``initial_guess_n_SS``</span>
+<span class="sd">            when ``use_zeta`` is True, ``initial_guess_n_SS_no_zeta``</span>
+<span class="sd">            otherwise)</span>
 <span class="sd">        r_tr_scalars (list): scalars to adjust initial guesses for r and TR</span>
 
 <span class="sd">    Returns:</span>
@@ -1887,14 +1894,16 @@
     <span class="c1"># create guesses list</span>
     <span class="c1"># Note that BQ is an vector of lenght J if use_zeta=False</span>
     <span class="k">if</span> <span class="n">p</span><span class="o">.</span><span class="n">use_zeta</span><span class="p">:</span>
-        <span class="n">b_guess</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">((</span><span class="n">p</span><span class="o">.</span><span class="n">S</span><span class="p">,</span> <span class="n">p</span><span class="o">.</span><span class="n">J</span><span class="p">))</span> <span class="o">*</span> <span class="n">b_val</span>
-        <span class="n">n_guess</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">((</span><span class="n">p</span><span class="o">.</span><span class="n">S</span><span class="p">,</span> <span class="n">p</span><span class="o">.</span><span class="n">J</span><span class="p">))</span> <span class="o">*</span> <span class="n">n_val</span> <span class="o">*</span> <span class="n">p</span><span class="o">.</span><span class="n">ltilde</span>
+        <span class="n">b0</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">initial_guess_b_SS</span> <span class="k">if</span> <span class="n">b_val</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">b_val</span>
+        <span class="n">n0</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">initial_guess_n_SS</span> <span class="k">if</span> <span class="n">n_val</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">n_val</span>
+        <span class="n">b_guess</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">((</span><span class="n">p</span><span class="o">.</span><span class="n">S</span><span class="p">,</span> <span class="n">p</span><span class="o">.</span><span class="n">J</span><span class="p">))</span> <span class="o">*</span> <span class="n">b0</span>
+        <span class="n">n_guess</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">((</span><span class="n">p</span><span class="o">.</span><span class="n">S</span><span class="p">,</span> <span class="n">p</span><span class="o">.</span><span class="n">J</span><span class="p">))</span> <span class="o">*</span> <span class="n">n0</span> <span class="o">*</span> <span class="n">p</span><span class="o">.</span><span class="n">ltilde</span>
         <span class="n">BQguess</span> <span class="o">=</span> <span class="mf">0.12231465279007188</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="n">b_guess</span> <span class="o">=</span> <span class="p">(</span>
-            <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">((</span><span class="n">p</span><span class="o">.</span><span class="n">S</span><span class="p">,</span> <span class="n">p</span><span class="o">.</span><span class="n">J</span><span class="p">))</span> <span class="o">*</span> <span class="mf">0.07</span>
-        <span class="p">)</span>  <span class="c1"># TODO: remove hardcode here and next line</span>
-        <span class="n">n_guess</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">((</span><span class="n">p</span><span class="o">.</span><span class="n">S</span><span class="p">,</span> <span class="n">p</span><span class="o">.</span><span class="n">J</span><span class="p">))</span> <span class="o">*</span> <span class="mf">0.35</span> <span class="o">*</span> <span class="n">p</span><span class="o">.</span><span class="n">ltilde</span>
+        <span class="n">b0</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">initial_guess_b_SS_no_zeta</span> <span class="k">if</span> <span class="n">b_val</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">b_val</span>
+        <span class="n">n0</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">initial_guess_n_SS_no_zeta</span> <span class="k">if</span> <span class="n">n_val</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">n_val</span>
+        <span class="n">b_guess</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">((</span><span class="n">p</span><span class="o">.</span><span class="n">S</span><span class="p">,</span> <span class="n">p</span><span class="o">.</span><span class="n">J</span><span class="p">))</span> <span class="o">*</span> <span class="n">b0</span>
+        <span class="n">n_guess</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">((</span><span class="n">p</span><span class="o">.</span><span class="n">S</span><span class="p">,</span> <span class="n">p</span><span class="o">.</span><span class="n">J</span><span class="p">))</span> <span class="o">*</span> <span class="n">n0</span> <span class="o">*</span> <span class="n">p</span><span class="o">.</span><span class="n">ltilde</span>
         <span class="n">BQguess</span> <span class="o">=</span> <span class="n">aggr</span><span class="o">.</span><span class="n">get_BQ</span><span class="p">(</span><span class="n">rguess</span><span class="p">,</span> <span class="n">b_guess</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="s2">"SS"</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
         <span class="c1"># append factor guess if baseline</span>
     <span class="n">BQ_items</span> <span class="o">=</span> <span class="p">[</span><span class="n">BQguess</span><span class="p">]</span> <span class="k">if</span> <span class="n">p</span><span class="o">.</span><span class="n">use_zeta</span> <span class="k">else</span> <span class="nb">list</span><span class="p">(</span><span class="n">BQguess</span><span class="p">)</span>

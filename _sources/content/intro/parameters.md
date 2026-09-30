@@ -1029,6 +1029,34 @@ _Valid Range:_ min = 1.0 and max = 500000
 _Out-of-Range Action:_ error  
 
 
+####  `initial_guess_b_SS`  
+_Description:_ Constant used as the initial guess for the household savings distribution in the steady-state solution when use_zeta is True.  
+_Value Type:_ float  
+_Valid Range:_ min = 1e-13 and max = 100.0  
+_Out-of-Range Action:_ error  
+
+
+####  `initial_guess_n_SS`  
+_Description:_ Constant (as a fraction of the labor endowment ltilde) used as the initial guess for the household labor-supply distribution in the steady-state solution when use_zeta is True.  
+_Value Type:_ float  
+_Valid Range:_ min = 1e-13 and max = 1.0  
+_Out-of-Range Action:_ error  
+
+
+####  `initial_guess_b_SS_no_zeta`  
+_Description:_ Constant used as the initial guess for the household savings distribution in the steady-state solution when use_zeta is False.  
+_Value Type:_ float  
+_Valid Range:_ min = 1e-13 and max = 100.0  
+_Out-of-Range Action:_ error  
+
+
+####  `initial_guess_n_SS_no_zeta`  
+_Description:_ Constant (as a fraction of the labor endowment ltilde) used as the initial guess for the household labor-supply distribution in the steady-state solution when use_zeta is False.  
+_Value Type:_ float  
+_Valid Range:_ min = 1e-13 and max = 1.0  
+_Out-of-Range Action:_ error  
+
+
 ## Other Parameters
 
 ####  `start_year`  

@@ -468,6 +468,39 @@
 
 
 
+<span class="k">def</span><span class="w"> </span><span class="nf">get_N</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">method</span><span class="p">):</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">"""</span>
+<span class="sd">    Calculate aggregate hours worked.</span>
+
+<span class="sd">    Unlike aggregate labor supply :math:`L`, this measure does not weight</span>
+<span class="sd">    hours by the effective-labor-units profile :math:`e_{j,s,t}`, so it</span>
+<span class="sd">    reports raw hours rather than productivity-adjusted labor:</span>
+
+<span class="sd">    .. math::</span>
+<span class="sd">        N_{t} = \sum_{s=E}^{E+S}\sum_{j=0}^{J}\omega_{s,t}\lambda_{j}n_{j,s,t}</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        n (Numpy array): labor supply of households</span>
+<span class="sd">        p (OG-Core Specifications object): model parameters</span>
+<span class="sd">        method (str): adjusts calculation dimensions based on 'SS' or</span>
+<span class="sd">            'TPI'</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        N (array_like): aggregate hours worked</span>
+
+<span class="sd">    """</span>
+    <span class="k">if</span> <span class="n">method</span> <span class="o">==</span> <span class="s2">"SS"</span><span class="p">:</span>
+        <span class="c1"># p.omega_SS is the (S, J) population weight and already carries the</span>
+        <span class="c1"># lambda_j type shares (its columns sum to lambdas), so no separate</span>
+        <span class="c1"># lambda multiplication is needed, mirroring get_L.</span>
+        <span class="n">N_presum</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">omega_SS</span> <span class="o">*</span> <span class="n">n</span>
+        <span class="n">N</span> <span class="o">=</span> <span class="n">N_presum</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+    <span class="k">elif</span> <span class="n">method</span> <span class="o">==</span> <span class="s2">"TPI"</span><span class="p">:</span>
+        <span class="n">N_presum</span> <span class="o">=</span> <span class="n">n</span> <span class="o">*</span> <span class="n">p</span><span class="o">.</span><span class="n">omega</span><span class="p">[:</span> <span class="n">p</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="p">:,</span> <span class="p">:]</span>
+        <span class="n">N</span> <span class="o">=</span> <span class="n">N_presum</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">N</span>
+
+
 <div class="viewcode-block" id="get_I">
 <a class="viewcode-back" href="../../content/api/aggregates.html#ogcore.aggregates.get_I">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">get_I</span><span class="p">(</span><span class="n">b_splus1</span><span class="p">,</span> <span class="n">K_p1</span><span class="p">,</span> <span class="n">K</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">method</span><span class="p">):</span>

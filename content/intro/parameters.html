@@ -662,6 +662,10 @@
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#initial-guess-r-ss"><code class="docutils literal notranslate"><span class="pre">initial_guess_r_SS</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#initial-guess-tr-ss"><code class="docutils literal notranslate"><span class="pre">initial_guess_TR_SS</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#initial-guess-factor-ss"><code class="docutils literal notranslate"><span class="pre">initial_guess_factor_SS</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#initial-guess-b-ss"><code class="docutils literal notranslate"><span class="pre">initial_guess_b_SS</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#initial-guess-n-ss"><code class="docutils literal notranslate"><span class="pre">initial_guess_n_SS</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#initial-guess-b-ss-no-zeta"><code class="docutils literal notranslate"><span class="pre">initial_guess_b_SS_no_zeta</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#initial-guess-n-ss-no-zeta"><code class="docutils literal notranslate"><span class="pre">initial_guess_n_SS_no_zeta</span></code></a></li>
 </ul>
 </li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#other-parameters">Other Parameters</a><ul class="nav section-nav flex-column">
@@ -1725,6 +1729,34 @@ organization of the theory in the <code class="docutils literal notranslate"><sp
 <em>Valid Range:</em> min = 1.0 and max = 500000<br />
 <em>Out-of-Range Action:</em> error</p>
 </section>
+<section id="initial-guess-b-ss">
+<h3><code class="docutils literal notranslate"><span class="pre">initial_guess_b_SS</span></code><a class="headerlink" href="#initial-guess-b-ss" title="Link to this heading">#</a></h3>
+<p><em>Description:</em> Constant used as the initial guess for the household savings distribution in the steady-state solution when use_zeta is True.<br />
+<em>Value Type:</em> float<br />
+<em>Valid Range:</em> min = 1e-13 and max = 100.0<br />
+<em>Out-of-Range Action:</em> error</p>
+</section>
+<section id="initial-guess-n-ss">
+<h3><code class="docutils literal notranslate"><span class="pre">initial_guess_n_SS</span></code><a class="headerlink" href="#initial-guess-n-ss" title="Link to this heading">#</a></h3>
+<p><em>Description:</em> Constant (as a fraction of the labor endowment ltilde) used as the initial guess for the household labor-supply distribution in the steady-state solution when use_zeta is True.<br />
+<em>Value Type:</em> float<br />
+<em>Valid Range:</em> min = 1e-13 and max = 1.0<br />
+<em>Out-of-Range Action:</em> error</p>
+</section>
+<section id="initial-guess-b-ss-no-zeta">
+<h3><code class="docutils literal notranslate"><span class="pre">initial_guess_b_SS_no_zeta</span></code><a class="headerlink" href="#initial-guess-b-ss-no-zeta" title="Link to this heading">#</a></h3>
+<p><em>Description:</em> Constant used as the initial guess for the household savings distribution in the steady-state solution when use_zeta is False.<br />
+<em>Value Type:</em> float<br />
+<em>Valid Range:</em> min = 1e-13 and max = 100.0<br />
+<em>Out-of-Range Action:</em> error</p>
+</section>
+<section id="initial-guess-n-ss-no-zeta">
+<h3><code class="docutils literal notranslate"><span class="pre">initial_guess_n_SS_no_zeta</span></code><a class="headerlink" href="#initial-guess-n-ss-no-zeta" title="Link to this heading">#</a></h3>
+<p><em>Description:</em> Constant (as a fraction of the labor endowment ltilde) used as the initial guess for the household labor-supply distribution in the steady-state solution when use_zeta is False.<br />
+<em>Value Type:</em> float<br />
+<em>Valid Range:</em> min = 1e-13 and max = 1.0<br />
+<em>Out-of-Range Action:</em> error</p>
+</section>
 </section>
 <section id="other-parameters">
 <h2>Other Parameters<a class="headerlink" href="#other-parameters" title="Link to this heading">#</a></h2>
@@ -2004,6 +2036,10 @@ organization of the theory in the <code class="docutils literal notranslate"><sp
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#initial-guess-r-ss"><code class="docutils literal notranslate"><span class="pre">initial_guess_r_SS</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#initial-guess-tr-ss"><code class="docutils literal notranslate"><span class="pre">initial_guess_TR_SS</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#initial-guess-factor-ss"><code class="docutils literal notranslate"><span class="pre">initial_guess_factor_SS</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#initial-guess-b-ss"><code class="docutils literal notranslate"><span class="pre">initial_guess_b_SS</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#initial-guess-n-ss"><code class="docutils literal notranslate"><span class="pre">initial_guess_n_SS</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#initial-guess-b-ss-no-zeta"><code class="docutils literal notranslate"><span class="pre">initial_guess_b_SS_no_zeta</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#initial-guess-n-ss-no-zeta"><code class="docutils literal notranslate"><span class="pre">initial_guess_n_SS_no_zeta</span></code></a></li>
 </ul>
 </li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#other-parameters">Other Parameters</a><ul class="nav section-nav flex-column">

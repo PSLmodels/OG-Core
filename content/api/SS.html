@@ -532,15 +532,20 @@ scattered to the Dask workers</p></li>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="ogcore.SS.SS_initial_guesses">
-<span class="sig-prename descclassname"><span class="pre">ogcore.SS.</span></span><span class="sig-name descname"><span class="pre">SS_initial_guesses</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">p</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">b_val</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0055</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_val</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.4</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">r_tr_scalars</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[1.0,</span> <span class="pre">1.0]</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogcore/SS.html#SS_initial_guesses"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogcore.SS.SS_initial_guesses" title="Link to this definition">#</a></dt>
+<span class="sig-prename descclassname"><span class="pre">ogcore.SS.</span></span><span class="sig-name descname"><span class="pre">SS_initial_guesses</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">p</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">b_val</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_val</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">r_tr_scalars</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[1.0,</span> <span class="pre">1.0]</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogcore/SS.html#SS_initial_guesses"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogcore.SS.SS_initial_guesses" title="Link to this definition">#</a></dt>
 <dd><p>Finds the initial guesses for b, n and for the steady state outer
 loop variables.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>p</strong> (<em>OG-Core Specifications object</em>) – model parameters</p></li>
-<li><p><strong>b_val</strong> (<em>float</em>) – initial guess value for savings</p></li>
-<li><p><strong>n_val</strong> (<em>float</em>) – initial guess value for labor supply</p></li>
+<li><p><strong>b_val</strong> (<em>float</em>) – initial guess value for savings; if None, the value
+is taken from the model parameters (<code class="docutils literal notranslate"><span class="pre">initial_guess_b_SS</span></code> when
+<code class="docutils literal notranslate"><span class="pre">use_zeta</span></code> is True, <code class="docutils literal notranslate"><span class="pre">initial_guess_b_SS_no_zeta</span></code> otherwise)</p></li>
+<li><p><strong>n_val</strong> (<em>float</em>) – initial guess value for labor supply; if None, the
+value is taken from the model parameters (<code class="docutils literal notranslate"><span class="pre">initial_guess_n_SS</span></code>
+when <code class="docutils literal notranslate"><span class="pre">use_zeta</span></code> is True, <code class="docutils literal notranslate"><span class="pre">initial_guess_n_SS_no_zeta</span></code>
+otherwise)</p></li>
 <li><p><strong>r_tr_scalars</strong> (<em>list</em>) – scalars to adjust initial guesses for r and TR</p></li>
 </ul>
 </dd>
