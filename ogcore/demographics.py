@@ -496,6 +496,7 @@ def get_un_data(
             "231": "ETH",
             "392": "JPN",
             "242": "FJI",
+            "682": "SAU",
         }
         un_variable_dict = {
             "68": "fertility_rates",
