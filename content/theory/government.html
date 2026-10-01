@@ -832,10 +832,10 @@
 <span class="eqno">(71)<a class="headerlink" href="#equation-eqn-pia" title="Link to this equation">#</a></span>\[\begin{split} PIAbase_{j,R,t+R} =
    \begin{cases}
      PIArate_1 \times AIME_{j,R,t+R}, \text{for } AIME_{j,R,t+R} \leq AIMEbkt_1 \\
-     PIArate_2 \times AIME_{j,R,t+R}, \text{for } AIMEbkt_1 &lt; AIME_{j,R,t+R} \leq AIMEbkt_2 \\
-     PIArate_3 \times AIME_{j,R,t+R}, \text{for } AIMEbkt_2 &lt; AIME_{j,R,t+R} \\
+     PIArate_1 \times AIMEbkt_1 + PIArate_2 \times (AIME_{j,R,t+R} - AIMEbkt_1), \text{for } AIMEbkt_1 &lt; AIME_{j,R,t+R} \leq AIMEbkt_2 \\
+     PIArate_1 \times AIMEbkt_1 + PIArate_2 \times (AIMEbkt_2 - AIMEbkt_1) + PIArate_3 \times (AIME_{j,R,t+R} - AIMEbkt_2), \text{for } AIMEbkt_2 &lt; AIME_{j,R,t+R} \\
    \end{cases}\end{split}\]</div>
-<p>The PIA is then capped at a maximum, set by the parameter <code class="docutils literal notranslate"><span class="pre">PIA_maxpayment</span></code>, <span class="math notranslate nohighlight">\(PIA_{j,R,t+R} = \max\{PIAbase_{j,R,t+R}, \text{ PIA max payment amount}\}\)</span>.</p>
+<p>The PIA is then capped at a maximum, set by the parameter <code class="docutils literal notranslate"><span class="pre">PIA_maxpayment</span></code>, and, when the parameter <code class="docutils literal notranslate"><span class="pre">PIA_minpayment</span></code> is nonzero, floored at that minimum: <span class="math notranslate nohighlight">\(PIA_{j,R,t+R} = \max\{\min\{PIAbase_{j,R,t+R}, \text{ PIA max payment amount}\}, \text{ PIA min payment amount}\}\)</span>.</p>
 <p>The replacement rate, <span class="math notranslate nohighlight">\(\theta_j\)</span> is then calculated as annual earnings, with an adjustment for the wage rate.:</p>
 <div class="math notranslate nohighlight" id="equation-eqn-theta">
 <span class="eqno">(72)<a class="headerlink" href="#equation-eqn-theta" title="Link to this equation">#</a></span>\[  \theta_{j,R,t+R} = \frac{PIA_{j,R,t+R} \times 12}{factor \times w_{t+R}}\]</div>
