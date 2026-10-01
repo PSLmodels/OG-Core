@@ -1,9 +1,14 @@
 name: Check Ruff formatting and linting
 
-on: [push, pull_request]
+on:
+  push:
+    branches: [master]
+  pull_request:
+    branches: [master]
 
 jobs:
   lint:
+    if: github.repository == 'PSLmodels/OG-Core'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7

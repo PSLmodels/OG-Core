@@ -1,6 +1,7 @@
 name: Build and test
 on:
   push:
+    branches: [master]
     paths:
       - '**.yml'
       - '**.toml'
@@ -11,6 +12,7 @@ on:
       - '**.pbz2'
       - '**.lock'
   pull_request:
+    branches: [master]
     paths:
       - '**.yml'
       - '**.toml'
@@ -22,6 +24,7 @@ on:
       - '**.lock'
 jobs:
   build:
+    if: github.repository == 'PSLmodels/OG-Core'
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:

@@ -1,17 +1,19 @@
 name: Check that docs build
 on:
   pull_request:
+    branches: [master]
     paths:
-      - './docs/**.png'
-      - './docs/book/content/theory/images/**.png'
-      - './docs/book/**.yml'
-      - './docs/book/**.bib'
+      - 'docs/**.png'
+      - 'docs/book/content/theory/images/**.png'
+      - 'docs/book/**.yml'
+      - 'docs/book/**.bib'
       - '**.md'
-      - './docs/book/content/api/**.rst'
-      - './ogcore/**.py'
+      - 'docs/book/content/api/**.rst'
+      - 'ogcore/**.py'
 
 jobs:
   build:
+    if: github.repository == 'PSLmodels/OG-Core'
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
