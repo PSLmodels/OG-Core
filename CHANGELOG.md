@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Updated
 - Removed the ceiling on the `numpy` version in `pyproject.toml` to `"numpy>=2.5"`. All tests passed locally and the example run script ran successfully under the new repo.
+- Fixed some warnings and errors in the documentation.
 - Updated the `uv.lock`
 
 ## [0.20.2] - 2026-09-30 13:00:00

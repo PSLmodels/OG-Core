@@ -168,7 +168,7 @@ def SS_amount(w, n, theta, t, j, shift, method, e, p):
     Calculate public pension benefit amounts for each household under
     a US-style social security system.
 
-    .. mathL::
+    .. math::
         pension_{j,s,t} = \theta_j \times w_t \quad \forall s > R
 
     Args:
