@@ -5,12 +5,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [0.20.3] - 2026-09-30
+## [0.20.3] - 2026-10-01
 
 ### Updated
-- Removed the ceiling on the `numpy` version in `pyproject.toml` to `"numpy>=2.5"`. All tests passed locally and the example run script ran successfully under the new repo.
-- Fixed some warnings and errors in the documentation. This entailed changes in some of the `/ogcore/*.py` file docstrings, `*.bib` files, `*.rst` files, and `*.md` files.
-- Updated the `uv.lock`
+- Removes the ceiling on the `numpy` version in `pyproject.toml` to `"numpy>=2.5"`. All tests passed locally, except for the first test `test_run_ogcore_example()` (the time test) in `test_run_example.py` and the example run script ran successfully under the new repo (see output below). This resolves Issue #1233.
+- The pytest output for the failed test showed that the baseline and reform of the example script ran and finished in less than 300 seconds, which resulted in an error in the test (our model is running too fast for the test). As such, I updated  the `test_run_ogcore_example()` script in `test_run_example.py` to pass either if the model was running after 300 seconds or if it had a successful exit code.
+- Fixes some warnings and errors in the documentation. This entailed changes in some of the `/ogcore/*.py` file docstrings, `*.bib` files, `*.rst` files, and `*.md` files.
+- Updates the `uv.lock`
 
 ## [0.20.2] - 2026-09-30 13:00:00
 
