@@ -203,8 +203,9 @@ def get_biz_tax(w, Y, L, K, p_m, p, m, method):
         R_{t}^{b} = \sum_{m=1}^{M}\tau_{m,t}^{b}(Y_{m,t} - w_{t}L_{m,t}) -
         \tau_{m,t}^{b}\delta_{m,t}^{\tau}K_{m,t}^{\tau}
         - \tau^{inv}_{m,t}I_{m,t}
+
     Args:
-        r (array_like): real interest rate
+        w (array_like): wage
         Y (array_like): aggregate output for each industry
         L (array_like): aggregate labor demand for each industry
         K (array_like): aggregate capital demand for each industry
