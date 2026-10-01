@@ -462,9 +462,12 @@ class Specifications(paramtools.Parameters):
         Notes:
             Given a reform dictionary, typical usage of the
             Specifications class is as follows::
+
                 >>> specs = Specifications()
                 >>> specs.update_specifications(revision)
+
             An example of a multi-parameter specification is as follows::
+
                 >>> revision = {
                     frisch: [0.03]
                 }

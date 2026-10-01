@@ -2,12 +2,14 @@ name: Check installer catalog
 
 on:
   push:
+    branches: [master]
     paths:
       - 'scripts/install.sh'
       - 'scripts/install.ps1'
       - 'scripts/repos.json'
       - '.github/workflows/check_catalog.yml'
   pull_request:
+    branches: [master]
     paths:
       - 'scripts/install.sh'
       - 'scripts/install.ps1'
@@ -16,6 +18,7 @@ on:
 
 jobs:
   catalog-in-sync:
+    if: github.repository == 'PSLmodels/OG-Core'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7

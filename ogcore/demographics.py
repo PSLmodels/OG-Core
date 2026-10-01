@@ -552,9 +552,12 @@ def get_fert(
         download_path (str): path to save fertility rate data
 
     Returns:
-        fert_rates (Numpy array): fertility rates for each year of data
-            and model age
-        fig (Matplotlib Figure): figure object if graph=True and plot_path=None
+        (tuple): fertility rates and, optionally, a figure:
+
+            * fert_rates (Numpy array): fertility rates for each year of
+              data and model age
+            * fig (Matplotlib Figure): figure object if graph=True and
+              plot_path=None
 
     """
     # initialize fert rates array
@@ -643,10 +646,14 @@ def get_mort(
         download_path (str): path to save mortality rate data
 
     Returns:
-        mort_rates (Numpy array) mortality rates for each year of data
-            and model age
-        infmort_rate_vec (Numpy array): infant mortality rates for each
-        fig (Matplotlib Figure): figure object if graph=True and plot_path=None
+        (tuple): mortality rates and, optionally, a figure:
+
+            * mort_rates (Numpy array): mortality rates for each year of
+              data and model age
+            * infmort_rate_vec (Numpy array): infant mortality rates for
+              each year of data
+            * fig (Matplotlib Figure): figure object if graph=True and
+              plot_path=None
 
     """
     mort_rates_2D = np.zeros((end_year + 1 - start_year, totpers))
@@ -1534,18 +1541,23 @@ def get_pop_objs(
 
     Returns:
         pop_dict (dict): includes:
-            omega_path_S (Numpy array), time path of the population
-                distribution from the current state to the steady-state,
-                size T+S x S
-            g_n_SS (scalar): steady-state population growth rate
-            omega_SS (Numpy array): normalized steady-state population
-                distribution, length S
-            surv_rates (Numpy array): survival rates that correspond to
-                each model period of life, length S
-            mort_rates (Numpy array): mortality rates that correspond to
-                each model period of life, length S
-            g_n_path (Numpy array): population growth rates over the time
-                path, length T + S
+
+            * omega (Numpy array): initial population distribution, T+S x S x 1
+            * g_n_ss (scalar): steady-state population growth rate
+            * omega_SS (Numpy array): normalized steady-state population
+              distribution, S x 1
+            * rho (Numpy array): mortality rates by age and time period,
+              T x S x 1
+            * g_n (Numpy array): time path of population growth rate, T+S x 1
+            * imm_rates (Numpy array): immigration rates by age over time,
+              T+S x S x 1
+            * omega_S_preTP (Numpy array): pre-transition initial population
+              distribution by age, S x 1
+            * imm_rates_preTP (Numpy array): pre-transition immigration rates
+              by age, S x 1
+            * rho_preTP (Numpy array): pre-transition mortality rates by age,
+              S x 1
+            * g_n_preTP (scalar): pre-transition population growth rate
 
     """
     start_data_year = initial_data_year - 1  # grab data from one year

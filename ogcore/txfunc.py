@@ -599,10 +599,10 @@ def txfunc_est(
     Returns:
         (tuple): tax function estimation output:
 
-            * params (Numpy array or function object): vector of estimated
-            parameters or nonparametric function object
+            * params (Numpy array or function object): vector of
+              estimated parameters or nonparametric function object
             * wsse (scalar): weighted sum of squared deviations from
-            minimization
+              minimization
             * obs (int): number of observations in the data, > 600
 
     """

@@ -159,9 +159,12 @@ def estimation(frisch, l_tilde):
         l_tilde (scalar): maximum amount of labor supply
 
     Returns:
-        b_MU_til (scalar): estimated b from elliptical utility function
-        upsilon_MU_til (scalar): estimated upsilon from elliptical
-            utility function
+        (tuple): estimated elliptical utility parameters:
+
+            * b_MU_til (scalar): estimated b from elliptical utility
+              function
+            * upsilon_MU_til (scalar): estimated upsilon from elliptical
+              utility function
 
     """
     # Set parameters

@@ -43,14 +43,15 @@ def plot_aggregates(
             object
         var_list (list): names of variable to plot
         plot_type (string): type of plot, can be:
-            'pct_diff': plots percentage difference between baseline
-                and reform ((reform-base)/base). For interest rates,
-                percentage point differences are plotted.
-            'diff': plots difference between baseline and reform
-                (reform-base)
-            'levels': plot variables in model units
-            'forecast': plots variables in levels relative to baseline
-                economic forecast
+
+            * 'pct_diff': plots percentage difference between baseline
+              and reform ((reform-base)/base). For interest rates,
+              percentage point differences are plotted.
+            * 'diff': plots difference between baseline and reform
+              (reform-base)
+            * 'levels': plot variables in model units
+            * 'forecast': plots variables in levels relative to baseline
+              economic forecast
         stationarized (bool): whether used stationarized variables
         num_years_to_plot (integer): number of years to include in plot
         start_year (integer): year to start plot
@@ -210,13 +211,14 @@ def plot_industry_aggregates(
         var_list (list): names of variable to plot
 
         plot_type (string): type of plot, can be:
-            'pct_diff': plots percentage difference between baseline
-                and reform ((reform-base)/base)
-            'diff': plots difference between baseline and reform
-                (reform-base)
-            'levels': plot variables in model units
-            'forecast': plots variables in levels relative to baseline
-                economic forecast
+
+            * 'pct_diff': plots percentage difference between baseline
+              and reform ((reform-base)/base)
+            * 'diff': plots difference between baseline and reform
+              (reform-base)
+            * 'levels': plot variables in model units
+            * 'forecast': plots variables in levels relative to baseline
+              economic forecast
         stationarized (bool): whether used stationarized variables
         num_years_to_plot (integer): number of years to include in plot
         start_year (integer): year to start plot
@@ -381,10 +383,12 @@ def ss_3Dplot(
         reform_ss (dictionary): SS output from reform run
         var (string): name of variable to plot
         plot_type (string): type of plot, can be:
-            'pct_diff': plots percentage difference between baseline
-                and reform ((reform-base)/base)
-            'diff': plots difference between baseline and reform (reform-base)
-            'levels': plot variables in model units
+
+            * 'pct_diff': plots percentage difference between baseline
+              and reform ((reform-base)/base)
+            * 'diff': plots difference between baseline and reform
+              (reform-base)
+            * 'levels': plot variables in model units
         plot_title (string): title for plot
         path (string): path to save figure to
 
@@ -448,9 +452,10 @@ def plot_gdp_ratio(
         p (OG-Core Specifications class): parameters object
         var_list (list): names of variable to plot
         plot_type (string): type of plot, can be:
-            'diff' or 'pct_diff': plots percentage point difference
-                between baseline and reform ratios to GDP (reform-base)
-            'levels': plot variables in model units
+
+            * 'diff' or 'pct_diff': plots percentage point difference
+              between baseline and reform ratios to GDP (reform-base)
+            * 'levels': plot variables in model units
         num_years_to_plot (integer): number of years to include in plot
         start_year (integer): year to start plot
         vertical_line_years (list): list of integers for years want
@@ -1150,11 +1155,12 @@ def inequality_plot(
             (numerator, denominator) or percentile for top share (not
             required for Gini or var_of_logs)
         plot_type (string): type of plot, can be:
-            'pct_diff': plots percentage difference between baselien
-                and reform ((reform-base)/base)
-            'diff': plots difference between baseline and reform
-                (reform-base)
-            'levels': plot variables in model units
+
+            * 'pct_diff': plots percentage difference between baseline
+              and reform ((reform-base)/base)
+            * 'diff': plots difference between baseline and reform
+              (reform-base)
+            * 'levels': plot variables in model units
         num_years_to_plot (integer): number of years to include in plot
         start_year (integer): year to start plot
         vertical_line_years (list): list of integers for years want

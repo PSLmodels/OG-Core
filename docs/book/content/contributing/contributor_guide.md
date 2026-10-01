@@ -199,6 +199,7 @@ A large set of plots that compare the changes among key variables from the basel
 
 (Sec_ContribFootnotes)=
 ## Footnotes
+This section contains the footnotes from this chapter.
 
 [^recent_python]:The most recent version of Python from Anaconda is Python 3.9. `OG-Core` is currently tested to run on Python 3.9 through 3.10.
 

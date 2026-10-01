@@ -4,7 +4,6 @@ does not break down (is still running) after 5 minutes or 300 seconds.
 """
 
 import multiprocessing
-import time
 import os
 import sys
 import pandas as pd
@@ -32,13 +31,19 @@ def call_run_ogcore_example():
 def test_run_ogcore_example(f=call_run_ogcore_example):
     p = multiprocessing.Process(target=f, name="run_ogcore_example", args=())
     p.start()
-    time.sleep(300)
+    # Wait up to 300 seconds, returning early if the script finishes
+    p.join(timeout=300)
     if p.is_alive():
         p.terminate()
         p.join()
         timetest = True
+    elif p.exitcode == 0:
+        print("run_ogcore_example.py finished successfully within 300 seconds")
+        timetest = True
     else:
-        print("run_ogcore_example did not run for minimum time")
+        print(
+            f"run_ogcore_example.py exited early with exit code {p.exitcode}"
+        )
         timetest = False
     print("timetest ==", timetest)
     # Delete directory created by run_ogcore_example.py
