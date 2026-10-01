@@ -5,7 +5,8 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [0.20.3] - 2026-10-01
+
+## [0.20.4] - 2026-10-01
 
 ### Added
 - Adds a `by_J` keyword argument (default `False`) to the demographic plotting functions in `parameter_plots.py` (`plot_imm_rates`, `plot_mort_rates`, `plot_population`, `plot_fert_rates`, `plot_mort_rates_data`, `plot_omega_fixed`, `plot_imm_fixed`, `plot_population_path`) now that the demographic objects are T x S x J. With `by_J=False`, population distributions are summed across income groups and rates are averaged across income groups using the population weights in `omega`, so one line is plotted for the overall population. With `by_J=True`, one line is plotted per income group and labeled with the j value. The array-based functions take an `omega` (or `omega_list`) argument to supply the weights. Each function checks the dimensions of its inputs and continues to accept objects without an income-group dimension (e.g., `T x S` or `S` arrays).
@@ -13,6 +14,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Updated
 - Fixes the population weighting in `plot_mort_rates`, which multiplied mortality rates by the unnormalized population shares rather than taking a weighted average across income groups.
 - Fixes the year indexing in `plot_imm_rates`, `plot_mort_rates_data`, and `plot_population_path`, which indexed years as `start_year - year` rather than `year - start_year`.
+
+## [0.20.3] - 2026-10-01
+
+### Updated
 - Removes the ceiling on the `numpy` version in `pyproject.toml` to `"numpy>=2.5"`. All tests passed locally, except for the first test `test_run_ogcore_example()` (the time test) in `test_run_example.py` and the example run script ran successfully under the new repo (see output below). This resolves Issue #1233.
 - The pytest output for the failed test showed that the baseline and reform of the example script ran and finished in less than 300 seconds, which resulted in an error in the test (our model is running too fast for the test). As such, I updated  the `test_run_ogcore_example()` script in `test_run_example.py` to pass either if the model was running after 300 seconds or if it had a successful exit code.
 - Updates the six GitHub Action files (`build_and_test.yml`, `check_catalog.yml`, `check_ruff.yml`, `deploy_docs.yml`, `docs_check.yml`, `publish_to_pypi.yml`) to only run on pushes and pulls to the `master` branch of the `PSLmodels/OG-Core` repository.
