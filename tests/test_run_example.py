@@ -4,7 +4,6 @@ does not break down (is still running) after 5 minutes or 300 seconds.
 """
 
 import multiprocessing
-import time
 import os
 import sys
 import pandas as pd
