@@ -386,7 +386,8 @@ def ss_3Dplot(
 
             * 'pct_diff': plots percentage difference between baseline
               and reform ((reform-base)/base)
-            * 'diff': plots difference between baseline and reform (reform-base)
+            * 'diff': plots difference between baseline and reform
+              (reform-base)
             * 'levels': plot variables in model units
         plot_title (string): title for plot
         path (string): path to save figure to

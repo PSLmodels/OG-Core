@@ -29,33 +29,32 @@ def macro_table(
 
     Args:
         base_tpi (dictionary): TPI output from baseline run
-        base_params (OG-Core Specifications class): baseline parameters
-            object
+        base_params (OG-Core Specifications class): baseline parameters object
         reform_tpi (dictionary): TPI output from reform run
-        reform_params (OG-Core Specifications class): reform parameters
-            object
+        reform_params (OG-Core Specifications class): reform parameters object
         var_list (list): names of variable to use in table
         output_type (string): type of plot, can be:
 
             * 'pct_diff': plots percentage difference between baseline
               and reform ((reform-base)/base)
-            * 'diff': plots difference between baseline and reform (reform-base)
+            * 'diff': plots difference between baseline and reform
+              (reform-base)
             * 'levels': variables in model units
-        stationarized (bool): whether used stationarized variables (False
-            only affects pct_diff right now)
+        stationarized (bool): whether used stationarized variables (False only
+            affects pct_diff right now)
         num_years (integer): number of years to include in table
-        include_SS (bool): whether to include the steady-state results
-            in the table
-        include_overall (bool): whether to include results over the
-            entire budget window as a column in the table
+        include_SS (bool): whether to include the steady-state results in the
+            table
+        include_overall (bool): whether to include results over the entire
+            budget window as a column in the table
         start_year (integer): year to start table
         table_format (string): format to return table in: 'csv', 'tex',
             'excel', 'json', if None, a DataFrame is returned
         path (string): path to save table to
 
     Returns:
-        table (various): table in DataFrame or string format or `None`
-            if saved to disk
+        table (various): table in DataFrame or string format or `None` if saved
+            to disk
 
     """
     assert isinstance(start_year, (int, np.integer))
@@ -178,8 +177,8 @@ def macro_table_SS(
         path (string): path to save table to
 
     Returns:
-        table (various): table in DataFrame or string format or `None`
-            if saved to disk
+        table (various): table in DataFrame or string format or `None` if saved
+            to disk
 
     """
     table_dict = {
@@ -246,31 +245,29 @@ def npv_table(
 
     Args:
         base_tpi (dictionary): TPI output from baseline run
-        base_params (OG-Core Specifications class): baseline parameters
-            object
+        base_params (OG-Core Specifications class): baseline parameters object
         reform_tpi (dictionary): TPI output from reform run
-        reform_params (OG-Core Specifications class): reform parameters
-            object
+        reform_params (OG-Core Specifications class): reform parameters object
         var_list (list): names of variables to include in the table
-        discount_rates (list): annual discount rates to compute the NPV
-            at, each expressed as a decimal (e.g. 0.03 for 3%)
+        discount_rates (list): annual discount rates to compute the NPV at,
+            each expressed as a decimal (e.g. 0.03 for 3%)
         num_years (integer): number of years to include in the NPV sum
-        stationarized (bool): whether to use the stationarized model
-            values; if False (default) the variables are un-stationarized
-            before discounting
-        factor (scalar or None): the model's units-to-currency scaling
-            factor (``factor_ss`` from the steady-state output). If
-            given, the change in each variable is multiplied by `factor`
-            so the NPV is expressed in the calibration's local currency
-            units; if None (default) the NPV is in model units
+        stationarized (bool): whether to use the stationarized model values; if
+            False (default) the variables are un-stationarized before
+            discounting
+        factor (scalar or None): the model's units-to-currency scaling factor
+            (``factor_ss`` from the steady-state output). If given, the change
+            in each variable is multiplied by `factor` so the NPV is expressed
+            in the calibration's local currency units; if None (default) the
+            NPV is in model units
         start_year (integer): first year of the NPV window
         table_format (string): format to return table in: 'csv', 'tex',
             'excel', 'json', if None, a DataFrame is returned
         path (string): path to save table to
 
     Returns:
-        table (various): table in DataFrame or string format or `None`
-            if saved to disk
+        table (various): table in DataFrame or string format or `None` if saved
+            to disk
 
     """
     assert reform_tpi is not None, (
@@ -325,11 +322,9 @@ def ineq_table(
 
     Args:
         base_ss (dictionary): SS output from baseline run
-        base_params (OG-Core Specifications class): baseline parameters
-            object
+        base_params (OG-Core Specifications class): baseline parameters object
         reform_ss (dictionary): SS output from reform run
-        reform_params (OG-Core Specifications class): reform parameters
-            object
+        reform_params (OG-Core Specifications class): reform parameters object
         var_list (list): names of variable to use in table
         table_format (string): format to return table in: 'csv', 'tex',
             'excel', 'json', if None, a DataFrame is returned
@@ -422,11 +417,9 @@ def gini_table(
 
     Args:
         base_ss (dictionary): SS output from baseline run
-        base_params (OG-Core Specifications class): baseline parameters
-            object
+        base_params (OG-Core Specifications class): baseline parameters object
         reform_ss (dictionary): SS output from reform run
-        reform_params (OG-Core Specifications class): reform parameters
-            object
+        reform_params (OG-Core Specifications class): reform parameters object
         var_list (list): names of variable to use in table
         table_format (string): format to return table in: 'csv', 'tex',
             'excel', 'json', if None, a DataFrame is returned
@@ -497,8 +490,7 @@ def wealth_moments_table(
 
     Args:
         base_ss (dictionary): SS output from baseline run
-        base_params (OG-Core Specifications class): baseline parameters
-            object
+        base_params (OG-Core Specifications class): baseline parameters object
         table_format (string): format to return table in: 'csv', 'tex',
             'excel', 'json', if None, a DataFrame is returned
         path (string): path to save table to
@@ -566,11 +558,9 @@ def time_series_table(
     transition path into an output table.
 
     Args:
-        base_params (OG-Core Specifications class): baseline parameters
-            object
+        base_params (OG-Core Specifications class): baseline parameters object
         base_tpi (dictionary): TP output from baseline run
-        reform_params (OG-Core Specifications class): reform parameters
-            object
+        reform_params (OG-Core Specifications class): reform parameters object
         reform_tpi (dictionary): TP output from reform run
         stationarized (bool): whether to report stationarized output
         table_format (string): format to return table in: 'csv', 'tex',
