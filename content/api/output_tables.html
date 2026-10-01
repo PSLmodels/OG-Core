@@ -492,7 +492,7 @@
                   
   <section id="output-table-functions">
 <span id="output-tables"></span><h1>Output Table Functions<a class="headerlink" href="#output-table-functions" title="Link to this heading">#</a></h1>
-<p><a href="#id1"><span class="problematic" id="id2">**</span></a>output_tabls.py modules*</p>
+<p><strong>output_tables.py modules</strong></p>
 <section id="module-ogcore.output_tables">
 <span id="ogcore-output-tables"></span><h2>ogcore.output_tables<a class="headerlink" href="#module-ogcore.output_tables" title="Link to this heading">#</a></h2>
 <dl class="py function">
@@ -540,13 +540,11 @@ effects</p></li>
 </dl>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p>The decomposition is the following:
-1. Simulate the baseline and reform in OG-Core. Save the</p>
-<blockquote>
-<div><p>resulting series of tax revenues. Call these series for the
-baseline and reform A and D, respectively.</p>
-</div></blockquote>
-<ol class="arabic simple" start="2">
+<p>The decomposition is the following:</p>
+<ol class="arabic simple">
+<li><p>Simulate the baseline and reform in OG-Core. Save the
+resulting series of tax revenues. Call these series for the
+baseline and reform A and D, respectively.</p></li>
 <li><p>Create a third revenue series that is computed using the
 baseline behavior (i.e., <cite>b_s</cite> and <cite>n</cite>) and macro
 variables (<cite>tr</cite>, <cite>bq</cite>, <cite>r</cite>, <cite>w</cite>), but with the tax function
@@ -557,14 +555,12 @@ reform behavior (i.e., <cite>b_s</cite> and <cite>n</cite>) and tax
 functions estimated on the reform tax policy, but
 the macro variables (<cite>tr</cite>, <cite>bq</cite>, <cite>r</cite>, <cite>w</cite>) from the baseline.
 Call this series C.</p></li>
-</ol>
-<ol class="arabic simple" start="3">
 <li><p>Calculate the percentage difference between B and A – call
 this the “static” change from the macro model.  Calculate the
 percentage difference between C and B – call this the
 behavioral effects.  Calculate the percentage difference
 between D and C – call this the macroeconomic effect.  The
-full dynamic effect is difference between C and A.</p></li>
+full dynamic effect is difference between D and A.</p></li>
 </ol>
 <p>One can apply the percentage difference from the macro feedback
 effect to (“static”) revenue estimates from the policy change
@@ -581,11 +577,9 @@ across lifetime earnings group, and across age.</p>
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>base_ss</strong> (<em>dictionary</em>) – SS output from baseline run</p></li>
-<li><p><strong>base_params</strong> (<em>OG-Core Specifications class</em>) – baseline parameters
-object</p></li>
+<li><p><strong>base_params</strong> (<em>OG-Core Specifications class</em>) – baseline parameters object</p></li>
 <li><p><strong>reform_ss</strong> (<em>dictionary</em>) – SS output from reform run</p></li>
-<li><p><strong>reform_params</strong> (<em>OG-Core Specifications class</em>) – reform parameters
-object</p></li>
+<li><p><strong>reform_params</strong> (<em>OG-Core Specifications class</em>) – reform parameters object</p></li>
 <li><p><strong>var_list</strong> (<em>list</em>) – names of variable to use in table</p></li>
 <li><p><strong>table_format</strong> (<em>string</em>) – format to return table in: ‘csv’, ‘tex’,
 ‘excel’, ‘json’, if None, a DataFrame is returned</p></li>
@@ -614,11 +608,9 @@ steady-state.</p>
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>base_ss</strong> (<em>dictionary</em>) – SS output from baseline run</p></li>
-<li><p><strong>base_params</strong> (<em>OG-Core Specifications class</em>) – baseline parameters
-object</p></li>
+<li><p><strong>base_params</strong> (<em>OG-Core Specifications class</em>) – baseline parameters object</p></li>
 <li><p><strong>reform_ss</strong> (<em>dictionary</em>) – SS output from reform run</p></li>
-<li><p><strong>reform_params</strong> (<em>OG-Core Specifications class</em>) – reform parameters
-object</p></li>
+<li><p><strong>reform_params</strong> (<em>OG-Core Specifications class</em>) – reform parameters object</p></li>
 <li><p><strong>var_list</strong> (<em>list</em>) – names of variable to use in table</p></li>
 <li><p><strong>table_format</strong> (<em>string</em>) – format to return table in: ‘csv’, ‘tex’,
 ‘excel’, ‘json’, if None, a DataFrame is returned</p></li>
@@ -646,27 +638,26 @@ object</p></li>
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>base_tpi</strong> (<em>dictionary</em>) – TPI output from baseline run</p></li>
-<li><p><strong>base_params</strong> (<em>OG-Core Specifications class</em>) – baseline parameters
-object</p></li>
+<li><p><strong>base_params</strong> (<em>OG-Core Specifications class</em>) – baseline parameters object</p></li>
 <li><p><strong>reform_tpi</strong> (<em>dictionary</em>) – TPI output from reform run</p></li>
-<li><p><strong>reform_params</strong> (<em>OG-Core Specifications class</em>) – reform parameters
-object</p></li>
+<li><p><strong>reform_params</strong> (<em>OG-Core Specifications class</em>) – reform parameters object</p></li>
 <li><p><strong>var_list</strong> (<em>list</em>) – names of variable to use in table</p></li>
-<li><p><strong>output_type</strong> (<em>string</em>) – <p>type of plot, can be:
-‘pct_diff’: plots percentage difference between baselien</p>
-<blockquote>
-<div><p>and reform ((reform-base)/base)</p>
-</div></blockquote>
-<p>’diff’: plots difference between baseline and reform (reform-base)
-‘levels’: variables in model units</p>
+<li><p><strong>output_type</strong> (<em>string</em>) – <p>type of plot, can be:</p>
+<ul>
+<li><p>’pct_diff’: plots percentage difference between baseline
+and reform ((reform-base)/base)</p></li>
+<li><p>’diff’: plots difference between baseline and reform
+(reform-base)</p></li>
+<li><p>’levels’: variables in model units</p></li>
+</ul>
 </p></li>
-<li><p><strong>stationarized</strong> (<em>bool</em>) – whether used stationarized variables (False
-only affects pct_diff right now)</p></li>
+<li><p><strong>stationarized</strong> (<em>bool</em>) – whether used stationarized variables (False only
+affects pct_diff right now)</p></li>
 <li><p><strong>num_years</strong> (<em>integer</em>) – number of years to include in table</p></li>
-<li><p><strong>include_SS</strong> (<em>bool</em>) – whether to include the steady-state results
-in the table</p></li>
-<li><p><strong>include_overall</strong> (<em>bool</em>) – whether to include results over the
-entire budget window as a column in the table</p></li>
+<li><p><strong>include_SS</strong> (<em>bool</em>) – whether to include the steady-state results in the
+table</p></li>
+<li><p><strong>include_overall</strong> (<em>bool</em>) – whether to include results over the entire
+budget window as a column in the table</p></li>
 <li><p><strong>start_year</strong> (<em>integer</em>) – year to start table</p></li>
 <li><p><strong>table_format</strong> (<em>string</em>) – format to return table in: ‘csv’, ‘tex’,
 ‘excel’, ‘json’, if None, a DataFrame is returned</p></li>
@@ -675,7 +666,7 @@ entire budget window as a column in the table</p></li>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p><dl class="simple">
-<dt>table in DataFrame or string format or <cite>None</cite></dt><dd><p>if saved to disk</p>
+<dt>table in DataFrame or string format or <cite>None</cite> if saved</dt><dd><p>to disk</p>
 </dd>
 </dl>
 </p>
@@ -703,7 +694,7 @@ entire budget window as a column in the table</p></li>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p><dl class="simple">
-<dt>table in DataFrame or string format or <cite>None</cite></dt><dd><p>if saved to disk</p>
+<dt>table in DataFrame or string format or <cite>None</cite> if saved</dt><dd><p>to disk</p>
 </dd>
 </dl>
 </p>
@@ -764,11 +755,9 @@ transition path into an output table.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>base_params</strong> (<em>OG-Core Specifications class</em>) – baseline parameters
-object</p></li>
+<li><p><strong>base_params</strong> (<em>OG-Core Specifications class</em>) – baseline parameters object</p></li>
 <li><p><strong>base_tpi</strong> (<em>dictionary</em>) – TP output from baseline run</p></li>
-<li><p><strong>reform_params</strong> (<em>OG-Core Specifications class</em>) – reform parameters
-object</p></li>
+<li><p><strong>reform_params</strong> (<em>OG-Core Specifications class</em>) – reform parameters object</p></li>
 <li><p><strong>reform_tpi</strong> (<em>dictionary</em>) – TP output from reform run</p></li>
 <li><p><strong>stationarized</strong> (<em>bool</em>) – whether to report stationarized output</p></li>
 <li><p><strong>table_format</strong> (<em>string</em>) – format to return table in: ‘csv’, ‘tex’,
@@ -798,8 +787,7 @@ and SCF data.</p>
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>base_ss</strong> (<em>dictionary</em>) – SS output from baseline run</p></li>
-<li><p><strong>base_params</strong> (<em>OG-Core Specifications class</em>) – baseline parameters
-object</p></li>
+<li><p><strong>base_params</strong> (<em>OG-Core Specifications class</em>) – baseline parameters object</p></li>
 <li><p><strong>table_format</strong> (<em>string</em>) – format to return table in: ‘csv’, ‘tex’,
 ‘excel’, ‘json’, if None, a DataFrame is returned</p></li>
 <li><p><strong>path</strong> (<em>string</em>) – path to save table to</p></li>

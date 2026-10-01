@@ -914,30 +914,32 @@ functions</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p><p>aggregate tax revenue
-iit_payroll_tax_revenue (array_like): aggregate income and</p>
+<dd class="field-even"><p><p>aggregate tax revenue and outlay components:</p>
 <blockquote>
-<div><p>payroll tax revenue</p>
+<div><ul class="simple">
+<li><p>total_tax_revenue (array_like): aggregate tax revenue</p></li>
+<li><p>iit_payroll_tax_revenue (array_like): aggregate income and
+payroll tax revenue</p></li>
+<li><p>agg_pension_outlays (array_like): aggregate outlays for
+gov’t pensions</p></li>
+<li><p>UBI_outlays (array_like): aggregate universal basic income
+(UBI) outlays</p></li>
+<li><p>bequest_tax_revenue (array_like): aggregate bequest tax
+revenue</p></li>
+<li><p>wealth_tax_revenue (array_like): aggregate wealth tax revenue</p></li>
+<li><p>cons_tax_revenue (array_like): aggregate consumption tax
+revenue</p></li>
+<li><p>business_tax_revenue (array_like): aggregate business tax
+revenue</p></li>
+<li><p>payroll_tax_revenue (array_like): aggregate payroll tax
+revenue</p></li>
+<li><p>iit_tax_revenue (array_like): aggregate income tax revenue</p></li>
+</ul>
 </div></blockquote>
-<dl class="simple">
-<dt>agg_pension_outlays (array_like): aggregate outlays for gov’t</dt><dd><p>pensions</p>
-</dd>
-<dt>UBI_outlays (array_like): aggregate universal basic income (UBI)</dt><dd><p>outlays</p>
-</dd>
-</dl>
-<p>bequest_tax_revenue (array_like): aggregate bequest tax revenue
-wealth_tax_revenue (array_like): aggregate wealth tax revenue
-cons_tax_revenue (array_like): aggregate consumption tax revenue
-business_tax_revenue (array_like): aggregate business tax</p>
-<blockquote>
-<div><p>revenue</p>
-</div></blockquote>
-<p>payroll_tax_revenue (array_like): aggregate payroll tax revenue
-iit_tax_revenue (array_like): aggregate income tax revenue</p>
 </p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>total_tax_revenue (array_like)</p>
+<dd class="field-odd"><p>(tuple)</p>
 </dd>
 </dl>
 </dd></dl>

@@ -989,9 +989,12 @@
 <span class="sd">        download_path (str): path to save fertility rate data</span>
 
 <span class="sd">    Returns:</span>
-<span class="sd">        fert_rates (Numpy array): fertility rates for each year of data</span>
-<span class="sd">            and model age</span>
-<span class="sd">        fig (Matplotlib Figure): figure object if graph=True and plot_path=None</span>
+<span class="sd">        (tuple): fertility rates and, optionally, a figure:</span>
+
+<span class="sd">            * fert_rates (Numpy array): fertility rates for each year of</span>
+<span class="sd">              data and model age</span>
+<span class="sd">            * fig (Matplotlib Figure): figure object if graph=True and</span>
+<span class="sd">              plot_path=None</span>
 
 <span class="sd">    """</span>
     <span class="c1"># initialize fert rates array</span>
@@ -1083,10 +1086,14 @@
 <span class="sd">        download_path (str): path to save mortality rate data</span>
 
 <span class="sd">    Returns:</span>
-<span class="sd">        mort_rates (Numpy array) mortality rates for each year of data</span>
-<span class="sd">            and model age</span>
-<span class="sd">        infmort_rate_vec (Numpy array): infant mortality rates for each</span>
-<span class="sd">        fig (Matplotlib Figure): figure object if graph=True and plot_path=None</span>
+<span class="sd">        (tuple): mortality rates and, optionally, a figure:</span>
+
+<span class="sd">            * mort_rates (Numpy array): mortality rates for each year of</span>
+<span class="sd">              data and model age</span>
+<span class="sd">            * infmort_rate_vec (Numpy array): infant mortality rates for</span>
+<span class="sd">              each year of data</span>
+<span class="sd">            * fig (Matplotlib Figure): figure object if graph=True and</span>
+<span class="sd">              plot_path=None</span>
 
 <span class="sd">    """</span>
     <span class="n">mort_rates_2D</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">end_year</span> <span class="o">+</span> <span class="mi">1</span> <span class="o">-</span> <span class="n">start_year</span><span class="p">,</span> <span class="n">totpers</span><span class="p">))</span>
@@ -1992,18 +1999,23 @@
 
 <span class="sd">    Returns:</span>
 <span class="sd">        pop_dict (dict): includes:</span>
-<span class="sd">            omega_path_S (Numpy array), time path of the population</span>
-<span class="sd">                distribution from the current state to the steady-state,</span>
-<span class="sd">                size T+S x S</span>
-<span class="sd">            g_n_SS (scalar): steady-state population growth rate</span>
-<span class="sd">            omega_SS (Numpy array): normalized steady-state population</span>
-<span class="sd">                distribution, length S</span>
-<span class="sd">            surv_rates (Numpy array): survival rates that correspond to</span>
-<span class="sd">                each model period of life, length S</span>
-<span class="sd">            mort_rates (Numpy array): mortality rates that correspond to</span>
-<span class="sd">                each model period of life, length S</span>
-<span class="sd">            g_n_path (Numpy array): population growth rates over the time</span>
-<span class="sd">                path, length T + S</span>
+
+<span class="sd">            * omega (Numpy array): initial population distribution, T+S x S x 1</span>
+<span class="sd">            * g_n_ss (scalar): steady-state population growth rate</span>
+<span class="sd">            * omega_SS (Numpy array): normalized steady-state population</span>
+<span class="sd">              distribution, S x 1</span>
+<span class="sd">            * rho (Numpy array): mortality rates by age and time period,</span>
+<span class="sd">              T x S x 1</span>
+<span class="sd">            * g_n (Numpy array): time path of population growth rate, T+S x 1</span>
+<span class="sd">            * imm_rates (Numpy array): immigration rates by age over time,</span>
+<span class="sd">              T+S x S x 1</span>
+<span class="sd">            * omega_S_preTP (Numpy array): pre-transition initial population</span>
+<span class="sd">              distribution by age, S x 1</span>
+<span class="sd">            * imm_rates_preTP (Numpy array): pre-transition immigration rates</span>
+<span class="sd">              by age, S x 1</span>
+<span class="sd">            * rho_preTP (Numpy array): pre-transition mortality rates by age,</span>
+<span class="sd">              S x 1</span>
+<span class="sd">            * g_n_preTP (scalar): pre-transition population growth rate</span>
 
 <span class="sd">    """</span>
     <span class="n">start_data_year</span> <span class="o">=</span> <span class="n">initial_data_year</span> <span class="o">-</span> <span class="mi">1</span>  <span class="c1"># grab data from one year</span>

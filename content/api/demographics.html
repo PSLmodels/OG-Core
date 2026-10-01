@@ -574,15 +574,19 @@ age that corresponds to the fertility rate data by age in years.</p>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p><dl class="simple">
-<dt>fertility rates for each year of data</dt><dd><p>and model age</p>
-</dd>
-</dl>
-<p>fig (Matplotlib Figure): figure object if graph=True and plot_path=None</p>
+<dd class="field-even"><p><p>fertility rates and, optionally, a figure:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>fert_rates (Numpy array): fertility rates for each year of
+data and model age</p></li>
+<li><p>fig (Matplotlib Figure): figure object if graph=True and
+plot_path=None</p></li>
+</ul>
+</div></blockquote>
 </p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>fert_rates (Numpy array)</p>
+<dd class="field-odd"><p>(tuple)</p>
 </dd>
 </dl>
 </dd></dl>
@@ -650,13 +654,21 @@ age.</p>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p><dl class="simple">
-<dt>mort_rates (Numpy array) mortality rates for each year of data</dt><dd><p>and model age</p>
-</dd>
-</dl>
-<p>infmort_rate_vec (Numpy array): infant mortality rates for each
-fig (Matplotlib Figure): figure object if graph=True and plot_path=None</p>
+<dd class="field-even"><p><p>mortality rates and, optionally, a figure:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>mort_rates (Numpy array): mortality rates for each year of
+data and model age</p></li>
+<li><p>infmort_rate_vec (Numpy array): infant mortality rates for
+each year of data</p></li>
+<li><p>fig (Matplotlib Figure): figure object if graph=True and
+plot_path=None</p></li>
+</ul>
+</div></blockquote>
 </p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>(tuple)</p>
 </dd>
 </dl>
 </dd></dl>
@@ -760,27 +772,27 @@ diagnostics</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p><dl>
-<dt>includes:</dt><dd><dl class="simple">
-<dt>omega_path_S (Numpy array), time path of the population</dt><dd><p>distribution from the current state to the steady-state,
-size T+S x S</p>
-</dd>
-</dl>
-<p>g_n_SS (scalar): steady-state population growth rate
-omega_SS (Numpy array): normalized steady-state population</p>
+<dd class="field-even"><p><p>includes:</p>
 <blockquote>
-<div><p>distribution, length S</p>
+<div><ul class="simple">
+<li><p>omega (Numpy array): initial population distribution, T+S x S x 1</p></li>
+<li><p>g_n_ss (scalar): steady-state population growth rate</p></li>
+<li><p>omega_SS (Numpy array): normalized steady-state population
+distribution, S x 1</p></li>
+<li><p>rho (Numpy array): mortality rates by age and time period,
+T x S x 1</p></li>
+<li><p>g_n (Numpy array): time path of population growth rate, T+S x 1</p></li>
+<li><p>imm_rates (Numpy array): immigration rates by age over time,
+T+S x S x 1</p></li>
+<li><p>omega_S_preTP (Numpy array): pre-transition initial population
+distribution by age, S x 1</p></li>
+<li><p>imm_rates_preTP (Numpy array): pre-transition immigration rates
+by age, S x 1</p></li>
+<li><p>rho_preTP (Numpy array): pre-transition mortality rates by age,
+S x 1</p></li>
+<li><p>g_n_preTP (scalar): pre-transition population growth rate</p></li>
+</ul>
 </div></blockquote>
-<dl class="simple">
-<dt>surv_rates (Numpy array): survival rates that correspond to</dt><dd><p>each model period of life, length S</p>
-</dd>
-<dt>mort_rates (Numpy array): mortality rates that correspond to</dt><dd><p>each model period of life, length S</p>
-</dd>
-<dt>g_n_path (Numpy array): population growth rates over the time</dt><dd><p>path, length T + S</p>
-</dd>
-</dl>
-</dd>
-</dl>
 </p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>

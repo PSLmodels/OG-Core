@@ -451,32 +451,32 @@
 
 <span class="sd">    Args:</span>
 <span class="sd">        base_tpi (dictionary): TPI output from baseline run</span>
-<span class="sd">        base_params (OG-Core Specifications class): baseline parameters</span>
-<span class="sd">            object</span>
+<span class="sd">        base_params (OG-Core Specifications class): baseline parameters object</span>
 <span class="sd">        reform_tpi (dictionary): TPI output from reform run</span>
-<span class="sd">        reform_params (OG-Core Specifications class): reform parameters</span>
-<span class="sd">            object</span>
+<span class="sd">        reform_params (OG-Core Specifications class): reform parameters object</span>
 <span class="sd">        var_list (list): names of variable to use in table</span>
 <span class="sd">        output_type (string): type of plot, can be:</span>
-<span class="sd">            'pct_diff': plots percentage difference between baselien</span>
-<span class="sd">                and reform ((reform-base)/base)</span>
-<span class="sd">            'diff': plots difference between baseline and reform (reform-base)</span>
-<span class="sd">            'levels': variables in model units</span>
-<span class="sd">        stationarized (bool): whether used stationarized variables (False</span>
-<span class="sd">            only affects pct_diff right now)</span>
+
+<span class="sd">            * 'pct_diff': plots percentage difference between baseline</span>
+<span class="sd">              and reform ((reform-base)/base)</span>
+<span class="sd">            * 'diff': plots difference between baseline and reform</span>
+<span class="sd">              (reform-base)</span>
+<span class="sd">            * 'levels': variables in model units</span>
+<span class="sd">        stationarized (bool): whether used stationarized variables (False only</span>
+<span class="sd">            affects pct_diff right now)</span>
 <span class="sd">        num_years (integer): number of years to include in table</span>
-<span class="sd">        include_SS (bool): whether to include the steady-state results</span>
-<span class="sd">            in the table</span>
-<span class="sd">        include_overall (bool): whether to include results over the</span>
-<span class="sd">            entire budget window as a column in the table</span>
+<span class="sd">        include_SS (bool): whether to include the steady-state results in the</span>
+<span class="sd">            table</span>
+<span class="sd">        include_overall (bool): whether to include results over the entire</span>
+<span class="sd">            budget window as a column in the table</span>
 <span class="sd">        start_year (integer): year to start table</span>
 <span class="sd">        table_format (string): format to return table in: 'csv', 'tex',</span>
 <span class="sd">            'excel', 'json', if None, a DataFrame is returned</span>
 <span class="sd">        path (string): path to save table to</span>
 
 <span class="sd">    Returns:</span>
-<span class="sd">        table (various): table in DataFrame or string format or `None`</span>
-<span class="sd">            if saved to disk</span>
+<span class="sd">        table (various): table in DataFrame or string format or `None` if saved</span>
+<span class="sd">            to disk</span>
 
 <span class="sd">    """</span>
     <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">start_year</span><span class="p">,</span> <span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">integer</span><span class="p">))</span>
@@ -602,8 +602,8 @@
 <span class="sd">        path (string): path to save table to</span>
 
 <span class="sd">    Returns:</span>
-<span class="sd">        table (various): table in DataFrame or string format or `None`</span>
-<span class="sd">            if saved to disk</span>
+<span class="sd">        table (various): table in DataFrame or string format or `None` if saved</span>
+<span class="sd">            to disk</span>
 
 <span class="sd">    """</span>
     <span class="n">table_dict</span> <span class="o">=</span> <span class="p">{</span>
@@ -671,31 +671,29 @@
 
 <span class="sd">    Args:</span>
 <span class="sd">        base_tpi (dictionary): TPI output from baseline run</span>
-<span class="sd">        base_params (OG-Core Specifications class): baseline parameters</span>
-<span class="sd">            object</span>
+<span class="sd">        base_params (OG-Core Specifications class): baseline parameters object</span>
 <span class="sd">        reform_tpi (dictionary): TPI output from reform run</span>
-<span class="sd">        reform_params (OG-Core Specifications class): reform parameters</span>
-<span class="sd">            object</span>
+<span class="sd">        reform_params (OG-Core Specifications class): reform parameters object</span>
 <span class="sd">        var_list (list): names of variables to include in the table</span>
-<span class="sd">        discount_rates (list): annual discount rates to compute the NPV</span>
-<span class="sd">            at, each expressed as a decimal (e.g. 0.03 for 3%)</span>
+<span class="sd">        discount_rates (list): annual discount rates to compute the NPV at,</span>
+<span class="sd">            each expressed as a decimal (e.g. 0.03 for 3%)</span>
 <span class="sd">        num_years (integer): number of years to include in the NPV sum</span>
-<span class="sd">        stationarized (bool): whether to use the stationarized model</span>
-<span class="sd">            values; if False (default) the variables are un-stationarized</span>
-<span class="sd">            before discounting</span>
-<span class="sd">        factor (scalar or None): the model's units-to-currency scaling</span>
-<span class="sd">            factor (``factor_ss`` from the steady-state output). If</span>
-<span class="sd">            given, the change in each variable is multiplied by `factor`</span>
-<span class="sd">            so the NPV is expressed in the calibration's local currency</span>
-<span class="sd">            units; if None (default) the NPV is in model units</span>
+<span class="sd">        stationarized (bool): whether to use the stationarized model values; if</span>
+<span class="sd">            False (default) the variables are un-stationarized before</span>
+<span class="sd">            discounting</span>
+<span class="sd">        factor (scalar or None): the model's units-to-currency scaling factor</span>
+<span class="sd">            (``factor_ss`` from the steady-state output). If given, the change</span>
+<span class="sd">            in each variable is multiplied by `factor` so the NPV is expressed</span>
+<span class="sd">            in the calibration's local currency units; if None (default) the</span>
+<span class="sd">            NPV is in model units</span>
 <span class="sd">        start_year (integer): first year of the NPV window</span>
 <span class="sd">        table_format (string): format to return table in: 'csv', 'tex',</span>
 <span class="sd">            'excel', 'json', if None, a DataFrame is returned</span>
 <span class="sd">        path (string): path to save table to</span>
 
 <span class="sd">    Returns:</span>
-<span class="sd">        table (various): table in DataFrame or string format or `None`</span>
-<span class="sd">            if saved to disk</span>
+<span class="sd">        table (various): table in DataFrame or string format or `None` if saved</span>
+<span class="sd">            to disk</span>
 
 <span class="sd">    """</span>
     <span class="k">assert</span> <span class="n">reform_tpi</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">,</span> <span class="p">(</span>
@@ -752,11 +750,9 @@
 
 <span class="sd">    Args:</span>
 <span class="sd">        base_ss (dictionary): SS output from baseline run</span>
-<span class="sd">        base_params (OG-Core Specifications class): baseline parameters</span>
-<span class="sd">            object</span>
+<span class="sd">        base_params (OG-Core Specifications class): baseline parameters object</span>
 <span class="sd">        reform_ss (dictionary): SS output from reform run</span>
-<span class="sd">        reform_params (OG-Core Specifications class): reform parameters</span>
-<span class="sd">            object</span>
+<span class="sd">        reform_params (OG-Core Specifications class): reform parameters object</span>
 <span class="sd">        var_list (list): names of variable to use in table</span>
 <span class="sd">        table_format (string): format to return table in: 'csv', 'tex',</span>
 <span class="sd">            'excel', 'json', if None, a DataFrame is returned</span>
@@ -852,11 +848,9 @@
 
 <span class="sd">    Args:</span>
 <span class="sd">        base_ss (dictionary): SS output from baseline run</span>
-<span class="sd">        base_params (OG-Core Specifications class): baseline parameters</span>
-<span class="sd">            object</span>
+<span class="sd">        base_params (OG-Core Specifications class): baseline parameters object</span>
 <span class="sd">        reform_ss (dictionary): SS output from reform run</span>
-<span class="sd">        reform_params (OG-Core Specifications class): reform parameters</span>
-<span class="sd">            object</span>
+<span class="sd">        reform_params (OG-Core Specifications class): reform parameters object</span>
 <span class="sd">        var_list (list): names of variable to use in table</span>
 <span class="sd">        table_format (string): format to return table in: 'csv', 'tex',</span>
 <span class="sd">            'excel', 'json', if None, a DataFrame is returned</span>
@@ -930,8 +924,7 @@
 
 <span class="sd">    Args:</span>
 <span class="sd">        base_ss (dictionary): SS output from baseline run</span>
-<span class="sd">        base_params (OG-Core Specifications class): baseline parameters</span>
-<span class="sd">            object</span>
+<span class="sd">        base_params (OG-Core Specifications class): baseline parameters object</span>
 <span class="sd">        table_format (string): format to return table in: 'csv', 'tex',</span>
 <span class="sd">            'excel', 'json', if None, a DataFrame is returned</span>
 <span class="sd">        path (string): path to save table to</span>
@@ -1002,11 +995,9 @@
 <span class="sd">    transition path into an output table.</span>
 
 <span class="sd">    Args:</span>
-<span class="sd">        base_params (OG-Core Specifications class): baseline parameters</span>
-<span class="sd">            object</span>
+<span class="sd">        base_params (OG-Core Specifications class): baseline parameters object</span>
 <span class="sd">        base_tpi (dictionary): TP output from baseline run</span>
-<span class="sd">        reform_params (OG-Core Specifications class): reform parameters</span>
-<span class="sd">            object</span>
+<span class="sd">        reform_params (OG-Core Specifications class): reform parameters object</span>
 <span class="sd">        reform_tpi (dictionary): TP output from reform run</span>
 <span class="sd">        stationarized (bool): whether to report stationarized output</span>
 <span class="sd">        table_format (string): format to return table in: 'csv', 'tex',</span>
@@ -1129,6 +1120,7 @@
 <span class="sd">            if saved to disk</span>
 
 <span class="sd">    .. note:: The decomposition is the following:</span>
+
 <span class="sd">        1. Simulate the baseline and reform in OG-Core. Save the</span>
 <span class="sd">           resulting series of tax revenues. Call these series for the</span>
 <span class="sd">           baseline and reform A and D, respectively.</span>
@@ -1142,12 +1134,12 @@
 <span class="sd">           functions estimated on the reform tax policy, but</span>
 <span class="sd">           the macro variables (`tr`, `bq`, `r`, `w`) from the baseline.</span>
 <span class="sd">           Call this series C.</span>
-<span class="sd">        3. Calculate the percentage difference between B and A -- call</span>
+<span class="sd">        4. Calculate the percentage difference between B and A -- call</span>
 <span class="sd">           this the "static" change from the macro model.  Calculate the</span>
 <span class="sd">           percentage difference between C and B -- call this the</span>
 <span class="sd">           behavioral effects.  Calculate the percentage difference</span>
 <span class="sd">           between D and C -- call this the macroeconomic effect.  The</span>
-<span class="sd">           full dynamic effect is difference between C and A.</span>
+<span class="sd">           full dynamic effect is difference between D and A.</span>
 
 <span class="sd">        One can apply the percentage difference from the macro feedback</span>
 <span class="sd">        effect to ("static") revenue estimates from the policy change</span>

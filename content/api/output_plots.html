@@ -578,16 +578,14 @@ object</p></li>
 <li><p><strong>pctiles</strong> (<em>tuple</em><em> or </em><em>None</em>) – percentiles for percentile ratios
 (numerator, denominator) or percentile for top share (not
 required for Gini or var_of_logs)</p></li>
-<li><p><strong>plot_type</strong> (<em>string</em>) – <p>type of plot, can be:
-‘pct_diff’: plots percentage difference between baselien</p>
-<blockquote>
-<div><p>and reform ((reform-base)/base)</p>
-</div></blockquote>
-<dl class="simple">
-<dt>’diff’: plots difference between baseline and reform</dt><dd><p>(reform-base)</p>
-</dd>
-</dl>
-<p>’levels’: plot variables in model units</p>
+<li><p><strong>plot_type</strong> (<em>string</em>) – <p>type of plot, can be:</p>
+<ul>
+<li><p>’pct_diff’: plots percentage difference between baseline
+and reform ((reform-base)/base)</p></li>
+<li><p>’diff’: plots difference between baseline and reform
+(reform-base)</p></li>
+<li><p>’levels’: plot variables in model units</p></li>
+</ul>
 </p></li>
 <li><p><strong>num_years_to_plot</strong> (<em>integer</em>) – number of years to include in plot</p></li>
 <li><p><strong>start_year</strong> (<em>integer</em>) – year to start plot</p></li>
@@ -638,21 +636,17 @@ object</p></li>
 <li><p><strong>reform_params</strong> (<em>OG-Core Specifications class</em>) – reform parameters
 object</p></li>
 <li><p><strong>var_list</strong> (<em>list</em>) – names of variable to plot</p></li>
-<li><p><strong>plot_type</strong> (<em>string</em>) – <p>type of plot, can be:
-‘pct_diff’: plots percentage difference between baseline</p>
-<blockquote>
-<div><p>and reform ((reform-base)/base). For interest rates,
-percentage point differences are plotted.</p>
-</div></blockquote>
-<dl class="simple">
-<dt>’diff’: plots difference between baseline and reform</dt><dd><p>(reform-base)</p>
-</dd>
-</dl>
-<p>’levels’: plot variables in model units
-‘forecast’: plots variables in levels relative to baseline</p>
-<blockquote>
-<div><p>economic forecast</p>
-</div></blockquote>
+<li><p><strong>plot_type</strong> (<em>string</em>) – <p>type of plot, can be:</p>
+<ul>
+<li><p>’pct_diff’: plots percentage difference between baseline
+and reform ((reform-base)/base). For interest rates,
+percentage point differences are plotted.</p></li>
+<li><p>’diff’: plots difference between baseline and reform
+(reform-base)</p></li>
+<li><p>’levels’: plot variables in model units</p></li>
+<li><p>’forecast’: plots variables in levels relative to baseline
+economic forecast</p></li>
+</ul>
 </p></li>
 <li><p><strong>stationarized</strong> (<em>bool</em>) – whether used stationarized variables</p></li>
 <li><p><strong>num_years_to_plot</strong> (<em>integer</em>) – number of years to include in plot</p></li>
@@ -709,12 +703,12 @@ vertical lines at</p></li>
 <li><p><strong>reform_params</strong> (<em>OG-Core Specifications class</em>) – reform parameters object</p></li>
 <li><p><strong>p</strong> (<em>OG-Core Specifications class</em>) – parameters object</p></li>
 <li><p><strong>var_list</strong> (<em>list</em>) – names of variable to plot</p></li>
-<li><p><strong>plot_type</strong> (<em>string</em>) – <p>type of plot, can be:
-‘diff’ or ‘pct_diff’: plots percentage point difference</p>
-<blockquote>
-<div><p>between baseline and reform ratios to GDP (reform-base)</p>
-</div></blockquote>
-<p>’levels’: plot variables in model units</p>
+<li><p><strong>plot_type</strong> (<em>string</em>) – <p>type of plot, can be:</p>
+<ul>
+<li><p>’diff’ or ‘pct_diff’: plots percentage point difference
+between baseline and reform ratios to GDP (reform-base)</p></li>
+<li><p>’levels’: plot variables in model units</p></li>
+</ul>
 </p></li>
 <li><p><strong>num_years_to_plot</strong> (<em>integer</em>) – number of years to include in plot</p></li>
 <li><p><strong>start_year</strong> (<em>integer</em>) – year to start plot</p></li>
@@ -747,20 +741,16 @@ object</p></li>
 <li><p><strong>reform_params</strong> (<em>OG-Core Specifications class</em>) – reform parameters
 object</p></li>
 <li><p><strong>var_list</strong> (<em>list</em>) – names of variable to plot</p></li>
-<li><p><strong>plot_type</strong> (<em>string</em>) – <p>type of plot, can be:
-‘pct_diff’: plots percentage difference between baseline</p>
-<blockquote>
-<div><p>and reform ((reform-base)/base)</p>
-</div></blockquote>
-<dl class="simple">
-<dt>’diff’: plots difference between baseline and reform</dt><dd><p>(reform-base)</p>
-</dd>
-</dl>
-<p>’levels’: plot variables in model units
-‘forecast’: plots variables in levels relative to baseline</p>
-<blockquote>
-<div><p>economic forecast</p>
-</div></blockquote>
+<li><p><strong>plot_type</strong> (<em>string</em>) – <p>type of plot, can be:</p>
+<ul>
+<li><p>’pct_diff’: plots percentage difference between baseline
+and reform ((reform-base)/base)</p></li>
+<li><p>’diff’: plots difference between baseline and reform
+(reform-base)</p></li>
+<li><p>’levels’: plot variables in model units</p></li>
+<li><p>’forecast’: plots variables in levels relative to baseline
+economic forecast</p></li>
+</ul>
 </p></li>
 <li><p><strong>stationarized</strong> (<em>bool</em>) – whether used stationarized variables</p></li>
 <li><p><strong>num_years_to_plot</strong> (<em>integer</em>) – number of years to include in plot</p></li>
@@ -795,13 +785,14 @@ vertical lines at</p></li>
 <li><p><strong>reform_params</strong> (<em>OG-Core Specifications class</em>) – reform parameters object</p></li>
 <li><p><strong>reform_ss</strong> (<em>dictionary</em>) – SS output from reform run</p></li>
 <li><p><strong>var</strong> (<em>string</em>) – name of variable to plot</p></li>
-<li><p><strong>plot_type</strong> (<em>string</em>) – <p>type of plot, can be:
-‘pct_diff’: plots percentage difference between baseline</p>
-<blockquote>
-<div><p>and reform ((reform-base)/base)</p>
-</div></blockquote>
-<p>’diff’: plots difference between baseline and reform (reform-base)
-‘levels’: plot variables in model units</p>
+<li><p><strong>plot_type</strong> (<em>string</em>) – <p>type of plot, can be:</p>
+<ul>
+<li><p>’pct_diff’: plots percentage difference between baseline
+and reform ((reform-base)/base)</p></li>
+<li><p>’diff’: plots difference between baseline and reform
+(reform-base)</p></li>
+<li><p>’levels’: plot variables in model units</p></li>
+</ul>
 </p></li>
 <li><p><strong>plot_title</strong> (<em>string</em>) – title for plot</p></li>
 <li><p><strong>path</strong> (<em>string</em>) – path to save figure to</p></li>
