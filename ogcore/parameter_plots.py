@@ -4,9 +4,186 @@ import os
 import matplotlib.pyplot as plt
 import matplotlib
 import matplotlib.ticker as mticker
+from matplotlib.lines import Line2D
 from ogcore.constants import GROUP_LABELS
 from ogcore import utils, txfunc
 from ogcore.constants import DEFAULT_START_YEAR, VAR_LABELS
+
+
+# Line styles cycled over when plotting one line per income group j
+# alongside a colormap over years (see plot_fert_rates)
+J_LINESTYLES = [
+    "-",
+    "--",
+    "-.",
+    ":",
+    (0, (5, 1)),
+    (0, (3, 1, 1, 1)),
+    (0, (1, 1)),
+    (0, (5, 2, 1, 2)),
+    (0, (3, 2, 1, 2, 1, 2)),
+]
+
+
+def _check_ndim(arr, name, allowed_ndims):
+    """
+    Check that a demographic object has one of the allowed numbers of
+    dimensions.  Objects are allowed either without an income-group
+    (J) dimension (backward compatible with earlier versions of
+    OG-Core) or with J as the last dimension.
+
+    Args:
+        arr (array_like): object to check
+        name (str): name of the object, used in the error message
+        allowed_ndims (tuple): allowed numbers of dimensions
+
+    Returns:
+        arr (NumPy array): the object as a NumPy array of floats
+
+    """
+    arr = np.asarray(arr, dtype=float)
+    assert arr.ndim in allowed_ndims, (
+        name
+        + " must have "
+        + " or ".join(str(n) for n in allowed_ndims)
+        + " dimensions (with income groups j as the last dimension, if "
+        + "present), got shape "
+        + str(arr.shape)
+    )
+    return arr
+
+
+def _avg_over_J(rates, omega=None):
+    """
+    Average demographic rates over the income-group (J) dimension,
+    which is assumed to be the last axis of ``rates``.
+
+    Args:
+        rates (NumPy array): array of rates whose last axis indexes
+            income groups j
+        omega (NumPy array or None): population distribution with the
+            same shape as ``rates`` used as weights.  The weights are
+            normalized within each cell of the leading dimensions (e.g.,
+            within each age) so that they sum to one across j.  If
+            None, a simple (unweighted) mean across j is used.
+
+    Returns:
+        avg (NumPy array): rates averaged over j (last axis removed)
+
+    """
+    rates = np.asarray(rates, dtype=float)
+    if omega is None:
+        return rates.mean(axis=-1)
+    omega = np.asarray(omega, dtype=float)
+    assert omega.shape == rates.shape, (
+        "omega must have the same shape as the rates being averaged, "
+        + "got "
+        + str(omega.shape)
+        + " and "
+        + str(rates.shape)
+    )
+    omega_sum = omega.sum(axis=-1, keepdims=True)
+    # where an age has zero population, fall back to equal weights
+    weights = np.divide(
+        omega,
+        omega_sum,
+        out=np.full(omega.shape, 1.0 / omega.shape[-1]),
+        where=omega_sum != 0,
+    )
+    return (rates * weights).sum(axis=-1)
+
+
+def _sum_over_J(dist):
+    """
+    Collapse a population distribution over the income-group (J)
+    dimension (assumed to be the last axis) by summing, which yields
+    the marginal distribution over the remaining dimensions.
+
+    Args:
+        dist (NumPy array): population distribution whose last axis
+            indexes income groups j
+
+    Returns:
+        marginal (NumPy array): distribution summed over j
+
+    """
+    return np.asarray(dist, dtype=float).sum(axis=-1)
+
+
+def _plot_age_profile(
+    ax,
+    arr,
+    label,
+    by_J,
+    x=None,
+    omega=None,
+    collapse="avg",
+    transform=None,
+    **plot_kwargs,
+):
+    """
+    Plot an age profile that may or may not have an income-group (J)
+    dimension.
+
+    If ``arr`` is one-dimensional (S,), a single line is plotted.  If
+    ``arr`` is two-dimensional (S x J) and ``by_J`` is True, one line
+    is plotted for each income group j and labeled with the j value.
+    If ``arr`` is (S x J) and ``by_J`` is False, the array is first
+    collapsed over j (summed for distributions, population-weighted
+    averaged for rates) and a single line is plotted.
+
+    Args:
+        ax (Matplotlib axes object): axes to plot on
+        arr (NumPy array): age profile, (S,) or (S x J)
+        label (str): legend label for the series (", j=k" is appended
+            when plotting by income group)
+        by_J (bool): whether to plot a separate line for each j
+        x (array_like or None): x-axis values, if None then the index
+            of ``arr`` is used
+        omega (NumPy array or None): population distribution of the
+            same shape as ``arr`` used to weight the average across
+            j when ``collapse`` is "avg"
+        collapse (str): "sum" to sum over j (for distributions) or
+            "avg" to take the population-weighted average over j (for
+            rates) when ``by_J`` is False
+        transform (callable or None): function applied to each (S,)
+            series just before it is plotted (e.g., to compute
+            cumulative survival rates from mortality rates)
+        plot_kwargs (dict): additional keyword arguments passed to
+            ``ax.plot``
+
+    Returns:
+        None
+
+    """
+    assert collapse in ["sum", "avg"], "collapse must be 'sum' or 'avg'"
+    arr = np.asarray(arr, dtype=float)
+    assert arr.ndim in [1, 2], (
+        "Expected an age profile of shape (S,) or (S, J), got shape "
+        + str(arr.shape)
+    )
+    if transform is None:
+
+        def transform(y):
+            return y
+
+    if arr.ndim == 2:
+        if by_J:
+            series = [
+                (arr[:, j], label + ", j=" + str(j))
+                for j in range(arr.shape[-1])
+            ]
+        elif collapse == "sum":
+            series = [(_sum_over_J(arr), label)]
+        else:
+            series = [(_avg_over_J(arr, omega), label)]
+    else:
+        series = [(arr, label)]
+    for y, lab in series:
+        if x is None:
+            ax.plot(transform(y), label=lab, **plot_kwargs)
+        else:
+            ax.plot(x, transform(y), label=lab, **plot_kwargs)
 
 
 def plot_imm_rates(
@@ -16,29 +193,52 @@ def plot_imm_rates(
     include_title=False,
     source="United Nations, World Population Prospects",
     path=None,
+    by_J=False,
+    omega=None,
 ):
     """
     Plot immigration rates from the data
 
     Args:
-        imm_rates (NumPy array): immigration rates for each of
-            totpers
+        imm_rates (NumPy array): immigration rates for each year and
+            age (T x S) or for each year, age, and income group
+            (T x S x J)
         start_year (int): first year of data
         years_to_plot (list): list of years to plot
+        include_title (bool): whether to include a title in the plot
         source (str): data source for immigration rates
         path (str): path to save figure to, if None then figure
             is returned
+        by_J (bool): if imm_rates has an income-group dimension, plot
+            a separate line for each income group j (labeled by j).
+            If False, the rates are averaged across income groups so
+            that one line is plotted per year.
+        omega (NumPy array): population distribution with the same
+            shape as imm_rates, used to weight the average across
+            income groups when by_J is False.  If None, a simple mean
+            across income groups is used.
 
     Returns:
         fig (Matplotlib plot object): plot of immigration rates
 
     """
-    # create line styles to cycle through
+    imm_rates = _check_ndim(imm_rates, "imm_rates", (2, 3))
+    if omega is not None:
+        omega = _check_ndim(omega, "omega", (imm_rates.ndim,))
+    plot_by_J = by_J and imm_rates.ndim == 3
     fig, ax = plt.subplots()
     for y in years_to_plot:
-        i = start_year - y
-        plt.plot(imm_rates[i, :], c="blue", label="Year " + str(y))
-    #     fontsize=20)
+        i = y - start_year
+        omega_i = None if omega is None else omega[i]
+        _plot_age_profile(
+            ax,
+            imm_rates[i],
+            "Year " + str(y),
+            by_J,
+            omega=omega_i,
+            collapse="avg",
+            **({} if plot_by_J else {"c": "blue"}),
+        )
     plt.xlabel(r"Age $s$")
     plt.ylabel(r"Immigration rate $i_{s}$")
     plt.legend(loc="upper left")
@@ -67,6 +267,7 @@ def plot_mort_rates(
     survival_rates=False,
     include_title=False,
     path=None,
+    by_J=False,
 ):
     """
     Create a plot of mortality rates from OG-Core parameterization.
@@ -74,40 +275,54 @@ def plot_mort_rates(
     Args:
         p_list (list): list of parameters objects
         labels (list): list of labels for the legend
+        years (list): list of years to plot
         survival_rates (bool): whether to plot survival rates instead
             of mortality rates
         include_title (bool): whether to include a title in the plot
         path (string): path to save figure to
+        by_J (bool): if mortality rates vary by income group, plot a
+            separate line for each income group j (labeled by j).  If
+            False, the rates are averaged across income groups using
+            the population weights in omega so that one line is
+            plotted per year and parameters object.
 
     Returns:
         fig (Matplotlib plot object): plot of mortality rates
 
     """
     p0 = p_list[0]
+    for p in p_list:
+        _check_ndim(p.rho, "rho", (2, 3))
+        _check_ndim(p.omega, "omega", (2, 3))
     age_per = np.linspace(p0.E, p0.E + p0.S, p0.S)
     fig, ax = plt.subplots()
+    if survival_rates:
+
+        def transform(rho_t):
+            return np.cumprod(1 - rho_t)
+
+    else:
+        transform = None
     for y in years:
         t = y - p0.start_year
         for i, p in enumerate(p_list):
-            # get average mortality rate across all j types if 3D array
-            if p.rho.ndim == 3:
-                # average over all j types
+            omega_t = None
+            if p.rho.ndim == 3 and not by_J:
+                # population weights used to average over j
                 if p.omega.ndim == 3:
-                    rho_t = (p.rho[t, :, :] * p.omega[t, :, :]).sum(axis=-1)
+                    omega_t = p.omega[t, :, :]
                 else:
-                    rho_t = (
-                        p.rho[t, :, :] * p.lambdas.reshape(1, 1, p.J)
-                    ).sum(axis=-1)
-            else:
-                rho_t = p.rho[t, :]
-            if survival_rates:
-                plt.plot(
-                    age_per,
-                    np.cumprod(1 - rho_t),
-                    label=labels[i] + " " + str(y),
-                )
-            else:
-                plt.plot(age_per, rho_t, label=labels[i] + " " + str(y))
+                    omega_t = np.tile(p.lambdas.reshape(1, p.J), (p.S, 1))
+            _plot_age_profile(
+                ax,
+                p.rho[t],
+                labels[i] + " " + str(y),
+                by_J,
+                x=age_per,
+                omega=omega_t,
+                collapse="avg",
+                transform=transform,
+            )
     plt.xlabel(r"Age $s$ (model periods)")
     if survival_rates:
         plt.ylabel(r"Cumulative Survival Rates")
@@ -179,7 +394,9 @@ def plot_pop_growth(
         plt.savefig(fig_path, dpi=300)
 
 
-def plot_population(p, years_to_plot=["SS"], include_title=False, path=None):
+def plot_population(
+    p, years_to_plot=["SS"], include_title=False, path=None, by_J=False
+):
     """
     Plot the distribution of the population over age for various years.
 
@@ -189,6 +406,12 @@ def plot_population(p, years_to_plot=["SS"], include_title=False, path=None):
             the steady-state period
         include_title (bool): whether to include a title in the plot
         path (string): path to save figure to
+        by_J (bool): if the population distribution has an
+            income-group dimension, plot a separate line for each
+            income group j (labeled by j).  If False, the distribution
+            is summed across income groups so that one line showing
+            the overall population distribution by age is plotted per
+            year.
 
     Returns:
         fig (Matplotlib plot object): plot of population distribution
@@ -198,14 +421,18 @@ def plot_population(p, years_to_plot=["SS"], include_title=False, path=None):
         assert isinstance(v, int) | (v == "SS")
         if isinstance(v, int):
             assert v >= p.start_year
+    _check_ndim(p.omega_SS, "omega_SS", (1, 2))
+    _check_ndim(p.omega, "omega", (2, 3))
     age_vec = np.arange(p.E, p.S + p.E)
     fig, ax = plt.subplots()
     for i, v in enumerate(years_to_plot):
         if v == "SS":
             pop_dist = p.omega_SS
         else:
-            pop_dist = p.omega[v - p.start_year, :]
-        plt.plot(age_vec, pop_dist, label=str(v) + " pop.")
+            pop_dist = p.omega[v - p.start_year]
+        _plot_age_profile(
+            ax, pop_dist, str(v) + " pop.", by_J, x=age_vec, collapse="sum"
+        )
     plt.xlabel(r"Age $s$")
     plt.ylabel(r"Pop. dist'n $\omega_{s}$")
     plt.legend(loc="lower left")
@@ -385,18 +612,30 @@ def plot_fert_rates(
     include_title=False,
     source="United Nations, World Population Prospects",
     path=None,
+    by_J=False,
+    omega_list=None,
 ):
     """
     Plot fertility rates from the data
 
     Args:
         fert_rates_list (list): list of Numpy arrays of fertility rates
-            for each model period and age
+            by age (S,) or by age and income group (S x J), one array
+            per series (e.g., per year)
         labels (list): list of labels for the legend
         include_title (bool): whether to include a title in the plot
         source (str): data source for fertility rates
         path (str): path to save figure to, if None then figure
             is returned
+        by_J (bool): if the fertility rates have an income-group
+            dimension, plot a separate line for each income group j
+            (labeled by j).  If False, the rates are averaged across
+            income groups so that one line is plotted per series.
+        omega_list (list): list of Numpy arrays of the population
+            distribution, each with the same shape as the corresponding
+            element of fert_rates_list, used to weight the average
+            across income groups when by_J is False.  If None, a
+            simple mean across income groups is used.
 
     Returns:
         fig (Matplotlib plot object): plot of fertility rates
@@ -407,6 +646,22 @@ def plot_fert_rates(
     assert num_series == len(labels), (
         "Number of series must match number of labels"
     )
+    if omega_list is not None:
+        assert len(omega_list) == num_series, (
+            "Number of series must match number of omega arrays"
+        )
+    fert_rates_list = [
+        _check_ndim(f, "fert_rates_list[" + str(i) + "]", (1, 2))
+        for i, f in enumerate(fert_rates_list)
+    ]
+    if omega_list is not None:
+        omega_list = [
+            _check_ndim(
+                om, "omega_list[" + str(i) + "]", (fert_rates_list[i].ndim,)
+            )
+            for i, om in enumerate(omega_list)
+        ]
+    plot_by_J = by_J and any(f.ndim == 2 for f in fert_rates_list)
 
     if num_series > 4:
         cm = plt.get_cmap("coolwarm")
@@ -418,14 +673,58 @@ def plot_fert_rates(
 
         vmin, vmax = min(label_values), max(label_values)
         norm = plt.Normalize(vmin=vmin, vmax=vmax)
+        max_J = 1
         for i, fert_rates in enumerate(fert_rates_list):
-            ax.plot(fert_rates, color=cm(norm(label_values[i])))
+            color = cm(norm(label_values[i]))
+            if fert_rates.ndim == 2 and plot_by_J:
+                # one line per j: color denotes the series (year),
+                # line style denotes the income group
+                max_J = max(max_J, fert_rates.shape[-1])
+                for j in range(fert_rates.shape[-1]):
+                    ax.plot(
+                        fert_rates[:, j],
+                        color=color,
+                        linestyle=J_LINESTYLES[j % len(J_LINESTYLES)],
+                        label=str(labels[i]) + ", j=" + str(j),
+                    )
+            else:
+                omega_i = None if omega_list is None else omega_list[i]
+                _plot_age_profile(
+                    ax,
+                    fert_rates,
+                    str(labels[i]),
+                    by_J=False,
+                    omega=omega_i,
+                    collapse="avg",
+                    color=color,
+                )
         sm = plt.cm.ScalarMappable(cmap=cm, norm=norm)
         sm.set_array([])
         plt.colorbar(sm, ax=ax, label="Year")
+        if plot_by_J:
+            # legend keyed on line style to identify income groups
+            handles = [
+                Line2D(
+                    [0],
+                    [0],
+                    color="black",
+                    linestyle=J_LINESTYLES[j % len(J_LINESTYLES)],
+                    label="j=" + str(j),
+                )
+                for j in range(max_J)
+            ]
+            ax.legend(handles=handles, loc="upper right")
     else:
         for i, fert_rates in enumerate(fert_rates_list):
-            ax.plot(fert_rates, label=labels[i])
+            omega_i = None if omega_list is None else omega_list[i]
+            _plot_age_profile(
+                ax,
+                fert_rates,
+                str(labels[i]),
+                by_J,
+                omega=omega_i,
+                collapse="avg",
+            )
         ax.legend(loc="upper right")
 
     if include_title:
@@ -455,30 +754,51 @@ def plot_mort_rates_data(
     years_to_plot=[DEFAULT_START_YEAR],
     source="United Nations, World Population Prospects",
     path=None,
+    by_J=False,
+    omega=None,
 ):
     """
     Plots mortality rates from the data.
 
     Args:
-        mort_rates (array_like): mortality rates for each of
-            totpers
+        mort_rates (array_like): mortality rates for each year and
+            age (T x S) or for each year, age, and income group
+            (T x S x J)
         start_year (int): first year of data
         years_to_plot (list): list of years to plot
-        source (str): data source for fertility rates
+        source (str): data source for mortality rates
         path (str): path to save figure to, if None then figure
             is returned
+        by_J (bool): if mort_rates has an income-group dimension, plot
+            a separate line for each income group j (labeled by j).
+            If False, the rates are averaged across income groups so
+            that one line is plotted per year.
+        omega (NumPy array): population distribution with the same
+            shape as mort_rates, used to weight the average across
+            income groups when by_J is False.  If None, a simple mean
+            across income groups is used.
 
     Returns:
         fig (Matplotlib plot object): plot of mortality rates
 
     """
-    # create line styles to cycle through
+    mort_rates = _check_ndim(mort_rates, "mort_rates", (2, 3))
+    if omega is not None:
+        omega = _check_ndim(omega, "omega", (mort_rates.ndim,))
+    plot_by_J = by_J and mort_rates.ndim == 3
     fig, ax = plt.subplots()
     for y in years_to_plot:
-        i = start_year - y
-        plt.plot(mort_rates[i, :], c="blue", label="Year " + str(y))
-    # plt.title('Fertility rates by age ($f_{s}$)',
-    #     fontsize=20)
+        i = y - start_year
+        omega_i = None if omega is None else omega[i]
+        _plot_age_profile(
+            ax,
+            mort_rates[i],
+            "Year " + str(y),
+            by_J,
+            omega=omega_i,
+            collapse="avg",
+            **({} if plot_by_J else {"c": "blue"}),
+        )
     plt.xlabel(r"Age $s$")
     plt.ylabel(r"Mortality rate $rho_{s}$")
     plt.legend(loc="upper left")
@@ -538,7 +858,9 @@ def plot_g_n(p_list, label_list=[""], include_title=False, path=None):
         plt.savefig(fig_path, dpi=300)
 
 
-def plot_omega_fixed(age_per_EpS, omega_SS_orig, omega_SSfx, E, S, path=None):
+def plot_omega_fixed(
+    age_per_EpS, omega_SS_orig, omega_SSfx, E, S, path=None, by_J=False
+):
     """
     Plot the steady-state population distribution implied by the data
     on fertility and mortality rates versus the the steady-state
@@ -550,22 +872,40 @@ def plot_omega_fixed(age_per_EpS, omega_SS_orig, omega_SSfx, E, S, path=None):
         age_per_EpS (array_like): list of ages over which to plot
             population distribution
         omega_SS_orig (Numpy array): population distribution in SS
-            without adjustment to immigration rates
+            without adjustment to immigration rates, by age (E+S,) or
+            by age and income group (E+S x J)
         omega_SSfx (Numpy array): population distribution in SS
-            after adjustment to immigration rates
+            after adjustment to immigration rates, by age (E+S,) or
+            by age and income group (E+S x J)
         E (int): age at which household becomes economically active
         S (int): number of years which household is economically active
         path (str): path to save figure to, if None then figure
             is returned
+        by_J (bool): if the distributions have an income-group
+            dimension, plot a separate line for each income group j
+            (labeled by j).  If False, the distributions are summed
+            across income groups so that one line is plotted for each
+            distribution.
 
     Returns:
         fig (Matplotlib plot object): plot of SS population distribution
             before and after adjustment to immigration rates
 
     """
+    omega_SS_orig = _check_ndim(omega_SS_orig, "omega_SS_orig", (1, 2))
+    omega_SSfx = _check_ndim(omega_SSfx, "omega_SSfx", (1, 2))
     fig, ax = plt.subplots()
-    plt.plot(age_per_EpS, omega_SS_orig, label="Original Dist'n")
-    plt.plot(age_per_EpS, omega_SSfx, label="Fixed Dist'n")
+    _plot_age_profile(
+        ax,
+        omega_SS_orig,
+        "Original Dist'n",
+        by_J,
+        x=age_per_EpS,
+        collapse="sum",
+    )
+    _plot_age_profile(
+        ax, omega_SSfx, "Fixed Dist'n", by_J, x=age_per_EpS, collapse="sum"
+    )
     plt.title("Original steady-state population distribution vs. fixed")
     plt.xlabel(r"Age $s$")
     plt.ylabel(r"Pop. dist'n $\omega_{s}$")
@@ -581,7 +921,14 @@ def plot_omega_fixed(age_per_EpS, omega_SS_orig, omega_SSfx, E, S, path=None):
 
 
 def plot_imm_fixed(
-    age_per_EpS, imm_rates_orig, imm_rates_adj, E, S, path=None
+    age_per_EpS,
+    imm_rates_orig,
+    imm_rates_adj,
+    E,
+    S,
+    path=None,
+    by_J=False,
+    omega=None,
 ):
     """
     Plot the immigration rates implied by the data on population,
@@ -592,21 +939,52 @@ def plot_imm_fixed(
     Args:
         age_per_EpS (array_like): list of ages over which to plot
             population distribution
-        imm_rates_orig (Numpy array): immigration rates by age
+        imm_rates_orig (Numpy array): immigration rates by age (E+S,)
+            or by age and income group (E+S x J)
         imm_rates_adj (Numpy array): adjusted immigration rates by age
+            (E+S,) or by age and income group (E+S x J)
         E (int): age at which household becomes economically active
         S (int): number of years which household is economically active
         path (str): path to save figure to, if None then figure
             is returned
+        by_J (bool): if the immigration rates have an income-group
+            dimension, plot a separate line for each income group j
+            (labeled by j).  If False, the rates are averaged across
+            income groups so that one line is plotted for each set of
+            rates.
+        omega (NumPy array): population distribution with the same
+            shape as the immigration rates, used to weight the average
+            across income groups when by_J is False.  If None, a
+            simple mean across income groups is used.
 
     Returns:
         fig (Matplotlib plot object): plot of immigration rates found
             from residuals and the adjusted rates to hit SS sooner
 
     """
+    imm_rates_orig = _check_ndim(imm_rates_orig, "imm_rates_orig", (1, 2))
+    imm_rates_adj = _check_ndim(imm_rates_adj, "imm_rates_adj", (1, 2))
+    if omega is not None:
+        omega = _check_ndim(omega, "omega", (1, 2))
     fig, ax = plt.subplots()
-    plt.plot(age_per_EpS, imm_rates_orig, label="Original Imm. Rates")
-    plt.plot(age_per_EpS, imm_rates_adj, label="Adj. Imm. Rates")
+    _plot_age_profile(
+        ax,
+        imm_rates_orig,
+        "Original Imm. Rates",
+        by_J,
+        x=age_per_EpS,
+        omega=omega,
+        collapse="avg",
+    )
+    _plot_age_profile(
+        ax,
+        imm_rates_adj,
+        "Adj. Imm. Rates",
+        by_J,
+        x=age_per_EpS,
+        omega=omega,
+        collapse="avg",
+    )
     plt.title("Original immigration rates vs. adjusted")
     plt.xlabel(r"Age $s$")
     plt.ylabel(r"Imm. rates $i_{s}$")
@@ -630,6 +1008,7 @@ def plot_population_path(
     year2,
     S,
     path=None,
+    by_J=False,
 ):
     """
     Plot the distribution of the population over age for various years.
@@ -637,11 +1016,11 @@ def plot_population_path(
     Args:
         age_per_EpS (array_like): list of ages over which to plot
             population distribution
-        initial_pop_pct (array_like): initial year population distribution
         omega_path_lev (Numpy array): number of households by age
+            (T+S x E+S) or by age and income group (T+S x E+S x J)
             over the transition path
-        omega_SSfx (Numpy array): number of households by age
-            in the SS
+        omega_SSfx (Numpy array): population distribution by age (E+S,)
+            or by age and income group (E+S x J) in the SS
         start_year (int): first year of data (so can get index of year1
             and year2)
         year1 (int): first year of data to plot
@@ -649,43 +1028,36 @@ def plot_population_path(
         S (int): number of years which household is economically active
         path (str): path to save figure to, if None then figure
             is returned
+        by_J (bool): if the population distributions have an
+            income-group dimension, plot a separate line for each
+            income group j (labeled by j).  If False, the distributions
+            are summed across income groups so that one line showing
+            the overall population distribution by age is plotted for
+            each point in time.
 
     Returns:
         fig (Matplotlib plot object): plot of population distribution
             at points along the time path
 
     """
+    omega_path_lev = _check_ndim(omega_path_lev, "omega_path_lev", (2, 3))
+    omega_SSfx = _check_ndim(omega_SSfx, "omega_SSfx", (1, 2))
     fig, ax = plt.subplots()
-    plt.plot(
-        age_per_EpS,
-        (
-            omega_path_lev[start_year - year1, :]
-            / omega_path_lev[start_year - year1, :].sum()
-        ),
-        label=str(year1) + " pop.",
+    periods = [
+        (year1 - start_year, str(year1) + " pop."),
+        (year2 - start_year, str(year2) + " pop."),
+        (int(0.5 * S), "T=" + str(int(0.5 * S)) + " pop."),
+        (int(S), "T=" + str(int(S)) + " pop."),
+    ]
+    for t, label in periods:
+        # population distribution across all (age, income group) cells
+        pop_dist = omega_path_lev[t] / omega_path_lev[t].sum()
+        _plot_age_profile(
+            ax, pop_dist, label, by_J, x=age_per_EpS, collapse="sum"
+        )
+    _plot_age_profile(
+        ax, omega_SSfx, "Adj. SS pop.", by_J, x=age_per_EpS, collapse="sum"
     )
-    plt.plot(
-        age_per_EpS,
-        (
-            omega_path_lev[start_year - year2, :]
-            / omega_path_lev[start_year - year2, :].sum()
-        ),
-        label=str(year2) + " pop.",
-    )
-    plt.plot(
-        age_per_EpS,
-        (
-            omega_path_lev[int(0.5 * S), :]
-            / omega_path_lev[int(0.5 * S), :].sum()
-        ),
-        label="T=" + str(int(0.5 * S)) + " pop.",
-    )
-    plt.plot(
-        age_per_EpS,
-        (omega_path_lev[int(S), :] / omega_path_lev[int(S), :].sum()),
-        label="T=" + str(int(S)) + " pop.",
-    )
-    plt.plot(age_per_EpS, omega_SSfx, label="Adj. SS pop.")
     plt.title("Population distribution at points in time path")
     plt.xlabel(r"Age $s$")
     plt.ylabel(r"Pop. dist'n $\omega_{s}$")
