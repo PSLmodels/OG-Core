@@ -6,12 +6,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
-## [0.20.4] - 2026-10-01
-
-### Added
+### Added in PR #1241
 - Adds a `by_J` keyword argument (default `False`) to the demographic plotting functions in `parameter_plots.py` (`plot_imm_rates`, `plot_mort_rates`, `plot_population`, `plot_fert_rates`, `plot_mort_rates_data`, `plot_omega_fixed`, `plot_imm_fixed`, `plot_population_path`) now that the demographic objects are T x S x J. With `by_J=False`, population distributions are summed across income groups and rates are averaged across income groups using the population weights in `omega`, so one line is plotted for the overall population. With `by_J=True`, one line is plotted per income group and labeled with the j value. The array-based functions take an `omega` (or `omega_list`) argument to supply the weights. Each function checks the dimensions of its inputs and continues to accept objects without an income-group dimension (e.g., `T x S` or `S` arrays).
 
-### Updated
+### Updated in PR #1241
 - Fixes the population weighting in `plot_mort_rates`, which multiplied mortality rates by the unnormalized population shares rather than taking a weighted average across income groups.
 - Fixes the year indexing in `plot_imm_rates`, `plot_mort_rates_data`, and `plot_population_path`, which indexed years as `start_year - year` rather than `year - start_year`.
 
