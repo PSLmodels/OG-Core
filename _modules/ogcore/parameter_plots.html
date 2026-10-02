@@ -424,9 +424,186 @@
 <span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.ticker</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">mticker</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">matplotlib.lines</span><span class="w"> </span><span class="kn">import</span> <span class="n">Line2D</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">ogcore.constants</span><span class="w"> </span><span class="kn">import</span> <span class="n">GROUP_LABELS</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">ogcore</span><span class="w"> </span><span class="kn">import</span> <span class="n">utils</span><span class="p">,</span> <span class="n">txfunc</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">ogcore.constants</span><span class="w"> </span><span class="kn">import</span> <span class="n">DEFAULT_START_YEAR</span><span class="p">,</span> <span class="n">VAR_LABELS</span>
+
+
+<span class="c1"># Line styles cycled over when plotting one line per income group j</span>
+<span class="c1"># alongside a colormap over years (see plot_fert_rates)</span>
+<span class="n">J_LINESTYLES</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="s2">"-"</span><span class="p">,</span>
+    <span class="s2">"--"</span><span class="p">,</span>
+    <span class="s2">"-."</span><span class="p">,</span>
+    <span class="s2">":"</span><span class="p">,</span>
+    <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="mi">1</span><span class="p">)),</span>
+    <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)),</span>
+    <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)),</span>
+    <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">)),</span>
+    <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">)),</span>
+<span class="p">]</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_check_ndim</span><span class="p">(</span><span class="n">arr</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">allowed_ndims</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""</span>
+<span class="sd">    Check that a demographic object has one of the allowed numbers of</span>
+<span class="sd">    dimensions.  Objects are allowed either without an income-group</span>
+<span class="sd">    (J) dimension (backward compatible with earlier versions of</span>
+<span class="sd">    OG-Core) or with J as the last dimension.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        arr (array_like): object to check</span>
+<span class="sd">        name (str): name of the object, used in the error message</span>
+<span class="sd">        allowed_ndims (tuple): allowed numbers of dimensions</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        arr (NumPy array): the object as a NumPy array of floats</span>
+
+<span class="sd">    """</span>
+    <span class="n">arr</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">arr</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
+    <span class="k">assert</span> <span class="n">arr</span><span class="o">.</span><span class="n">ndim</span> <span class="ow">in</span> <span class="n">allowed_ndims</span><span class="p">,</span> <span class="p">(</span>
+        <span class="n">name</span>
+        <span class="o">+</span> <span class="s2">" must have "</span>
+        <span class="o">+</span> <span class="s2">" or "</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">n</span><span class="p">)</span> <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">allowed_ndims</span><span class="p">)</span>
+        <span class="o">+</span> <span class="s2">" dimensions (with income groups j as the last dimension, if "</span>
+        <span class="o">+</span> <span class="s2">"present), got shape "</span>
+        <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">arr</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+    <span class="p">)</span>
+    <span class="k">return</span> <span class="n">arr</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_avg_over_J</span><span class="p">(</span><span class="n">rates</span><span class="p">,</span> <span class="n">omega</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""</span>
+<span class="sd">    Average demographic rates over the income-group (J) dimension,</span>
+<span class="sd">    which is assumed to be the last axis of ``rates``.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        rates (NumPy array): array of rates whose last axis indexes</span>
+<span class="sd">            income groups j</span>
+<span class="sd">        omega (NumPy array or None): population distribution with the</span>
+<span class="sd">            same shape as ``rates`` used as weights.  The weights are</span>
+<span class="sd">            normalized within each cell of the leading dimensions (e.g.,</span>
+<span class="sd">            within each age) so that they sum to one across j.  If</span>
+<span class="sd">            None, a simple (unweighted) mean across j is used.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        avg (NumPy array): rates averaged over j (last axis removed)</span>
+
+<span class="sd">    """</span>
+    <span class="n">rates</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">rates</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">omega</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">rates</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">axis</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">omega</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">omega</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
+    <span class="k">assert</span> <span class="n">omega</span><span class="o">.</span><span class="n">shape</span> <span class="o">==</span> <span class="n">rates</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="p">(</span>
+        <span class="s2">"omega must have the same shape as the rates being averaged, "</span>
+        <span class="o">+</span> <span class="s2">"got "</span>
+        <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">omega</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+        <span class="o">+</span> <span class="s2">" and "</span>
+        <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">rates</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+    <span class="p">)</span>
+    <span class="n">omega_sum</span> <span class="o">=</span> <span class="n">omega</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">axis</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span> <span class="n">keepdims</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="c1"># where an age has zero population, fall back to equal weights</span>
+    <span class="n">weights</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">divide</span><span class="p">(</span>
+        <span class="n">omega</span><span class="p">,</span>
+        <span class="n">omega_sum</span><span class="p">,</span>
+        <span class="n">out</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">full</span><span class="p">(</span><span class="n">omega</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="mf">1.0</span> <span class="o">/</span> <span class="n">omega</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]),</span>
+        <span class="n">where</span><span class="o">=</span><span class="n">omega_sum</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="k">return</span> <span class="p">(</span><span class="n">rates</span> <span class="o">*</span> <span class="n">weights</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">axis</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_sum_over_J</span><span class="p">(</span><span class="n">dist</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""</span>
+<span class="sd">    Collapse a population distribution over the income-group (J)</span>
+<span class="sd">    dimension (assumed to be the last axis) by summing, which yields</span>
+<span class="sd">    the marginal distribution over the remaining dimensions.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        dist (NumPy array): population distribution whose last axis</span>
+<span class="sd">            indexes income groups j</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        marginal (NumPy array): distribution summed over j</span>
+
+<span class="sd">    """</span>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">dist</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">axis</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_plot_age_profile</span><span class="p">(</span>
+    <span class="n">ax</span><span class="p">,</span>
+    <span class="n">arr</span><span class="p">,</span>
+    <span class="n">label</span><span class="p">,</span>
+    <span class="n">by_J</span><span class="p">,</span>
+    <span class="n">x</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">omega</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">collapse</span><span class="o">=</span><span class="s2">"avg"</span><span class="p">,</span>
+    <span class="n">transform</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="o">**</span><span class="n">plot_kwargs</span><span class="p">,</span>
+<span class="p">):</span>
+<span class="w">    </span><span class="sd">"""</span>
+<span class="sd">    Plot an age profile that may or may not have an income-group (J)</span>
+<span class="sd">    dimension.</span>
+
+<span class="sd">    If ``arr`` is one-dimensional (S,), a single line is plotted.  If</span>
+<span class="sd">    ``arr`` is two-dimensional (S x J) and ``by_J`` is True, one line</span>
+<span class="sd">    is plotted for each income group j and labeled with the j value.</span>
+<span class="sd">    If ``arr`` is (S x J) and ``by_J`` is False, the array is first</span>
+<span class="sd">    collapsed over j (summed for distributions, population-weighted</span>
+<span class="sd">    averaged for rates) and a single line is plotted.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        ax (Matplotlib axes object): axes to plot on</span>
+<span class="sd">        arr (NumPy array): age profile, (S,) or (S x J)</span>
+<span class="sd">        label (str): legend label for the series (", j=k" is appended</span>
+<span class="sd">            when plotting by income group)</span>
+<span class="sd">        by_J (bool): whether to plot a separate line for each j</span>
+<span class="sd">        x (array_like or None): x-axis values, if None then the index</span>
+<span class="sd">            of ``arr`` is used</span>
+<span class="sd">        omega (NumPy array or None): population distribution of the</span>
+<span class="sd">            same shape as ``arr`` used to weight the average across</span>
+<span class="sd">            j when ``collapse`` is "avg"</span>
+<span class="sd">        collapse (str): "sum" to sum over j (for distributions) or</span>
+<span class="sd">            "avg" to take the population-weighted average over j (for</span>
+<span class="sd">            rates) when ``by_J`` is False</span>
+<span class="sd">        transform (callable or None): function applied to each (S,)</span>
+<span class="sd">            series just before it is plotted (e.g., to compute</span>
+<span class="sd">            cumulative survival rates from mortality rates)</span>
+<span class="sd">        plot_kwargs (dict): additional keyword arguments passed to</span>
+<span class="sd">            ``ax.plot``</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        None</span>
+
+<span class="sd">    """</span>
+    <span class="k">assert</span> <span class="n">collapse</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">"sum"</span><span class="p">,</span> <span class="s2">"avg"</span><span class="p">],</span> <span class="s2">"collapse must be 'sum' or 'avg'"</span>
+    <span class="n">arr</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">arr</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
+    <span class="k">assert</span> <span class="n">arr</span><span class="o">.</span><span class="n">ndim</span> <span class="ow">in</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">],</span> <span class="p">(</span>
+        <span class="s2">"Expected an age profile of shape (S,) or (S, J), got shape "</span>
+        <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">arr</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+    <span class="p">)</span>
+    <span class="k">if</span> <span class="n">transform</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+
+        <span class="k">def</span><span class="w"> </span><span class="nf">transform</span><span class="p">(</span><span class="n">y</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">y</span>
+
+    <span class="k">if</span> <span class="n">arr</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">by_J</span><span class="p">:</span>
+            <span class="n">series</span> <span class="o">=</span> <span class="p">[</span>
+                <span class="p">(</span><span class="n">arr</span><span class="p">[:,</span> <span class="n">j</span><span class="p">],</span> <span class="n">label</span> <span class="o">+</span> <span class="s2">", j="</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">j</span><span class="p">))</span>
+                <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">arr</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+            <span class="p">]</span>
+        <span class="k">elif</span> <span class="n">collapse</span> <span class="o">==</span> <span class="s2">"sum"</span><span class="p">:</span>
+            <span class="n">series</span> <span class="o">=</span> <span class="p">[(</span><span class="n">_sum_over_J</span><span class="p">(</span><span class="n">arr</span><span class="p">),</span> <span class="n">label</span><span class="p">)]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">series</span> <span class="o">=</span> <span class="p">[(</span><span class="n">_avg_over_J</span><span class="p">(</span><span class="n">arr</span><span class="p">,</span> <span class="n">omega</span><span class="p">),</span> <span class="n">label</span><span class="p">)]</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">series</span> <span class="o">=</span> <span class="p">[(</span><span class="n">arr</span><span class="p">,</span> <span class="n">label</span><span class="p">)]</span>
+    <span class="k">for</span> <span class="n">y</span><span class="p">,</span> <span class="n">lab</span> <span class="ow">in</span> <span class="n">series</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">x</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">transform</span><span class="p">(</span><span class="n">y</span><span class="p">),</span> <span class="n">label</span><span class="o">=</span><span class="n">lab</span><span class="p">,</span> <span class="o">**</span><span class="n">plot_kwargs</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">transform</span><span class="p">(</span><span class="n">y</span><span class="p">),</span> <span class="n">label</span><span class="o">=</span><span class="n">lab</span><span class="p">,</span> <span class="o">**</span><span class="n">plot_kwargs</span><span class="p">)</span>
 
 
 <div class="viewcode-block" id="plot_imm_rates">
@@ -438,29 +615,52 @@
     <span class="n">include_title</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
     <span class="n">source</span><span class="o">=</span><span class="s2">"United Nations, World Population Prospects"</span><span class="p">,</span>
     <span class="n">path</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">by_J</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="n">omega</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
 <span class="p">):</span>
 <span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Plot immigration rates from the data</span>
 
 <span class="sd">    Args:</span>
-<span class="sd">        imm_rates (NumPy array): immigration rates for each of</span>
-<span class="sd">            totpers</span>
+<span class="sd">        imm_rates (NumPy array): immigration rates for each year and</span>
+<span class="sd">            age (T x S) or for each year, age, and income group</span>
+<span class="sd">            (T x S x J)</span>
 <span class="sd">        start_year (int): first year of data</span>
 <span class="sd">        years_to_plot (list): list of years to plot</span>
+<span class="sd">        include_title (bool): whether to include a title in the plot</span>
 <span class="sd">        source (str): data source for immigration rates</span>
 <span class="sd">        path (str): path to save figure to, if None then figure</span>
 <span class="sd">            is returned</span>
+<span class="sd">        by_J (bool): if imm_rates has an income-group dimension, plot</span>
+<span class="sd">            a separate line for each income group j (labeled by j).</span>
+<span class="sd">            If False, the rates are averaged across income groups so</span>
+<span class="sd">            that one line is plotted per year.</span>
+<span class="sd">        omega (NumPy array): population distribution with the same</span>
+<span class="sd">            shape as imm_rates, used to weight the average across</span>
+<span class="sd">            income groups when by_J is False.  If None, a simple mean</span>
+<span class="sd">            across income groups is used.</span>
 
 <span class="sd">    Returns:</span>
 <span class="sd">        fig (Matplotlib plot object): plot of immigration rates</span>
 
 <span class="sd">    """</span>
-    <span class="c1"># create line styles to cycle through</span>
+    <span class="n">imm_rates</span> <span class="o">=</span> <span class="n">_check_ndim</span><span class="p">(</span><span class="n">imm_rates</span><span class="p">,</span> <span class="s2">"imm_rates"</span><span class="p">,</span> <span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">))</span>
+    <span class="k">if</span> <span class="n">omega</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">omega</span> <span class="o">=</span> <span class="n">_check_ndim</span><span class="p">(</span><span class="n">omega</span><span class="p">,</span> <span class="s2">"omega"</span><span class="p">,</span> <span class="p">(</span><span class="n">imm_rates</span><span class="o">.</span><span class="n">ndim</span><span class="p">,))</span>
+    <span class="n">plot_by_J</span> <span class="o">=</span> <span class="n">by_J</span> <span class="ow">and</span> <span class="n">imm_rates</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">3</span>
     <span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">()</span>
     <span class="k">for</span> <span class="n">y</span> <span class="ow">in</span> <span class="n">years_to_plot</span><span class="p">:</span>
-        <span class="n">i</span> <span class="o">=</span> <span class="n">start_year</span> <span class="o">-</span> <span class="n">y</span>
-        <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">imm_rates</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="p">:],</span> <span class="n">c</span><span class="o">=</span><span class="s2">"blue"</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">"Year "</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">y</span><span class="p">))</span>
-    <span class="c1">#     fontsize=20)</span>
+        <span class="n">i</span> <span class="o">=</span> <span class="n">y</span> <span class="o">-</span> <span class="n">start_year</span>
+        <span class="n">omega_i</span> <span class="o">=</span> <span class="kc">None</span> <span class="k">if</span> <span class="n">omega</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">omega</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+        <span class="n">_plot_age_profile</span><span class="p">(</span>
+            <span class="n">ax</span><span class="p">,</span>
+            <span class="n">imm_rates</span><span class="p">[</span><span class="n">i</span><span class="p">],</span>
+            <span class="s2">"Year "</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">y</span><span class="p">),</span>
+            <span class="n">by_J</span><span class="p">,</span>
+            <span class="n">omega</span><span class="o">=</span><span class="n">omega_i</span><span class="p">,</span>
+            <span class="n">collapse</span><span class="o">=</span><span class="s2">"avg"</span><span class="p">,</span>
+            <span class="o">**</span><span class="p">({}</span> <span class="k">if</span> <span class="n">plot_by_J</span> <span class="k">else</span> <span class="p">{</span><span class="s2">"c"</span><span class="p">:</span> <span class="s2">"blue"</span><span class="p">}),</span>
+        <span class="p">)</span>
     <span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="sa">r</span><span class="s2">"Age $s$"</span><span class="p">)</span>
     <span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="sa">r</span><span class="s2">"Immigration rate $i_</span><span class="si">{s}</span><span class="s2">$"</span><span class="p">)</span>
     <span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">loc</span><span class="o">=</span><span class="s2">"upper left"</span><span class="p">)</span>
@@ -492,6 +692,7 @@
     <span class="n">survival_rates</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
     <span class="n">include_title</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
     <span class="n">path</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">by_J</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
 <span class="p">):</span>
 <span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Create a plot of mortality rates from OG-Core parameterization.</span>
@@ -499,40 +700,54 @@
 <span class="sd">    Args:</span>
 <span class="sd">        p_list (list): list of parameters objects</span>
 <span class="sd">        labels (list): list of labels for the legend</span>
+<span class="sd">        years (list): list of years to plot</span>
 <span class="sd">        survival_rates (bool): whether to plot survival rates instead</span>
 <span class="sd">            of mortality rates</span>
 <span class="sd">        include_title (bool): whether to include a title in the plot</span>
 <span class="sd">        path (string): path to save figure to</span>
+<span class="sd">        by_J (bool): if mortality rates vary by income group, plot a</span>
+<span class="sd">            separate line for each income group j (labeled by j).  If</span>
+<span class="sd">            False, the rates are averaged across income groups using</span>
+<span class="sd">            the population weights in omega so that one line is</span>
+<span class="sd">            plotted per year and parameters object.</span>
 
 <span class="sd">    Returns:</span>
 <span class="sd">        fig (Matplotlib plot object): plot of mortality rates</span>
 
 <span class="sd">    """</span>
     <span class="n">p0</span> <span class="o">=</span> <span class="n">p_list</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">p_list</span><span class="p">:</span>
+        <span class="n">_check_ndim</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">rho</span><span class="p">,</span> <span class="s2">"rho"</span><span class="p">,</span> <span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">))</span>
+        <span class="n">_check_ndim</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">omega</span><span class="p">,</span> <span class="s2">"omega"</span><span class="p">,</span> <span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">))</span>
     <span class="n">age_per</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="n">p0</span><span class="o">.</span><span class="n">E</span><span class="p">,</span> <span class="n">p0</span><span class="o">.</span><span class="n">E</span> <span class="o">+</span> <span class="n">p0</span><span class="o">.</span><span class="n">S</span><span class="p">,</span> <span class="n">p0</span><span class="o">.</span><span class="n">S</span><span class="p">)</span>
     <span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">()</span>
+    <span class="k">if</span> <span class="n">survival_rates</span><span class="p">:</span>
+
+        <span class="k">def</span><span class="w"> </span><span class="nf">transform</span><span class="p">(</span><span class="n">rho_t</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">cumprod</span><span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">rho_t</span><span class="p">)</span>
+
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">transform</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="k">for</span> <span class="n">y</span> <span class="ow">in</span> <span class="n">years</span><span class="p">:</span>
         <span class="n">t</span> <span class="o">=</span> <span class="n">y</span> <span class="o">-</span> <span class="n">p0</span><span class="o">.</span><span class="n">start_year</span>
         <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">p</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">p_list</span><span class="p">):</span>
-            <span class="c1"># get average mortality rate across all j types if 3D array</span>
-            <span class="k">if</span> <span class="n">p</span><span class="o">.</span><span class="n">rho</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">3</span><span class="p">:</span>
-                <span class="c1"># average over all j types</span>
+            <span class="n">omega_t</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="k">if</span> <span class="n">p</span><span class="o">.</span><span class="n">rho</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">3</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">by_J</span><span class="p">:</span>
+                <span class="c1"># population weights used to average over j</span>
                 <span class="k">if</span> <span class="n">p</span><span class="o">.</span><span class="n">omega</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">3</span><span class="p">:</span>
-                    <span class="n">rho_t</span> <span class="o">=</span> <span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">rho</span><span class="p">[</span><span class="n">t</span><span class="p">,</span> <span class="p">:,</span> <span class="p">:]</span> <span class="o">*</span> <span class="n">p</span><span class="o">.</span><span class="n">omega</span><span class="p">[</span><span class="n">t</span><span class="p">,</span> <span class="p">:,</span> <span class="p">:])</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">axis</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span>
+                    <span class="n">omega_t</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">omega</span><span class="p">[</span><span class="n">t</span><span class="p">,</span> <span class="p">:,</span> <span class="p">:]</span>
                 <span class="k">else</span><span class="p">:</span>
-                    <span class="n">rho_t</span> <span class="o">=</span> <span class="p">(</span>
-                        <span class="n">p</span><span class="o">.</span><span class="n">rho</span><span class="p">[</span><span class="n">t</span><span class="p">,</span> <span class="p">:,</span> <span class="p">:]</span> <span class="o">*</span> <span class="n">p</span><span class="o">.</span><span class="n">lambdas</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">p</span><span class="o">.</span><span class="n">J</span><span class="p">)</span>
-                    <span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">axis</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="n">rho_t</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">rho</span><span class="p">[</span><span class="n">t</span><span class="p">,</span> <span class="p">:]</span>
-            <span class="k">if</span> <span class="n">survival_rates</span><span class="p">:</span>
-                <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span>
-                    <span class="n">age_per</span><span class="p">,</span>
-                    <span class="n">np</span><span class="o">.</span><span class="n">cumprod</span><span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">rho_t</span><span class="p">),</span>
-                    <span class="n">label</span><span class="o">=</span><span class="n">labels</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">+</span> <span class="s2">" "</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">y</span><span class="p">),</span>
-                <span class="p">)</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">age_per</span><span class="p">,</span> <span class="n">rho_t</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="n">labels</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">+</span> <span class="s2">" "</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">y</span><span class="p">))</span>
+                    <span class="n">omega_t</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">tile</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">lambdas</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">p</span><span class="o">.</span><span class="n">J</span><span class="p">),</span> <span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">S</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
+            <span class="n">_plot_age_profile</span><span class="p">(</span>
+                <span class="n">ax</span><span class="p">,</span>
+                <span class="n">p</span><span class="o">.</span><span class="n">rho</span><span class="p">[</span><span class="n">t</span><span class="p">],</span>
+                <span class="n">labels</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">+</span> <span class="s2">" "</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">y</span><span class="p">),</span>
+                <span class="n">by_J</span><span class="p">,</span>
+                <span class="n">x</span><span class="o">=</span><span class="n">age_per</span><span class="p">,</span>
+                <span class="n">omega</span><span class="o">=</span><span class="n">omega_t</span><span class="p">,</span>
+                <span class="n">collapse</span><span class="o">=</span><span class="s2">"avg"</span><span class="p">,</span>
+                <span class="n">transform</span><span class="o">=</span><span class="n">transform</span><span class="p">,</span>
+            <span class="p">)</span>
     <span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="sa">r</span><span class="s2">"Age $s$ (model periods)"</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">survival_rates</span><span class="p">:</span>
         <span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="sa">r</span><span class="s2">"Cumulative Survival Rates"</span><span class="p">)</span>
@@ -610,7 +825,9 @@
 
 <div class="viewcode-block" id="plot_population">
 <a class="viewcode-back" href="../../content/api/parameter_plots.html#ogcore.parameter_plots.plot_population">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">plot_population</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">years_to_plot</span><span class="o">=</span><span class="p">[</span><span class="s2">"SS"</span><span class="p">],</span> <span class="n">include_title</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">path</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">plot_population</span><span class="p">(</span>
+    <span class="n">p</span><span class="p">,</span> <span class="n">years_to_plot</span><span class="o">=</span><span class="p">[</span><span class="s2">"SS"</span><span class="p">],</span> <span class="n">include_title</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">path</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">by_J</span><span class="o">=</span><span class="kc">False</span>
+<span class="p">):</span>
 <span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Plot the distribution of the population over age for various years.</span>
 
@@ -620,6 +837,12 @@
 <span class="sd">            the steady-state period</span>
 <span class="sd">        include_title (bool): whether to include a title in the plot</span>
 <span class="sd">        path (string): path to save figure to</span>
+<span class="sd">        by_J (bool): if the population distribution has an</span>
+<span class="sd">            income-group dimension, plot a separate line for each</span>
+<span class="sd">            income group j (labeled by j).  If False, the distribution</span>
+<span class="sd">            is summed across income groups so that one line showing</span>
+<span class="sd">            the overall population distribution by age is plotted per</span>
+<span class="sd">            year.</span>
 
 <span class="sd">    Returns:</span>
 <span class="sd">        fig (Matplotlib plot object): plot of population distribution</span>
@@ -629,14 +852,18 @@
         <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="nb">int</span><span class="p">)</span> <span class="o">|</span> <span class="p">(</span><span class="n">v</span> <span class="o">==</span> <span class="s2">"SS"</span><span class="p">)</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
             <span class="k">assert</span> <span class="n">v</span> <span class="o">&gt;=</span> <span class="n">p</span><span class="o">.</span><span class="n">start_year</span>
+    <span class="n">_check_ndim</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">omega_SS</span><span class="p">,</span> <span class="s2">"omega_SS"</span><span class="p">,</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">))</span>
+    <span class="n">_check_ndim</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">omega</span><span class="p">,</span> <span class="s2">"omega"</span><span class="p">,</span> <span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">))</span>
     <span class="n">age_vec</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">E</span><span class="p">,</span> <span class="n">p</span><span class="o">.</span><span class="n">S</span> <span class="o">+</span> <span class="n">p</span><span class="o">.</span><span class="n">E</span><span class="p">)</span>
     <span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">()</span>
     <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">years_to_plot</span><span class="p">):</span>
         <span class="k">if</span> <span class="n">v</span> <span class="o">==</span> <span class="s2">"SS"</span><span class="p">:</span>
             <span class="n">pop_dist</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">omega_SS</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">pop_dist</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">omega</span><span class="p">[</span><span class="n">v</span> <span class="o">-</span> <span class="n">p</span><span class="o">.</span><span class="n">start_year</span><span class="p">,</span> <span class="p">:]</span>
-        <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">age_vec</span><span class="p">,</span> <span class="n">pop_dist</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">v</span><span class="p">)</span> <span class="o">+</span> <span class="s2">" pop."</span><span class="p">)</span>
+            <span class="n">pop_dist</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">omega</span><span class="p">[</span><span class="n">v</span> <span class="o">-</span> <span class="n">p</span><span class="o">.</span><span class="n">start_year</span><span class="p">]</span>
+        <span class="n">_plot_age_profile</span><span class="p">(</span>
+            <span class="n">ax</span><span class="p">,</span> <span class="n">pop_dist</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">v</span><span class="p">)</span> <span class="o">+</span> <span class="s2">" pop."</span><span class="p">,</span> <span class="n">by_J</span><span class="p">,</span> <span class="n">x</span><span class="o">=</span><span class="n">age_vec</span><span class="p">,</span> <span class="n">collapse</span><span class="o">=</span><span class="s2">"sum"</span>
+        <span class="p">)</span>
     <span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="sa">r</span><span class="s2">"Age $s$"</span><span class="p">)</span>
     <span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="sa">r</span><span class="s2">"Pop. dist'n $\omega_</span><span class="si">{s}</span><span class="s2">$"</span><span class="p">)</span>
     <span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">loc</span><span class="o">=</span><span class="s2">"lower left"</span><span class="p">)</span>
@@ -828,18 +1055,30 @@
     <span class="n">include_title</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
     <span class="n">source</span><span class="o">=</span><span class="s2">"United Nations, World Population Prospects"</span><span class="p">,</span>
     <span class="n">path</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">by_J</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="n">omega_list</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
 <span class="p">):</span>
 <span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Plot fertility rates from the data</span>
 
 <span class="sd">    Args:</span>
 <span class="sd">        fert_rates_list (list): list of Numpy arrays of fertility rates</span>
-<span class="sd">            for each model period and age</span>
+<span class="sd">            by age (S,) or by age and income group (S x J), one array</span>
+<span class="sd">            per series (e.g., per year)</span>
 <span class="sd">        labels (list): list of labels for the legend</span>
 <span class="sd">        include_title (bool): whether to include a title in the plot</span>
 <span class="sd">        source (str): data source for fertility rates</span>
 <span class="sd">        path (str): path to save figure to, if None then figure</span>
 <span class="sd">            is returned</span>
+<span class="sd">        by_J (bool): if the fertility rates have an income-group</span>
+<span class="sd">            dimension, plot a separate line for each income group j</span>
+<span class="sd">            (labeled by j).  If False, the rates are averaged across</span>
+<span class="sd">            income groups so that one line is plotted per series.</span>
+<span class="sd">        omega_list (list): list of Numpy arrays of the population</span>
+<span class="sd">            distribution, each with the same shape as the corresponding</span>
+<span class="sd">            element of fert_rates_list, used to weight the average</span>
+<span class="sd">            across income groups when by_J is False.  If None, a</span>
+<span class="sd">            simple mean across income groups is used.</span>
 
 <span class="sd">    Returns:</span>
 <span class="sd">        fig (Matplotlib plot object): plot of fertility rates</span>
@@ -850,6 +1089,22 @@
     <span class="k">assert</span> <span class="n">num_series</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="n">labels</span><span class="p">),</span> <span class="p">(</span>
         <span class="s2">"Number of series must match number of labels"</span>
     <span class="p">)</span>
+    <span class="k">if</span> <span class="n">omega_list</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">omega_list</span><span class="p">)</span> <span class="o">==</span> <span class="n">num_series</span><span class="p">,</span> <span class="p">(</span>
+            <span class="s2">"Number of series must match number of omega arrays"</span>
+        <span class="p">)</span>
+    <span class="n">fert_rates_list</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="n">_check_ndim</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="s2">"fert_rates_list["</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="o">+</span> <span class="s2">"]"</span><span class="p">,</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">))</span>
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">f</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">fert_rates_list</span><span class="p">)</span>
+    <span class="p">]</span>
+    <span class="k">if</span> <span class="n">omega_list</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">omega_list</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="n">_check_ndim</span><span class="p">(</span>
+                <span class="n">om</span><span class="p">,</span> <span class="s2">"omega_list["</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="o">+</span> <span class="s2">"]"</span><span class="p">,</span> <span class="p">(</span><span class="n">fert_rates_list</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">ndim</span><span class="p">,)</span>
+            <span class="p">)</span>
+            <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">om</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">omega_list</span><span class="p">)</span>
+        <span class="p">]</span>
+    <span class="n">plot_by_J</span> <span class="o">=</span> <span class="n">by_J</span> <span class="ow">and</span> <span class="nb">any</span><span class="p">(</span><span class="n">f</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">2</span> <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">fert_rates_list</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="n">num_series</span> <span class="o">&gt;</span> <span class="mi">4</span><span class="p">:</span>
         <span class="n">cm</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">get_cmap</span><span class="p">(</span><span class="s2">"coolwarm"</span><span class="p">)</span>
@@ -861,14 +1116,58 @@
 
         <span class="n">vmin</span><span class="p">,</span> <span class="n">vmax</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">label_values</span><span class="p">),</span> <span class="nb">max</span><span class="p">(</span><span class="n">label_values</span><span class="p">)</span>
         <span class="n">norm</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">Normalize</span><span class="p">(</span><span class="n">vmin</span><span class="o">=</span><span class="n">vmin</span><span class="p">,</span> <span class="n">vmax</span><span class="o">=</span><span class="n">vmax</span><span class="p">)</span>
+        <span class="n">max_J</span> <span class="o">=</span> <span class="mi">1</span>
         <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">fert_rates</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">fert_rates_list</span><span class="p">):</span>
-            <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">fert_rates</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="n">cm</span><span class="p">(</span><span class="n">norm</span><span class="p">(</span><span class="n">label_values</span><span class="p">[</span><span class="n">i</span><span class="p">])))</span>
+            <span class="n">color</span> <span class="o">=</span> <span class="n">cm</span><span class="p">(</span><span class="n">norm</span><span class="p">(</span><span class="n">label_values</span><span class="p">[</span><span class="n">i</span><span class="p">]))</span>
+            <span class="k">if</span> <span class="n">fert_rates</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">2</span> <span class="ow">and</span> <span class="n">plot_by_J</span><span class="p">:</span>
+                <span class="c1"># one line per j: color denotes the series (year),</span>
+                <span class="c1"># line style denotes the income group</span>
+                <span class="n">max_J</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">max_J</span><span class="p">,</span> <span class="n">fert_rates</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+                <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">fert_rates</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]):</span>
+                    <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span>
+                        <span class="n">fert_rates</span><span class="p">[:,</span> <span class="n">j</span><span class="p">],</span>
+                        <span class="n">color</span><span class="o">=</span><span class="n">color</span><span class="p">,</span>
+                        <span class="n">linestyle</span><span class="o">=</span><span class="n">J_LINESTYLES</span><span class="p">[</span><span class="n">j</span> <span class="o">%</span> <span class="nb">len</span><span class="p">(</span><span class="n">J_LINESTYLES</span><span class="p">)],</span>
+                        <span class="n">label</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">labels</span><span class="p">[</span><span class="n">i</span><span class="p">])</span> <span class="o">+</span> <span class="s2">", j="</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">j</span><span class="p">),</span>
+                    <span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">omega_i</span> <span class="o">=</span> <span class="kc">None</span> <span class="k">if</span> <span class="n">omega_list</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">omega_list</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+                <span class="n">_plot_age_profile</span><span class="p">(</span>
+                    <span class="n">ax</span><span class="p">,</span>
+                    <span class="n">fert_rates</span><span class="p">,</span>
+                    <span class="nb">str</span><span class="p">(</span><span class="n">labels</span><span class="p">[</span><span class="n">i</span><span class="p">]),</span>
+                    <span class="n">by_J</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+                    <span class="n">omega</span><span class="o">=</span><span class="n">omega_i</span><span class="p">,</span>
+                    <span class="n">collapse</span><span class="o">=</span><span class="s2">"avg"</span><span class="p">,</span>
+                    <span class="n">color</span><span class="o">=</span><span class="n">color</span><span class="p">,</span>
+                <span class="p">)</span>
         <span class="n">sm</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">cm</span><span class="o">.</span><span class="n">ScalarMappable</span><span class="p">(</span><span class="n">cmap</span><span class="o">=</span><span class="n">cm</span><span class="p">,</span> <span class="n">norm</span><span class="o">=</span><span class="n">norm</span><span class="p">)</span>
         <span class="n">sm</span><span class="o">.</span><span class="n">set_array</span><span class="p">([])</span>
         <span class="n">plt</span><span class="o">.</span><span class="n">colorbar</span><span class="p">(</span><span class="n">sm</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">"Year"</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">plot_by_J</span><span class="p">:</span>
+            <span class="c1"># legend keyed on line style to identify income groups</span>
+            <span class="n">handles</span> <span class="o">=</span> <span class="p">[</span>
+                <span class="n">Line2D</span><span class="p">(</span>
+                    <span class="p">[</span><span class="mi">0</span><span class="p">],</span>
+                    <span class="p">[</span><span class="mi">0</span><span class="p">],</span>
+                    <span class="n">color</span><span class="o">=</span><span class="s2">"black"</span><span class="p">,</span>
+                    <span class="n">linestyle</span><span class="o">=</span><span class="n">J_LINESTYLES</span><span class="p">[</span><span class="n">j</span> <span class="o">%</span> <span class="nb">len</span><span class="p">(</span><span class="n">J_LINESTYLES</span><span class="p">)],</span>
+                    <span class="n">label</span><span class="o">=</span><span class="s2">"j="</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">j</span><span class="p">),</span>
+                <span class="p">)</span>
+                <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">max_J</span><span class="p">)</span>
+            <span class="p">]</span>
+            <span class="n">ax</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">handles</span><span class="o">=</span><span class="n">handles</span><span class="p">,</span> <span class="n">loc</span><span class="o">=</span><span class="s2">"upper right"</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">fert_rates</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">fert_rates_list</span><span class="p">):</span>
-            <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">fert_rates</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="n">labels</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+            <span class="n">omega_i</span> <span class="o">=</span> <span class="kc">None</span> <span class="k">if</span> <span class="n">omega_list</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">omega_list</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+            <span class="n">_plot_age_profile</span><span class="p">(</span>
+                <span class="n">ax</span><span class="p">,</span>
+                <span class="n">fert_rates</span><span class="p">,</span>
+                <span class="nb">str</span><span class="p">(</span><span class="n">labels</span><span class="p">[</span><span class="n">i</span><span class="p">]),</span>
+                <span class="n">by_J</span><span class="p">,</span>
+                <span class="n">omega</span><span class="o">=</span><span class="n">omega_i</span><span class="p">,</span>
+                <span class="n">collapse</span><span class="o">=</span><span class="s2">"avg"</span><span class="p">,</span>
+            <span class="p">)</span>
         <span class="n">ax</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">loc</span><span class="o">=</span><span class="s2">"upper right"</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="n">include_title</span><span class="p">:</span>
@@ -901,30 +1200,51 @@
     <span class="n">years_to_plot</span><span class="o">=</span><span class="p">[</span><span class="n">DEFAULT_START_YEAR</span><span class="p">],</span>
     <span class="n">source</span><span class="o">=</span><span class="s2">"United Nations, World Population Prospects"</span><span class="p">,</span>
     <span class="n">path</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">by_J</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="n">omega</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
 <span class="p">):</span>
 <span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Plots mortality rates from the data.</span>
 
 <span class="sd">    Args:</span>
-<span class="sd">        mort_rates (array_like): mortality rates for each of</span>
-<span class="sd">            totpers</span>
+<span class="sd">        mort_rates (array_like): mortality rates for each year and</span>
+<span class="sd">            age (T x S) or for each year, age, and income group</span>
+<span class="sd">            (T x S x J)</span>
 <span class="sd">        start_year (int): first year of data</span>
 <span class="sd">        years_to_plot (list): list of years to plot</span>
-<span class="sd">        source (str): data source for fertility rates</span>
+<span class="sd">        source (str): data source for mortality rates</span>
 <span class="sd">        path (str): path to save figure to, if None then figure</span>
 <span class="sd">            is returned</span>
+<span class="sd">        by_J (bool): if mort_rates has an income-group dimension, plot</span>
+<span class="sd">            a separate line for each income group j (labeled by j).</span>
+<span class="sd">            If False, the rates are averaged across income groups so</span>
+<span class="sd">            that one line is plotted per year.</span>
+<span class="sd">        omega (NumPy array): population distribution with the same</span>
+<span class="sd">            shape as mort_rates, used to weight the average across</span>
+<span class="sd">            income groups when by_J is False.  If None, a simple mean</span>
+<span class="sd">            across income groups is used.</span>
 
 <span class="sd">    Returns:</span>
 <span class="sd">        fig (Matplotlib plot object): plot of mortality rates</span>
 
 <span class="sd">    """</span>
-    <span class="c1"># create line styles to cycle through</span>
+    <span class="n">mort_rates</span> <span class="o">=</span> <span class="n">_check_ndim</span><span class="p">(</span><span class="n">mort_rates</span><span class="p">,</span> <span class="s2">"mort_rates"</span><span class="p">,</span> <span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">))</span>
+    <span class="k">if</span> <span class="n">omega</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">omega</span> <span class="o">=</span> <span class="n">_check_ndim</span><span class="p">(</span><span class="n">omega</span><span class="p">,</span> <span class="s2">"omega"</span><span class="p">,</span> <span class="p">(</span><span class="n">mort_rates</span><span class="o">.</span><span class="n">ndim</span><span class="p">,))</span>
+    <span class="n">plot_by_J</span> <span class="o">=</span> <span class="n">by_J</span> <span class="ow">and</span> <span class="n">mort_rates</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">3</span>
     <span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">()</span>
     <span class="k">for</span> <span class="n">y</span> <span class="ow">in</span> <span class="n">years_to_plot</span><span class="p">:</span>
-        <span class="n">i</span> <span class="o">=</span> <span class="n">start_year</span> <span class="o">-</span> <span class="n">y</span>
-        <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">mort_rates</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="p">:],</span> <span class="n">c</span><span class="o">=</span><span class="s2">"blue"</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">"Year "</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">y</span><span class="p">))</span>
-    <span class="c1"># plt.title('Fertility rates by age ($f_{s}$)',</span>
-    <span class="c1">#     fontsize=20)</span>
+        <span class="n">i</span> <span class="o">=</span> <span class="n">y</span> <span class="o">-</span> <span class="n">start_year</span>
+        <span class="n">omega_i</span> <span class="o">=</span> <span class="kc">None</span> <span class="k">if</span> <span class="n">omega</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">omega</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+        <span class="n">_plot_age_profile</span><span class="p">(</span>
+            <span class="n">ax</span><span class="p">,</span>
+            <span class="n">mort_rates</span><span class="p">[</span><span class="n">i</span><span class="p">],</span>
+            <span class="s2">"Year "</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">y</span><span class="p">),</span>
+            <span class="n">by_J</span><span class="p">,</span>
+            <span class="n">omega</span><span class="o">=</span><span class="n">omega_i</span><span class="p">,</span>
+            <span class="n">collapse</span><span class="o">=</span><span class="s2">"avg"</span><span class="p">,</span>
+            <span class="o">**</span><span class="p">({}</span> <span class="k">if</span> <span class="n">plot_by_J</span> <span class="k">else</span> <span class="p">{</span><span class="s2">"c"</span><span class="p">:</span> <span class="s2">"blue"</span><span class="p">}),</span>
+        <span class="p">)</span>
     <span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="sa">r</span><span class="s2">"Age $s$"</span><span class="p">)</span>
     <span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="sa">r</span><span class="s2">"Mortality rate $rho_</span><span class="si">{s}</span><span class="s2">$"</span><span class="p">)</span>
     <span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">loc</span><span class="o">=</span><span class="s2">"upper left"</span><span class="p">)</span>
@@ -990,7 +1310,9 @@
 
 <div class="viewcode-block" id="plot_omega_fixed">
 <a class="viewcode-back" href="../../content/api/parameter_plots.html#ogcore.parameter_plots.plot_omega_fixed">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">plot_omega_fixed</span><span class="p">(</span><span class="n">age_per_EpS</span><span class="p">,</span> <span class="n">omega_SS_orig</span><span class="p">,</span> <span class="n">omega_SSfx</span><span class="p">,</span> <span class="n">E</span><span class="p">,</span> <span class="n">S</span><span class="p">,</span> <span class="n">path</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">plot_omega_fixed</span><span class="p">(</span>
+    <span class="n">age_per_EpS</span><span class="p">,</span> <span class="n">omega_SS_orig</span><span class="p">,</span> <span class="n">omega_SSfx</span><span class="p">,</span> <span class="n">E</span><span class="p">,</span> <span class="n">S</span><span class="p">,</span> <span class="n">path</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">by_J</span><span class="o">=</span><span class="kc">False</span>
+<span class="p">):</span>
 <span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Plot the steady-state population distribution implied by the data</span>
 <span class="sd">    on fertility and mortality rates versus the the steady-state</span>
@@ -1002,22 +1324,40 @@
 <span class="sd">        age_per_EpS (array_like): list of ages over which to plot</span>
 <span class="sd">            population distribution</span>
 <span class="sd">        omega_SS_orig (Numpy array): population distribution in SS</span>
-<span class="sd">            without adjustment to immigration rates</span>
+<span class="sd">            without adjustment to immigration rates, by age (E+S,) or</span>
+<span class="sd">            by age and income group (E+S x J)</span>
 <span class="sd">        omega_SSfx (Numpy array): population distribution in SS</span>
-<span class="sd">            after adjustment to immigration rates</span>
+<span class="sd">            after adjustment to immigration rates, by age (E+S,) or</span>
+<span class="sd">            by age and income group (E+S x J)</span>
 <span class="sd">        E (int): age at which household becomes economically active</span>
 <span class="sd">        S (int): number of years which household is economically active</span>
 <span class="sd">        path (str): path to save figure to, if None then figure</span>
 <span class="sd">            is returned</span>
+<span class="sd">        by_J (bool): if the distributions have an income-group</span>
+<span class="sd">            dimension, plot a separate line for each income group j</span>
+<span class="sd">            (labeled by j).  If False, the distributions are summed</span>
+<span class="sd">            across income groups so that one line is plotted for each</span>
+<span class="sd">            distribution.</span>
 
 <span class="sd">    Returns:</span>
 <span class="sd">        fig (Matplotlib plot object): plot of SS population distribution</span>
 <span class="sd">            before and after adjustment to immigration rates</span>
 
 <span class="sd">    """</span>
+    <span class="n">omega_SS_orig</span> <span class="o">=</span> <span class="n">_check_ndim</span><span class="p">(</span><span class="n">omega_SS_orig</span><span class="p">,</span> <span class="s2">"omega_SS_orig"</span><span class="p">,</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">))</span>
+    <span class="n">omega_SSfx</span> <span class="o">=</span> <span class="n">_check_ndim</span><span class="p">(</span><span class="n">omega_SSfx</span><span class="p">,</span> <span class="s2">"omega_SSfx"</span><span class="p">,</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">))</span>
     <span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">()</span>
-    <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">age_per_EpS</span><span class="p">,</span> <span class="n">omega_SS_orig</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">"Original Dist'n"</span><span class="p">)</span>
-    <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">age_per_EpS</span><span class="p">,</span> <span class="n">omega_SSfx</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">"Fixed Dist'n"</span><span class="p">)</span>
+    <span class="n">_plot_age_profile</span><span class="p">(</span>
+        <span class="n">ax</span><span class="p">,</span>
+        <span class="n">omega_SS_orig</span><span class="p">,</span>
+        <span class="s2">"Original Dist'n"</span><span class="p">,</span>
+        <span class="n">by_J</span><span class="p">,</span>
+        <span class="n">x</span><span class="o">=</span><span class="n">age_per_EpS</span><span class="p">,</span>
+        <span class="n">collapse</span><span class="o">=</span><span class="s2">"sum"</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">_plot_age_profile</span><span class="p">(</span>
+        <span class="n">ax</span><span class="p">,</span> <span class="n">omega_SSfx</span><span class="p">,</span> <span class="s2">"Fixed Dist'n"</span><span class="p">,</span> <span class="n">by_J</span><span class="p">,</span> <span class="n">x</span><span class="o">=</span><span class="n">age_per_EpS</span><span class="p">,</span> <span class="n">collapse</span><span class="o">=</span><span class="s2">"sum"</span>
+    <span class="p">)</span>
     <span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s2">"Original steady-state population distribution vs. fixed"</span><span class="p">)</span>
     <span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="sa">r</span><span class="s2">"Age $s$"</span><span class="p">)</span>
     <span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="sa">r</span><span class="s2">"Pop. dist'n $\omega_</span><span class="si">{s}</span><span class="s2">$"</span><span class="p">)</span>
@@ -1036,7 +1376,14 @@
 <div class="viewcode-block" id="plot_imm_fixed">
 <a class="viewcode-back" href="../../content/api/parameter_plots.html#ogcore.parameter_plots.plot_imm_fixed">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">plot_imm_fixed</span><span class="p">(</span>
-    <span class="n">age_per_EpS</span><span class="p">,</span> <span class="n">imm_rates_orig</span><span class="p">,</span> <span class="n">imm_rates_adj</span><span class="p">,</span> <span class="n">E</span><span class="p">,</span> <span class="n">S</span><span class="p">,</span> <span class="n">path</span><span class="o">=</span><span class="kc">None</span>
+    <span class="n">age_per_EpS</span><span class="p">,</span>
+    <span class="n">imm_rates_orig</span><span class="p">,</span>
+    <span class="n">imm_rates_adj</span><span class="p">,</span>
+    <span class="n">E</span><span class="p">,</span>
+    <span class="n">S</span><span class="p">,</span>
+    <span class="n">path</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">by_J</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="n">omega</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
 <span class="p">):</span>
 <span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Plot the immigration rates implied by the data on population,</span>
@@ -1047,21 +1394,52 @@
 <span class="sd">    Args:</span>
 <span class="sd">        age_per_EpS (array_like): list of ages over which to plot</span>
 <span class="sd">            population distribution</span>
-<span class="sd">        imm_rates_orig (Numpy array): immigration rates by age</span>
+<span class="sd">        imm_rates_orig (Numpy array): immigration rates by age (E+S,)</span>
+<span class="sd">            or by age and income group (E+S x J)</span>
 <span class="sd">        imm_rates_adj (Numpy array): adjusted immigration rates by age</span>
+<span class="sd">            (E+S,) or by age and income group (E+S x J)</span>
 <span class="sd">        E (int): age at which household becomes economically active</span>
 <span class="sd">        S (int): number of years which household is economically active</span>
 <span class="sd">        path (str): path to save figure to, if None then figure</span>
 <span class="sd">            is returned</span>
+<span class="sd">        by_J (bool): if the immigration rates have an income-group</span>
+<span class="sd">            dimension, plot a separate line for each income group j</span>
+<span class="sd">            (labeled by j).  If False, the rates are averaged across</span>
+<span class="sd">            income groups so that one line is plotted for each set of</span>
+<span class="sd">            rates.</span>
+<span class="sd">        omega (NumPy array): population distribution with the same</span>
+<span class="sd">            shape as the immigration rates, used to weight the average</span>
+<span class="sd">            across income groups when by_J is False.  If None, a</span>
+<span class="sd">            simple mean across income groups is used.</span>
 
 <span class="sd">    Returns:</span>
 <span class="sd">        fig (Matplotlib plot object): plot of immigration rates found</span>
 <span class="sd">            from residuals and the adjusted rates to hit SS sooner</span>
 
 <span class="sd">    """</span>
+    <span class="n">imm_rates_orig</span> <span class="o">=</span> <span class="n">_check_ndim</span><span class="p">(</span><span class="n">imm_rates_orig</span><span class="p">,</span> <span class="s2">"imm_rates_orig"</span><span class="p">,</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">))</span>
+    <span class="n">imm_rates_adj</span> <span class="o">=</span> <span class="n">_check_ndim</span><span class="p">(</span><span class="n">imm_rates_adj</span><span class="p">,</span> <span class="s2">"imm_rates_adj"</span><span class="p">,</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">))</span>
+    <span class="k">if</span> <span class="n">omega</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">omega</span> <span class="o">=</span> <span class="n">_check_ndim</span><span class="p">(</span><span class="n">omega</span><span class="p">,</span> <span class="s2">"omega"</span><span class="p">,</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">))</span>
     <span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">()</span>
-    <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">age_per_EpS</span><span class="p">,</span> <span class="n">imm_rates_orig</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">"Original Imm. Rates"</span><span class="p">)</span>
-    <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">age_per_EpS</span><span class="p">,</span> <span class="n">imm_rates_adj</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">"Adj. Imm. Rates"</span><span class="p">)</span>
+    <span class="n">_plot_age_profile</span><span class="p">(</span>
+        <span class="n">ax</span><span class="p">,</span>
+        <span class="n">imm_rates_orig</span><span class="p">,</span>
+        <span class="s2">"Original Imm. Rates"</span><span class="p">,</span>
+        <span class="n">by_J</span><span class="p">,</span>
+        <span class="n">x</span><span class="o">=</span><span class="n">age_per_EpS</span><span class="p">,</span>
+        <span class="n">omega</span><span class="o">=</span><span class="n">omega</span><span class="p">,</span>
+        <span class="n">collapse</span><span class="o">=</span><span class="s2">"avg"</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">_plot_age_profile</span><span class="p">(</span>
+        <span class="n">ax</span><span class="p">,</span>
+        <span class="n">imm_rates_adj</span><span class="p">,</span>
+        <span class="s2">"Adj. Imm. Rates"</span><span class="p">,</span>
+        <span class="n">by_J</span><span class="p">,</span>
+        <span class="n">x</span><span class="o">=</span><span class="n">age_per_EpS</span><span class="p">,</span>
+        <span class="n">omega</span><span class="o">=</span><span class="n">omega</span><span class="p">,</span>
+        <span class="n">collapse</span><span class="o">=</span><span class="s2">"avg"</span><span class="p">,</span>
+    <span class="p">)</span>
     <span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s2">"Original immigration rates vs. adjusted"</span><span class="p">)</span>
     <span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="sa">r</span><span class="s2">"Age $s$"</span><span class="p">)</span>
     <span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="sa">r</span><span class="s2">"Imm. rates $i_</span><span class="si">{s}</span><span class="s2">$"</span><span class="p">)</span>
@@ -1088,6 +1466,7 @@
     <span class="n">year2</span><span class="p">,</span>
     <span class="n">S</span><span class="p">,</span>
     <span class="n">path</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">by_J</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
 <span class="p">):</span>
 <span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Plot the distribution of the population over age for various years.</span>
@@ -1095,11 +1474,11 @@
 <span class="sd">    Args:</span>
 <span class="sd">        age_per_EpS (array_like): list of ages over which to plot</span>
 <span class="sd">            population distribution</span>
-<span class="sd">        initial_pop_pct (array_like): initial year population distribution</span>
 <span class="sd">        omega_path_lev (Numpy array): number of households by age</span>
+<span class="sd">            (T+S x E+S) or by age and income group (T+S x E+S x J)</span>
 <span class="sd">            over the transition path</span>
-<span class="sd">        omega_SSfx (Numpy array): number of households by age</span>
-<span class="sd">            in the SS</span>
+<span class="sd">        omega_SSfx (Numpy array): population distribution by age (E+S,)</span>
+<span class="sd">            or by age and income group (E+S x J) in the SS</span>
 <span class="sd">        start_year (int): first year of data (so can get index of year1</span>
 <span class="sd">            and year2)</span>
 <span class="sd">        year1 (int): first year of data to plot</span>
@@ -1107,43 +1486,36 @@
 <span class="sd">        S (int): number of years which household is economically active</span>
 <span class="sd">        path (str): path to save figure to, if None then figure</span>
 <span class="sd">            is returned</span>
+<span class="sd">        by_J (bool): if the population distributions have an</span>
+<span class="sd">            income-group dimension, plot a separate line for each</span>
+<span class="sd">            income group j (labeled by j).  If False, the distributions</span>
+<span class="sd">            are summed across income groups so that one line showing</span>
+<span class="sd">            the overall population distribution by age is plotted for</span>
+<span class="sd">            each point in time.</span>
 
 <span class="sd">    Returns:</span>
 <span class="sd">        fig (Matplotlib plot object): plot of population distribution</span>
 <span class="sd">            at points along the time path</span>
 
 <span class="sd">    """</span>
+    <span class="n">omega_path_lev</span> <span class="o">=</span> <span class="n">_check_ndim</span><span class="p">(</span><span class="n">omega_path_lev</span><span class="p">,</span> <span class="s2">"omega_path_lev"</span><span class="p">,</span> <span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">))</span>
+    <span class="n">omega_SSfx</span> <span class="o">=</span> <span class="n">_check_ndim</span><span class="p">(</span><span class="n">omega_SSfx</span><span class="p">,</span> <span class="s2">"omega_SSfx"</span><span class="p">,</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">))</span>
     <span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">()</span>
-    <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span>
-        <span class="n">age_per_EpS</span><span class="p">,</span>
-        <span class="p">(</span>
-            <span class="n">omega_path_lev</span><span class="p">[</span><span class="n">start_year</span> <span class="o">-</span> <span class="n">year1</span><span class="p">,</span> <span class="p">:]</span>
-            <span class="o">/</span> <span class="n">omega_path_lev</span><span class="p">[</span><span class="n">start_year</span> <span class="o">-</span> <span class="n">year1</span><span class="p">,</span> <span class="p">:]</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
-        <span class="p">),</span>
-        <span class="n">label</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">year1</span><span class="p">)</span> <span class="o">+</span> <span class="s2">" pop."</span><span class="p">,</span>
+    <span class="n">periods</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="p">(</span><span class="n">year1</span> <span class="o">-</span> <span class="n">start_year</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">year1</span><span class="p">)</span> <span class="o">+</span> <span class="s2">" pop."</span><span class="p">),</span>
+        <span class="p">(</span><span class="n">year2</span> <span class="o">-</span> <span class="n">start_year</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">year2</span><span class="p">)</span> <span class="o">+</span> <span class="s2">" pop."</span><span class="p">),</span>
+        <span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="mf">0.5</span> <span class="o">*</span> <span class="n">S</span><span class="p">),</span> <span class="s2">"T="</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="mf">0.5</span> <span class="o">*</span> <span class="n">S</span><span class="p">))</span> <span class="o">+</span> <span class="s2">" pop."</span><span class="p">),</span>
+        <span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">S</span><span class="p">),</span> <span class="s2">"T="</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">S</span><span class="p">))</span> <span class="o">+</span> <span class="s2">" pop."</span><span class="p">),</span>
+    <span class="p">]</span>
+    <span class="k">for</span> <span class="n">t</span><span class="p">,</span> <span class="n">label</span> <span class="ow">in</span> <span class="n">periods</span><span class="p">:</span>
+        <span class="c1"># population distribution across all (age, income group) cells</span>
+        <span class="n">pop_dist</span> <span class="o">=</span> <span class="n">omega_path_lev</span><span class="p">[</span><span class="n">t</span><span class="p">]</span> <span class="o">/</span> <span class="n">omega_path_lev</span><span class="p">[</span><span class="n">t</span><span class="p">]</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+        <span class="n">_plot_age_profile</span><span class="p">(</span>
+            <span class="n">ax</span><span class="p">,</span> <span class="n">pop_dist</span><span class="p">,</span> <span class="n">label</span><span class="p">,</span> <span class="n">by_J</span><span class="p">,</span> <span class="n">x</span><span class="o">=</span><span class="n">age_per_EpS</span><span class="p">,</span> <span class="n">collapse</span><span class="o">=</span><span class="s2">"sum"</span>
+        <span class="p">)</span>
+    <span class="n">_plot_age_profile</span><span class="p">(</span>
+        <span class="n">ax</span><span class="p">,</span> <span class="n">omega_SSfx</span><span class="p">,</span> <span class="s2">"Adj. SS pop."</span><span class="p">,</span> <span class="n">by_J</span><span class="p">,</span> <span class="n">x</span><span class="o">=</span><span class="n">age_per_EpS</span><span class="p">,</span> <span class="n">collapse</span><span class="o">=</span><span class="s2">"sum"</span>
     <span class="p">)</span>
-    <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span>
-        <span class="n">age_per_EpS</span><span class="p">,</span>
-        <span class="p">(</span>
-            <span class="n">omega_path_lev</span><span class="p">[</span><span class="n">start_year</span> <span class="o">-</span> <span class="n">year2</span><span class="p">,</span> <span class="p">:]</span>
-            <span class="o">/</span> <span class="n">omega_path_lev</span><span class="p">[</span><span class="n">start_year</span> <span class="o">-</span> <span class="n">year2</span><span class="p">,</span> <span class="p">:]</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
-        <span class="p">),</span>
-        <span class="n">label</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">year2</span><span class="p">)</span> <span class="o">+</span> <span class="s2">" pop."</span><span class="p">,</span>
-    <span class="p">)</span>
-    <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span>
-        <span class="n">age_per_EpS</span><span class="p">,</span>
-        <span class="p">(</span>
-            <span class="n">omega_path_lev</span><span class="p">[</span><span class="nb">int</span><span class="p">(</span><span class="mf">0.5</span> <span class="o">*</span> <span class="n">S</span><span class="p">),</span> <span class="p">:]</span>
-            <span class="o">/</span> <span class="n">omega_path_lev</span><span class="p">[</span><span class="nb">int</span><span class="p">(</span><span class="mf">0.5</span> <span class="o">*</span> <span class="n">S</span><span class="p">),</span> <span class="p">:]</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
-        <span class="p">),</span>
-        <span class="n">label</span><span class="o">=</span><span class="s2">"T="</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="mf">0.5</span> <span class="o">*</span> <span class="n">S</span><span class="p">))</span> <span class="o">+</span> <span class="s2">" pop."</span><span class="p">,</span>
-    <span class="p">)</span>
-    <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span>
-        <span class="n">age_per_EpS</span><span class="p">,</span>
-        <span class="p">(</span><span class="n">omega_path_lev</span><span class="p">[</span><span class="nb">int</span><span class="p">(</span><span class="n">S</span><span class="p">),</span> <span class="p">:]</span> <span class="o">/</span> <span class="n">omega_path_lev</span><span class="p">[</span><span class="nb">int</span><span class="p">(</span><span class="n">S</span><span class="p">),</span> <span class="p">:]</span><span class="o">.</span><span class="n">sum</span><span class="p">()),</span>
-        <span class="n">label</span><span class="o">=</span><span class="s2">"T="</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">S</span><span class="p">))</span> <span class="o">+</span> <span class="s2">" pop."</span><span class="p">,</span>
-    <span class="p">)</span>
-    <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">age_per_EpS</span><span class="p">,</span> <span class="n">omega_SSfx</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">"Adj. SS pop."</span><span class="p">)</span>
     <span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s2">"Population distribution at points in time path"</span><span class="p">)</span>
     <span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="sa">r</span><span class="s2">"Age $s$"</span><span class="p">)</span>
     <span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="sa">r</span><span class="s2">"Pop. dist'n $\omega_</span><span class="si">{s}</span><span class="s2">$"</span><span class="p">)</span>

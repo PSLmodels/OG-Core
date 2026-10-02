@@ -643,18 +643,28 @@ levels</p></li>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="ogcore.parameter_plots.plot_fert_rates">
-<span class="sig-prename descclassname"><span class="pre">ogcore.parameter_plots.</span></span><span class="sig-name descname"><span class="pre">plot_fert_rates</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fert_rates_list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">labels</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">['']</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">include_title</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">source</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'United</span> <span class="pre">Nations,</span> <span class="pre">World</span> <span class="pre">Population</span> <span class="pre">Prospects'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogcore/parameter_plots.html#plot_fert_rates"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogcore.parameter_plots.plot_fert_rates" title="Link to this definition">#</a></dt>
+<span class="sig-prename descclassname"><span class="pre">ogcore.parameter_plots.</span></span><span class="sig-name descname"><span class="pre">plot_fert_rates</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fert_rates_list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">labels</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">['']</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">include_title</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">source</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'United</span> <span class="pre">Nations,</span> <span class="pre">World</span> <span class="pre">Population</span> <span class="pre">Prospects'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">by_J</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">omega_list</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogcore/parameter_plots.html#plot_fert_rates"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogcore.parameter_plots.plot_fert_rates" title="Link to this definition">#</a></dt>
 <dd><p>Plot fertility rates from the data</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>fert_rates_list</strong> (<em>list</em>) – list of Numpy arrays of fertility rates
-for each model period and age</p></li>
+by age (S,) or by age and income group (S x J), one array
+per series (e.g., per year)</p></li>
 <li><p><strong>labels</strong> (<em>list</em>) – list of labels for the legend</p></li>
 <li><p><strong>include_title</strong> (<em>bool</em>) – whether to include a title in the plot</p></li>
 <li><p><strong>source</strong> (<em>str</em>) – data source for fertility rates</p></li>
 <li><p><strong>path</strong> (<em>str</em>) – path to save figure to, if None then figure
 is returned</p></li>
+<li><p><strong>by_J</strong> (<em>bool</em>) – if the fertility rates have an income-group
+dimension, plot a separate line for each income group j
+(labeled by j).  If False, the rates are averaged across
+income groups so that one line is plotted per series.</p></li>
+<li><p><strong>omega_list</strong> (<em>list</em>) – list of Numpy arrays of the population
+distribution, each with the same shape as the corresponding
+element of fert_rates_list, used to weight the average
+across income groups when by_J is False.  If None, a
+simple mean across income groups is used.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -690,7 +700,7 @@ is returned</p></li>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="ogcore.parameter_plots.plot_imm_fixed">
-<span class="sig-prename descclassname"><span class="pre">ogcore.parameter_plots.</span></span><span class="sig-name descname"><span class="pre">plot_imm_fixed</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">age_per_EpS</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">imm_rates_orig</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">imm_rates_adj</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">E</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">S</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogcore/parameter_plots.html#plot_imm_fixed"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogcore.parameter_plots.plot_imm_fixed" title="Link to this definition">#</a></dt>
+<span class="sig-prename descclassname"><span class="pre">ogcore.parameter_plots.</span></span><span class="sig-name descname"><span class="pre">plot_imm_fixed</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">age_per_EpS</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">imm_rates_orig</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">imm_rates_adj</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">E</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">S</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">by_J</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">omega</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogcore/parameter_plots.html#plot_imm_fixed"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogcore.parameter_plots.plot_imm_fixed" title="Link to this definition">#</a></dt>
 <dd><p>Plot the immigration rates implied by the data on population,
 mortality, and fertility versus the adjusted immigration rates
 needed to achieve a stationary distribution of the population in a
@@ -700,12 +710,23 @@ reasonable number of model periods.</p>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>age_per_EpS</strong> (<em>array_like</em>) – list of ages over which to plot
 population distribution</p></li>
-<li><p><strong>imm_rates_orig</strong> (<em>Numpy array</em>) – immigration rates by age</p></li>
-<li><p><strong>imm_rates_adj</strong> (<em>Numpy array</em>) – adjusted immigration rates by age</p></li>
+<li><p><strong>imm_rates_orig</strong> (<em>Numpy array</em>) – immigration rates by age (E+S,)
+or by age and income group (E+S x J)</p></li>
+<li><p><strong>imm_rates_adj</strong> (<em>Numpy array</em>) – adjusted immigration rates by age
+(E+S,) or by age and income group (E+S x J)</p></li>
 <li><p><strong>E</strong> (<em>int</em>) – age at which household becomes economically active</p></li>
 <li><p><strong>S</strong> (<em>int</em>) – number of years which household is economically active</p></li>
 <li><p><strong>path</strong> (<em>str</em>) – path to save figure to, if None then figure
 is returned</p></li>
+<li><p><strong>by_J</strong> (<em>bool</em>) – if the immigration rates have an income-group
+dimension, plot a separate line for each income group j
+(labeled by j).  If False, the rates are averaged across
+income groups so that one line is plotted for each set of
+rates.</p></li>
+<li><p><strong>omega</strong> (<em>NumPy array</em>) – population distribution with the same
+shape as the immigration rates, used to weight the average
+across income groups when by_J is False.  If None, a
+simple mean across income groups is used.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -723,18 +744,28 @@ is returned</p></li>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="ogcore.parameter_plots.plot_imm_rates">
-<span class="sig-prename descclassname"><span class="pre">ogcore.parameter_plots.</span></span><span class="sig-name descname"><span class="pre">plot_imm_rates</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">imm_rates</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">start_year</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2025</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">years_to_plot</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[2025]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">include_title</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">source</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'United</span> <span class="pre">Nations,</span> <span class="pre">World</span> <span class="pre">Population</span> <span class="pre">Prospects'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogcore/parameter_plots.html#plot_imm_rates"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogcore.parameter_plots.plot_imm_rates" title="Link to this definition">#</a></dt>
+<span class="sig-prename descclassname"><span class="pre">ogcore.parameter_plots.</span></span><span class="sig-name descname"><span class="pre">plot_imm_rates</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">imm_rates</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">start_year</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2025</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">years_to_plot</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[2025]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">include_title</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">source</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'United</span> <span class="pre">Nations,</span> <span class="pre">World</span> <span class="pre">Population</span> <span class="pre">Prospects'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">by_J</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">omega</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogcore/parameter_plots.html#plot_imm_rates"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogcore.parameter_plots.plot_imm_rates" title="Link to this definition">#</a></dt>
 <dd><p>Plot immigration rates from the data</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>imm_rates</strong> (<em>NumPy array</em>) – immigration rates for each of
-totpers</p></li>
+<li><p><strong>imm_rates</strong> (<em>NumPy array</em>) – immigration rates for each year and
+age (T x S) or for each year, age, and income group
+(T x S x J)</p></li>
 <li><p><strong>start_year</strong> (<em>int</em>) – first year of data</p></li>
 <li><p><strong>years_to_plot</strong> (<em>list</em>) – list of years to plot</p></li>
+<li><p><strong>include_title</strong> (<em>bool</em>) – whether to include a title in the plot</p></li>
 <li><p><strong>source</strong> (<em>str</em>) – data source for immigration rates</p></li>
 <li><p><strong>path</strong> (<em>str</em>) – path to save figure to, if None then figure
 is returned</p></li>
+<li><p><strong>by_J</strong> (<em>bool</em>) – if imm_rates has an income-group dimension, plot
+a separate line for each income group j (labeled by j).
+If False, the rates are averaged across income groups so
+that one line is plotted per year.</p></li>
+<li><p><strong>omega</strong> (<em>NumPy array</em>) – population distribution with the same
+shape as imm_rates, used to weight the average across
+income groups when by_J is False.  If None, a simple mean
+across income groups is used.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -772,17 +803,23 @@ income group, size TxSxJ</p></li>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="ogcore.parameter_plots.plot_mort_rates">
-<span class="sig-prename descclassname"><span class="pre">ogcore.parameter_plots.</span></span><span class="sig-name descname"><span class="pre">plot_mort_rates</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">p_list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">labels</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">['']</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">years</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[2025]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">survival_rates</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">include_title</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogcore/parameter_plots.html#plot_mort_rates"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogcore.parameter_plots.plot_mort_rates" title="Link to this definition">#</a></dt>
+<span class="sig-prename descclassname"><span class="pre">ogcore.parameter_plots.</span></span><span class="sig-name descname"><span class="pre">plot_mort_rates</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">p_list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">labels</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">['']</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">years</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[2025]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">survival_rates</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">include_title</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">by_J</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogcore/parameter_plots.html#plot_mort_rates"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogcore.parameter_plots.plot_mort_rates" title="Link to this definition">#</a></dt>
 <dd><p>Create a plot of mortality rates from OG-Core parameterization.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>p_list</strong> (<em>list</em>) – list of parameters objects</p></li>
 <li><p><strong>labels</strong> (<em>list</em>) – list of labels for the legend</p></li>
+<li><p><strong>years</strong> (<em>list</em>) – list of years to plot</p></li>
 <li><p><strong>survival_rates</strong> (<em>bool</em>) – whether to plot survival rates instead
 of mortality rates</p></li>
 <li><p><strong>include_title</strong> (<em>bool</em>) – whether to include a title in the plot</p></li>
 <li><p><strong>path</strong> (<em>string</em>) – path to save figure to</p></li>
+<li><p><strong>by_J</strong> (<em>bool</em>) – if mortality rates vary by income group, plot a
+separate line for each income group j (labeled by j).  If
+False, the rates are averaged across income groups using
+the population weights in omega so that one line is
+plotted per year and parameters object.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -796,18 +833,27 @@ of mortality rates</p></li>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="ogcore.parameter_plots.plot_mort_rates_data">
-<span class="sig-prename descclassname"><span class="pre">ogcore.parameter_plots.</span></span><span class="sig-name descname"><span class="pre">plot_mort_rates_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mort_rates</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">start_year</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2025</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">years_to_plot</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[2025]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">source</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'United</span> <span class="pre">Nations,</span> <span class="pre">World</span> <span class="pre">Population</span> <span class="pre">Prospects'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogcore/parameter_plots.html#plot_mort_rates_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogcore.parameter_plots.plot_mort_rates_data" title="Link to this definition">#</a></dt>
+<span class="sig-prename descclassname"><span class="pre">ogcore.parameter_plots.</span></span><span class="sig-name descname"><span class="pre">plot_mort_rates_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mort_rates</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">start_year</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2025</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">years_to_plot</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[2025]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">source</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'United</span> <span class="pre">Nations,</span> <span class="pre">World</span> <span class="pre">Population</span> <span class="pre">Prospects'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">by_J</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">omega</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogcore/parameter_plots.html#plot_mort_rates_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogcore.parameter_plots.plot_mort_rates_data" title="Link to this definition">#</a></dt>
 <dd><p>Plots mortality rates from the data.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>mort_rates</strong> (<em>array_like</em>) – mortality rates for each of
-totpers</p></li>
+<li><p><strong>mort_rates</strong> (<em>array_like</em>) – mortality rates for each year and
+age (T x S) or for each year, age, and income group
+(T x S x J)</p></li>
 <li><p><strong>start_year</strong> (<em>int</em>) – first year of data</p></li>
 <li><p><strong>years_to_plot</strong> (<em>list</em>) – list of years to plot</p></li>
-<li><p><strong>source</strong> (<em>str</em>) – data source for fertility rates</p></li>
+<li><p><strong>source</strong> (<em>str</em>) – data source for mortality rates</p></li>
 <li><p><strong>path</strong> (<em>str</em>) – path to save figure to, if None then figure
 is returned</p></li>
+<li><p><strong>by_J</strong> (<em>bool</em>) – if mort_rates has an income-group dimension, plot
+a separate line for each income group j (labeled by j).
+If False, the rates are averaged across income groups so
+that one line is plotted per year.</p></li>
+<li><p><strong>omega</strong> (<em>NumPy array</em>) – population distribution with the same
+shape as mort_rates, used to weight the average across
+income groups when by_J is False.  If None, a simple mean
+across income groups is used.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -821,7 +867,7 @@ is returned</p></li>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="ogcore.parameter_plots.plot_omega_fixed">
-<span class="sig-prename descclassname"><span class="pre">ogcore.parameter_plots.</span></span><span class="sig-name descname"><span class="pre">plot_omega_fixed</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">age_per_EpS</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">omega_SS_orig</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">omega_SSfx</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">E</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">S</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogcore/parameter_plots.html#plot_omega_fixed"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogcore.parameter_plots.plot_omega_fixed" title="Link to this definition">#</a></dt>
+<span class="sig-prename descclassname"><span class="pre">ogcore.parameter_plots.</span></span><span class="sig-name descname"><span class="pre">plot_omega_fixed</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">age_per_EpS</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">omega_SS_orig</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">omega_SSfx</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">E</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">S</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">by_J</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogcore/parameter_plots.html#plot_omega_fixed"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogcore.parameter_plots.plot_omega_fixed" title="Link to this definition">#</a></dt>
 <dd><p>Plot the steady-state population distribution implied by the data
 on fertility and mortality rates versus the the steady-state
 population distribution after adjusting immigration rates so that
@@ -833,13 +879,20 @@ model periods.</p>
 <li><p><strong>age_per_EpS</strong> (<em>array_like</em>) – list of ages over which to plot
 population distribution</p></li>
 <li><p><strong>omega_SS_orig</strong> (<em>Numpy array</em>) – population distribution in SS
-without adjustment to immigration rates</p></li>
+without adjustment to immigration rates, by age (E+S,) or
+by age and income group (E+S x J)</p></li>
 <li><p><strong>omega_SSfx</strong> (<em>Numpy array</em>) – population distribution in SS
-after adjustment to immigration rates</p></li>
+after adjustment to immigration rates, by age (E+S,) or
+by age and income group (E+S x J)</p></li>
 <li><p><strong>E</strong> (<em>int</em>) – age at which household becomes economically active</p></li>
 <li><p><strong>S</strong> (<em>int</em>) – number of years which household is economically active</p></li>
 <li><p><strong>path</strong> (<em>str</em>) – path to save figure to, if None then figure
 is returned</p></li>
+<li><p><strong>by_J</strong> (<em>bool</em>) – if the distributions have an income-group
+dimension, plot a separate line for each income group j
+(labeled by j).  If False, the distributions are summed
+across income groups so that one line is plotted for each
+distribution.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -880,7 +933,7 @@ is returned</p></li>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="ogcore.parameter_plots.plot_population">
-<span class="sig-prename descclassname"><span class="pre">ogcore.parameter_plots.</span></span><span class="sig-name descname"><span class="pre">plot_population</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">p</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">years_to_plot</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">['SS']</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">include_title</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogcore/parameter_plots.html#plot_population"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogcore.parameter_plots.plot_population" title="Link to this definition">#</a></dt>
+<span class="sig-prename descclassname"><span class="pre">ogcore.parameter_plots.</span></span><span class="sig-name descname"><span class="pre">plot_population</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">p</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">years_to_plot</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">['SS']</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">include_title</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">by_J</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogcore/parameter_plots.html#plot_population"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogcore.parameter_plots.plot_population" title="Link to this definition">#</a></dt>
 <dd><p>Plot the distribution of the population over age for various years.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -890,6 +943,12 @@ is returned</p></li>
 the steady-state period</p></li>
 <li><p><strong>include_title</strong> (<em>bool</em>) – whether to include a title in the plot</p></li>
 <li><p><strong>path</strong> (<em>string</em>) – path to save figure to</p></li>
+<li><p><strong>by_J</strong> (<em>bool</em>) – if the population distribution has an
+income-group dimension, plot a separate line for each
+income group j (labeled by j).  If False, the distribution
+is summed across income groups so that one line showing
+the overall population distribution by age is plotted per
+year.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -903,18 +962,18 @@ the steady-state period</p></li>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="ogcore.parameter_plots.plot_population_path">
-<span class="sig-prename descclassname"><span class="pre">ogcore.parameter_plots.</span></span><span class="sig-name descname"><span class="pre">plot_population_path</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">age_per_EpS</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">omega_path_lev</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">omega_SSfx</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">start_year</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">year1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">year2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">S</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogcore/parameter_plots.html#plot_population_path"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogcore.parameter_plots.plot_population_path" title="Link to this definition">#</a></dt>
+<span class="sig-prename descclassname"><span class="pre">ogcore.parameter_plots.</span></span><span class="sig-name descname"><span class="pre">plot_population_path</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">age_per_EpS</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">omega_path_lev</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">omega_SSfx</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">start_year</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">year1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">year2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">S</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">by_J</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogcore/parameter_plots.html#plot_population_path"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogcore.parameter_plots.plot_population_path" title="Link to this definition">#</a></dt>
 <dd><p>Plot the distribution of the population over age for various years.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>age_per_EpS</strong> (<em>array_like</em>) – list of ages over which to plot
 population distribution</p></li>
-<li><p><strong>initial_pop_pct</strong> (<em>array_like</em>) – initial year population distribution</p></li>
 <li><p><strong>omega_path_lev</strong> (<em>Numpy array</em>) – number of households by age
+(T+S x E+S) or by age and income group (T+S x E+S x J)
 over the transition path</p></li>
-<li><p><strong>omega_SSfx</strong> (<em>Numpy array</em>) – number of households by age
-in the SS</p></li>
+<li><p><strong>omega_SSfx</strong> (<em>Numpy array</em>) – population distribution by age (E+S,)
+or by age and income group (E+S x J) in the SS</p></li>
 <li><p><strong>start_year</strong> (<em>int</em>) – first year of data (so can get index of year1
 and year2)</p></li>
 <li><p><strong>year1</strong> (<em>int</em>) – first year of data to plot</p></li>
@@ -922,6 +981,12 @@ and year2)</p></li>
 <li><p><strong>S</strong> (<em>int</em>) – number of years which household is economically active</p></li>
 <li><p><strong>path</strong> (<em>str</em>) – path to save figure to, if None then figure
 is returned</p></li>
+<li><p><strong>by_J</strong> (<em>bool</em>) – if the population distributions have an
+income-group dimension, plot a separate line for each
+income group j (labeled by j).  If False, the distributions
+are summed across income groups so that one line showing
+the overall population distribution by age is plotted for
+each point in time.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
