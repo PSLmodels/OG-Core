@@ -271,6 +271,25 @@ def test_rc_error_message():
     assert "1e-04" in msg or "0.0001" in msg  # the tolerance
 
 
+def test_rc_error_message_names_terminal_tolerance():
+    """When the worst error is in the terminal period the message names the
+    RC_TPI_terminal tolerance; when it is interior it names RC_TPI."""
+    T, M = 100, 2
+    # Terminal spike -> RC_TPI_terminal named.
+    term = np.full((T, M), 1e-8)
+    term[T - 1, 0] = 0.2
+    msg_term = TPI._rc_error_message(term, 1e-4, 0.5)
+    assert "RC_TPI_terminal" in msg_term
+    assert "0.5" in msg_term
+
+    # Interior spike -> RC_TPI named (not the terminal tolerance value).
+    interior = np.full((T, M), 1e-8)
+    interior[10, 0] = 0.2
+    msg_int = TPI._rc_error_message(interior, 1e-4, 0.5)
+    assert f"period {10}" in msg_int
+    assert "RC_TPI = 0.0001" in msg_int or "RC_TPI = 1e-04" in msg_int
+
+
 def test_firstdoughnutring():
     # Test TPI.firstdoughnutring function.  Provide inputs to function and
     # ensure that output returned matches what it has been before.
