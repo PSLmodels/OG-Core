@@ -1088,6 +1088,8 @@
     "initial_Kg_ratio": {
         "title": "Government capital (public capital) to GDP ratio in the initial period",
         "description": "Government capital (aka infrastructure) to GDP ratio in the initial period.",
+        "short_description": "Initial-period public capital to GDP ratio",
+        "param_notation": "$K_{g,0}/Y_0$",
         "section_1": "Fiscal Policy Parameters",
         "notes": "Should be calibrated based on the value of public infrastructure to GDP in the model start year.",
         "type": "float",
@@ -1170,6 +1172,8 @@
         "title": "Linear effect of debt to GDP ratio on government interest rate",
         "section_1": "Fiscal Policy Parameters",
         "description": "Parameter summarizing the linear effect of the debt to GDP ratio on the government interest rate.",
+        "short_description": "Linear effect of debt-to-GDP on the government interest rate",
+        "param_notation": "$\\alpha_{D}$",
         "notes": "",
         "type": "float",
         "value": [
@@ -1188,6 +1192,8 @@
         "title": "Quadratic effect of debt to GDP ratio on government interest rate",
         "section_1": "Fiscal Policy Parameters",
         "description": "Parameter summarizing the quadratic effect of the debt to GDP ratio on the government interest rate.",
+        "short_description": "Quadratic effect of debt-to-GDP on the government interest rate",
+        "param_notation": "$\\alpha_{D2}$",
         "notes": "",
         "type": "float",
         "value": [
@@ -1205,6 +1211,8 @@
     "cit_rate": {
         "title": "Corporate income tax rate",
         "description": "Corporate income tax rate.  Set value for base year, click '+' to add value for next year.  All future years not specified are set to last value entered.",
+        "short_description": "Corporate income tax rate",
+        "param_notation": "$\\tau^{corp}_{m,t}$",
         "section_1": "Fiscal Policy Parameters",
         "section_2": "Taxes",
         "notes": "This is the top marginal corporate income tax rate.",
@@ -1227,6 +1235,8 @@
     "c_corp_share_of_assets": {
         "title": "Share of total business assets held in C corporations",
         "description": "Share of total business assets held in C corporations",
+        "short_description": "Share of business assets held in C corporations",
+        "param_notation": "$\\gamma_{c}$",
         "section_1": "Fiscal Policy Parameters",
         "section_2": "Taxes",
         "notes": "This affects the effective corporate income tax rate on the representative firm in the model",
@@ -1246,6 +1256,8 @@
     "adjustment_factor_for_cit_receipts": {
         "title": "Adjustment to the statutory CIT rate to match effective rate on corporations",
         "description": "Adjustment to the statutory CIT rate to match effective rate on corporations",
+        "short_description": "Adjustment from statutory to effective CIT rate",
+        "param_notation": "$h$",
         "section_1": "Fiscal Policy Parameters",
         "section_2": "Taxes",
         "notes": "This adjustment is necessary to match corporate income tax receipts found in the data.  It is computed as the ratio of the CIT/GDP from US data to CIT/GDP in the model (with this parameter =1)",
@@ -1266,6 +1278,8 @@
     "inv_tax_credit": {
         "title": "Investment tax credit rate",
         "description": "Investment tax credit rate.  This credit reduced the cost of new investment by the specified rate.",
+        "short_description": "Investment tax credit rate",
+        "param_notation": "$\\tau^{inv}_{m,t}$",
         "section_1": "Fiscal Policy Parameters",
         "section_2": "Taxes",
         "notes": "This credit reduced the cost of new investment by the specified rate",
@@ -1312,6 +1326,8 @@
     "delta_tau_annual": {
         "title": "Annual rate of depreciation of capital for tax purposes",
         "description": "Annual rate of depreciation of capital for tax purposes.  Set value for base year, click '+' to add value for next year.  All future years not specified are set to last value entered.",
+        "short_description": "Annual depreciation rate of capital for tax purposes",
+        "param_notation": "$\\delta_{\\tau,ann}$",
         "section_1": "Fiscal Policy Parameters",
         "section_2": "Taxes",
         "notes": "Cost-of-Capital-Calculator can help to calibrate this parameter.",
@@ -1587,6 +1603,8 @@
     "ubi_growthadj": {
         "title": "Boolean indicator variable for whether or not to growth adjust universal basic income transfer",
         "description": "Boolean indicator variable for whether or not to growth adjust universal basic income transfer.",
+        "short_description": "Whether to growth-adjust the UBI transfer",
+        "param_notation": "\\texttt{ubi\\_growthadj}",
         "section_1": "Fiscal Policy Parameters",
         "section_2": "Spending",
         "notes": "When this Boolean = True, the ubi_{j,s,t} matrix is stationary because it is multiplied by e^{g_y t} in the nonstationary household budget constraint. When this Boolean = False, the ubi_{j,s,t} is not multiplied by e^{g_y t} and the steady-state value is a matrix of zeros.",
@@ -1608,6 +1626,8 @@
     "ubi_nom_017": {
         "title": "Dollar (nominal) amount of universal basic income (UBI) per child age 0 through 17",
         "description": "Dollar (nominal) amount of universal basic income (UBI) per child age 0 through 17.",
+        "short_description": "Nominal UBI per child age 0 to 17",
+        "param_notation": "$ubi^{nom}_{0-17}$",
         "section_1": "Fiscal Policy Parameters",
         "section_2": "Spending",
         "notes": "The universal basic income (UBI) per child ages 0 through 17 can take positive or negative values (e.g., a negative value may be used to implement a head tax).",
@@ -1627,6 +1647,8 @@
     "ubi_nom_1864": {
         "title": "Dollar (nominal) amount of universal basic income (UBI) per adult age 18 through 64",
         "description": "Dollar (nominal) amount of universal basic income (UBI) per adult age 18 to 64.",
+        "short_description": "Nominal UBI per adult age 18 to 64",
+        "param_notation": "$ubi^{nom}_{18-64}$",
         "section_1": "Fiscal Policy Parameters",
         "section_2": "Spending",
         "notes": "The universal basic income (UBI) per adult age 18 through 64 can take positive or negative values (e.g., a negative value may be used to implement a head tax).",
@@ -1646,6 +1668,8 @@
     "ubi_nom_65p": {
         "title": "Dollar (nominal) amount of universal basic income (UBI) per adult age 65 and over",
         "description": "Dollar (nominal) amount of universal basic income (UBI) per adult age 65 and over.",
+        "short_description": "Nominal UBI per adult age 65 and over",
+        "param_notation": "$ubi^{nom}_{65+}$",
         "section_1": "Fiscal Policy Parameters",
         "section_2": "Spending",
         "notes": "The universal basic income (UBI) per adult age 65 can take positive or negative values (e.g., a negative value may be used to implement a head tax).",
@@ -1665,6 +1689,8 @@
     "ubi_nom_max": {
         "title": "Maximum dollar (nominal) amount of universal basic income (UBI) per household when all UBI allowances are added up",
         "description": "Maximum dollar (nominal) amount of universal basic income (UBI) per household when all UBI allowances are added up.",
+        "short_description": "Maximum nominal UBI per household",
+        "param_notation": "$ubi^{nom}_{max}$",
         "section_1": "Fiscal Policy Parameters",
         "section_2": "Spending",
         "notes": "The maximum dollar (nominal) amount of universal basic income (UBI) per household can range from $0 per year to $40,000 per year ($3,333 per month).",
@@ -3931,6 +3957,8 @@
     "constant_rates": {
         "title": "Flag to use linear tax functions",
         "description": "Flag to use linear tax functions.",
+        "short_description": "Use linear tax functions",
+        "param_notation": "\\texttt{constant\\_rates}",
         "section_1": "Fiscal Policy Parameters",
         "section_2": "Taxes",
         "notes": "",
@@ -3947,6 +3975,8 @@
     "zero_taxes": {
         "title": "Flag to run model without any individual income taxes",
         "description": "Flag to run model without any individual income taxes.",
+        "short_description": "Run the model without individual income taxes",
+        "param_notation": "\\texttt{zero\\_taxes}",
         "section_1": "Fiscal Policy Parameters",
         "section_2": "Taxes",
         "notes": "",
@@ -4023,6 +4053,8 @@
     "pension_system": {
         "title": "Pension system",
         "description": "Pension system.",
+        "short_description": "Pension system used",
+        "param_notation": "\\texttt{pension\\_system}",
         "section_1": "Fiscal Policy Parameters",
         "section_2": "Government Pension Parameters",
         "notes": "",
@@ -4046,6 +4078,8 @@
     "tau_p": {
         "title": "Pension system contribution tax rate under a notional defined contribution system.",
         "description": "Pension system contribution tax rate under a notional defined contribution system.",
+        "short_description": "NDC pension contribution tax rate",
+        "param_notation": "$\\tau^{p}_{t}$",
         "section_1": "Fiscal Policy Parameters",
         "section_2": "Government Pension Parameters",
         "notes": "",
@@ -4065,6 +4099,8 @@
     "indR": {
         "title": "Adjustment for survivor benefits under a notional defined contribution system.",
         "description": "Adjustment for survivor benefits under a notional defined contribution system.",
+        "short_description": "NDC survivor-benefit adjustment",
+        "param_notation": "$ind_{R}$",
         "section_1": "Fiscal Policy Parameters",
         "section_2": "Government Pension Parameters",
         "notes": "indR = 0.0 for no survivor benefits, indR = 0.5 for survivor benefits",
@@ -4084,6 +4120,8 @@
     "k_ret": {
         "title": "Adjustment for frequency of pension payments under a notional defined contribution system.",
         "description": "Adjustment for frequency of pension payments under a notional defined contribution system.",
+        "short_description": "NDC payment-frequency adjustment",
+        "param_notation": "$k_{ret}$",
         "section_1": "Fiscal Policy Parameters",
         "section_2": "Government Pension Parameters",
         "notes": "k = 0.5 - (6/13n), where n is the number of payments per year",
@@ -4103,6 +4141,8 @@
     "ndc_growth_rate": {
         "title": "Growth rate applied to contributions under a notional defined contribution system.",
         "description": "Growth rate applied to contributions under a notional defined contribution system.",
+        "short_description": "Growth rate applied to NDC contributions",
+        "param_notation": "$g_{NDC,t}$",
         "section_1": "Fiscal Policy Parameters",
         "section_2": "Government Pension Parameters",
         "notes": "'r' uses the model interest rate, 'Curr GDP' the current GDP growth rate, and 'LR GDP' the long-run GDP growth rate.",
@@ -4125,6 +4165,8 @@
     "dir_growth_rate": {
         "title": "Growth rate used in the conversion coefficient of a notional defined contribution system.",
         "description": "Growth rate used in the conversion coefficient of a notional defined contribution system.",
+        "short_description": "Growth rate in the NDC conversion coefficient",
+        "param_notation": "$g_{dir,t}$",
         "section_1": "Fiscal Policy Parameters",
         "section_2": "Government Pension Parameters",
         "notes": "'r' uses the model interest rate, 'Curr GDP' the current GDP growth rate, and 'LR GDP' the long-run GDP growth rate.",
@@ -4147,6 +4189,8 @@
     "alpha_db": {
         "title": "Replacement rate under a defined contribution system.",
         "description": "Replacement rate under a defined contribution system.",
+        "short_description": "Replacement rate under a defined-benefits system",
+        "param_notation": "$\\alpha_{DB}$",
         "section_1": "Fiscal Policy Parameters",
         "section_2": "Government Pension Parameters",
         "notes": "",
@@ -4166,6 +4210,8 @@
     "vpoint": {
         "title": "The value of a point under a points system pension.",
         "description": "The value of a point under a points system pension.",
+        "short_description": "Value of a point under a points-system pension",
+        "param_notation": "$v_{t}$",
         "section_1": "Fiscal Policy Parameters",
         "section_2": "Government Pension Parameters",
         "notes": "",
@@ -4185,6 +4231,8 @@
     "points_growth_rate": {
         "title": "Growth rate applied to contributions under a points system pension.",
         "description": "Growth rate applied to contributions under a points system pension.",
+        "short_description": "Growth rate applied to points-system contributions",
+        "param_notation": "$g_{ps,t}$",
         "section_1": "Fiscal Policy Parameters",
         "section_2": "Government Pension Parameters",
         "notes": "'r' uses the model interest rate, 'Curr GDP' the current GDP growth rate, and 'LR GDP' the long-run GDP growth rate.",
@@ -4207,6 +4255,8 @@
     "yr_contrib": {
         "title": "Number of years of contributions made to defined benefits pension system.",
         "description": "Number of years of contributions made to defined benefits pension system.",
+        "short_description": "Years of contributions under a defined-benefits system",
+        "param_notation": "$Y_{contrib}$",
         "section_1": "Fiscal Policy Parameters",
         "section_2": "Government Pension Parameters",
         "notes": "Since there is not exit from the labor force in the model, the number of years of contributions is set exogenously.",
@@ -4548,6 +4598,8 @@
     "labor_income_tax_noncompliance_rate": {
         "title": "Labor income tax noncompliance rate",
         "description": "Labor income tax noncompliance rate, the ratio of taxes paid to taxes owed.",
+        "short_description": "Labor income tax noncompliance rate",
+        "param_notation": "$\\varsigma^{L}_{j,t}$",
         "section_1": "Fiscal Policy Parameters",
         "section_2": "Taxes",
         "notes": "Can be specified to vary by type J and over year T",
@@ -4576,6 +4628,8 @@
     "capital_income_tax_noncompliance_rate": {
         "title": "Capital income tax noncompliance rate",
         "description": "Capital income tax noncompliance rate, the ratio of taxes paid to taxes owed.",
+        "short_description": "Capital income tax noncompliance rate",
+        "param_notation": "$\\varsigma^{K}_{j,t}$",
         "section_1": "Fiscal Policy Parameters",
         "section_2": "Taxes",
         "notes": "Can be specified to vary by type J and over year T",
@@ -4604,6 +4658,8 @@
     "income_tax_filer": {
         "title": "Income tax filer indicator",
         "description": "Binary indicator for whether lifetime income type j is subject to income taxes. Non-filers (tax_filer[j]=0) are not subject to income taxes but still pay payroll taxes.",
+        "short_description": "Income tax filer indicator",
+        "param_notation": "",
         "section_1": "Fiscal Policy Parameters",
         "section_2": "Taxes",
         "notes": "Specified by time T and lifetime income group J. Defaults to 1.0 (all groups file). Can be set to values between 0 and 1 to represent the share of group j that files.",
@@ -4631,6 +4687,8 @@
     },
         "wealth_tax_filer": {
         "title": "Wealth tax filer indicator",
+        "short_description": "Wealth tax filer indicator",
+        "param_notation": "",
         "description": "Binary indicator for whether lifetime income type j is subject to wealth taxes. Non-filers (wealth_tax_filer[j]=0) are not subject to wealth taxes but still pay payroll taxes.",
         "section_1": "Fiscal Policy Parameters",
         "section_2": "Taxes",
@@ -4680,6 +4738,7 @@
     "TPI_outer_method": {
         "title": "Update rule for the TPI outer (price/aggregate) loop",
         "description": "Update rule for the transition-path outer loop. 'picard' (default) is the model's historical damped functional iteration x <- (1-nu) x + nu G(x) (see nu), which leaves model solutions unchanged. 'anderson' uses limited-memory Anderson acceleration on the residual history to take larger, better-directed steps, guarded by a trust region anchored to the damped point (TPI_trust_radius).",
+        "param_notation": "\\texttt{TPI\\_outer\\_method}",
         "short_description": "TPI outer-loop update rule",
         "section_1": "Model Solution Parameters",
         "notes": "Opt-in solver acceleration. The default ('picard') reproduces the constant-nu behavior exactly.",
@@ -4701,6 +4760,7 @@
     "TPI_anderson_m": {
         "title": "Anderson acceleration memory depth",
         "description": "Number of past iterate/residual differences retained by the Anderson accelerator when TPI_outer_method='anderson'. Ignored otherwise.",
+        "param_notation": "\\texttt{TPI\\_anderson\\_m}",
         "short_description": "Anderson memory depth (m)",
         "section_1": "Model Solution Parameters",
         "notes": "",
@@ -4720,6 +4780,7 @@
     "TPI_anderson_beta": {
         "title": "Anderson acceleration mixing parameter",
         "description": "Mixing weight for the Anderson step when TPI_outer_method='anderson'. beta=1 is undamped; beta<1 adds damping for robustness far from the solution. Ignored otherwise.",
+        "param_notation": "\\texttt{TPI\\_anderson\\_beta}",
         "short_description": "Anderson mixing (beta)",
         "section_1": "Model Solution Parameters",
         "notes": "",
@@ -4739,6 +4800,7 @@
     "TPI_trust_radius": {
         "title": "Trust radius for the anchored Anderson step",
         "description": "Initial trust radius for the accelerated TPI step, as a multiple of the damped functional-iteration step length around the always-feasible damped point. Grown after an improving iteration and shrunk (with a reset) after a worsening one. A non-positive value disables the trust region (unguarded accelerator; not recommended). Ignored when TPI_outer_method='picard'.",
+        "param_notation": "\\texttt{TPI\\_trust\\_radius}",
         "short_description": "Anchored-Anderson trust radius",
         "section_1": "Model Solution Parameters",
         "notes": "",
@@ -4758,6 +4820,7 @@
     "TPI_stall_window": {
         "title": "Iteration window for TPI stall detection",
         "description": "Number of trailing TPI outer-loop iterations over which the best distance must improve on the best from before the window. When it does not, the loop has stalled (cycling or diverging) and a diagnosis is logged; see TPI_stall_action for whether the loop also stops. A value of 0 disables stall detection.",
+        "param_notation": "\\texttt{TPI\\_stall\\_window}",
         "short_description": "TPI stall-detection window",
         "section_1": "Model Solution Parameters",
         "notes": "",
@@ -4777,6 +4840,7 @@
     "TPI_stall_action": {
         "title": "Action when TPI stall detection fires",
         "description": "What to do when stall detection (TPI_stall_window) diagnoses a stalled TPI outer loop. 'warn' (default) logs the diagnosis once and lets the loop continue, leaving model solutions unchanged; 'stop' also ends the loop early, so the run fails through the usual non-convergence checks instead of spending the rest of maxiter.",
+        "param_notation": "\\texttt{TPI\\_stall\\_action}",
         "short_description": "TPI stall action",
         "section_1": "Model Solution Parameters",
         "notes": "",
@@ -4798,6 +4862,8 @@
     "SS_root_method": {
         "title": "Root finding algorithm for outer loop of the SS solution",
         "description": "Root finding algorithm for outer loop of the SS solution.",
+        "short_description": "Root finder for the SS outer loop",
+        "param_notation": "\\texttt{SS\\_root\\_method}",
         "section_1": "Model Solution Parameters",
         "notes": "Uses scipy.optimize.root, please see scipy documentation for description of methods. Note that some methods may require more arguments than are in the function calls in SS.py and TPI.py and will therefore break without modifications of the source code.",
         "type": "str",
@@ -4826,6 +4892,8 @@
     "FOC_root_method": {
         "title": "Root finding algorithm for solving household first order conditions",
         "description": "Root finding algorithm for solving household first order conditions. ",
+        "short_description": "Root finder for the household first order conditions",
+        "param_notation": "\\texttt{FOC\\_root\\_method}",
         "section_1": "Model Solution Parameters",
         "notes": "Uses scipy.optimize.root, please see scipy documentation for description of methods. Note that some methods may require more arguments than are in the function calls in SS.py and TPI.py and will therefore break without modifications of the source code.",
         "type": "str",
@@ -4914,6 +4982,8 @@
     "RC_SS": {
         "title": "Tolerance for the resource constraint in the steady state solution",
         "description": "Tolerance for the resource constraint in the steady state solution.",
+        "short_description": "Resource constraint tolerance in the steady state",
+        "param_notation": "\\texttt{RC\\_SS}",
         "section_1": "Model Solution Parameters",
         "notes": "",
         "type": "float",
@@ -4932,6 +5002,8 @@
     "RC_TPI": {
         "title": "Tolerance for the resource constraint in the time path solution",
         "description": "Tolerance for the resource constraint in the time path solution.",
+        "short_description": "Resource constraint tolerance in the time path",
+        "param_notation": "\\texttt{RC\\_TPI}",
         "section_1": "Model Solution Parameters",
         "notes": "",
         "type": "float",
@@ -4949,6 +5021,8 @@
     },
     "reform_use_baseline_solution":{
         "title": "Whether or not the baseline SS solution is used for starting values when solving the reform",
+        "short_description": "Use the baseline SS as reform starting values",
+        "param_notation": "\\texttt{reform\\_use\\_baseline\\_solution}",
         "description": "Whether or not the baseline SS solution is used for starting values when solving the reform.",
         "section_1": "Model Solution Parameters",
         "notes": "",
@@ -4965,6 +5039,8 @@
     "initial_guess_r_SS": {
         "title": "Initial guess of r for the SS solution",
         "description": "Initial guess of r for the SS solution.",
+        "short_description": "Initial guess of r for the SS solution",
+        "param_notation": "",
         "section_1": "Model Solution Parameters",
         "notes": "",
         "type": "float",
@@ -4983,6 +5059,8 @@
     "initial_guess_TR_SS": {
         "title": "Initial guess of TR for the SS solution",
         "description": "Initial guess of TR for the SS solution. This value is in model units and can therefore be any large positive number. We may have to adjust the maximum for this parameter from time to time.",
+        "short_description": "Initial guess of TR for the SS solution",
+        "param_notation": "",
         "section_1": "Model Solution Parameters",
         "notes": "",
         "type": "float",
@@ -5001,6 +5079,8 @@
     "initial_guess_factor_SS": {
         "title": "Initial guess of factor for the SS solution",
         "description": "Initial guess of factor for the SS solution.",
+        "short_description": "Initial guess of factor for the SS solution",
+        "param_notation": "",
         "section_1": "Model Solution Parameters",
         "notes": "",
         "type": "float",
@@ -294101,6 +294181,8 @@
     "omega_S_preTP": {
         "title": "Population distribution (fraction at each age) in the period before the transition path begins.",
         "description": "Population distribution (fraction at each age) in the period before the transition path begins.",
+        "short_description": "Population distribution in the period before the transition",
+        "param_notation": "$\\hat{\\omega}_{s,-1}$",
         "section_1": "Demographic Parameters",
         "notes": "",
         "type": "float",
@@ -294719,6 +294801,8 @@
     "g_n_preTP": {
         "title": "Population growth rate from year before model start to start year",
         "description": "Population growth rate from year before model start to start year.",
+        "short_description": "Population growth rate in the period before the model start",
+        "param_notation": "$g_{n,-1}$",
         "section_1": "Demographic Parameters",
         "notes": "",
         "type": "float",
@@ -583559,6 +583643,8 @@
     "imm_rates_preTP": {
         "title": "Immigration rates in period before model start year",
         "description": "Immigration rates in period before model start year.",
+        "short_description": "Immigration rates in the period before the model start",
+        "param_notation": "$i_{s,-1}$",
         "section_1": "Demographic Parameters",
         "notes": "",
         "type": "float",
@@ -584713,6 +584799,8 @@
     "rho_preTP": {
         "title": "Age-specific mortality rates.",
         "description": "Age-specific mortality rates.",
+        "short_description": "Mortality rates in the period before the transition",
+        "param_notation": "$\\rho_{s,-1}$",
         "section_1": "Demographic Parameters",
         "notes": "",
         "type": "float",
@@ -585285,6 +585373,8 @@
     "etr_params": {
         "title": "Effective tax rate function parameters.",
         "description": "Effective tax rate function parameters.",
+        "short_description": "Effective tax rate function parameters",
+        "param_notation": "",
         "section_1": "Fiscal Policy Parameters",
         "section_2": "Taxes",
         "notes": "",
@@ -585308,6 +585398,8 @@
     "mtrx_params": {
         "title": "Marginal tax rate on labor income function parameters.",
         "description": "Marginal tax rate on labor income function parameters.",
+        "short_description": "Marginal labor income tax rate function parameters",
+        "param_notation": "",
         "section_1": "Fiscal Policy Parameters",
         "section_2": "Taxes",
         "notes": "",
@@ -585331,6 +585423,8 @@
     "mtry_params": {
         "title": "Marginal tax rate on capital income function parameters.",
         "description": "Marginal tax rate on capital income function parameters.",
+        "short_description": "Marginal capital income tax rate function parameters",
+        "param_notation": "",
         "section_1": "Fiscal Policy Parameters",
         "section_2": "Taxes",
         "notes": "",
@@ -585354,6 +585448,8 @@
     "mean_income_data": {
         "title": "Mean income (in current dollars) from the microdata used for tax function estimation.",
         "description": "Mean income (in current dollars) from the microdata used for tax function estimation.",
+        "short_description": "Mean income in the microdata used to estimate tax functions",
+        "param_notation": "",
         "section_1": "Other Parameters",
         "section_2": "",
         "notes": "",
@@ -585373,6 +585469,8 @@
     "frac_tax_payroll": {
         "title": "Fraction of IIT+Payroll tax revenue that is attributable to payroll taxes.",
         "description": "Fraction of IIT+Payroll tax revenue that is attributable to payroll taxes.",
+        "short_description": "Share of IIT-plus-payroll revenue from payroll taxes",
+        "param_notation": "",
         "section_1": "Fiscal Policy Parameters",
         "section_2": "Taxes",
         "notes": "",
