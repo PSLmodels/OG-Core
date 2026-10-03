@@ -998,3 +998,29 @@ def test_params_to_json_save(tmpdir):
     with open(os.path.join(tmpdir, "test.json"), "r") as f:
         j_str = f.read()
     assert isinstance(j_str, str)
+
+
+def test_D3_to_df():
+    """D3_to_df reshapes a (T, S, J) array into a tidy (Year, Age) x J
+    DataFrame with the right shape, index, and values."""
+    T, S, J = 4, 3, 2
+    arr = np.arange(T * S * J, dtype=float).reshape(T, S, J)
+    tpi_vars = {"c_path": arr}
+    df = utils.D3_to_df(tpi_vars, var="c_path", start_year=2025)
+    # shape: T*S rows, J columns
+    assert df.shape == (T * S, J)
+    assert list(df.index.names) == ["Year", "Age"]
+    # first year label starts at start_year
+    assert df.index[0] == ("2025", "0")
+    # last year label is start_year + T - 1
+    assert df.index[-1] == (str(2025 + T - 1), str(S - 1))
+    # values round-trip: row (t, s), column j equals arr[t, s, j]
+    assert df.loc[("2026", "1")].tolist() == arr[1, 1, :].tolist()
+
+
+def test_D3_to_df_errors():
+    """D3_to_df raises on a missing key or a non-3D array."""
+    with pytest.raises(ValueError):
+        utils.D3_to_df({"c_path": np.zeros((2, 3, 2))}, var="missing")
+    with pytest.raises(ValueError):
+        utils.D3_to_df({"c_path": np.zeros((2, 3))}, var="c_path")
