@@ -124,9 +124,7 @@ def marg_ut_labor(n, chi_n, p):
     ) * (
         (1 - ((eps_low / p.ltilde) ** p.upsilon))
         ** ((1 - p.upsilon) / p.upsilon)
-    ) - (
-        2 * b2 * eps_low
-    )
+    ) - (2 * b2 * eps_low)
     MDU_n[nvec_low] = 2 * b2 * nvec[nvec_low] + b1
     d2 = (
         0.5
@@ -149,9 +147,7 @@ def marg_ut_labor(n, chi_n, p):
     ) * (
         (1 - ((eps_high / p.ltilde) ** p.upsilon))
         ** ((1 - p.upsilon) / p.upsilon)
-    ) - (
-        2 * d2 * eps_high
-    )
+    ) - (2 * d2 * eps_high)
     MDU_n[nvec_high] = 2 * d2 * nvec[nvec_high] + d1
     output = MDU_n * np.squeeze(chi_n)
     output = np.squeeze(output)
