@@ -615,7 +615,6 @@
             <span class="s2">"world_int_rate_annual"</span><span class="p">,</span>
             <span class="s2">"adjustment_factor_for_cit_receipts"</span><span class="p">,</span>
             <span class="s2">"tau_bq"</span><span class="p">,</span>
-            <span class="s2">"tau_payroll"</span><span class="p">,</span>
             <span class="s2">"h_wealth"</span><span class="p">,</span>
             <span class="s2">"m_wealth"</span><span class="p">,</span>
             <span class="s2">"p_wealth"</span><span class="p">,</span>
@@ -660,9 +659,22 @@
             <span class="s2">"replacement_rate_adjust"</span><span class="p">,</span>
             <span class="s2">"income_tax_filer"</span><span class="p">,</span>
             <span class="s2">"wealth_tax_filer"</span><span class="p">,</span>
+            <span class="s2">"tau_payroll"</span><span class="p">,</span>
         <span class="p">]</span>
         <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">tp_param_list3</span><span class="p">:</span>
-            <span class="n">param_in</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">)</span>
+            <span class="n">param_in</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">))</span>
+            <span class="c1"># If J has changed since this parameter was last extrapolated</span>
+            <span class="c1"># (e.g., via update_specifications), a previously extrapolated</span>
+            <span class="c1"># T+S x J_old array will not match the new J.  When the values</span>
+            <span class="c1"># are the same across the old J groups, collapse to one column</span>
+            <span class="c1"># so that it can be re-extrapolated to the new J.  Otherwise,</span>
+            <span class="c1"># leave it to extrapolate_array to raise the error.</span>
+            <span class="k">if</span> <span class="p">(</span>
+                <span class="n">param_in</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">2</span>
+                <span class="ow">and</span> <span class="n">param_in</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">J</span>
+                <span class="ow">and</span> <span class="n">np</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="n">param_in</span> <span class="o">==</span> <span class="n">param_in</span><span class="p">[:,</span> <span class="p">:</span><span class="mi">1</span><span class="p">])</span>
+            <span class="p">):</span>
+                <span class="n">param_in</span> <span class="o">=</span> <span class="n">param_in</span><span class="p">[:,</span> <span class="p">:</span><span class="mi">1</span><span class="p">]</span>
             <span class="n">param_out</span> <span class="o">=</span> <span class="n">extrapolate_array</span><span class="p">(</span>
                 <span class="n">param_in</span><span class="p">,</span> <span class="n">dims</span><span class="o">=</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">T</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">S</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">J</span><span class="p">),</span> <span class="n">item</span><span class="o">=</span><span class="n">item</span>
             <span class="p">)</span>

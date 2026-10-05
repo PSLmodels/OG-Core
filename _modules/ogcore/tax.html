@@ -796,6 +796,9 @@
                 <span class="n">tax_filer</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">income_tax_filer</span><span class="p">[</span><span class="n">t</span> <span class="p">:</span> <span class="n">t</span> <span class="o">+</span> <span class="n">length</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span>
                     <span class="n">length</span><span class="p">,</span> <span class="mi">1</span>
                 <span class="p">)</span>
+                <span class="n">tau_payroll</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">tau_payroll</span><span class="p">[</span><span class="n">t</span> <span class="p">:</span> <span class="n">t</span> <span class="o">+</span> <span class="n">length</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span>
+                    <span class="n">length</span><span class="p">,</span> <span class="mi">1</span>
+                <span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="n">labor_income_tax_compliance_rate</span> <span class="o">=</span> <span class="p">(</span>
                     <span class="n">p</span><span class="o">.</span><span class="n">labor_income_tax_noncompliance_rate</span><span class="p">[</span><span class="n">t</span> <span class="p">:</span> <span class="n">t</span> <span class="o">+</span> <span class="n">length</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span>
@@ -804,6 +807,7 @@
                     <span class="n">p</span><span class="o">.</span><span class="n">capital_income_tax_noncompliance_rate</span><span class="p">[</span><span class="n">t</span> <span class="p">:</span> <span class="n">t</span> <span class="o">+</span> <span class="n">length</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span>
                 <span class="p">)</span>
                 <span class="n">tax_filer</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">income_tax_filer</span><span class="p">[</span><span class="n">t</span> <span class="p">:</span> <span class="n">t</span> <span class="o">+</span> <span class="n">length</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span>
+                <span class="n">tau_payroll</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">tau_payroll</span><span class="p">[</span><span class="n">t</span> <span class="p">:</span> <span class="n">t</span> <span class="o">+</span> <span class="n">length</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span>
         <span class="k">elif</span> <span class="n">method</span> <span class="o">==</span> <span class="s2">"TPI_scalar"</span><span class="p">:</span>
             <span class="n">labor_income_tax_compliance_rate</span> <span class="o">=</span> <span class="p">(</span>
                 <span class="n">p</span><span class="o">.</span><span class="n">labor_income_tax_noncompliance_rate</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span>
@@ -812,6 +816,7 @@
                 <span class="n">p</span><span class="o">.</span><span class="n">capital_income_tax_noncompliance_rate</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span>
             <span class="p">)</span>
             <span class="n">tax_filer</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">income_tax_filer</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span>
+            <span class="n">tau_payroll</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">tau_payroll</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">labor_income_tax_compliance_rate</span> <span class="o">=</span> <span class="p">(</span>
                 <span class="n">p</span><span class="o">.</span><span class="n">labor_income_tax_noncompliance_rate</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span>
@@ -820,6 +825,7 @@
                 <span class="n">p</span><span class="o">.</span><span class="n">capital_income_tax_noncompliance_rate</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span>
             <span class="p">)</span>
             <span class="n">tax_filer</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">income_tax_filer</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span>
+            <span class="n">tau_payroll</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">tau_payroll</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="k">if</span> <span class="n">method</span> <span class="o">==</span> <span class="s2">"TPI"</span><span class="p">:</span>
             <span class="n">r</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">to_timepath_shape</span><span class="p">(</span><span class="n">r</span><span class="p">)</span>
@@ -838,6 +844,18 @@
             <span class="n">tax_filer</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">income_tax_filer</span><span class="p">[</span><span class="n">t</span> <span class="p">:</span> <span class="n">t</span> <span class="o">+</span> <span class="n">length</span><span class="p">,</span> <span class="p">:]</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span>
                 <span class="n">length</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">p</span><span class="o">.</span><span class="n">J</span>
             <span class="p">)</span>
+            <span class="n">tau_payroll</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">tau_payroll</span><span class="p">[</span><span class="n">t</span> <span class="p">:</span> <span class="n">t</span> <span class="o">+</span> <span class="n">length</span><span class="p">,</span> <span class="p">:]</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span>
+                <span class="n">length</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">p</span><span class="o">.</span><span class="n">J</span>
+            <span class="p">)</span>
+        <span class="k">elif</span> <span class="n">method</span> <span class="o">==</span> <span class="s2">"TPI_scalar"</span><span class="p">:</span>
+            <span class="n">labor_income_tax_compliance_rate</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="n">p</span><span class="o">.</span><span class="n">labor_income_tax_noncompliance_rate</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="p">:]</span>
+            <span class="p">)</span>
+            <span class="n">capital_income_tax_compliance_rate</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="n">p</span><span class="o">.</span><span class="n">capital_income_tax_noncompliance_rate</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="p">:]</span>
+            <span class="p">)</span>
+            <span class="n">tax_filer</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">income_tax_filer</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="p">:]</span>
+            <span class="n">tau_payroll</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">tau_payroll</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="p">:]</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">labor_income_tax_compliance_rate</span> <span class="o">=</span> <span class="p">(</span>
                 <span class="n">p</span><span class="o">.</span><span class="n">labor_income_tax_noncompliance_rate</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="p">:]</span>
@@ -846,6 +864,7 @@
                 <span class="n">p</span><span class="o">.</span><span class="n">capital_income_tax_noncompliance_rate</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="p">:]</span>
             <span class="p">)</span>
             <span class="n">tax_filer</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">income_tax_filer</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="p">:]</span>
+            <span class="n">tau_payroll</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">tau_payroll</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="p">:]</span>
     <span class="n">income</span> <span class="o">=</span> <span class="n">r</span> <span class="o">*</span> <span class="n">b</span> <span class="o">+</span> <span class="n">w</span> <span class="o">*</span> <span class="n">e</span> <span class="o">*</span> <span class="n">n</span>
     <span class="n">labor_income</span> <span class="o">=</span> <span class="n">w</span> <span class="o">*</span> <span class="n">e</span> <span class="o">*</span> <span class="n">n</span>
 
@@ -866,23 +885,9 @@
         <span class="o">*</span> <span class="n">income</span>
     <span class="p">)</span>
 
-    <span class="k">if</span> <span class="n">method</span> <span class="o">==</span> <span class="s2">"SS"</span><span class="p">:</span>
-        <span class="n">T_P</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">tau_payroll</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="n">labor_income</span>
-    <span class="k">elif</span> <span class="n">method</span> <span class="o">==</span> <span class="s2">"TPI"</span><span class="p">:</span>
-        <span class="n">length</span> <span class="o">=</span> <span class="n">w</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">b</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
-            <span class="n">T_P</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">tau_payroll</span><span class="p">[</span><span class="n">t</span> <span class="p">:</span> <span class="n">t</span> <span class="o">+</span> <span class="n">length</span><span class="p">]</span> <span class="o">*</span> <span class="n">labor_income</span>
-        <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="n">b</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
-            <span class="n">T_P</span> <span class="o">=</span> <span class="p">(</span>
-                <span class="n">p</span><span class="o">.</span><span class="n">tau_payroll</span><span class="p">[</span><span class="n">t</span> <span class="p">:</span> <span class="n">t</span> <span class="o">+</span> <span class="n">length</span><span class="p">]</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">length</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="n">labor_income</span>
-            <span class="p">)</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="n">T_P</span> <span class="o">=</span> <span class="p">(</span>
-                <span class="n">p</span><span class="o">.</span><span class="n">tau_payroll</span><span class="p">[</span><span class="n">t</span> <span class="p">:</span> <span class="n">t</span> <span class="o">+</span> <span class="n">length</span><span class="p">]</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">length</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
-                <span class="o">*</span> <span class="n">labor_income</span>
-            <span class="p">)</span>
-    <span class="k">elif</span> <span class="n">method</span> <span class="o">==</span> <span class="s2">"TPI_scalar"</span><span class="p">:</span>
-        <span class="n">T_P</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">tau_payroll</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="n">labor_income</span>
+    <span class="c1"># Linear payroll tax, with a rate that may vary over time and by</span>
+    <span class="c1"># lifetime income group j (tau_payroll is T+S x J)</span>
+    <span class="n">T_P</span> <span class="o">=</span> <span class="n">tau_payroll</span> <span class="o">*</span> <span class="n">labor_income</span>
 
     <span class="n">income_payroll_tax_liab</span> <span class="o">=</span> <span class="n">T_I</span> <span class="o">+</span> <span class="n">T_P</span>
 

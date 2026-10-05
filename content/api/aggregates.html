@@ -750,14 +750,16 @@ debt owned by foreigners</p></li>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="ogcore.aggregates.get_payroll_tax_revenue">
-<span class="sig-prename descclassname"><span class="pre">ogcore.aggregates.</span></span><span class="sig-name descname"><span class="pre">get_payroll_tax_revenue</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">w</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">L</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">iit_payroll_tax_revenue</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">method</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogcore/aggregates.html#get_payroll_tax_revenue"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogcore.aggregates.get_payroll_tax_revenue" title="Link to this definition">#</a></dt>
+<span class="sig-prename descclassname"><span class="pre">ogcore.aggregates.</span></span><span class="sig-name descname"><span class="pre">get_payroll_tax_revenue</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">w</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">e</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pop_weights</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">iit_payroll_tax_revenue</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">method</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogcore/aggregates.html#get_payroll_tax_revenue"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogcore.aggregates.get_payroll_tax_revenue" title="Link to this definition">#</a></dt>
 <dd><p>Calculate aggregate payroll tax revenue.</p>
 <p>How payroll tax revenue is computed depends on how the user has
 chosen to represent payroll taxes in the model.  If payroll taxes
 are included directly through the <code class="docutils literal notranslate"><span class="pre">tau_payroll</span></code> parameter, then
-revenue is the payroll tax rate times aggregate labor income:</p>
+revenue is the sum across households of the (type-specific) payroll
+tax rate times household labor income:</p>
 <div class="math notranslate nohighlight">
-\[PR_{t} = \tau^{p}_{t}w_{t}L_{t}\]</div>
+\[PR_{t} = \sum_{s=E}^{E+S}\sum_{j=0}^{J}\omega_{s,j,t}
+\tau^{p}_{j,t}w_{t}e_{j,s,t}n_{j,s,t}\]</div>
 <p>Otherwise, payroll taxes are assumed to be embedded in the estimated
 income and payroll tax functions (the default), and payroll tax
 revenue is separated out as a fraction <code class="docutils literal notranslate"><span class="pre">frac_tax_payroll</span></code> of the
@@ -767,7 +769,12 @@ identical when <code class="docutils literal notranslate"><span class="pre">tau_
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>w</strong> (<em>array_like</em>) – the real wage rate</p></li>
-<li><p><strong>L</strong> (<em>array_like</em>) – aggregate labor by industry</p></li>
+<li><p><strong>n</strong> (<em>Numpy array</em>) – household labor supply (S x J for SS, or
+T x S x J for TPI)</p></li>
+<li><p><strong>e</strong> (<em>Numpy array</em>) – effective labor units (S x J for SS, or
+T x S x J for TPI)</p></li>
+<li><p><strong>pop_weights</strong> (<em>Numpy array</em>) – population weights for each
+household (S x J for SS, or T x S x J for TPI)</p></li>
 <li><p><strong>iit_payroll_tax_revenue</strong> (<em>array_like</em>) – aggregate income and
 payroll tax revenue</p></li>
 <li><p><strong>p</strong> (<em>OG-Core Specifications object</em>) – model parameters</p></li>

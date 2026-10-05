@@ -630,7 +630,7 @@ _Out-of-Range Action:_ error
 
 ####  `tau_payroll`  
 _Description:_ Linear payroll tax rate. Set value for base year, click '+' to add value for next year.  All future years not specified are set to last value entered.  
-_Notes:_ Set to zero as default since tax functions include income and payroll taxes.  
+_Notes:_ Set to zero as default since tax functions include income and payroll taxes. Can be specified to vary by type J and over year T.  
 _Value Type:_ float  
 _Valid Range:_ min = 0.0 and max = 0.99  
 _Out-of-Range Action:_ error  
