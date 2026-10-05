@@ -188,7 +188,6 @@ class Specifications(paramtools.Parameters):
             "world_int_rate_annual",
             "adjustment_factor_for_cit_receipts",
             "tau_bq",
-            "tau_payroll",
             "h_wealth",
             "m_wealth",
             "p_wealth",
@@ -233,9 +232,22 @@ class Specifications(paramtools.Parameters):
             "replacement_rate_adjust",
             "income_tax_filer",
             "wealth_tax_filer",
+            "tau_payroll",
         ]
         for item in tp_param_list3:
-            param_in = getattr(self, item)
+            param_in = np.asarray(getattr(self, item))
+            # If J has changed since this parameter was last extrapolated
+            # (e.g., via update_specifications), a previously extrapolated
+            # T+S x J_old array will not match the new J.  When the values
+            # are the same across the old J groups, collapse to one column
+            # so that it can be re-extrapolated to the new J.  Otherwise,
+            # leave it to extrapolate_array to raise the error.
+            if (
+                param_in.ndim == 2
+                and param_in.shape[1] != self.J
+                and np.all(param_in == param_in[:, :1])
+            ):
+                param_in = param_in[:, :1]
             param_out = extrapolate_array(
                 param_in, dims=(self.T + self.S, self.J), item=item
             )

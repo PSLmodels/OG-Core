@@ -356,6 +356,9 @@ def income_tax_liab(r, w, b, n, factor, t, j, method, e, etr_params, p):
                 tax_filer = p.income_tax_filer[t : t + length, j].reshape(
                     length, 1
                 )
+                tau_payroll = p.tau_payroll[t : t + length, j].reshape(
+                    length, 1
+                )
             else:
                 labor_income_tax_compliance_rate = (
                     p.labor_income_tax_noncompliance_rate[t : t + length, j]
@@ -364,6 +367,7 @@ def income_tax_liab(r, w, b, n, factor, t, j, method, e, etr_params, p):
                     p.capital_income_tax_noncompliance_rate[t : t + length, j]
                 )
                 tax_filer = p.income_tax_filer[t : t + length, j]
+                tau_payroll = p.tau_payroll[t : t + length, j]
         elif method == "TPI_scalar":
             labor_income_tax_compliance_rate = (
                 p.labor_income_tax_noncompliance_rate[0, j]
@@ -372,6 +376,7 @@ def income_tax_liab(r, w, b, n, factor, t, j, method, e, etr_params, p):
                 p.capital_income_tax_noncompliance_rate[0, j]
             )
             tax_filer = p.income_tax_filer[0, j]
+            tau_payroll = p.tau_payroll[0, j]
         else:
             labor_income_tax_compliance_rate = (
                 p.labor_income_tax_noncompliance_rate[-1, j]
@@ -380,6 +385,7 @@ def income_tax_liab(r, w, b, n, factor, t, j, method, e, etr_params, p):
                 p.capital_income_tax_noncompliance_rate[-1, j]
             )
             tax_filer = p.income_tax_filer[-1, j]
+            tau_payroll = p.tau_payroll[-1, j]
     else:
         if method == "TPI":
             r = utils.to_timepath_shape(r)
@@ -398,6 +404,18 @@ def income_tax_liab(r, w, b, n, factor, t, j, method, e, etr_params, p):
             tax_filer = p.income_tax_filer[t : t + length, :].reshape(
                 length, 1, p.J
             )
+            tau_payroll = p.tau_payroll[t : t + length, :].reshape(
+                length, 1, p.J
+            )
+        elif method == "TPI_scalar":
+            labor_income_tax_compliance_rate = (
+                p.labor_income_tax_noncompliance_rate[0, :]
+            )
+            capital_income_tax_compliance_rate = (
+                p.capital_income_tax_noncompliance_rate[0, :]
+            )
+            tax_filer = p.income_tax_filer[0, :]
+            tau_payroll = p.tau_payroll[0, :]
         else:
             labor_income_tax_compliance_rate = (
                 p.labor_income_tax_noncompliance_rate[-1, :]
@@ -406,6 +424,7 @@ def income_tax_liab(r, w, b, n, factor, t, j, method, e, etr_params, p):
                 p.capital_income_tax_noncompliance_rate[-1, :]
             )
             tax_filer = p.income_tax_filer[-1, :]
+            tau_payroll = p.tau_payroll[-1, :]
     income = r * b + w * e * n
     labor_income = w * e * n
 
@@ -426,23 +445,9 @@ def income_tax_liab(r, w, b, n, factor, t, j, method, e, etr_params, p):
         * income
     )
 
-    if method == "SS":
-        T_P = p.tau_payroll[-1] * labor_income
-    elif method == "TPI":
-        length = w.shape[0]
-        if len(b.shape) == 1:
-            T_P = p.tau_payroll[t : t + length] * labor_income
-        elif len(b.shape) == 2:
-            T_P = (
-                p.tau_payroll[t : t + length].reshape(length, 1) * labor_income
-            )
-        else:
-            T_P = (
-                p.tau_payroll[t : t + length].reshape(length, 1, 1)
-                * labor_income
-            )
-    elif method == "TPI_scalar":
-        T_P = p.tau_payroll[0] * labor_income
+    # Linear payroll tax, with a rate that may vary over time and by
+    # lifetime income group j (tau_payroll is T+S x J)
+    T_P = tau_payroll * labor_income
 
     income_payroll_tax_liab = T_I + T_P
 

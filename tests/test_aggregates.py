@@ -1309,7 +1309,7 @@ new_param_values = {
     "eta": (np.ones((20, 2)) / (20 * 2)),
     "lambdas": [0.6, 0.4],
     "tau_bq": [0.17],
-    "tau_payroll": [0.5],
+    "tau_payroll": [[0.5]],
     "h_wealth": [0.1],
     "p_wealth": [0.2],
     "m_wealth": [1.0],
@@ -1379,7 +1379,7 @@ new_param_values3 = {
     "eta": (np.ones((20, 2)) / (20 * 2)),
     "lambdas": [0.6, 0.4],
     "tau_bq": [0.17],
-    "tau_payroll": [0.5],
+    "tau_payroll": [[0.5]],
     "h_wealth": [0.1],
     "p_wealth": [0.2],
     "m_wealth": [1.0],
@@ -1430,7 +1430,7 @@ new_param_values_ubi = {
     "eta": (np.ones((20, 2)) / (20 * 2)),
     "lambdas": [0.6, 0.4],
     "tau_bq": [0.17],
-    "tau_payroll": [0.5],
+    "tau_payroll": [[0.5]],
     "h_wealth": [0.1],
     "p_wealth": [0.2],
     "m_wealth": [1.0],
@@ -1778,33 +1778,65 @@ def test_get_payroll_tax_revenue():
     """
     p = Specifications()
     p.T = 3
+    p.S = 2
+    p.J = 2
     iit_payroll_ss = 10.0
     iit_payroll_tpi = np.array([10.0, 11.0, 12.0])
     w_ss = 1.2
-    L_ss = np.array([2.0, 3.0])  # labor by industry
     w_tpi = np.array([1.0, 1.1, 1.2])
-    L_tpi = np.array([[1.0, 2.0], [1.5, 2.5], [2.0, 3.0]])  # (T, M)
+    # household labor supply, effective labor, and population weights
+    # (S x J for SS and T x S x J for TPI)
+    n_ss = np.array([[0.5, 0.4], [0.3, 0.2]])
+    e_ss = np.array([[1.0, 2.0], [1.5, 2.5]])
+    omega_ss = np.array([[0.3, 0.2], [0.3, 0.2]])
+    n_tpi = np.tile(n_ss.reshape(1, 2, 2), (p.T + 1, 1, 1))
+    n_tpi[1, :, :] *= 2.0
+    e_tpi = np.tile(e_ss.reshape(1, 2, 2), (p.T + 1, 1, 1))
+    omega_tpi = np.tile(omega_ss.reshape(1, 2, 2), (p.T + 1, 1, 1))
 
     # Payroll taxes embedded in the tax functions (tau_payroll == 0)
-    p.tau_payroll = np.zeros(p.T)
+    p.tau_payroll = np.zeros((p.T, p.J))
     p.frac_tax_payroll = np.array([0.5, 0.5, 0.5])
-    pr_ss = aggr.get_payroll_tax_revenue(w_ss, L_ss, iit_payroll_ss, p, "SS")
+    pr_ss = aggr.get_payroll_tax_revenue(
+        w_ss, n_ss, e_ss, omega_ss, iit_payroll_ss, p, "SS"
+    )
     assert np.allclose(pr_ss, 0.5 * iit_payroll_ss)
     pr_tpi = aggr.get_payroll_tax_revenue(
-        w_tpi, L_tpi, iit_payroll_tpi, p, "TPI"
+        w_tpi, n_tpi, e_tpi, omega_tpi, iit_payroll_tpi, p, "TPI"
     )
     assert np.allclose(pr_tpi, 0.5 * iit_payroll_tpi)
 
-    # Payroll taxes modeled explicitly via tau_payroll
-    p.tau_payroll = np.array([0.1, 0.2, 0.3])
-    pr_ss = aggr.get_payroll_tax_revenue(w_ss, L_ss, iit_payroll_ss, p, "SS")
-    assert np.allclose(pr_ss, 0.3 * w_ss * L_ss.sum())
+    # Payroll taxes modeled explicitly via tau_payroll, with the rate
+    # varying over time and across lifetime income groups
+    p.tau_payroll = np.array([[0.1, 0.4], [0.2, 0.5], [0.3, 0.6]])
+    pr_ss = aggr.get_payroll_tax_revenue(
+        w_ss, n_ss, e_ss, omega_ss, iit_payroll_ss, p, "SS"
+    )
+    # hand computation: sum_{s,j} omega_{s,j} tau_j w e_{s,j} n_{s,j}
+    # using the last period rates, tau = [0.3, 0.6]
+    expected_ss = w_ss * (
+        0.3 * 0.3 * 1.0 * 0.5
+        + 0.3 * 0.3 * 1.5 * 0.3
+        + 0.6 * 0.2 * 2.0 * 0.4
+        + 0.6 * 0.2 * 2.5 * 0.2
+    )
+    assert np.allclose(pr_ss, expected_ss)
     pr_tpi = aggr.get_payroll_tax_revenue(
-        w_tpi, L_tpi, iit_payroll_tpi, p, "TPI"
+        w_tpi, n_tpi, e_tpi, omega_tpi, iit_payroll_tpi, p, "TPI"
     )
-    assert np.allclose(
-        pr_tpi, np.array([0.1, 0.2, 0.3]) * w_tpi * L_tpi.sum(-1)
-    )
+    expected_tpi = np.zeros(p.T)
+    for t in range(p.T):
+        for s in range(p.S):
+            for j in range(p.J):
+                expected_tpi[t] += (
+                    omega_tpi[t, s, j]
+                    * p.tau_payroll[t, j]
+                    * w_tpi[t]
+                    * e_tpi[t, s, j]
+                    * n_tpi[t, s, j]
+                )
+    assert pr_tpi.shape == (p.T,)
+    assert np.allclose(pr_tpi, expected_tpi)
 
 
 test_data = [

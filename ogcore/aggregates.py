@@ -460,7 +460,7 @@ def revenue(
     # income vs payroll split can be reported; it must NOT be added into
     # the total again (that double-counted payroll revenue -- Issue #1199).
     payroll_tax_revenue = get_payroll_tax_revenue(
-        w, L, iit_payroll_tax_revenue, p, method
+        w, n, e, pop_weights, iit_payroll_tax_revenue, p, method
     )
     business_tax_revenue = tax.get_biz_tax(w, Y, L, K, p_m, p, m, method).sum(
         -1
@@ -489,17 +489,21 @@ def revenue(
     )
 
 
-def get_payroll_tax_revenue(w, L, iit_payroll_tax_revenue, p, method):
+def get_payroll_tax_revenue(
+    w, n, e, pop_weights, iit_payroll_tax_revenue, p, method
+):
     r"""
     Calculate aggregate payroll tax revenue.
 
     How payroll tax revenue is computed depends on how the user has
     chosen to represent payroll taxes in the model.  If payroll taxes
     are included directly through the ``tau_payroll`` parameter, then
-    revenue is the payroll tax rate times aggregate labor income:
+    revenue is the sum across households of the (type-specific) payroll
+    tax rate times household labor income:
 
     .. math::
-        PR_{t} = \tau^{p}_{t}w_{t}L_{t}
+        PR_{t} = \sum_{s=E}^{E+S}\sum_{j=0}^{J}\omega_{s,j,t}
+        \tau^{p}_{j,t}w_{t}e_{j,s,t}n_{j,s,t}
 
     Otherwise, payroll taxes are assumed to be embedded in the estimated
     income and payroll tax functions (the default), and payroll tax
@@ -509,7 +513,12 @@ def get_payroll_tax_revenue(w, L, iit_payroll_tax_revenue, p, method):
 
     Args:
         w (array_like): the real wage rate
-        L (array_like): aggregate labor by industry
+        n (Numpy array): household labor supply (S x J for SS, or
+            T x S x J for TPI)
+        e (Numpy array): effective labor units (S x J for SS, or
+            T x S x J for TPI)
+        pop_weights (Numpy array): population weights for each
+            household (S x J for SS, or T x S x J for TPI)
         iit_payroll_tax_revenue (array_like): aggregate income and
             payroll tax revenue
         p (OG-Core Specifications object): model parameters
@@ -522,14 +531,22 @@ def get_payroll_tax_revenue(w, L, iit_payroll_tax_revenue, p, method):
     """
     if np.any(p.tau_payroll != 0):
         # Payroll taxes are modeled explicitly via tau_payroll, so
-        # revenue is the payroll tax rate times aggregate labor income
-        # (summing labor across industries).
-        L_total = L.sum(-1)
+        # revenue is the (type-specific) payroll tax rate times
+        # household labor income, summed over all households.
         if method == "SS":
-            payroll_tax_revenue = p.tau_payroll[-1] * w * L_total
-        else:  # TPI
+            tau_payroll = p.tau_payroll[-1, :].reshape(1, p.J)
+            labor_income = w * e * n
             payroll_tax_revenue = (
-                p.tau_payroll[: p.T] * w[: p.T] * L_total[: p.T]
+                tau_payroll * labor_income * pop_weights
+            ).sum()
+        else:  # TPI
+            tau_payroll = p.tau_payroll[: p.T, :].reshape(p.T, 1, p.J)
+            w = w[: p.T].reshape(p.T, 1, 1)
+            labor_income = w * e[: p.T, :, :] * n[: p.T, :, :]
+            payroll_tax_revenue = (
+                (tau_payroll * labor_income * pop_weights[: p.T, :, :])
+                .sum(1)
+                .sum(1)
             )
     else:
         # Payroll taxes are embedded in the income and payroll tax
