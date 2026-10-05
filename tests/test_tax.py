@@ -968,7 +968,7 @@ p.e = np.array([0.5, 0.45, 0.3]).reshape(3, 1)
 p.h_wealth = np.ones(p.T + p.S) * 1
 p.p_wealth = np.ones(p.T + p.S) * 2
 p.m_wealth = np.ones(p.T + p.S) * 3
-p.tau_payroll = np.ones(p.T + p.S) * 0.15
+p.tau_payroll = np.ones((p.T + p.S, p.J)) * 0.15
 p.tau_bq = np.ones(p.T + p.S) * 0.1
 p.retire = (np.ones(p.T + p.S) * 2).astype(int)
 p1 = copy.deepcopy(p)
@@ -990,6 +990,7 @@ p5.capital_income_tax_noncompliance_rate = np.zeros((p5.T + p5.S, p5.J))
 p5.income_tax_filer = np.ones((p5.T, p5.J))
 p5.wealth_tax_filer = np.ones((p5.T, p5.J))
 p5.replacement_rate_adjust = np.ones((p5.T, p5.J))
+p5.tau_payroll = np.ones((p5.T + p5.S, p5.J)) * 0.15
 p5.lambdas = np.array([0.65, 0.35])
 # set variables and other parameters for each case
 r1 = 0.04
@@ -1252,7 +1253,7 @@ p_u.e = np.array([[0.3, 0.2], [0.5, 0.4], [0.45, 0.3]])
 p_u.h_wealth = np.ones(p_u.T + p_u.S) * 1
 p_u.p_wealth = np.ones(p_u.T + p_u.S) * 2
 p_u.m_wealth = np.ones(p_u.T + p_u.S) * 3
-p_u.tau_payroll = np.ones(p_u.T + p_u.S) * 0.15
+p_u.tau_payroll = np.ones((p_u.T + p_u.S, p_u.J)) * 0.15
 p_u.tau_bq = np.ones(p_u.T + p_u.S) * 0.1
 p_u.retire = (np.ones(p_u.T + p_u.S) * 2).astype(int)
 

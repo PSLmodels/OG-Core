@@ -689,45 +689,48 @@ def FOC_labor(
 
     """
     if method == "SS":
-        tau_payroll = p.tau_payroll[-1]
         tau_c = p.tau_c[-1, :]
     elif method == "TPI_scalar":  # for 1st donut ring only
-        tau_payroll = p.tau_payroll[0]
         tau_c = p.tau_c[0, :]
     else:
         length = r.shape[0]
-        tau_payroll = p.tau_payroll[t : t + length]
         tau_c = p.tau_c[t : t + length, :]
     if j is not None:
         if method == "SS":
             tax_noncompliance = p.labor_income_tax_noncompliance_rate[-1, j]
             income_tax_filer = p.income_tax_filer[-1, j]
+            tau_payroll = p.tau_payroll[-1, j]
             e = np.squeeze(p.e[-1, :, j])
         elif method == "TPI_scalar":
             tax_noncompliance = p.labor_income_tax_noncompliance_rate[0, j]
             income_tax_filer = p.income_tax_filer[0, j]
+            tau_payroll = p.tau_payroll[0, j]
             e = np.squeeze(p.e[0, -1, j])
         else:
             tax_noncompliance = p.labor_income_tax_noncompliance_rate[
                 t : t + length, j
             ]
             income_tax_filer = p.income_tax_filer[t : t + length, j]
+            tau_payroll = p.tau_payroll[t : t + length, j]
             e_long = _get_e_long(p)
             e = np.diag(e_long[t : t + p.S, :, j], max(p.S - length, 0))
     else:
         if method == "SS":
             tax_noncompliance = p.labor_income_tax_noncompliance_rate[-1, :]
             income_tax_filer = p.income_tax_filer[-1, :]
+            tau_payroll = p.tau_payroll[-1, :]
             e = np.squeeze(p.e[-1, :, :])
         elif method == "TPI_scalar":
             tax_noncompliance = p.labor_income_tax_noncompliance_rate[0, :]
             income_tax_filer = p.income_tax_filer[0, :]
+            tau_payroll = p.tau_payroll[0, :]
             e = np.squeeze(p.e[0, -1, :])
         else:
             tax_noncompliance = p.labor_income_tax_noncompliance_rate[
                 t : t + length, :
             ]
             income_tax_filer = p.income_tax_filer[t : t + length, :]
+            tau_payroll = p.tau_payroll[t : t + length, :]
             e_long = _get_e_long(p)
             e = np.diag(e_long[t : t + p.S, :, j], max(p.S - length, 0))
     if method == "TPI":

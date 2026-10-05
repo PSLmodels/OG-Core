@@ -5,11 +5,17 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.20.4] - 2026-10-05
 
-### Added in PR #1241
+### Added
+- Allows the linear payroll tax rate `tau_payroll` to vary across lifetime income groups as well as over time. The parameter is now a `T x J` array (`number_dims` changed from 1 to 2 in `default_parameters.json`), extrapolated like `labor_income_tax_noncompliance_rate` and `income_tax_filer`, so a single value (`[[0.1]]`), one value per income group (`[[0.1, ..., 0.2]]`), or a time path (`[[0.1], [0.12]]`) can be entered. Reform JSON files or scripts that previously set `tau_payroll` as a flat list (e.g., `[0.124]`) must now use the nested form (e.g., `[[0.124]]`).
+- Adds a `vary tau_payroll by J` case to `test_FOC_labor` in `test_household.py`, a `tau_payroll` extrapolation test to `test_parameters.py`, and a hand-computed check of `get_payroll_tax_revenue` with group-specific rates in `test_aggregates.py`.
 - Adds a `by_J` keyword argument (default `False`) to the demographic plotting functions in `parameter_plots.py` (`plot_imm_rates`, `plot_mort_rates`, `plot_population`, `plot_fert_rates`, `plot_mort_rates_data`, `plot_omega_fixed`, `plot_imm_fixed`, `plot_population_path`) now that the demographic objects are T x S x J. With `by_J=False`, population distributions are summed across income groups and rates are averaged across income groups using the population weights in `omega`, so one line is plotted for the overall population. With `by_J=True`, one line is plotted per income group and labeled with the j value. The array-based functions take an `omega` (or `omega_list`) argument to supply the weights. Each function checks the dimensions of its inputs and continues to accept objects without an income-group dimension (e.g., `T x S` or `S` arrays).
 
-### Updated in PR #1241
+### Updated
+- `tax.income_tax_liab` and `household.FOC_labor` now select `tau_payroll` by `j` (or across all `J` when `j` is `None`) in the same way as the tax noncompliance rates and filer status.
+- `aggregates.get_payroll_tax_revenue` now takes household labor supply `n`, effective labor `e`, and population weights in place of aggregate labor `L`, and computes payroll tax revenue as the population-weighted sum of `tau_payroll[t, j] * w * e * n` across households, which is required when the rate differs across income groups. When `tau_payroll` is zero everywhere, the `frac_tax_payroll` fallback is unchanged.
+- `Specifications.compute_default_params` now collapses a previously extrapolated `T x J` parameter (`labor_income_tax_noncompliance_rate`, `capital_income_tax_noncompliance_rate`, `replacement_rate_adjust`, `income_tax_filer`, `wealth_tax_filer`, `tau_payroll`) back to a single column when `J` changes and the values are the same across groups, so that these parameters need not be re-specified whenever `J` is changed via `update_specifications` (the `T x S x J` demographic and ability parameters still must be).
 - Fixes the population weighting in `plot_mort_rates`, which multiplied mortality rates by the unnormalized population shares rather than taking a weighted average across income groups.
 - Fixes the year indexing in `plot_imm_rates`, `plot_mort_rates_data`, and `plot_population_path`, which indexed years as `start_year - year` rather than `year - start_year`.
 
@@ -729,6 +735,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Any earlier versions of OG-USA can be found in the [`OG-Core`](https://github.com/PSLmodels/OG-Core) repository [release history](https://github.com/PSLmodels/OG-Core/releases) from [v.0.6.4](https://github.com/PSLmodels/OG-Core/releases/tag/v0.6.4) (Jul. 20, 2021) or earlier.
 
 
+[0.20.4]: https://github.com/PSLmodels/OG-Core/compare/v0.20.3...v0.20.4
 [0.20.3]: https://github.com/PSLmodels/OG-Core/compare/v0.20.2...v0.20.3
 [0.20.2]: https://github.com/PSLmodels/OG-Core/compare/v0.20.1...v0.20.2
 [0.20.1]: https://github.com/PSLmodels/OG-Core/compare/v0.20.0...v0.20.1

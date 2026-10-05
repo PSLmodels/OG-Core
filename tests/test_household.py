@@ -605,7 +605,7 @@ mtry_params = np.array(
 p1.h_wealth = np.array([0.1])
 p1.m_wealth = np.array([1.0])
 p1.p_wealth = np.array([0.0])
-p1.tau_payroll = np.array([0.15])
+p1.tau_payroll = np.ones((1, p1.J)) * 0.15
 p1.retire = np.array([2]).astype(int)
 
 test_params_ss = p1
@@ -663,7 +663,7 @@ expected_ss = np.array([9.9403099, -1.00478079, -140.55458776])
 # Define variables/params for test of TPI version
 method_tpi = "TPI"
 test_params_tpi = copy.deepcopy(p1)
-test_params_tpi.tau_payroll = np.array([0.15, 0.15, 0.15])
+test_params_tpi.tau_payroll = np.ones((3, p1.J)) * 0.15
 test_params_tpi.tau_bq = np.array([0.0, 0.0, 0.0])
 test_params_tpi.retire = np.array([2, 2, 2]).astype(int)
 test_params_tpi.h_wealth = np.array([0.1, 0.1, 0.1])
@@ -926,7 +926,7 @@ mtrx_params = np.array(
 p1.h_wealth = np.array([0.1])
 p1.m_wealth = np.array([1.0])
 p1.p_wealth = np.array([0.0])
-p1.tau_payroll = np.array([0.15])
+p1.tau_payroll = np.ones((1, p1.J)) * 0.15
 p1.retire = np.array([2]).astype(int)
 theta = np.array([0.1])
 j = 0
@@ -970,7 +970,7 @@ test_params_tpi.retire = np.array([2, 2, 2]).astype(int)
 test_params_tpi.h_wealth = np.array([0.1, 0.1, 0.1])
 test_params_tpi.m_wealth = np.array([1.0, 1.0, 1.0])
 test_params_tpi.p_wealth = np.array([0.0, 0.0, 0.0])
-test_params_tpi.tau_payroll = np.array([0.15, 0.15, 0.15])
+test_params_tpi.tau_payroll = np.ones((3, p1.J)) * 0.15
 test_params_tpi.tau_bq = np.array([0.0, 0.0, 0.0])
 r_vec = np.array([0.05, 0.03, 0.04])
 w_vec = np.array([1.2, 0.9, 0.8])
@@ -1017,7 +1017,9 @@ test_params_tau_pay.retire = np.array([2, 2, 2]).astype(int)
 test_params_tau_pay.h_wealth = np.array([0.1, 0.1, 0.1])
 test_params_tau_pay.m_wealth = np.array([1.0, 1.0, 1.0])
 test_params_tau_pay.p_wealth = np.array([0.0, 0.0, 0.0])
-test_params_tau_pay.tau_payroll = np.array([0.11, 0.05, 0.33])
+test_params_tau_pay.tau_payroll = np.tile(
+    np.array([0.11, 0.05, 0.33]).reshape(3, 1), (1, p1.J)
+)
 test_params_tau_pay.tau_bq = np.array([0.0, 0.0, 0.0])
 expected_tau_pay = np.array(
     [
@@ -1026,6 +1028,14 @@ expected_tau_pay = np.array(
         [3.50954120e05, 1.39637342e-01, -4.15072835e-01],
     ]
 )
+
+# Define variables/params for test with tau_payroll that varies by J.
+# The j=0 column matches test_params_tau_pay and the other columns are
+# set to a very different rate, so the FOC error for j=0 (the group
+# tested) is unchanged only if the j-specific payroll tax rate is used.
+test_params_tau_pay_J = copy.deepcopy(test_params_tau_pay)
+test_params_tau_pay_J.tau_payroll = np.ones((3, 3)) * 0.99
+test_params_tau_pay_J.tau_payroll[:, 0] = np.array([0.11, 0.05, 0.33])
 
 # create parameter objects with non-zero tax noncompliance
 test_params_ss_noncomply = copy.deepcopy(test_params_ss)
@@ -1056,6 +1066,7 @@ test_data = [
     (test_vars_ss, test_params_ss, expected_ss),
     (test_vars_tpi, test_params_tpi, expected_tpi),
     (test_vars_tpi, test_params_tau_pay, expected_tau_pay),
+    (test_vars_tpi, test_params_tau_pay_J, expected_tau_pay),
     (test_vars_ss, test_params_ss_noncomply, expected_ss_noncomply),
     (test_vars_tpi, test_params_tpi_noncomply, expected_tpi_noncomply),
 ]
@@ -1064,7 +1075,14 @@ test_data = [
 @pytest.mark.parametrize(
     "model_vars,params,expected",
     test_data,
-    ids=["SS", "TPI", "vary tau_payroll", "SS, noncomply", "TPI, noncomply"],
+    ids=[
+        "SS",
+        "TPI",
+        "vary tau_payroll",
+        "vary tau_payroll by J",
+        "SS, noncomply",
+        "TPI, noncomply",
+    ],
 )
 def test_FOC_labor(model_vars, params, expected):
     # Test FOC condition for household's choice of labor supply

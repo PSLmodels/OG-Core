@@ -1431,17 +1431,17 @@
         "title": "Linear payroll tax rate",
         "description": "Linear payroll tax rate. Set value for base year, click '+' to add value for next year.  All future years not specified are set to last value entered.",
         "short_description": "Payroll tax rate",
-        "param_notation": "$\\tau^{p}_{t}$",
+        "param_notation": "$\\tau^{p}_{j,t}$",
         "section_1": "Fiscal Policy Parameters",
         "section_2": "Taxes",
-        "notes": "Set to zero as default since tax functions include income and payroll taxes.",
+        "notes": "Set to zero as default since tax functions include income and payroll taxes. Can be specified to vary by type J and over year T.",
         "type": "float",
-        "number_dims": 1,
+        "number_dims": 2,
         "value": [
             {
-                "value": [
+                "value": [[
                     0.0
-                ]
+                ]]
             }
         ],
         "validators": {

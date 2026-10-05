@@ -53,6 +53,74 @@ def test_alpha_FA_extended_over_time_path():
     assert specs.alpha_FA[-1] == 0.03
 
 
+def test_tau_payroll_extended_over_T_and_J():
+    # tau_payroll may vary over the time path and across lifetime income
+    # groups, so it should be extrapolated to T+S x J from a scalar, a
+    # vector of length J, or a (partial) time path.
+    specs = Specifications()
+    assert specs.tau_payroll.shape == (specs.T + specs.S, specs.J)
+    assert np.all(specs.tau_payroll == 0.0)
+    # single value applies to all groups and periods
+    specs.update_specifications({"tau_payroll": [[0.1]]})
+    assert specs.tau_payroll.shape == (specs.T + specs.S, specs.J)
+    assert np.allclose(specs.tau_payroll, 0.1)
+    # one value per income group, constant over time
+    by_J = [[0.01 * (j + 1) for j in range(specs.J)]]
+    specs.update_specifications({"tau_payroll": by_J})
+    assert specs.tau_payroll.shape == (specs.T + specs.S, specs.J)
+    assert np.allclose(specs.tau_payroll[0, :], by_J[0])
+    assert np.allclose(specs.tau_payroll[-1, :], by_J[0])
+    # time path common across groups, last value carried forward
+    specs.update_specifications({"tau_payroll": [[0.1], [0.2], [0.3]]})
+    assert specs.tau_payroll.shape == (specs.T + specs.S, specs.J)
+    assert np.allclose(specs.tau_payroll[:3, 0], [0.1, 0.2, 0.3])
+    assert np.allclose(specs.tau_payroll[3:, :], 0.3)
+    assert np.allclose(specs.tau_payroll[1, :], 0.2)
+
+
+def test_TxJ_params_collapse_when_J_changes():
+    # A previously extrapolated T+S x J array that is uniform across J
+    # should be re-extrapolated to the new J when J is changed, rather
+    # than raising an error, so the T x J parameters need not be
+    # re-specified when changing J (the T x S x J demographic and
+    # ability parameters still must be).
+    specs = Specifications()
+    specs.update_specifications({"tau_payroll": [[0.1]]})
+    assert specs.tau_payroll.shape[1] == 7
+    rho_vec = np.zeros((1, 20))
+    rho_vec[0, -1] = 1.0
+    new_J_params = {
+        "T": 30,
+        "S": 20,
+        "J": 2,
+        "chi_n": np.ones(2),
+        "e": np.ones((20, 2)),
+        "eta": (np.ones((20, 2)) / (20 * 2)),
+        "lambdas": [0.6, 0.4],
+        "omega": (np.ones((30, 20)) / 20).reshape(30, 20, 1)
+        * np.array([0.6, 0.4]).tolist(),
+        "omega_SS": (np.ones(20) / 20).reshape(20, 1)
+        * np.array([0.6, 0.4]).tolist(),
+        "omega_S_preTP": (np.ones(20) / 20).reshape(20, 1)
+        * np.array([0.6, 0.4]).tolist(),
+        "imm_rates": np.zeros((30, 20, 2)).tolist(),
+        "imm_rates_preTP": np.zeros((20, 2)).tolist(),
+        "rho": np.tile(rho_vec.reshape(1, 20, 1), (30, 1, 2)).tolist(),
+        "rho_preTP": np.tile(rho_vec.reshape(20, 1), (1, 2)).tolist(),
+    }
+    specs.update_specifications(new_J_params)
+    for item in [
+        "tau_payroll",
+        "labor_income_tax_noncompliance_rate",
+        "capital_income_tax_noncompliance_rate",
+        "replacement_rate_adjust",
+        "income_tax_filer",
+        "wealth_tax_filer",
+    ]:
+        assert getattr(specs, item).shape == (specs.T + specs.S, 2), item
+    assert np.allclose(specs.tau_payroll, 0.1)
+
+
 rho_array = np.zeros((4, 3, 7))
 rho_array[:, -1, :] = 1.0
 param_updates1 = {
