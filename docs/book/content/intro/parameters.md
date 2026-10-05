@@ -341,7 +341,8 @@ _Valid Choices:_['r', 'Curr GDP', 'LR GDP']
 
 
 ####  `alpha_db`  
-_Description:_ Replacement rate under a defined contribution system.  
+_Description:_ Replacement rate per year of contribution under a defined benefits system. Set value for base year, click '+' to add value for next year.  All future years not specified are set to last value entered.  
+_Notes:_ Can be specified to vary by type J and over year T. The rate applied is the one in effect in the period the benefit is paid.  
 _Value Type:_ float  
 _Valid Range:_ min = 0.0 and max = 1.0  
 _Out-of-Range Action:_ error  

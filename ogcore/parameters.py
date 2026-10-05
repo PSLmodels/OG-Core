@@ -233,6 +233,7 @@ class Specifications(paramtools.Parameters):
             "income_tax_filer",
             "wealth_tax_filer",
             "tau_payroll",
+            "alpha_db",
         ]
         for item in tp_param_list3:
             param_in = np.asarray(getattr(self, item))

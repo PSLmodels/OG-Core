@@ -4145,15 +4145,19 @@
         }
     },
     "alpha_db": {
-        "title": "Replacement rate under a defined contribution system.",
-        "description": "Replacement rate under a defined contribution system.",
+        "title": "Replacement rate under a defined benefits system.",
+        "description": "Replacement rate per year of contribution under a defined benefits system. Set value for base year, click '+' to add value for next year.  All future years not specified are set to last value entered.",
+        "param_notation": "$\\alpha^{DB}_{j,t}$",
         "section_1": "Fiscal Policy Parameters",
         "section_2": "Government Pension Parameters",
-        "notes": "",
+        "notes": "Can be specified to vary by type J and over year T. The rate applied is the one in effect in the period the benefit is paid.",
         "type": "float",
+        "number_dims": 2,
         "value": [
             {
-                "value": 0.0
+                "value": [[
+                    0.0
+                ]]
             }
         ],
         "validators": {
