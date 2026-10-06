@@ -1431,15 +1431,15 @@ def run_TPI(p, client=None):
             # "picard": the historical damped functional-iteration step,
             # unchanged, so the default behavior (and golden outputs) is
             # preserved exactly.
-            w[: p.T] = utils.convex_combo(wnew[: p.T], w[: p.T], p.nu)
-            r[: p.T] = utils.convex_combo(rnew[: p.T], r[: p.T], p.nu)
-            r_p[: p.T] = utils.convex_combo(r_p_new[: p.T], r_p[: p.T], p.nu)
+            w[: p.T] = utils.convex_combo(wnew[: p.T], w[: p.T], p.xi_tpi)
+            r[: p.T] = utils.convex_combo(rnew[: p.T], r[: p.T], p.xi_tpi)
+            r_p[: p.T] = utils.convex_combo(r_p_new[: p.T], r_p[: p.T], p.xi_tpi)
             p_m[: p.T, :] = utils.convex_combo(
-                new_p_m[: p.T, :], p_m[: p.T, :], p.nu
+                new_p_m[: p.T, :], p_m[: p.T, :], p.xi_tpi
             )
-            BQ[: p.T] = utils.convex_combo(BQnew[: p.T], BQ[: p.T], p.nu)
+            BQ[: p.T] = utils.convex_combo(BQnew[: p.T], BQ[: p.T], p.xi_tpi)
             if not p.baseline_spending:
-                TR[: p.T] = utils.convex_combo(TR_new[: p.T], TR[: p.T], p.nu)
+                TR[: p.T] = utils.convex_combo(TR_new[: p.T], TR[: p.T], p.xi_tpi)
         else:
             # Accelerated outer step on the packed macro/price vector
             # {r_p, r, w, p_m, BQ[, TR]}; the update rule (Anderson) uses the
@@ -1478,11 +1478,11 @@ def run_TPI(p, client=None):
             # non-contractive on the stiff case (why Picard needs a low nu), so
             # accelerating it directly overshoots and diverges. Same fixed
             # point; convergence is still measured on the raw residual above.
-            gx_damped = (1.0 - p.nu) * x + p.nu * gx
+            gx_damped = (1.0 - p.xi_tpi) * x + p.xi_tpi * gx
             x_next = outer_updater.update(x, gx_damped)
             if not np.all(np.isfinite(x_next)):
                 # accelerated step blew up -> damped Picard fallback + reset
-                x_next = p.nu * gx + (1.0 - p.nu) * x
+                x_next = p.xi_tpi * gx + (1.0 - p.xi_tpi) * x
                 outer_updater.reset()
                 logger.info(
                     "accelerated step non-finite; Picard fallback + reset"
@@ -1499,10 +1499,10 @@ def run_TPI(p, client=None):
             solvers.unpack_outer_vars(x_next, blocks, p.T)
         # Auxiliaries (unchanged): government rate, debt, and the household
         # policy warm-starts stay on the damped update.
-        r_gov[: p.T] = utils.convex_combo(r_gov_new[: p.T], r_gov[: p.T], p.nu)
+        r_gov[: p.T] = utils.convex_combo(r_gov_new[: p.T], r_gov[: p.T], p.xi_tpi)
         D[: p.T] = Dnew[: p.T]
-        guesses_b = utils.convex_combo(b_mat, guesses_b, p.nu)
-        guesses_n = utils.convex_combo(n_mat, guesses_n, p.nu)
+        guesses_b = utils.convex_combo(b_mat, guesses_b, p.xi_tpi)
+        guesses_n = utils.convex_combo(n_mat, guesses_n, p.xi_tpi)
         logger.info(
             f"w diff: {(wnew[: p.T] - w[: p.T]).max()}, "
             + f"{(wnew[: p.T] - w[: p.T]).min()}"
