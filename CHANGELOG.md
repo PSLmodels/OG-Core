@@ -5,7 +5,7 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [0.20.4] - 2026-10-05
+## [0.20.5] - 2026-10-06
 
 ### Added
 - Allows the defined benefit pension replacement rate `alpha_db` to vary across lifetime income groups and over time. The parameter is now a `T x J` array (`number_dims` changed from 0 to 2 in `default_parameters.json`), extrapolated like the other `T x J` parameters, so a single value (`[[0.02]]`), one value per income group, or a time path can be entered. The rate applied to a benefit is the one in effect in the period in which the benefit is paid, so a change in the rate affects current as well as future retirees. Reform JSON files or scripts that previously set `alpha_db` as a scalar (e.g., `0.02`) must now use the nested list form (e.g., `[[0.02]]`).
@@ -16,6 +16,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `pensions.deriv_DB` and `pensions.deriv_theta` now take `t` and `j` arguments. With a time-varying rate, the derivative of benefits with respect to labor supply at each working age is evaluated at the rate in effect when the household retires. `deriv_theta` is not yet used in the household first order conditions, so this has no effect on model solutions.
 - Fixes the title and description of `alpha_db` in `default_parameters.json`, which referred to a defined contribution system.
 - Updates the defined benefit pension equations in the theory documentation (`government.md`) to use $\alpha^{DB}_{j,t}$.
+
+## [0.20.4] - 2026-10-05
 
 ### Added
 - Allows the linear payroll tax rate `tau_payroll` to vary across lifetime income groups as well as over time. The parameter is now a `T x J` array (`number_dims` changed from 1 to 2 in `default_parameters.json`), extrapolated like `labor_income_tax_noncompliance_rate` and `income_tax_filer`, so a single value (`[[0.1]]`), one value per income group (`[[0.1, ..., 0.2]]`), or a time path (`[[0.1], [0.12]]`) can be entered. Reform JSON files or scripts that previously set `tau_payroll` as a flat list (e.g., `[0.124]`) must now use the nested form (e.g., `[[0.124]]`).
