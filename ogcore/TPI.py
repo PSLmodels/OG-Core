@@ -731,33 +731,46 @@ def inner_loop(guesses, outer_loop_vars, initial_values, ubi, j, ind, p):
     return euler_errors, b_mat, n_mat
 
 
-def _rc_error_message(RC_error, RC_TPI):
+def _rc_error_message(RC_error, RC_TPI, RC_TPI_terminal=None):
     """
     Build the message for a transition resource-constraint failure.
 
     Reports the maximum absolute resource-constraint error, the period it
     occurs in, and how to read it: a violation confined to the first or last
     periods is usually an initial- or terminal-boundary artifact, while one
-    spread across the path points to an inconsistent calibration.
+    spread across the path points to an inconsistent calibration. The
+    interior periods are checked against ``RC_TPI`` and the terminal period
+    against ``RC_TPI_terminal``, so the message names whichever tolerance the
+    worst error breaches.
 
     Args:
         RC_error (array_like): resource constraint error, time on axis 0
-        RC_TPI (scalar): the tolerance the error is checked against
+        RC_TPI (scalar): the tolerance the interior periods are checked
+            against
+        RC_TPI_terminal (scalar): the tolerance the terminal period is
+            checked against; defaults to ``RC_TPI`` when not supplied
 
     Returns:
         msg (str): the diagnostic error message
     """
+    if RC_TPI_terminal is None:
+        RC_TPI_terminal = RC_TPI
     abs_rc = np.absolute(RC_error)
     rc_by_period = abs_rc.reshape(abs_rc.shape[0], -1).max(axis=1)
     t_worst = int(np.argmax(rc_by_period))
+    t_last = rc_by_period.shape[0] - 1
+    tol = RC_TPI_terminal if t_worst == t_last else RC_TPI
+    tol_name = "RC_TPI_terminal" if t_worst == t_last else "RC_TPI"
     return (
         "Transition path equilibrium not found (RC_error): max "
         f"|resource constraint error| = {rc_by_period[t_worst]:.2e} at "
         f"period {t_worst} of {rc_by_period.shape[0]} (tolerance "
-        f"RC_TPI = {RC_TPI}). A violation confined to the first or last "
+        f"{tol_name} = {tol}). A violation confined to the first or last "
         "periods is usually an initial- or terminal-boundary artifact; one "
         "spread across the path points to an inconsistent calibration "
-        "(spending, revenue, debt_ratio_ss)."
+        "(spending, revenue, debt_ratio_ss). The terminal period is checked "
+        "against RC_TPI_terminal, which can be loosened on its own to exempt "
+        "the truncation boundary without waiving the interior check."
     )
 
 
@@ -1871,8 +1884,18 @@ def run_TPI(p, client=None):
             )
         raise RuntimeError(msg)
 
-    if (np.any(np.absolute(RC_error) >= p.RC_TPI)) and ENFORCE_SOLUTION_CHECKS:
-        raise RuntimeError(_rc_error_message(RC_error, p.RC_TPI))
+    # Check the interior periods against RC_TPI and the terminal period
+    # against the (by default identical) RC_TPI_terminal tolerance. The
+    # terminal period of a truncated path is not a true steady state, so its
+    # error is routinely larger; keeping a separate tolerance lets it be
+    # exempted without waiving the interior check.
+    abs_RC = np.absolute(RC_error)
+    interior_fail = np.any(abs_RC[:-1] >= p.RC_TPI)
+    terminal_fail = np.any(abs_RC[-1:] >= p.RC_TPI_terminal)
+    if (interior_fail or terminal_fail) and ENFORCE_SOLUTION_CHECKS:
+        raise RuntimeError(
+            _rc_error_message(RC_error, p.RC_TPI, p.RC_TPI_terminal)
+        )
 
     if (
         np.any(np.absolute(eul_savings) >= p.mindist_TPI)

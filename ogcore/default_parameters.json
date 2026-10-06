@@ -4947,6 +4947,24 @@
             }
         }
     },
+    "RC_TPI_terminal": {
+        "title": "Tolerance for the resource constraint in the terminal period of the time path solution",
+        "description": "Tolerance for the resource constraint in the final (terminal) period of the time path solution. The terminal period of a truncated transition path is not a true steady state, so its resource-constraint error is routinely larger than the interior periods; this separate, looser tolerance lets the terminal period be exempted without waiving the interior check.",
+        "section_1": "Model Solution Parameters",
+        "notes": "",
+        "type": "float",
+        "value": [
+            {
+                "value": 1e-04
+            }
+        ],
+        "validators": {
+            "range": {
+                "min": 1e-13,
+                "max": 1.0
+            }
+        }
+    },
     "reform_use_baseline_solution":{
         "title": "Whether or not the baseline SS solution is used for starting values when solving the reform",
         "description": "Whether or not the baseline SS solution is used for starting values when solving the reform.",
