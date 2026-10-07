@@ -308,7 +308,9 @@ def DB_amount(w, e, n, t, j, method, p):
         n_S = np.append(p.n_preTP[:(-per_rmn), j], n)
         # This household is age S - per_rmn at time t, so its benefit
         # at age u is paid in period t + u - (S - per_rmn)
-        idx = np.clip(t - (p.S - per_rmn) + np.arange(p.S), 0, p.alpha_db.shape[0] - 1)
+        idx = np.clip(
+            t - (p.S - per_rmn) + np.arange(p.S), 0, p.alpha_db.shape[0] - 1
+        )
         alpha_db_u = p.alpha_db[idx, j]
 
         DB = np.zeros(p.S)
