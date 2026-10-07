@@ -565,7 +565,7 @@
     <span class="k">if</span> <span class="n">p</span><span class="o">.</span><span class="n">pension_system</span> <span class="o">==</span> <span class="s2">"US-Style Social Security"</span><span class="p">:</span>
         <span class="n">pension</span> <span class="o">=</span> <span class="n">SS_amount</span><span class="p">(</span><span class="n">w</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">theta</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="n">j</span><span class="p">,</span> <span class="n">shift</span><span class="p">,</span> <span class="n">method</span><span class="p">,</span> <span class="n">e</span><span class="p">,</span> <span class="n">p</span><span class="p">)</span>
     <span class="k">elif</span> <span class="n">p</span><span class="o">.</span><span class="n">pension_system</span> <span class="o">==</span> <span class="s2">"Defined Benefits"</span><span class="p">:</span>
-        <span class="n">pension</span> <span class="o">=</span> <span class="n">DB_amount</span><span class="p">(</span><span class="n">w</span><span class="p">,</span> <span class="n">e</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">j</span><span class="p">,</span> <span class="n">p</span><span class="p">)</span>
+        <span class="n">pension</span> <span class="o">=</span> <span class="n">DB_amount</span><span class="p">(</span><span class="n">w</span><span class="p">,</span> <span class="n">e</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="n">j</span><span class="p">,</span> <span class="n">method</span><span class="p">,</span> <span class="n">p</span><span class="p">)</span>
         <span class="n">pension</span> <span class="o">=</span> <span class="n">pension</span> <span class="o">*</span> <span class="n">replacement_rate_adjustment</span><span class="p">(</span>
             <span class="n">pension</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="n">j</span><span class="p">,</span> <span class="n">method</span><span class="p">,</span> <span class="n">p</span>
         <span class="p">)</span>
@@ -680,14 +680,18 @@
 
 <div class="viewcode-block" id="DB_amount">
 <a class="viewcode-back" href="../../content/api/pensions.html#ogcore.pensions.DB_amount">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">DB_amount</span><span class="p">(</span><span class="n">w</span><span class="p">,</span> <span class="n">e</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">j</span><span class="p">,</span> <span class="n">p</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">DB_amount</span><span class="p">(</span><span class="n">w</span><span class="p">,</span> <span class="n">e</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="n">j</span><span class="p">,</span> <span class="n">method</span><span class="p">,</span> <span class="n">p</span><span class="p">):</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">"""</span>
 <span class="sd">    Calculate public pension from a defined benefits system.</span>
 
 <span class="sd">    .. math::</span>
 <span class="sd">        pension{j,s,t} = \biggl[\frac{\sum_{s=R-ny}^{R-1}w_{t}e_{j,s,t}</span>
-<span class="sd">            n_{j,s,t}}{ny}\biggr]\times Cy \times \alpha_{DB}</span>
+<span class="sd">            n_{j,s,t}}{ny}\biggr]\times Cy \times \alpha^{DB}_{j,t}</span>
 <span class="sd">            \quad \forall s &gt; R</span>
+
+<span class="sd">    The replacement rate :math:`\alpha^{DB}_{j,t}` may vary over time</span>
+<span class="sd">    and across lifetime income groups.  The rate applied to a benefit is</span>
+<span class="sd">    the one in effect in the period the benefit is paid.</span>
 
 <span class="sd">    Args:</span>
 <span class="sd">        w (array_like): real wage rate</span>
@@ -696,7 +700,12 @@
 <span class="sd">            (length &lt; S, for cohorts alive when the time path begins),</span>
 <span class="sd">            a steady-state vector (S,) or matrix (S, J), or the full</span>
 <span class="sd">            time path (T, S, J)</span>
-<span class="sd">        j (int): index of lifetime income group</span>
+<span class="sd">        t (int): model period of the first element of ``n`` (for a</span>
+<span class="sd">            partial or full lifetime path) or of the first row of ``n``</span>
+<span class="sd">            (for the full time path)</span>
+<span class="sd">        j (int): index of lifetime income group, None if all groups</span>
+<span class="sd">        method (str): adjusts calculation dimensions based on 'SS',</span>
+<span class="sd">            'TPI', or 'TPI_scalar'</span>
 <span class="sd">        p (OG-Core Specifications object): model parameters</span>
 
 <span class="sd">    Returns:</span>
@@ -728,6 +737,12 @@
         <span class="c1"># from the model's initial condition n_preTP (see Issue #1014)</span>
         <span class="n">w_S</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">w</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">S</span><span class="p">))[:(</span><span class="o">-</span><span class="n">per_rmn</span><span class="p">)],</span> <span class="n">w</span><span class="p">)</span>
         <span class="n">n_S</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">n_preTP</span><span class="p">[:(</span><span class="o">-</span><span class="n">per_rmn</span><span class="p">),</span> <span class="n">j</span><span class="p">],</span> <span class="n">n</span><span class="p">)</span>
+        <span class="c1"># This household is age S - per_rmn at time t, so its benefit</span>
+        <span class="c1"># at age u is paid in period t + u - (S - per_rmn)</span>
+        <span class="n">idx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">clip</span><span class="p">(</span>
+            <span class="n">t</span> <span class="o">-</span> <span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">S</span> <span class="o">-</span> <span class="n">per_rmn</span><span class="p">)</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">S</span><span class="p">),</span> <span class="mi">0</span><span class="p">,</span> <span class="n">p</span><span class="o">.</span><span class="n">alpha_db</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="mi">1</span>
+        <span class="p">)</span>
+        <span class="n">alpha_db_u</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">alpha_db</span><span class="p">[</span><span class="n">idx</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span>
 
         <span class="n">DB</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">S</span><span class="p">)</span>
         <span class="n">DB</span> <span class="o">=</span> <span class="n">DB_1dim_loop</span><span class="p">(</span>
@@ -744,13 +759,21 @@
             <span class="n">L_inc_avg</span><span class="p">,</span>
             <span class="n">DB</span><span class="p">,</span>
             <span class="n">equiv_periods</span><span class="p">,</span>
-            <span class="n">p</span><span class="o">.</span><span class="n">alpha_db</span><span class="p">,</span>
+            <span class="n">alpha_db_u</span><span class="p">,</span>
             <span class="n">equiv_yr_contrib</span><span class="p">,</span>
         <span class="p">)</span>
         <span class="n">DB</span> <span class="o">=</span> <span class="n">DB</span><span class="p">[</span><span class="o">-</span><span class="n">per_rmn</span><span class="p">:]</span>
 
     <span class="k">else</span><span class="p">:</span>
         <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">ndim</span><span class="p">(</span><span class="n">n</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">method</span> <span class="o">==</span> <span class="s2">"SS"</span><span class="p">:</span>
+                <span class="n">alpha_db_u</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">full</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">S</span><span class="p">,</span> <span class="n">p</span><span class="o">.</span><span class="n">alpha_db</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">j</span><span class="p">])</span>
+            <span class="k">elif</span> <span class="n">method</span> <span class="o">==</span> <span class="s2">"TPI_scalar"</span><span class="p">:</span>
+                <span class="n">alpha_db_u</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">full</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">S</span><span class="p">,</span> <span class="n">p</span><span class="o">.</span><span class="n">alpha_db</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="n">j</span><span class="p">])</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="c1"># full lifetime of a cohort that is age 0 at time t</span>
+                <span class="n">idx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">clip</span><span class="p">(</span><span class="n">t</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">S</span><span class="p">),</span> <span class="mi">0</span><span class="p">,</span> <span class="n">p</span><span class="o">.</span><span class="n">alpha_db</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
+                <span class="n">alpha_db_u</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">alpha_db</span><span class="p">[</span><span class="n">idx</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span>
             <span class="n">DB</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">S</span><span class="p">)</span>
             <span class="n">DB</span> <span class="o">=</span> <span class="n">DB_1dim_loop</span><span class="p">(</span>
                 <span class="n">w</span><span class="p">,</span>
@@ -763,11 +786,19 @@
                 <span class="n">L_inc_avg</span><span class="p">,</span>
                 <span class="n">DB</span><span class="p">,</span>
                 <span class="n">equiv_periods</span><span class="p">,</span>
-                <span class="n">p</span><span class="o">.</span><span class="n">alpha_db</span><span class="p">,</span>
+                <span class="n">alpha_db_u</span><span class="p">,</span>
                 <span class="n">equiv_yr_contrib</span><span class="p">,</span>
             <span class="p">)</span>
 
         <span class="k">elif</span> <span class="n">np</span><span class="o">.</span><span class="n">ndim</span><span class="p">(</span><span class="n">n</span><span class="p">)</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+            <span class="c1"># cross-section of all S x J households in a single period</span>
+            <span class="k">if</span> <span class="n">method</span> <span class="o">==</span> <span class="s2">"SS"</span><span class="p">:</span>
+                <span class="n">alpha_db_j</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">alpha_db</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="p">:]</span>
+            <span class="k">elif</span> <span class="n">method</span> <span class="o">==</span> <span class="s2">"TPI_scalar"</span><span class="p">:</span>
+                <span class="n">alpha_db_j</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">alpha_db</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="p">:]</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">alpha_db_j</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">alpha_db</span><span class="p">[</span><span class="n">t</span><span class="p">,</span> <span class="p">:]</span>
+            <span class="n">alpha_db_uj</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">tile</span><span class="p">(</span><span class="n">alpha_db_j</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">p</span><span class="o">.</span><span class="n">J</span><span class="p">),</span> <span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">S</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
             <span class="n">DB</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">p</span><span class="o">.</span><span class="n">S</span><span class="p">,</span> <span class="n">p</span><span class="o">.</span><span class="n">J</span><span class="p">))</span>
             <span class="n">L_inc_avg_sj</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">equiv_periods</span><span class="p">,</span> <span class="n">p</span><span class="o">.</span><span class="n">J</span><span class="p">))</span>
             <span class="n">DB</span> <span class="o">=</span> <span class="n">DB_2dim_loop</span><span class="p">(</span>
@@ -781,7 +812,7 @@
                 <span class="n">L_inc_avg</span><span class="p">,</span>
                 <span class="n">DB</span><span class="p">,</span>
                 <span class="n">equiv_periods</span><span class="p">,</span>
-                <span class="n">p</span><span class="o">.</span><span class="n">alpha_db</span><span class="p">,</span>
+                <span class="n">alpha_db_uj</span><span class="p">,</span>
                 <span class="n">equiv_yr_contrib</span><span class="p">,</span>
             <span class="p">)</span>
 
@@ -791,6 +822,10 @@
             <span class="k">if</span> <span class="n">w_path</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
                 <span class="n">w_path</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">full</span><span class="p">(</span><span class="n">T</span><span class="p">,</span> <span class="nb">float</span><span class="p">(</span><span class="n">w_path</span><span class="p">))</span>
             <span class="n">e_ss</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">e</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">ndim</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">e</span><span class="p">)</span> <span class="o">==</span> <span class="mi">3</span> <span class="k">else</span> <span class="n">p</span><span class="o">.</span><span class="n">e</span>
+            <span class="c1"># rate in effect in each period of the path, T x J</span>
+            <span class="n">idx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">clip</span><span class="p">(</span><span class="n">t</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">T</span><span class="p">),</span> <span class="mi">0</span><span class="p">,</span> <span class="n">p</span><span class="o">.</span><span class="n">alpha_db</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
+            <span class="n">alpha_db_tj</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ascontiguousarray</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">alpha_db</span><span class="p">[</span><span class="n">idx</span><span class="p">,</span> <span class="p">:])</span>
+            <span class="c1"># alpha_db_tj = p.alpha_db[t + np.arange(T), :]</span>
             <span class="n">DB</span> <span class="o">=</span> <span class="n">DB_3dim_loop</span><span class="p">(</span>
                 <span class="n">w_path</span><span class="p">,</span>
                 <span class="n">e_ss</span><span class="p">,</span>
@@ -801,7 +836,7 @@
                 <span class="n">p</span><span class="o">.</span><span class="n">J</span><span class="p">,</span>
                 <span class="nb">float</span><span class="p">(</span><span class="n">g_y_arr</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]),</span>
                 <span class="n">equiv_periods</span><span class="p">,</span>
-                <span class="n">p</span><span class="o">.</span><span class="n">alpha_db</span><span class="p">,</span>
+                <span class="n">alpha_db_tj</span><span class="p">,</span>
                 <span class="n">equiv_yr_contrib</span><span class="p">,</span>
             <span class="p">)</span>
 
@@ -1005,7 +1040,7 @@
 
 <div class="viewcode-block" id="deriv_theta">
 <a class="viewcode-back" href="../../content/api/pensions.html#ogcore.pensions.deriv_theta">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">deriv_theta</span><span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="n">w</span><span class="p">,</span> <span class="n">e</span><span class="p">,</span> <span class="n">Y</span><span class="p">,</span> <span class="n">per_rmn</span><span class="p">,</span> <span class="n">factor</span><span class="p">,</span> <span class="n">p</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">deriv_theta</span><span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="n">w</span><span class="p">,</span> <span class="n">e</span><span class="p">,</span> <span class="n">Y</span><span class="p">,</span> <span class="n">per_rmn</span><span class="p">,</span> <span class="n">factor</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="n">j</span><span class="p">,</span> <span class="n">p</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Change in pension benefits for another unit of labor supply for</span>
 <span class="sd">    pension system selected</span>
@@ -1017,6 +1052,9 @@
 <span class="sd">        Y (array_like): GDP</span>
 <span class="sd">        per_rmn (int): number of periods remaining in the model</span>
 <span class="sd">        factor (scalar): scaling factor converting model units to</span>
+<span class="sd">        t (int): model period</span>
+<span class="sd">        j (int): index of lifetime income group</span>
+<span class="sd">        p (OG-Core Specifications object): model parameters</span>
 
 <span class="sd">    Returns:</span>
 <span class="sd">        d_theta (Numpy array): change in pension benefits for another</span>
@@ -1024,7 +1062,7 @@
 <span class="sd">    """</span>
     <span class="c1"># TODO: Add SS here...</span>
     <span class="k">if</span> <span class="n">p</span><span class="o">.</span><span class="n">pension_system</span> <span class="o">==</span> <span class="s2">"Defined Benefits"</span><span class="p">:</span>
-        <span class="n">d_theta</span> <span class="o">=</span> <span class="n">deriv_DB</span><span class="p">(</span><span class="n">w</span><span class="p">,</span> <span class="n">e</span><span class="p">,</span> <span class="n">per_rmn</span><span class="p">,</span> <span class="n">p</span><span class="p">)</span>
+        <span class="n">d_theta</span> <span class="o">=</span> <span class="n">deriv_DB</span><span class="p">(</span><span class="n">w</span><span class="p">,</span> <span class="n">e</span><span class="p">,</span> <span class="n">per_rmn</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="n">j</span><span class="p">,</span> <span class="n">p</span><span class="p">)</span>
         <span class="n">d_theta</span> <span class="o">=</span> <span class="n">d_theta</span><span class="p">[</span><span class="o">-</span><span class="n">per_rmn</span><span class="p">:]</span>
     <span class="k">elif</span> <span class="n">p</span><span class="o">.</span><span class="n">pension_system</span> <span class="o">==</span> <span class="s2">"Notional Defined Contribution"</span><span class="p">:</span>
         <span class="n">d_theta</span> <span class="o">=</span> <span class="n">deriv_NDC</span><span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="n">w</span><span class="p">,</span> <span class="n">e</span><span class="p">,</span> <span class="n">Y</span><span class="p">,</span> <span class="n">per_rmn</span><span class="p">,</span> <span class="n">p</span><span class="p">)</span>
@@ -1095,7 +1133,7 @@
 
 <div class="viewcode-block" id="deriv_DB">
 <a class="viewcode-back" href="../../content/api/pensions.html#ogcore.pensions.deriv_DB">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">deriv_DB</span><span class="p">(</span><span class="n">w</span><span class="p">,</span> <span class="n">e</span><span class="p">,</span> <span class="n">per_rmn</span><span class="p">,</span> <span class="n">p</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">deriv_DB</span><span class="p">(</span><span class="n">w</span><span class="p">,</span> <span class="n">e</span><span class="p">,</span> <span class="n">per_rmn</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="n">j</span><span class="p">,</span> <span class="n">p</span><span class="p">):</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">"""</span>
 <span class="sd">    Change in DB pension benefits for another unit of labor supply</span>
 
@@ -1103,15 +1141,23 @@
 <span class="sd">        \frac{\partial \theta_{j,u,t+u-s}}{\partial n_{j,s,t}} =</span>
 <span class="sd">            \begin{cases}</span>
 <span class="sd">                0 , &amp; \text{if}\ s &lt; R - Cy \\</span>
-<span class="sd">                w_{t}e_{j,s}\alpha_{DB}\times \frac{Cy}{ny},</span>
+<span class="sd">                w_{t}e_{j,s}\alpha^{DB}_{j,t+R-s}\times \frac{Cy}{ny},</span>
 <span class="sd">                &amp; \text{if}\  R - Cy &lt;= s &lt; R  \\</span>
 <span class="sd">                0, &amp; \text{if}\ s \geq R \\</span>
 <span class="sd">            \end{cases}</span>
+
+<span class="sd">    With a replacement rate that varies over time, the change in the</span>
+<span class="sd">    benefit paid at each age u depends on the rate in effect at that</span>
+<span class="sd">    time.  This function returns a single derivative for each working</span>
+<span class="sd">    age s, evaluated at the rate in effect when the household retires</span>
+<span class="sd">    (period t + R - s), as an approximation.</span>
 
 <span class="sd">    Args:</span>
 <span class="sd">        w (array_like): real wage rate</span>
 <span class="sd">        e (Numpy array): effective labor units</span>
 <span class="sd">        per_rmn (int): number of periods remaining in the model</span>
+<span class="sd">        t (int): model period</span>
+<span class="sd">        j (int): index of lifetime income group</span>
 <span class="sd">        p (OG-Core Specifications object): model parameters</span>
 
 <span class="sd">    Returns:</span>
@@ -1125,6 +1171,12 @@
     <span class="k">if</span> <span class="n">per_rmn</span> <span class="o">&lt;</span> <span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">S</span> <span class="o">-</span> <span class="n">S_ret</span> <span class="o">+</span> <span class="mi">1</span><span class="p">):</span>
         <span class="n">d_theta</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">S</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
+        <span class="c1"># element s of the loop is a household of age S - per_rmn + s</span>
+        <span class="c1"># at time t, which retires in period t + S_ret - age</span>
+        <span class="n">age</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">S</span> <span class="o">-</span> <span class="n">per_rmn</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">per_rmn</span><span class="p">)</span>
+        <span class="n">idx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">clip</span><span class="p">(</span><span class="n">t</span> <span class="o">+</span> <span class="n">S_ret</span> <span class="o">-</span> <span class="n">age</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">p</span><span class="o">.</span><span class="n">alpha_db</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="n">alpha_db_s</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">alpha_db</span><span class="p">[</span><span class="n">idx</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span>
+        <span class="c1"># alpha_db_s = p.alpha_db[t + S_ret - age, j]</span>
         <span class="n">d_theta</span> <span class="o">=</span> <span class="n">deriv_DB_loop</span><span class="p">(</span>
             <span class="n">w</span><span class="p">,</span>
             <span class="n">e</span><span class="p">,</span>
@@ -1132,7 +1184,7 @@
             <span class="n">S_ret</span><span class="p">,</span>
             <span class="n">per_rmn</span><span class="p">,</span>
             <span class="n">equiv_periods</span><span class="p">,</span>
-            <span class="n">p</span><span class="o">.</span><span class="n">alpha_db</span><span class="p">,</span>
+            <span class="n">alpha_db_s</span><span class="p">,</span>
             <span class="n">equiv_yr_contrib</span><span class="p">,</span>
         <span class="p">)</span>
     <span class="k">return</span> <span class="n">d_theta</span></div>
@@ -1332,7 +1384,8 @@
 <span class="sd">        S_ret (int): retirement age</span>
 <span class="sd">        per_rmn (int): number of periods remaining in the model</span>
 <span class="sd">        avg_earn_num_years (int): number of years AIME is computed from</span>
-<span class="sd">        alpha_db (scalar): replacement rate</span>
+<span class="sd">        alpha_db (Numpy array): replacement rate for each of the</span>
+<span class="sd">            per_rmn remaining periods</span>
 <span class="sd">        yr_contr (scalar): years of contribution</span>
 
 <span class="sd">    Returns:</span>
@@ -1344,7 +1397,9 @@
     <span class="c1"># print("Average earnings years: ", avg_earn_num_years)</span>
     <span class="n">num_per_retire</span> <span class="o">=</span> <span class="n">S</span> <span class="o">-</span> <span class="n">S_ret</span>
     <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">per_rmn</span><span class="p">):</span>
-        <span class="n">d_theta</span><span class="p">[</span><span class="n">s</span><span class="p">]</span> <span class="o">=</span> <span class="n">w</span><span class="p">[</span><span class="n">s</span><span class="p">]</span> <span class="o">*</span> <span class="n">e</span><span class="p">[</span><span class="n">s</span><span class="p">]</span> <span class="o">*</span> <span class="n">alpha_db</span> <span class="o">*</span> <span class="p">(</span><span class="n">yr_contr</span> <span class="o">/</span> <span class="n">avg_earn_num_years</span><span class="p">)</span>
+        <span class="n">d_theta</span><span class="p">[</span><span class="n">s</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="n">w</span><span class="p">[</span><span class="n">s</span><span class="p">]</span> <span class="o">*</span> <span class="n">e</span><span class="p">[</span><span class="n">s</span><span class="p">]</span> <span class="o">*</span> <span class="n">alpha_db</span><span class="p">[</span><span class="n">s</span><span class="p">]</span> <span class="o">*</span> <span class="p">(</span><span class="n">yr_contr</span> <span class="o">/</span> <span class="n">avg_earn_num_years</span><span class="p">)</span>
+        <span class="p">)</span>
     <span class="n">d_theta</span><span class="p">[</span><span class="o">-</span><span class="n">num_per_retire</span><span class="p">:]</span> <span class="o">=</span> <span class="mf">0.0</span>
 
     <span class="k">return</span> <span class="n">d_theta</span></div>
@@ -1565,7 +1620,8 @@
 <span class="sd">        L_inc_avg (scalar): average labor income</span>
 <span class="sd">        DB (Numpy array): pension amount for each household</span>
 <span class="sd">        avg_earn_num_years (int): number of years AIME is computed from</span>
-<span class="sd">        alpha_db (scalar): replacement rate</span>
+<span class="sd">        alpha_db (Numpy array): replacement rate in effect at each age</span>
+<span class="sd">            u, length S</span>
 <span class="sd">        yr_contr (scalar): years of contribution</span>
 
 <span class="sd">    Returns:</span>
@@ -1580,7 +1636,7 @@
                 <span class="n">w</span><span class="p">[</span><span class="n">s</span><span class="p">]</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">g_y</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="p">(</span><span class="n">u</span> <span class="o">-</span> <span class="n">s</span><span class="p">))</span> <span class="o">*</span> <span class="n">e</span><span class="p">[</span><span class="n">s</span><span class="p">]</span> <span class="o">*</span> <span class="n">n</span><span class="p">[</span><span class="n">s</span><span class="p">]</span>
             <span class="p">)</span>
         <span class="n">L_inc_avg</span> <span class="o">=</span> <span class="n">L_inc_avg_s</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span> <span class="o">/</span> <span class="n">avg_earn_num_years</span>
-        <span class="n">rep_rate</span> <span class="o">=</span> <span class="n">yr_contr</span> <span class="o">*</span> <span class="n">alpha_db</span>
+        <span class="n">rep_rate</span> <span class="o">=</span> <span class="n">yr_contr</span> <span class="o">*</span> <span class="n">alpha_db</span><span class="p">[</span><span class="n">u</span><span class="p">]</span>
         <span class="n">DB</span><span class="p">[</span><span class="n">u</span><span class="p">]</span> <span class="o">=</span> <span class="n">rep_rate</span> <span class="o">*</span> <span class="n">L_inc_avg</span>
 
     <span class="k">return</span> <span class="n">DB</span></div>
@@ -1618,7 +1674,8 @@
 <span class="sd">        L_inc_avg (scalar): average labor income</span>
 <span class="sd">        DB (Numpy array): pension amount for each household</span>
 <span class="sd">        avg_earn_num_years (int): number of years AIME is computed from</span>
-<span class="sd">        alpha_db (scalar): replacement rate</span>
+<span class="sd">        alpha_db (Numpy array): replacement rate in effect at each age</span>
+<span class="sd">            u for each group j, size S x J</span>
 <span class="sd">        yr_contr (scalar): years of contribution</span>
 
 <span class="sd">    Returns:</span>
@@ -1631,7 +1688,7 @@
                 <span class="n">w</span><span class="p">[</span><span class="n">s</span><span class="p">]</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">g_y</span> <span class="o">*</span> <span class="p">(</span><span class="n">u</span> <span class="o">-</span> <span class="n">s</span><span class="p">))</span> <span class="o">*</span> <span class="n">e</span><span class="p">[</span><span class="n">s</span><span class="p">,</span> <span class="p">:]</span> <span class="o">*</span> <span class="n">n</span><span class="p">[</span><span class="n">s</span><span class="p">,</span> <span class="p">:]</span>
             <span class="p">)</span>
         <span class="n">L_inc_avg</span> <span class="o">=</span> <span class="n">L_inc_avg_sj</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span> <span class="o">/</span> <span class="n">avg_earn_num_years</span>
-        <span class="n">rep_rate</span> <span class="o">=</span> <span class="n">yr_contr</span> <span class="o">*</span> <span class="n">alpha_db</span>
+        <span class="n">rep_rate</span> <span class="o">=</span> <span class="n">yr_contr</span> <span class="o">*</span> <span class="n">alpha_db</span><span class="p">[</span><span class="n">u</span><span class="p">,</span> <span class="p">:]</span>
         <span class="n">DB</span><span class="p">[</span><span class="n">u</span><span class="p">,</span> <span class="p">:]</span> <span class="o">=</span> <span class="n">rep_rate</span> <span class="o">*</span> <span class="n">L_inc_avg</span>
 
     <span class="k">return</span> <span class="n">DB</span></div>
@@ -1680,7 +1737,9 @@
 <span class="sd">        g_y (scalar): growth rate of technology</span>
 <span class="sd">        avg_earn_num_years (int): number of years earnings are averaged</span>
 <span class="sd">            over</span>
-<span class="sd">        alpha_db (scalar): replacement rate per year of contribution</span>
+<span class="sd">        alpha_db (Numpy array): replacement rate per year of</span>
+<span class="sd">            contribution in effect in each period t for each group j,</span>
+<span class="sd">            size T x J</span>
 <span class="sd">        yr_contr (int): years of contribution</span>
 
 <span class="sd">    Returns:</span>
@@ -1702,7 +1761,9 @@
                 <span class="n">e_ss</span><span class="p">[</span><span class="n">s_idx</span><span class="p">,</span> <span class="p">:]</span> <span class="o">*</span> <span class="n">n_hist</span>
             <span class="p">)</span>
             <span class="n">DB</span><span class="p">[</span><span class="n">t</span><span class="p">,</span> <span class="n">u</span><span class="p">,</span> <span class="p">:]</span> <span class="o">=</span> <span class="p">(</span>
-                <span class="p">(</span><span class="n">L</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span> <span class="o">/</span> <span class="n">avg_earn_num_years</span><span class="p">)</span> <span class="o">*</span> <span class="n">yr_contr</span> <span class="o">*</span> <span class="n">alpha_db</span>
+                <span class="p">(</span><span class="n">L</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span> <span class="o">/</span> <span class="n">avg_earn_num_years</span><span class="p">)</span>
+                <span class="o">*</span> <span class="n">yr_contr</span>
+                <span class="o">*</span> <span class="n">alpha_db</span><span class="p">[</span><span class="n">t</span><span class="p">,</span> <span class="p">:]</span>
             <span class="p">)</span>
 
     <span class="k">return</span> <span class="n">DB</span></div>

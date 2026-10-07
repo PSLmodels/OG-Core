@@ -402,13 +402,13 @@ The defined benefit system pension amount is given as:
 
   ```{math}
   :label: eqn:db_pension
-  pension_{j,s,t} = \biggl[\frac{\sum_{s=R-ny}^{R-1}w_{t}e_{j,s,t}n_{j,s,t}}{ny}\biggr]\times Cy \times \alpha_{DB} \quad \forall s > R
+  pension_{j,s,t} = \biggl[\frac{\sum_{s=R-ny}^{R-1}w_{t}e_{j,s,t}n_{j,s,t}}{ny}\biggr]\times Cy \times \alpha^{DB}_{j,t} \quad \forall s > R
   ```
 
 where:
   - $ny$ are the number of years over which average earnings are calculated
   - $Cy$ are the number of years of contributions.  In our model, there is no exit from the labor force, so workers will contribute for $R$ years, but $Cy$ could be some number less than $R$ if there is a maximum number of years of contributions one can accrue under the DB system.
-  - $\alpha_{DB}$ is the replacement rate per year of contribution.
+  - $\alpha^{DB}_{j,t}$ is the replacement rate per year of contribution.  This rate may vary over time and across lifetime income groups.  The rate applied to a benefit is the one in effect in the period in which the benefit is paid, so a change in the rate affects the benefits of current retirees as well as those of future retirees.
 
   Given this pension system and the fact that there is only variation in labor supply along the intensive margin (so we don't need to consider changes in $Cy$), the partial derivatives from the household section are given by:
 
@@ -417,7 +417,7 @@ where:
     \frac{\partial \theta_{j,u,t+u-s}}{\partial n_{j,s,t}} =
       \begin{cases}
         0 , & \text{if}\ s < R - Cy \\
-        w_{t}e_{j,s}\alpha_{DB}\times \frac{Cy}{ny}, & \text{if}\  R - Cy <= s < R  \\
+        w_{t}e_{j,s}\alpha^{DB}_{j,t+R-s}\times \frac{Cy}{ny}, & \text{if}\  R - Cy <= s < R  \\
         0, & \text{if}\ s \geq R \\
       \end{cases}
   ```

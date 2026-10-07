@@ -531,7 +531,8 @@
 <li><p><strong>L_inc_avg</strong> (<em>scalar</em>) – average labor income</p></li>
 <li><p><strong>DB</strong> (<em>Numpy array</em>) – pension amount for each household</p></li>
 <li><p><strong>avg_earn_num_years</strong> (<em>int</em>) – number of years AIME is computed from</p></li>
-<li><p><strong>alpha_db</strong> (<em>scalar</em>) – replacement rate</p></li>
+<li><p><strong>alpha_db</strong> (<em>Numpy array</em>) – replacement rate in effect at each age
+u, length S</p></li>
 <li><p><strong>yr_contr</strong> (<em>scalar</em>) – years of contribution</p></li>
 </ul>
 </dd>
@@ -561,7 +562,8 @@
 <li><p><strong>L_inc_avg</strong> (<em>scalar</em>) – average labor income</p></li>
 <li><p><strong>DB</strong> (<em>Numpy array</em>) – pension amount for each household</p></li>
 <li><p><strong>avg_earn_num_years</strong> (<em>int</em>) – number of years AIME is computed from</p></li>
-<li><p><strong>alpha_db</strong> (<em>scalar</em>) – replacement rate</p></li>
+<li><p><strong>alpha_db</strong> (<em>Numpy array</em>) – replacement rate in effect at each age
+u for each group j, size S x J</p></li>
 <li><p><strong>yr_contr</strong> (<em>scalar</em>) – years of contribution</p></li>
 </ul>
 </dd>
@@ -602,7 +604,9 @@ vectorized rather than looped.</p>
 <li><p><strong>g_y</strong> (<em>scalar</em>) – growth rate of technology</p></li>
 <li><p><strong>avg_earn_num_years</strong> (<em>int</em>) – number of years earnings are averaged
 over</p></li>
-<li><p><strong>alpha_db</strong> (<em>scalar</em>) – replacement rate per year of contribution</p></li>
+<li><p><strong>alpha_db</strong> (<em>Numpy array</em>) – replacement rate per year of
+contribution in effect in each period t for each group j,
+size T x J</p></li>
 <li><p><strong>yr_contr</strong> (<em>int</em>) – years of contribution</p></li>
 </ul>
 </dd>
@@ -617,12 +621,15 @@ over</p></li>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="ogcore.pensions.DB_amount">
-<span class="sig-prename descclassname"><span class="pre">ogcore.pensions.</span></span><span class="sig-name descname"><span class="pre">DB_amount</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">w</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">e</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">j</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogcore/pensions.html#DB_amount"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogcore.pensions.DB_amount" title="Link to this definition">#</a></dt>
+<span class="sig-prename descclassname"><span class="pre">ogcore.pensions.</span></span><span class="sig-name descname"><span class="pre">DB_amount</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">w</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">e</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">t</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">j</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">method</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogcore/pensions.html#DB_amount"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogcore.pensions.DB_amount" title="Link to this definition">#</a></dt>
 <dd><p>Calculate public pension from a defined benefits system.</p>
 <div class="math notranslate nohighlight">
 \[pension{j,s,t} = \biggl[\frac{\sum_{s=R-ny}^{R-1}w_{t}e_{j,s,t}
-    n_{j,s,t}}{ny}\biggr]\times Cy \times \alpha_{DB}
+    n_{j,s,t}}{ny}\biggr]\times Cy \times \alpha^{DB}_{j,t}
     \quad \forall s &gt; R\]</div>
+<p>The replacement rate <span class="math notranslate nohighlight">\(\alpha^{DB}_{j,t}\)</span> may vary over time
+and across lifetime income groups.  The rate applied to a benefit is
+the one in effect in the period the benefit is paid.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
@@ -632,7 +639,12 @@ over</p></li>
 (length &lt; S, for cohorts alive when the time path begins),
 a steady-state vector (S,) or matrix (S, J), or the full
 time path (T, S, J)</p></li>
-<li><p><strong>j</strong> (<em>int</em>) – index of lifetime income group</p></li>
+<li><p><strong>t</strong> (<em>int</em>) – model period of the first element of <code class="docutils literal notranslate"><span class="pre">n</span></code> (for a
+partial or full lifetime path) or of the first row of <code class="docutils literal notranslate"><span class="pre">n</span></code>
+(for the full time path)</p></li>
+<li><p><strong>j</strong> (<em>int</em>) – index of lifetime income group, None if all groups</p></li>
+<li><p><strong>method</strong> (<em>str</em>) – adjusts calculation dimensions based on ‘SS’,
+‘TPI’, or ‘TPI_scalar’</p></li>
 <li><p><strong>p</strong> (<em>OG-Core Specifications object</em>) – model parameters</p></li>
 </ul>
 </dd>
@@ -937,22 +949,29 @@ pension amount</p></li>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="ogcore.pensions.deriv_DB">
-<span class="sig-prename descclassname"><span class="pre">ogcore.pensions.</span></span><span class="sig-name descname"><span class="pre">deriv_DB</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">w</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">e</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">per_rmn</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogcore/pensions.html#deriv_DB"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogcore.pensions.deriv_DB" title="Link to this definition">#</a></dt>
+<span class="sig-prename descclassname"><span class="pre">ogcore.pensions.</span></span><span class="sig-name descname"><span class="pre">deriv_DB</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">w</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">e</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">per_rmn</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">t</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">j</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogcore/pensions.html#deriv_DB"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogcore.pensions.deriv_DB" title="Link to this definition">#</a></dt>
 <dd><p>Change in DB pension benefits for another unit of labor supply</p>
 <div class="math notranslate nohighlight">
 \[\begin{split}\frac{\partial \theta_{j,u,t+u-s}}{\partial n_{j,s,t}} =
     \begin{cases}
         0 , &amp; \text{if}\ s &lt; R - Cy \\
-        w_{t}e_{j,s}\alpha_{DB}\times \frac{Cy}{ny},
+        w_{t}e_{j,s}\alpha^{DB}_{j,t+R-s}\times \frac{Cy}{ny},
         &amp; \text{if}\  R - Cy &lt;= s &lt; R  \\
         0, &amp; \text{if}\ s \geq R \\
     \end{cases}\end{split}\]</div>
+<p>With a replacement rate that varies over time, the change in the
+benefit paid at each age u depends on the rate in effect at that
+time.  This function returns a single derivative for each working
+age s, evaluated at the rate in effect when the household retires
+(period t + R - s), as an approximation.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>w</strong> (<em>array_like</em>) – real wage rate</p></li>
 <li><p><strong>e</strong> (<em>Numpy array</em>) – effective labor units</p></li>
 <li><p><strong>per_rmn</strong> (<em>int</em>) – number of periods remaining in the model</p></li>
+<li><p><strong>t</strong> (<em>int</em>) – model period</p></li>
+<li><p><strong>j</strong> (<em>int</em>) – index of lifetime income group</p></li>
 <li><p><strong>p</strong> (<em>OG-Core Specifications object</em>) – model parameters</p></li>
 </ul>
 </dd>
@@ -982,7 +1001,8 @@ pension amount</p></li>
 <li><p><strong>S_ret</strong> (<em>int</em>) – retirement age</p></li>
 <li><p><strong>per_rmn</strong> (<em>int</em>) – number of periods remaining in the model</p></li>
 <li><p><strong>avg_earn_num_years</strong> (<em>int</em>) – number of years AIME is computed from</p></li>
-<li><p><strong>alpha_db</strong> (<em>scalar</em>) – replacement rate</p></li>
+<li><p><strong>alpha_db</strong> (<em>Numpy array</em>) – replacement rate for each of the
+per_rmn remaining periods</p></li>
 <li><p><strong>yr_contr</strong> (<em>scalar</em>) – years of contribution</p></li>
 </ul>
 </dd>
@@ -1136,7 +1156,7 @@ local currency</p></li>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="ogcore.pensions.deriv_theta">
-<span class="sig-prename descclassname"><span class="pre">ogcore.pensions.</span></span><span class="sig-name descname"><span class="pre">deriv_theta</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">r</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">w</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">e</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Y</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">per_rmn</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">factor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogcore/pensions.html#deriv_theta"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogcore.pensions.deriv_theta" title="Link to this definition">#</a></dt>
+<span class="sig-prename descclassname"><span class="pre">ogcore.pensions.</span></span><span class="sig-name descname"><span class="pre">deriv_theta</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">r</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">w</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">e</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Y</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">per_rmn</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">factor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">t</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">j</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogcore/pensions.html#deriv_theta"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogcore.pensions.deriv_theta" title="Link to this definition">#</a></dt>
 <dd><p>Change in pension benefits for another unit of labor supply for
 pension system selected</p>
 <dl class="field-list simple">
@@ -1148,6 +1168,9 @@ pension system selected</p>
 <li><p><strong>Y</strong> (<em>array_like</em>) – GDP</p></li>
 <li><p><strong>per_rmn</strong> (<em>int</em>) – number of periods remaining in the model</p></li>
 <li><p><strong>factor</strong> (<em>scalar</em>) – scaling factor converting model units to</p></li>
+<li><p><strong>t</strong> (<em>int</em>) – model period</p></li>
+<li><p><strong>j</strong> (<em>int</em>) – index of lifetime income group</p></li>
+<li><p><strong>p</strong> (<em>OG-Core Specifications object</em>) – model parameters</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>

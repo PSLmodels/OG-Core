@@ -848,19 +848,19 @@
 <h5>Defined benefit system<a class="headerlink" href="#defined-benefit-system" title="Link to this heading">#</a></h5>
 <p>The defined benefit system pension amount is given as:</p>
 <div class="math notranslate nohighlight" id="equation-eqn-db-pension">
-<span class="eqno">(74)<a class="headerlink" href="#equation-eqn-db-pension" title="Link to this equation">#</a></span>\[pension_{j,s,t} = \biggl[\frac{\sum_{s=R-ny}^{R-1}w_{t}e_{j,s,t}n_{j,s,t}}{ny}\biggr]\times Cy \times \alpha_{DB} \quad \forall s &gt; R\]</div>
+<span class="eqno">(74)<a class="headerlink" href="#equation-eqn-db-pension" title="Link to this equation">#</a></span>\[pension_{j,s,t} = \biggl[\frac{\sum_{s=R-ny}^{R-1}w_{t}e_{j,s,t}n_{j,s,t}}{ny}\biggr]\times Cy \times \alpha^{DB}_{j,t} \quad \forall s &gt; R\]</div>
 <p>where:</p>
 <ul class="simple">
 <li><p><span class="math notranslate nohighlight">\(ny\)</span> are the number of years over which average earnings are calculated</p></li>
 <li><p><span class="math notranslate nohighlight">\(Cy\)</span> are the number of years of contributions.  In our model, there is no exit from the labor force, so workers will contribute for <span class="math notranslate nohighlight">\(R\)</span> years, but <span class="math notranslate nohighlight">\(Cy\)</span> could be some number less than <span class="math notranslate nohighlight">\(R\)</span> if there is a maximum number of years of contributions one can accrue under the DB system.</p></li>
-<li><p><span class="math notranslate nohighlight">\(\alpha_{DB}\)</span> is the replacement rate per year of contribution.</p></li>
+<li><p><span class="math notranslate nohighlight">\(\alpha^{DB}_{j,t}\)</span> is the replacement rate per year of contribution.  This rate may vary over time and across lifetime income groups.  The rate applied to a benefit is the one in effect in the period in which the benefit is paid, so a change in the rate affects the benefits of current retirees as well as those of future retirees.</p></li>
 </ul>
 <p>Given this pension system and the fact that there is only variation in labor supply along the intensive margin (so we don’t need to consider changes in <span class="math notranslate nohighlight">\(Cy\)</span>), the partial derivatives from the household section are given by:</p>
 <div class="math notranslate nohighlight" id="equation-eqn-db-deriv">
 <span class="eqno">(75)<a class="headerlink" href="#equation-eqn-db-deriv" title="Link to this equation">#</a></span>\[\begin{split}  \frac{\partial \theta_{j,u,t+u-s}}{\partial n_{j,s,t}} =
     \begin{cases}
       0 , &amp; \text{if}\ s &lt; R - Cy \\
-      w_{t}e_{j,s}\alpha_{DB}\times \frac{Cy}{ny}, &amp; \text{if}\  R - Cy &lt;= s &lt; R  \\
+      w_{t}e_{j,s}\alpha^{DB}_{j,t+R-s}\times \frac{Cy}{ny}, &amp; \text{if}\  R - Cy &lt;= s &lt; R  \\
       0, &amp; \text{if}\ s \geq R \\
     \end{cases}\end{split}\]</div>
 </section>
