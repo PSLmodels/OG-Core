@@ -5,7 +5,7 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [0.21.0] - 2026-10-06
+## [0.21.0] - 2026-10-07
 
 ### Added
 - Allows the defined benefit pension replacement rate `alpha_db` to vary across lifetime income groups and over time. The parameter is now a `T x J` array (`number_dims` changed from 0 to 2 in `default_parameters.json`), extrapolated like the other `T x J` parameters, so a single value (`[[0.02]]`), one value per income group, or a time path can be entered. The rate applied to a benefit is the one in effect in the period in which the benefit is paid, so a change in the rate affects current as well as future retirees. Reform JSON files or scripts that previously set `alpha_db` as a scalar (e.g., `0.02`) must now use the nested list form (e.g., `[[0.02]]`).

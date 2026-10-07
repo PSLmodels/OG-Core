@@ -249,30 +249,6 @@ def SS_amount(w, n, theta, t, j, shift, method, e, p):
     return pension
 
 
-def _alpha_db_by_age(t0, j, p):
-    """
-    Return the DB replacement rate in effect in each period of life for
-    a household that is age 0 (model period) at time ``t0``.
-
-    The rate applied to a benefit is the one in effect in the period the
-    benefit is paid, so a household of age u receives a benefit scaled
-    by ``alpha_db[t0 + u, j]``.  Periods before the start of the time
-    path use the period-0 rate (they are never paid out in the model)
-    and periods beyond the end of the parameter array use the last rate.
-
-    Args:
-        t0 (int): model period in which the household is age 0; may be
-            negative for cohorts alive when the time path begins
-        j (int): index of lifetime income group
-        p (OG-Core Specifications object): model parameters
-
-    Returns:
-        alpha_db_u (Numpy array): replacement rate by age, length S
-    """
-    idx = np.clip(t0 + np.arange(p.S), 0, p.alpha_db.shape[0] - 1)
-    return p.alpha_db[idx, j]
-
-
 def DB_amount(w, e, n, t, j, method, p):
     r"""
     Calculate public pension from a defined benefits system.
@@ -332,7 +308,8 @@ def DB_amount(w, e, n, t, j, method, p):
         n_S = np.append(p.n_preTP[:(-per_rmn), j], n)
         # This household is age S - per_rmn at time t, so its benefit
         # at age u is paid in period t + u - (S - per_rmn)
-        alpha_db_u = _alpha_db_by_age(t - (p.S - per_rmn), j, p)
+        idx = np.clip(t - (p.S - per_rmn) + np.arange(p.S), 0, p.alpha_db.shape[0] - 1)
+        alpha_db_u = p.alpha_db[idx, j]
 
         DB = np.zeros(p.S)
         DB = DB_1dim_loop(
@@ -362,7 +339,8 @@ def DB_amount(w, e, n, t, j, method, p):
                 alpha_db_u = np.full(p.S, p.alpha_db[0, j])
             else:
                 # full lifetime of a cohort that is age 0 at time t
-                alpha_db_u = _alpha_db_by_age(t, j, p)
+                idx = np.clip(t + np.arange(p.S), 0, p.alpha_db.shape[0] - 1)
+                alpha_db_u = p.alpha_db[idx, j]
             DB = np.zeros(p.S)
             DB = DB_1dim_loop(
                 w,
@@ -414,6 +392,7 @@ def DB_amount(w, e, n, t, j, method, p):
             # rate in effect in each period of the path, T x J
             idx = np.clip(t + np.arange(T), 0, p.alpha_db.shape[0] - 1)
             alpha_db_tj = np.ascontiguousarray(p.alpha_db[idx, :])
+            # alpha_db_tj = p.alpha_db[t + np.arange(T), :]
             DB = DB_3dim_loop(
                 w_path,
                 e_ss,
@@ -749,6 +728,7 @@ def deriv_DB(w, e, per_rmn, t, j, p):
         age = p.S - per_rmn + np.arange(per_rmn)
         idx = np.clip(t + S_ret - age, 0, p.alpha_db.shape[0] - 1)
         alpha_db_s = p.alpha_db[idx, j]
+        # alpha_db_s = p.alpha_db[t + S_ret - age, j]
         d_theta = deriv_DB_loop(
             w,
             e,
