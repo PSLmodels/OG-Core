@@ -140,7 +140,7 @@ def pension_amount(r, w, n, Y, theta, t, j, shift, method, e, factor, p):
     if p.pension_system == "US-Style Social Security":
         pension = SS_amount(w, n, theta, t, j, shift, method, e, p)
     elif p.pension_system == "Defined Benefits":
-        pension = DB_amount(w, e, n, j, p)
+        pension = DB_amount(w, e, n, t, j, method, p)
         pension = pension * replacement_rate_adjustment(
             pension, t, j, method, p
         )
@@ -249,14 +249,18 @@ def SS_amount(w, n, theta, t, j, shift, method, e, p):
     return pension
 
 
-def DB_amount(w, e, n, j, p):
+def DB_amount(w, e, n, t, j, method, p):
     r"""
     Calculate public pension from a defined benefits system.
 
     .. math::
         pension{j,s,t} = \biggl[\frac{\sum_{s=R-ny}^{R-1}w_{t}e_{j,s,t}
-            n_{j,s,t}}{ny}\biggr]\times Cy \times \alpha_{DB}
+            n_{j,s,t}}{ny}\biggr]\times Cy \times \alpha^{DB}_{j,t}
             \quad \forall s > R
+
+    The replacement rate :math:`\alpha^{DB}_{j,t}` may vary over time
+    and across lifetime income groups.  The rate applied to a benefit is
+    the one in effect in the period the benefit is paid.
 
     Args:
         w (array_like): real wage rate
@@ -265,7 +269,12 @@ def DB_amount(w, e, n, j, p):
             (length < S, for cohorts alive when the time path begins),
             a steady-state vector (S,) or matrix (S, J), or the full
             time path (T, S, J)
-        j (int): index of lifetime income group
+        t (int): model period of the first element of ``n`` (for a
+            partial or full lifetime path) or of the first row of ``n``
+            (for the full time path)
+        j (int): index of lifetime income group, None if all groups
+        method (str): adjusts calculation dimensions based on 'SS',
+            'TPI', or 'TPI_scalar'
         p (OG-Core Specifications object): model parameters
 
     Returns:
@@ -297,6 +306,12 @@ def DB_amount(w, e, n, j, p):
         # from the model's initial condition n_preTP (see Issue #1014)
         w_S = np.append((w[0] * np.ones(p.S))[:(-per_rmn)], w)
         n_S = np.append(p.n_preTP[:(-per_rmn), j], n)
+        # This household is age S - per_rmn at time t, so its benefit
+        # at age u is paid in period t + u - (S - per_rmn)
+        idx = np.clip(
+            t - (p.S - per_rmn) + np.arange(p.S), 0, p.alpha_db.shape[0] - 1
+        )
+        alpha_db_u = p.alpha_db[idx, j]
 
         DB = np.zeros(p.S)
         DB = DB_1dim_loop(
@@ -313,13 +328,21 @@ def DB_amount(w, e, n, j, p):
             L_inc_avg,
             DB,
             equiv_periods,
-            p.alpha_db,
+            alpha_db_u,
             equiv_yr_contrib,
         )
         DB = DB[-per_rmn:]
 
     else:
         if np.ndim(n) == 1:
+            if method == "SS":
+                alpha_db_u = np.full(p.S, p.alpha_db[-1, j])
+            elif method == "TPI_scalar":
+                alpha_db_u = np.full(p.S, p.alpha_db[0, j])
+            else:
+                # full lifetime of a cohort that is age 0 at time t
+                idx = np.clip(t + np.arange(p.S), 0, p.alpha_db.shape[0] - 1)
+                alpha_db_u = p.alpha_db[idx, j]
             DB = np.zeros(p.S)
             DB = DB_1dim_loop(
                 w,
@@ -332,11 +355,19 @@ def DB_amount(w, e, n, j, p):
                 L_inc_avg,
                 DB,
                 equiv_periods,
-                p.alpha_db,
+                alpha_db_u,
                 equiv_yr_contrib,
             )
 
         elif np.ndim(n) == 2:
+            # cross-section of all S x J households in a single period
+            if method == "SS":
+                alpha_db_j = p.alpha_db[-1, :]
+            elif method == "TPI_scalar":
+                alpha_db_j = p.alpha_db[0, :]
+            else:
+                alpha_db_j = p.alpha_db[t, :]
+            alpha_db_uj = np.tile(alpha_db_j.reshape(1, p.J), (p.S, 1))
             DB = np.zeros((p.S, p.J))
             L_inc_avg_sj = np.zeros((equiv_periods, p.J))
             DB = DB_2dim_loop(
@@ -350,7 +381,7 @@ def DB_amount(w, e, n, j, p):
                 L_inc_avg,
                 DB,
                 equiv_periods,
-                p.alpha_db,
+                alpha_db_uj,
                 equiv_yr_contrib,
             )
 
@@ -360,6 +391,10 @@ def DB_amount(w, e, n, j, p):
             if w_path.ndim == 0:
                 w_path = np.full(T, float(w_path))
             e_ss = p.e[-1] if np.ndim(p.e) == 3 else p.e
+            # rate in effect in each period of the path, T x J
+            idx = np.clip(t + np.arange(T), 0, p.alpha_db.shape[0] - 1)
+            alpha_db_tj = np.ascontiguousarray(p.alpha_db[idx, :])
+            # alpha_db_tj = p.alpha_db[t + np.arange(T), :]
             DB = DB_3dim_loop(
                 w_path,
                 e_ss,
@@ -370,7 +405,7 @@ def DB_amount(w, e, n, j, p):
                 p.J,
                 float(g_y_arr[-1]),
                 equiv_periods,
-                p.alpha_db,
+                alpha_db_tj,
                 equiv_yr_contrib,
             )
 
@@ -565,7 +600,7 @@ def PS_amount(w, e, n, j, factor, p):
     return PS
 
 
-def deriv_theta(r, w, e, Y, per_rmn, factor, p):
+def deriv_theta(r, w, e, Y, per_rmn, factor, t, j, p):
     """
     Change in pension benefits for another unit of labor supply for
     pension system selected
@@ -577,6 +612,9 @@ def deriv_theta(r, w, e, Y, per_rmn, factor, p):
         Y (array_like): GDP
         per_rmn (int): number of periods remaining in the model
         factor (scalar): scaling factor converting model units to
+        t (int): model period
+        j (int): index of lifetime income group
+        p (OG-Core Specifications object): model parameters
 
     Returns:
         d_theta (Numpy array): change in pension benefits for another
@@ -584,7 +622,7 @@ def deriv_theta(r, w, e, Y, per_rmn, factor, p):
     """
     # TODO: Add SS here...
     if p.pension_system == "Defined Benefits":
-        d_theta = deriv_DB(w, e, per_rmn, p)
+        d_theta = deriv_DB(w, e, per_rmn, t, j, p)
         d_theta = d_theta[-per_rmn:]
     elif p.pension_system == "Notional Defined Contribution":
         d_theta = deriv_NDC(r, w, e, Y, per_rmn, p)
@@ -649,7 +687,7 @@ def deriv_NDC(r, w, e, Y, per_rmn, p):
     return d_theta
 
 
-def deriv_DB(w, e, per_rmn, p):
+def deriv_DB(w, e, per_rmn, t, j, p):
     r"""
     Change in DB pension benefits for another unit of labor supply
 
@@ -657,15 +695,23 @@ def deriv_DB(w, e, per_rmn, p):
         \frac{\partial \theta_{j,u,t+u-s}}{\partial n_{j,s,t}} =
             \begin{cases}
                 0 , & \text{if}\ s < R - Cy \\
-                w_{t}e_{j,s}\alpha_{DB}\times \frac{Cy}{ny},
+                w_{t}e_{j,s}\alpha^{DB}_{j,t+R-s}\times \frac{Cy}{ny},
                 & \text{if}\  R - Cy <= s < R  \\
                 0, & \text{if}\ s \geq R \\
             \end{cases}
+
+    With a replacement rate that varies over time, the change in the
+    benefit paid at each age u depends on the rate in effect at that
+    time.  This function returns a single derivative for each working
+    age s, evaluated at the rate in effect when the household retires
+    (period t + R - s), as an approximation.
 
     Args:
         w (array_like): real wage rate
         e (Numpy array): effective labor units
         per_rmn (int): number of periods remaining in the model
+        t (int): model period
+        j (int): index of lifetime income group
         p (OG-Core Specifications object): model parameters
 
     Returns:
@@ -679,6 +725,12 @@ def deriv_DB(w, e, per_rmn, p):
     if per_rmn < (p.S - S_ret + 1):
         d_theta = np.zeros(p.S)
     else:
+        # element s of the loop is a household of age S - per_rmn + s
+        # at time t, which retires in period t + S_ret - age
+        age = p.S - per_rmn + np.arange(per_rmn)
+        idx = np.clip(t + S_ret - age, 0, p.alpha_db.shape[0] - 1)
+        alpha_db_s = p.alpha_db[idx, j]
+        # alpha_db_s = p.alpha_db[t + S_ret - age, j]
         d_theta = deriv_DB_loop(
             w,
             e,
@@ -686,7 +738,7 @@ def deriv_DB(w, e, per_rmn, p):
             S_ret,
             per_rmn,
             equiv_periods,
-            p.alpha_db,
+            alpha_db_s,
             equiv_yr_contrib,
         )
     return d_theta
@@ -868,7 +920,8 @@ def deriv_DB_loop(
         S_ret (int): retirement age
         per_rmn (int): number of periods remaining in the model
         avg_earn_num_years (int): number of years AIME is computed from
-        alpha_db (scalar): replacement rate
+        alpha_db (Numpy array): replacement rate for each of the
+            per_rmn remaining periods
         yr_contr (scalar): years of contribution
 
     Returns:
@@ -880,7 +933,9 @@ def deriv_DB_loop(
     # print("Average earnings years: ", avg_earn_num_years)
     num_per_retire = S - S_ret
     for s in range(per_rmn):
-        d_theta[s] = w[s] * e[s] * alpha_db * (yr_contr / avg_earn_num_years)
+        d_theta[s] = (
+            w[s] * e[s] * alpha_db[s] * (yr_contr / avg_earn_num_years)
+        )
     d_theta[-num_per_retire:] = 0.0
 
     return d_theta
@@ -1083,7 +1138,8 @@ def DB_1dim_loop(
         L_inc_avg (scalar): average labor income
         DB (Numpy array): pension amount for each household
         avg_earn_num_years (int): number of years AIME is computed from
-        alpha_db (scalar): replacement rate
+        alpha_db (Numpy array): replacement rate in effect at each age
+            u, length S
         yr_contr (scalar): years of contribution
 
     Returns:
@@ -1098,7 +1154,7 @@ def DB_1dim_loop(
                 w[s] / np.exp(g_y[-1] * (u - s)) * e[s] * n[s]
             )
         L_inc_avg = L_inc_avg_s.sum() / avg_earn_num_years
-        rep_rate = yr_contr * alpha_db
+        rep_rate = yr_contr * alpha_db[u]
         DB[u] = rep_rate * L_inc_avg
 
     return DB
@@ -1133,7 +1189,8 @@ def DB_2dim_loop(
         L_inc_avg (scalar): average labor income
         DB (Numpy array): pension amount for each household
         avg_earn_num_years (int): number of years AIME is computed from
-        alpha_db (scalar): replacement rate
+        alpha_db (Numpy array): replacement rate in effect at each age
+            u for each group j, size S x J
         yr_contr (scalar): years of contribution
 
     Returns:
@@ -1146,7 +1203,7 @@ def DB_2dim_loop(
                 w[s] / np.exp(g_y * (u - s)) * e[s, :] * n[s, :]
             )
         L_inc_avg = L_inc_avg_sj.sum(axis=0) / avg_earn_num_years
-        rep_rate = yr_contr * alpha_db
+        rep_rate = yr_contr * alpha_db[u, :]
         DB[u, :] = rep_rate * L_inc_avg
 
     return DB
@@ -1192,7 +1249,9 @@ def DB_3dim_loop(
         g_y (scalar): growth rate of technology
         avg_earn_num_years (int): number of years earnings are averaged
             over
-        alpha_db (scalar): replacement rate per year of contribution
+        alpha_db (Numpy array): replacement rate per year of
+            contribution in effect in each period t for each group j,
+            size T x J
         yr_contr (int): years of contribution
 
     Returns:
@@ -1214,7 +1273,9 @@ def DB_3dim_loop(
                 e_ss[s_idx, :] * n_hist
             )
             DB[t, u, :] = (
-                (L.sum(axis=0) / avg_earn_num_years) * yr_contr * alpha_db
+                (L.sum(axis=0) / avg_earn_num_years)
+                * yr_contr
+                * alpha_db[t, :]
             )
 
     return DB

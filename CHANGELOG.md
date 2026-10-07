@@ -5,6 +5,18 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.21.0] - 2026-10-07
+
+### Added
+- Allows the defined benefit pension replacement rate `alpha_db` to vary across lifetime income groups and over time. The parameter is now a `T x J` array (`number_dims` changed from 0 to 2 in `default_parameters.json`), extrapolated like the other `T x J` parameters, so a single value (`[[0.02]]`), one value per income group, or a time path can be entered. The rate applied to a benefit is the one in effect in the period in which the benefit is paid, so a change in the rate affects current as well as future retirees. Reform JSON files or scripts that previously set `alpha_db` as a scalar (e.g., `0.02`) must now use the nested list form (e.g., `[[0.02]]`).
+- Adds tests in `test_pensions.py` of DB benefits that vary by group in the steady state, of an incomplete lifetime straddling a change in the rate along the time path, of the derivative of benefits with a time-varying rate, and of consistency between the cohort-by-cohort and full-time-path computations of DB benefits with a rate that varies over time and by group.
+
+### Updated
+- `pensions.DB_amount` now takes `t` and `method` arguments (`DB_amount(w, e, n, t, j, method, p)`) so that it can select the replacement rate for the period in which each benefit is paid. `pensions.DB_1dim_loop`, `DB_2dim_loop`, and `DB_3dim_loop` take the replacement rate as an array indexed by age (or by period for the full time path) rather than a scalar.
+- `pensions.deriv_DB` and `pensions.deriv_theta` now take `t` and `j` arguments. With a time-varying rate, the derivative of benefits with respect to labor supply at each working age is evaluated at the rate in effect when the household retires. `deriv_theta` is not yet used in the household first order conditions, so this has no effect on model solutions.
+- Fixes the title and description of `alpha_db` in `default_parameters.json`, which referred to a defined contribution system.
+- Updates the defined benefit pension equations in the theory documentation (`government.md`) to use $\alpha^{DB}_{j,t}$.
+
 ## [0.20.4] - 2026-10-05
 
 ### Added
@@ -735,6 +747,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Any earlier versions of OG-USA can be found in the [`OG-Core`](https://github.com/PSLmodels/OG-Core) repository [release history](https://github.com/PSLmodels/OG-Core/releases) from [v.0.6.4](https://github.com/PSLmodels/OG-Core/releases/tag/v0.6.4) (Jul. 20, 2021) or earlier.
 
 
+[0.21.0]: https://github.com/PSLmodels/OG-Core/compare/v0.20.4...v0.21.0
 [0.20.4]: https://github.com/PSLmodels/OG-Core/compare/v0.20.3...v0.20.4
 [0.20.3]: https://github.com/PSLmodels/OG-Core/compare/v0.20.2...v0.20.3
 [0.20.2]: https://github.com/PSLmodels/OG-Core/compare/v0.20.1...v0.20.2

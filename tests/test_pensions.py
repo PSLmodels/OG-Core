@@ -124,7 +124,7 @@ def test_replacement_rate_vals(n, w, factor, j, p_in, expected):
 
 p = Specifications()
 p.S = 7
-p.alpha_db = 0.2
+p.alpha_db = np.ones((p.T + p.S, p.J)) * 0.2
 p.retire = 4
 p.avg_earn_num_years = 50
 p.yr_contrib = 55
@@ -153,7 +153,7 @@ args1 = (
     L_inc_avg,
     DB,
     equiv_periods,
-    p.alpha_db,
+    np.full(p.S, 0.2),  # rate in effect at each age u
     equiv_contrib_periods,
 )
 
@@ -205,7 +205,7 @@ p.retire = 4
 per_rmn = p.S
 p.avg_earn_num_years = 50
 p.yr_contrib = 55
-p.alpha_db = 0.2
+p.alpha_db = np.ones((p.T + p.S, p.J)) * 0.2
 p.g_y = np.ones(p.T) * 0.03
 w = np.array([1.2, 1.1, 1.21, 1, 1.01, 0.99, 0.8])
 e = np.array([1.1, 1.11, 0.9, 0.87, 0.87, 0.7, 0.6])
@@ -222,7 +222,7 @@ args3 = (
     p.retire,
     per_rmn,
     equiv_periods,
-    p.alpha_db,
+    np.full(per_rmn, 0.2),  # rate in effect at each remaining period
     equiv_contrib_periods,
 )
 
@@ -281,7 +281,7 @@ p.S = 7
 p.retire = 4
 p.avg_earn_num_years = 50
 p.yr_contrib = 55
-p.alpha_db = 0.2
+p.alpha_db = np.ones((p.T + p.S, p.J)) * 0.2
 p.g_y = np.ones(p.T) * 0.03
 n_ddb1 = np.array([0.4, 0.45, 0.4, 0.42, 0.3, 0.2, 0.2])
 w_ddb1 = np.array([1.2, 1.1, 1.21, 1, 1.01, 0.99, 0.8])
@@ -289,7 +289,7 @@ e_ddb1 = np.array([1.1, 1.11, 0.9, 0.87, 0.87, 0.7, 0.6])
 per_rmn = n_ddb1.shape[0]
 d_theta_empty = np.zeros_like(per_rmn)
 deriv_DB_expected1 = np.array([0.352, 0.3256, 0.2904, 0.232, 0.0, 0.0, 0.0])
-args_ddb1 = (w_ddb1, e_ddb1, per_rmn, p)
+args_ddb1 = (w_ddb1, e_ddb1, per_rmn, 0, 1, p)
 
 #############non-zero d_theta: case 2############
 p2 = Specifications()
@@ -297,7 +297,7 @@ p2.S = 7
 p2.retire = 5
 p2.last_career_yrs = 2
 p2.yr_contrib = 55
-p2.alpha_db = 0.2
+p2.alpha_db = np.ones((p2.T + p2.S, p2.J)) * 0.2
 p2.g_y = 0.03
 n_ddb2 = np.array([0.45, 0.4, 0.42, 0.3, 0.2, 0.2])
 w_ddb1 = np.array([1.1, 1.21, 1, 1.01, 0.99, 0.8])
@@ -305,22 +305,50 @@ e_ddb1 = np.array([1.11, 0.9, 0.87, 0.87, 0.7, 0.6])
 per_rmn = n_ddb2.shape[0]
 d_theta_empty = np.zeros_like(per_rmn)
 deriv_DB_expected2 = np.array([0.4884, 0.4356, 0.348, 0.35148, 0.0, 0.0])
-args_ddb2 = (w_ddb1, e_ddb1, per_rmn, p2)
+args_ddb2 = (w_ddb1, e_ddb1, per_rmn, 0, 1, p2)
 
-test_data = [(args_ddb1, deriv_DB_expected1), (args_ddb2, deriv_DB_expected2)]
+# Rate that varies over time: the derivative for a household of age s
+# at time t is evaluated at the rate in effect when it retires, period
+# t + R - s.  With S=7, R=4 and the rate doubling from period 2 on, the
+# household of age 0 at t=0 retires in period 4 (0.4), age 1 in period 3
+# (0.4), age 2 in period 2 (0.4), age 3 in period 1 (0.2).
+p3 = copy.deepcopy(p)
+p3.alpha_db = np.ones((p3.T + p3.S, p3.J)) * 0.2
+p3.alpha_db[2:, :] = 0.4
+deriv_DB_expected3 = deriv_DB_expected1 * np.array(
+    [2.0, 2.0, 2.0, 1.0, 1.0, 1.0, 1.0]
+)
+args_ddb3 = (
+    np.array([1.2, 1.1, 1.21, 1, 1.01, 0.99, 0.8]),
+    np.array([1.1, 1.11, 0.9, 0.87, 0.87, 0.7, 0.6]),
+    7,
+    0,
+    1,
+    p3,
+)
+
+test_data = [
+    (args_ddb1, deriv_DB_expected1),
+    (args_ddb2, deriv_DB_expected2),
+    (args_ddb3, deriv_DB_expected3),
+]
 
 
 @pytest.mark.parametrize(
     "args,deriv_DB_expected",
     test_data,
-    ids=["non-zero d_theta: case 1", "non-zero d_theta: case 2"],
+    ids=[
+        "non-zero d_theta: case 1",
+        "non-zero d_theta: case 2",
+        "time-varying alpha_db",
+    ],
 )
 def test_deriv_DB(args, deriv_DB_expected):
     """
     Test of the pensions.deriv_DB() function.
     """
-    w, e, per_rmn, p = args
-    deriv_DB = pensions.deriv_DB(w, e, per_rmn, p)
+    w, e, per_rmn, t, j, p = args
+    deriv_DB = pensions.deriv_DB(w, e, per_rmn, t, j, p)
 
     assert np.allclose(deriv_DB, deriv_DB_expected)
 
@@ -440,7 +468,7 @@ p.S = 7
 p.retire = 4
 p.avg_earn_num_years = 50
 p.yr_contrib = 55
-p.alpha_db = 0.2
+p.alpha_db = np.ones((p.T + p.S, p.J)) * 0.2
 p.g_y = np.ones(p.T) * 0.03
 w_db = np.array([1.2, 1.1, 1.21, 1.0, 1.01, 0.99, 0.8])
 e_db = np.array([1.1, 1.11, 0.9, 0.87, 0.87, 0.7, 0.6])
@@ -647,14 +675,23 @@ p.S = 7
 p.retire = 4
 p.avg_earn_num_years = 50
 p.yr_contrib = 55
-p.alpha_db = 0.2
+p.alpha_db = np.ones((p.T + p.S, p.J)) * 0.2
 p.g_y = np.ones(p.T) * 0.03
 j = 1
 w = np.array([1.2, 1.1, 1.21, 1.0, 1.01, 0.99, 0.8])
 e = np.array([1.1, 1.11, 0.9, 0.87, 0.87, 0.7, 0.6])
 n = np.array([0.4, 0.45, 0.4, 0.42, 0.3, 0.2, 0.2])
 DB_expected1 = np.array([0, 0, 0, 0, 0.337864778, 0.327879365, 0.318189065])
-args1 = (w, e, n, j, p)
+args1 = (w, e, n, None, j, "SS", p)
+
+# Same steady state, but with a replacement rate that differs across
+# lifetime income groups: group j=1 keeps 0.2 and the other groups get
+# a very different rate, so the result for j=1 is unchanged only if the
+# group-specific rate is used.
+p_J = copy.deepcopy(p)
+p_J.alpha_db = np.ones((p_J.T + p_J.S, p_J.J)) * 0.9
+p_J.alpha_db[:, 1] = 0.2
+args1_J = (w, e, n, None, j, "SS", p_J)
 
 #####################Incomplete############
 p2 = Specifications()
@@ -662,7 +699,7 @@ p2.S = 7
 p2.retire = 4
 p.avg_earn_num_years = 50
 p2.yr_contrib = 55
-p2.alpha_db = 0.2
+p2.alpha_db = np.ones((p2.T + p2.S, p2.J)) * 0.2
 p2.g_y = np.ones(p2.T) * 0.03
 j = 1
 w2 = np.array([1.21, 1.0, 1.01, 0.99, 0.8])
@@ -692,22 +729,142 @@ p2.n_preTP = np.array(
 )
 p2.e = e2
 DB_expected2 = np.array([0, 0, 0.30593337, 0.29689167, 0.2881172])
-args2 = (w2, e2, n2, j, p2)
+args2 = (w2, e2, n2, 0, j, "TPI", p2)
 
-test_data = [(args1, DB_expected1), (args2, DB_expected2)]
+# Incomplete lifetime straddling a change in the replacement rate.  This
+# household is age 2 at t=0 (S=7, 5 periods remaining) so its benefits
+# at ages 4, 5, 6 are paid in periods 2, 3, 4.  The rate doubles from
+# period 3 on, so the age-4 benefit is unchanged and the age-5 and
+# age-6 benefits double: the rate in effect when the benefit is paid
+# applies, not the rate at retirement.
+p2_tv = copy.deepcopy(p2)
+p2_tv.alpha_db = np.ones((p2_tv.T + p2_tv.S, p2_tv.J)) * 0.2
+p2_tv.alpha_db[3:, :] = 0.4
+DB_expected2_tv = DB_expected2 * np.array([1.0, 1.0, 1.0, 2.0, 2.0])
+args2_tv = (w2, e2, n2, 0, j, "TPI", p2_tv)
+
+test_data = [
+    (args1, DB_expected1),
+    (args1_J, DB_expected1),
+    (args2, DB_expected2),
+    (args2_tv, DB_expected2_tv),
+]
 
 
 @pytest.mark.parametrize(
-    "args,DB_expected", test_data, ids=["SS/Complete", "Incomplete"]
+    "args,DB_expected",
+    test_data,
+    ids=[
+        "SS/Complete",
+        "SS/Complete, alpha_db varies by J",
+        "Incomplete",
+        "Incomplete, alpha_db varies over time",
+    ],
 )
 def test_DB(args, DB_expected):
     """
-    Test of the pensions.get_DB() function.
+    Test of the pensions.DB_amount() function.
     """
-    w, e, n, j, p = args
-    DB = pensions.DB_amount(w, e, n, j, p)
+    w, e, n, t, j, method, p = args
+    DB = pensions.DB_amount(w, e, n, t, j, method, p)
 
     assert np.allclose(DB, DB_expected)
+
+
+def test_DB_cross_section_varies_by_J():
+    """
+    In the steady state with all groups computed at once (S x J inputs),
+    each group's DB benefit should scale with its own replacement rate.
+    """
+    p_xs = Specifications()
+    p_xs.S = 7
+    p_xs.J = 3
+    p_xs.retire = 4
+    p_xs.avg_earn_num_years = 50
+    p_xs.yr_contrib = 55
+    p_xs.g_y = 0.03
+    alpha_J = np.array([0.1, 0.2, 0.4])
+    p_xs.alpha_db = np.tile(alpha_J.reshape(1, 3), (p_xs.T + p_xs.S, 1))
+    w_xs = np.array([1.2, 1.1, 1.21, 1.0, 1.01, 0.99, 0.8])
+    e_xs = np.tile(
+        np.array([1.1, 1.11, 0.9, 0.87, 0.87, 0.7, 0.6]).reshape(7, 1),
+        (1, 3),
+    )
+    n_xs = np.tile(
+        np.array([0.4, 0.45, 0.4, 0.42, 0.3, 0.2, 0.2]).reshape(7, 1), (1, 3)
+    )
+    DB = pensions.DB_amount(w_xs, e_xs, n_xs, None, None, "SS", p_xs)
+    assert DB.shape == (7, 3)
+    # identical earnings histories, so benefits differ only by the rate
+    assert np.allclose(DB[:, 1], DB_expected1)
+    assert np.allclose(DB[:, 0], DB_expected1 * 0.5)
+    assert np.allclose(DB[:, 2], DB_expected1 * 2.0)
+
+
+def test_DB_time_path_consistent_with_cohort_solves():
+    """
+    With a replacement rate that varies over time and by group, the DB
+    benefits computed for the full time path at once (the T x S x J
+    branch used for aggregates) must agree with the benefits computed
+    cohort by cohort (the partial- and full-lifetime branches used in
+    the household solves), since both index the rate by the period in
+    which the benefit is paid.
+    """
+    p_tp = Specifications()
+    p_tp.S = 7
+    p_tp.J = 2
+    p_tp.T = 12
+    p_tp.retire = 4
+    p_tp.avg_earn_num_years = 50
+    p_tp.yr_contrib = 55
+    p_tp.g_y = 0.03
+    rng = np.random.RandomState(3)
+    p_tp.alpha_db = 0.1 + 0.3 * rng.rand(p_tp.T + p_tp.S, p_tp.J)
+    p_tp.e = np.tile(
+        np.array([1.1, 1.11, 0.9, 0.87, 0.87, 0.7, 0.6]).reshape(1, 7, 1),
+        (p_tp.T + p_tp.S, 1, 2),
+    )
+    p_tp.e[:, :, 1] *= 1.5
+    # constant wage and labor supply over time so that the pre-time-path
+    # history used by the two branches is the same
+    w_path = np.ones(p_tp.T) * 1.2
+    n_ss = np.tile(
+        np.array([0.4, 0.45, 0.4, 0.42, 0.3, 0.2, 0.2]).reshape(7, 1), (1, 2)
+    )
+    n_path = np.tile(n_ss.reshape(1, 7, 2), (p_tp.T, 1, 1))
+    p_tp.n_preTP = n_ss
+    DB_3D = pensions.DB_amount(w_path, None, n_path, 0, None, "TPI", p_tp)
+    assert DB_3D.shape == (p_tp.T, p_tp.S, p_tp.J)
+    for j in range(p_tp.J):
+        # cohorts alive at t=0, of age a, with S - a periods remaining
+        for a in range(1, p_tp.S):
+            per_rmn = p_tp.S - a
+            DB_1D = pensions.DB_amount(
+                w_path[:per_rmn],
+                p_tp.e[-1, a:, j],
+                n_ss[a:, j],
+                0,
+                j,
+                "TPI",
+                p_tp,
+            )
+            path_vals = np.array(
+                [DB_3D[tt, a + tt, j] for tt in range(per_rmn)]
+            )
+            assert np.allclose(DB_1D, path_vals), (j, a)
+        # cohorts born at t >= 0 with full lifetimes inside the path
+        for t0 in range(p_tp.T - p_tp.S + 1):
+            DB_1D = pensions.DB_amount(
+                w_path[t0 : t0 + p_tp.S],
+                p_tp.e[-1, :, j],
+                n_ss[:, j],
+                t0,
+                j,
+                "TPI",
+                p_tp,
+            )
+            path_vals = np.array([DB_3D[t0 + u, u, j] for u in range(p_tp.S)])
+            assert np.allclose(DB_1D, path_vals), (j, t0)
 
 
 ################pension benefit derivative: DB############
@@ -718,7 +875,7 @@ p.retire = 4
 per_rmn = p.S
 p.avg_earn_num_years = 50
 p.yr_contrib = 55
-p.alpha_db = 0.2
+p.alpha_db = np.ones((p.T + p.S, p.J)) * 0.2
 w_ddb = np.array([1.2, 1.1, 1.21, 1, 1.01, 0.99, 0.8])
 e_ddb = np.array([1.1, 1.11, 0.9, 0.87, 0.87, 0.7, 0.6])
 p.g_y = np.ones(p.T) * 0.03
@@ -726,7 +883,7 @@ Y = None
 r_ddb = np.ones(p.T) * 0.03
 factor = 2
 d_theta_expected_ddb = np.array([0.352, 0.3256, 0.2904, 0.232, 0.0, 0.0, 0.0])
-args_ddb = (r_ddb, w_ddb, e_ddb, Y, per_rmn, factor, p)
+args_ddb = (r_ddb, w_ddb, e_ddb, Y, per_rmn, factor, 0, 1, p)
 
 ################pension benefit derivative: NDC############
 p2 = Specifications()
@@ -750,7 +907,7 @@ d_theta_expected_dndc = np.array([0.75838653, 0.680222841, 0, 0])
 # d_theta_expected_dndc = np.array([0.757437326, 0.680222841, 0, 0])
 Y = None
 factor = 2
-args_dndc = (r_dndc, w_dndc, e_dndc, Y, per_rmn, factor, p2)
+args_dndc = (r_dndc, w_dndc, e_dndc, Y, per_rmn, factor, 0, 1, p2)
 
 
 ################pension benefit derivative: PS############
@@ -769,7 +926,7 @@ omegas = 1 / (p3.S) * np.ones(p3.S)
 p3.omega_SS = omegas
 per_rmn_ps = 5
 d_theta_expected_dps = np.array([0.0026136, 0.002088, 0, 0, 0])
-args_dps = (r_dps, w_dps, e_dps, Y, per_rmn_ps, factor, p3)
+args_dps = (r_dps, w_dps, e_dps, Y, per_rmn_ps, factor, 0, 1, p3)
 
 test_data = [
     (args_ddb, d_theta_expected_ddb),
@@ -785,8 +942,8 @@ def test_deriv_theta(args, d_theta_expected):
     """
     Test of pensions.deriv_theta
     """
-    r, w, e, Y, per_rmn, factor, p = args
-    d_theta = pensions.deriv_theta(r, w, e, Y, per_rmn, factor, p)
+    r, w, e, Y, per_rmn, factor, t, j, p = args
+    d_theta = pensions.deriv_theta(r, w, e, Y, per_rmn, factor, t, j, p)
     assert np.allclose(d_theta, d_theta_expected)
 
 
@@ -983,7 +1140,7 @@ def test_get_PS(args, PS_expected):
     [
         (
             "Defined Benefits",
-            {"alpha_db": 0.02, "yr_contrib": 35, "avg_earn_num_years": 40},
+            {"alpha_db": [[0.02]], "yr_contrib": 35, "avg_earn_num_years": 40},
         ),
         ("Points System", {"vpoint": 0.5}),
         # The NDC growth-rate settings (ndc_growth_rate,
@@ -1026,7 +1183,7 @@ def test_pension_amount_with_real_specifications(system, updates):
     "system,updates",
     [
         ("US-Style Social Security", {}),
-        ("Defined Benefits", {"alpha_db": 0.01, "yr_contrib": 40}),
+        ("Defined Benefits", {"alpha_db": [[0.01]], "yr_contrib": 40}),
         (
             "Points System",
             {"vpoint": 0.4, "points_growth_rate": "LR GDP"},
@@ -1093,7 +1250,7 @@ def test_SS_solve_defined_benefits(tmp_path):
     p.update_specifications(
         {
             "pension_system": "Defined Benefits",
-            "alpha_db": 0.02,
+            "alpha_db": [[0.02]],
             "yr_contrib": 35,
             "avg_earn_num_years": 40,
         }
