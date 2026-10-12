@@ -306,6 +306,11 @@ def DB_amount(w, e, n, t, j, method, p):
         # from the model's initial condition n_preTP (see Issue #1014)
         w_S = np.append((w[0] * np.ones(p.S))[:(-per_rmn)], w)
         n_S = np.append(p.n_preTP[:(-per_rmn), j], n)
+        # The first doughnut ring (method 'TPI_scalar') solves the
+        # household in its final period of life at t = 0 and passes
+        # t = None, as every other TPI_scalar branch indexes period 0
+        if method == "TPI_scalar":
+            t = 0
         # This household is age S - per_rmn at time t, so its benefit
         # at age u is paid in period t + u - (S - per_rmn)
         idx = np.clip(
