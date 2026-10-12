@@ -1925,6 +1925,53 @@
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">ordered_dict</span></div>
 
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">D3_to_df</span><span class="p">(</span><span class="n">tpi_vars</span><span class="p">,</span> <span class="n">var</span><span class="o">=</span><span class="s2">"c_path"</span><span class="p">,</span> <span class="n">start_year</span><span class="o">=</span><span class="mi">2025</span><span class="p">):</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">"""</span>
+<span class="sd">    Reshape a three dimensional (T x S x J) model output array into a</span>
+<span class="sd">    tidy Pandas DataFrame with a (year, age) MultiIndex and one column</span>
+<span class="sd">    per ability type j.</span>
+
+<span class="sd">    This is a convenience for using transition-path output in other</span>
+<span class="sd">    software (for example plotting or spreadsheets), where a panel</span>
+<span class="sd">    (long-on-index, wide-on-type) layout is easier to work with than a</span>
+<span class="sd">    raw 3D NumPy array.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        tpi_vars (dict): dictionary of transition-path variables, as</span>
+<span class="sd">            returned by the model (for example the ``TPI_vars`` output)</span>
+<span class="sd">        var (str): key in ``tpi_vars`` of the array to reshape; the array</span>
+<span class="sd">            must be three dimensional with shape (T, S, J)</span>
+<span class="sd">        start_year (int): calendar year of period t=0, used to label the</span>
+<span class="sd">            year level of the index</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        df (Pandas DataFrame): a DataFrame indexed by a (Year, Age)</span>
+<span class="sd">            MultiIndex with T*S rows and J columns, one per ability type</span>
+
+<span class="sd">    Raises:</span>
+<span class="sd">        ValueError: if ``var`` is not in ``tpi_vars`` or the selected</span>
+<span class="sd">            array is not three dimensional</span>
+<span class="sd">    """</span>
+    <span class="k">if</span> <span class="n">var</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">tpi_vars</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"'</span><span class="si">{</span><span class="n">var</span><span class="si">}</span><span class="s2">' is not a key in tpi_vars."</span><span class="p">)</span>
+    <span class="n">data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">tpi_vars</span><span class="p">[</span><span class="n">var</span><span class="p">])</span>
+    <span class="k">if</span> <span class="n">data</span><span class="o">.</span><span class="n">ndim</span> <span class="o">!=</span> <span class="mi">3</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">"'</span><span class="si">{</span><span class="n">var</span><span class="si">}</span><span class="s2">' has </span><span class="si">{</span><span class="n">data</span><span class="o">.</span><span class="n">ndim</span><span class="si">}</span><span class="s2"> dimensions; D3_to_df expects a "</span>
+            <span class="s2">"three dimensional (T x S x J) array."</span>
+        <span class="p">)</span>
+    <span class="n">T</span><span class="p">,</span> <span class="n">S</span><span class="p">,</span> <span class="n">J</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">shape</span>
+    <span class="n">idx_t</span> <span class="o">=</span> <span class="p">[</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">start_year</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">i</span><span class="si">}</span><span class="s2">"</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">T</span><span class="p">)]</span>
+    <span class="n">idx_s</span> <span class="o">=</span> <span class="p">[</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2">"</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">S</span><span class="p">)]</span>
+    <span class="n">idx_j</span> <span class="o">=</span> <span class="p">[</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2">"</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">J</span><span class="p">)]</span>
+    <span class="n">multi_idx</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">MultiIndex</span><span class="o">.</span><span class="n">from_product</span><span class="p">(</span>
+        <span class="p">[</span><span class="n">idx_t</span><span class="p">,</span> <span class="n">idx_s</span><span class="p">],</span> <span class="n">names</span><span class="o">=</span><span class="p">[</span><span class="s2">"Year"</span><span class="p">,</span> <span class="s2">"Age"</span><span class="p">]</span>
+    <span class="p">)</span>
+    <span class="n">reshaped_data</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">T</span> <span class="o">*</span> <span class="n">S</span><span class="p">,</span> <span class="n">J</span><span class="p">)</span>
+    <span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">reshaped_data</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="n">multi_idx</span><span class="p">,</span> <span class="n">columns</span><span class="o">=</span><span class="n">idx_j</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">df</span>
 </pre></div>
 
                 </article>
