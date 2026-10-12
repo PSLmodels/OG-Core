@@ -1263,6 +1263,36 @@ def test_SS_solve_defined_benefits(tmp_path):
     assert 0.0 < ss["agg_pension_outlays"] / Y < 1.0
 
 
+def test_DB_amount_first_doughnut_ring_t_none():
+    """
+    TPI.firstdoughnutring solves the household in its last period of life
+    at t = 0 and passes t = None with method 'TPI_scalar'.  DB_amount must
+    treat that as period 0 rather than raise on ``t - (S - per_rmn)``.
+    """
+    p = Specifications()
+    p.update_specifications(
+        {
+            "pension_system": "Defined Benefits",
+            "alpha_db": [[0.02]],
+            "yr_contrib": 35,
+            "avg_earn_num_years": 40,
+        }
+    )
+    p.n_preTP = np.full((p.S, p.J), 0.4)
+    j = 0
+    w, n, e = 1.2, np.array([0.3]), np.asarray(p.e)[-1, -1:, j]
+    scalar = pensions.DB_amount(w, e, n, None, j, "TPI_scalar", p)
+    period0 = pensions.DB_amount(w, e, n, 0, j, "TPI_scalar", p)
+    assert np.isfinite(scalar).all()
+    assert np.allclose(scalar, period0)
+    # the oldest household at t = 0 is paid under the period-0 rate
+    alpha_path = np.full((p.T + p.S, p.J), 0.02)
+    alpha_path[0, :] = 0.05
+    p.alpha_db = alpha_path
+    raised = pensions.DB_amount(w, e, n, None, j, "TPI_scalar", p)
+    assert np.allclose(raised, period0 * 0.05 / 0.02)
+
+
 def test_replacement_rate_adjustment_indexes_by_cohort_year():
     """
     On the time path the adjustment must vary with each cohort's own year.
