@@ -1415,3 +1415,50 @@ def json_to_dict(json_text):
         msg += bline + "\n"
         raise ValueError(msg)
     return ordered_dict
+
+
+def D3_to_df(tpi_vars, var="c_path", start_year=2025):
+    r"""
+    Reshape a three dimensional (T x S x J) model output array into a
+    tidy Pandas DataFrame with a (year, age) MultiIndex and one column
+    per ability type j.
+
+    This is a convenience for using transition-path output in other
+    software (for example plotting or spreadsheets), where a panel
+    (long-on-index, wide-on-type) layout is easier to work with than a
+    raw 3D NumPy array.
+
+    Args:
+        tpi_vars (dict): dictionary of transition-path variables, as
+            returned by the model (for example the ``TPI_vars`` output)
+        var (str): key in ``tpi_vars`` of the array to reshape; the array
+            must be three dimensional with shape (T, S, J)
+        start_year (int): calendar year of period t=0, used to label the
+            year level of the index
+
+    Returns:
+        df (Pandas DataFrame): a DataFrame indexed by a (Year, Age)
+            MultiIndex with T*S rows and J columns, one per ability type
+
+    Raises:
+        ValueError: if ``var`` is not in ``tpi_vars`` or the selected
+            array is not three dimensional
+    """
+    if var not in tpi_vars:
+        raise ValueError(f"'{var}' is not a key in tpi_vars.")
+    data = np.asarray(tpi_vars[var])
+    if data.ndim != 3:
+        raise ValueError(
+            f"'{var}' has {data.ndim} dimensions; D3_to_df expects a "
+            "three dimensional (T x S x J) array."
+        )
+    T, S, J = data.shape
+    idx_t = [f"{start_year + i}" for i in range(T)]
+    idx_s = [f"{i}" for i in range(S)]
+    idx_j = [f"{i}" for i in range(J)]
+    multi_idx = pd.MultiIndex.from_product(
+        [idx_t, idx_s], names=["Year", "Age"]
+    )
+    reshaped_data = data.reshape(T * S, J)
+    df = pd.DataFrame(reshaped_data, index=multi_idx, columns=idx_j)
+    return df
