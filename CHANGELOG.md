@@ -5,6 +5,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.21.1] - 2026-10-12
+
+### Fixed
+- `pensions.DB_amount` raised a `TypeError` on the transition path with the Defined Benefits pension system. `TPI.firstdoughnutring` solves the household in its final period of life at `t = 0` and passes `t = None` with method `'TPI_scalar'`, and the short-horizon branch of `DB_amount` used `t` to index the replacement rate path. `DB_amount` now treats `t = None` as period 0 in that branch, consistent with the other `'TPI_scalar'` branches.
+- Adds `test_DB_amount_first_doughnut_ring_t_none` to `test_pensions.py` and a `Baseline, Defined Benefits pension` parameterization of `test_run_TPI_extra` in `test_TPI.py` (expected output in `run_TPI_outputs_DB.pkl`) so that the transition path is solved with the Defined Benefits system.
+
 ## [0.21.0] - 2026-10-07
 
 ### Added
