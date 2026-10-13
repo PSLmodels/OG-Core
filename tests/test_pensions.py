@@ -288,7 +288,7 @@ w_ddb1 = np.array([1.2, 1.1, 1.21, 1, 1.01, 0.99, 0.8])
 e_ddb1 = np.array([1.1, 1.11, 0.9, 0.87, 0.87, 0.7, 0.6])
 per_rmn = n_ddb1.shape[0]
 d_theta_empty = np.zeros_like(per_rmn)
-deriv_DB_expected1 = np.array([0.352, 0.3256, 0.2904, 0.232, 0.0, 0.0, 0.0])
+deriv_DB_expected1 = np.array([0.33, 0.30525, 0.27225, 0.2175, 0.0, 0.0, 0.0])
 args_ddb1 = (w_ddb1, e_ddb1, per_rmn, 0, 1, p)
 
 #############non-zero d_theta: case 2############
@@ -304,7 +304,8 @@ w_ddb1 = np.array([1.1, 1.21, 1, 1.01, 0.99, 0.8])
 e_ddb1 = np.array([1.11, 0.9, 0.87, 0.87, 0.7, 0.6])
 per_rmn = n_ddb2.shape[0]
 d_theta_empty = np.zeros_like(per_rmn)
-deriv_DB_expected2 = np.array([0.4884, 0.4356, 0.348, 0.35148, 0.0, 0.0])
+# p2 keeps the default avg_earn_num_years=35 (3 periods), 5 periods credited
+deriv_DB_expected2 = np.array([0.407, 0.363, 0.29, 0.2929, 0.0, 0.0])
 args_ddb2 = (w_ddb1, e_ddb1, per_rmn, 0, 1, p2)
 
 # Rate that varies over time: the derivative for a household of age s
@@ -478,7 +479,7 @@ j = 1
 factor = 2
 omegas = None
 lambdas = 1
-pension_expected_db = [0, 0, 0, 0, 0.337864778, 0.327879365, 0.318189065]
+pension_expected_db = [0, 0, 0, 0, 0.433821727, 0.421000358, 0.408557917]
 args_pb = (r, w_db, n_db, Y, theta, t, j, shift, method, e_db, factor, p)
 
 ################pension benefit: NDC############
@@ -681,7 +682,7 @@ j = 1
 w = np.array([1.2, 1.1, 1.21, 1.0, 1.01, 0.99, 0.8])
 e = np.array([1.1, 1.11, 0.9, 0.87, 0.87, 0.7, 0.6])
 n = np.array([0.4, 0.45, 0.4, 0.42, 0.3, 0.2, 0.2])
-DB_expected1 = np.array([0, 0, 0, 0, 0.337864778, 0.327879365, 0.318189065])
+DB_expected1 = np.array([0, 0, 0, 0, 0.433821727, 0.421000358, 0.408557917])
 args1 = (w, e, n, None, j, "SS", p)
 
 # Same steady state, but with a replacement rate that differs across
@@ -697,7 +698,7 @@ args1_J = (w, e, n, None, j, "SS", p_J)
 p2 = Specifications()
 p2.S = 7
 p2.retire = 4
-p.avg_earn_num_years = 50
+p2.avg_earn_num_years = 50
 p2.yr_contrib = 55
 p2.alpha_db = np.ones((p2.T + p2.S, p2.J)) * 0.2
 p2.g_y = np.ones(p2.T) * 0.03
@@ -728,7 +729,7 @@ p2.n_preTP = np.array(
     ]
 )
 p2.e = e2
-DB_expected2 = np.array([0, 0, 0.30593337, 0.29689167, 0.2881172])
+DB_expected2 = np.array([0, 0, 0.40132004, 0.389459241, 0.377948981])
 args2 = (w2, e2, n2, 0, j, "TPI", p2)
 
 # Incomplete lifetime straddling a change in the replacement rate.  This
@@ -882,7 +883,9 @@ p.g_y = np.ones(p.T) * 0.03
 Y = None
 r_ddb = np.ones(p.T) * 0.03
 factor = 2
-d_theta_expected_ddb = np.array([0.352, 0.3256, 0.2904, 0.232, 0.0, 0.0, 0.0])
+d_theta_expected_ddb = np.array(
+    [0.33, 0.30525, 0.27225, 0.2175, 0.0, 0.0, 0.0]
+)
 args_ddb = (r_ddb, w_ddb, e_ddb, Y, per_rmn, factor, 0, 1, p)
 
 ################pension benefit derivative: NDC############
@@ -1261,6 +1264,47 @@ def test_SS_solve_defined_benefits(tmp_path):
     Y = np.asarray(ss["Y"]).sum()
     assert ss["agg_pension_outlays"] > 0.0
     assert 0.0 < ss["agg_pension_outlays"] / Y < 1.0
+
+
+def test_pension_periods_conversion_and_bounds():
+    """
+    The calendar-year pension parameters are converted to model periods
+    by rounding S/80 * years, with no shift, so the average is taken over
+    ``avg_earn_num_years`` years and ``yr_contrib`` years are credited.
+    A window shorter than one model period or longer than the working
+    life (which would index before the start of the lifetime) raises.
+    """
+    p = Specifications()
+    p.update_specifications(
+        {
+            "pension_system": "Defined Benefits",
+            "alpha_db": [[0.02]],
+            "yr_contrib": 40,
+            "avg_earn_num_years": 35,
+        }
+    )
+    ny, cy, S_ret = pensions.pension_periods(p)
+    assert (ny, cy, S_ret) == (35, 40, int(p.retire[-1]))
+    n = np.linspace(0.5, 0.2, p.S)
+    e = np.asarray(p.e)[-1, :, 0]
+    assert np.isfinite(pensions.DB_amount(1.0, e, n, None, 0, "SS", p)).all()
+    # window exactly the working life is allowed
+    p.avg_earn_num_years = int(p.retire[-1])
+    assert pensions.pension_periods(p)[0] == int(p.retire[-1])
+    # one year longer would index before the first period of life
+    p.avg_earn_num_years = int(p.retire[-1]) + 1
+    with pytest.raises(ValueError, match="working life"):
+        pensions.DB_amount(1.0, e, n, None, 0, "SS", p)
+    with pytest.raises(ValueError, match="working life"):
+        pensions.replacement_rate_vals(n, 1.0, 1e5, 0, p)
+    # a one-year window is one period under Social Security, not 0/0
+    p.avg_earn_num_years = 1
+    theta = pensions.replacement_rate_vals(n, 1.0, 1e5, 0, p)
+    assert np.isfinite(theta).all()
+    # fewer than one model period
+    p.S = 40
+    with pytest.raises(ValueError, match="at least one model period"):
+        pensions.pension_periods(p)
 
 
 def test_DB_amount_first_doughnut_ring_t_none():
