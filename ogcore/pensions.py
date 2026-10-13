@@ -8,6 +8,51 @@ MONTHS_IN_A_YEAR = 12
 THOUSAND = 1000
 
 
+def pension_periods(p):
+    """
+    Convert the pension parameters measured in calendar years into
+    integer model periods.
+
+    Args:
+        p (OG-Core Specifications object): model parameters
+
+    Returns:
+        equiv_periods (int): number of model periods over which earnings
+            are averaged (``avg_earn_num_years``)
+        equiv_yr_contrib (int): number of model periods of contributions
+            credited (``yr_contrib``)
+        S_ret (int): model period of retirement
+
+    Raises:
+        ValueError: if the averaging window is shorter than one model
+            period or longer than the working life, in which case the
+            window would index before the start of the lifetime
+    """
+    per_year = p.S / 80.0
+    equiv_periods = int(round(per_year * p.avg_earn_num_years))
+    equiv_yr_contrib = int(round(per_year * p.yr_contrib))
+    # Retirement age is potentially time varying (PR #433), but the
+    # pension systems support a single retirement age for now; use the
+    # steady-state value (see Issue #1014)
+    S_ret = int(np.asarray(p.retire).flat[-1])
+    if equiv_periods < 1:
+        raise ValueError(
+            "avg_earn_num_years must cover at least one model period: "
+            f"avg_earn_num_years={p.avg_earn_num_years} with S={p.S} "
+            f"gives {equiv_periods} periods."
+        )
+    if equiv_periods > S_ret:
+        raise ValueError(
+            "avg_earn_num_years cannot exceed the working life: "
+            f"avg_earn_num_years={p.avg_earn_num_years} is "
+            f"{equiv_periods} model periods, but households retire after "
+            f"{S_ret} periods (retirement_age - starting_age = "
+            f"{float(np.asarray(p.retirement_age).flat[-1]) - p.starting_age}"
+            " years)."
+        )
+    return equiv_periods, equiv_yr_contrib, S_ret
+
+
 def replacement_rate_vals(nssmat, wss, factor_ss, j, p):
     r"""
     Calculates replacement rate values for the social security system.
@@ -37,13 +82,19 @@ def replacement_rate_vals(nssmat, wss, factor_ss, j, p):
             (p.S, p.J)
         )  # Only computes using SS earnings
         dim2 = p.J
-    # adjust number of calendar years AIME computed from int model periods
-    equiv_periods = int(round((p.S / 80.0) * p.avg_earn_num_years)) - 1
+    # adjust number of calendar years AIME computed from int model periods.
+    # The Social Security window keeps the one-period shift it has always
+    # used (so pinned steady-state and time-path results are unchanged);
+    # see pension_periods for the unshifted conversion the DB system uses.
+    # The shift is floored at one period so that a one-year window cannot
+    # produce a 0/0 replacement rate, and the window is bounds-checked.
+    equiv_periods, _, S_ret = pension_periods(p)
+    equiv_periods = max(equiv_periods - 1, 1)
     earnings = (e * (wss * nssmat * factor_ss)).reshape(p.S, dim2)
     # get highest earning years for number of years AIME computed from
-    highest_earn = (
-        -1.0 * np.sort(-1.0 * earnings[: p.retire[-1], :], axis=0)
-    )[:equiv_periods]
+    highest_earn = (-1.0 * np.sort(-1.0 * earnings[:S_ret, :], axis=0))[
+        :equiv_periods
+    ]
     AIME = highest_earn.sum(0) / ((12.0 * (p.S / 80.0)) * equiv_periods)
     PIA = np.zeros(dim2)
     # Compute level of replacement using AIME brackets and PIA rates
@@ -281,16 +332,10 @@ def DB_amount(w, e, n, t, j, method, p):
         DB (Numpy array): pension amount for each household
     """
     L_inc_avg = np.zeros(0)
-    # Adjustment to turn years into model periods
-    # TODO: could add this to parameters.py at some point
-    equiv_periods = int(round((p.S / 80.0) * p.avg_earn_num_years)) - 1
-    equiv_yr_contrib = int(round((p.S / 80.0) * p.yr_contrib)) - 1
+    equiv_periods, equiv_yr_contrib, S_ret = pension_periods(p)
     L_inc_avg_s = np.zeros(equiv_periods)
-    # Retirement age is potentially time varying (PR #433), but the DB
-    # system supports a single retirement age for now; use the
-    # steady-state value (see Issue #1014). g_y is a scalar parameter,
-    # but the numba loops index it, so pass it as a 1-element array.
-    S_ret = int(np.asarray(p.retire).flat[-1])
+    # g_y is a scalar parameter, but the numba loops index it, so pass
+    # it as a 1-element array.
     g_y_arr = np.atleast_1d(np.asarray(p.g_y, dtype=float)).ravel()
     # The wage may arrive as a scalar (steady state, or one remaining
     # period in the TPI); the loops index it as a path, so broadcast it
@@ -306,20 +351,34 @@ def DB_amount(w, e, n, t, j, method, p):
         # from the model's initial condition n_preTP (see Issue #1014)
         w_S = np.append((w[0] * np.ones(p.S))[:(-per_rmn)], w)
         n_S = np.append(p.n_preTP[:(-per_rmn), j], n)
+        # The first doughnut ring (method 'TPI_scalar') solves the
+        # household in its final period of life at t = 0 and passes
+        # t = None, as every other TPI_scalar branch indexes period 0
+        if method == "TPI_scalar":
+            t = 0
         # This household is age S - per_rmn at time t, so its benefit
         # at age u is paid in period t + u - (S - per_rmn)
         idx = np.clip(
             t - (p.S - per_rmn) + np.arange(p.S), 0, p.alpha_db.shape[0] - 1
         )
         alpha_db_u = p.alpha_db[idx, j]
+        # Effective labor units over this household's lifetime: the
+        # profile in effect in the period each age is lived in.  Ages
+        # before the time path begins use the period-0 profile (as the
+        # wage above) and ages beyond the end of the path use the
+        # final (steady-state) profile.
+        if np.ndim(p.e) == 3:
+            idx_e = np.clip(
+                t - (p.S - per_rmn) + np.arange(p.S), 0, p.e.shape[0] - 1
+            )
+            e_S = p.e[idx_e, np.arange(p.S), j]
+        else:
+            e_S = p.e[:, j]
 
         DB = np.zeros(p.S)
         DB = DB_1dim_loop(
             w_S,
-            # TODO: will need to update how the e matrix is handled
-            # here and elsewhere to allow for it to be time varying
-            # (see Issue #1014); use the steady-state profile for now
-            p.e[-1, :, j] if np.ndim(p.e) == 3 else p.e[:, j],
+            e_S,
             n_S,
             S_ret,
             p.S,
@@ -620,7 +679,7 @@ def deriv_theta(r, w, e, Y, per_rmn, factor, t, j, p):
         d_theta (Numpy array): change in pension benefits for another
             unit of labor supply
     """
-    # TODO: Add SS here...
+    # TODO: Add Social Security here...
     if p.pension_system == "Defined Benefits":
         d_theta = deriv_DB(w, e, per_rmn, t, j, p)
         d_theta = d_theta[-per_rmn:]
@@ -718,10 +777,7 @@ def deriv_DB(w, e, per_rmn, t, j, p):
         d_theta: change in DB pension benefits for another unit of labor
             supply
     """
-    equiv_periods = int(round((p.S / 80.0) * p.avg_earn_num_years)) - 1
-    equiv_yr_contrib = int(round((p.S / 80.0) * p.yr_contrib)) - 1
-    # Single retirement age for now (see Issue #1014)
-    S_ret = int(np.asarray(p.retire).flat[-1])
+    equiv_periods, equiv_yr_contrib, S_ret = pension_periods(p)
     if per_rmn < (p.S - S_ret + 1):
         d_theta = np.zeros(p.S)
     else:
@@ -1147,9 +1203,6 @@ def DB_1dim_loop(
     """
     for u in range(S_ret, S):
         for s in range(S_ret - avg_earn_num_years, S_ret):
-            # TODO: pass t so that can pull correct g_y value
-            # Just need to make if doing over time path makes sense
-            # or if should just do SS
             L_inc_avg_s[s - (S_ret - avg_earn_num_years)] = (
                 w[s] / np.exp(g_y[-1] * (u - s)) * e[s] * n[s]
             )

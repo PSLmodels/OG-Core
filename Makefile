@@ -31,10 +31,12 @@ install:
 
 .PHONY: pytest_all
 pytest_all:
+	uv sync --extra dev
 	uv run python -m pytest
 
 .PHONY: pytest_ci
 pytest_ci:
+	uv sync --extra dev
 	uv run python -m pytest -m "not local and not benchmark"
 
 ogcore_JSON_FILES := $(shell ls -l ./ogcore/*json | awk '{print $$9}')

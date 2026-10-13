@@ -8,7 +8,7 @@ module contains the following tests:
     - test_inner_loop(), 1 parameterization
     - test_run_TPI_full_run(), 11 parameterizations, local only
     - test_run_TPI(), 2 parameterizations, local only
-    - test_run_TPI_extra(), 8 parameterizations, local only
+    - test_run_TPI_extra(), 9 parameterizations, local only
     - test_run_TPI_serial_no_client(), 1 parameterization
 """
 
@@ -1044,6 +1044,16 @@ param_updates10 = {
     "imm_rates_preTP": np.array(TEST_PARAM_DICT["imm_rates_preTP"])[:, 0:1],
 }
 filename10 = os.path.join(CUR_PATH, "test_io_data", "run_TPI_outputs_J1.pkl")
+# Defined Benefits pension system: the first doughnut ring passes t=None
+# with method 'TPI_scalar' into pensions.DB_amount, which must treat it
+# as period 0; the full time path exercises the 1-, 2-, and 3-dim loops
+param_updates11 = {
+    "pension_system": "Defined Benefits",
+    "alpha_db": [[0.02]],
+    "yr_contrib": 35,
+    "avg_earn_num_years": 40,
+}
+filename11 = os.path.join(CUR_PATH, "test_io_data", "run_TPI_outputs_DB.pkl")
 # read in mono tax funcs (not age specific)
 if sys.version_info[1] < 11:
     dict_params = utils.safe_read_pickle(
@@ -1084,6 +1094,7 @@ if sys.version_info[1] < 11:
         (False, param_updates4, filename4),
         (True, param_updates8, filename8),
         (True, param_updates9, filename9),
+        (True, param_updates11, filename11),
     ]
     id_list = [
         "Baseline, balanced budget",
@@ -1094,6 +1105,7 @@ if sys.version_info[1] < 11:
         "Reform, baseline spending",
         "Baseline, Kg>0",
         "mono tax functions",
+        "Baseline, Defined Benefits pension",
     ]
 else:
     test_list = [
@@ -1105,6 +1117,7 @@ else:
         (False, param_updates4, filename4),
         (True, param_updates8, filename8),
         (True, param_updates10, filename10),
+        (True, param_updates11, filename11),
     ]
     id_list = [
         "Baseline, balanced budget",
@@ -1115,6 +1128,7 @@ else:
         "Reform, baseline spending",
         "Baseline, Kg>0",
         "J=1",
+        "Baseline, Defined Benefits pension",
     ]
 
 
@@ -1197,6 +1211,10 @@ def test_run_TPI_extra(baseline, param_updates, filename, tmpdir, dask_client):
 
     for k, v in expected_dict.items():
         print("Checking ", k)
+        if np.ndim(v) == 0:  # scalar outputs such as factor
+            print("Diff = ", np.absolute(test_dict[k] - v))
+            assert np.allclose(test_dict[k], v, rtol=1e-04, atol=1e-04)
+            continue
         try:
             print(
                 "Diff = ",
