@@ -362,14 +362,23 @@ def DB_amount(w, e, n, t, j, method, p):
             t - (p.S - per_rmn) + np.arange(p.S), 0, p.alpha_db.shape[0] - 1
         )
         alpha_db_u = p.alpha_db[idx, j]
+        # Effective labor units over this household's lifetime: the
+        # profile in effect in the period each age is lived in.  Ages
+        # before the time path begins use the period-0 profile (as the
+        # wage above) and ages beyond the end of the path use the
+        # final (steady-state) profile.
+        if np.ndim(p.e) == 3:
+            idx_e = np.clip(
+                t - (p.S - per_rmn) + np.arange(p.S), 0, p.e.shape[0] - 1
+            )
+            e_S = p.e[idx_e, np.arange(p.S), j]
+        else:
+            e_S = p.e[:, j]
 
         DB = np.zeros(p.S)
         DB = DB_1dim_loop(
             w_S,
-            # TODO: will need to update how the e matrix is handled
-            # here and elsewhere to allow for it to be time varying
-            # (see Issue #1014); use the steady-state profile for now
-            p.e[-1, :, j] if np.ndim(p.e) == 3 else p.e[:, j],
+            e_S,
             n_S,
             S_ret,
             p.S,

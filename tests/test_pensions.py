@@ -868,6 +868,65 @@ def test_DB_time_path_consistent_with_cohort_solves():
             assert np.allclose(DB_1D, path_vals), (j, t0)
 
 
+def test_DB_partial_lifetime_uses_time_varying_e():
+    """
+    For a cohort alive when the time path begins (the partial-lifetime
+    branch), the earnings profile used in the benefit formula must be
+    the one in effect in the period each age is lived in, not the
+    steady-state profile.  Check this against the full-lifetime branch
+    called with the lifetime profile built by hand, and check that the
+    answer differs from the one using the steady-state profile.
+    """
+    p_tv = Specifications()
+    p_tv.S = 7
+    p_tv.J = 2
+    p_tv.T = 12
+    p_tv.retire = 4
+    p_tv.avg_earn_num_years = 50
+    p_tv.yr_contrib = 55
+    p_tv.g_y = 0.03
+    p_tv.alpha_db = np.ones((p_tv.T + p_tv.S, p_tv.J)) * 0.2
+    e_ss = np.array([1.1, 1.11, 0.9, 0.87, 0.87, 0.7, 0.6])
+    # profile drifts up over the path, settling at the steady state
+    scale = np.linspace(0.6, 1.0, p_tv.T).reshape(p_tv.T, 1, 1)
+    p_tv.e = scale * np.tile(e_ss.reshape(1, 7, 1), (p_tv.T, 1, 2))
+    p_tv.e[:, :, 1] *= 1.5
+    w_path = np.linspace(1.2, 1.3, p_tv.T)
+    n_ss = np.array([0.4, 0.45, 0.4, 0.42, 0.3, 0.2, 0.2])
+    p_tv.n_preTP = np.tile(n_ss.reshape(7, 1), (1, 2))
+    j = 1
+    for t in range(0, 3):
+        for a in range(1, p_tv.S):
+            per_rmn = p_tv.S - a
+            birth = t - a
+            # lifetime path as seen by DB_amount's partial branch
+            w_S = np.append(np.full(a, w_path[t]), w_path[t : t + per_rmn])
+            n_S = np.append(p_tv.n_preTP[:a, j], n_ss[a:])
+            periods = np.clip(birth + np.arange(p_tv.S), 0, p_tv.T - 1)
+            e_S = p_tv.e[periods, np.arange(p_tv.S), j]
+            expected = pensions.DB_amount(
+                w_S, e_S, n_S, birth, j, "TPI", p_tv
+            )[-per_rmn:]
+            DB_partial = pensions.DB_amount(
+                w_path[t : t + per_rmn],
+                e_S[a:],
+                n_ss[a:],
+                t,
+                j,
+                "TPI",
+                p_tv,
+            )
+            assert np.allclose(DB_partial, expected), (t, a)
+            if per_rmn > p_tv.S - p_tv.retire:
+                # a retiree whose benefit was computed before the SS
+                # profile applies: the SS profile would give a different
+                # (here larger) benefit
+                DB_ss_e = pensions.DB_amount(
+                    w_S, p_tv.e[-1, :, j], n_S, birth, j, "TPI", p_tv
+                )[-per_rmn:]
+                assert not np.allclose(DB_partial, DB_ss_e), (t, a)
+
+
 ################pension benefit derivative: DB############
 p = Specifications()
 p.pension_system = "Defined Benefits"
