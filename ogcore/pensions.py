@@ -679,7 +679,7 @@ def deriv_theta(r, w, e, Y, per_rmn, factor, t, j, p):
         d_theta (Numpy array): change in pension benefits for another
             unit of labor supply
     """
-    # TODO: Add SS here...
+    # TODO: Add Social Security here...
     if p.pension_system == "Defined Benefits":
         d_theta = deriv_DB(w, e, per_rmn, t, j, p)
         d_theta = d_theta[-per_rmn:]
@@ -1203,9 +1203,6 @@ def DB_1dim_loop(
     """
     for u in range(S_ret, S):
         for s in range(S_ret - avg_earn_num_years, S_ret):
-            # TODO: pass t so that can pull correct g_y value
-            # Just need to make if doing over time path makes sense
-            # or if should just do SS
             L_inc_avg_s[s - (S_ret - avg_earn_num_years)] = (
                 w[s] / np.exp(g_y[-1] * (u - s)) * e[s] * n[s]
             )
