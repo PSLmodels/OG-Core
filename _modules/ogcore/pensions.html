@@ -428,6 +428,51 @@
 <span class="n">THOUSAND</span> <span class="o">=</span> <span class="mi">1000</span>
 
 
+<span class="k">def</span><span class="w"> </span><span class="nf">pension_periods</span><span class="p">(</span><span class="n">p</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""</span>
+<span class="sd">    Convert the pension parameters measured in calendar years into</span>
+<span class="sd">    integer model periods.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        p (OG-Core Specifications object): model parameters</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        equiv_periods (int): number of model periods over which earnings</span>
+<span class="sd">            are averaged (``avg_earn_num_years``)</span>
+<span class="sd">        equiv_yr_contrib (int): number of model periods of contributions</span>
+<span class="sd">            credited (``yr_contrib``)</span>
+<span class="sd">        S_ret (int): model period of retirement</span>
+
+<span class="sd">    Raises:</span>
+<span class="sd">        ValueError: if the averaging window is shorter than one model</span>
+<span class="sd">            period or longer than the working life, in which case the</span>
+<span class="sd">            window would index before the start of the lifetime</span>
+<span class="sd">    """</span>
+    <span class="n">per_year</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">S</span> <span class="o">/</span> <span class="mf">80.0</span>
+    <span class="n">equiv_periods</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="nb">round</span><span class="p">(</span><span class="n">per_year</span> <span class="o">*</span> <span class="n">p</span><span class="o">.</span><span class="n">avg_earn_num_years</span><span class="p">))</span>
+    <span class="n">equiv_yr_contrib</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="nb">round</span><span class="p">(</span><span class="n">per_year</span> <span class="o">*</span> <span class="n">p</span><span class="o">.</span><span class="n">yr_contrib</span><span class="p">))</span>
+    <span class="c1"># Retirement age is potentially time varying (PR #433), but the</span>
+    <span class="c1"># pension systems support a single retirement age for now; use the</span>
+    <span class="c1"># steady-state value (see Issue #1014)</span>
+    <span class="n">S_ret</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">retire</span><span class="p">)</span><span class="o">.</span><span class="n">flat</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+    <span class="k">if</span> <span class="n">equiv_periods</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+            <span class="s2">"avg_earn_num_years must cover at least one model period: "</span>
+            <span class="sa">f</span><span class="s2">"avg_earn_num_years=</span><span class="si">{</span><span class="n">p</span><span class="o">.</span><span class="n">avg_earn_num_years</span><span class="si">}</span><span class="s2"> with S=</span><span class="si">{</span><span class="n">p</span><span class="o">.</span><span class="n">S</span><span class="si">}</span><span class="s2"> "</span>
+            <span class="sa">f</span><span class="s2">"gives </span><span class="si">{</span><span class="n">equiv_periods</span><span class="si">}</span><span class="s2"> periods."</span>
+        <span class="p">)</span>
+    <span class="k">if</span> <span class="n">equiv_periods</span> <span class="o">&gt;</span> <span class="n">S_ret</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+            <span class="s2">"avg_earn_num_years cannot exceed the working life: "</span>
+            <span class="sa">f</span><span class="s2">"avg_earn_num_years=</span><span class="si">{</span><span class="n">p</span><span class="o">.</span><span class="n">avg_earn_num_years</span><span class="si">}</span><span class="s2"> is "</span>
+            <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">equiv_periods</span><span class="si">}</span><span class="s2"> model periods, but households retire after "</span>
+            <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">S_ret</span><span class="si">}</span><span class="s2"> periods (retirement_age - starting_age = "</span>
+            <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="nb">float</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">retirement_age</span><span class="p">)</span><span class="o">.</span><span class="n">flat</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">p</span><span class="o">.</span><span class="n">starting_age</span><span class="si">}</span><span class="s2">"</span>
+            <span class="s2">" years)."</span>
+        <span class="p">)</span>
+    <span class="k">return</span> <span class="n">equiv_periods</span><span class="p">,</span> <span class="n">equiv_yr_contrib</span><span class="p">,</span> <span class="n">S_ret</span>
+
+
 <div class="viewcode-block" id="replacement_rate_vals">
 <a class="viewcode-back" href="../../content/api/pensions.html#ogcore.pensions.replacement_rate_vals">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">replacement_rate_vals</span><span class="p">(</span><span class="n">nssmat</span><span class="p">,</span> <span class="n">wss</span><span class="p">,</span> <span class="n">factor_ss</span><span class="p">,</span> <span class="n">j</span><span class="p">,</span> <span class="n">p</span><span class="p">):</span>
@@ -459,13 +504,19 @@
             <span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">S</span><span class="p">,</span> <span class="n">p</span><span class="o">.</span><span class="n">J</span><span class="p">)</span>
         <span class="p">)</span>  <span class="c1"># Only computes using SS earnings</span>
         <span class="n">dim2</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">J</span>
-    <span class="c1"># adjust number of calendar years AIME computed from int model periods</span>
-    <span class="n">equiv_periods</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="nb">round</span><span class="p">((</span><span class="n">p</span><span class="o">.</span><span class="n">S</span> <span class="o">/</span> <span class="mf">80.0</span><span class="p">)</span> <span class="o">*</span> <span class="n">p</span><span class="o">.</span><span class="n">avg_earn_num_years</span><span class="p">))</span> <span class="o">-</span> <span class="mi">1</span>
+    <span class="c1"># adjust number of calendar years AIME computed from int model periods.</span>
+    <span class="c1"># The Social Security window keeps the one-period shift it has always</span>
+    <span class="c1"># used (so pinned steady-state and time-path results are unchanged);</span>
+    <span class="c1"># see pension_periods for the unshifted conversion the DB system uses.</span>
+    <span class="c1"># The shift is floored at one period so that a one-year window cannot</span>
+    <span class="c1"># produce a 0/0 replacement rate, and the window is bounds-checked.</span>
+    <span class="n">equiv_periods</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">S_ret</span> <span class="o">=</span> <span class="n">pension_periods</span><span class="p">(</span><span class="n">p</span><span class="p">)</span>
+    <span class="n">equiv_periods</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">equiv_periods</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
     <span class="n">earnings</span> <span class="o">=</span> <span class="p">(</span><span class="n">e</span> <span class="o">*</span> <span class="p">(</span><span class="n">wss</span> <span class="o">*</span> <span class="n">nssmat</span> <span class="o">*</span> <span class="n">factor_ss</span><span class="p">))</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">S</span><span class="p">,</span> <span class="n">dim2</span><span class="p">)</span>
     <span class="c1"># get highest earning years for number of years AIME computed from</span>
-    <span class="n">highest_earn</span> <span class="o">=</span> <span class="p">(</span>
-        <span class="o">-</span><span class="mf">1.0</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="o">-</span><span class="mf">1.0</span> <span class="o">*</span> <span class="n">earnings</span><span class="p">[:</span> <span class="n">p</span><span class="o">.</span><span class="n">retire</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="p">:],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
-    <span class="p">)[:</span><span class="n">equiv_periods</span><span class="p">]</span>
+    <span class="n">highest_earn</span> <span class="o">=</span> <span class="p">(</span><span class="o">-</span><span class="mf">1.0</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="o">-</span><span class="mf">1.0</span> <span class="o">*</span> <span class="n">earnings</span><span class="p">[:</span><span class="n">S_ret</span><span class="p">,</span> <span class="p">:],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">))[</span>
+        <span class="p">:</span><span class="n">equiv_periods</span>
+    <span class="p">]</span>
     <span class="n">AIME</span> <span class="o">=</span> <span class="n">highest_earn</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span> <span class="o">/</span> <span class="p">((</span><span class="mf">12.0</span> <span class="o">*</span> <span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">S</span> <span class="o">/</span> <span class="mf">80.0</span><span class="p">))</span> <span class="o">*</span> <span class="n">equiv_periods</span><span class="p">)</span>
     <span class="n">PIA</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">dim2</span><span class="p">)</span>
     <span class="c1"># Compute level of replacement using AIME brackets and PIA rates</span>
@@ -712,16 +763,10 @@
 <span class="sd">        DB (Numpy array): pension amount for each household</span>
 <span class="sd">    """</span>
     <span class="n">L_inc_avg</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
-    <span class="c1"># Adjustment to turn years into model periods</span>
-    <span class="c1"># TODO: could add this to parameters.py at some point</span>
-    <span class="n">equiv_periods</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="nb">round</span><span class="p">((</span><span class="n">p</span><span class="o">.</span><span class="n">S</span> <span class="o">/</span> <span class="mf">80.0</span><span class="p">)</span> <span class="o">*</span> <span class="n">p</span><span class="o">.</span><span class="n">avg_earn_num_years</span><span class="p">))</span> <span class="o">-</span> <span class="mi">1</span>
-    <span class="n">equiv_yr_contrib</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="nb">round</span><span class="p">((</span><span class="n">p</span><span class="o">.</span><span class="n">S</span> <span class="o">/</span> <span class="mf">80.0</span><span class="p">)</span> <span class="o">*</span> <span class="n">p</span><span class="o">.</span><span class="n">yr_contrib</span><span class="p">))</span> <span class="o">-</span> <span class="mi">1</span>
+    <span class="n">equiv_periods</span><span class="p">,</span> <span class="n">equiv_yr_contrib</span><span class="p">,</span> <span class="n">S_ret</span> <span class="o">=</span> <span class="n">pension_periods</span><span class="p">(</span><span class="n">p</span><span class="p">)</span>
     <span class="n">L_inc_avg_s</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">equiv_periods</span><span class="p">)</span>
-    <span class="c1"># Retirement age is potentially time varying (PR #433), but the DB</span>
-    <span class="c1"># system supports a single retirement age for now; use the</span>
-    <span class="c1"># steady-state value (see Issue #1014). g_y is a scalar parameter,</span>
-    <span class="c1"># but the numba loops index it, so pass it as a 1-element array.</span>
-    <span class="n">S_ret</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">retire</span><span class="p">)</span><span class="o">.</span><span class="n">flat</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+    <span class="c1"># g_y is a scalar parameter, but the numba loops index it, so pass</span>
+    <span class="c1"># it as a 1-element array.</span>
     <span class="n">g_y_arr</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">atleast_1d</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">g_y</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">))</span><span class="o">.</span><span class="n">ravel</span><span class="p">()</span>
     <span class="c1"># The wage may arrive as a scalar (steady state, or one remaining</span>
     <span class="c1"># period in the TPI); the loops index it as a path, so broadcast it</span>
@@ -737,20 +782,34 @@
         <span class="c1"># from the model's initial condition n_preTP (see Issue #1014)</span>
         <span class="n">w_S</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">w</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">S</span><span class="p">))[:(</span><span class="o">-</span><span class="n">per_rmn</span><span class="p">)],</span> <span class="n">w</span><span class="p">)</span>
         <span class="n">n_S</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">n_preTP</span><span class="p">[:(</span><span class="o">-</span><span class="n">per_rmn</span><span class="p">),</span> <span class="n">j</span><span class="p">],</span> <span class="n">n</span><span class="p">)</span>
+        <span class="c1"># The first doughnut ring (method 'TPI_scalar') solves the</span>
+        <span class="c1"># household in its final period of life at t = 0 and passes</span>
+        <span class="c1"># t = None, as every other TPI_scalar branch indexes period 0</span>
+        <span class="k">if</span> <span class="n">method</span> <span class="o">==</span> <span class="s2">"TPI_scalar"</span><span class="p">:</span>
+            <span class="n">t</span> <span class="o">=</span> <span class="mi">0</span>
         <span class="c1"># This household is age S - per_rmn at time t, so its benefit</span>
         <span class="c1"># at age u is paid in period t + u - (S - per_rmn)</span>
         <span class="n">idx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">clip</span><span class="p">(</span>
             <span class="n">t</span> <span class="o">-</span> <span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">S</span> <span class="o">-</span> <span class="n">per_rmn</span><span class="p">)</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">S</span><span class="p">),</span> <span class="mi">0</span><span class="p">,</span> <span class="n">p</span><span class="o">.</span><span class="n">alpha_db</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="mi">1</span>
         <span class="p">)</span>
         <span class="n">alpha_db_u</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">alpha_db</span><span class="p">[</span><span class="n">idx</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span>
+        <span class="c1"># Effective labor units over this household's lifetime: the</span>
+        <span class="c1"># profile in effect in the period each age is lived in.  Ages</span>
+        <span class="c1"># before the time path begins use the period-0 profile (as the</span>
+        <span class="c1"># wage above) and ages beyond the end of the path use the</span>
+        <span class="c1"># final (steady-state) profile.</span>
+        <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">ndim</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">e</span><span class="p">)</span> <span class="o">==</span> <span class="mi">3</span><span class="p">:</span>
+            <span class="n">idx_e</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">clip</span><span class="p">(</span>
+                <span class="n">t</span> <span class="o">-</span> <span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">S</span> <span class="o">-</span> <span class="n">per_rmn</span><span class="p">)</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">S</span><span class="p">),</span> <span class="mi">0</span><span class="p">,</span> <span class="n">p</span><span class="o">.</span><span class="n">e</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="mi">1</span>
+            <span class="p">)</span>
+            <span class="n">e_S</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">e</span><span class="p">[</span><span class="n">idx_e</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">S</span><span class="p">),</span> <span class="n">j</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">e_S</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">e</span><span class="p">[:,</span> <span class="n">j</span><span class="p">]</span>
 
         <span class="n">DB</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">S</span><span class="p">)</span>
         <span class="n">DB</span> <span class="o">=</span> <span class="n">DB_1dim_loop</span><span class="p">(</span>
             <span class="n">w_S</span><span class="p">,</span>
-            <span class="c1"># TODO: will need to update how the e matrix is handled</span>
-            <span class="c1"># here and elsewhere to allow for it to be time varying</span>
-            <span class="c1"># (see Issue #1014); use the steady-state profile for now</span>
-            <span class="n">p</span><span class="o">.</span><span class="n">e</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="p">:,</span> <span class="n">j</span><span class="p">]</span> <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">ndim</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">e</span><span class="p">)</span> <span class="o">==</span> <span class="mi">3</span> <span class="k">else</span> <span class="n">p</span><span class="o">.</span><span class="n">e</span><span class="p">[:,</span> <span class="n">j</span><span class="p">],</span>
+            <span class="n">e_S</span><span class="p">,</span>
             <span class="n">n_S</span><span class="p">,</span>
             <span class="n">S_ret</span><span class="p">,</span>
             <span class="n">p</span><span class="o">.</span><span class="n">S</span><span class="p">,</span>
@@ -1060,7 +1119,7 @@
 <span class="sd">        d_theta (Numpy array): change in pension benefits for another</span>
 <span class="sd">            unit of labor supply</span>
 <span class="sd">    """</span>
-    <span class="c1"># TODO: Add SS here...</span>
+    <span class="c1"># TODO: Add Social Security here...</span>
     <span class="k">if</span> <span class="n">p</span><span class="o">.</span><span class="n">pension_system</span> <span class="o">==</span> <span class="s2">"Defined Benefits"</span><span class="p">:</span>
         <span class="n">d_theta</span> <span class="o">=</span> <span class="n">deriv_DB</span><span class="p">(</span><span class="n">w</span><span class="p">,</span> <span class="n">e</span><span class="p">,</span> <span class="n">per_rmn</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="n">j</span><span class="p">,</span> <span class="n">p</span><span class="p">)</span>
         <span class="n">d_theta</span> <span class="o">=</span> <span class="n">d_theta</span><span class="p">[</span><span class="o">-</span><span class="n">per_rmn</span><span class="p">:]</span>
@@ -1164,10 +1223,7 @@
 <span class="sd">        d_theta: change in DB pension benefits for another unit of labor</span>
 <span class="sd">            supply</span>
 <span class="sd">    """</span>
-    <span class="n">equiv_periods</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="nb">round</span><span class="p">((</span><span class="n">p</span><span class="o">.</span><span class="n">S</span> <span class="o">/</span> <span class="mf">80.0</span><span class="p">)</span> <span class="o">*</span> <span class="n">p</span><span class="o">.</span><span class="n">avg_earn_num_years</span><span class="p">))</span> <span class="o">-</span> <span class="mi">1</span>
-    <span class="n">equiv_yr_contrib</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="nb">round</span><span class="p">((</span><span class="n">p</span><span class="o">.</span><span class="n">S</span> <span class="o">/</span> <span class="mf">80.0</span><span class="p">)</span> <span class="o">*</span> <span class="n">p</span><span class="o">.</span><span class="n">yr_contrib</span><span class="p">))</span> <span class="o">-</span> <span class="mi">1</span>
-    <span class="c1"># Single retirement age for now (see Issue #1014)</span>
-    <span class="n">S_ret</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">retire</span><span class="p">)</span><span class="o">.</span><span class="n">flat</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+    <span class="n">equiv_periods</span><span class="p">,</span> <span class="n">equiv_yr_contrib</span><span class="p">,</span> <span class="n">S_ret</span> <span class="o">=</span> <span class="n">pension_periods</span><span class="p">(</span><span class="n">p</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">per_rmn</span> <span class="o">&lt;</span> <span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">S</span> <span class="o">-</span> <span class="n">S_ret</span> <span class="o">+</span> <span class="mi">1</span><span class="p">):</span>
         <span class="n">d_theta</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">S</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
@@ -1629,9 +1685,6 @@
 <span class="sd">    """</span>
     <span class="k">for</span> <span class="n">u</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">S_ret</span><span class="p">,</span> <span class="n">S</span><span class="p">):</span>
         <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">S_ret</span> <span class="o">-</span> <span class="n">avg_earn_num_years</span><span class="p">,</span> <span class="n">S_ret</span><span class="p">):</span>
-            <span class="c1"># TODO: pass t so that can pull correct g_y value</span>
-            <span class="c1"># Just need to make if doing over time path makes sense</span>
-            <span class="c1"># or if should just do SS</span>
             <span class="n">L_inc_avg_s</span><span class="p">[</span><span class="n">s</span> <span class="o">-</span> <span class="p">(</span><span class="n">S_ret</span> <span class="o">-</span> <span class="n">avg_earn_num_years</span><span class="p">)]</span> <span class="o">=</span> <span class="p">(</span>
                 <span class="n">w</span><span class="p">[</span><span class="n">s</span><span class="p">]</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">g_y</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="p">(</span><span class="n">u</span> <span class="o">-</span> <span class="n">s</span><span class="p">))</span> <span class="o">*</span> <span class="n">e</span><span class="p">[</span><span class="n">s</span><span class="p">]</span> <span class="o">*</span> <span class="n">n</span><span class="p">[</span><span class="n">s</span><span class="p">]</span>
             <span class="p">)</span>
