@@ -438,6 +438,7 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">ogcore</span><span class="w"> </span><span class="kn">import</span> <span class="n">aggregates</span> <span class="k">as</span> <span class="n">aggr</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">ogcore.constants</span><span class="w"> </span><span class="kn">import</span> <span class="n">SHOW_RUNTIME</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">uuid</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">warnings</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">distributed</span><span class="w"> </span><span class="kn">import</span> <span class="n">wait</span>
@@ -471,15 +472,23 @@
 <span class="n">ENFORCE_SOLUTION_CHECKS</span> <span class="o">=</span> <span class="kc">True</span>
 
 
+<span class="c1"># Cache of detected sparsity patterns, keyed by (function name, problem</span>
+<span class="c1"># size) and scoped to a single run_TPI call (see _BANDED_JAC_SCOPE): the</span>
+<span class="c1"># pattern depends on the parameterization, e.g. a Defined Benefits pension</span>
+<span class="c1"># couples retirement-age conditions to working-age labor, so a pattern</span>
+<span class="c1"># detected for an earlier run in this process, or on a long-lived dask</span>
+<span class="c1"># worker, must not be reused for a later one.</span>
 <span class="n">_BANDED_JAC_CACHE</span> <span class="o">=</span> <span class="p">{}</span>
+<span class="n">_BANDED_JAC_SCOPE</span> <span class="o">=</span> <span class="kc">None</span>
 
 
-<span class="k">def</span><span class="w"> </span><span class="nf">_detect_jac_sparsity</span><span class="p">(</span><span class="n">fun</span><span class="p">,</span> <span class="n">x0</span><span class="p">,</span> <span class="n">args</span><span class="p">,</span> <span class="n">thr_rel</span><span class="o">=</span><span class="mf">1e-9</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_detect_jac_sparsity</span><span class="p">(</span><span class="n">fun</span><span class="p">,</span> <span class="n">x0</span><span class="p">,</span> <span class="n">args</span><span class="p">,</span> <span class="n">scope</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">thr_rel</span><span class="o">=</span><span class="mf">1e-9</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">"""Auto-detect the Jacobian sparsity of `fun` near x0 and return a</span>
 <span class="sd">    (csr_pattern, groups) coloring for sparse finite differences, or None if</span>
 <span class="sd">    the Jacobian is too dense to benefit (caller then uses plain dense FD).</span>
 
-<span class="sd">    One-time per problem dimension (cached). The pattern is unioned over two</span>
+<span class="sd">    One-time per problem dimension within a run (cached; the cache is</span>
+<span class="sd">    emptied when ``scope`` changes). The pattern is unioned over two</span>
 <span class="sd">    nearby points so a coupling that happens to vanish at one point is not</span>
 <span class="sd">    missed. Portable across countries/calibrations/pensions: it reads the</span>
 <span class="sd">    *actual* structure each run rather than assuming a stencil, so a</span>
@@ -490,6 +499,9 @@
 <span class="sd">        fun (function): the residual function whose Jacobian is probed</span>
 <span class="sd">        x0 (array_like): point at which to probe the sparsity</span>
 <span class="sd">        args (tuple): extra arguments passed to ``fun``</span>
+<span class="sd">        scope (hashable or None): identifier of the run the pattern</span>
+<span class="sd">            belongs to (``p._jac_cache_scope``, set by ``run_TPI``);</span>
+<span class="sd">            cached patterns from a different scope are discarded</span>
 <span class="sd">        thr_rel (float): relative threshold below which an entry is treated</span>
 <span class="sd">            as a structural zero</span>
 
@@ -498,6 +510,10 @@
 <span class="sd">            finite differences, or None if the Jacobian is not sparse enough</span>
 <span class="sd">            to benefit</span>
 <span class="sd">    """</span>
+    <span class="k">global</span> <span class="n">_BANDED_JAC_SCOPE</span>
+    <span class="k">if</span> <span class="n">scope</span> <span class="o">!=</span> <span class="n">_BANDED_JAC_SCOPE</span><span class="p">:</span>
+        <span class="n">_BANDED_JAC_CACHE</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
+        <span class="n">_BANDED_JAC_SCOPE</span> <span class="o">=</span> <span class="n">scope</span>
     <span class="n">n</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">x0</span><span class="p">)</span>
     <span class="n">key</span> <span class="o">=</span> <span class="p">(</span><span class="nb">getattr</span><span class="p">(</span><span class="n">fun</span><span class="p">,</span> <span class="s2">"__name__"</span><span class="p">,</span> <span class="nb">repr</span><span class="p">(</span><span class="n">fun</span><span class="p">)),</span> <span class="n">n</span><span class="p">)</span>
     <span class="n">cached</span> <span class="o">=</span> <span class="n">_BANDED_JAC_CACHE</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="s2">"miss"</span><span class="p">)</span>
@@ -543,7 +559,11 @@
 <span class="sd">    """</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">enabled</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">_HAVE_SPARSE_FD</span><span class="p">:</span>
         <span class="k">return</span> <span class="kc">None</span>
-    <span class="n">bj</span> <span class="o">=</span> <span class="n">_detect_jac_sparsity</span><span class="p">(</span><span class="n">fun</span><span class="p">,</span> <span class="n">x0</span><span class="p">,</span> <span class="n">args</span><span class="p">)</span>
+    <span class="c1"># the parameters object is the last element of args at both call sites</span>
+    <span class="n">p</span> <span class="o">=</span> <span class="n">args</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+    <span class="n">bj</span> <span class="o">=</span> <span class="n">_detect_jac_sparsity</span><span class="p">(</span>
+        <span class="n">fun</span><span class="p">,</span> <span class="n">x0</span><span class="p">,</span> <span class="n">args</span><span class="p">,</span> <span class="n">scope</span><span class="o">=</span><span class="nb">getattr</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="s2">"_jac_cache_scope"</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+    <span class="p">)</span>
     <span class="k">if</span> <span class="n">bj</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="k">return</span> <span class="kc">None</span>
     <span class="n">P</span><span class="p">,</span> <span class="n">groups</span> <span class="o">=</span> <span class="n">bj</span>
@@ -1210,6 +1230,10 @@
 <span class="sd">    """</span>
     <span class="k">if</span> <span class="n">p</span><span class="o">.</span><span class="n">use_sparse_FOC_jac</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">_HAVE_SPARSE_FD</span><span class="p">:</span>
         <span class="nb">print</span><span class="p">(</span><span class="s2">"[TPI] sparse FOC jacobian unavailable; using dense"</span><span class="p">)</span>
+    <span class="c1"># Scope the Jacobian sparsity cache to this solve (see</span>
+    <span class="c1"># _detect_jac_sparsity); set before p is scattered so that every copy</span>
+    <span class="c1"># of p on the dask workers carries the same identifier</span>
+    <span class="n">p</span><span class="o">.</span><span class="n">_jac_cache_scope</span> <span class="o">=</span> <span class="n">uuid</span><span class="o">.</span><span class="n">uuid4</span><span class="p">()</span><span class="o">.</span><span class="n">hex</span>
     <span class="c1"># unpack tuples of parameters</span>
     <span class="n">initial_values</span><span class="p">,</span> <span class="n">ss_vars</span><span class="p">,</span> <span class="n">theta</span><span class="p">,</span> <span class="n">baseline_values</span> <span class="o">=</span> <span class="n">get_initial_SS_values</span><span class="p">(</span><span class="n">p</span><span class="p">)</span>
     <span class="n">B0</span><span class="p">,</span> <span class="n">b_sinit</span><span class="p">,</span> <span class="n">b_splus1init</span><span class="p">,</span> <span class="n">factor</span><span class="p">,</span> <span class="n">initial_b</span><span class="p">,</span> <span class="n">initial_n</span> <span class="o">=</span> <span class="n">initial_values</span>
