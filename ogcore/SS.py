@@ -750,7 +750,7 @@ def SS_solver(
     iteration = 0
     dist_vec = np.zeros(p.maxiter)
     maxiter_ss = p.maxiter
-    nu_ss = p.nu
+    nu_ss = p.xi_ss
     if fsolve_flag:  # case where already solved via SS_fsolve
         maxiter_ss = 1
     if p.baseline_spending:
