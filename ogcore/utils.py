@@ -504,7 +504,6 @@ class Inequality:
         self.sort_weights = flattened_weights[idx]
         self.cum_weights = np.cumsum(self.sort_weights)
 
-
     def gini(self, type="overall"):
         """
         Compute the Gini coefficient
@@ -543,7 +542,6 @@ class Inequality:
 
         return gini_coeff
 
-
     def var_of_logs(self):
         """
         Compute the variance of logs
@@ -564,7 +562,6 @@ class Inequality:
         ) * (1.0 / (self.sort_weights.sum()))
 
         return var_ln_dist
-
 
     def ratio_pct1_pct2(self, pct1, pct2):
         """
@@ -590,7 +587,6 @@ class Inequality:
 
         return pct_ratio
 
-
     def pct(self, pct):
         """
         Returns value at given percentile
@@ -608,7 +604,6 @@ class Inequality:
         value = self.sort_dist[loc_pct]
 
         return value
-
 
     def top_share(self, pctile):
         """
