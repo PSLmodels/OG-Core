@@ -35,11 +35,12 @@ def macro_table(
         var_list (list): names of variable to use in table
         output_type (string): type of plot, can be:
 
-            * 'pct_diff': plots percentage difference between baseline
-              and reform ((reform-base)/base)
+            * 'pct_diff': plots percentage difference between baseline and
+              reform ((reform-base)/base)
             * 'diff': plots difference between baseline and reform
               (reform-base)
             * 'levels': variables in model units
+
         stationarized (bool): whether used stationarized variables (False only
             affects pct_diff right now)
         num_years (integer): number of years to include in table
@@ -331,8 +332,8 @@ def ineq_table(
         path (string): path to save table to
 
     Returns:
-        table (various): table in DataFrame or string format or `None`
-            if saved to disk
+        table (various): table in DataFrame or string format or `None` if saved
+            to disk
 
     """
     table_dict = {
@@ -412,8 +413,8 @@ def gini_table(
     path=None,
 ):
     """
-    Creates table with measures of the Gini coefficient: overall,
-    across lifetime earnings group, and across age.
+    Creates table with measures of the Gini coefficient: overall, across
+    lifetime earnings group, and across age.
 
     Args:
         base_ss (dictionary): SS output from baseline run
@@ -485,8 +486,8 @@ def wealth_moments_table(
     base_ss, base_params, data_moments=None, table_format=None, path=None
 ):
     """
-    Creates table with moments of the wealth distribution from the model
-    and SCF data.
+    Creates table with moments of the wealth distribution from the model and
+    SCF data.
 
     Args:
         base_ss (dictionary): SS output from baseline run
@@ -496,8 +497,8 @@ def wealth_moments_table(
         path (string): path to save table to
 
     Returns:
-        table (various): table in DataFrame or string format or `None`
-            if saved to disk
+        table (various): table in DataFrame or string format or `None` if saved
+            to disk
 
     """
     table_dict = {
@@ -554,8 +555,8 @@ def time_series_table(
     path=None,
 ):
     """
-    This function dumps many of the macro time series from the
-    transition path into an output table.
+    This function dumps many of the macro time series from the transition path
+    into an output table.
 
     Args:
         base_params (OG-Core Specifications class): baseline parameters object
@@ -568,8 +569,8 @@ def time_series_table(
         path (string): path to save table to
 
     Returns:
-        table (various): table in DataFrame or string format or `None`
-            if saved to disk
+        table (various): table in DataFrame or string format or `None` if saved
+            to disk
 
     """
     T = base_params.T
@@ -648,26 +649,24 @@ def dynamic_revenue_decomposition(
     path=None,
 ):
     """
-    This function decomposes the source of changes in tax revenues to
-    determine the percentage change in tax revenues that can be
-    attributed to macroeconomic feedback effects.
+    This function decomposes the source of changes in tax revenues to determine
+    the percentage change in tax revenues that can be attributed to
+    macroeconomic feedback effects.
 
     Args:
-        base_params (OG-Core Specifications class): baseline parameters
-            object
+        base_params (OG-Core Specifications class): baseline parameters object
         base_tpi (dictionary): TP output from baseline run
         base_ss (dictionary): SS output from baseline run
-        reform_params (OG-Core Specifications class): reform parameters
-            object
+        reform_params (OG-Core Specifications class): reform parameters object
         reform_tpi (dictionary): TP output from reform run
         reform_ss (dictionary): SS output from reform run
         num_years (integer): number of years to include in table
-        include_SS (bool): whether to include the steady-state results
-            in the table
-        include_overall (bool): whether to include results over the
-            entire budget window as a column in the table
-        include_business_tax (bool): whether to include business tax
-            revenue changes in result
+        include_SS (bool): whether to include the steady-state results in the
+            table
+        include_overall (bool): whether to include results over the entire
+            budget window as a column in the table
+        include_business_tax (bool): whether to include business tax revenue
+            changes in result
         full_break_out (bool): whether to break out behavioral and macro
             effects
         start_year (integer): year to start table
@@ -676,34 +675,34 @@ def dynamic_revenue_decomposition(
         path (string): path to save table to
 
     Returns:
-        table (various): table in DataFrame or string format or `None`
-            if saved to disk
+        table (various): table in DataFrame or string format or `None` if saved
+            to disk
 
-    .. note:: The decomposition is the following:
+    .. note::
 
-        1. Simulate the baseline and reform in OG-Core. Save the
-           resulting series of tax revenues. Call these series for the
-           baseline and reform A and D, respectively.
-        2. Create a third revenue series that is computed using the
-           baseline behavior (i.e., `b_s` and `n`) and macro
-           variables (`tr`, `bq`, `r`, `w`), but with the tax function
-           parameter estimates from the reform policy.  Call this
-           series B.
-        3. Create a fourth revenue series that is computed using the
-           reform behavior (i.e., `b_s` and `n`) and tax
-           functions estimated on the reform tax policy, but
-           the macro variables (`tr`, `bq`, `r`, `w`) from the baseline.
-           Call this series C.
-        4. Calculate the percentage difference between B and A -- call
-           this the "static" change from the macro model.  Calculate the
-           percentage difference between C and B -- call this the
-           behavioral effects.  Calculate the percentage difference
-           between D and C -- call this the macroeconomic effect.  The
-           full dynamic effect is difference between D and A.
+        The decomposition is the following:
 
-        One can apply the percentage difference from the macro feedback
-        effect to ("static") revenue estimates from the policy change
-        to produce an estimate of the revenue including macro feedback.
+        1. Simulate the baseline and reform in OG-Core. Save the resulting
+           series of tax revenues. Call these series for the baseline and
+           reform A and D, respectively.
+        2. Create a third revenue series that is computed using the baseline
+           behavior (i.e., `b_s` and `n`) and macro variables (`tr`, `bq`, `r`,
+           `w`), but with the tax function parameter estimates from the reform
+           policy. Call this series B.
+        3. Create a fourth revenue series that is computed using the reform
+           behavior (i.e., `b_s` and `n`) and tax functions estimated on the
+           reform tax policy, but the macro variables (`tr`, `bq`, `r`, `w`)
+           from the baseline. Call this series C.
+        4. Calculate the percentage difference between B and A -- call this the
+           "static" change from the macro model. Calculate the percentage
+           difference between C and B -- call this the behavioral effects.
+           Calculate the percentage difference between D and C -- call this the
+           macroeconomic effect. The full dynamic effect is difference between
+           D and A.
+
+        One can apply the percentage difference from the macro feedback effect
+        to ("static") revenue estimates from the policy change to produce an
+        estimate of the revenue including macro feedback.
 
     """
     assert isinstance(start_year, (int, np.integer))
@@ -1104,18 +1103,16 @@ def model_fit_table(
 
         params (OG-Core Specifications class): model parameters object
         tpi_output (dict): output dictionary returned by ``TPI.run_TPI``
-        t (int): period index used for model moment calculations.
-            Defaults to ``0`` (first period of the transition path).
-            Pass ``-1`` to use the last period, which approximates
-            steady-state values.
-        table_format (string): format to return table in: ``'csv'``,
-            ``'tex'``, ``'excel'``, ``'json'``; if ``None`` a
-            DataFrame is returned
+        t (int): period index used for model moment calculations. Defaults to
+            ``0`` (first period of the transition path). Pass ``-1`` to use the
+            last period, which approximates steady-state values.
+        table_format (string): format to return table in: ``'csv'``, ``'tex'``,
+            ``'excel'``, ``'json'``; if ``None`` a DataFrame is returned
         path (string): path to save table to
 
     Returns:
-        table (various): table as a DataFrame, formatted string, or
-            ``None`` if saved to disk
+        table (various): table as a DataFrame, formatted string, or ``None`` if
+            saved to disk
 
     """
     # Ordered groups and the moment descriptions belonging to each
