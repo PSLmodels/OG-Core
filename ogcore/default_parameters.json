@@ -1065,6 +1065,49 @@
             }
         }
     },
+    "initial_hhwealth_dist": {
+        "title": "Household wealth distribution in the initial period",
+        "description": "Household wealth distribution in the initial period",
+        "section_1": "Household Parameters",
+        "section_2": "Endowments",
+        "notes": "Should be calibrated based on household wealth data by age and by lifetime income group",
+        "type": "float",
+        "number_dims": 2,
+        "value": [
+            {
+                "value": [
+                    [0.21]
+                ]
+            }
+        ],
+        "validators": {
+            "range": {
+                "min": 0.0,
+                "max": 0.99
+            }
+        }
+    },
+    "initial_wealth_ratio": {
+        "title": "Aggregate household wealth to GDP ratio in the initial period",
+        "description": "Wealth to GDP ratio in the initial period.",
+        "short_description": "Initial period Wealth-to-GDP ratio",
+        "param_notation": "$\\alpha_{B,0}$",
+        "section_1": "Household Parameters",
+        "section_2": "Endowments",
+        "notes": "Should be calibrated based on total household wealth to GDP in the most recent data year.",
+        "type": "float",
+        "value": [
+            {
+                "value": 5.7
+            }
+        ],
+        "validators": {
+            "range": {
+                "min": 0.8,
+                "max": 7.0
+            }
+        }
+    },
     "initial_debt_ratio": {
         "title": "Debt to GDP ratio in the initial period",
         "description": "Debt to GDP ratio in the initial period.",
