@@ -103,6 +103,22 @@ _Valid Range:_ min = -0.02 and max = 0.15
 _Out-of-Range Action:_ error  
 
 
+####  `initial_hhwealth_dist`  
+_Description:_ Household wealth distribution in the initial period  
+_Notes:_ Should be calibrated based on household wealth data by age and by lifetime income group  
+_Value Type:_ float  
+_Valid Range:_ min = 0.0 and max = 0.99  
+_Out-of-Range Action:_ error  
+
+
+####  `initial_wealth_ratio`  
+_Description:_ Wealth to GDP ratio in the initial period.  
+_Notes:_ Should be calibrated based on total household wealth to GDP in the most recent data year.  
+_Value Type:_ float  
+_Valid Range:_ min = 0.8 and max = 7.0  
+_Out-of-Range Action:_ error  
+
+
 ####  `eta_RM`  
 _Description:_ Matrix that allocates aggregate remittances across households.  
 _Notes:_ This SxJ matrix gives the fraction of total aggregate remittances going to each age s and ability type j.  
