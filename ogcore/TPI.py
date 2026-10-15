@@ -181,8 +181,18 @@ def get_initial_SS_values(p):
     baseline_ss = os.path.join(p.baseline_dir, "SS", "SS_vars.pkl")
     ss_baseline_vars = utils.safe_read_pickle(baseline_ss)
     factor = ss_baseline_vars["factor"]
-    B0 = aggr.get_B(ss_baseline_vars["b_sp1"], p, "SS", True)
-    initial_b = ss_baseline_vars["b_sp1"] * (ss_baseline_vars["B"] / B0)
+    # Set initial aggregate household wealth to the level implied by the
+    # steady-state distribution of wealth evaluated at period-0 population.
+    # This is just an initial guess.
+    b_sp1_ss = ss_baseline_vars["b_sp1"]
+    B0 = aggr.get_B(b_sp1_ss, p, "SS", True)
+    initial_b_sp1_prelim = p.initial_hhwealth_dist * B0
+    initial_b_sp1 = initial_b_sp1_prelim * (
+        B0 /aggr.get_B(initial_b_sp1_prelim, p, "SS", preTP=True)
+    )
+    initial_b = np.zeros((p.S, p.J))
+    initial_b[1:, :] = initial_b_sp1[:-1, :]
+    # initial_b = ss_baseline_vars["b_sp1"] * (ss_baseline_vars["B"] / B0)
     initial_n = ss_baseline_vars["n"]
     # The DB/NDC/PS pension formulas need the labor supplied before the
     # time path begins by cohorts alive at t=0. Use the model's initial
@@ -222,32 +232,41 @@ def get_initial_SS_values(p):
     # Get an initial distribution of wealth with the initial population
     # distribution. When small_open=True, the value of K0 is used as a
     # placeholder for first-period wealth
-    B0 = aggr.get_B(initial_b, p, "SS", True)
+    # B0 = aggr.get_B(initial_b, p, "SS", True)
 
-    b_sinit = np.array(
-        list(np.zeros(p.J).reshape(1, p.J)) + list(initial_b[:-1])
-    )
-    b_splus1init = initial_b
+    b_sinit = initial_b.copy()
+    b_splus1init = initial_b_sp1.copy()
 
     # Intial gov't debt and capital stock must match that in the baseline
     if not p.baseline:
         baseline_tpi = os.path.join(p.baseline_dir, "TPI", "TPI_vars.pkl")
         tpi_baseline_vars = utils.safe_read_pickle(baseline_tpi)
+        B0 = tpi_baseline_vars["B"][0]
+        b_sinit = tpi_baseline_vars["b_s"][0, :]
+        b_splus1init = tpi_baseline_vars["b_sp1"][0, :, :]
         D0_baseline = tpi_baseline_vars["D"][0]
+        K0_baseline = tpi_baseline_vars["K"][0]
+        Kd0_baseline = tpi_baseline_vars["K_d"][0]
         Kg0_baseline = tpi_baseline_vars["K_g"][0]
+        Km0_baseline = tpi_baseline_vars["K_m"][0, :]
     else:
-        RM0_baseline = None
         D0_baseline = None
+        K0_baseline = None
+        Kd0_baseline = None
         Kg0_baseline = None
+        Km0_baseline = None
 
-    initial_values = (B0, b_sinit, b_splus1init, factor, initial_b, initial_n)
+    initial_values = (B0, b_sinit, b_splus1init, factor, initial_n)
     baseline_values = (
         Ybaseline,
         TRbaseline,
         Gbaseline,
         Ig_baseline,
         D0_baseline,
+        K0_baseline,
+        Kd0_baseline,
         Kg0_baseline,
+        Km0_baseline,
     )
 
     return initial_values, ss_vars, theta, baseline_values
@@ -523,8 +542,7 @@ def inner_loop(guesses, outer_loop_vars, initial_values, ubi, j, ind, p):
         TR (Numpy array): lump sum transfer amount
         theta (Numpy array): retirement replacement rates, length J
         initial_values (tuple): initial period variable values,
-            (b_sinit, b_splus1init, factor, initial_b, initial_n,
-            D0_baseline)
+            (b_sinit, b_splus1init, factor, initial_n, D0_baseline)
         ubi (array_like): T+S x S x J array time series of UBI transfers in
             model units for each type-j age-s household in every period t
         j (int): index of ability type
@@ -539,7 +557,7 @@ def inner_loop(guesses, outer_loop_vars, initial_values, ubi, j, ind, p):
             * n_mat (Numpy array): labor supply amounts, size = TxS
 
     """
-    K0, b_sinit, b_splus1init, factor, initial_b, initial_n = initial_values
+    K0, b_sinit, b_splus1init, factor, initial_n = initial_values
     guesses_b, guesses_n = guesses
     r_p, r, w, p_m, BQ, RM, TR, theta = outer_loop_vars
 
@@ -576,7 +594,7 @@ def inner_loop(guesses, outer_loop_vars, initial_values, ubi, j, ind, p):
             factor,
             ubi[0, -1, j],
             j,
-            initial_b,
+            b_splus1init,
             p,
         ),
         method=p.FOC_root_method,
@@ -633,7 +651,7 @@ def inner_loop(guesses, outer_loop_vars, initial_values, ubi, j, ind, p):
             etr_params_to_use,
             mtrx_params_to_use,
             mtry_params_to_use,
-            initial_b,
+            b_splus1init,
             p,
         )
         _tri_jac = _banded_jac_for(
@@ -712,7 +730,7 @@ def inner_loop(guesses, outer_loop_vars, initial_values, ubi, j, ind, p):
             etr_params_to_use,
             mtrx_params_to_use,
             mtry_params_to_use,
-            initial_b,
+            b_splus1init,
             p,
         )
         _td_x0 = list(b_guesses_to_use) + list(n_guesses_to_use)
@@ -802,14 +820,17 @@ def run_TPI(p, client=None):
     p._jac_cache_scope = uuid.uuid4().hex
     # unpack tuples of parameters
     initial_values, ss_vars, theta, baseline_values = get_initial_SS_values(p)
-    B0, b_sinit, b_splus1init, factor, initial_b, initial_n = initial_values
+    B0, b_sinit, b_splus1init, factor, initial_n = initial_values
     (
         Ybaseline,
         TRbaseline,
         Gbaseline,
         Ig_baseline,
         D0_baseline,
+        K0_baseline,
+        Kd0_baseline,
         Kg0_baseline,
+        Km0_baseline,
     ) = baseline_values
 
     # Create time path of UBI household benefits and aggregate UBI outlays
@@ -822,32 +843,67 @@ def run_TPI(p, client=None):
 
     # Initialize guesses at time paths
     # Make array of initial guesses for labor supply and savings
-    guesses_b = utils.get_initial_path(initial_b, ss_vars["b_sp1"], p, "ratio")
-    guesses_n = utils.get_initial_path(initial_n, ss_vars["n"], p, "ratio")
+    guesses_b = utils.get_initial_path(
+        b_splus1init, ss_vars["b_sp1"], p, "quadratic"
+    )
+    guesses_n = utils.get_initial_path(initial_n, ss_vars["n"], p, "quadratic")
     b_mat = guesses_b
     n_mat = guesses_n
     ind = np.arange(p.S)
 
     # Get path for aggregate savings and labor supply
     L_init = np.ones((p.T + p.S,)) * ss_vars["L"]
-    B_init = np.ones((p.T + p.S,)) * ss_vars["B"]
+    B_init = utils.get_initial_path(B0, ss_vars["B"], p, "quadratic")
+    # B_init = np.ones((p.T + p.S,)) * ss_vars["B"]
     L_init[: p.T] = aggr.get_L(n_mat[: p.T], p, "TPI")
-    B_init[1 : p.T] = aggr.get_B(b_mat[: p.T], p, "TPI", False)[: p.T - 1]
-    B_init[0] = B0
-    K_init = B_init * ss_vars["K"] / ss_vars["B"]
+    # B_init[1 : p.T] = aggr.get_B(b_mat[: p.T], p, "TPI", False)[: p.T - 1]
+    # B_init[0] = B0
+    if p.baseline:
+        K_init = B_init * ss_vars["K"] / ss_vars["B"]
+        K_d = K_init * ss_vars["K_d"] / ss_vars["K"]
+        K_g = np.ones_like(K_init) * ss_vars["K_g"]
+        K_vec_init = (
+            np.ones((p.T + p.S, p.M))
+            * ss_vars["K_m"].reshape(1, p.M)
+            * np.tile((K_init / ss_vars["K"]).reshape(p.T + p.S, 1), (1, p.M))
+        )
+    else:
+        K_init = utils.get_initial_path(
+            K0_baseline, ss_vars["K"], p, "quadratic"
+        )
+        K_d = utils.get_initial_path(
+            Kd0_baseline, ss_vars["K_d"], p, "quadratic"
+        )
+        K_g = utils.get_initial_path(
+            Kg0_baseline, ss_vars["K_g"], p, "quadratic"
+        )
+        K_vec_init = utils.get_initial_path(
+            Km0_baseline.reshape(1, p.M),
+            ss_vars["K_m"].reshape(1, p.M),
+            p,
+            "quadratic",
+        )
     K = K_init
-    K_d = K_init * ss_vars["K_d"] / ss_vars["K"]
-    K_f = K_init * ss_vars["K_f"] / ss_vars["K"]
+    K_f = K_init - K_d
     L = L_init
     B = B_init
-    K_g = np.ones_like(K) * ss_vars["K_g"]
-    Y = np.zeros_like(K)
-    Y[: p.T] = firm.get_Y(K[: p.T], K_g[: p.T], L[: p.T], p, "TPI")
-    Y[p.T :] = ss_vars["Y"]
-    # path for industry specific aggregates
-    K_vec_init = np.ones((p.T + p.S, p.M)) * ss_vars["K_m"].reshape(1, p.M)
+    # Get initial paths for industry specific labor
     L_vec_init = np.ones((p.T + p.S, p.M)) * ss_vars["L_m"].reshape(1, p.M)
+    # Get the initial paths for industry specific output
     Y_vec_init = np.ones((p.T + p.S, p.M)) * ss_vars["Y_m"].reshape(1, p.M)
+    for m in range(p.M):
+        Y_vec_init[: p.T, m] = firm.get_Y(
+            K_vec_init[: p.T, m], K_g[: p.T], L_vec_init[: p.T, m], p, "TPI", m
+        )
+    Y = Y_vec_init.sum(axis=1).reshape(
+        p.T + p.S,
+    )
+    # Y = np.zeros_like(K)
+    # Y[: p.T] = firm.get_Y(K[: p.T], K_g[: p.T], L[: p.T], p, "TPI")
+    # Y[p.T :] = ss_vars["Y"]
+    # path for industry specific aggregates
+    # K_vec_init = np.ones((p.T + p.S, p.M)) * ss_vars["K_m"].reshape(1, p.M)
+    # Y_vec_init = np.ones((p.T + p.S, p.M)) * ss_vars["Y_m"].reshape(1, p.M)
     # compute w
     w = np.ones_like(K) * ss_vars["w"]
     # compute goods prices
@@ -956,7 +1012,7 @@ def run_TPI(p, client=None):
     )
 
     # Initialize bequests
-    BQ0 = aggr.get_BQ(r_p[0], initial_b, None, p, "SS", True)
+    BQ0 = aggr.get_BQ(r_p[0], b_splus1init, None, p, "SS", True)
     if not p.use_zeta:
         BQ = np.zeros((p.T + p.S, p.J))
         for j in range(p.J):
@@ -1108,10 +1164,13 @@ def run_TPI(p, client=None):
             euler_errors[:, :, j], b_mat[:, :, j], n_mat[:, :, j] = result
 
         bmat_s = np.zeros((p.T, p.S, p.J))
-        bmat_s[0, 1:, :] = initial_b[:-1, :]
+        # bmat_s[:, 1:, :] = b_mat[: p.T, :-1, :]
+        bmat_s[0, 1:, :] = b_splus1init[:-1, :]
         bmat_s[1:, 1:, :] = b_mat[: p.T - 1, :-1, :]
-        bmat_splus1 = np.zeros((p.T, p.S, p.J))
-        bmat_splus1[:, :, :] = b_mat[: p.T, :, :]
+        bmat_splus1 = b_mat[: p.T, :, :]
+        # bmat_splus1 = np.zeros((p.T, p.S, p.J))
+        # bmat_splus1[0, :, :] = b_splus1init
+        # bmat_splus1[1:, :, :] = b_mat[: p.T - 1, :, :]
 
         num_params = len(p.etr_params[0][0])
         etr_params_4D = [
@@ -1398,7 +1457,7 @@ def run_TPI(p, client=None):
         )  # normalize prices by industry M
 
         b_mat_shift = np.append(
-            np.reshape(initial_b, (1, p.S, p.J)),
+            np.reshape(b_splus1init, (1, p.S, p.J)),
             b_mat[: p.T - 1, :, :],
             axis=0,
         )
@@ -1525,6 +1584,18 @@ def run_TPI(p, client=None):
         # policy warm-starts stay on the damped update.
         r_gov[: p.T] = utils.convex_combo(r_gov_new[: p.T], r_gov[: p.T], p.nu)
         D[: p.T] = Dnew[: p.T]
+        # Update initial B and b_splus1init and guesses_b
+        if p.baseline:
+            B[0] = utils.convex_combo(
+                p.initial_wealth_ratio * Y[0], B[0], p.nu
+            )
+            b_splus1init_prelim = utils.convex_combo(
+                p.initial_hhwealth_dist * B[0], b_splus1init, p.nu
+            )
+            b_splus1init = b_splus1init_prelim * (
+                B[0] / aggr.get_B(b_splus1init_prelim, p, "SS", preTP=True)
+            )
+            initial_values = B[0], b_sinit, b_splus1init, factor, initial_n
         guesses_b = utils.convex_combo(b_mat, guesses_b, p.nu)
         guesses_n = utils.convex_combo(n_mat, guesses_n, p.nu)
         logger.info(

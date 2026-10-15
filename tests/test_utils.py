@@ -1,3 +1,4 @@
+import copy
 import pytest
 from ogcore import utils
 from ogcore.utils import Inequality
@@ -475,6 +476,99 @@ def test_get_initial_path(x1, xT, p, shape, expected):
     """
     test_path = utils.get_initial_path(x1, xT, p, shape)
     assert np.allclose(test_path, expected)
+
+
+@pytest.mark.parametrize(
+    "x1,xT,p,shape,expected",
+    [
+        (0.4, 5.0, p, "linear", expected1[:, 0, 0]),
+        (0.4, 5.0, p, "quadratic", expected2[:, 0, 0]),
+        (0.4, 5.0, p, "ratio", expected3[:, 0, 0]),
+        (np.float64(0.4), np.float64(5.0), p, "quadratic", expected2[:, 0, 0]),
+        (5.0, 5.0, p, "linear", expected4[:, 0, 0]),
+        (5.0, 5.0, p, "quadratic", expected4[:, 0, 0]),
+        (5.0, 5.0, p, "ratio", expected4[:, 0, 0]),
+    ],
+    ids=[
+        "linear",
+        "quadratic",
+        "ratio",
+        "quadratic - numpy scalars",
+        "linear - trivial",
+        "quadratic - trivial",
+        "ratio - trivial",
+    ],
+)
+def test_get_initial_path_scalar(x1, xT, p, shape, expected):
+    """
+    Test of utils.get_inital_path function with scalar endpoints, which
+    should return a one-dimensional path of length T+S
+    """
+    test_path = utils.get_initial_path(x1, xT, p, shape)
+    assert test_path.shape == (p.T + p.S,)
+    assert np.allclose(test_path, expected)
+
+
+# Every path shape is x1 + (xT - x1) * g(t) for a weight g(t) that runs from
+# 0 to 1, so the weights can be recovered from the scalar expected paths
+# above (which run from 0.4 to 5.0) and applied to any endpoints
+path_weights = {
+    "linear": (expected1[:, 0, 0] - 0.4) / (5.0 - 0.4),
+    "quadratic": (expected2[:, 0, 0] - 0.4) / (5.0 - 0.4),
+    "ratio": (expected3[:, 0, 0] - 0.4) / (5.0 - 0.4),
+}
+p_M = copy.deepcopy(p)
+p_M.M = 4
+x1_M = np.array([[0.4, 1.0, 2.0, 3.0]])
+xT_M = np.array([[5.0, 5.0, 1.0, 3.0]])
+
+
+@pytest.mark.parametrize("shape", ["linear", "quadratic", "ratio"])
+def test_get_initial_path_vector(shape):
+    """
+    Test of utils.get_inital_path function with 1xM endpoints, which
+    should return a path of shape (T+S)xM
+    """
+    expected = x1_M + (xT_M - x1_M) * path_weights[shape].reshape(-1, 1)
+    test_path = utils.get_initial_path(x1_M, xT_M, p_M, shape)
+    assert test_path.shape == (p_M.T + p_M.S, p_M.M)
+    assert np.allclose(test_path, expected)
+
+
+@pytest.mark.parametrize("shape", ["linear", "quadratic", "ratio"])
+def test_get_initial_path_S_J(shape):
+    """
+    Test of utils.get_inital_path function when an SxJ array has the
+    same shape as a 1xM vector (S=1 and J=M). Without S and J the
+    endpoints are read as 1xM, and passing S and J reads them as SxJ.
+    """
+    p_amb = copy.deepcopy(p_M)
+    p_amb.S = 1
+    p_amb.J = p_amb.M
+    weights = np.append(path_weights[shape][: p_amb.T], 1.0)
+    expected = x1_M + (xT_M - x1_M) * weights.reshape(-1, 1)
+    inferred_path = utils.get_initial_path(x1_M, xT_M, p_amb, shape)
+    declared_path = utils.get_initial_path(
+        x1_M, xT_M, p_amb, shape, S=1, J=p_amb.J
+    )
+    assert inferred_path.shape == (p_amb.T + 1, p_amb.M)
+    assert declared_path.shape == (p_amb.T + 1, 1, p_amb.J)
+    assert np.allclose(inferred_path, expected)
+    assert np.allclose(declared_path[:, 0, :], expected)
+
+
+@pytest.mark.parametrize(
+    "S,J",
+    [(p.S, None), (None, p.J), (p.S + 1, p.J)],
+    ids=["S only", "J only", "S and J do not match shape"],
+)
+def test_get_initial_path_S_J_errors(S, J):
+    """
+    Test that utils.get_inital_path raises a ValueError when only one of
+    S and J is passed, or when they do not match the endpoint shape
+    """
+    with pytest.raises(ValueError):
+        utils.get_initial_path(x1, xT, p, "linear", S=S, J=J)
 
 
 @pytest.mark.parametrize(

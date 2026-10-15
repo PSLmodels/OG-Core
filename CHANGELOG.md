@@ -5,10 +5,23 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.21.3] - 2026-10-15
+
+### Updated
+- Adds two new parameters `initial_hhwealth_dist` and `initial_wealth_ratio` to `default_parameters.json`.
+- Updates `TPI.py` with new approach to initial household wealth.
+- Updates the `get_initial_path()` function in `utils.py` to do paths for scalar endpoint variables like household wealth `B` and the aggregate capital stock `K` and for one-dimensional endpoint variables like `K_m`. The original functionality only handled (T+S, S, J) variables that had (S, J) endpoints. I also added optional `S=None` and `J=None` arguments that resolve the special ambiguous cases when S=J or when S=1 and J=M. I also wrote some tests in `test_utils.py`
+- Updates `calibration.md` by adding new section on the end about calibrating initial household wealth.
+- Fixes multi-industry example run script `multi_industry_example.py`.
+- Removes the extraneous requirements.txt file. This file is clearly out-of-date, and I can't see anything that is calling it or using it. os is not a PyPI package, it is Python standard library. taxcalc is not a dependency of OG-Core. It omits the important dependencies listed in pyproject.toml. requirements.txt was added in commit 36727c7c (Aug 2019) as part of "add readthedocs files," and there's no .readthedocs.yaml in the repo anymore — docs now build via the Makefile and workflows. It's been touched twice since, last in f44266f2 (Jul 2024, "Added numba to requirements.txt"), which looks like someone updating it out of habit rather than because anything consumed it.
+- Fixes a formatting issues in `output_tables.py`, `aggregates.py`, and `utils.py` that caused a warning in the documentation build.
+- Changed two file names in the example run script `run_ogcore_example.py`.
+- Fixes equation in `stationarization.md`.
+
 ## [0.21.2] - 2026-10-14
 
 ### Fixed
- The cache of auto-detected household Jacobian sparsity patterns in `TPI` (used when `use_sparse_FOC_jac` is True) was keyed only on the residual function name and problem size, so a pattern detected for one parameterization was reused for every later `run_TPI` call in the same process, including on long-lived dask workers. A pattern detected under `US-Style Social Security` (banded) was then applied to a `Defined Benefits` run, whose retirement-age conditions depend on working-age labor, and the household solves converged to slightly wrong values. The cache is now scoped to a single `run_TPI` call via `p._jac_cache_scope` and emptied when a new run begins.
+ The cache of auto-detected household Jacobian sparsity patterns in `TPI` (used when `use_sparse_FOC_jac` xis True) was keyed only on the residual function name and problem size, so a pattern detected for one parameterization was reused for every later `run_TPI` call in the same process, including on long-lived dask workers. A pattern detected under `US-Style Social Security` (banded) was then applied to a `Defined Benefits` run, whose retirement-age conditions depend on working-age labor, and the household solves converged to slightly wrong values. The cache is now scoped to a single `run_TPI` call via `p._jac_cache_scope` and emptied when a new run begins.
 - Adds `tests/test_io_data/run_TPI_outputs_DB.pkl`, which was not committed with the additional test in `test_run_TPI_extra` in `test_TPI.py` committed previously.
 
 ## [0.21.1] - 2026-10-12
@@ -763,6 +776,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Any earlier versions of OG-USA can be found in the [`OG-Core`](https://github.com/PSLmodels/OG-Core) repository [release history](https://github.com/PSLmodels/OG-Core/releases) from [v.0.6.4](https://github.com/PSLmodels/OG-Core/releases/tag/v0.6.4) (Jul. 20, 2021) or earlier.
 
 
+[0.21.3]: https://github.com/PSLmodels/OG-Core/compare/v0.21.2...v0.21.3
 [0.21.2]: https://github.com/PSLmodels/OG-Core/compare/v0.21.1...v0.21.2
 [0.21.1]: https://github.com/PSLmodels/OG-Core/compare/v0.21.0...v0.21.1
 [0.21.0]: https://github.com/PSLmodels/OG-Core/compare/v0.20.4...v0.21.0

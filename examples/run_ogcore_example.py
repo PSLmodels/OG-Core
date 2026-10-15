@@ -66,6 +66,7 @@ def main():
         "alpha_T": alpha_T.tolist(),
         "alpha_G": alpha_G.tolist(),
         "initial_guess_r_SS": 0.04,
+        "nu": 0.2,
     }
 
     """
@@ -132,14 +133,12 @@ def main():
     )
 
     # create plots of output
-    op.plot_all(
-        base_dir, reform_dir, os.path.join(save_dir, "OG-Core_example_plots")
-    )
+    op.plot_all(base_dir, reform_dir, os.path.join(save_dir, "example_plots"))
 
     print("total time was ", (time.time() - run_start_time))
     print("Percentage changes in aggregates:", ans)
     # save percentage change output to csv file
-    ans.to_csv(os.path.join(save_dir, "OG-Core_example_output.csv"))
+    ans.to_csv(os.path.join(save_dir, "example_output.csv"))
     client.close()
 
 
