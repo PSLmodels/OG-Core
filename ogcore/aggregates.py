@@ -138,7 +138,11 @@ def get_B(b, p, method, preTP):
     Calculate aggregate savings
 
     .. math::
-        B_{t} = \sum_{s=E}^{E+S}\sum_{j=0}^{J}\omega_{s,t}\lambda_{j}b_{j,s,t}
+        \hat{B}_{t} = \frac{1}{1 + \tilde{g}_{n,t}}
+        \sum_{s=E+2}^{E+S+1}\sum_{j=1}^{J}
+        \Bigl(\hat{\omega}_{s-1,t-1}\lambda_{j}\hat{b}_{j,s,t} +
+        i_{s,t}\hat{\omega}_{s,t-1}\lambda_{j}\hat{b}_{j,s,t}\Bigr)
+        \quad\forall t
 
     Args:
         b (Numpy array): savings of households
@@ -402,19 +406,15 @@ def revenue(
             * total_tax_revenue (array_like): aggregate tax revenue
             * iit_payroll_tax_revenue (array_like): aggregate income and
               payroll tax revenue
-            * agg_pension_outlays (array_like): aggregate outlays for
-              gov't pensions
-            * UBI_outlays (array_like): aggregate universal basic income
-              (UBI) outlays
-            * bequest_tax_revenue (array_like): aggregate bequest tax
-              revenue
+            * agg_pension_outlays (array_like): aggregate outlays for gov't
+              pensions
+            * UBI_outlays (array_like): aggregate universal basic income (UBI)
+              outlays
+            * bequest_tax_revenue (array_like): aggregate bequest tax revenue
             * wealth_tax_revenue (array_like): aggregate wealth tax revenue
-            * cons_tax_revenue (array_like): aggregate consumption tax
-              revenue
-            * business_tax_revenue (array_like): aggregate business tax
-              revenue
-            * payroll_tax_revenue (array_like): aggregate payroll tax
-              revenue
+            * cons_tax_revenue (array_like): aggregate consumption tax revenue
+            * business_tax_revenue (array_like): aggregate business tax revenue
+            * payroll_tax_revenue (array_like): aggregate payroll tax revenue
             * iit_tax_revenue (array_like): aggregate income tax revenue
 
     """

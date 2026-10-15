@@ -39,8 +39,8 @@ def mkdirs(path):
 
 def pct_diff_func(simul, data):
     """
-    Used to calculate the absolute percent difference between data
-    moments and model moments.
+    Used to calculate the absolute percent difference between data moments and
+    model moments.
 
     Args:
         simul (array_like): any shape, model moments
@@ -82,9 +82,9 @@ def pickle_file_compare(
     fname1, fname2, tol=1e-3, exceptions={}, relative=False
 ):
     """
-    Read two pickle files and unpickle each. We assume that each
-    resulting object is a dictionary. The values of each dict are either
-    numpy arrays or else types that are comparable with the == operator.
+    Read two pickle files and unpickle each. We assume that each resulting
+    object is a dictionary. The values of each dict are either numpy arrays or
+    else types that are comparable with the == operator.
 
     Args:
         fname1 (str): file name of file 1
@@ -167,7 +167,7 @@ def comp_scalar(name, a, b, tol, unequal, exceptions={}, relative=False):
     Args:
         name (str): name of variable being compared
         a (scalar): first scalar to compare
-        b (scalra): second scalar to compare
+        b (scalar): second scalar to compare
         tol (scalar): tolerance used for comparison
         unequal (list):  list of variables that are not equal
         exceptions (dict): exceptions
@@ -208,11 +208,10 @@ def dict_compare(
     relative=False,
 ):
     r"""
-    Compare two dictionaries. The values of each dict are either
-    numpy arrays or else types that are comparable with the `==` operator.
-    For arrays, they are considered the same if `|x - y| < tol` in
-    the L_inf norm. For scalars, they are considered the same if
-    `x - y < tol`.
+    Compare two dictionaries. The values of each dict are either numpy arrays
+    or else types that are comparable with the `==` operator. For arrays, they
+    are considered the same if `|x - y| < tol` in the L_inf norm. For scalars,
+    they are considered the same if `x - y < tol`.
 
     Args:
         name1 (str): name of dictionary 1
@@ -314,8 +313,8 @@ def to_timepath_shape(some_array):
 
 def get_initial_path(x1, xT, p, shape):
     r"""
-    This function generates a path from point x1 to point xT such that
-    that the path x is a linear or quadratic function of time t.
+    This function generates a path from point x1 to point xT such that the path
+    x is a linear or quadratic function of time t.
 
         * linear:    `x = d*t + e`
         * quadratic: `x = a*t^2 + b*t + c`
@@ -360,7 +359,7 @@ def get_initial_path(x1, xT, p, shape):
 
 def safe_read_pickle(file_path):
     """
-    This function reads a pickle from Python 2 into Python 2 or Python 3
+    This function reads a pickle from Python 2 into Python 2 or Python 3.
 
     Args:
         file_path (str): path to pickle file
@@ -379,7 +378,7 @@ def safe_read_pickle(file_path):
 
 def rate_conversion(annual_rate, start_age, end_age, S):
     """
-    This function converts annual rates to model period ratesself.
+    This function converts annual rates to model period rates.
 
     Args:
         annual_rate (array_like): annualized rates
@@ -619,8 +618,8 @@ def print_progress(
     bar_length=50,
 ):
     """
-    Prints a progress bar to the terminal when completing small tasks
-    of a larger job.
+    Prints a progress bar to the terminal when completing small tasks of a
+    larger job.
 
     Args:
         iteration (int>=1): which task the job is currently doing
@@ -671,8 +670,8 @@ def print_progress(
 
 def fetch_files_from_web(file_urls):
     """
-    Fetches zip files from respective web addresses and saves them as
-    temporary files. Prints progress bar as it downloads the files.
+    Fetches zip files from respective web addresses and saves them as temporary
+    files. Prints progress bar as it downloads the files.
 
     Args:
         file_urls (list of strings): list of URLs of respective data zip
@@ -1096,12 +1095,11 @@ def extrapolate_nested_list(list_in, dims=(400, 80, 1)):
 
 class CustomHttpAdapter(requests.adapters.HTTPAdapter):
     """
-    The UN Data Portal server doesn't support "RFC 5746 secure
-    renegotiation". This causes and error when the client is using
-    OpenSSL 3, which enforces that standard by default.
-    The fix is to create a custom SSL context that allows for legacy
-    connections. This defines a function get_legacy_session() that
-    should be used instead of requests().
+    The UN Data Portal server doesn't support "RFC 5746 secure renegotiation".
+    This causes and error when the client is using OpenSSL 3, which enforces
+    that standard by default. The fix is to create a custom SSL context that
+    allows for legacy connections. This defines a function get_legacy_session()
+    that should be used instead of requests().
     """
 
     # "Transport adapter" that allows us to use custom ssl_context.
@@ -1120,8 +1118,8 @@ class CustomHttpAdapter(requests.adapters.HTTPAdapter):
 
 def get_legacy_session():
     ctx = ssl.create_default_context(ssl.Purpose.SERVER_AUTH)
-    # OP_LEGACY_SERVER_CONNECT; in Python 3.12 you will be able to
-    # switch from 0x4 to ssl.OP_LEGACY_SERVER_CONNECT.
+    # OP_LEGACY_SERVER_CONNECT; in Python 3.12 you will be able to switch from
+    # 0x4 to ssl.OP_LEGACY_SERVER_CONNECT.
     ctx.options |= 0x4
     session = requests.session()
     session.mount("https://", CustomHttpAdapter(ctx))
@@ -1140,9 +1138,9 @@ def shift_bio_clock(
 ):
     """
     This function takes an initial array of parameters that has a time
-    dimension and an age dimension. It then applies a shift along the
-    age dimension (i.e., a change in the "biological clock") and phases
-    this shift in over some period of time.
+    dimension and an age dimension. It then applies a shift along the age
+    dimension (i.e., a change in the "biological clock") and phases this shift
+    in over some period of time.
 
     Args:
         param_in (Numpy array): initial parameter values, first two
@@ -1242,15 +1240,14 @@ def unstationarize_vars(
 ):
     """
     This function takes a model variable and returns the unstationarized
-    value by adjusting for underlying growth in labor productivity
-    and population growth (where necessary).
+    value by adjusting for underlying growth in labor productivity and
+    population growth (where necessary).
 
     Args:
         var (string): name of variable to unstationarize
         tpi_vars (Numpy array): time path of the output variables from
             the baseline run
-        params (Specifications object): parameters
-            from the baseline run
+        params (Specifications object): parameters from the baseline run
 
     Returns:
         pct_changes (array_like): unstationarized values for var
@@ -1325,8 +1322,8 @@ def unstationarize_vars(
 
 def params_to_json(p, path=None):
     """
-    This function creates a JSON file with the model parameters of the
-    format used for the default_parameters.json file.
+    This function creates a JSON file with the model parameters of the format
+    used for the default_parameters.json file.
 
     Args:
         p (OG-Core Specifications class): model parameters object
@@ -1419,14 +1416,13 @@ def json_to_dict(json_text):
 
 def D3_to_df(tpi_vars, var="c_path", start_year=2025):
     r"""
-    Reshape a three dimensional (T x S x J) model output array into a
-    tidy Pandas DataFrame with a (year, age) MultiIndex and one column
-    per ability type j.
+    Reshape a three dimensional (T x S x J) model output array into a tidy
+    Pandas DataFrame with a (year, age) MultiIndex and one column per ability
+    type j.
 
-    This is a convenience for using transition-path output in other
-    software (for example plotting or spreadsheets), where a panel
-    (long-on-index, wide-on-type) layout is easier to work with than a
-    raw 3D NumPy array.
+    This is a convenience for using transition-path output in other software
+    (for example plotting or spreadsheets), where a panel (long-on-index,
+    wide-on-type) layout is easier to work with than a raw 3D NumPy array.
 
     Args:
         tpi_vars (dict): dictionary of transition-path variables, as
@@ -1437,8 +1433,8 @@ def D3_to_df(tpi_vars, var="c_path", start_year=2025):
             year level of the index
 
     Returns:
-        df (Pandas DataFrame): a DataFrame indexed by a (Year, Age)
-            MultiIndex with T*S rows and J columns, one per ability type
+        df (Pandas DataFrame): a DataFrame indexed by a (Year, Age) MultiIndex
+            with T*S rows and J columns, one per ability type
 
     Raises:
         ValueError: if ``var`` is not in ``tpi_vars`` or the selected
