@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Updates
 - Adds two new parameters `initial_hhwealth_dist` and `initial_wealth_ratio` to `default_parameters.json`.
+- Changes directory path names in `run_ogcore_example.py` and `multi_industry_example.py` and adds the necessary `c_min` specification in `multi_industry_example.py` to make it run without errors.
 - Fixes equation in `stationarization.md`.
 
 
