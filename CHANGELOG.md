@@ -5,10 +5,15 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.21.3] - 2026-10-14
+
+### Updated
+- Added two new parameters `initial_hhwealth_dist` and `initial_wealth_ratio` to `default_parameters.json`.
+
 ## [0.21.2] - 2026-10-14
 
 ### Fixed
- The cache of auto-detected household Jacobian sparsity patterns in `TPI` (used when `use_sparse_FOC_jac` is True) was keyed only on the residual function name and problem size, so a pattern detected for one parameterization was reused for every later `run_TPI` call in the same process, including on long-lived dask workers. A pattern detected under `US-Style Social Security` (banded) was then applied to a `Defined Benefits` run, whose retirement-age conditions depend on working-age labor, and the household solves converged to slightly wrong values. The cache is now scoped to a single `run_TPI` call via `p._jac_cache_scope` and emptied when a new run begins.
+ The cache of auto-detected household Jacobian sparsity patterns in `TPI` (used when `use_sparse_FOC_jac` xis True) was keyed only on the residual function name and problem size, so a pattern detected for one parameterization was reused for every later `run_TPI` call in the same process, including on long-lived dask workers. A pattern detected under `US-Style Social Security` (banded) was then applied to a `Defined Benefits` run, whose retirement-age conditions depend on working-age labor, and the household solves converged to slightly wrong values. The cache is now scoped to a single `run_TPI` call via `p._jac_cache_scope` and emptied when a new run begins.
 - Adds `tests/test_io_data/run_TPI_outputs_DB.pkl`, which was not committed with the additional test in `test_run_TPI_extra` in `test_TPI.py` committed previously.
 
 ## [0.21.1] - 2026-10-12
@@ -763,6 +768,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Any earlier versions of OG-USA can be found in the [`OG-Core`](https://github.com/PSLmodels/OG-Core) repository [release history](https://github.com/PSLmodels/OG-Core/releases) from [v.0.6.4](https://github.com/PSLmodels/OG-Core/releases/tag/v0.6.4) (Jul. 20, 2021) or earlier.
 
 
+[0.21.3]: https://github.com/PSLmodels/OG-Core/compare/v0.21.2...v0.21.3
 [0.21.2]: https://github.com/PSLmodels/OG-Core/compare/v0.21.1...v0.21.2
 [0.21.1]: https://github.com/PSLmodels/OG-Core/compare/v0.21.0...v0.21.1
 [0.21.0]: https://github.com/PSLmodels/OG-Core/compare/v0.20.4...v0.21.0
