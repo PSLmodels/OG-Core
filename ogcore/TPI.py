@@ -539,8 +539,7 @@ def inner_loop(guesses, outer_loop_vars, initial_values, ubi, j, ind, p):
         TR (Numpy array): lump sum transfer amount
         theta (Numpy array): retirement replacement rates, length J
         initial_values (tuple): initial period variable values,
-            (b_sinit, b_splus1init, factor, initial_b, initial_n,
-            D0_baseline)
+            (b_sinit, b_splus1init, factor, initial_n, D0_baseline)
         ubi (array_like): T+S x S x J array time series of UBI transfers in
             model units for each type-j age-s household in every period t
         j (int): index of ability type
@@ -555,7 +554,7 @@ def inner_loop(guesses, outer_loop_vars, initial_values, ubi, j, ind, p):
             * n_mat (Numpy array): labor supply amounts, size = TxS
 
     """
-    K0, b_sinit, b_splus1init, factor, initial_b, initial_n = initial_values
+    K0, b_sinit, b_splus1init, factor, initial_n = initial_values
     guesses_b, guesses_n = guesses
     r_p, r, w, p_m, BQ, RM, TR, theta = outer_loop_vars
 
@@ -592,7 +591,7 @@ def inner_loop(guesses, outer_loop_vars, initial_values, ubi, j, ind, p):
             factor,
             ubi[0, -1, j],
             j,
-            initial_b,
+            b_splus1init,
             p,
         ),
         method=p.FOC_root_method,
@@ -649,7 +648,7 @@ def inner_loop(guesses, outer_loop_vars, initial_values, ubi, j, ind, p):
             etr_params_to_use,
             mtrx_params_to_use,
             mtry_params_to_use,
-            initial_b,
+            b_splus1init,
             p,
         )
         _tri_jac = _banded_jac_for(
@@ -728,7 +727,7 @@ def inner_loop(guesses, outer_loop_vars, initial_values, ubi, j, ind, p):
             etr_params_to_use,
             mtrx_params_to_use,
             mtry_params_to_use,
-            initial_b,
+            b_splus1init,
             p,
         )
         _td_x0 = list(b_guesses_to_use) + list(n_guesses_to_use)
@@ -885,10 +884,10 @@ def run_TPI(p, client=None):
     # Get initial paths for industry specific labor
     L_vec_init = np.ones((p.T + p.S, p.M)) * ss_vars["L_m"].reshape(1, p.M)
     # Get the initial paths for industry specific output
-    Y_vec_init = np.zeros((p.T + p.S, p.M))
+    Y_vec_init = np.ones((p.T + p.S, p.M)) * ss_vars["Y_m"].reshape(1, p.M)
     for m in range(p.M):
-        Y_vec_init[:, m] = firm.get_Y(
-            K_vec_init[:, m], K_g, L_vec_init[:, m], p, "TPI"
+        Y_vec_init[:p.T, m] = firm.get_Y(
+            K_vec_init[:p.T, m], K_g[:p.T], L_vec_init[:p.T, m], p, "TPI", m
         )
     Y = Y_vec_init.sum(axis=1).reshape(p.T + p.S,)
     # Y = np.zeros_like(K)
@@ -1162,7 +1161,7 @@ def run_TPI(p, client=None):
         bmat_s[1:, 1:, :] = b_mat[: p.T - 1, :-1, :]
         bmat_splus1 = np.zeros((p.T, p.S, p.J))
         bmat_splus1[0, :, :] = b_splus1init
-        bmat_splus1[1:, :, :] = b_mat[: p.T, :, :]
+        bmat_splus1[1:, :, :] = b_mat[: p.T - 1, :, :]
 
         num_params = len(p.etr_params[0][0])
         etr_params_4D = [
