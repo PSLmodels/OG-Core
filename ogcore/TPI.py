@@ -242,10 +242,16 @@ def get_initial_SS_values(p):
         b_sinit = tpi_baseline_vars["b_s"][0, :]
         b_splus1init = tpi_baseline_vars["b_sp1"][0, :, :]
         D0_baseline = tpi_baseline_vars["D"][0]
+        K0_baseline = tpi_baseline_vars["K"][0]
+        Kd0_baseline = tpi_baseline_vars["K_d"][0]
         Kg0_baseline = tpi_baseline_vars["K_g"][0]
+        Km0_baseline = tpi_baseline_vars["K_m"][0, :]
     else:
         D0_baseline = None
+        K0_baseline = None
+        Kd0_baseline = None
         Kg0_baseline = None
+        Km0_baseline = None
 
     initial_values = (B0, b_sinit, b_splus1init, factor, initial_n)
     baseline_values = (
@@ -254,7 +260,10 @@ def get_initial_SS_values(p):
         Gbaseline,
         Ig_baseline,
         D0_baseline,
+        K0_baseline,
+        Kd0_baseline,
         Kg0_baseline,
+        Km0_baseline
     )
 
     return initial_values, ss_vars, theta, baseline_values
@@ -816,7 +825,10 @@ def run_TPI(p, client=None):
         Gbaseline,
         Ig_baseline,
         D0_baseline,
+        K0_baseline,
+        Kd0_baseline,
         Kg0_baseline,
+        Km0_baseline
     ) = baseline_values
 
     # Create time path of UBI household benefits and aggregate UBI outlays
@@ -844,20 +856,47 @@ def run_TPI(p, client=None):
     L_init[: p.T] = aggr.get_L(n_mat[: p.T], p, "TPI")
     # B_init[1 : p.T] = aggr.get_B(b_mat[: p.T], p, "TPI", False)[: p.T - 1]
     # B_init[0] = B0
-    K_init = B_init * ss_vars["K"] / ss_vars["B"]
+    if p.baseline:
+        K_init = B_init * ss_vars["K"] / ss_vars["B"]
+        K_d = K_init * ss_vars["K_d"] / ss_vars["K"]
+        K_g = np.ones_like(K_init) * ss_vars["K_g"]
+        K_vec_init = (
+            np.ones((p.T + p.S, p.M)) * ss_vars["K_m"].reshape(1, p.M) *
+            np.tile((K_init / ss_vars["K"]).reshape(p.T + p.S, 1), (1, p.M))
+        )
+    else:
+        K_init = utils.get_initial_path(
+            K0_baseline, ss_vars["K"], p, "quadratic"
+        )
+        K_d = utils.get_initial_path(
+            Kd0_baseline, ss_vars["K_d"], p, "quadratic"
+        )
+        K_g = utils.get_initial_path(
+            Kg0_baseline, ss_vars["K_g"], p, "quadratic"
+        )
+        K_vec_init = utils.get_initial_path(
+            Km0_baseline.reshape(1, p.M), ss_vars["K_m"].reshape(1, p.M), p,
+            "quadratic"
+        )
     K = K_init
-    K_d = K_init * ss_vars["K_d"] / ss_vars["K"]
-    K_f = K_init * ss_vars["K_f"] / ss_vars["K"]
+    K_f = K_init - K_d
     L = L_init
     B = B_init
-    K_g = np.ones_like(K) * ss_vars["K_g"]
-    Y = np.zeros_like(K)
-    Y[: p.T] = firm.get_Y(K[: p.T], K_g[: p.T], L[: p.T], p, "TPI")
-    Y[p.T :] = ss_vars["Y"]
-    # path for industry specific aggregates
-    K_vec_init = np.ones((p.T + p.S, p.M)) * ss_vars["K_m"].reshape(1, p.M)
+    # Get initial paths for industry specific labor
     L_vec_init = np.ones((p.T + p.S, p.M)) * ss_vars["L_m"].reshape(1, p.M)
-    Y_vec_init = np.ones((p.T + p.S, p.M)) * ss_vars["Y_m"].reshape(1, p.M)
+    # Get the initial paths for industry specific output
+    Y_vec_init = np.zeros((p.T + p.S, p.M))
+    for m in range(p.M):
+        Y_vec_init[:, m] = firm.get_Y(
+            K_vec_init[:, m], K_g, L_vec_init[:, m], p, "TPI"
+        )
+    Y = Y_vec_init.sum(axis=1).reshape(p.T + p.S,)
+    # Y = np.zeros_like(K)
+    # Y[: p.T] = firm.get_Y(K[: p.T], K_g[: p.T], L[: p.T], p, "TPI")
+    # Y[p.T :] = ss_vars["Y"]
+    # path for industry specific aggregates
+    # K_vec_init = np.ones((p.T + p.S, p.M)) * ss_vars["K_m"].reshape(1, p.M)
+    # Y_vec_init = np.ones((p.T + p.S, p.M)) * ss_vars["Y_m"].reshape(1, p.M)
     # compute w
     w = np.ones_like(K) * ss_vars["w"]
     # compute goods prices
