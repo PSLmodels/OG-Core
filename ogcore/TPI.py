@@ -1005,7 +1005,7 @@ def run_TPI(p, client=None):
     )
 
     # Initialize bequests
-    BQ0 = aggr.get_BQ(r_p[0], initial_b, None, p, "SS", True)
+    BQ0 = aggr.get_BQ(r_p[0], b_splus1init, None, p, "SS", True)
     if not p.use_zeta:
         BQ = np.zeros((p.T + p.S, p.J))
         for j in range(p.J):
@@ -1157,10 +1157,12 @@ def run_TPI(p, client=None):
             euler_errors[:, :, j], b_mat[:, :, j], n_mat[:, :, j] = result
 
         bmat_s = np.zeros((p.T, p.S, p.J))
-        bmat_s[0, 1:, :] = initial_b[:-1, :]
+        # bmat_s[:, 1:, :] = b_mat[: p.T, :-1, :]
+        bmat_s[0, 1:, :] = b_splus1init[:-1, :]
         bmat_s[1:, 1:, :] = b_mat[: p.T - 1, :-1, :]
         bmat_splus1 = np.zeros((p.T, p.S, p.J))
-        bmat_splus1[:, :, :] = b_mat[: p.T, :, :]
+        bmat_splus1[0, :, :] = b_splus1init
+        bmat_splus1[1:, :, :] = b_mat[: p.T, :, :]
 
         num_params = len(p.etr_params[0][0])
         etr_params_4D = [
@@ -1447,7 +1449,7 @@ def run_TPI(p, client=None):
         )  # normalize prices by industry M
 
         b_mat_shift = np.append(
-            np.reshape(initial_b, (1, p.S, p.J)),
+            np.reshape(b_splus1init, (1, p.S, p.J)),
             b_mat[: p.T - 1, :, :],
             axis=0,
         )
@@ -1574,6 +1576,14 @@ def run_TPI(p, client=None):
         # policy warm-starts stay on the damped update.
         r_gov[: p.T] = utils.convex_combo(r_gov_new[: p.T], r_gov[: p.T], p.nu)
         D[: p.T] = Dnew[: p.T]
+        # Update initial B and b_splus1init and guesses_b
+        if p.baseline:
+            B[0] = utils.convex_combo(
+                p.initial_wealth_ratio * Y[0], B[0], p.nu
+            )
+            b_splus1init = utils.convex_combo(
+                p.initial_hhwealth_dist * B[0], b_splus1init, p.nu
+            )
         guesses_b = utils.convex_combo(b_mat, guesses_b, p.nu)
         guesses_n = utils.convex_combo(n_mat, guesses_n, p.nu)
         logger.info(
