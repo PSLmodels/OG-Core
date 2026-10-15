@@ -186,7 +186,10 @@ def get_initial_SS_values(p):
     # This is just an initial guess.
     b_sp1_ss = ss_baseline_vars["b_sp1"]
     B0 = aggr.get_B(b_sp1_ss, p, "SS", True)
-    initial_b_sp1 = p.initial_hhwealth_dist * B0
+    initial_b_sp1_prelim = p.initial_hhwealth_dist * B0
+    initial_b_sp1 = initial_b_sp1_prelim * (
+        B0 /aggr.get_B(initial_b_sp1_prelim, p, "SS", preTP=True)
+    )
     initial_b = np.zeros((p.S, p.J))
     initial_b[1:, :] = initial_b_sp1[:-1, :]
     # initial_b = ss_baseline_vars["b_sp1"] * (ss_baseline_vars["B"] / B0)
@@ -1585,8 +1588,11 @@ def run_TPI(p, client=None):
             B[0] = utils.convex_combo(
                 p.initial_wealth_ratio * Y[0], B[0], p.nu
             )
-            b_splus1init = utils.convex_combo(
+            b_splus1init_prelim = utils.convex_combo(
                 p.initial_hhwealth_dist * B[0], b_splus1init, p.nu
+            )
+            b_splus1init = b_splus1init_prelim * (
+                B[0] / aggr.get_B(b_splus1init_prelim, p, "SS", preTP=True)
             )
         guesses_b = utils.convex_combo(b_mat, guesses_b, p.nu)
         guesses_n = utils.convex_combo(n_mat, guesses_n, p.nu)
