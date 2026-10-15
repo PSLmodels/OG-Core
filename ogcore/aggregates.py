@@ -25,8 +25,7 @@ def get_L(n, p, method):
     Args:
         n (Numpy array): labor supply of households
         p (OG-Core Specifications object): model parameters
-        method (str): adjusts calculation dimensions based on 'SS' or
-            'TPI'
+        method (str): adjusts calculation dimensions based on 'SS' or 'TPI'
 
     Returns:
         L (array_like): aggregate labor supply
@@ -49,9 +48,9 @@ def get_N(n, p, method):
     r"""
     Calculate aggregate hours worked.
 
-    Unlike aggregate labor supply :math:`L`, this measure does not weight
-    hours by the effective-labor-units profile :math:`e_{j,s,t}`, so it
-    reports raw hours rather than productivity-adjusted labor:
+    Unlike aggregate labor supply :math:`L`, this measure does not weight hours
+    by the effective-labor-units profile :math:`e_{j,s,t}`, so it reports raw
+    hours rather than productivity-adjusted labor:
 
     .. math::
         N_{t} = \sum_{s=E}^{E+S}\sum_{j=0}^{J}\omega_{s,t}\lambda_{j}n_{j,s,t}
@@ -59,8 +58,7 @@ def get_N(n, p, method):
     Args:
         n (Numpy array): labor supply of households
         p (OG-Core Specifications object): model parameters
-        method (str): adjusts calculation dimensions based on 'SS' or
-            'TPI'
+        method (str): adjusts calculation dimensions based on 'SS' or 'TPI'
 
     Returns:
         N (array_like): aggregate hours worked
@@ -138,16 +136,18 @@ def get_B(b, p, method, preTP):
     Calculate aggregate savings
 
     .. math::
-        B_{t} = \sum_{s=E}^{E+S}\sum_{j=0}^{J}\omega_{s,t}\lambda_{j}b_{j,s,t}
+        \hat{B}_{t} = \frac{1}{1 + \tilde{g}_{n,t}}
+        \sum_{s=E+2}^{E+S+1}\sum_{j=1}^{J}
+        \Bigl(\hat{\omega}_{s-1,t-1}\lambda_{j}\hat{b}_{j,s,t} +
+        i_{s,t}\hat{\omega}_{s,t-1}\lambda_{j}\hat{b}_{j,s,t}\Bigr)
+        \quad\forall t
 
     Args:
         b (Numpy array): savings of households
         p (OG-Core Specifications object): model parameters
-        method (str): adjusts calculation dimensions based on 'SS' or
-            'TPI'
-        preTP (bool): whether calculation is for the pre-time path
-            period amount of savings.  If True, then need to use
-            `omega_S_preTP`.
+        method (str): adjusts calculation dimensions based on 'SS' or 'TPI'
+        preTP (bool): whether calculation is for the pre-time path period
+            amount of savings. If True, then need to use `omega_S_preTP`.
 
     Returns:
         B (array_like): aggregate supply of savings
@@ -193,8 +193,8 @@ def get_B(b, p, method, preTP):
 
 def get_BQ(r, b_splus1, j, p, method, preTP):
     r"""
-    Calculation of aggregate bequests.  If `use_zeta` is False, then
-    computes aggregate bequests within each lifetime income group.
+    Calculation of aggregate bequests.  If `use_zeta` is False, then computes
+    aggregate bequests within each lifetime income group.
 
     .. math::
         BQ_{t} = \sum_{s=E}^{E+S}\sum_{j=0}^{J}\rho_{s}\omega_{s,t}
@@ -205,15 +205,13 @@ def get_BQ(r, b_splus1, j, p, method, preTP):
         b_splus1 (numpy array): household savings one period ahead
         j (int): index of lifetime income group
         p (OG-Core Specifications object): model parameters
-        method (str): adjusts calculation dimensions based on SS or
-            TPI
-        preTP (bool): whether calculation is for the pre-time path
-            period amount of savings.  If True, then need to use
-            `omega_S_preTP`.
+        method (str): adjusts calculation dimensions based on "SS" or "TPI"
+        preTP (bool): whether calculation is for the pre-time path period
+            amount of savings. If True, then need to use `omega_S_preTP`.
 
     Returns:
-        BQ (array_like): aggregate bequests, overall or by lifetime
-            income group, depending on `use_zeta` value.
+        BQ (array_like): aggregate bequests, overall or by lifetime income
+            group, depending on `use_zeta` value.
 
     """
     if method == "SS":
@@ -283,7 +281,7 @@ def get_RM(Y, p, method):
     Args:
         Y (array_like): GDP steady state or time path
         p (OG-Core Specifications object): model parameters
-        method (str): adjusts calculation dimensions based on SS or TPI
+        method (str): adjusts calculation dimensions based on "SS" or "TPI"
 
     Returns:
         RM (array_like): aggregate remittances
@@ -315,8 +313,8 @@ def get_C(c, p, method):
     r"""
     Calculation of aggregate consumption.
 
-    Set up to only take one consumption good at a time. This
-    function is called in a loop to get consumption for all goods.
+    Set up to only take one consumption good at a time. This function is called
+    in a loop to get consumption for all goods.
 
     .. math::
         C_{t} = \sum_{s=E}^{E+S}\sum_{j=0}^{J}\omega_{s,t}
@@ -325,8 +323,7 @@ def get_C(c, p, method):
     Args:
         c (Numpy array): consumption of households
         p (OG-Core Specifications object): model parameters
-        method (str): adjusts calculation dimensions based on 'SS' or
-            'TPI'
+        method (str): adjusts calculation dimensions based on 'SS' or 'TPI'
 
     Returns:
         C (array_like): aggregate consumption
@@ -384,17 +381,15 @@ def revenue(
         L (array_like): aggregate labor
         K (array_like): aggregate capital
         p_m (array_like): output prices
-        factor (scalar): scaling factor converting model units to
-            dollars
+        factor (scalar): scaling factor converting model units to dollars
         ubi (array_like): universal basic income household distributions
-        theta (Numpy array): social security replacement rate for each
-            lifetime income group
+        theta (Numpy array): social security replacement rate for each lifetime
+            income group
         etr_params (list): list of parameters of the effective tax rate
             functions
         e (Numpy array): effective labor units
         p (OG-Core Specifications object): model parameters
-        method (str): adjusts calculation dimensions based on 'SS' or
-            'TPI'
+        method (str): adjusts calculation dimensions based on 'SS' or 'TPI'
 
     Returns:
         (tuple): aggregate tax revenue and outlay components:
@@ -402,19 +397,15 @@ def revenue(
             * total_tax_revenue (array_like): aggregate tax revenue
             * iit_payroll_tax_revenue (array_like): aggregate income and
               payroll tax revenue
-            * agg_pension_outlays (array_like): aggregate outlays for
-              gov't pensions
-            * UBI_outlays (array_like): aggregate universal basic income
-              (UBI) outlays
-            * bequest_tax_revenue (array_like): aggregate bequest tax
-              revenue
+            * agg_pension_outlays (array_like): aggregate outlays for gov't
+              pensions
+            * UBI_outlays (array_like): aggregate universal basic income (UBI)
+              outlays
+            * bequest_tax_revenue (array_like): aggregate bequest tax revenue
             * wealth_tax_revenue (array_like): aggregate wealth tax revenue
-            * cons_tax_revenue (array_like): aggregate consumption tax
-              revenue
-            * business_tax_revenue (array_like): aggregate business tax
-              revenue
-            * payroll_tax_revenue (array_like): aggregate payroll tax
-              revenue
+            * cons_tax_revenue (array_like): aggregate consumption tax revenue
+            * business_tax_revenue (array_like): aggregate business tax revenue
+            * payroll_tax_revenue (array_like): aggregate payroll tax revenue
             * iit_tax_revenue (array_like): aggregate income tax revenue
 
     """
@@ -495,21 +486,21 @@ def get_payroll_tax_revenue(
     r"""
     Calculate aggregate payroll tax revenue.
 
-    How payroll tax revenue is computed depends on how the user has
-    chosen to represent payroll taxes in the model.  If payroll taxes
-    are included directly through the ``tau_payroll`` parameter, then
-    revenue is the sum across households of the (type-specific) payroll
-    tax rate times household labor income:
+    How payroll tax revenue is computed depends on how the user has chosen to
+    represent payroll taxes in the model. If payroll taxes are included
+    directly through the ``tau_payroll`` parameter, then revenue is the sum
+    across households of the (type-specific) payroll tax rate times household
+    labor income:
 
     .. math::
         PR_{t} = \sum_{s=E}^{E+S}\sum_{j=0}^{J}\omega_{s,j,t}
         \tau^{p}_{j,t}w_{t}e_{j,s,t}n_{j,s,t}
 
-    Otherwise, payroll taxes are assumed to be embedded in the estimated
-    income and payroll tax functions (the default), and payroll tax
-    revenue is separated out as a fraction ``frac_tax_payroll`` of the
-    combined income and payroll tax revenue.  These two calculations are
-    identical when ``tau_payroll`` is zero.
+    Otherwise, payroll taxes are assumed to be embedded in the estimated income
+    and payroll tax functions (the default), and payroll tax revenue is
+    separated out as a fraction ``frac_tax_payroll`` of the combined income and
+    payroll tax revenue. These two calculations are identical when
+    ``tau_payroll`` is zero.
 
     Args:
         w (array_like): the real wage rate
@@ -565,8 +556,8 @@ def get_payroll_tax_revenue(
 
 def get_r_p(r, r_gov, p_m, K_vec, K_g, D, MPKg_vec, p, method):
     r"""
-    Compute the interest rate on the household's portfolio of assets,
-    a mix of government debt and private equity.
+    Compute the interest rate on the household's portfolio of assets, a mix of
+    government debt and private equity.
 
     .. math::
         r_{p,t} = \frac{r_{gov,t}D_{t} + r_{K,t}K_{t}}{D_{t} + K_{t}}
@@ -578,11 +569,10 @@ def get_r_p(r, r_gov, p_m, K_vec, K_g, D, MPKg_vec, p, method):
         K_vec (array_like): aggregate capital demand from each industry
         K_g (array_like): aggregate public capital
         D (array_like): aggregate government debt
-        MPKg_vec (array_like): marginal product of government capital
-            for each industry
+        MPKg_vec (array_like): marginal product of government capital for each
+            industry
         p (OG-Core Specifications object): model parameters
-        method (str): adjusts calculation dimensions based on 'SS' or
-            'TPI'
+        method (str): adjusts calculation dimensions based on 'SS' or 'TPI'
 
     Returns:
         r_p (array_like): the real interest rate on the household portfolio
@@ -657,10 +647,10 @@ def get_capital_outflows(r, K_f, new_borrowing_f, debt_service_f, p):
     Args:
         r (array_like): the real interest rate
         K_f (array_like): aggregate capital that is foreign-owned
-        new_borrowing_f (array_like): new borrowing of government debt
-            from foreign investors
-        debt_service_f (array_like): interest payments on government
-            debt owned by foreigners
+        new_borrowing_f (array_like): new borrowing of government debt from
+            foreign investors
+        debt_service_f (array_like): interest payments on government debt owned
+            by foreigners
         p (OG-Core Specifications object): model parameters
 
     Returns:
@@ -673,8 +663,8 @@ def get_capital_outflows(r, K_f, new_borrowing_f, debt_service_f, p):
 
 def get_K_splits(B, K_demand_open, D_d, zeta_K):
     r"""
-    Returns total domestic capital as well as amounts of domestic
-    capital held by domestic and foreign investors separately.
+    Returns total domestic capital as well as amounts of domestic capital held
+    domestic and foreign investors separately.
 
     .. math::
         \begin{split}
@@ -686,11 +676,10 @@ def get_K_splits(B, K_demand_open, D_d, zeta_K):
 
     Args:
         B (array_like): aggregate savings by domestic households
-        K_demand_open (array_like): capital demand at the world
-            interest rate
-        D_d (array_like): governmet debt held by domestic households
-        zeta_K (array_like): fraction of excess capital demand satisfied
-            by foreign investors
+        K_demand_open (array_like): capital demand at the world interest rate
+        D_d (array_like): government debt held by domestic households
+        zeta_K (array_like): fraction of excess capital demand satisfied by
+            foreign investors
 
     Returns:
         (tuple): series of capital stocks:
