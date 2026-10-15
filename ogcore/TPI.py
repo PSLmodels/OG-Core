@@ -830,16 +830,17 @@ def run_TPI(p, client=None):
     # Initialize guesses at time paths
     # Make array of initial guesses for labor supply and savings
     guesses_b = utils.get_initial_path(
-        b_splus1init, ss_vars["b_sp1"], p, "ratio"
+        b_splus1init, ss_vars["b_sp1"], p, "quadratic"
     )
-    guesses_n = utils.get_initial_path(initial_n, ss_vars["n"], p, "ratio")
+    guesses_n = utils.get_initial_path(initial_n, ss_vars["n"], p, "quadratic")
     b_mat = guesses_b
     n_mat = guesses_n
     ind = np.arange(p.S)
 
     # Get path for aggregate savings and labor supply
     L_init = np.ones((p.T + p.S,)) * ss_vars["L"]
-    B_init = np.ones((p.T + p.S,)) * ss_vars["B"]
+    B_init = utils.get_initial_path(B0, ss_vars["B"], p, "quadratic")
+    # B_init = np.ones((p.T + p.S,)) * ss_vars["B"]
     L_init[: p.T] = aggr.get_L(n_mat[: p.T], p, "TPI")
     B_init[1 : p.T] = aggr.get_B(b_mat[: p.T], p, "TPI", False)[: p.T - 1]
     B_init[0] = B0
