@@ -35,11 +35,12 @@ def macro_table(
         var_list (list): names of variable to use in table
         output_type (string): type of plot, can be:
 
-            * 'pct_diff': plots percentage difference between baseline
-              and reform ((reform-base)/base)
+            * 'pct_diff': plots percentage difference between baseline and
+              reform ((reform-base)/base)
             * 'diff': plots difference between baseline and reform
               (reform-base)
             * 'levels': variables in model units
+
         stationarized (bool): whether used stationarized variables (False only
             affects pct_diff right now)
         num_years (integer): number of years to include in table
@@ -679,7 +680,9 @@ def dynamic_revenue_decomposition(
         table (various): table in DataFrame or string format or `None`
             if saved to disk
 
-    .. note:: The decomposition is the following:
+    .. note::
+
+        The decomposition is the following:
 
         1. Simulate the baseline and reform in OG-Core. Save the
            resulting series of tax revenues. Call these series for the
