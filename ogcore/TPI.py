@@ -1167,9 +1167,10 @@ def run_TPI(p, client=None):
         # bmat_s[:, 1:, :] = b_mat[: p.T, :-1, :]
         bmat_s[0, 1:, :] = b_splus1init[:-1, :]
         bmat_s[1:, 1:, :] = b_mat[: p.T - 1, :-1, :]
-        bmat_splus1 = np.zeros((p.T, p.S, p.J))
-        bmat_splus1[0, :, :] = b_splus1init
-        bmat_splus1[1:, :, :] = b_mat[: p.T - 1, :, :]
+        bmat_splus1 = b_mat[: p.T, :, :]
+        # bmat_splus1 = np.zeros((p.T, p.S, p.J))
+        # bmat_splus1[0, :, :] = b_splus1init
+        # bmat_splus1[1:, :, :] = b_mat[: p.T - 1, :, :]
 
         num_params = len(p.etr_params[0][0])
         etr_params_4D = [
@@ -1594,6 +1595,7 @@ def run_TPI(p, client=None):
             b_splus1init = b_splus1init_prelim * (
                 B[0] / aggr.get_B(b_splus1init_prelim, p, "SS", preTP=True)
             )
+            initial_values = B[0], b_sinit, b_splus1init, factor, initial_n
         guesses_b = utils.convex_combo(b_mat, guesses_b, p.nu)
         guesses_n = utils.convex_combo(n_mat, guesses_n, p.nu)
         logger.info(

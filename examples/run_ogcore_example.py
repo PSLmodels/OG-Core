@@ -66,6 +66,7 @@ def main():
         "alpha_T": alpha_T.tolist(),
         "alpha_G": alpha_G.tolist(),
         "initial_guess_r_SS": 0.04,
+        "nu": 0.2,
     }
 
     """
