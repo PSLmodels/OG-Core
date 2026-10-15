@@ -9,9 +9,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Updated
 - Adds two new parameters `initial_hhwealth_dist` and `initial_wealth_ratio` to `default_parameters.json`.
+- Updates `TPI.py` with new approach to initial household wealth.
 - Updates `calibration.md` by adding new section on the end about calibrating initial household wealth.
+- Fixes multi-industry example run script `multi_industry_example.py`.
 - Removes the extraneous requirements.txt file. This file is clearly out-of-date, and I can't see anything that is calling it or using it. os is not a PyPI package, it is Python standard library. taxcalc is not a dependency of OG-Core. It omits the important dependencies listed in pyproject.toml. requirements.txt was added in commit 36727c7c (Aug 2019) as part of "add readthedocs files," and there's no .readthedocs.yaml in the repo anymore — docs now build via the Makefile and workflows. It's been touched twice since, last in f44266f2 (Jul 2024, "Added numba to requirements.txt"), which looks like someone updating it out of habit rather than because anything consumed it.
-- Fixes a formatting issue in `output_tables.py` that caused a warning in the documentation build.
+- Fixes a formatting issues in `output_tables.py`, `aggregates.py`, and `utils.py` that caused a warning in the documentation build.
 - Changed two file names in the example run script `run_ogcore_example.py`.
 - Fixes equation in `stationarization.md`.
 

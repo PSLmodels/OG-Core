@@ -181,8 +181,15 @@ def get_initial_SS_values(p):
     baseline_ss = os.path.join(p.baseline_dir, "SS", "SS_vars.pkl")
     ss_baseline_vars = utils.safe_read_pickle(baseline_ss)
     factor = ss_baseline_vars["factor"]
-    B0 = aggr.get_B(ss_baseline_vars["b_sp1"], p, "SS", True)
-    initial_b = ss_baseline_vars["b_sp1"] * (ss_baseline_vars["B"] / B0)
+    # Set initial aggregate household wealth to the level implied by the
+    # steady-state distribution of wealth evaluated at period-0 population.
+    # This is just an initial guess.
+    b_sp1_ss = ss_baseline_vars["b_sp1"]
+    B0 = aggr.get_B(b_sp1_ss, p, "SS", True)
+    initial_b_sp1 = p.initial_hhwealth_dist * B0
+    initial_b = np.zeros((p.S, p.J))
+    initial_b[1:, :] = initial_b_sp1[:-1, :]
+    # initial_b = ss_baseline_vars["b_sp1"] * (ss_baseline_vars["B"] / B0)
     initial_n = ss_baseline_vars["n"]
     # The DB/NDC/PS pension formulas need the labor supplied before the
     # time path begins by cohorts alive at t=0. Use the model's initial
@@ -222,25 +229,25 @@ def get_initial_SS_values(p):
     # Get an initial distribution of wealth with the initial population
     # distribution. When small_open=True, the value of K0 is used as a
     # placeholder for first-period wealth
-    B0 = aggr.get_B(initial_b, p, "SS", True)
+    # B0 = aggr.get_B(initial_b, p, "SS", True)
 
-    b_sinit = np.array(
-        list(np.zeros(p.J).reshape(1, p.J)) + list(initial_b[:-1])
-    )
-    b_splus1init = initial_b
+    b_sinit = initial_b.copy()
+    b_splus1init = initial_b_sp1.copy()
 
     # Intial gov't debt and capital stock must match that in the baseline
     if not p.baseline:
         baseline_tpi = os.path.join(p.baseline_dir, "TPI", "TPI_vars.pkl")
         tpi_baseline_vars = utils.safe_read_pickle(baseline_tpi)
+        B0 = tpi_baseline_vars["B"][0]
+        b_sinit = tpi_baseline_vars["b_s"][0, :]
+        b_splus1init = tpi_baseline_vars["b_sp1"][0, :, :]
         D0_baseline = tpi_baseline_vars["D"][0]
         Kg0_baseline = tpi_baseline_vars["K_g"][0]
     else:
-        RM0_baseline = None
         D0_baseline = None
         Kg0_baseline = None
 
-    initial_values = (B0, b_sinit, b_splus1init, factor, initial_b, initial_n)
+    initial_values = (B0, b_sinit, b_splus1init, factor, initial_n)
     baseline_values = (
         Ybaseline,
         TRbaseline,
@@ -802,7 +809,7 @@ def run_TPI(p, client=None):
     p._jac_cache_scope = uuid.uuid4().hex
     # unpack tuples of parameters
     initial_values, ss_vars, theta, baseline_values = get_initial_SS_values(p)
-    B0, b_sinit, b_splus1init, factor, initial_b, initial_n = initial_values
+    B0, b_sinit, b_splus1init, factor, initial_n = initial_values
     (
         Ybaseline,
         TRbaseline,
@@ -822,7 +829,9 @@ def run_TPI(p, client=None):
 
     # Initialize guesses at time paths
     # Make array of initial guesses for labor supply and savings
-    guesses_b = utils.get_initial_path(initial_b, ss_vars["b_sp1"], p, "ratio")
+    guesses_b = utils.get_initial_path(
+        b_splus1init, ss_vars["b_sp1"], p, "ratio"
+    )
     guesses_n = utils.get_initial_path(initial_n, ss_vars["n"], p, "ratio")
     b_mat = guesses_b
     n_mat = guesses_n
