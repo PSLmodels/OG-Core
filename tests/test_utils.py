@@ -478,6 +478,37 @@ def test_get_initial_path(x1, xT, p, shape, expected):
 
 
 @pytest.mark.parametrize(
+    "x1,xT,p,shape,expected",
+    [
+        (0.4, 5.0, p, "linear", expected1[:, 0, 0]),
+        (0.4, 5.0, p, "quadratic", expected2[:, 0, 0]),
+        (0.4, 5.0, p, "ratio", expected3[:, 0, 0]),
+        (np.float64(0.4), np.float64(5.0), p, "quadratic", expected2[:, 0, 0]),
+        (5.0, 5.0, p, "linear", expected4[:, 0, 0]),
+        (5.0, 5.0, p, "quadratic", expected4[:, 0, 0]),
+        (5.0, 5.0, p, "ratio", expected4[:, 0, 0]),
+    ],
+    ids=[
+        "linear",
+        "quadratic",
+        "ratio",
+        "quadratic - numpy scalars",
+        "linear - trivial",
+        "quadratic - trivial",
+        "ratio - trivial",
+    ],
+)
+def test_get_initial_path_scalar(x1, xT, p, shape, expected):
+    """
+    Test of utils.get_inital_path function with scalar endpoints, which
+    should return a one-dimensional path of length T+S
+    """
+    test_path = utils.get_initial_path(x1, xT, p, shape)
+    assert test_path.shape == (p.T + p.S,)
+    assert np.allclose(test_path, expected)
+
+
+@pytest.mark.parametrize(
     "filename",
     [("SS_solver_outputs_baseline.pkl"), ("tax_dict_for_tests.pkl")],
     ids=["Python 2 pickle file", "Python 3 pickle file"],

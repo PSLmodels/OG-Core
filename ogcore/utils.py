@@ -320,14 +320,18 @@ def get_initial_path(x1, xT, p, shape):
         * quadratic: `x = a*t^2 + b*t + c`
 
     Args:
-        x1 (scalar): initial value of the function x(t) at t=0
-        xT (scalar): value of the function x(t) at t=T-1
-        T (int): number of periods of the path, must be >= 3
+        x1 (scalar or array_like): initial value of the function x(t) at
+            t=0, either a scalar or an SxJ array
+        xT (scalar or array_like): value of the function x(t) at t=T-1,
+            either a scalar or an SxJ array
+        p (OG-Core Specifications object): model parameters, T must
+            be >= 3
         shape (str): shape of guess for time path, "linear", "ratio",
             or "quadratic"
 
     Returns:
-        xpath (Numpy array): guess of variable over the time path
+        xpath (Numpy array): guess of variable over the time path, size
+            T+S if x1 and xT are scalars, otherwise (T+S)xSxJ
 
     Notes:
         The identifying assumptions for quadratic are the following:
@@ -336,22 +340,27 @@ def get_initial_path(x1, xT, p, shape):
             3. the slope of the path at `t=T-1` is 0: `0 = 2*a*(T-1) + b`
 
     """
+    # scalar endpoints give a path of length T+S; SxJ endpoints give a
+    # (T+S)xSxJ path, with time broadcast along the first axis
+    scalar_path = np.ndim(x1) == 0 and np.ndim(xT) == 0
+    time_shape = (p.T,) if scalar_path else (p.T, 1, 1)
     if shape == "linear":
         xpath = np.linspace(x1, xT, p.T)
     elif shape == "ratio":
-        domain = np.linspace(0, p.T, p.T)
-        domain2 = np.tile(domain.reshape(p.T, 1, 1), (1, p.S, p.J))
-        xpath = (-1 / (domain2 + 1)) * (xT - x1) + xT
+        domain = np.linspace(0, p.T, p.T).reshape(time_shape)
+        xpath = (-1 / (domain + 1)) * (xT - x1) + xT
     elif shape == "quadratic":
         cc = x1
         bb = 2 * (xT - x1) / (p.T - 1)
         aa = (x1 - xT) / ((p.T - 1) ** 2)
-        xpath = (
-            aa * (np.arange(0, p.T).reshape(p.T, 1, 1) ** 2)
-            + (bb * np.arange(0, p.T).reshape(p.T, 1, 1))
-            + cc
+        t = np.arange(0, p.T).reshape(time_shape)
+        xpath = aa * (t**2) + (bb * t) + cc
+    if scalar_path:
+        ending_x_tail = np.full(p.S, xT, dtype=float)
+    else:
+        ending_x_tail = np.tile(
+            np.asarray(xT).reshape(1, p.S, p.J), (p.S, 1, 1)
         )
-    ending_x_tail = np.tile(xT.reshape(1, p.S, p.J), (p.S, 1, 1))
     xpath_full = np.append(xpath, ending_x_tail, axis=0)
 
     return xpath_full
