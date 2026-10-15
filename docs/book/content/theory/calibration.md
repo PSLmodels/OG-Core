@@ -150,7 +150,7 @@ In the following section, we detail a list of items to calibrate for a country a
 
   ```{math}
   :label: EqInitHHwealth
-    \hat{b}_{j,s,1} = \texttt{initial_hhwealth_dist}\,\times\, \hat{B}_1
+    \mathbf{\hat{\Gamma}}_1\equiv \{\hat{b}_{j,s,1}\}_{j=1,s=E+1}^{J,E+S} = \texttt{initial_hhwealth_dist}\,\times\, \hat{B}_1
   ```
 
   factors for which the default is a matrix of ones. This parameter object tells the model what factor of the steady-state distribution of household wealth is the initial distribution of household wealth.
