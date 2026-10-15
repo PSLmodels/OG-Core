@@ -263,7 +263,7 @@ def get_initial_SS_values(p):
         K0_baseline,
         Kd0_baseline,
         Kg0_baseline,
-        Km0_baseline
+        Km0_baseline,
     )
 
     return initial_values, ss_vars, theta, baseline_values
@@ -827,7 +827,7 @@ def run_TPI(p, client=None):
         K0_baseline,
         Kd0_baseline,
         Kg0_baseline,
-        Km0_baseline
+        Km0_baseline,
     ) = baseline_values
 
     # Create time path of UBI household benefits and aggregate UBI outlays
@@ -860,8 +860,9 @@ def run_TPI(p, client=None):
         K_d = K_init * ss_vars["K_d"] / ss_vars["K"]
         K_g = np.ones_like(K_init) * ss_vars["K_g"]
         K_vec_init = (
-            np.ones((p.T + p.S, p.M)) * ss_vars["K_m"].reshape(1, p.M) *
-            np.tile((K_init / ss_vars["K"]).reshape(p.T + p.S, 1), (1, p.M))
+            np.ones((p.T + p.S, p.M))
+            * ss_vars["K_m"].reshape(1, p.M)
+            * np.tile((K_init / ss_vars["K"]).reshape(p.T + p.S, 1), (1, p.M))
         )
     else:
         K_init = utils.get_initial_path(
@@ -874,8 +875,10 @@ def run_TPI(p, client=None):
             Kg0_baseline, ss_vars["K_g"], p, "quadratic"
         )
         K_vec_init = utils.get_initial_path(
-            Km0_baseline.reshape(1, p.M), ss_vars["K_m"].reshape(1, p.M), p,
-            "quadratic"
+            Km0_baseline.reshape(1, p.M),
+            ss_vars["K_m"].reshape(1, p.M),
+            p,
+            "quadratic",
         )
     K = K_init
     K_f = K_init - K_d
@@ -886,10 +889,12 @@ def run_TPI(p, client=None):
     # Get the initial paths for industry specific output
     Y_vec_init = np.ones((p.T + p.S, p.M)) * ss_vars["Y_m"].reshape(1, p.M)
     for m in range(p.M):
-        Y_vec_init[:p.T, m] = firm.get_Y(
-            K_vec_init[:p.T, m], K_g[:p.T], L_vec_init[:p.T, m], p, "TPI", m
+        Y_vec_init[: p.T, m] = firm.get_Y(
+            K_vec_init[: p.T, m], K_g[: p.T], L_vec_init[: p.T, m], p, "TPI", m
         )
-    Y = Y_vec_init.sum(axis=1).reshape(p.T + p.S,)
+    Y = Y_vec_init.sum(axis=1).reshape(
+        p.T + p.S,
+    )
     # Y = np.zeros_like(K)
     # Y[: p.T] = firm.get_Y(K[: p.T], K_g[: p.T], L[: p.T], p, "TPI")
     # Y[p.T :] = ss_vars["Y"]

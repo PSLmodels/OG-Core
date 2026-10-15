@@ -133,9 +133,7 @@ def main():
     )
 
     # create plots of output
-    op.plot_all(
-        base_dir, reform_dir, os.path.join(save_dir, "example_plots")
-    )
+    op.plot_all(base_dir, reform_dir, os.path.join(save_dir, "example_plots"))
 
     op.plot_industry_aggregates(
         base_tpi,
