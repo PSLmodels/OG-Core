@@ -188,7 +188,7 @@ def get_initial_SS_values(p):
     B0 = aggr.get_B(b_sp1_ss, p, "SS", True)
     initial_b_sp1_prelim = p.initial_hhwealth_dist * B0
     initial_b_sp1 = initial_b_sp1_prelim * (
-        B0 /aggr.get_B(initial_b_sp1_prelim, p, "SS", preTP=True)
+        B0 / aggr.get_B(initial_b_sp1_prelim, p, "SS", preTP=True)
     )
     initial_b = np.zeros((p.S, p.J))
     initial_b[1:, :] = initial_b_sp1[:-1, :]
