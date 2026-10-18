@@ -244,6 +244,11 @@ def test_get_initial_SS_values(baseline, param_updates, filename, tmpdir):
         exp_baseline_values,
     ) = expected_tuple
 
+    # The pickled expected tuple predates the removal of the redundant
+    # initial_b element (identical to b_splus1init) from initial_values
+    exp_initial_values = exp_initial_values[:4] + exp_initial_values[5:]
+
+    assert len(test_initial_values) == len(exp_initial_values)
     for k, v in enumerate(exp_initial_values):
         assert np.allclose(test_initial_values[k], v, equal_nan=True)
 
@@ -488,6 +493,9 @@ def test_inner_loop():
         os.path.join(CUR_PATH, "test_io_data", "tpi_inner_loop_inputs.pkl")
     )
     guesses, outer_loop_vars_old, initial_values, ubi, j, ind = input_tuple
+    # The pickled initial_values predates the removal of the redundant
+    # initial_b element (identical to b_splus1init) from the tuple
+    initial_values = initial_values[:4] + initial_values[5:]
     p = Specifications()
     p.update_specifications({"use_sparse_FOC_jac": False})
     r = outer_loop_vars_old[0]
@@ -518,6 +526,9 @@ def test_inner_loop_sparse_FOC_jac():
         os.path.join(CUR_PATH, "test_io_data", "tpi_inner_loop_inputs.pkl")
     )
     guesses, outer_loop_vars_old, initial_values, ubi, j, ind = input_tuple
+    # The pickled initial_values predates the removal of the redundant
+    # initial_b element (identical to b_splus1init) from the tuple
+    initial_values = initial_values[:4] + initial_values[5:]
     p = Specifications()
     p.update_specifications({"use_sparse_FOC_jac": True})
     r = outer_loop_vars_old[0]
