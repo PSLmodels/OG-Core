@@ -103,6 +103,19 @@ _Valid Range:_ min = -0.02 and max = 0.15
 _Out-of-Range Action:_ error  
 
 
+####  `use_initial_b_dist`  
+_Description:_ If true, the initial (t=0) distribution of wealth across ages and ability types is taken from initial_b_dist rather than from the steady-state distribution. Useful when the model start-year age structure is far from its steady state.  
+_Value Type:_ bool  
+_Valid Choices:_[True, False]  
+
+
+####  `initial_b_dist`  
+_Description:_ Shape of the initial (t=0) distribution of household wealth across ages (S) and ability types (J), used only when use_initial_b_dist is true. Only the shape matters: the aggregate is rescaled to the steady-state level inside the transition solver, so units are arbitrary.  
+_Value Type:_ float  
+_Valid Range:_ min = 0.0 and max = 9e+99  
+_Out-of-Range Action:_ error  
+
+
 ####  `eta_RM`  
 _Description:_ Matrix that allocates aggregate remittances across households.  
 _Notes:_ This SxJ matrix gives the fraction of total aggregate remittances going to each age s and ability type j.  

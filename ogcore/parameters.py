@@ -316,6 +316,21 @@ class Specifications(paramtools.Parameters):
             param_in, dims=(self.T, self.S, self.J), item="e"
         )
         setattr(self, "e", param_out)
+        # shape the supplied initial wealth distribution to (S, J); when it
+        # is not used (use_initial_b_dist is False) this is the harmless
+        # default. Read the raw spec value rather than the attribute: the
+        # attribute may hold a prior run's array already expanded to (S, J),
+        # and feeding that back into extrapolate_array when a later
+        # update_specifications shrinks S or J would raise (the 2nd dimension
+        # would no longer match J).
+        initial_b_dist_in = np.array(
+            self.specification(include_empty=False, serializable=False)[
+                "initial_b_dist"
+            ][0]["value"]
+        )
+        self.initial_b_dist = extrapolate_array(
+            initial_b_dist_in, dims=(self.S, self.J), item="initial_b_dist"
+        )
         # Extrapolate chi_n over T + S
         param_in = getattr(self, "chi_n")
         param_out = extrapolate_array(
