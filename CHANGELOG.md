@@ -12,6 +12,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Removes the redundant `initial_b` element (identical to `b_splus1init`) from the `initial_values` tuple returned by `TPI.get_initial_SS_values` and unpacked in `TPI.inner_loop` and `TPI.run_TPI`. The tuple is now `(B0, b_sinit, b_splus1init, factor, initial_n)`. All downstream uses in `inner_loop` (the arguments to `firstdoughnutring` and `twist_doughnut`) and in `run_TPI` (the initial guess for the savings path, `BQ0`, `bmat_s` in period 0, and `b_mat_shift`) now use `b_splus1init`.
 - Updates `test_get_initial_SS_values`, `test_inner_loop`, and `test_inner_loop_sparse_FOC_jac` in `test_TPI.py` to drop the stale `initial_b` element from the pickled `initial_values` tuples, so that the existing test data files do not need to be regenerated.
 
+## [0.21.2] - 2026-10-14
+
+### Fixed
+ The cache of auto-detected household Jacobian sparsity patterns in `TPI` (used when `use_sparse_FOC_jac` is True) was keyed only on the residual function name and problem size, so a pattern detected for one parameterization was reused for every later `run_TPI` call in the same process, including on long-lived dask workers. A pattern detected under `US-Style Social Security` (banded) was then applied to a `Defined Benefits` run, whose retirement-age conditions depend on working-age labor, and the household solves converged to slightly wrong values. The cache is now scoped to a single `run_TPI` call via `p._jac_cache_scope` and emptied when a new run begins.
+- Adds `tests/test_io_data/run_TPI_outputs_DB.pkl`, which was not committed with the additional test in `test_run_TPI_extra` in `test_TPI.py` committed previously.
+
+## [0.21.1] - 2026-10-12
+
+### Fixed
+- `pensions.DB_amount` raised a `TypeError` on the transition path with the Defined Benefits pension system. `TPI.firstdoughnutring` solves the household in its final period of life at `t = 0` and passes `t = None` with method `'TPI_scalar'`, and the short-horizon branch of `DB_amount` used `t` to index the replacement rate path. `DB_amount` now treats `t = None` as period 0 in that branch, consistent with the other `'TPI_scalar'` branches.
+- The conversion of `avg_earn_num_years` and `yr_contrib` from calendar years to model periods subtracted one period, so the Defined Benefits system averaged earnings over one fewer year and credited one fewer year of contributions than the parameters state, and `avg_earn_num_years=1` gave a zero-length window: a 0/0 NaN replacement rate under `US-Style Social Security` and a `ZeroDivisionError` under `Defined Benefits`. A new `pensions.pension_periods` helper rounds `S/80 * years` with no shift and is used by `DB_amount` and `deriv_DB`, so the DB code matches the documented formula. `replacement_rate_vals` keeps the one-period shift in the Social Security averaging window so that pinned steady-state and time-path results are unchanged, but floors the window at one period so a one-year window no longer produces NaN; removing that shift (the highest 35 years with the default `avg_earn_num_years=35` rather than 34) requires regenerating the pinned model outputs in `tests/test_io_data` and is left for a separate change.
+- The partial-lifetime branch of `pensions.DB_amount` (cohorts alive when the time path begins) used the steady-state earnings profile `e` over the whole lifetime. It now uses the profile in effect in the period each age is lived in, with ages before the path anchored to the period-0 profile (as the wage is) and ages beyond the path using the final profile. The full-time-path (`T x S x J`) branch and the `NDC_amount` and `PS_amount` partial-lifetime branches still use the steady-state profile (see Issue #1014).
+- `pensions.pension_periods` raises a `ValueError` when the averaging window is shorter than one model period or longer than the working life. The `avg_earn_num_years` validator allows values up to `retirement_age`, but a window longer than `retirement_age - starting_age` indexed before the first period of life and silently averaged in earnings from the oldest ages.
+- Adds `test_pension_periods_conversion_and_bounds` to `test_pensions.py` and updates the expected values of the `replacement_rate_vals`, `DB_amount`, `deriv_DB`, `pension_amount`, and `deriv_theta` tests to the unshifted period counts. Fixes a typo in the `Incomplete` case of `test_DB` that set `avg_earn_num_years` on the wrong parameters object.
+- Adds `test_DB_amount_first_doughnut_ring_t_none` to `test_pensions.py` and a `Baseline, Defined Benefits pension` parameterization of `test_run_TPI_extra` in `test_TPI.py` (expected output in `run_TPI_outputs_DB.pkl`) so that the transition path is solved with the Defined Benefits system.
+
 ## [0.21.0] - 2026-10-07
 
 ### Added
@@ -754,7 +770,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Any earlier versions of OG-USA can be found in the [`OG-Core`](https://github.com/PSLmodels/OG-Core) repository [release history](https://github.com/PSLmodels/OG-Core/releases) from [v.0.6.4](https://github.com/PSLmodels/OG-Core/releases/tag/v0.6.4) (Jul. 20, 2021) or earlier.
 
 
-[Unreleased]: https://github.com/PSLmodels/OG-Core/compare/v0.21.0...HEAD
+[0.21.2]: https://github.com/PSLmodels/OG-Core/compare/v0.21.1...v0.21.2
+[0.21.1]: https://github.com/PSLmodels/OG-Core/compare/v0.21.0...v0.21.1
 [0.21.0]: https://github.com/PSLmodels/OG-Core/compare/v0.20.4...v0.21.0
 [0.20.4]: https://github.com/PSLmodels/OG-Core/compare/v0.20.3...v0.20.4
 [0.20.3]: https://github.com/PSLmodels/OG-Core/compare/v0.20.2...v0.20.3

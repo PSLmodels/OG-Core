@@ -18,6 +18,7 @@ from ogcore import tax, utils, household, firm, fiscal, pensions, solvers
 from ogcore import aggregates as aggr
 from ogcore.constants import SHOW_RUNTIME
 import os
+import uuid
 import warnings
 import logging
 from distributed import wait
@@ -51,15 +52,23 @@ Set flag for enforcement of solution check
 ENFORCE_SOLUTION_CHECKS = True
 
 
+# Cache of detected sparsity patterns, keyed by (function name, problem
+# size) and scoped to a single run_TPI call (see _BANDED_JAC_SCOPE): the
+# pattern depends on the parameterization, e.g. a Defined Benefits pension
+# couples retirement-age conditions to working-age labor, so a pattern
+# detected for an earlier run in this process, or on a long-lived dask
+# worker, must not be reused for a later one.
 _BANDED_JAC_CACHE = {}
+_BANDED_JAC_SCOPE = None
 
 
-def _detect_jac_sparsity(fun, x0, args, thr_rel=1e-9):
+def _detect_jac_sparsity(fun, x0, args, scope=None, thr_rel=1e-9):
     """Auto-detect the Jacobian sparsity of `fun` near x0 and return a
     (csr_pattern, groups) coloring for sparse finite differences, or None if
     the Jacobian is too dense to benefit (caller then uses plain dense FD).
 
-    One-time per problem dimension (cached). The pattern is unioned over two
+    One-time per problem dimension within a run (cached; the cache is
+    emptied when ``scope`` changes). The pattern is unioned over two
     nearby points so a coupling that happens to vanish at one point is not
     missed. Portable across countries/calibrations/pensions: it reads the
     *actual* structure each run rather than assuming a stencil, so a
@@ -70,6 +79,9 @@ def _detect_jac_sparsity(fun, x0, args, thr_rel=1e-9):
         fun (function): the residual function whose Jacobian is probed
         x0 (array_like): point at which to probe the sparsity
         args (tuple): extra arguments passed to ``fun``
+        scope (hashable or None): identifier of the run the pattern
+            belongs to (``p._jac_cache_scope``, set by ``run_TPI``);
+            cached patterns from a different scope are discarded
         thr_rel (float): relative threshold below which an entry is treated
             as a structural zero
 
@@ -78,6 +90,10 @@ def _detect_jac_sparsity(fun, x0, args, thr_rel=1e-9):
             finite differences, or None if the Jacobian is not sparse enough
             to benefit
     """
+    global _BANDED_JAC_SCOPE
+    if scope != _BANDED_JAC_SCOPE:
+        _BANDED_JAC_CACHE.clear()
+        _BANDED_JAC_SCOPE = scope
     n = len(x0)
     key = (getattr(fun, "__name__", repr(fun)), n)
     cached = _BANDED_JAC_CACHE.get(key, "miss")
@@ -123,7 +139,11 @@ def _banded_jac_for(fun, x0, args, enabled):
     """
     if not enabled or not _HAVE_SPARSE_FD:
         return None
-    bj = _detect_jac_sparsity(fun, x0, args)
+    # the parameters object is the last element of args at both call sites
+    p = args[-1]
+    bj = _detect_jac_sparsity(
+        fun, x0, args, scope=getattr(p, "_jac_cache_scope", None)
+    )
     if bj is None:
         return None
     P, groups = bj
@@ -775,6 +795,10 @@ def run_TPI(p, client=None):
     """
     if p.use_sparse_FOC_jac and not _HAVE_SPARSE_FD:
         print("[TPI] sparse FOC jacobian unavailable; using dense")
+    # Scope the Jacobian sparsity cache to this solve (see
+    # _detect_jac_sparsity); set before p is scattered so that every copy
+    # of p on the dask workers carries the same identifier
+    p._jac_cache_scope = uuid.uuid4().hex
     # unpack tuples of parameters
     initial_values, ss_vars, theta, baseline_values = get_initial_SS_values(p)
     B0, b_sinit, b_splus1init, factor, initial_n = initial_values
