@@ -312,23 +312,35 @@ def to_timepath_shape(some_array):
     return tp_array
 
 
-def get_initial_path(x1, xT, p, shape):
+def get_initial_path(x1, xT, p, shape, S=None, J=None):
     r"""
-    This function generates a path from point x1 to point xT such that
-    that the path x is a linear or quadratic function of time t.
+    This function generates a path from point x1 to point xT such that the path
+    x is a linear or quadratic function of time t.
 
         * linear:    `x = d*t + e`
         * quadratic: `x = a*t^2 + b*t + c`
 
     Args:
-        x1 (scalar): initial value of the function x(t) at t=0
-        xT (scalar): value of the function x(t) at t=T-1
-        T (int): number of periods of the path, must be >= 3
+        x1 (scalar or array_like): initial value of the function x(t) at
+            t=0, either a scalar, a 1xM array, or an SxJ array
+        xT (scalar or array_like): value of the function x(t) at t=T-1,
+            same shape as x1
+        p (OG-Core Specifications object): model parameters, T must
+            be >= 3
         shape (str): shape of guess for time path, "linear", "ratio",
             or "quadratic"
+        S (int or None): number of ages in x1 and xT. Passing S and J
+            declares that x1 and xT are SxJ arrays, which resolves the
+            case where an SxJ array has the same shape as a 1xM vector
+            (S=1 and J=M). If None, the layout is inferred from the
+            shape of x1 and xT.
+        J (int or None): number of lifetime income groups in x1 and xT,
+            passed together with S
 
     Returns:
-        xpath (Numpy array): guess of variable over the time path
+        xpath (Numpy array): guess of variable over the time path, size
+            T+S if x1 and xT are scalars, (T+S)xM if they are 1xM, and
+            (T+S)xSxJ if they are SxJ
 
     Notes:
         The identifying assumptions for quadratic are the following:
@@ -337,22 +349,34 @@ def get_initial_path(x1, xT, p, shape):
             3. the slope of the path at `t=T-1` is 0: `0 = 2*a*(T-1) + b`
 
     """
+    # time runs along a new first axis in front of the per-period shape:
+    # () for scalars, (M,) for 1xM vectors, and (S, J) for SxJ arrays
+    x1 = np.asarray(x1, dtype=float)
+    xT = np.asarray(xT, dtype=float)
+    if (S is None) != (J is None):
+        raise ValueError("S and J must be passed together or not at all")
+    if S is not None:
+        if x1.shape != (S, J) or xT.shape != (S, J):
+            raise ValueError(
+                f"x1 and xT must have shape (S, J) = ({S}, {J}); got "
+                f"{x1.shape} and {xT.shape}"
+            )
+    elif x1.shape == (1, p.M) and xT.shape == (1, p.M):
+        x1 = x1.reshape(p.M)
+        xT = xT.reshape(p.M)
+    time_shape = (p.T,) + (1,) * xT.ndim
     if shape == "linear":
         xpath = np.linspace(x1, xT, p.T)
     elif shape == "ratio":
-        domain = np.linspace(0, p.T, p.T)
-        domain2 = np.tile(domain.reshape(p.T, 1, 1), (1, p.S, p.J))
-        xpath = (-1 / (domain2 + 1)) * (xT - x1) + xT
+        domain = np.linspace(0, p.T, p.T).reshape(time_shape)
+        xpath = (-1 / (domain + 1)) * (xT - x1) + xT
     elif shape == "quadratic":
         cc = x1
         bb = 2 * (xT - x1) / (p.T - 1)
         aa = (x1 - xT) / ((p.T - 1) ** 2)
-        xpath = (
-            aa * (np.arange(0, p.T).reshape(p.T, 1, 1) ** 2)
-            + (bb * np.arange(0, p.T).reshape(p.T, 1, 1))
-            + cc
-        )
-    ending_x_tail = np.tile(xT.reshape(1, p.S, p.J), (p.S, 1, 1))
+        t = np.arange(0, p.T).reshape(time_shape)
+        xpath = aa * (t**2) + (bb * t) + cc
+    ending_x_tail = np.tile(xT, (p.S,) + (1,) * xT.ndim)
     xpath_full = np.append(xpath, ending_x_tail, axis=0)
 
     return xpath_full

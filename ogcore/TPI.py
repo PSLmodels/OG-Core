@@ -234,11 +234,16 @@ def get_initial_SS_values(p):
         baseline_tpi = os.path.join(p.baseline_dir, "TPI", "TPI_vars.pkl")
         tpi_baseline_vars = utils.safe_read_pickle(baseline_tpi)
         D0_baseline = tpi_baseline_vars["D"][0]
+        K0_baseline = tpi_baseline_vars["K"][0]
+        Kd0_baseline = tpi_baseline_vars["K_d"][0]
         Kg0_baseline = tpi_baseline_vars["K_g"][0]
+        Km0_baseline = tpi_baseline_vars["K_m"][0, :]
     else:
-        RM0_baseline = None
         D0_baseline = None
+        K0_baseline = None
+        Kd0_baseline = None
         Kg0_baseline = None
+        Km0_baseline = None
 
     initial_values = (B0, b_sinit, b_splus1init, factor, initial_n)
     baseline_values = (
@@ -247,7 +252,10 @@ def get_initial_SS_values(p):
         Gbaseline,
         Ig_baseline,
         D0_baseline,
+        K0_baseline,
+        Kd0_baseline,
         Kg0_baseline,
+        Km0_baseline,
     )
 
     return initial_values, ss_vars, theta, baseline_values
@@ -502,6 +510,42 @@ def _params_to_array(nested, tax_func_type):
     return np.array(nested)
 
 
+def _retry_root_if_failed(solutions, fun, x0, args, p):
+    """
+    Re-solve a household problem with Levenberg-Marquardt when the
+    configured root finder stops short of a root.
+
+    ``hybr`` can return "not making good progress" after a few evaluations
+    when the starting point is far from the solution, which happens for the
+    short partial-lifetime problems of households alive at t=0. In that
+    case ``solutions.x`` is just the initial guess. ``lm`` is more robust
+    from such starting points, so it is tried next and the result with the
+    smaller maximum residual is kept.
+
+    Args:
+        solutions (OptimizeResult): result of the first root-finding call
+        fun (function): the residual function
+        x0 (array_like): the initial guess used in the first call
+        args (tuple): extra arguments passed to ``fun``
+        p (OG-Core Specifications object): model parameters
+
+    Returns:
+        solutions (OptimizeResult): the better of the two results
+    """
+    max_resid = np.abs(solutions.fun).max()
+    if solutions.success and max_resid <= p.mindist_TPI:
+        return solutions
+    retry = opt.root(fun, x0, args=args, method="lm", tol=MINIMIZER_TOL)
+    if np.abs(retry.fun).max() < max_resid:
+        logger.debug(
+            "Household root finder did not converge (max residual "
+            f"{max_resid:.2e}); the Levenberg-Marquardt retry reached "
+            f"{np.abs(retry.fun).max():.2e}"
+        )
+        return retry
+    return solutions
+
+
 def inner_loop(guesses, outer_loop_vars, initial_values, ubi, j, ind, p):
     """
     Given path of economic aggregates and factor prices, solves
@@ -533,9 +577,14 @@ def inner_loop(guesses, outer_loop_vars, initial_values, ubi, j, ind, p):
     Returns:
         (tuple): household solution results:
 
-            * euler_errors (Numpy array): errors from FOCs, size = Tx2S
-            * b_mat (Numpy array): savings amounts, size = TxS
-            * n_mat (Numpy array): labor supply amounts, size = TxS
+            * euler_errors (Numpy array): errors from FOCs, size =
+              (T+S)x2S. Row t holds the period-t residuals by age: the
+              savings FOCs in the first S columns and the labor FOCs in
+              the last S, so that entry [t, s] (or [t, S+s]) lines up
+              with b_mat[t, s] and n_mat[t, s]. This includes the
+              partial-lifetime problems of the households alive at t=0.
+            * b_mat (Numpy array): savings amounts, size = (T+S)xS
+            * n_mat (Numpy array): labor supply amounts, size = (T+S)xS
 
     """
     K0, b_sinit, b_splus1init, factor, initial_n = initial_values
@@ -558,30 +607,40 @@ def inner_loop(guesses, outer_loop_vars, initial_values, ubi, j, ind, p):
     # initialize arrays
     b_mat = np.zeros((p.T + p.S, p.S))
     n_mat = np.zeros((p.T + p.S, p.S))
-    euler_errors = np.zeros((p.T, 2 * p.S))
+    # Euler errors are stored in the same (period, age) layout as b_mat
+    # and n_mat, with the savings FOC residuals in the first S columns
+    # and the labor FOC residuals in the last S columns
+    euler_errors = np.zeros((p.T + p.S, 2 * p.S))
 
+    _fdr_x0 = [guesses_b[0, -1], guesses_n[0, -1]]
+    _fdr_args = (
+        r_p[0],
+        w[0],
+        p_tilde[0],
+        p_i[0, :],
+        bq[0, -1, j],
+        rm[0, -1, j],
+        tr[0, -1, j],
+        theta * p.replacement_rate_adjust[0, j],
+        factor,
+        ubi[0, -1, j],
+        j,
+        b_splus1init,
+        p,
+    )
     solutions = opt.root(
         firstdoughnutring,
-        [guesses_b[0, -1], guesses_n[0, -1]],
-        args=(
-            r_p[0],
-            w[0],
-            p_tilde[0],
-            p_i[0, :],
-            bq[0, -1, j],
-            rm[0, -1, j],
-            tr[0, -1, j],
-            theta * p.replacement_rate_adjust[0, j],
-            factor,
-            ubi[0, -1, j],
-            j,
-            b_splus1init,
-            p,
-        ),
+        _fdr_x0,
+        args=_fdr_args,
         method=p.FOC_root_method,
         tol=MINIMIZER_TOL,
     )
+    solutions = _retry_root_if_failed(
+        solutions, firstdoughnutring, _fdr_x0, _fdr_args, p
+    )
     b_mat[0, -1], n_mat[0, -1] = solutions.x[0], solutions.x[1]
+    euler_errors[0, p.S - 1] = solutions.fun[0]
+    euler_errors[0, 2 * p.S - 1] = solutions.fun[1]
 
     for s in range(p.S - 2):  # Upper triangle
         ind2 = np.arange(s + 2)
@@ -655,11 +714,16 @@ def inner_loop(guesses, outer_loop_vars, initial_values, ubi, j, ind, p):
                 method=p.FOC_root_method,
                 tol=MINIMIZER_TOL,
             )
+        solutions = _retry_root_if_failed(
+            solutions, twist_doughnut, _tri_x0, _tri_args, p
+        )
 
-        b_vec = solutions.x[: int(len(solutions.x) / 2)]
+        b_vec = solutions.x[: s + 2]
         b_mat[ind2, p.S - (s + 2) + ind2] = b_vec
-        n_vec = solutions.x[int(len(solutions.x) / 2) :]
+        n_vec = solutions.x[s + 2 :]
         n_mat[ind2, p.S - (s + 2) + ind2] = n_vec
+        euler_errors[ind2, p.S - (s + 2) + ind2] = solutions.fun[: s + 2]
+        euler_errors[ind2, 2 * p.S - (s + 2) + ind2] = solutions.fun[s + 2 :]
 
     for t in range(0, p.T):
         b_guesses_to_use = 0.75 * np.diag(guesses_b[t : t + p.S, :])
@@ -740,14 +804,52 @@ def inner_loop(guesses, outer_loop_vars, initial_values, ubi, j, ind, p):
                 method=p.FOC_root_method,
                 tol=MINIMIZER_TOL,
             )
-        euler_errors[t, :] = solutions.fun
-
+        solutions = _retry_root_if_failed(
+            solutions, twist_doughnut, _td_x0, _td_args, p
+        )
         b_vec = solutions.x[: p.S]
         b_mat[t + ind, ind] = b_vec
         n_vec = solutions.x[p.S :]
         n_mat[t + ind, ind] = n_vec
+        euler_errors[t + ind, ind] = solutions.fun[: p.S]
+        euler_errors[t + ind, p.S + ind] = solutions.fun[p.S :]
 
     return euler_errors, b_mat, n_mat
+
+
+def _euler_error_message(eul_savings, eul_laborleisure):
+    """
+    Build the message for a household first order condition failure along
+    the transition path.
+
+    Reports the largest absolute savings and labor FOC residuals and the
+    (period, age, income group) at which each occurs. Residuals at ages
+    greater than the period index belong to households already alive when
+    the time path begins, whose partial-lifetime problems are the ones
+    most sensitive to the initial guesses.
+
+    Args:
+        eul_savings (Numpy array): savings FOC residuals, (T+S) x S x J
+        eul_laborleisure (Numpy array): labor FOC residuals, (T+S) x S x J
+
+    Returns:
+        msg (str): the diagnostic error message
+    """
+    msg = "Transition path equilibrium not found (eulers)."
+    for name, err in (
+        ("savings", eul_savings),
+        ("labor", eul_laborleisure),
+    ):
+        abs_err = np.absolute(err)
+        t, s, j = np.unravel_index(np.nanargmax(abs_err), abs_err.shape)
+        msg += (
+            f" Max {name} FOC error = {abs_err[t, s, j]:.2e} at period "
+            f"t={t}, age s={s}, income group j={j}"
+        )
+        if s > t:
+            msg += " (household alive at t=0)"
+        msg += "."
+    return msg
 
 
 def _rc_error_message(RC_error, RC_TPI):
@@ -808,7 +910,10 @@ def run_TPI(p, client=None):
         Gbaseline,
         Ig_baseline,
         D0_baseline,
+        K0_baseline,
+        Kd0_baseline,
         Kg0_baseline,
+        Km0_baseline,
     ) = baseline_values
 
     # Create time path of UBI household benefits and aggregate UBI outlays
@@ -822,33 +927,57 @@ def run_TPI(p, client=None):
     # Initialize guesses at time paths
     # Make array of initial guesses for labor supply and savings
     guesses_b = utils.get_initial_path(
-        b_splus1init, ss_vars["b_sp1"], p, "ratio"
+        b_splus1init, ss_vars["b_sp1"], p, "quadratic"
     )
-    guesses_n = utils.get_initial_path(initial_n, ss_vars["n"], p, "ratio")
+    guesses_n = utils.get_initial_path(initial_n, ss_vars["n"], p, "quadratic")
     b_mat = guesses_b
     n_mat = guesses_n
     ind = np.arange(p.S)
 
     # Get path for aggregate savings and labor supply
     L_init = np.ones((p.T + p.S,)) * ss_vars["L"]
-    B_init = np.ones((p.T + p.S,)) * ss_vars["B"]
+    B_init = utils.get_initial_path(B0, ss_vars["B"], p, "quadratic")
     L_init[: p.T] = aggr.get_L(n_mat[: p.T], p, "TPI")
-    B_init[1 : p.T] = aggr.get_B(b_mat[: p.T], p, "TPI", False)[: p.T - 1]
-    B_init[0] = B0
-    K_init = B_init * ss_vars["K"] / ss_vars["B"]
+    # Get initial paths for aggregate capital. In the baseline, scale the
+    # steady-state capital stocks by the path of B; in a reform, start
+    # from the period-0 capital stocks of the baseline time path
+    if p.baseline:
+        K_init = B_init * ss_vars["K"] / ss_vars["B"]
+        K_d = K_init * ss_vars["K_d"] / ss_vars["K"]
+        K_g = np.ones_like(K_init) * ss_vars["K_g"]
+        K_vec_init = (
+            np.ones((p.T + p.S, p.M))
+            * ss_vars["K_m"].reshape(1, p.M)
+            * np.tile((K_init / ss_vars["K"]).reshape(p.T + p.S, 1), (1, p.M))
+        )
+    else:
+        K_init = utils.get_initial_path(
+            K0_baseline, ss_vars["K"], p, "quadratic"
+        )
+        K_d = utils.get_initial_path(
+            Kd0_baseline, ss_vars["K_d"], p, "quadratic"
+        )
+        K_g = utils.get_initial_path(
+            Kg0_baseline, ss_vars["K_g"], p, "quadratic"
+        )
+        K_vec_init = utils.get_initial_path(
+            Km0_baseline.reshape(1, p.M),
+            ss_vars["K_m"].reshape(1, p.M),
+            p,
+            "quadratic",
+        )
     K = K_init
-    K_d = K_init * ss_vars["K_d"] / ss_vars["K"]
-    K_f = K_init * ss_vars["K_f"] / ss_vars["K"]
+    K_f = K_init - K_d
     L = L_init
     B = B_init
-    K_g = np.ones_like(K) * ss_vars["K_g"]
-    Y = np.zeros_like(K)
-    Y[: p.T] = firm.get_Y(K[: p.T], K_g[: p.T], L[: p.T], p, "TPI")
-    Y[p.T :] = ss_vars["Y"]
-    # path for industry specific aggregates
-    K_vec_init = np.ones((p.T + p.S, p.M)) * ss_vars["K_m"].reshape(1, p.M)
+    # Get initial paths for industry specific labor
     L_vec_init = np.ones((p.T + p.S, p.M)) * ss_vars["L_m"].reshape(1, p.M)
+    # Get the initial paths for industry specific output
     Y_vec_init = np.ones((p.T + p.S, p.M)) * ss_vars["Y_m"].reshape(1, p.M)
+    for m in range(p.M):
+        Y_vec_init[: p.T, m] = firm.get_Y(
+            K_vec_init[: p.T, m], K_g[: p.T], L_vec_init[: p.T, m], p, "TPI", m
+        )
     # compute w
     w = np.ones_like(K) * ss_vars["w"]
     # compute goods prices
@@ -859,6 +988,13 @@ def run_TPI(p, client=None):
     p_m = p_m / p_m[:, -1].reshape(
         p.T + p.S, 1
     )  # normalize prices by industry M
+    Y = (
+        (Y_vec_init * p_m)
+        .sum(axis=1)
+        .reshape(
+            p.T + p.S,
+        )
+    )
     p_i = (
         np.tile(p.io_matrix.reshape(1, p.I, p.M), (p.T + p.S, 1, 1))
         * np.tile(p_m.reshape(p.T + p.S, 1, p.M), (1, p.I, 1))
@@ -984,7 +1120,7 @@ def run_TPI(p, client=None):
     # Start transition path iteration (TPI)
     TPIiter = 0
     TPIdist = 10
-    euler_errors = np.zeros((p.T, 2 * p.S, p.J))
+    euler_errors = np.zeros((p.T + p.S, 2 * p.S, p.J))
     TPIdist_vec = np.zeros(p.maxiter)
     stall = None
     stall_reported = None
@@ -1042,7 +1178,7 @@ def run_TPI(p, client=None):
         p_tilde = aggr.get_ptilde(p_i[:, :], p.tau_c[:, :], p.alpha_c, "TPI")
 
         # Initialize Euler errors
-        euler_errors = np.zeros((p.T, 2 * p.S, p.J))
+        euler_errors = np.zeros((p.T + p.S, 2 * p.S, p.J))
         # Solve for household decisions
         results = []
         if client:
@@ -1903,8 +2039,6 @@ def run_TPI(p, client=None):
         np.any(np.absolute(eul_savings) >= p.mindist_TPI)
         or (np.any(np.absolute(eul_laborleisure) > p.mindist_TPI))
     ) and ENFORCE_SOLUTION_CHECKS:
-        raise RuntimeError(
-            "Transition path equlibrium not found " + "(eulers)"
-        )
+        raise RuntimeError(_euler_error_message(eul_savings, eul_laborleisure))
 
     return output
