@@ -234,16 +234,10 @@ def get_initial_SS_values(p):
         baseline_tpi = os.path.join(p.baseline_dir, "TPI", "TPI_vars.pkl")
         tpi_baseline_vars = utils.safe_read_pickle(baseline_tpi)
         D0_baseline = tpi_baseline_vars["D"][0]
-        K0_baseline = tpi_baseline_vars["K"][0]
-        Kd0_baseline = tpi_baseline_vars["K_d"][0]
         Kg0_baseline = tpi_baseline_vars["K_g"][0]
-        Km0_baseline = tpi_baseline_vars["K_m"][0, :]
     else:
         D0_baseline = None
-        K0_baseline = None
-        Kd0_baseline = None
         Kg0_baseline = None
-        Km0_baseline = None
 
     initial_values = (B0, b_sinit, b_splus1init, factor, initial_n)
     baseline_values = (
@@ -252,10 +246,7 @@ def get_initial_SS_values(p):
         Gbaseline,
         Ig_baseline,
         D0_baseline,
-        K0_baseline,
-        Kd0_baseline,
         Kg0_baseline,
-        Km0_baseline,
     )
 
     return initial_values, ss_vars, theta, baseline_values
@@ -910,10 +901,7 @@ def run_TPI(p, client=None):
         Gbaseline,
         Ig_baseline,
         D0_baseline,
-        K0_baseline,
-        Kd0_baseline,
         Kg0_baseline,
-        Km0_baseline,
     ) = baseline_values
 
     # Create time path of UBI household benefits and aggregate UBI outlays
@@ -938,34 +926,22 @@ def run_TPI(p, client=None):
     L_init = np.ones((p.T + p.S,)) * ss_vars["L"]
     B_init = utils.get_initial_path(B0, ss_vars["B"], p, "quadratic")
     L_init[: p.T] = aggr.get_L(n_mat[: p.T], p, "TPI")
-    # Get initial paths for aggregate capital. In the baseline, scale the
-    # steady-state capital stocks by the path of B; in a reform, start
-    # from the period-0 capital stocks of the baseline time path
-    if p.baseline:
-        K_init = B_init * ss_vars["K"] / ss_vars["B"]
-        K_d = K_init * ss_vars["K_d"] / ss_vars["K"]
-        K_g = np.ones_like(K_init) * ss_vars["K_g"]
-        K_vec_init = (
-            np.ones((p.T + p.S, p.M))
-            * ss_vars["K_m"].reshape(1, p.M)
-            * np.tile((K_init / ss_vars["K"]).reshape(p.T + p.S, 1), (1, p.M))
-        )
-    else:
-        K_init = utils.get_initial_path(
-            K0_baseline, ss_vars["K"], p, "quadratic"
-        )
-        K_d = utils.get_initial_path(
-            Kd0_baseline, ss_vars["K_d"], p, "quadratic"
-        )
-        K_g = utils.get_initial_path(
-            Kg0_baseline, ss_vars["K_g"], p, "quadratic"
-        )
-        K_vec_init = utils.get_initial_path(
-            Km0_baseline.reshape(1, p.M),
-            ss_vars["K_m"].reshape(1, p.M),
-            p,
-            "quadratic",
-        )
+    # Get initial paths for aggregate capital by scaling the steady-state
+    # capital stocks with the path of B. These paths only serve as guesses
+    # for the first iteration: inside the loop K, K_d, K_f, and K_m are
+    # recomputed from household wealth and K_g from the fiscal rule.
+    # Starting a reform instead from the period-0 capital stocks of the
+    # baseline time path was found to send the outer loop off on a
+    # divergent track in the multi-industry example, so the same guesses
+    # are used for baseline and reform runs.
+    K_init = B_init * ss_vars["K"] / ss_vars["B"]
+    K_d = K_init * ss_vars["K_d"] / ss_vars["K"]
+    K_g = np.ones_like(K_init) * ss_vars["K_g"]
+    K_vec_init = (
+        np.ones((p.T + p.S, p.M))
+        * ss_vars["K_m"].reshape(1, p.M)
+        * np.tile((K_init / ss_vars["K"]).reshape(p.T + p.S, 1), (1, p.M))
+    )
     K = K_init
     K_f = K_init - K_d
     L = L_init
