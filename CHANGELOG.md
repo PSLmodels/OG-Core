@@ -5,9 +5,10 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+## [0.22.0] - 2026-10-20
 
 ### Added
+- Adds two optional parameters for the initial distribution of household wealth on the transition path, `initial_hhwealth_dist` (an `S x J` matrix of shares of aggregate wealth, summing to one, that sets the shape of the initial distribution) and `initial_wealth_ratio` (the target ratio of initial aggregate household wealth to initial GDP, which sets its level). Both default to null, in which case `TPI` starts from the steady-state distribution of savings as before: `get_initial_SS_values` uses `initial_hhwealth_dist` for the shape only when it is not `None`, and `run_TPI` updates `B[0]` toward `initial_wealth_ratio * Y[0]` in each outer-loop iteration (rescaling the initial savings and refreshing `initial_values` for the inner loop) only when the ratio is not `None`. A reform run with either parameter set starts from the first-period wealth of the baseline transition path. `Specifications.compute_default_params` normalizes a null or cleared value of either parameter to `None` and checks the shape and sum of a supplied distribution. Documented in the calibration chapter (`SecCalibOther_InitW`) and the parameters list, with a test of `run_TPI` with both parameters set.
 - Adds `TPI._retry_root_if_failed`, which re-solves a household problem with the Levenberg-Marquardt method whenever the root finder selected by `FOC_root_method` stops short of a root, and keeps the result with the smaller maximum residual. The `hybr` method can return "not making good progress" after a handful of evaluations when started far from the solution, in which case the returned point is just the initial guess. The fallback is applied to the oldest household's problem (`firstdoughnutring`), the partial-lifetime problems of households alive at `t=0`, and the full-lifetime problems (`twist_doughnut`).
 - Adds `TPI._euler_error_message` so that a failed Euler-error check at the end of `run_TPI` reports the largest savings and labor FOC residuals and the (period, age, income group) at which each occurs, flagging households that were alive when the time path began.
 - `utils.get_initial_path` now accepts scalars and `1 x M` vectors as well as `S x J` arrays, returning paths of size `T+S`, `(T+S) x M`, or `(T+S) x S x J`. Optional `S` and `J` arguments declare the `S x J` layout for the ambiguous case `S=1, J=M`.
@@ -785,6 +786,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Any earlier versions of OG-USA can be found in the [`OG-Core`](https://github.com/PSLmodels/OG-Core) repository [release history](https://github.com/PSLmodels/OG-Core/releases) from [v.0.6.4](https://github.com/PSLmodels/OG-Core/releases/tag/v0.6.4) (Jul. 20, 2021) or earlier.
 
 
+[0.22.0]: https://github.com/PSLmodels/OG-Core/compare/v0.21.2...v0.22.0
 [0.21.2]: https://github.com/PSLmodels/OG-Core/compare/v0.21.1...v0.21.2
 [0.21.1]: https://github.com/PSLmodels/OG-Core/compare/v0.21.0...v0.21.1
 [0.21.0]: https://github.com/PSLmodels/OG-Core/compare/v0.20.4...v0.21.0
