@@ -103,6 +103,22 @@ _Valid Range:_ min = -0.02 and max = 0.15
 _Out-of-Range Action:_ error  
 
 
+####  `initial_hhwealth_dist`  
+_Description:_ Shape of the distribution of household wealth across ages and lifetime income groups in the initial period of the transition path.  
+_Notes:_ An S x J matrix proportional to the wealth held by a household of each age and lifetime income group at the start of the transition path, normalized so that its elements sum to one; it sets only the shape of the initial distribution, whose level is set so that aggregate household wealth matches its initial value. When null (the default), the shape is that of the steady-state distribution of savings. Should be calibrated from household wealth data by age and lifetime income group; shapes far from the steady state can leave the oldest cohorts without enough wealth to solve their remaining lifetimes.  
+_Value Type:_ float  
+_Valid Range:_ min = 0.0 and max = 1.0  
+_Out-of-Range Action:_ error  
+
+
+####  `initial_wealth_ratio`  
+_Description:_ Aggregate household wealth to GDP ratio in the initial period of the transition path.  
+_Notes:_ When null (the default), aggregate household wealth in the initial period is the level implied by the steady-state distribution of savings. Otherwise the time path solution sets initial aggregate household wealth to this ratio times initial GDP, scaling the initial distribution of wealth up or down. Should be calibrated from total household wealth over GDP in the model start year.  
+_Value Type:_ float  
+_Valid Range:_ min = 0.8 and max = 7.0  
+_Out-of-Range Action:_ error  
+
+
 ####  `eta_RM`  
 _Description:_ Matrix that allocates aggregate remittances across households.  
 _Notes:_ This SxJ matrix gives the fraction of total aggregate remittances going to each age s and ability type j.  
