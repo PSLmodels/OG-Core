@@ -135,6 +135,8 @@ In the following section, we detail a list of items to calibrate for a country a
 (SecCalibOther_InitW)=
 ### Initial distribution of capital $\Gamma_1$ and aggregate household wealth $B_1$
 
+  [The content in this section is just a placeholder and will need to be updated as the initial distribution of wealth is incorporated as an exogenous input parameter of the model.]
+
   One of the initial state parameters in the transition path equilibrium solution algorithm is the initial distribution of wealth held by households $\mathbf{\hat{\Gamma}}_1 \equiv \{b_{j,s,1}\}_{j=1,s=E+1}^{J,E+S}$. Note also that the initial value of aggregate household wealth $\hat{B}_1$ is a function of the initial distribution of capital $\mathbf{\hat{\Gamma}}_1$ and the pre-initial period population distribution $\{\hat{\omega}_{s,0}\}_{s=E+1}^{E+S}$ (see equation {eq}`EqStnrz_Bt`).
 
   ```{math}
@@ -152,20 +154,6 @@ In the following section, we detail a list of items to calibrate for a country a
   :label: EqInitHHwealth
     \mathbf{\hat{\Gamma}}_1\equiv \{\hat{b}_{j,s,1}\}_{j=1,s=E+1}^{J,E+S} = \texttt{initial_hhwealth_dist}\,\times\, \hat{B}_1
   ```
-
-  factors for which the default is a matrix of ones. This parameter object tells the model what factor of the steady-state distribution of household wealth is the initial distribution of household wealth.
-
-  ```{math}
-  :label: EqInitHHwealthDist
-    \begin{split}
-      &\mathbf{\hat{\Gamma}}_1 = \texttt{initial_wealth_factor_mat}\:\times\:\mathbf{\bar{\Gamma}} \\
-      &\Rightarrow\quad \hat{b}_{j,s,1} = \texttt{initial_wealth_factor_mat}_{s,j}\:\times\:\bar{b}_{j,s} \quad\forall j,s
-    \end{split}
-  ```
-
-  The default parameterization of `initial_wealth_factor_mat` = 1 for all $s$ and $j$ sets the initial distribution of household wealth equal to the steady-state distribution.
-
-  The other two parameters for calibrating the initial distribution of wealth are `use_initial_BY_ratio` and `initial_BY_ratio`. These are used if the modeler wants to shape the initial distribution of capital $\mathbf{\hat{\Gamma}}_1 \equiv \{b_{j,s,1}\}_{j=1,s=E+1}^{J,E+S}$ by targeting the ratio of initial aggregate household wealth $\hat{B}_1$ to GDP $\hat{Y}_1$. Because this is a ratio, the stationarized version is equal to the nonstationarized version.
 
   {numref}`TabWealthGDPcountries` shows the aggregate household wealth to GDP ratios in seven countries, with values ranging from 1.695 to 5.594. The range of valid values for the `initial_BY_ratio` parameter is 0.8 to 7.0.
 
@@ -213,10 +201,6 @@ In the following section, we detail a list of items to calibrate for a country a
     - 169.5%
     - 2022
   ```
-
-  If the modeler wants to calibrate the initial distribution of wealth $\mathbf{\hat{\Gamma}}_1$ to target the initial aggregate household wealth to GDP ration $\hat{B}_1/\hat{Y}_1$, he simply chooses the values for `initial_wealth_factor_mat`, which sets the shape of the initial distribution of wealth, then chooses `use_initial_BY_ratio=True` and sets a target value for `initial_BY_ratio`. The default value for `initial_BY_ratio` is the USA value of 5.594 from the table above. But this value is only used if `use_initial_BY_ratio=True`. Because the default value of `use_initial_BY_ratio=False`, the value of `initial_BY_ratio` is not used in this default case.
-
-  The reason we need the boolean flag parameter `use_initial_BY_ratio` is because the denominator $\hat{Y}_1$ of the wealth-to-GDP target is endogenous. We don't know the equilibrium value of GDP in the initial period. So in the `TPI.py` solution algorithm, we choose $\hat{B}_1$ in each iteration that sets the initial aggregate household wealth to GDP ratio equal to its target. This is done by shifting the initial distribution of household wealth $\mathbf{\hat{\Gamma}}_1$ up or down by a constant factor.
 
 
 <!--(SecCalibFootnotes)=
