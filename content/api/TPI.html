@@ -554,7 +554,7 @@ equilibrium values.</p>
 <blockquote>
 <div><ul class="simple">
 <li><dl class="simple">
-<dt>initial_values (tuple): initial period variable values,</dt><dd><p>(b_sinit, b_splus1init, factor, initial_b, initial_n)</p>
+<dt>initial_values (tuple): initial period variable values,</dt><dd><p>(B0, b_sinit, b_splus1init, factor, initial_n)</p>
 </dd>
 </dl>
 </li>
@@ -607,8 +607,7 @@ aggregates used in household problem
 <li><p><strong>TR</strong> (<em>Numpy array</em>) – lump sum transfer amount</p></li>
 <li><p><strong>theta</strong> (<em>Numpy array</em>) – retirement replacement rates, length J</p></li>
 <li><p><strong>initial_values</strong> (<em>tuple</em>) – initial period variable values,
-(b_sinit, b_splus1init, factor, initial_b, initial_n,
-D0_baseline)</p></li>
+(b_sinit, b_splus1init, factor, initial_n, D0_baseline)</p></li>
 <li><p><strong>ubi</strong> (<em>array_like</em>) – T+S x S x J array time series of UBI transfers in
 model units for each type-j age-s household in every period t</p></li>
 <li><p><strong>j</strong> (<em>int</em>) – index of ability type</p></li>

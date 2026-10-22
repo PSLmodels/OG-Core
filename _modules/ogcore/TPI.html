@@ -590,7 +590,7 @@
 <span class="sd">        (tuple): initial period and steady state values:</span>
 
 <span class="sd">            * initial_values (tuple): initial period variable values,</span>
-<span class="sd">                (b_sinit, b_splus1init, factor, initial_b, initial_n)</span>
+<span class="sd">                (B0, b_sinit, b_splus1init, factor, initial_n)</span>
 <span class="sd">            * ss_vars (dictionary): dictionary with steady state</span>
 <span class="sd">                solution results</span>
 <span class="sd">            * theta (Numpy array): steady-state retirement replacement</span>
@@ -604,7 +604,9 @@
     <span class="n">ss_baseline_vars</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">safe_read_pickle</span><span class="p">(</span><span class="n">baseline_ss</span><span class="p">)</span>
     <span class="n">factor</span> <span class="o">=</span> <span class="n">ss_baseline_vars</span><span class="p">[</span><span class="s2">"factor"</span><span class="p">]</span>
     <span class="n">B0</span> <span class="o">=</span> <span class="n">aggr</span><span class="o">.</span><span class="n">get_B</span><span class="p">(</span><span class="n">ss_baseline_vars</span><span class="p">[</span><span class="s2">"b_sp1"</span><span class="p">],</span> <span class="n">p</span><span class="p">,</span> <span class="s2">"SS"</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
-    <span class="n">initial_b</span> <span class="o">=</span> <span class="n">ss_baseline_vars</span><span class="p">[</span><span class="s2">"b_sp1"</span><span class="p">]</span> <span class="o">*</span> <span class="p">(</span><span class="n">ss_baseline_vars</span><span class="p">[</span><span class="s2">"B"</span><span class="p">]</span> <span class="o">/</span> <span class="n">B0</span><span class="p">)</span>
+    <span class="n">initial_b_sp1</span> <span class="o">=</span> <span class="n">ss_baseline_vars</span><span class="p">[</span><span class="s2">"b_sp1"</span><span class="p">]</span> <span class="o">*</span> <span class="p">(</span><span class="n">ss_baseline_vars</span><span class="p">[</span><span class="s2">"B"</span><span class="p">]</span> <span class="o">/</span> <span class="n">B0</span><span class="p">)</span>
+    <span class="n">initial_b</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">p</span><span class="o">.</span><span class="n">S</span><span class="p">,</span> <span class="n">p</span><span class="o">.</span><span class="n">J</span><span class="p">))</span>
+    <span class="n">initial_b</span><span class="p">[</span><span class="mi">1</span><span class="p">:,</span> <span class="p">:]</span> <span class="o">=</span> <span class="n">initial_b_sp1</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="p">:]</span>
     <span class="n">initial_n</span> <span class="o">=</span> <span class="n">ss_baseline_vars</span><span class="p">[</span><span class="s2">"n"</span><span class="p">]</span>
     <span class="c1"># The DB/NDC/PS pension formulas need the labor supplied before the</span>
     <span class="c1"># time path begins by cohorts alive at t=0. Use the model's initial</span>
@@ -644,12 +646,10 @@
     <span class="c1"># Get an initial distribution of wealth with the initial population</span>
     <span class="c1"># distribution. When small_open=True, the value of K0 is used as a</span>
     <span class="c1"># placeholder for first-period wealth</span>
-    <span class="n">B0</span> <span class="o">=</span> <span class="n">aggr</span><span class="o">.</span><span class="n">get_B</span><span class="p">(</span><span class="n">initial_b</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="s2">"SS"</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
+    <span class="n">B0</span> <span class="o">=</span> <span class="n">aggr</span><span class="o">.</span><span class="n">get_B</span><span class="p">(</span><span class="n">initial_b_sp1</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="s2">"SS"</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
 
-    <span class="n">b_sinit</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span>
-        <span class="nb">list</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">J</span><span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">p</span><span class="o">.</span><span class="n">J</span><span class="p">))</span> <span class="o">+</span> <span class="nb">list</span><span class="p">(</span><span class="n">initial_b</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
-    <span class="p">)</span>
-    <span class="n">b_splus1init</span> <span class="o">=</span> <span class="n">initial_b</span>
+    <span class="n">b_sinit</span> <span class="o">=</span> <span class="n">initial_b</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+    <span class="n">b_splus1init</span> <span class="o">=</span> <span class="n">initial_b_sp1</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
 
     <span class="c1"># Intial gov't debt and capital stock must match that in the baseline</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">p</span><span class="o">.</span><span class="n">baseline</span><span class="p">:</span>
@@ -662,7 +662,7 @@
         <span class="n">D0_baseline</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="n">Kg0_baseline</span> <span class="o">=</span> <span class="kc">None</span>
 
-    <span class="n">initial_values</span> <span class="o">=</span> <span class="p">(</span><span class="n">B0</span><span class="p">,</span> <span class="n">b_sinit</span><span class="p">,</span> <span class="n">b_splus1init</span><span class="p">,</span> <span class="n">factor</span><span class="p">,</span> <span class="n">initial_b</span><span class="p">,</span> <span class="n">initial_n</span><span class="p">)</span>
+    <span class="n">initial_values</span> <span class="o">=</span> <span class="p">(</span><span class="n">B0</span><span class="p">,</span> <span class="n">b_sinit</span><span class="p">,</span> <span class="n">b_splus1init</span><span class="p">,</span> <span class="n">factor</span><span class="p">,</span> <span class="n">initial_n</span><span class="p">)</span>
     <span class="n">baseline_values</span> <span class="o">=</span> <span class="p">(</span>
         <span class="n">Ybaseline</span><span class="p">,</span>
         <span class="n">TRbaseline</span><span class="p">,</span>
@@ -954,8 +954,7 @@
 <span class="sd">        TR (Numpy array): lump sum transfer amount</span>
 <span class="sd">        theta (Numpy array): retirement replacement rates, length J</span>
 <span class="sd">        initial_values (tuple): initial period variable values,</span>
-<span class="sd">            (b_sinit, b_splus1init, factor, initial_b, initial_n,</span>
-<span class="sd">            D0_baseline)</span>
+<span class="sd">            (b_sinit, b_splus1init, factor, initial_n, D0_baseline)</span>
 <span class="sd">        ubi (array_like): T+S x S x J array time series of UBI transfers in</span>
 <span class="sd">            model units for each type-j age-s household in every period t</span>
 <span class="sd">        j (int): index of ability type</span>
@@ -970,7 +969,7 @@
 <span class="sd">            * n_mat (Numpy array): labor supply amounts, size = TxS</span>
 
 <span class="sd">    """</span>
-    <span class="n">K0</span><span class="p">,</span> <span class="n">b_sinit</span><span class="p">,</span> <span class="n">b_splus1init</span><span class="p">,</span> <span class="n">factor</span><span class="p">,</span> <span class="n">initial_b</span><span class="p">,</span> <span class="n">initial_n</span> <span class="o">=</span> <span class="n">initial_values</span>
+    <span class="n">K0</span><span class="p">,</span> <span class="n">b_sinit</span><span class="p">,</span> <span class="n">b_splus1init</span><span class="p">,</span> <span class="n">factor</span><span class="p">,</span> <span class="n">initial_n</span> <span class="o">=</span> <span class="n">initial_values</span>
     <span class="n">guesses_b</span><span class="p">,</span> <span class="n">guesses_n</span> <span class="o">=</span> <span class="n">guesses</span>
     <span class="n">r_p</span><span class="p">,</span> <span class="n">r</span><span class="p">,</span> <span class="n">w</span><span class="p">,</span> <span class="n">p_m</span><span class="p">,</span> <span class="n">BQ</span><span class="p">,</span> <span class="n">RM</span><span class="p">,</span> <span class="n">TR</span><span class="p">,</span> <span class="n">theta</span> <span class="o">=</span> <span class="n">outer_loop_vars</span>
 
@@ -1007,7 +1006,7 @@
             <span class="n">factor</span><span class="p">,</span>
             <span class="n">ubi</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">j</span><span class="p">],</span>
             <span class="n">j</span><span class="p">,</span>
-            <span class="n">initial_b</span><span class="p">,</span>
+            <span class="n">b_splus1init</span><span class="p">,</span>
             <span class="n">p</span><span class="p">,</span>
         <span class="p">),</span>
         <span class="n">method</span><span class="o">=</span><span class="n">p</span><span class="o">.</span><span class="n">FOC_root_method</span><span class="p">,</span>
@@ -1064,7 +1063,7 @@
             <span class="n">etr_params_to_use</span><span class="p">,</span>
             <span class="n">mtrx_params_to_use</span><span class="p">,</span>
             <span class="n">mtry_params_to_use</span><span class="p">,</span>
-            <span class="n">initial_b</span><span class="p">,</span>
+            <span class="n">b_splus1init</span><span class="p">,</span>
             <span class="n">p</span><span class="p">,</span>
         <span class="p">)</span>
         <span class="n">_tri_jac</span> <span class="o">=</span> <span class="n">_banded_jac_for</span><span class="p">(</span>
@@ -1143,7 +1142,7 @@
             <span class="n">etr_params_to_use</span><span class="p">,</span>
             <span class="n">mtrx_params_to_use</span><span class="p">,</span>
             <span class="n">mtry_params_to_use</span><span class="p">,</span>
-            <span class="n">initial_b</span><span class="p">,</span>
+            <span class="n">b_splus1init</span><span class="p">,</span>
             <span class="n">p</span><span class="p">,</span>
         <span class="p">)</span>
         <span class="n">_td_x0</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">b_guesses_to_use</span><span class="p">)</span> <span class="o">+</span> <span class="nb">list</span><span class="p">(</span><span class="n">n_guesses_to_use</span><span class="p">)</span>
@@ -1236,7 +1235,7 @@
     <span class="n">p</span><span class="o">.</span><span class="n">_jac_cache_scope</span> <span class="o">=</span> <span class="n">uuid</span><span class="o">.</span><span class="n">uuid4</span><span class="p">()</span><span class="o">.</span><span class="n">hex</span>
     <span class="c1"># unpack tuples of parameters</span>
     <span class="n">initial_values</span><span class="p">,</span> <span class="n">ss_vars</span><span class="p">,</span> <span class="n">theta</span><span class="p">,</span> <span class="n">baseline_values</span> <span class="o">=</span> <span class="n">get_initial_SS_values</span><span class="p">(</span><span class="n">p</span><span class="p">)</span>
-    <span class="n">B0</span><span class="p">,</span> <span class="n">b_sinit</span><span class="p">,</span> <span class="n">b_splus1init</span><span class="p">,</span> <span class="n">factor</span><span class="p">,</span> <span class="n">initial_b</span><span class="p">,</span> <span class="n">initial_n</span> <span class="o">=</span> <span class="n">initial_values</span>
+    <span class="n">B0</span><span class="p">,</span> <span class="n">b_sinit</span><span class="p">,</span> <span class="n">b_splus1init</span><span class="p">,</span> <span class="n">factor</span><span class="p">,</span> <span class="n">initial_n</span> <span class="o">=</span> <span class="n">initial_values</span>
     <span class="p">(</span>
         <span class="n">Ybaseline</span><span class="p">,</span>
         <span class="n">TRbaseline</span><span class="p">,</span>
@@ -1256,7 +1255,9 @@
 
     <span class="c1"># Initialize guesses at time paths</span>
     <span class="c1"># Make array of initial guesses for labor supply and savings</span>
-    <span class="n">guesses_b</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">get_initial_path</span><span class="p">(</span><span class="n">initial_b</span><span class="p">,</span> <span class="n">ss_vars</span><span class="p">[</span><span class="s2">"b_sp1"</span><span class="p">],</span> <span class="n">p</span><span class="p">,</span> <span class="s2">"ratio"</span><span class="p">)</span>
+    <span class="n">guesses_b</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">get_initial_path</span><span class="p">(</span>
+        <span class="n">b_splus1init</span><span class="p">,</span> <span class="n">ss_vars</span><span class="p">[</span><span class="s2">"b_sp1"</span><span class="p">],</span> <span class="n">p</span><span class="p">,</span> <span class="s2">"ratio"</span>
+    <span class="p">)</span>
     <span class="n">guesses_n</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">get_initial_path</span><span class="p">(</span><span class="n">initial_n</span><span class="p">,</span> <span class="n">ss_vars</span><span class="p">[</span><span class="s2">"n"</span><span class="p">],</span> <span class="n">p</span><span class="p">,</span> <span class="s2">"ratio"</span><span class="p">)</span>
     <span class="n">b_mat</span> <span class="o">=</span> <span class="n">guesses_b</span>
     <span class="n">n_mat</span> <span class="o">=</span> <span class="n">guesses_n</span>
@@ -1390,7 +1391,7 @@
     <span class="p">)</span>
 
     <span class="c1"># Initialize bequests</span>
-    <span class="n">BQ0</span> <span class="o">=</span> <span class="n">aggr</span><span class="o">.</span><span class="n">get_BQ</span><span class="p">(</span><span class="n">r_p</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">initial_b</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="s2">"SS"</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
+    <span class="n">BQ0</span> <span class="o">=</span> <span class="n">aggr</span><span class="o">.</span><span class="n">get_BQ</span><span class="p">(</span><span class="n">r_p</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">b_splus1init</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="s2">"SS"</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">p</span><span class="o">.</span><span class="n">use_zeta</span><span class="p">:</span>
         <span class="n">BQ</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">p</span><span class="o">.</span><span class="n">T</span> <span class="o">+</span> <span class="n">p</span><span class="o">.</span><span class="n">S</span><span class="p">,</span> <span class="n">p</span><span class="o">.</span><span class="n">J</span><span class="p">))</span>
         <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">J</span><span class="p">):</span>
@@ -1542,7 +1543,7 @@
             <span class="n">euler_errors</span><span class="p">[:,</span> <span class="p">:,</span> <span class="n">j</span><span class="p">],</span> <span class="n">b_mat</span><span class="p">[:,</span> <span class="p">:,</span> <span class="n">j</span><span class="p">],</span> <span class="n">n_mat</span><span class="p">[:,</span> <span class="p">:,</span> <span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="n">result</span>
 
         <span class="n">bmat_s</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">p</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="n">p</span><span class="o">.</span><span class="n">S</span><span class="p">,</span> <span class="n">p</span><span class="o">.</span><span class="n">J</span><span class="p">))</span>
-        <span class="n">bmat_s</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">:,</span> <span class="p">:]</span> <span class="o">=</span> <span class="n">initial_b</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="p">:]</span>
+        <span class="n">bmat_s</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">:,</span> <span class="p">:]</span> <span class="o">=</span> <span class="n">b_splus1init</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="p">:]</span>
         <span class="n">bmat_s</span><span class="p">[</span><span class="mi">1</span><span class="p">:,</span> <span class="mi">1</span><span class="p">:,</span> <span class="p">:]</span> <span class="o">=</span> <span class="n">b_mat</span><span class="p">[:</span> <span class="n">p</span><span class="o">.</span><span class="n">T</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="p">:]</span>
         <span class="n">bmat_splus1</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">p</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="n">p</span><span class="o">.</span><span class="n">S</span><span class="p">,</span> <span class="n">p</span><span class="o">.</span><span class="n">J</span><span class="p">))</span>
         <span class="n">bmat_splus1</span><span class="p">[:,</span> <span class="p">:,</span> <span class="p">:]</span> <span class="o">=</span> <span class="n">b_mat</span><span class="p">[:</span> <span class="n">p</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="p">:,</span> <span class="p">:]</span>
@@ -1832,7 +1833,7 @@
         <span class="p">)</span>  <span class="c1"># normalize prices by industry M</span>
 
         <span class="n">b_mat_shift</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
-            <span class="n">np</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">initial_b</span><span class="p">,</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">p</span><span class="o">.</span><span class="n">S</span><span class="p">,</span> <span class="n">p</span><span class="o">.</span><span class="n">J</span><span class="p">)),</span>
+            <span class="n">np</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">b_splus1init</span><span class="p">,</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">p</span><span class="o">.</span><span class="n">S</span><span class="p">,</span> <span class="n">p</span><span class="o">.</span><span class="n">J</span><span class="p">)),</span>
             <span class="n">b_mat</span><span class="p">[:</span> <span class="n">p</span><span class="o">.</span><span class="n">T</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="p">:,</span> <span class="p">:],</span>
             <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
         <span class="p">)</span>
