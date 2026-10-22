@@ -498,14 +498,12 @@ def _params_to_array(nested, tax_func_type):
 
 def inner_loop(guesses, outer_loop_vars, initial_values, ubi, j, ind, p):
     """
-    Given path of economic aggregates and factor prices, solves
-    household problem.  This has been termed the inner-loop (in
-    contrast to the outer fixed point loop that solves for GE factor
-    prices and economic aggregates).
+    Given path of economic aggregates and factor prices, solves household
+    problem. This has been termed the inner-loop (in contrast to the outer
+    fixed point loop that solves for GE factor prices and economic aggregates).
 
     Args:
-        guesses (tuple): initial guesses for b and n, (guesses_b,
-            guesses_n)
+        guesses (tuple): initial guesses for b and n, (guesses_b, guesses_n)
         outer_loop_vars (tuple): values for factor prices and economic
             aggregates used in household problem
             (r_p, r, w, p_m, BQ, RM, TR, theta)
@@ -517,7 +515,7 @@ def inner_loop(guesses, outer_loop_vars, initial_values, ubi, j, ind, p):
         TR (Numpy array): lump sum transfer amount
         theta (Numpy array): retirement replacement rates, length J
         initial_values (tuple): initial period variable values,
-            (K0, b_splus1init, factor, initial_n)
+            (B0, b_splus1init, factor, initial_n)
         ubi (array_like): T+S x S x J array time series of UBI transfers in
             model units for each type-j age-s household in every period t
         j (int): index of ability type
@@ -532,7 +530,7 @@ def inner_loop(guesses, outer_loop_vars, initial_values, ubi, j, ind, p):
             * n_mat (Numpy array): labor supply amounts, size = TxS
 
     """
-    K0, b_splus1init, factor, initial_n = initial_values
+    B0, b_splus1init, factor, initial_n = initial_values
     guesses_b, guesses_n = guesses
     r_p, r, w, p_m, BQ, RM, TR, theta = outer_loop_vars
 
