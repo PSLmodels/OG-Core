@@ -16,6 +16,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fixes a formatting issues in `output_tables.py`, `aggregates.py`, and `utils.py` that caused a warning in the documentation build.
 - Changes directory path names in `run_ogcore_example.py` and `multi_industry_example.py` and adds the necessary `c_min` specification in `multi_industry_example.py` to make it run without errors.
 - Fixes equation in `stationarization.md`.
+- Updates the `uv.lock` file.
 
 
 ## [0.21.2] - 2026-10-14
