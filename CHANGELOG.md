@@ -5,6 +5,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Updated
+- Renames the initial-period wealth objects in `TPI.py` to make the age timing explicit. In `get_initial_SS_values`, the baseline steady-state savings rescaled to the period-0 population are now `initial_b_sp1` (savings chosen at age `s`, held at `s+1`), and `initial_b` is the corresponding `S x J` array of wealth held at age `s`, with zeros in the first row. `b_sinit` and `b_splus1init` are copies of these two arrays, as before. This is a naming change only; the values of `B0`, `b_sinit`, and `b_splus1init` are unchanged.
+- Removes the redundant `initial_b` element (identical to `b_splus1init`) from the `initial_values` tuple returned by `TPI.get_initial_SS_values` and unpacked in `TPI.inner_loop` and `TPI.run_TPI`. The tuple is now `(B0, b_sinit, b_splus1init, factor, initial_n)`. All downstream uses in `inner_loop` (the arguments to `firstdoughnutring` and `twist_doughnut`) and in `run_TPI` (the initial guess for the savings path, `BQ0`, `bmat_s` in period 0, and `b_mat_shift`) now use `b_splus1init`.
+- Updates `test_get_initial_SS_values`, `test_inner_loop`, and `test_inner_loop_sparse_FOC_jac` in `test_TPI.py` to drop the stale `initial_b` element from the pickled `initial_values` tuples, so that the existing test data files do not need to be regenerated.
+
 ## [0.21.2] - 2026-10-14
 
 ### Fixed
