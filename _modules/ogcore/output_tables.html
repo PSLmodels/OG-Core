@@ -457,11 +457,12 @@
 <span class="sd">        var_list (list): names of variable to use in table</span>
 <span class="sd">        output_type (string): type of plot, can be:</span>
 
-<span class="sd">            * 'pct_diff': plots percentage difference between baseline</span>
-<span class="sd">              and reform ((reform-base)/base)</span>
+<span class="sd">            * 'pct_diff': plots percentage difference between baseline and</span>
+<span class="sd">              reform ((reform-base)/base)</span>
 <span class="sd">            * 'diff': plots difference between baseline and reform</span>
 <span class="sd">              (reform-base)</span>
 <span class="sd">            * 'levels': variables in model units</span>
+
 <span class="sd">        stationarized (bool): whether used stationarized variables (False only</span>
 <span class="sd">            affects pct_diff right now)</span>
 <span class="sd">        num_years (integer): number of years to include in table</span>
@@ -1119,7 +1120,9 @@
 <span class="sd">        table (various): table in DataFrame or string format or `None`</span>
 <span class="sd">            if saved to disk</span>
 
-<span class="sd">    .. note:: The decomposition is the following:</span>
+<span class="sd">    .. note::</span>
+
+<span class="sd">        The decomposition is the following:</span>
 
 <span class="sd">        1. Simulate the baseline and reform in OG-Core. Save the</span>
 <span class="sd">           resulting series of tax revenues. Call these series for the</span>
