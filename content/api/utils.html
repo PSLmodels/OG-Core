@@ -876,9 +876,9 @@ zipped_file = ZipFile object, opened zipfile</p>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="ogcore.utils.get_initial_path">
-<span class="sig-prename descclassname"><span class="pre">ogcore.utils.</span></span><span class="sig-name descname"><span class="pre">get_initial_path</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">xT</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">shape</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogcore/utils.html#get_initial_path"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogcore.utils.get_initial_path" title="Link to this definition">#</a></dt>
-<dd><p>This function generates a path from point x1 to point xT such that
-that the path x is a linear or quadratic function of time t.</p>
+<span class="sig-prename descclassname"><span class="pre">ogcore.utils.</span></span><span class="sig-name descname"><span class="pre">get_initial_path</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">xT</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">shape</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">S</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">J</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ogcore/utils.html#get_initial_path"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogcore.utils.get_initial_path" title="Link to this definition">#</a></dt>
+<dd><p>This function generates a path from point x1 to point xT such that the path
+x is a linear or quadratic function of time t.</p>
 <blockquote>
 <div><ul class="simple">
 <li><p>linear:    <cite>x = d*t + e</cite></p></li>
@@ -888,15 +888,30 @@ that the path x is a linear or quadratic function of time t.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>x1</strong> (<em>scalar</em>) – initial value of the function x(t) at t=0</p></li>
-<li><p><strong>xT</strong> (<em>scalar</em>) – value of the function x(t) at t=T-1</p></li>
-<li><p><strong>T</strong> (<em>int</em>) – number of periods of the path, must be &gt;= 3</p></li>
+<li><p><strong>x1</strong> (<em>scalar</em><em> or </em><em>array_like</em>) – initial value of the function x(t) at
+t=0, either a scalar, a 1xM array, or an SxJ array</p></li>
+<li><p><strong>xT</strong> (<em>scalar</em><em> or </em><em>array_like</em>) – value of the function x(t) at t=T-1,
+same shape as x1</p></li>
+<li><p><strong>p</strong> (<em>OG-Core Specifications object</em>) – model parameters, T must
+be &gt;= 3</p></li>
 <li><p><strong>shape</strong> (<em>str</em>) – shape of guess for time path, “linear”, “ratio”,
 or “quadratic”</p></li>
+<li><p><strong>S</strong> (<em>int</em><em> or </em><em>None</em>) – number of ages in x1 and xT. Passing S and J
+declares that x1 and xT are SxJ arrays, which resolves the
+case where an SxJ array has the same shape as a 1xM vector
+(S=1 and J=M). If None, the layout is inferred from the
+shape of x1 and xT.</p></li>
+<li><p><strong>J</strong> (<em>int</em><em> or </em><em>None</em>) – number of lifetime income groups in x1 and xT,
+passed together with S</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>guess of variable over the time path</p>
+<dd class="field-even"><p><dl class="simple">
+<dt>guess of variable over the time path, size</dt><dd><p>T+S if x1 and xT are scalars, (T+S)xM if they are 1xM, and
+(T+S)xSxJ if they are SxJ</p>
+</dd>
+</dl>
+</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>xpath (Numpy array)</p>

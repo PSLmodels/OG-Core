@@ -619,9 +619,14 @@ model units for each type-j age-s household in every period t</p></li>
 <dd class="field-even"><p><p>household solution results:</p>
 <blockquote>
 <div><ul class="simple">
-<li><p>euler_errors (Numpy array): errors from FOCs, size = Tx2S</p></li>
-<li><p>b_mat (Numpy array): savings amounts, size = TxS</p></li>
-<li><p>n_mat (Numpy array): labor supply amounts, size = TxS</p></li>
+<li><p>euler_errors (Numpy array): errors from FOCs, size =
+(T+S)x2S. Row t holds the period-t residuals by age: the
+savings FOCs in the first S columns and the labor FOCs in
+the last S, so that entry [t, s] (or [t, S+s]) lines up
+with b_mat[t, s] and n_mat[t, s]. This includes the
+partial-lifetime problems of the households alive at t=0.</p></li>
+<li><p>b_mat (Numpy array): savings amounts, size = (T+S)xS</p></li>
+<li><p>n_mat (Numpy array): labor supply amounts, size = (T+S)xS</p></li>
 </ul>
 </div></blockquote>
 </p>

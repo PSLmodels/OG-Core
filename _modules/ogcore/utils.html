@@ -758,23 +758,35 @@
 
 <div class="viewcode-block" id="get_initial_path">
 <a class="viewcode-back" href="../../content/api/utils.html#ogcore.utils.get_initial_path">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">get_initial_path</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">xT</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">shape</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">get_initial_path</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">xT</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">shape</span><span class="p">,</span> <span class="n">S</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">J</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">"""</span>
-<span class="sd">    This function generates a path from point x1 to point xT such that</span>
-<span class="sd">    that the path x is a linear or quadratic function of time t.</span>
+<span class="sd">    This function generates a path from point x1 to point xT such that the path</span>
+<span class="sd">    x is a linear or quadratic function of time t.</span>
 
 <span class="sd">        * linear:    `x = d*t + e`</span>
 <span class="sd">        * quadratic: `x = a*t^2 + b*t + c`</span>
 
 <span class="sd">    Args:</span>
-<span class="sd">        x1 (scalar): initial value of the function x(t) at t=0</span>
-<span class="sd">        xT (scalar): value of the function x(t) at t=T-1</span>
-<span class="sd">        T (int): number of periods of the path, must be &gt;= 3</span>
+<span class="sd">        x1 (scalar or array_like): initial value of the function x(t) at</span>
+<span class="sd">            t=0, either a scalar, a 1xM array, or an SxJ array</span>
+<span class="sd">        xT (scalar or array_like): value of the function x(t) at t=T-1,</span>
+<span class="sd">            same shape as x1</span>
+<span class="sd">        p (OG-Core Specifications object): model parameters, T must</span>
+<span class="sd">            be &gt;= 3</span>
 <span class="sd">        shape (str): shape of guess for time path, "linear", "ratio",</span>
 <span class="sd">            or "quadratic"</span>
+<span class="sd">        S (int or None): number of ages in x1 and xT. Passing S and J</span>
+<span class="sd">            declares that x1 and xT are SxJ arrays, which resolves the</span>
+<span class="sd">            case where an SxJ array has the same shape as a 1xM vector</span>
+<span class="sd">            (S=1 and J=M). If None, the layout is inferred from the</span>
+<span class="sd">            shape of x1 and xT.</span>
+<span class="sd">        J (int or None): number of lifetime income groups in x1 and xT,</span>
+<span class="sd">            passed together with S</span>
 
 <span class="sd">    Returns:</span>
-<span class="sd">        xpath (Numpy array): guess of variable over the time path</span>
+<span class="sd">        xpath (Numpy array): guess of variable over the time path, size</span>
+<span class="sd">            T+S if x1 and xT are scalars, (T+S)xM if they are 1xM, and</span>
+<span class="sd">            (T+S)xSxJ if they are SxJ</span>
 
 <span class="sd">    Notes:</span>
 <span class="sd">        The identifying assumptions for quadratic are the following:</span>
@@ -783,22 +795,34 @@
 <span class="sd">            3. the slope of the path at `t=T-1` is 0: `0 = 2*a*(T-1) + b`</span>
 
 <span class="sd">    """</span>
+    <span class="c1"># time runs along a new first axis in front of the per-period shape:</span>
+    <span class="c1"># () for scalars, (M,) for 1xM vectors, and (S, J) for SxJ arrays</span>
+    <span class="n">x1</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
+    <span class="n">xT</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">xT</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">S</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">)</span> <span class="o">!=</span> <span class="p">(</span><span class="n">J</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"S and J must be passed together or not at all"</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">S</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">x1</span><span class="o">.</span><span class="n">shape</span> <span class="o">!=</span> <span class="p">(</span><span class="n">S</span><span class="p">,</span> <span class="n">J</span><span class="p">)</span> <span class="ow">or</span> <span class="n">xT</span><span class="o">.</span><span class="n">shape</span> <span class="o">!=</span> <span class="p">(</span><span class="n">S</span><span class="p">,</span> <span class="n">J</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">"x1 and xT must have shape (S, J) = (</span><span class="si">{</span><span class="n">S</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="n">J</span><span class="si">}</span><span class="s2">); got "</span>
+                <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">x1</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s2"> and </span><span class="si">{</span><span class="n">xT</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s2">"</span>
+            <span class="p">)</span>
+    <span class="k">elif</span> <span class="n">x1</span><span class="o">.</span><span class="n">shape</span> <span class="o">==</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">p</span><span class="o">.</span><span class="n">M</span><span class="p">)</span> <span class="ow">and</span> <span class="n">xT</span><span class="o">.</span><span class="n">shape</span> <span class="o">==</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">p</span><span class="o">.</span><span class="n">M</span><span class="p">):</span>
+        <span class="n">x1</span> <span class="o">=</span> <span class="n">x1</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">M</span><span class="p">)</span>
+        <span class="n">xT</span> <span class="o">=</span> <span class="n">xT</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">M</span><span class="p">)</span>
+    <span class="n">time_shape</span> <span class="o">=</span> <span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">T</span><span class="p">,)</span> <span class="o">+</span> <span class="p">(</span><span class="mi">1</span><span class="p">,)</span> <span class="o">*</span> <span class="n">xT</span><span class="o">.</span><span class="n">ndim</span>
     <span class="k">if</span> <span class="n">shape</span> <span class="o">==</span> <span class="s2">"linear"</span><span class="p">:</span>
         <span class="n">xpath</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">xT</span><span class="p">,</span> <span class="n">p</span><span class="o">.</span><span class="n">T</span><span class="p">)</span>
     <span class="k">elif</span> <span class="n">shape</span> <span class="o">==</span> <span class="s2">"ratio"</span><span class="p">:</span>
-        <span class="n">domain</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">p</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="n">p</span><span class="o">.</span><span class="n">T</span><span class="p">)</span>
-        <span class="n">domain2</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">tile</span><span class="p">(</span><span class="n">domain</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">p</span><span class="o">.</span><span class="n">S</span><span class="p">,</span> <span class="n">p</span><span class="o">.</span><span class="n">J</span><span class="p">))</span>
-        <span class="n">xpath</span> <span class="o">=</span> <span class="p">(</span><span class="o">-</span><span class="mi">1</span> <span class="o">/</span> <span class="p">(</span><span class="n">domain2</span> <span class="o">+</span> <span class="mi">1</span><span class="p">))</span> <span class="o">*</span> <span class="p">(</span><span class="n">xT</span> <span class="o">-</span> <span class="n">x1</span><span class="p">)</span> <span class="o">+</span> <span class="n">xT</span>
+        <span class="n">domain</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">p</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="n">p</span><span class="o">.</span><span class="n">T</span><span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">time_shape</span><span class="p">)</span>
+        <span class="n">xpath</span> <span class="o">=</span> <span class="p">(</span><span class="o">-</span><span class="mi">1</span> <span class="o">/</span> <span class="p">(</span><span class="n">domain</span> <span class="o">+</span> <span class="mi">1</span><span class="p">))</span> <span class="o">*</span> <span class="p">(</span><span class="n">xT</span> <span class="o">-</span> <span class="n">x1</span><span class="p">)</span> <span class="o">+</span> <span class="n">xT</span>
     <span class="k">elif</span> <span class="n">shape</span> <span class="o">==</span> <span class="s2">"quadratic"</span><span class="p">:</span>
         <span class="n">cc</span> <span class="o">=</span> <span class="n">x1</span>
         <span class="n">bb</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">*</span> <span class="p">(</span><span class="n">xT</span> <span class="o">-</span> <span class="n">x1</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">T</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
         <span class="n">aa</span> <span class="o">=</span> <span class="p">(</span><span class="n">x1</span> <span class="o">-</span> <span class="n">xT</span><span class="p">)</span> <span class="o">/</span> <span class="p">((</span><span class="n">p</span><span class="o">.</span><span class="n">T</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span>
-        <span class="n">xpath</span> <span class="o">=</span> <span class="p">(</span>
-            <span class="n">aa</span> <span class="o">*</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">p</span><span class="o">.</span><span class="n">T</span><span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span>
-            <span class="o">+</span> <span class="p">(</span><span class="n">bb</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">p</span><span class="o">.</span><span class="n">T</span><span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
-            <span class="o">+</span> <span class="n">cc</span>
-        <span class="p">)</span>
-    <span class="n">ending_x_tail</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">tile</span><span class="p">(</span><span class="n">xT</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">p</span><span class="o">.</span><span class="n">S</span><span class="p">,</span> <span class="n">p</span><span class="o">.</span><span class="n">J</span><span class="p">),</span> <span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">S</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
+        <span class="n">t</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">p</span><span class="o">.</span><span class="n">T</span><span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">time_shape</span><span class="p">)</span>
+        <span class="n">xpath</span> <span class="o">=</span> <span class="n">aa</span> <span class="o">*</span> <span class="p">(</span><span class="n">t</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span> <span class="o">+</span> <span class="p">(</span><span class="n">bb</span> <span class="o">*</span> <span class="n">t</span><span class="p">)</span> <span class="o">+</span> <span class="n">cc</span>
+    <span class="n">ending_x_tail</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">tile</span><span class="p">(</span><span class="n">xT</span><span class="p">,</span> <span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">S</span><span class="p">,)</span> <span class="o">+</span> <span class="p">(</span><span class="mi">1</span><span class="p">,)</span> <span class="o">*</span> <span class="n">xT</span><span class="o">.</span><span class="n">ndim</span><span class="p">)</span>
     <span class="n">xpath_full</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">xpath</span><span class="p">,</span> <span class="n">ending_x_tail</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="n">xpath_full</span></div>
