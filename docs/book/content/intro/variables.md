@@ -382,13 +382,13 @@ _SS dimensions:_ scalar
 
 
 ####  `euler_savings`  
-_Description:_ Errors in household FOC for choice of savings  
+_Description:_ Errors in household FOC for choice of savings. Along the time path, entry `[t, s, j]` is the residual for the age-`s` household of income group `j` in period `t`, including the households already alive when the time path begins  
 _TPI dimensions:_ TxSxJ  
 _SS dimensions:_ SxJ  
 
 
 ####  `euler_laborleisure`  
-_Description:_ Errors in household FOC for choice of labor  
+_Description:_ Errors in household FOC for choice of labor. Along the time path, entry `[t, s, j]` is the residual for the age-`s` household of income group `j` in period `t`, including the households already alive when the time path begins  
 _TPI dimensions:_ TxSxJ  
 _SS dimensions:_ SxJ  
 
