@@ -33,8 +33,9 @@ def main():
 
     # Directories to save data
     CUR_DIR = os.path.dirname(os.path.realpath(__file__))
-    base_dir = os.path.join(CUR_DIR, "MultiIndustryExample", BASELINE_DIR)
-    reform_dir = os.path.join(CUR_DIR, "MultiIndustryExample", REFORM_DIR)
+    save_dir = os.path.join(CUR_DIR, "MultiIndustryExample")
+    base_dir = os.path.join(save_dir, BASELINE_DIR)
+    reform_dir = os.path.join(save_dir, REFORM_DIR)
 
     # Set some OG model parameters
     # See default_parameters.json for more description of these parameters
@@ -48,7 +49,7 @@ def main():
     alpha_G[3:6] = 0.05 - 0.005
     alpha_G[6:] = 0.05
     # Set start year for baseline and reform.
-    START_YEAR = 2023
+    START_YEAR = 2026
     # Also adjust the Frisch elasticity, the start year, the
     # effective corporate income tax rate, and the SS debt-to-GDP ratio
     og_spec = {
@@ -61,7 +62,8 @@ def main():
         "gamma": [0.3, 0.35, 0.4],
         "gamma_g": [0.1, 0.05, 0.15],
         "alpha_c": [0.2, 0.4, 0.4],
-        "initial_guess_r_SS": 0.11,
+        "c_min": [0.0, 0.0, 0.0],
+        "initial_guess_r_SS": 0.115,
         "initial_guess_TR_SS": 0.07,
         "alpha_I": [0.01],
         "initial_Kg_ratio": 0.01,
@@ -131,9 +133,7 @@ def main():
     )
 
     # create plots of output
-    op.plot_all(
-        base_dir, reform_dir, os.path.join(CUR_DIR, "run_example_plots")
-    )
+    op.plot_all(base_dir, reform_dir, os.path.join(save_dir, "example_plots"))
 
     op.plot_industry_aggregates(
         base_tpi,
@@ -150,7 +150,7 @@ def main():
         ],
         plot_title="Percentage Changes in Output by Industry",
         path=os.path.join(
-            CUR_DIR, "run_example_plots", "industry_output_path.png"
+            save_dir, "example_plots", "industry_output_path.png"
         ),
     )
 
@@ -169,7 +169,7 @@ def main():
         ],
         plot_title="Percentage Changes in Labor Demand by Industry",
         path=os.path.join(
-            CUR_DIR, "run_example_plots", "industry_output_path.png"
+            save_dir, "example_plots", "industry_labor_path.png"
         ),
     )
 
@@ -188,14 +188,14 @@ def main():
         ],
         plot_title="Percentage Changes in Capital Stock by Industry",
         path=os.path.join(
-            CUR_DIR, "run_example_plots", "industry_output_path.png"
+            save_dir, "example_plots", "industry_capital_path.png"
         ),
     )
 
     print("total time was ", (time.time() - run_start_time))
     print("Percentage changes in aggregates:", ans)
     # save percentage change output to csv file
-    ans.to_csv(os.path.join(CUR_DIR, "ogcore_example_output.csv"))
+    ans.to_csv(os.path.join(save_dir, "example_output.csv"))
     client.close()
 
 
