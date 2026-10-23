@@ -129,6 +129,80 @@ In the following section, we detail a list of items to calibrate for a country a
 ```
 
 
+(SecCalibOther)=
+## Other parameters to calibrate
+
+(SecCalibOther_InitW)=
+### Initial distribution of wealth $\hat{\mathbf{\Gamma}}_1$ and aggregate household wealth $\hat{B}_1$
+
+  One of the initial state objects in the transition path equilibrium solution is the initial distribution of wealth held by households, $\hat{\mathbf{\Gamma}}_1 \equiv \{\hat{b}_{j,s,1}\}_{j=1,s=E+1}^{J,E+S}$. Initial aggregate household wealth $\hat{B}_1$ follows from this distribution and the pre-initial-period population distribution $\{\hat{\omega}_{s,0}\}_{s=E+1}^{E+S}$ (see equation {eq}`EqStnrz_Bt`).
+
+  ```{math}
+  :label: EqCalib_B1
+    \hat{B}_1 \equiv \frac{1}{1 + \tilde{g}_{n,1}}\sum_{s=E+2}^{E+S+1}\sum_{j=1}^{J}\Bigl(\hat{\omega}_{s-1,0}\lambda_j\hat{b}_{j,s,1} + i_s\hat{\omega}_{s,0}\lambda_j\hat{b}_{j,s,1}\Bigr) \quad\text{where}\quad \frac{1}{1 + \tilde{g}_{n,1}} = \frac{\tilde{N}_0}{\tilde{N}_1}
+  ```
+
+  By default, `OG-Core` starts the transition path from the steady-state distribution of savings: $\hat{b}_{j,s,1} = \bar{b}_{j,s}$ for all $j$ and $s$, scaled by a single factor so that $\hat{B}_1$, evaluated with the initial population distribution, equals steady-state aggregate household wealth $\bar{B}$. Two optional parameters let the modeler calibrate the shape and the level of the initial distribution of wealth separately. Both are null by default, in which case the default behavior above applies.
+
+  - `initial_hhwealth_dist` is an $S\times J$ matrix proportional to the wealth held in the initial period by a household of age $s$ and lifetime income group $j$, normalized so that its elements sum to one. It sets only the shape of $\hat{\mathbf{\Gamma}}_1$:
+
+    ```{math}
+    :label: EqCalib_InitHHwealthDist
+      \hat{b}_{j,s,1} = \kappa\:\texttt{initial\_hhwealth\_dist}_{s,j} \quad\forall j,s
+    ```
+
+    where the scalar $\kappa$ is set so that equation {eq}`EqCalib_B1` holds exactly with the initial population, that is, so that the aggregate of this distribution equals $\hat{B}_1$. When `initial_hhwealth_dist` is null, the shape of $\hat{\mathbf{\Gamma}}_1$ is that of the steady-state distribution $\bar{\mathbf{\Gamma}}$. The matrix should be calibrated from household wealth data by age and by lifetime income group (for example, a household wealth survey). Because the households alive in the initial period solve their remaining lifetimes from this wealth, a shape far from the steady state, for example one that leaves the oldest cohorts with no wealth, can make their problems infeasible; the shape should be checked against the Euler errors reported at the end of the transition path solution.
+
+  - `initial_wealth_ratio` is the target ratio of initial aggregate household wealth to initial GDP, $\alpha_{B,1} \equiv \hat{B}_1 / \hat{Y}_1$. Because it is a ratio of two stationarized variables, it equals the ratio of the nonstationarized ones. When `initial_wealth_ratio` is null, $\hat{B}_1 = \bar{B}$ as above. Otherwise, because $\hat{Y}_1$ is endogenous, the transition path solution in `TPI.py` updates $\hat{B}_1$ in each iteration of the outer loop toward $\alpha_{B,1}\hat{Y}_1$ (with the same damping as the other outer-loop variables) and scales the initial distribution of wealth $\hat{\mathbf{\Gamma}}_1$ up or down by a constant factor so that equation {eq}`EqCalib_B1` holds. The shape of $\hat{\mathbf{\Gamma}}_1$ is whatever `initial_hhwealth_dist` or its default implies; `initial_wealth_ratio` only sets its level. In a reform run, the initial distribution of wealth is read from the first period of the baseline transition path so that the baseline and reform start from the same wealth.
+
+  {numref}`TabWealthGDPcountries` shows aggregate household wealth to GDP ratios in seven countries, with values ranging from 1.695 to 5.702. The range of valid values for `initial_wealth_ratio` is 0.8 to 7.0.
+
+  ```{list-table} **Aggregate household wealth as a percent of GDP in select countries**
+  :header-rows: 1
+  :name: TabWealthGDPcountries
+  * - **Country**
+    - **Aggr. HH wealth ($B_1$)**
+    - **Nominal GDP ($Y_1$)**
+    - **Aggr. HH wealth/GDP**
+    - **Data year**
+  * - United States
+    - $185.65 T
+    - $32.56 T
+    - 570.2%
+    - 2026
+  * - United Kingdom
+    - $18.06 T
+    - $3.70 T
+    - 488.1%
+    - 2024
+  * - India
+    - $16.01 T
+    - $3.76 T
+    - 425.8%
+    - 2024
+  * - Indonesia
+    - $3.59 T
+    - $1.40 T
+    - 256.4%
+    - 2024
+  * - South Africa
+    - $1.03 T
+    - $0.401 T
+    - 256.2%
+    - 2024
+  * - Philippines
+    - $1.011 T
+    - $0.404 T
+    - 250.2%
+    - 2022
+  * - Ethiopia
+    - $0.300 T
+    - $0.177 T
+    - 169.5%
+    - 2022
+  ```
+
+
 (SecCalibFootnotes)=
 ## Footnotes
 

@@ -891,11 +891,42 @@ filename4 = os.path.join(
 )
 
 
+def _initial_hhwealth_dist():
+    """
+    An S x J initial distribution of wealth for tests of the initial
+    wealth parameters: the steady-state savings of the tests' baseline
+    fixture tilted toward older ages, normalized to sum to one. A shape
+    close to the steady state keeps the household problems of the
+    cohorts alive at t=0 well posed.
+    """
+    ss_vars = utils.safe_read_pickle(
+        os.path.join(CUR_PATH, "test_io_data", "OUTPUT2", "SS", "SS_vars.pkl")
+    )
+    b_sp1 = np.asarray(ss_vars[SS_VAR_NAME_MAPPING.get("b_sp1", "b_sp1")])
+    S = b_sp1.shape[0]
+    tilt = 1.0 + 0.3 * (np.arange(S) / (S - 1) - 0.5)
+    dist = b_sp1 * tilt.reshape(S, 1)
+    return (dist / dist.sum()).tolist()
+
+
+param_updates_iw = {
+    "initial_wealth_ratio": 3.0,
+    "initial_hhwealth_dist": _initial_hhwealth_dist(),
+}
+filename_iw = os.path.join(
+    CUR_PATH, "test_io_data", "run_TPI_outputs_baseline_initial_wealth.pkl"
+)
+
+
 @pytest.mark.local
 @pytest.mark.parametrize(
     "baseline,param_updates,filename",
-    [(True, {}, filename1), (False, {}, filename3)],
-    ids=["Baseline", "Reform"],
+    [
+        (True, {}, filename1),
+        (False, {}, filename3),
+        (True, param_updates_iw, filename_iw),
+    ],
+    ids=["Baseline", "Reform", "Baseline, initial wealth parameters"],
 )
 def test_run_TPI(baseline, param_updates, filename, tmpdir, dask_client):
     """
