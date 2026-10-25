@@ -74,6 +74,46 @@ _Valid Range:_ min = 0.0 and max = 9e+99
 _Out-of-Range Action:_ error  
 
 
+####  `nz`  
+_Description:_ Number of states of the idiosyncratic productivity shock z.  
+_Notes:_ With one state (the default) there are no idiosyncratic shocks and z = 1. More than one state requires household_solver = 'egm'.  
+_Value Type:_ int  
+_Valid Range:_ min = 1 and max = 25  
+_Out-of-Range Action:_ error  
+
+
+####  `z_persistence`  
+_Description:_ Autocorrelation of log idiosyncratic productivity per model period.  
+_Notes:_ Log productivity follows an AR(1), discretized by the Rouwenhorst method into nz states. Used only when nz > 1 and z_grid is not given.  
+_Value Type:_ float  
+_Valid Range:_ min = 0.0 and max = 0.999  
+_Out-of-Range Action:_ error  
+
+
+####  `z_innovation_sd`  
+_Description:_ Standard deviation of the innovation to log idiosyncratic productivity per model period.  
+_Notes:_ Used only when nz > 1 and z_grid is not given.  
+_Value Type:_ float  
+_Valid Range:_ min = 0.0 and max = 2.0  
+_Out-of-Range Action:_ error  
+
+
+####  `z_grid`  
+_Description:_ Levels of the idiosyncratic productivity shock z, which multiplies the deterministic ability e in labor income.  
+_Notes:_ A vector of nz positive levels, given together with z_trans. If empty (the default), the levels come from the Rouwenhorst discretization of the AR(1) given by z_persistence and z_innovation_sd, scaled so that the mean of z under the stationary distribution is one.  
+_Value Type:_ float  
+_Valid Range:_ min = 0.0 and max = 100.0  
+_Out-of-Range Action:_ error  
+
+
+####  `z_trans`  
+_Description:_ Markov transition matrix of the idiosyncratic productivity shock z.  
+_Notes:_ An nz x nz matrix whose entry [i, k] is the probability of moving from z_grid[i] to z_grid[k], given together with z_grid. If empty (the default), it comes from the Rouwenhorst discretization. Newborns draw z from its stationary distribution.  
+_Value Type:_ float  
+_Valid Range:_ min = 0.0 and max = 1.0  
+_Out-of-Range Action:_ error  
+
+
 ####  `ltilde`  
 _Description:_ Total time endowment of household.  
 _Notes:_ Can be normalized to 1.0 without loss of generality.  
@@ -966,6 +1006,37 @@ _Description:_ Root finding algorithm for solving household first order conditio
 _Notes:_ Uses scipy.optimize.root, please see scipy documentation for description of methods. Note that some methods may require more arguments than are in the function calls in SS.py and TPI.py and will therefore break without modifications of the source code.  
 _Value Type:_ str  
 _Valid Choices:_['hybr', 'lm', 'broyden1', 'broyden2', 'anderson', 'linearmixing', 'diagbroyden', 'excitingmixing', 'krylov', 'df-sane']  
+
+
+####  `household_solver`  
+_Description:_ Method used to solve the household problem.  
+_Notes:_ 'root' solves the first order conditions of each lifetime income group with scipy.optimize.root (see FOC_root_method) and does not allow idiosyncratic shocks. 'egm' solves the household problem with idiosyncratic productivity shocks on an asset grid by the endogenous grid method, and the distribution of households over assets and shocks by Young's method (household_stoch.py).  
+_Value Type:_ str  
+_Valid Choices:_['root', 'egm']  
+
+
+####  `nb`  
+_Description:_ Number of points in the asset grid of each lifetime income group.  
+_Notes:_ Used when household_solver = 'egm'.  
+_Value Type:_ int  
+_Valid Range:_ min = 10 and max = 2000  
+_Out-of-Range Action:_ error  
+
+
+####  `b_grid_curvature`  
+_Description:_ Curvature of the household asset grid.  
+_Notes:_ Grid points are b_max x^curvature for x evenly spaced on [0, 1], so larger values put more points near zero assets. Used when household_solver = 'egm'.  
+_Value Type:_ float  
+_Valid Range:_ min = 1.0 and max = 10.0  
+_Out-of-Range Action:_ error  
+
+
+####  `b_grid_margin`  
+_Description:_ Top of each household asset grid as a multiple of the highest savings chosen where the distribution has mass.  
+_Notes:_ The top of each lifetime income group's grid is resized until it is close to this multiple. Used when household_solver = 'egm'.  
+_Value Type:_ float  
+_Valid Range:_ min = 1.0 and max = 5.0  
+_Out-of-Range Action:_ error  
 
 
 ####  `maxiter`  

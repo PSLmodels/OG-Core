@@ -3,7 +3,7 @@ import numpy as np
 import scipy.interpolate as si
 import paramtools
 import ogcore
-from ogcore import elliptical_u_est
+from ogcore import elliptical_u_est, household_stoch
 from ogcore.utils import (
     rate_conversion,
     extrapolate_array,
@@ -388,6 +388,26 @@ class Specifications(paramtools.Parameters):
 
         # Create time series of stationarized UBI transfers
         self.ubi_nom_array = self.get_ubi_nom_objs()
+
+        # Idiosyncratic productivity shocks: z_grid and z_trans as given,
+        # or the Rouwenhorst discretization of the AR(1) if they are
+        # empty. The inputs are read with to_array because z_grid and
+        # z_trans are replaced here by the process actually used.
+        self.nz = int(self.nz)
+        self.z_grid, self.z_trans, self.z_dist0 = (
+            household_stoch.shock_process(
+                self.nz,
+                self.z_persistence,
+                self.z_innovation_sd,
+                self.to_array("z_grid"),
+                self.to_array("z_trans"),
+            )
+        )
+        if self.nz > 1 and self.household_solver != "egm":
+            raise ValueError(
+                "Idiosyncratic shocks (nz > 1) require "
+                + "household_solver = 'egm'."
+            )
 
     def get_ubi_nom_objs(self):
         """
