@@ -2,6 +2,7 @@
 import numpy as np
 import scipy.optimize as opt
 from ogcore import tax, pensions, household, firm, utils, fiscal
+from ogcore import household_stoch
 from ogcore import aggregates as aggr
 from ogcore.constants import SHOW_RUNTIME, DEV_FACTOR_LIST
 import os
@@ -264,11 +265,21 @@ def scatter_params(p, client):
     return scattered_p
 
 
-def inner_loop(outer_loop_vars, p, client, scattered_p=None):
+def inner_loop(outer_loop_vars, p, client, scattered_p=None, b_grid=None):
     """
     This function solves for the inner loop of the SS.  That is, given
     the guesses of the outer loop variables (r, w, TR, factor) this
     function solves the households' problems in the SS.
+
+    With ``p.household_solver = 'egm'``, households face idiosyncratic
+    productivity shocks and are solved on asset grids by
+    ``household_stoch.solve_all_households_ss``. Aggregates that are
+    linear in household choices take the means of savings, labor and
+    consumption within each age and type, with effective labor E[z n]
+    where labor income enters; tax liabilities, which are nonlinear,
+    are averaged over the distribution. Pension benefits come from each
+    type's mean effective earnings profile E[z n | s, j] rather than
+    from individual earnings histories.
 
     Args:
         outer_loop_vars (tuple): tuple of outer loop variables,
@@ -289,14 +300,20 @@ def inner_loop(outer_loop_vars, p, client, scattered_p=None):
         scattered_p (Dask Future or None): future pointing to the
             model parameters already scattered to the workers.  If
             None and a client is provided, `p` is scattered here.
+        b_grid (Numpy array or None): asset grids of each type, size =
+            J x nb, with ``household_solver = 'egm'``; if None, grids
+            are fitted to the distribution at these prices
 
     Returns:
         (tuple): results from household solution:
 
             * euler_errors (Numpy array): errors terms from FOCs,
-                size = 2SxJ
-            * bssmat (Numpy array): savings, size = SxJ
-            * nssmat (Numpy array): labor supply, size = SxJ
+                size = 2SxJ; with ``household_solver = 'egm'``, the
+                household solution (``household_stoch.HouseholdSolution``)
+            * bssmat (Numpy array): savings, size = SxJ (with
+                ``household_solver = 'egm'``, means by age and type)
+            * nssmat (Numpy array): labor supply, size = SxJ (with
+                ``household_solver = 'egm'``, means by age and type)
             * new_r (scalar): real interest rate on firm capital
             * new_r_gov (scalar): real interest rate on government debt
             * new_r_p (scalar): real interest rate on household
@@ -336,7 +353,13 @@ def inner_loop(outer_loop_vars, p, client, scattered_p=None):
     results = []
     # from dask.base import dask_sizeof
 
-    if client:
+    if p.household_solver == "egm":
+        # All types at once, with idiosyncratic shocks; pension benefits
+        # are consistent with each type's mean effective earnings
+        hh = household_stoch.solve_all_households_ss(
+            r_p, w, p_m, BQ, TR, factor, p, Y=Y, b_grid=b_grid
+        )
+    elif client:
         # Scatter the parameters only if they have not already been
         # scattered by the caller (run_SS scatters once per solve).
         if scattered_p is None:
@@ -422,11 +445,6 @@ def inner_loop(outer_loop_vars, p, client, scattered_p=None):
         bssmat[:, j] = result.x[: p.S]
         nssmat[:, j] = result.x[p.S :]
 
-    b_splus1 = bssmat
-    b_s = np.array(list(np.zeros(p.J).reshape(1, p.J)) + list(bssmat[:-1, :]))
-
-    theta = pensions.replacement_rate_vals(nssmat, w, factor, None, p)
-
     num_params = len(p.etr_params[-1][0])
     etr_params_3D = [
         [
@@ -436,43 +454,63 @@ def inner_loop(outer_loop_vars, p, client, scattered_p=None):
         for s in range(p.S)
     ]
 
-    net_tax = tax.net_taxes(
-        r_p,
-        w,
-        b_s,
-        nssmat,
-        bq,
-        factor,
-        tr,
-        ubi,
-        theta,
-        None,
-        None,
-        False,
-        "SS",
-        np.squeeze(p.e[-1, :, :]).reshape((p.S, p.J)),
-        etr_params_3D,
-        p,
-    )
-    c_s = household.get_cons(
-        r_p,
-        w,
-        p_tilde,
-        p_i,
-        b_s,
-        b_splus1,
-        nssmat,
-        bq,
-        rm,
-        net_tax,
-        np.squeeze(p.e[-1, :, :]).reshape((p.S, p.J)),
-        p.tau_c[-1, :],
-        p,
-    )
+    if p.household_solver == "egm":
+        euler_errors = hh
+        bssmat = hh.cell_means(hh.b_policy)
+        nssmat = hh.cell_means(hh.n_policy)
+        # effective labor E[z n] takes the place of n in labor income
+        n_eff = household_stoch.mean_effective_labor(
+            hh.dist, hh.n_policy, hh.z_grid
+        )
+        b_splus1 = bssmat
+        b_s = hh.cell_means(hh.b_s())
+        c_s = hh.cell_means(hh.c_policy)
+    else:
+        n_eff = nssmat
+        b_splus1 = bssmat
+        b_s = np.array(
+            list(np.zeros(p.J).reshape(1, p.J)) + list(bssmat[:-1, :])
+        )
+
+        theta = pensions.replacement_rate_vals(nssmat, w, factor, None, p)
+
+        net_tax = tax.net_taxes(
+            r_p,
+            w,
+            b_s,
+            nssmat,
+            bq,
+            factor,
+            tr,
+            ubi,
+            theta,
+            None,
+            None,
+            False,
+            "SS",
+            np.squeeze(p.e[-1, :, :]).reshape((p.S, p.J)),
+            etr_params_3D,
+            p,
+        )
+        c_s = household.get_cons(
+            r_p,
+            w,
+            p_tilde,
+            p_i,
+            b_s,
+            b_splus1,
+            nssmat,
+            bq,
+            rm,
+            net_tax,
+            np.squeeze(p.e[-1, :, :]).reshape((p.S, p.J)),
+            p.tau_c[-1, :],
+            p,
+        )
     c_i = household.get_ci(
         c_s, p_i, p_tilde, p.tau_c[-1, :], p.alpha_c, p.c_min
     )
-    L = aggr.get_L(nssmat, p, "SS")
+    L = aggr.get_L(n_eff, p, "SS")
     B = aggr.get_B(bssmat, p, "SS", False)
 
     # Find gov't debt
@@ -549,7 +587,7 @@ def inner_loop(outer_loop_vars, p, client, scattered_p=None):
     # (S, J) nssmat broadcasts into an (S, S) outer product, scaling the
     # income sum by S. p.e[-1, :, :] is already (S, J).
     average_income_model = (
-        (new_r_p * b_s + new_w * p.e[-1, :, :] * nssmat) * p.omega_SS
+        (new_r_p * b_s + new_w * p.e[-1, :, :] * n_eff) * p.omega_SS
     ).sum()
     if p.baseline:
         new_factor = p.mean_income_data / average_income_model
@@ -560,7 +598,7 @@ def inner_loop(outer_loop_vars, p, client, scattered_p=None):
     new_RM = aggr.get_RM(Y, p, "SS")
     new_rm = household.get_rm(new_RM, None, p, "SS")
     tr = household.get_tr(TR, None, p, "SS")
-    theta = pensions.replacement_rate_vals(nssmat, new_w, new_factor, None, p)
+    theta = pensions.replacement_rate_vals(n_eff, new_w, new_factor, None, p)
 
     # Find updated goods prices
     new_p_m = firm.get_pm(new_w, Y_vec, L_vec, p, "SS")
@@ -610,6 +648,13 @@ def inner_loop(outer_loop_vars, p, client, scattered_p=None):
         p.tau_c[-1, :],
         p,
     )
+    if p.household_solver == "egm":
+        # nonlinear in income and wealth: means over the distribution
+        hh_tax_liab = household_stoch.tax_cell_means(
+            hh, new_r_p, new_w, factor, p
+        )
+    else:
+        hh_tax_liab = {}
     (
         total_tax_revenue,
         _,
@@ -625,7 +670,7 @@ def inner_loop(outer_loop_vars, p, client, scattered_p=None):
         new_r_p,
         new_w,
         b_s,
-        nssmat,
+        n_eff,
         new_bq,
         c_i,
         Y_vec,
@@ -640,6 +685,7 @@ def inner_loop(outer_loop_vars, p, client, scattered_p=None):
         p,
         None,
         "SS",
+        **hh_tax_liab,
     )
     G = fiscal.get_G_ss(
         Y,
@@ -719,10 +765,17 @@ def SS_solver(
     client,
     fsolve_flag=False,
     scattered_p=None,
+    b_grid=None,
 ):
     """
     Solves for the steady state distribution of capital, labor, as well
     as w, r, TR and the scaling factor, using functional iteration.
+
+    With ``p.household_solver = 'egm'``, household variables by age and
+    type (``b_s``, ``n``, ``c``, ``etr``, ``hh_net_taxes``, ...) are
+    means over the distribution of households within each age and type,
+    and the output also holds the distribution, policies and grids and
+    inequality measures over the full distribution.
 
     Args:
         bmat (Numpy array): initial guess at savings, size = SxJ
@@ -740,6 +793,10 @@ def SS_solver(
         fsolve_flag (bool): flag for whether solution came from fsolve
         scattered_p (Dask Future or None): future pointing to the model
             parameters already scattered to the Dask workers
+        b_grid (Numpy array or None): asset grids of each type, size =
+            J x nb, with ``household_solver = 'egm'``; if None, grids
+            are fitted to the distribution at the first iteration and
+            kept
 
     Returns:
         output (dictionary): dictionary with steady state solution
@@ -797,7 +854,9 @@ def SS_solver(
             new_factor,
             new_BQ,
             average_income_model,
-        ) = inner_loop(outer_loop_vars, p, client, scattered_p)
+        ) = inner_loop(outer_loop_vars, p, client, scattered_p, b_grid)
+        if p.household_solver == "egm" and b_grid is None:
+            b_grid = euler_errors.b_grid
 
         # update guesses for next iteration
         bmat = utils.convex_combo(new_bmat, bmat, nu_ss)
@@ -858,9 +917,21 @@ def SS_solver(
         logger.info(f"Iteration: {iteration}  Distance: {dist}")
 
     # Generate the SS values of variables, including euler errors
-    bssmat_s = np.append(np.zeros((1, p.J)), bmat[:-1, :], axis=0)
-    bssmat_splus1 = bmat
-    nssmat = nmat
+    if p.household_solver == "egm":
+        # the household solution at the last guesses, and means by age
+        # and type
+        hh = euler_errors
+        bssmat_s = hh.cell_means(hh.b_s())
+        bssmat_splus1 = hh.cell_means(hh.b_policy)
+        nssmat = hh.cell_means(hh.n_policy)
+        n_eff = household_stoch.mean_effective_labor(
+            hh.dist, hh.n_policy, hh.z_grid
+        )
+    else:
+        bssmat_s = np.append(np.zeros((1, p.J)), bmat[:-1, :], axis=0)
+        bssmat_splus1 = bmat
+        nssmat = nmat
+        n_eff = nssmat
 
     rss = new_r
     wss = new_w
@@ -876,7 +947,7 @@ def SS_solver(
     Yss = new_Y
     I_g_ss = fiscal.get_I_g(Yss, Ig_baseline, p, "SS")
     K_g_ss = fiscal.get_K_g(0, I_g_ss, p, "SS")
-    Lss = aggr.get_L(nssmat, p, "SS")
+    Lss = aggr.get_L(n_eff, p, "SS")
     Nss = aggr.get_N(nssmat, p, "SS")
     Bss = aggr.get_B(bssmat_splus1, p, "SS", False)
     (
@@ -919,7 +990,7 @@ def SS_solver(
     trssmat = household.get_tr(TR_ss, None, p, "SS")
     rmssmat = household.get_rm(RM_ss, None, p, "SS")
     ubissmat = p.ubi_nom_array[-1, :, :] / factor_ss
-    theta = pensions.replacement_rate_vals(nssmat, wss, factor_ss, None, p)
+    theta = pensions.replacement_rate_vals(n_eff, wss, factor_ss, None, p)
 
     # Compute effective and marginal tax rates for all agents
     num_params = len(p.etr_params[-1][0])
@@ -957,53 +1028,63 @@ def SS_solver(
         np.reshape(p.income_tax_filer[-1, :], (1, p.J)),
         (p.S, 1),
     )
-    mtry_ss = tax.MTR_income(
-        r_p_ss,
-        wss,
-        bssmat_s,
-        nssmat,
-        factor,
-        True,
-        np.squeeze(p.e[-1, :, :]).reshape((p.S, p.J)),
-        etr_params_3D,
-        mtry_params_3D,
-        capital_noncompliance_rate_2D,
-        income_tax_filer_2D,
-        p,
-    )
-    mtrx_ss = tax.MTR_income(
-        r_p_ss,
-        wss,
-        bssmat_s,
-        nssmat,
-        factor,
-        False,
-        np.squeeze(p.e[-1, :, :]).reshape((p.S, p.J)),
-        etr_params_3D,
-        mtrx_params_3D,
-        labor_noncompliance_rate_2D,
-        income_tax_filer_2D,
-        p,
-    )
-    etr_ss = tax.ETR_income(
-        r_p_ss,
-        wss,
-        bssmat_s,
-        nssmat,
-        factor,
-        np.squeeze(p.e[-1, :, :]).reshape((p.S, p.J)),
-        etr_params_3D,
-        labor_noncompliance_rate_2D,
-        capital_noncompliance_rate_2D,
-        income_tax_filer_2D,
-        p,
-    )
+    if p.household_solver == "egm":
+        # tax rates and liabilities are nonlinear in income and wealth:
+        # means over the distribution
+        rates = household_stoch.tax_rate_cell_means(hh, r_p_ss, wss, factor, p)
+        mtry_ss, mtrx_ss, etr_ss = rates["mtry"], rates["mtrx"], rates["etr"]
+        hh_tax_liab = household_stoch.tax_cell_means(
+            hh, r_p_ss, wss, factor_ss, p
+        )
+    else:
+        mtry_ss = tax.MTR_income(
+            r_p_ss,
+            wss,
+            bssmat_s,
+            nssmat,
+            factor,
+            True,
+            np.squeeze(p.e[-1, :, :]).reshape((p.S, p.J)),
+            etr_params_3D,
+            mtry_params_3D,
+            capital_noncompliance_rate_2D,
+            income_tax_filer_2D,
+            p,
+        )
+        mtrx_ss = tax.MTR_income(
+            r_p_ss,
+            wss,
+            bssmat_s,
+            nssmat,
+            factor,
+            False,
+            np.squeeze(p.e[-1, :, :]).reshape((p.S, p.J)),
+            etr_params_3D,
+            mtrx_params_3D,
+            labor_noncompliance_rate_2D,
+            income_tax_filer_2D,
+            p,
+        )
+        etr_ss = tax.ETR_income(
+            r_p_ss,
+            wss,
+            bssmat_s,
+            nssmat,
+            factor,
+            np.squeeze(p.e[-1, :, :]).reshape((p.S, p.J)),
+            etr_params_3D,
+            labor_noncompliance_rate_2D,
+            capital_noncompliance_rate_2D,
+            income_tax_filer_2D,
+            p,
+        )
+        hh_tax_liab = {}
 
     taxss = tax.net_taxes(
         r_p_ss,
         wss,
         bssmat_s,
-        nssmat,
+        n_eff,
         bqssmat,
         factor_ss,
         trssmat,
@@ -1016,24 +1097,28 @@ def SS_solver(
         np.squeeze(p.e[-1, :, :]).reshape((p.S, p.J)),
         etr_params_3D,
         p,
+        **hh_tax_liab,
     )
-    income_tax_ss = tax.income_tax_liab(
-        r_p_ss,
-        wss,
-        bssmat_s,
-        nssmat,
-        factor_ss,
-        0,
-        None,
-        "SS",
-        np.squeeze(p.e[-1, :, :]).reshape((p.S, p.J)),
-        etr_params_3D,
-        p,
-    )
+    if p.household_solver == "egm":
+        income_tax_ss = hh_tax_liab["inc_pay_tax_liab"]
+    else:
+        income_tax_ss = tax.income_tax_liab(
+            r_p_ss,
+            wss,
+            bssmat_s,
+            nssmat,
+            factor_ss,
+            0,
+            None,
+            "SS",
+            np.squeeze(p.e[-1, :, :]).reshape((p.S, p.J)),
+            etr_params_3D,
+            p,
+        )
     pension_ss = pensions.pension_amount(
         r_p_ss,
         wss,
-        nssmat,
+        n_eff,
         1,
         theta,
         0,
@@ -1047,7 +1132,10 @@ def SS_solver(
     bq_tax_ss = tax.bequest_tax_liab(
         r_p_ss, bssmat_s, bqssmat, 0, None, "SS", p
     )
-    wealth_tax_ss = tax.wealth_tax_liab(r_p_ss, bssmat_s, 0, None, "SS", p)
+    if p.household_solver == "egm":
+        wealth_tax_ss = hh_tax_liab["w_tax_liab"]
+    else:
+        wealth_tax_ss = tax.wealth_tax_liab(r_p_ss, bssmat_s, 0, None, "SS", p)
     cssmat = household.get_cons(
         r_p_ss,
         wss,
@@ -1055,7 +1143,7 @@ def SS_solver(
         p_i_ss,
         bssmat_s,
         bssmat_splus1,
-        nssmat,
+        n_eff,
         bqssmat,
         rmssmat,
         taxss,
@@ -1073,11 +1161,9 @@ def SS_solver(
         "SS",
     )
     sales_tax_ss = tax.cons_tax_liab(c_i, p_i_ss, p, "SS")
-    yss_before_tax_mat = household.get_y(
-        r_p_ss, wss, bssmat_s, nssmat, p, "SS"
-    )
+    yss_before_tax_mat = household.get_y(r_p_ss, wss, bssmat_s, n_eff, p, "SS")
     labor_income_ss = (
-        wss * nssmat * np.squeeze(p.e[-1, :, :]).reshape((p.S, p.J))
+        wss * n_eff * np.squeeze(p.e[-1, :, :]).reshape((p.S, p.J))
     )
     capital_income_ss = r_p_ss * bssmat_s
     Css = aggr.get_C(cssmat, p, "SS")
@@ -1109,7 +1195,7 @@ def SS_solver(
         r_p_ss,
         wss,
         bssmat_s,
-        nssmat,
+        n_eff,
         bqssmat,
         c_i_ss_mat,
         Y_vec_ss,
@@ -1124,6 +1210,7 @@ def SS_solver(
         p,
         None,
         "SS",
+        **hh_tax_liab,
     )
     Gss = fiscal.get_G_ss(
         Yss,
@@ -1190,8 +1277,25 @@ def SS_solver(
     # check constraints
     household.constraint_checker_SS(bssmat_splus1, nssmat, cssmat, p.ltilde)
 
-    euler_savings = euler_errors[: p.S, :]
-    euler_labor_leisure = euler_errors[p.S :, :]
+    if p.household_solver == "egm":
+        # Euler errors between asset nodes, largest where households
+        # are, by age and type; the bequest FOC at the last age and the
+        # labor FOC hold at every node up to the solver's tolerance
+        euler = household_stoch.euler_errors(hh)
+        euler_savings = np.vstack(
+            [euler["max_with_mass_by_cell"], np.zeros((1, p.J))]
+        )
+        euler_labor_leisure = np.full(
+            (p.S, p.J), hh.diagnostics.max_static_residual
+        )
+        logger.info(f"Household solver: {hh.diagnostics.summary()}")
+        logger.info(
+            "Mean Euler error where households are = "
+            f"{euler['mean_with_mass']}"
+        )
+    else:
+        euler_savings = euler_errors[: p.S, :]
+        euler_labor_leisure = euler_errors[p.S :, :]
     logger.info(
         "Maximum error in labor FOC = "
         f"{np.absolute(euler_labor_leisure).max()}"
@@ -1285,8 +1389,80 @@ def SS_solver(
         "euler_labor_leisure": euler_labor_leisure,
         "resource_constraint_error": RC,
     }
+    if p.household_solver == "egm":
+        # policies and distribution over (age, type, asset node, shock)
+        output.update(
+            {
+                "b_grid": hh.b_grid,
+                "z_grid": hh.z_grid,
+                "z_trans": hh.z_trans,
+                "dist": hh.dist,
+                "b_policy": hh.b_policy,
+                "c_policy": hh.c_policy,
+                "n_policy": hh.n_policy,
+                "inequality": household_stoch.inequality_ss(
+                    hh, r_p_ss, wss, p
+                ),
+            }
+        )
 
     return output
+
+
+def _outer_loop_vars(
+    guesses, bssmat, nssmat, TR_ss, Ig_baseline, factor_ss, p
+):
+    """
+    The outer loop variables that ``inner_loop`` takes, from the root
+    finder's guesses.
+
+    Args:
+        guesses (list): guesses of the outer loop variables (r_p, r,
+            w, p_m, BQ, TR (or Y), factor)
+        bssmat (Numpy array): initial guess at savings, size = SxJ
+        nssmat (Numpy array): initial guess at labor supply, size = SxJ
+        TR_ss (scalar): lump sum transfer amount
+        Ig_baseline (scalar): public investment in the baseline
+        factor_ss (scalar): scaling factor converting model units to dollars
+        p (OG-Core Specifications object): model parameters
+
+    Returns:
+        outer_loop_vars (tuple): (bssmat, nssmat, r_p, r, w, p_m, Y, BQ,
+            TR, Ig_baseline, factor)
+
+    """
+    # Rename the inputs
+    r_p = guesses[0]
+    r = guesses[1]
+    w = guesses[2]
+    p_m = guesses[3 : 3 + p.M]
+    Y = guesses[3 + p.M]
+    if p.baseline:
+        BQ = guesses[3 + p.M + 1 : -2]
+        TR = guesses[-2]
+        factor = guesses[-1]
+    else:
+        BQ = guesses[3 + p.M + 1 : -1]
+        TR = guesses[-1]
+        factor = factor_ss
+    if p.baseline_spending:
+        TR = TR_ss
+    if not p.budget_balance and not p.baseline_spending:
+        Y = TR / p.alpha_T[-1]
+
+    return (
+        bssmat,
+        nssmat,
+        r_p,
+        r,
+        w,
+        p_m,
+        Y,
+        BQ,
+        TR,
+        Ig_baseline,
+        factor,
+    )
 
 
 def SS_fsolve(guesses, *args):
@@ -1308,59 +1484,23 @@ def SS_fsolve(guesses, *args):
         scattered_p (Dask Future or None): optional eighth element of
             args, a future pointing to the model parameters already
             scattered to the Dask workers
+        b_grid (Numpy array or None): optional ninth element of args,
+            the asset grids of each type with
+            ``household_solver = 'egm'`` (see ``inner_loop``)
 
     Returns:
         errors (list): errors from differences between guessed and
             implied outer loop variables
 
     """
-    if len(args) == 8:
-        (
-            bssmat,
-            nssmat,
-            TR_ss,
-            Ig_baseline,
-            factor_ss,
-            p,
-            client,
-            scattered_p,
-        ) = args
-    else:
-        bssmat, nssmat, TR_ss, Ig_baseline, factor_ss, p, client = args
-        scattered_p = None
+    bssmat, nssmat, TR_ss, Ig_baseline, factor_ss, p, client = args[:7]
+    scattered_p = args[7] if len(args) > 7 else None
+    b_grid = args[8] if len(args) > 8 else None
 
-    # Rename the inputs
-    r_p = guesses[0]
-    r = guesses[1]
-    w = guesses[2]
-    p_m = guesses[3 : 3 + p.M]
-    Y = guesses[3 + p.M]
-    if p.baseline:
-        BQ = guesses[3 + p.M + 1 : -2]
-        TR = guesses[-2]
-        factor = guesses[-1]
-    else:
-        BQ = guesses[3 + p.M + 1 : -1]
-        TR = guesses[-1]
-        factor = factor_ss
-    if p.baseline_spending:
-        TR = TR_ss
-    if not p.budget_balance and not p.baseline_spending:
-        Y = TR / p.alpha_T[-1]
-
-    outer_loop_vars = (
-        bssmat,
-        nssmat,
-        r_p,
-        r,
-        w,
-        p_m,
-        Y,
-        BQ,
-        TR,
-        Ig_baseline,
-        factor,
+    outer_loop_vars = _outer_loop_vars(
+        guesses, bssmat, nssmat, TR_ss, Ig_baseline, factor_ss, p
     )
+    _, _, r_p, r, w, p_m, Y, BQ, TR, _, factor = outer_loop_vars
 
     # Solve for the steady state levels of b and n, given w, r, TR and
     # factor
@@ -1382,7 +1522,7 @@ def SS_fsolve(guesses, *args):
         new_factor,
         new_BQ,
         average_income_model,
-    ) = inner_loop(outer_loop_vars, p, client, scattered_p)
+    ) = inner_loop(outer_loop_vars, p, client, scattered_p, b_grid)
 
     # Create list of errors in general equilibrium variables
     error_r_p = float(new_r_p - r_p)
@@ -1483,6 +1623,115 @@ def SS_initial_guesses(p, b_val=None, n_val=None, r_tr_scalars=[1.0, 1.0]):
     return guesses, b_guess, n_guess
 
 
+def solve_SS_root(guesses, ss_params, p):
+    """
+    Solve for the steady-state outer loop variables with the root
+    finder ``p.SS_root_method`` applied to ``SS_fsolve``.
+
+    With ``p.household_solver = 'egm'``, households are solved on asset
+    grids that stay fixed while the root finder runs, so that the
+    errors it sees are smooth in the guesses. The grids are fitted to
+    the distribution at the initial guesses; if they no longer fit the
+    distribution at the solution (``household_stoch.refit_asset_grids``),
+    they are refitted there and the root finder starts again from that
+    solution, at most ``SolverOptions.grid_resize_iter`` times.
+
+    Args:
+        guesses (list): initial guesses of the outer loop variables
+        ss_params (tuple): the other arguments of ``SS_fsolve``
+            (bssmat, nssmat, TR_ss, Ig_baseline, factor_ss, p, client,
+            scattered_p)
+        p (OG-Core Specifications object): model parameters
+
+    Returns:
+        sol (OptimizeResult): solution from the root finder
+        b_grid (Numpy array or None): asset grids of each type, size =
+            J x nb (None unless ``household_solver = 'egm'``)
+
+    """
+    if p.household_solver != "egm":
+        sol = opt.root(
+            SS_fsolve,
+            guesses,
+            args=ss_params,
+            method=p.SS_root_method,
+            tol=p.mindist_SS,
+        )
+        return sol, None
+
+    bssmat, nssmat, TR_ss, Ig_baseline, factor_ss, _, client = ss_params[:7]
+    scattered_p = ss_params[7] if len(ss_params) > 7 else None
+
+    def household_solution(x, b_grid):
+        _, _, r_p, _, w, p_m, Y, BQ, TR, _, factor = _outer_loop_vars(
+            x, bssmat, nssmat, TR_ss, Ig_baseline, factor_ss, p
+        )
+        return household_stoch.solve_all_households_ss(
+            r_p,
+            w,
+            np.array(p_m),
+            np.array(BQ),
+            TR,
+            factor,
+            p,
+            Y=Y,
+            b_grid=b_grid,
+        )
+
+    b_grid = household_solution(guesses, None).b_grid
+    max_rounds = household_stoch.SolverOptions().grid_resize_iter
+    last = None  # last solution found, and its grids
+    for it in range(max_rounds + 1):
+        args = (
+            bssmat,
+            nssmat,
+            TR_ss,
+            Ig_baseline,
+            factor_ss,
+            p,
+            client,
+            scattered_p,
+            b_grid,
+        )
+        sol = opt.root(
+            SS_fsolve,
+            guesses,
+            args=args,
+            method=p.SS_root_method,
+            tol=p.mindist_SS,
+        )
+        if not sol.success:
+            if last is not None:
+                # keep the steady state found on the previous grids
+                logger.warning(
+                    "Steady state not found on refitted asset grids; "
+                    "keeping the solution on the previous grids"
+                )
+                sol, b_grid = last
+            break
+        last = (sol, b_grid)
+        new_grid, refit = household_stoch.refit_asset_grids(
+            household_solution(sol.x, b_grid), p
+        )
+        if not refit.any():
+            break
+        if it == max_rounds:
+            logger.warning(
+                "Asset grids of types %s still do not fit the steady-state "
+                "distribution after %d rounds",
+                np.flatnonzero(refit),
+                max_rounds,
+            )
+            break
+        logger.info(
+            "Refitting asset grids of types %s to the steady-state "
+            "distribution",
+            np.flatnonzero(refit),
+        )
+        b_grid, guesses = new_grid, sol.x
+    return sol, b_grid
+
+
 def run_SS(p, client=None):
     """
     Solve for steady-state equilibrium of OG-Core.
@@ -1570,13 +1819,7 @@ def run_SS(p, client=None):
                 )
 
                 # Solve for steady state using root finder
-                sol = opt.root(
-                    SS_fsolve,
-                    guesses,
-                    args=ss_params,
-                    method=p.SS_root_method,
-                    tol=p.mindist_SS,
-                )
+                sol, b_grid = solve_SS_root(guesses, ss_params, p)
             else:
                 logger.warning(
                     "Dimensions of previous solutions for SS do not match"
@@ -1637,13 +1880,7 @@ def run_SS(p, client=None):
                     scattered_p,
                 )
                 # Solve for steady state using root finder
-                sol = opt.root(
-                    SS_fsolve,
-                    guesses,
-                    args=ss_params,
-                    method=p.SS_root_method,
-                    tol=p.mindist_SS,
-                )
+                sol, b_grid = solve_SS_root(guesses, ss_params, p)
                 if sol.success:
                     SS_solved = True
                     break
@@ -1690,6 +1927,7 @@ def run_SS(p, client=None):
         client,
         fsolve_flag,
         scattered_p,
+        b_grid,
     )
     if output["G"] < 0.0:
         warnings.warn(

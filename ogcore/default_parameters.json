@@ -4966,7 +4966,7 @@
         "title": "Household solution method",
         "description": "Method used to solve the household problem.",
         "section_1": "Model Solution Parameters",
-        "notes": "'root' solves the first order conditions of each lifetime income group with scipy.optimize.root (see FOC_root_method) and does not allow idiosyncratic shocks. 'egm' solves the household problem with idiosyncratic productivity shocks on an asset grid by the endogenous grid method, and the distribution of households over assets and shocks by Young's method (household_stoch.py).",
+        "notes": "'root' solves the first order conditions of each lifetime income group with scipy.optimize.root (see FOC_root_method) and does not allow idiosyncratic shocks. 'egm' solves the household problem with idiosyncratic productivity shocks on an asset grid by the endogenous grid method, and the distribution of households over assets and shocks by Young's method (household_stoch.py). 'egm' is available for the steady state; the transition path is not yet implemented for it.",
         "type": "str",
         "value": [
             {

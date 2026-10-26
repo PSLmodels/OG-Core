@@ -363,6 +363,8 @@ def revenue(
     p,
     m,
     method,
+    inc_pay_tax_liab=None,
+    w_tax_liab=None,
 ):
     r"""
     Calculate aggregate tax revenue.
@@ -399,6 +401,12 @@ def revenue(
         p (OG-Core Specifications object): model parameters
         method (str): adjusts calculation dimensions based on 'SS' or
             'TPI'
+        inc_pay_tax_liab (Numpy array): income and payroll tax liability
+            of each household, if already computed (with idiosyncratic
+            shocks, the mean over each age and type's distribution);
+            computed from b, n and e if None
+        w_tax_liab (Numpy array): wealth tax liability of each
+            household, if already computed; computed from b if None
 
     Returns:
         (tuple): aggregate tax revenue and outlay components:
@@ -418,14 +426,16 @@ def revenue(
             * iit_tax_revenue (array_like): aggregate income tax revenue
 
     """
-    inc_pay_tax_liab = tax.income_tax_liab(
-        r, w, b, n, factor, 0, None, method, e, etr_params, p
-    )
+    if inc_pay_tax_liab is None:
+        inc_pay_tax_liab = tax.income_tax_liab(
+            r, w, b, n, factor, 0, None, method, e, etr_params, p
+        )
     pension_benefits = pensions.pension_amount(
         r, w, n, Y, theta, 0, None, False, method, e, factor, p
     )
     bq_tax_liab = tax.bequest_tax_liab(r, b, bq, 0, None, method, p)
-    w_tax_liab = tax.wealth_tax_liab(r, b, 0, None, method, p)
+    if w_tax_liab is None:
+        w_tax_liab = tax.wealth_tax_liab(r, b, 0, None, method, p)
     if method == "SS":
         p_i = np.dot(p.io_matrix, p_m)
         pop_weights = p.omega_SS

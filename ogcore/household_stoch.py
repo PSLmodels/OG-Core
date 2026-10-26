@@ -39,7 +39,7 @@ import numpy as np
 import scipy.stats as sps
 from ogcore import aggregates as aggr
 from ogcore import household as hh_core
-from ogcore import pensions, tax
+from ogcore import pensions, tax, utils
 from ogcore.household import (  # noqa: F401 (re-exported)
     constraint_checker_SS,
     constraint_checker_TPI,
@@ -3185,6 +3185,56 @@ def _support_top(dist, b_policy, grid, omega_j, mass_tol, failed=None):
     return top
 
 
+def _grid_fit(dist, b_policy, grids, p, options, failed=None):
+    """
+    Grid tops that fit the distribution, ``p.b_grid_margin`` times the
+    highest savings chosen where there is mass, by type, and which
+    grids have tops off from these by more than a factor 1.25.
+    """
+    omega_j = np.asarray(p.omega_SS).sum(axis=0)
+    top = _support_top(
+        dist, b_policy, grids, omega_j, options.mass_tol, failed
+    )
+    target = p.b_grid_margin * np.maximum(top, 1e-3)
+    off = np.abs(np.log(grids[:, -1] / target)) > np.log(1.25)
+    return target, off
+
+
+def refit_asset_grids(sol, p, options=None):
+    """
+    Asset grids that fit the distribution of a household solution, by
+    the rule ``solve_all_households_ss`` uses to size its grids: a type
+    keeps its grid if the top is within a factor 1.25 of
+    ``p.b_grid_margin`` times the highest savings chosen where the
+    distribution has mass, and otherwise gets a grid of the same size
+    (``make_asset_grid``) with that top.
+
+    Args:
+        sol (HouseholdSolution): household solution
+        p (OG-Core Specifications object): model parameters
+        options (SolverOptions): solver settings (``mass_tol``)
+
+    Returns:
+        b_grid (Numpy array): asset grids, (J, nb)
+        refit (Numpy array): bool (J,), True for types whose grid changed
+    """
+    options = options or SolverOptions()
+    target, off = _grid_fit(
+        sol.dist,
+        sol.b_policy,
+        sol.b_grid,
+        p,
+        options,
+        sol.diagnostics.failed_nodes,
+    )
+    b_grid = np.array(sol.b_grid, dtype=float)
+    for j in np.flatnonzero(off):
+        b_grid[j] = make_asset_grid(
+            target[j], b_grid.shape[1], p.b_grid_curvature
+        )
+    return b_grid, off
+
+
 def solve_all_households_ss(
     r_p,
     w,
@@ -3299,23 +3349,20 @@ def solve_all_households_ss(
         result = solve(inp, grids)
     else:
         b_max = initial_b_max(inp, z_grid)
-        omega_j = np.asarray(p.omega_SS).sum(axis=0)
         for it in range(options.grid_resize_iter + 1):
             grids = np.stack(
                 [make_asset_grid(bm, p.nb, p.b_grid_curvature) for bm in b_max]
             )
             result = solve(inp, grids)
             iterations["grid"] = it
-            top = _support_top(
+            target, off = _grid_fit(
                 result[4],
                 result[0],
                 grids,
-                omega_j,
-                options.mass_tol,
+                p,
+                options,
                 result[3].failed_nodes,
             )
-            target = p.b_grid_margin * np.maximum(top, 1e-3)
-            off = np.abs(np.log(b_max / target)) > np.log(1.25)
             if not off.any():
                 break
             if it == options.grid_resize_iter:
@@ -3370,6 +3417,213 @@ def solve_all_households_ss(
         dist_diagnostics=dd,
         iterations=iterations,
     )
+
+
+"""
+------------------------------------------------------------------------
+    Steady-state quantities over the distribution
+
+    Within an (age, type) cell, OG-Core's budget constraint and
+    aggregates are linear in savings, consumption and effective labor
+    z n, so their cell means can go through OG-Core's (S, J) functions
+    unchanged. Tax liabilities and tax rates are not, so they are
+    evaluated at every asset and shock node and averaged. Pension
+    benefits are computed from the cell means of effective labor, an
+    approximation with shocks (see ``pension_ss``).
+------------------------------------------------------------------------
+"""
+
+
+def _by_node(x):
+    """
+    An (S, J, nb, nz) array as (S, nb * nz, J): the asset and shock
+    nodes of each (age, type) cell on the middle axis, so that OG-Core's
+    (S, J) functions apply at every node by broadcasting.
+    """
+    x = np.asarray(x, dtype=float)
+    S, J, nb, nz = x.shape
+    return np.moveaxis(x, 1, -1).reshape(S, nb * nz, J)
+
+
+def _tax_params_by_node(params, S, J, Q):
+    """
+    Steady-state tax function parameters at Q nodes of every (age,
+    type) cell, (S, Q, J, K), or for nonparametric tax functions nested
+    lists of the functions, which OG-Core's tax functions index as
+    [s][node][j].
+    """
+    by_age = _tax_params_by_age(params, S)
+    if isinstance(by_age, np.ndarray):
+        return np.broadcast_to(
+            by_age[:, None, None, :], (S, Q, J, by_age.shape[-1])
+        )
+    return [[[by_age[s]] * J] * Q for s in range(S)]
+
+
+def _household_nodes(sol, p):
+    """
+    Assets b held, labor supply n, effective labor units e z and
+    population mass at each node, (S, nb * nz, J) each.
+    """
+    nb = sol.b_policy.shape[2]
+    z = np.tile(sol.z_grid, nb)  # node (i_b, i_z) is i_b * nz + i_z
+    e = np.asarray(p.e[-1], dtype=float).reshape(p.S, p.J)
+    return {
+        "b": _by_node(sol.b_s()),
+        "n": _by_node(sol.n_policy),
+        "e": e[:, None, :] * z[None, :, None],
+        "mass": _by_node(sol.dist),
+    }
+
+
+def _node_mean(mass, x):
+    """
+    Mean of node values x within each (age, type) cell, (S, J); nodes
+    without mass are left out (values there may not be finite).
+    """
+    return np.where(mass > 0, mass * x, 0.0).sum(axis=1) / mass.sum(axis=1)
+
+
+def tax_cell_means(sol, r, w, factor, p):
+    """
+    Mean tax liabilities within each (age, type) cell of the
+    steady-state distribution: OG-Core's income and payroll tax
+    liability (``tax.income_tax_liab``) and wealth tax liability
+    (``tax.wealth_tax_liab``) at every asset and shock node, averaged
+    over the cell. Weighted by ``p.omega_SS`` they sum to the totals
+    over the distribution, so they can stand in for liabilities at the
+    cell means, which differ because taxes are nonlinear.
+
+    Args:
+        sol (HouseholdSolution): steady-state household solution
+        r (scalar): return on the household portfolio
+        w (scalar): wage
+        factor (scalar): model-units-to-dollars scaling factor
+        p (OG-Core Specifications object): model parameters
+
+    Returns:
+        dict with 'inc_pay_tax_liab' (income and payroll taxes) and
+        'w_tax_liab' (wealth taxes), (S, J) each, the keyword arguments
+        of ``tax.net_taxes`` and ``aggregates.revenue`` that take them
+    """
+    x = _household_nodes(sol, p)
+    etr_params = _tax_params_by_node(p.etr_params, p.S, p.J, x["b"].shape[1])
+    inc_pay = tax.income_tax_liab(
+        r, w, x["b"], x["n"], factor, 0, None, "SS", x["e"], etr_params, p
+    )
+    wealth = tax.wealth_tax_liab(r, x["b"], 0, None, "SS", p)
+    return {
+        "inc_pay_tax_liab": _node_mean(x["mass"], inc_pay),
+        "w_tax_liab": _node_mean(x["mass"], wealth),
+    }
+
+
+def tax_rate_cell_means(sol, r, w, factor, p):
+    """
+    Mean income tax rates within each (age, type) cell of the
+    steady-state distribution: OG-Core's effective rate
+    (``tax.ETR_income``) and marginal rates on labor and capital income
+    (``tax.MTR_income``) at every asset and shock node, averaged over
+    the cell.
+
+    Args:
+        sol (HouseholdSolution): steady-state household solution
+        r (scalar): return on the household portfolio
+        w (scalar): wage
+        factor (scalar): model-units-to-dollars scaling factor
+        p (OG-Core Specifications object): model parameters
+
+    Returns:
+        dict with 'etr', 'mtrx' (labor income) and 'mtry' (capital
+        income), (S, J) each
+    """
+    x = _household_nodes(sol, p)
+    Q = x["b"].shape[1]
+    etr_params = _tax_params_by_node(p.etr_params, p.S, p.J, Q)
+    labor_nc = p.labor_income_tax_noncompliance_rate[-1, :]
+    capital_nc = p.capital_income_tax_noncompliance_rate[-1, :]
+    filer = p.income_tax_filer[-1, :]
+    b, n, e = x["b"], x["n"], x["e"]
+    etr = tax.ETR_income(
+        r, w, b, n, factor, e, etr_params, labor_nc, capital_nc, filer, p
+    )
+    mtrx = tax.MTR_income(
+        r,
+        w,
+        b,
+        n,
+        factor,
+        False,
+        e,
+        etr_params,
+        _tax_params_by_node(p.mtrx_params, p.S, p.J, Q),
+        labor_nc,
+        filer,
+        p,
+    )
+    mtry = tax.MTR_income(
+        r,
+        w,
+        b,
+        n,
+        factor,
+        True,
+        e,
+        etr_params,
+        _tax_params_by_node(p.mtry_params, p.S, p.J, Q),
+        capital_nc,
+        filer,
+        p,
+    )
+    return {
+        name: _node_mean(x["mass"], rate)
+        for name, rate in (("etr", etr), ("mtrx", mtrx), ("mtry", mtry))
+    }
+
+
+def inequality_ss(sol, r, w, p):
+    """
+    Inequality over the full steady-state distribution of households,
+    for savings b' ('b_sp1'), consumption ('c'), labor income w e z n
+    ('labor_income') and before-tax income r b + w e z n
+    ('before_tax_income'): the measures of
+    ``ogcore.output_tables.ineq_table``, from ``ogcore.utils.Inequality``
+    weighted by the population at each node.
+
+    Args:
+        sol (HouseholdSolution): steady-state household solution
+        r (scalar): return on the household portfolio
+        w (scalar): wage
+        p (OG-Core Specifications object): model parameters
+
+    Returns:
+        dict of dicts: for each variable, 'gini', 'var_of_logs',
+        '90/10 ratio', 'top_10_share' and 'top_1_share'
+    """
+    x = _household_nodes(sol, p)
+    labor_income = w * x["e"] * x["n"]
+    values = {
+        "b_sp1": _by_node(sol.b_policy),
+        "c": _by_node(sol.c_policy),
+        "labor_income": labor_income,
+        "before_tax_income": r * x["b"] + labor_income,
+    }
+    has_mass = x["mass"] > 0
+    mass = x["mass"][has_mass].reshape(-1, 1)
+    out = {}
+    with np.errstate(divide="ignore", invalid="ignore"):
+        for name, v in values.items():
+            ineq = utils.Inequality(
+                v[has_mass].reshape(-1, 1), mass, None, p.S, p.J
+            )
+            out[name] = {
+                "gini": ineq.gini(),
+                "var_of_logs": ineq.var_of_logs(),
+                "90/10 ratio": ineq.ratio_pct1_pct2(0.90, 0.10),
+                "top_10_share": ineq.top_share(0.1),
+                "top_1_share": ineq.top_share(0.01),
+            }
+    return out
 
 
 """
@@ -3478,6 +3732,7 @@ def euler_errors(sol, ages=None, options=None):
         'max': over all midpoints checked;
         'max_with_mass': over midpoints next to a node with any mass in
         ``sol.dist``;
+        'max_with_mass_by_cell' (S - 1, J): the same by age and type;
         'mean_with_mass': population-weighted mean (each midpoint
         weighted by the mean mass at its two nodes);
         'share_above': {threshold: population share at midpoints with
@@ -3573,6 +3828,9 @@ def euler_errors(sol, ages=None, options=None):
         "errors": errors,
         "max": float(np.max(abs_err, where=checked, initial=0.0)),
         "max_with_mass": float(np.max(abs_err, where=with_mass, initial=0.0)),
+        "max_with_mass_by_cell": np.max(
+            abs_err, axis=(2, 3), where=with_mass, initial=0.0
+        ),
         "mean_with_mass": float(
             (weight * np.where(finite, abs_err, 0.0)).sum()
             / max(weight[finite].sum(), 1e-300)

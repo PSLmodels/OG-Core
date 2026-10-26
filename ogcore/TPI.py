@@ -895,6 +895,11 @@ def run_TPI(p, client=None):
             results
 
     """
+    if p.household_solver == "egm":
+        raise NotImplementedError(
+            "The transition path is not yet implemented for "
+            + "household_solver = 'egm'; only the steady state is."
+        )
     if p.use_sparse_FOC_jac and not _HAVE_SPARSE_FD:
         print("[TPI] sparse FOC jacobian unavailable; using dense")
     # Scope the Jacobian sparsity cache to this solve (see

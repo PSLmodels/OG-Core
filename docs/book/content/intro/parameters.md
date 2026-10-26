@@ -1010,7 +1010,7 @@ _Valid Choices:_['hybr', 'lm', 'broyden1', 'broyden2', 'anderson', 'linearmixing
 
 ####  `household_solver`  
 _Description:_ Method used to solve the household problem.  
-_Notes:_ 'root' solves the first order conditions of each lifetime income group with scipy.optimize.root (see FOC_root_method) and does not allow idiosyncratic shocks. 'egm' solves the household problem with idiosyncratic productivity shocks on an asset grid by the endogenous grid method, and the distribution of households over assets and shocks by Young's method (household_stoch.py).  
+_Notes:_ 'root' solves the first order conditions of each lifetime income group with scipy.optimize.root (see FOC_root_method) and does not allow idiosyncratic shocks. 'egm' solves the household problem with idiosyncratic productivity shocks on an asset grid by the endogenous grid method, and the distribution of households over assets and shocks by Young's method (household_stoch.py). 'egm' is available for the steady state; the transition path is not yet implemented for it.  
 _Value Type:_ str  
 _Valid Choices:_['root', 'egm']  
 
