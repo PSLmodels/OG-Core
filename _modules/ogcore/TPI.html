@@ -590,7 +590,10 @@
 <span class="sd">        (tuple): initial period and steady state values:</span>
 
 <span class="sd">            * initial_values (tuple): initial period variable values,</span>
-<span class="sd">                (B0, b_sinit, b_splus1init, factor, initial_n)</span>
+<span class="sd">                (B0, b_sinit, b_splus1init, factor, initial_n), where</span>
+<span class="sd">                B0 is aggregate household wealth and b_sinit and</span>
+<span class="sd">                b_splus1init the S x J wealth held and savings chosen in</span>
+<span class="sd">                the initial period</span>
 <span class="sd">            * ss_vars (dictionary): dictionary with steady state</span>
 <span class="sd">                solution results</span>
 <span class="sd">            * theta (Numpy array): steady-state retirement replacement</span>
@@ -603,8 +606,24 @@
     <span class="n">baseline_ss</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">baseline_dir</span><span class="p">,</span> <span class="s2">"SS"</span><span class="p">,</span> <span class="s2">"SS_vars.pkl"</span><span class="p">)</span>
     <span class="n">ss_baseline_vars</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">safe_read_pickle</span><span class="p">(</span><span class="n">baseline_ss</span><span class="p">)</span>
     <span class="n">factor</span> <span class="o">=</span> <span class="n">ss_baseline_vars</span><span class="p">[</span><span class="s2">"factor"</span><span class="p">]</span>
+    <span class="c1"># Initial distribution of savings, b_sp1 chosen at age s and held at</span>
+    <span class="c1"># s+1, scaled so that aggregate household wealth evaluated with the</span>
+    <span class="c1"># period-0 population equals the steady-state aggregate. Its shape is</span>
+    <span class="c1"># the steady-state distribution unless initial_hhwealth_dist (an S x J</span>
+    <span class="c1"># matrix of shares of aggregate wealth) is given. When</span>
+    <span class="c1"># initial_wealth_ratio is given, the level is revised inside run_TPI</span>
+    <span class="c1"># so that initial wealth is that ratio times initial GDP.</span>
     <span class="n">B0</span> <span class="o">=</span> <span class="n">aggr</span><span class="o">.</span><span class="n">get_B</span><span class="p">(</span><span class="n">ss_baseline_vars</span><span class="p">[</span><span class="s2">"b_sp1"</span><span class="p">],</span> <span class="n">p</span><span class="p">,</span> <span class="s2">"SS"</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
-    <span class="n">initial_b_sp1</span> <span class="o">=</span> <span class="n">ss_baseline_vars</span><span class="p">[</span><span class="s2">"b_sp1"</span><span class="p">]</span> <span class="o">*</span> <span class="p">(</span><span class="n">ss_baseline_vars</span><span class="p">[</span><span class="s2">"B"</span><span class="p">]</span> <span class="o">/</span> <span class="n">B0</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">p</span><span class="o">.</span><span class="n">initial_hhwealth_dist</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">initial_b_sp1</span> <span class="o">=</span> <span class="n">ss_baseline_vars</span><span class="p">[</span><span class="s2">"b_sp1"</span><span class="p">]</span> <span class="o">*</span> <span class="p">(</span>
+            <span class="n">ss_baseline_vars</span><span class="p">[</span><span class="s2">"B"</span><span class="p">]</span> <span class="o">/</span> <span class="n">B0</span>
+        <span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">initial_b_sp1_prelim</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">initial_hhwealth_dist</span> <span class="o">*</span> <span class="n">ss_baseline_vars</span><span class="p">[</span><span class="s2">"B"</span><span class="p">]</span>
+        <span class="n">initial_b_sp1</span> <span class="o">=</span> <span class="n">initial_b_sp1_prelim</span> <span class="o">*</span> <span class="p">(</span>
+            <span class="n">ss_baseline_vars</span><span class="p">[</span><span class="s2">"B"</span><span class="p">]</span>
+            <span class="o">/</span> <span class="n">aggr</span><span class="o">.</span><span class="n">get_B</span><span class="p">(</span><span class="n">initial_b_sp1_prelim</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="s2">"SS"</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
+        <span class="p">)</span>
     <span class="n">initial_b</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">p</span><span class="o">.</span><span class="n">S</span><span class="p">,</span> <span class="n">p</span><span class="o">.</span><span class="n">J</span><span class="p">))</span>
     <span class="n">initial_b</span><span class="p">[</span><span class="mi">1</span><span class="p">:,</span> <span class="p">:]</span> <span class="o">=</span> <span class="n">initial_b_sp1</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="p">:]</span>
     <span class="n">initial_n</span> <span class="o">=</span> <span class="n">ss_baseline_vars</span><span class="p">[</span><span class="s2">"n"</span><span class="p">]</span>
@@ -655,17 +674,31 @@
     <span class="k">if</span> <span class="ow">not</span> <span class="n">p</span><span class="o">.</span><span class="n">baseline</span><span class="p">:</span>
         <span class="n">baseline_tpi</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">baseline_dir</span><span class="p">,</span> <span class="s2">"TPI"</span><span class="p">,</span> <span class="s2">"TPI_vars.pkl"</span><span class="p">)</span>
         <span class="n">tpi_baseline_vars</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">safe_read_pickle</span><span class="p">(</span><span class="n">baseline_tpi</span><span class="p">)</span>
+        <span class="k">if</span> <span class="p">(</span>
+            <span class="n">p</span><span class="o">.</span><span class="n">initial_wealth_ratio</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+            <span class="ow">or</span> <span class="n">p</span><span class="o">.</span><span class="n">initial_hhwealth_dist</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+        <span class="p">):</span>
+            <span class="c1"># The baseline's initial wealth was set by the initial wealth</span>
+            <span class="c1"># parameters (and, for the ratio, solved for along with the</span>
+            <span class="c1"># baseline path), so the reform must start from the same</span>
+            <span class="c1"># period-0 wealth rather than from the steady-state values.</span>
+            <span class="c1"># b_sp1_preTP is the savings chosen before the time path</span>
+            <span class="c1"># began (held at t=0); an older baseline pickle without it is</span>
+            <span class="c1"># rebuilt from the wealth held at t=0, keeping the current</span>
+            <span class="c1"># last row (savings of the oldest cohort, which only enter</span>
+            <span class="c1"># period-0 bequests)</span>
+            <span class="n">B0</span> <span class="o">=</span> <span class="n">tpi_baseline_vars</span><span class="p">[</span><span class="s2">"B"</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+            <span class="n">b_sinit</span> <span class="o">=</span> <span class="n">tpi_baseline_vars</span><span class="p">[</span><span class="s2">"b_s"</span><span class="p">][</span><span class="mi">0</span><span class="p">,</span> <span class="p">:,</span> <span class="p">:]</span>
+            <span class="k">if</span> <span class="s2">"b_sp1_preTP"</span> <span class="ow">in</span> <span class="n">tpi_baseline_vars</span><span class="p">:</span>
+                <span class="n">b_splus1init</span> <span class="o">=</span> <span class="n">tpi_baseline_vars</span><span class="p">[</span><span class="s2">"b_sp1_preTP"</span><span class="p">]</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">b_splus1init</span> <span class="o">=</span> <span class="n">b_splus1init</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+                <span class="n">b_splus1init</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="p">:]</span> <span class="o">=</span> <span class="n">b_sinit</span><span class="p">[</span><span class="mi">1</span><span class="p">:,</span> <span class="p">:]</span>
         <span class="n">D0_baseline</span> <span class="o">=</span> <span class="n">tpi_baseline_vars</span><span class="p">[</span><span class="s2">"D"</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
-        <span class="n">K0_baseline</span> <span class="o">=</span> <span class="n">tpi_baseline_vars</span><span class="p">[</span><span class="s2">"K"</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
-        <span class="n">Kd0_baseline</span> <span class="o">=</span> <span class="n">tpi_baseline_vars</span><span class="p">[</span><span class="s2">"K_d"</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
         <span class="n">Kg0_baseline</span> <span class="o">=</span> <span class="n">tpi_baseline_vars</span><span class="p">[</span><span class="s2">"K_g"</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
-        <span class="n">Km0_baseline</span> <span class="o">=</span> <span class="n">tpi_baseline_vars</span><span class="p">[</span><span class="s2">"K_m"</span><span class="p">][</span><span class="mi">0</span><span class="p">,</span> <span class="p">:]</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="n">D0_baseline</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="n">K0_baseline</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="n">Kd0_baseline</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="n">Kg0_baseline</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="n">Km0_baseline</span> <span class="o">=</span> <span class="kc">None</span>
 
     <span class="n">initial_values</span> <span class="o">=</span> <span class="p">(</span><span class="n">B0</span><span class="p">,</span> <span class="n">b_sinit</span><span class="p">,</span> <span class="n">b_splus1init</span><span class="p">,</span> <span class="n">factor</span><span class="p">,</span> <span class="n">initial_n</span><span class="p">)</span>
     <span class="n">baseline_values</span> <span class="o">=</span> <span class="p">(</span>
@@ -674,10 +707,7 @@
         <span class="n">Gbaseline</span><span class="p">,</span>
         <span class="n">Ig_baseline</span><span class="p">,</span>
         <span class="n">D0_baseline</span><span class="p">,</span>
-        <span class="n">K0_baseline</span><span class="p">,</span>
-        <span class="n">Kd0_baseline</span><span class="p">,</span>
         <span class="n">Kg0_baseline</span><span class="p">,</span>
-        <span class="n">Km0_baseline</span><span class="p">,</span>
     <span class="p">)</span>
 
     <span class="k">return</span> <span class="n">initial_values</span><span class="p">,</span> <span class="n">ss_vars</span><span class="p">,</span> <span class="n">theta</span><span class="p">,</span> <span class="n">baseline_values</span></div>
@@ -1348,10 +1378,7 @@
         <span class="n">Gbaseline</span><span class="p">,</span>
         <span class="n">Ig_baseline</span><span class="p">,</span>
         <span class="n">D0_baseline</span><span class="p">,</span>
-        <span class="n">K0_baseline</span><span class="p">,</span>
-        <span class="n">Kd0_baseline</span><span class="p">,</span>
         <span class="n">Kg0_baseline</span><span class="p">,</span>
-        <span class="n">Km0_baseline</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">=</span> <span class="n">baseline_values</span>
 
     <span class="c1"># Create time path of UBI household benefits and aggregate UBI outlays</span>
@@ -1376,34 +1403,22 @@
     <span class="n">L_init</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">((</span><span class="n">p</span><span class="o">.</span><span class="n">T</span> <span class="o">+</span> <span class="n">p</span><span class="o">.</span><span class="n">S</span><span class="p">,))</span> <span class="o">*</span> <span class="n">ss_vars</span><span class="p">[</span><span class="s2">"L"</span><span class="p">]</span>
     <span class="n">B_init</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">get_initial_path</span><span class="p">(</span><span class="n">B0</span><span class="p">,</span> <span class="n">ss_vars</span><span class="p">[</span><span class="s2">"B"</span><span class="p">],</span> <span class="n">p</span><span class="p">,</span> <span class="s2">"quadratic"</span><span class="p">)</span>
     <span class="n">L_init</span><span class="p">[:</span> <span class="n">p</span><span class="o">.</span><span class="n">T</span><span class="p">]</span> <span class="o">=</span> <span class="n">aggr</span><span class="o">.</span><span class="n">get_L</span><span class="p">(</span><span class="n">n_mat</span><span class="p">[:</span> <span class="n">p</span><span class="o">.</span><span class="n">T</span><span class="p">],</span> <span class="n">p</span><span class="p">,</span> <span class="s2">"TPI"</span><span class="p">)</span>
-    <span class="c1"># Get initial paths for aggregate capital. In the baseline, scale the</span>
-    <span class="c1"># steady-state capital stocks by the path of B; in a reform, start</span>
-    <span class="c1"># from the period-0 capital stocks of the baseline time path</span>
-    <span class="k">if</span> <span class="n">p</span><span class="o">.</span><span class="n">baseline</span><span class="p">:</span>
-        <span class="n">K_init</span> <span class="o">=</span> <span class="n">B_init</span> <span class="o">*</span> <span class="n">ss_vars</span><span class="p">[</span><span class="s2">"K"</span><span class="p">]</span> <span class="o">/</span> <span class="n">ss_vars</span><span class="p">[</span><span class="s2">"B"</span><span class="p">]</span>
-        <span class="n">K_d</span> <span class="o">=</span> <span class="n">K_init</span> <span class="o">*</span> <span class="n">ss_vars</span><span class="p">[</span><span class="s2">"K_d"</span><span class="p">]</span> <span class="o">/</span> <span class="n">ss_vars</span><span class="p">[</span><span class="s2">"K"</span><span class="p">]</span>
-        <span class="n">K_g</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones_like</span><span class="p">(</span><span class="n">K_init</span><span class="p">)</span> <span class="o">*</span> <span class="n">ss_vars</span><span class="p">[</span><span class="s2">"K_g"</span><span class="p">]</span>
-        <span class="n">K_vec_init</span> <span class="o">=</span> <span class="p">(</span>
-            <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">((</span><span class="n">p</span><span class="o">.</span><span class="n">T</span> <span class="o">+</span> <span class="n">p</span><span class="o">.</span><span class="n">S</span><span class="p">,</span> <span class="n">p</span><span class="o">.</span><span class="n">M</span><span class="p">))</span>
-            <span class="o">*</span> <span class="n">ss_vars</span><span class="p">[</span><span class="s2">"K_m"</span><span class="p">]</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">p</span><span class="o">.</span><span class="n">M</span><span class="p">)</span>
-            <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">tile</span><span class="p">((</span><span class="n">K_init</span> <span class="o">/</span> <span class="n">ss_vars</span><span class="p">[</span><span class="s2">"K"</span><span class="p">])</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">T</span> <span class="o">+</span> <span class="n">p</span><span class="o">.</span><span class="n">S</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">p</span><span class="o">.</span><span class="n">M</span><span class="p">))</span>
-        <span class="p">)</span>
-    <span class="k">else</span><span class="p">:</span>
-        <span class="n">K_init</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">get_initial_path</span><span class="p">(</span>
-            <span class="n">K0_baseline</span><span class="p">,</span> <span class="n">ss_vars</span><span class="p">[</span><span class="s2">"K"</span><span class="p">],</span> <span class="n">p</span><span class="p">,</span> <span class="s2">"quadratic"</span>
-        <span class="p">)</span>
-        <span class="n">K_d</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">get_initial_path</span><span class="p">(</span>
-            <span class="n">Kd0_baseline</span><span class="p">,</span> <span class="n">ss_vars</span><span class="p">[</span><span class="s2">"K_d"</span><span class="p">],</span> <span class="n">p</span><span class="p">,</span> <span class="s2">"quadratic"</span>
-        <span class="p">)</span>
-        <span class="n">K_g</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">get_initial_path</span><span class="p">(</span>
-            <span class="n">Kg0_baseline</span><span class="p">,</span> <span class="n">ss_vars</span><span class="p">[</span><span class="s2">"K_g"</span><span class="p">],</span> <span class="n">p</span><span class="p">,</span> <span class="s2">"quadratic"</span>
-        <span class="p">)</span>
-        <span class="n">K_vec_init</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">get_initial_path</span><span class="p">(</span>
-            <span class="n">Km0_baseline</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">p</span><span class="o">.</span><span class="n">M</span><span class="p">),</span>
-            <span class="n">ss_vars</span><span class="p">[</span><span class="s2">"K_m"</span><span class="p">]</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">p</span><span class="o">.</span><span class="n">M</span><span class="p">),</span>
-            <span class="n">p</span><span class="p">,</span>
-            <span class="s2">"quadratic"</span><span class="p">,</span>
-        <span class="p">)</span>
+    <span class="c1"># Get initial paths for aggregate capital by scaling the steady-state</span>
+    <span class="c1"># capital stocks with the path of B. These paths only serve as guesses</span>
+    <span class="c1"># for the first iteration: inside the loop K, K_d, K_f, and K_m are</span>
+    <span class="c1"># recomputed from household wealth and K_g from the fiscal rule.</span>
+    <span class="c1"># Starting a reform instead from the period-0 capital stocks of the</span>
+    <span class="c1"># baseline time path was found to send the outer loop off on a</span>
+    <span class="c1"># divergent track in the multi-industry example, so the same guesses</span>
+    <span class="c1"># are used for baseline and reform runs.</span>
+    <span class="n">K_init</span> <span class="o">=</span> <span class="n">B_init</span> <span class="o">*</span> <span class="n">ss_vars</span><span class="p">[</span><span class="s2">"K"</span><span class="p">]</span> <span class="o">/</span> <span class="n">ss_vars</span><span class="p">[</span><span class="s2">"B"</span><span class="p">]</span>
+    <span class="n">K_d</span> <span class="o">=</span> <span class="n">K_init</span> <span class="o">*</span> <span class="n">ss_vars</span><span class="p">[</span><span class="s2">"K_d"</span><span class="p">]</span> <span class="o">/</span> <span class="n">ss_vars</span><span class="p">[</span><span class="s2">"K"</span><span class="p">]</span>
+    <span class="n">K_g</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones_like</span><span class="p">(</span><span class="n">K_init</span><span class="p">)</span> <span class="o">*</span> <span class="n">ss_vars</span><span class="p">[</span><span class="s2">"K_g"</span><span class="p">]</span>
+    <span class="n">K_vec_init</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">((</span><span class="n">p</span><span class="o">.</span><span class="n">T</span> <span class="o">+</span> <span class="n">p</span><span class="o">.</span><span class="n">S</span><span class="p">,</span> <span class="n">p</span><span class="o">.</span><span class="n">M</span><span class="p">))</span>
+        <span class="o">*</span> <span class="n">ss_vars</span><span class="p">[</span><span class="s2">"K_m"</span><span class="p">]</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">p</span><span class="o">.</span><span class="n">M</span><span class="p">)</span>
+        <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">tile</span><span class="p">((</span><span class="n">K_init</span> <span class="o">/</span> <span class="n">ss_vars</span><span class="p">[</span><span class="s2">"K"</span><span class="p">])</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">T</span> <span class="o">+</span> <span class="n">p</span><span class="o">.</span><span class="n">S</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">p</span><span class="o">.</span><span class="n">M</span><span class="p">))</span>
+    <span class="p">)</span>
     <span class="n">K</span> <span class="o">=</span> <span class="n">K_init</span>
     <span class="n">K_f</span> <span class="o">=</span> <span class="n">K_init</span> <span class="o">-</span> <span class="n">K_d</span>
     <span class="n">L</span> <span class="o">=</span> <span class="n">L_init</span>
@@ -2100,6 +2115,20 @@
         <span class="c1"># policy warm-starts stay on the damped update.</span>
         <span class="n">r_gov</span><span class="p">[:</span> <span class="n">p</span><span class="o">.</span><span class="n">T</span><span class="p">]</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">convex_combo</span><span class="p">(</span><span class="n">r_gov_new</span><span class="p">[:</span> <span class="n">p</span><span class="o">.</span><span class="n">T</span><span class="p">],</span> <span class="n">r_gov</span><span class="p">[:</span> <span class="n">p</span><span class="o">.</span><span class="n">T</span><span class="p">],</span> <span class="n">p</span><span class="o">.</span><span class="n">nu</span><span class="p">)</span>
         <span class="n">D</span><span class="p">[:</span> <span class="n">p</span><span class="o">.</span><span class="n">T</span><span class="p">]</span> <span class="o">=</span> <span class="n">Dnew</span><span class="p">[:</span> <span class="n">p</span><span class="o">.</span><span class="n">T</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">p</span><span class="o">.</span><span class="n">baseline</span> <span class="ow">and</span> <span class="n">p</span><span class="o">.</span><span class="n">initial_wealth_ratio</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="c1"># Initial aggregate household wealth is a target ratio to</span>
+            <span class="c1"># initial GDP, which is endogenous: move B[0] toward the</span>
+            <span class="c1"># target with the outer-loop damping and scale the initial</span>
+            <span class="c1"># distribution of savings (whose shape is fixed) to match, so</span>
+            <span class="c1"># that the next inner loop starts households from it</span>
+            <span class="n">B0</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">convex_combo</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">initial_wealth_ratio</span> <span class="o">*</span> <span class="n">Y</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">B</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">p</span><span class="o">.</span><span class="n">nu</span><span class="p">)</span>
+            <span class="n">B</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">B0</span>
+            <span class="n">b_splus1init</span> <span class="o">=</span> <span class="n">b_splus1init</span> <span class="o">*</span> <span class="p">(</span>
+                <span class="n">B0</span> <span class="o">/</span> <span class="n">aggr</span><span class="o">.</span><span class="n">get_B</span><span class="p">(</span><span class="n">b_splus1init</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="s2">"SS"</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
+            <span class="p">)</span>
+            <span class="n">b_sinit</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">p</span><span class="o">.</span><span class="n">S</span><span class="p">,</span> <span class="n">p</span><span class="o">.</span><span class="n">J</span><span class="p">))</span>
+            <span class="n">b_sinit</span><span class="p">[</span><span class="mi">1</span><span class="p">:,</span> <span class="p">:]</span> <span class="o">=</span> <span class="n">b_splus1init</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="p">:]</span>
+            <span class="n">initial_values</span> <span class="o">=</span> <span class="p">(</span><span class="n">B0</span><span class="p">,</span> <span class="n">b_sinit</span><span class="p">,</span> <span class="n">b_splus1init</span><span class="p">,</span> <span class="n">factor</span><span class="p">,</span> <span class="n">initial_n</span><span class="p">)</span>
         <span class="n">guesses_b</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">convex_combo</span><span class="p">(</span><span class="n">b_mat</span><span class="p">,</span> <span class="n">guesses_b</span><span class="p">,</span> <span class="n">p</span><span class="o">.</span><span class="n">nu</span><span class="p">)</span>
         <span class="n">guesses_n</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">convex_combo</span><span class="p">(</span><span class="n">n_mat</span><span class="p">,</span> <span class="n">guesses_n</span><span class="p">,</span> <span class="n">p</span><span class="o">.</span><span class="n">nu</span><span class="p">)</span>
         <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
@@ -2416,6 +2445,7 @@
         <span class="s2">"p_tilde"</span><span class="p">:</span> <span class="n">p_tilde</span><span class="p">[:</span> <span class="n">p</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="o">...</span><span class="p">],</span>
         <span class="s2">"b_sp1"</span><span class="p">:</span> <span class="n">bmat_splus1</span><span class="p">[:</span> <span class="n">p</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="o">...</span><span class="p">],</span>
         <span class="s2">"b_s"</span><span class="p">:</span> <span class="n">bmat_s</span><span class="p">[:</span> <span class="n">p</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="o">...</span><span class="p">],</span>
+        <span class="s2">"b_sp1_preTP"</span><span class="p">:</span> <span class="n">b_splus1init</span><span class="p">,</span>
         <span class="s2">"n"</span><span class="p">:</span> <span class="n">n_mat</span><span class="p">[:</span> <span class="n">p</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="o">...</span><span class="p">],</span>
         <span class="s2">"c"</span><span class="p">:</span> <span class="n">c_mat</span><span class="p">[:</span> <span class="n">p</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="o">...</span><span class="p">],</span>
         <span class="s2">"c_i"</span><span class="p">:</span> <span class="n">c_i</span><span class="p">[:</span> <span class="n">p</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="o">...</span><span class="p">],</span>

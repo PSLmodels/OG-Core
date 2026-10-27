@@ -487,6 +487,8 @@
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#alpha-rm-1"><code class="docutils literal notranslate"><span class="pre">alpha_RM_1</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#alpha-rm-t"><code class="docutils literal notranslate"><span class="pre">alpha_RM_T</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#g-rm"><code class="docutils literal notranslate"><span class="pre">g_RM</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#initial-hhwealth-dist"><code class="docutils literal notranslate"><span class="pre">initial_hhwealth_dist</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#initial-wealth-ratio"><code class="docutils literal notranslate"><span class="pre">initial_wealth_ratio</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#eta-rm"><code class="docutils literal notranslate"><span class="pre">eta_RM</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#zeta"><code class="docutils literal notranslate"><span class="pre">zeta</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#use-zeta"><code class="docutils literal notranslate"><span class="pre">use_zeta</span></code></a></li>
@@ -784,6 +786,22 @@ organization of the theory in the <code class="docutils literal notranslate"><sp
 <p><em>Description:</em> Growth rate of aggregate remittances between periods tG1 and tG2<br />
 <em>Value Type:</em> float<br />
 <em>Valid Range:</em> min = -0.02 and max = 0.15<br />
+<em>Out-of-Range Action:</em> error</p>
+</section>
+<section id="initial-hhwealth-dist">
+<h4><code class="docutils literal notranslate"><span class="pre">initial_hhwealth_dist</span></code><a class="headerlink" href="#initial-hhwealth-dist" title="Link to this heading">#</a></h4>
+<p><em>Description:</em> Shape of the distribution of household wealth across ages and lifetime income groups in the initial period of the transition path.<br />
+<em>Notes:</em> An S x J matrix proportional to the wealth held by a household of each age and lifetime income group at the start of the transition path, normalized so that its elements sum to one; it sets only the shape of the initial distribution, whose level is set so that aggregate household wealth matches its initial value. When null (the default), the shape is that of the steady-state distribution of savings. Should be calibrated from household wealth data by age and lifetime income group; shapes far from the steady state can leave the oldest cohorts without enough wealth to solve their remaining lifetimes.<br />
+<em>Value Type:</em> float<br />
+<em>Valid Range:</em> min = 0.0 and max = 1.0<br />
+<em>Out-of-Range Action:</em> error</p>
+</section>
+<section id="initial-wealth-ratio">
+<h4><code class="docutils literal notranslate"><span class="pre">initial_wealth_ratio</span></code><a class="headerlink" href="#initial-wealth-ratio" title="Link to this heading">#</a></h4>
+<p><em>Description:</em> Aggregate household wealth to GDP ratio in the initial period of the transition path.<br />
+<em>Notes:</em> When null (the default), aggregate household wealth in the initial period is the level implied by the steady-state distribution of savings. Otherwise the time path solution sets initial aggregate household wealth to this ratio times initial GDP, scaling the initial distribution of wealth up or down. Should be calibrated from total household wealth over GDP in the model start year.<br />
+<em>Value Type:</em> float<br />
+<em>Valid Range:</em> min = 0.8 and max = 7.0<br />
 <em>Out-of-Range Action:</em> error</p>
 </section>
 <section id="eta-rm">
@@ -1862,6 +1880,8 @@ organization of the theory in the <code class="docutils literal notranslate"><sp
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#alpha-rm-1"><code class="docutils literal notranslate"><span class="pre">alpha_RM_1</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#alpha-rm-t"><code class="docutils literal notranslate"><span class="pre">alpha_RM_T</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#g-rm"><code class="docutils literal notranslate"><span class="pre">g_RM</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#initial-hhwealth-dist"><code class="docutils literal notranslate"><span class="pre">initial_hhwealth_dist</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#initial-wealth-ratio"><code class="docutils literal notranslate"><span class="pre">initial_wealth_ratio</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#eta-rm"><code class="docutils literal notranslate"><span class="pre">eta_RM</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#zeta"><code class="docutils literal notranslate"><span class="pre">zeta</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#use-zeta"><code class="docutils literal notranslate"><span class="pre">use_zeta</span></code></a></li>

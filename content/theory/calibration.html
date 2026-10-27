@@ -60,6 +60,8 @@
     <script async="async" src="../../_static/sphinx-thebe.js?v=c100c467"></script>
     <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
     <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"; const thebe_selector = ".thebe,.cell"; const thebe_selector_input = "pre"; const thebe_selector_output = ".output, .cell_output"</script>
+    <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'content/theory/calibration';</script>
     <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
     <link rel="index" title="Index" href="../../genindex.html" />
@@ -469,7 +471,10 @@
             <nav aria-label="Page">
                 <ul class="pst-show_toc_level nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#detail-of-parameters-data-and-approaches-for-calibration">Detail of parameters, data, and approaches for calibration</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#footnotes">Footnotes</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#other-parameters-to-calibrate">Other parameters to calibrate</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#initial-distribution-of-capital-gamma-1-and-aggregate-household-wealth-b-1">Initial distribution of capital <span class="math notranslate nohighlight">\(\Gamma_1\)</span> and aggregate household wealth <span class="math notranslate nohighlight">\(B_1\)</span></a></li>
+</ul>
+</li>
 </ul>
             </nav>
         </div>
@@ -642,9 +647,84 @@
 </table>
 </div>
 </section>
-<section id="footnotes">
-<span id="seccalibfootnotes"></span><h2>Footnotes<a class="headerlink" href="#footnotes" title="Link to this heading">#</a></h2>
-<!-- [^citation_note]: See {cite}`AuerbachEtAl:1981,AuerbachEtAl:1983`, {cite}`AuerbachKotlikoff:1983a,AuerbachKotlikoff:1983b,AuerbachKotlikoff:1983c`, and {cite}`AuerbachKotlikoff:1985`. -->
+<section id="other-parameters-to-calibrate">
+<span id="seccalibother"></span><h2>Other parameters to calibrate<a class="headerlink" href="#other-parameters-to-calibrate" title="Link to this heading">#</a></h2>
+<section id="initial-distribution-of-capital-gamma-1-and-aggregate-household-wealth-b-1">
+<span id="seccalibother-initw"></span><h3>Initial distribution of capital <span class="math notranslate nohighlight">\(\Gamma_1\)</span> and aggregate household wealth <span class="math notranslate nohighlight">\(B_1\)</span><a class="headerlink" href="#initial-distribution-of-capital-gamma-1-and-aggregate-household-wealth-b-1" title="Link to this heading">#</a></h3>
+<p>[The content in this section is just a placeholder and will need to be updated as the initial distribution of wealth is incorporated as an exogenous input parameter of the model.]</p>
+<p>One of the initial state parameters in the transition path equilibrium solution algorithm is the initial distribution of wealth held by households <span class="math notranslate nohighlight">\(\mathbf{\hat{\Gamma}}_1 \equiv \{b_{j,s,1}\}_{j=1,s=E+1}^{J,E+S}\)</span>. Note also that the initial value of aggregate household wealth <span class="math notranslate nohighlight">\(\hat{B}_1\)</span> is a function of the initial distribution of capital <span class="math notranslate nohighlight">\(\mathbf{\hat{\Gamma}}_1\)</span> and the pre-initial period population distribution <span class="math notranslate nohighlight">\(\{\hat{\omega}_{s,0}\}_{s=E+1}^{E+S}\)</span> (see equation <a class="reference internal" href="stationarization.html#equation-eqstnrz-bt">(162)</a>).</p>
+<div class="math notranslate nohighlight" id="equation-eqmarkclr-b1">
+<span class="eqno">(188)<a class="headerlink" href="#equation-eqmarkclr-b1" title="Link to this equation">#</a></span>\[  \hat{B}_1 \equiv \frac{1}{1 + \tilde{g}_{n,1}}\sum_{s=E+2}^{E+S+1}\sum_{j=1}^{J}\Bigl(\hat{\omega}_{s-1,0}\lambda_j\hat{b}_{j,s,1} + i_s\hat{\omega}_{s,0}\lambda_j\hat{b}_{j,s,1}\Bigr) \quad\text{where}\quad \frac{1}{1 + \tilde{g}_{n,1}} = \frac{\tilde{N}_0}{\tilde{N}_1}\]</div>
+<p>OG-Core has two parameter objects for calibrating this initial distribution of capital <span class="math notranslate nohighlight">\(\mathbf{\hat{\Gamma}}_1 \equiv \{b_{j,s,1}\}_{j=1,s=E+1}^{J,E+S}\)</span>:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">initial_hhwealth_dist</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">initial_wealth_ratio</span></code></p></li>
+</ul>
+<p>The <code class="docutils literal notranslate"><span class="pre">initial_hhwealth_dist</span></code> parameter object is an <span class="math notranslate nohighlight">\(S \times J\)</span> matrix of percentages representing the percent of total household wealth in the initial period held by households of age <span class="math notranslate nohighlight">\(s\)</span> and lifetime income group <span class="math notranslate nohighlight">\(j\)</span>. The elements of this distribution must sum to 1.</p>
+<div class="math notranslate nohighlight" id="equation-eqinithhwealth">
+<span class="eqno">(189)<a class="headerlink" href="#equation-eqinithhwealth" title="Link to this equation">#</a></span>\[  \mathbf{\hat{\Gamma}}_1\equiv \{\hat{b}_{j,s,1}\}_{j=1,s=E+1}^{J,E+S} = \texttt{initial_hhwealth_dist}\,\times\, \hat{B}_1\]</div>
+<p><a class="reference internal" href="#tabwealthgdpcountries"><span class="std std-numref">Table 7</span></a> shows the aggregate household wealth to GDP ratios in seven countries, with values ranging from 1.695 to 5.594. The range of valid values for the <code class="docutils literal notranslate"><span class="pre">initial_BY_ratio</span></code> parameter is 0.8 to 7.0.</p>
+<div class="pst-scrollable-table-container"><table class="table" id="tabwealthgdpcountries">
+<caption><span class="caption-number">Table 7 </span><span class="caption-text"><strong>Aggregate household wealth as a percent of GDP in select countries</strong></span><a class="headerlink" href="#tabwealthgdpcountries" title="Link to this table">#</a></caption>
+<thead>
+<tr class="row-odd"><th class="head"><p><strong>Country</strong></p></th>
+<th class="head"><p><strong>Aggr. HH wealth (<span class="math notranslate nohighlight">\(B_1\)</span>)</strong></p></th>
+<th class="head"><p><strong>Nominal GDP (<span class="math notranslate nohighlight">\(Y_1\)</span>)</strong></p></th>
+<th class="head"><p><strong>Aggr. HH wealth/GDP</strong></p></th>
+<th class="head"><p><strong>Data year</strong></p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>United States</p></td>
+<td><p>$185.65 T</p></td>
+<td><p>$32.56 T</p></td>
+<td><p>570.2%</p></td>
+<td><p>2026</p></td>
+</tr>
+<tr class="row-odd"><td><p>United Kingdom</p></td>
+<td><p>$18.06 T</p></td>
+<td><p>$3.70 T</p></td>
+<td><p>488.1%</p></td>
+<td><p>2024</p></td>
+</tr>
+<tr class="row-even"><td><p>India</p></td>
+<td><p>$16.01 T</p></td>
+<td><p>$3.76 T</p></td>
+<td><p>425.8%</p></td>
+<td><p>2024</p></td>
+</tr>
+<tr class="row-odd"><td><p>Indonesia</p></td>
+<td><p>$3.59 T</p></td>
+<td><p>$1.40 T</p></td>
+<td><p>256.4%</p></td>
+<td><p>2024</p></td>
+</tr>
+<tr class="row-even"><td><p>South Africa</p></td>
+<td><p>$1.03 T</p></td>
+<td><p>$0.401 T</p></td>
+<td><p>256.2%</p></td>
+<td><p>2024</p></td>
+</tr>
+<tr class="row-odd"><td><p>Philippines</p></td>
+<td><p>$1.011 T</p></td>
+<td><p>$0.404 T</p></td>
+<td><p>250.2%</p></td>
+<td><p>2022</p></td>
+</tr>
+<tr class="row-even"><td><p>Ethiopia</p></td>
+<td><p>$0.300 T</p></td>
+<td><p>$0.177 T</p></td>
+<td><p>169.5%</p></td>
+<td><p>2022</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<!--(SecCalibFootnotes)=
+## Footnotes
+
+[^citation_note]: See {cite}`AuerbachEtAl:1981,AuerbachEtAl:1983`, {cite}`AuerbachKotlikoff:1983a,AuerbachKotlikoff:1983b,AuerbachKotlikoff:1983c`, and {cite}`AuerbachKotlikoff:1985`. -->
+</section>
 </section>
 </section>
 
@@ -715,7 +795,10 @@
   <nav id="pst-page-toc-nav" class="page-toc" aria-labelledby="pst-page-navigation-heading-2">
     <ul class="pst-show_toc_level nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#detail-of-parameters-data-and-approaches-for-calibration">Detail of parameters, data, and approaches for calibration</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#footnotes">Footnotes</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#other-parameters-to-calibrate">Other parameters to calibrate</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#initial-distribution-of-capital-gamma-1-and-aggregate-household-wealth-b-1">Initial distribution of capital <span class="math notranslate nohighlight">\(\Gamma_1\)</span> and aggregate household wealth <span class="math notranslate nohighlight">\(B_1\)</span></a></li>
+</ul>
+</li>
 </ul>
   </nav></div>
 
