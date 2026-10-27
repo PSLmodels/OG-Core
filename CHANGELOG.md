@@ -5,7 +5,7 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [0.22.0] - 2026-10-20
+## [0.22.0] - 2026-10-27
 
 ### Added
 - Adds two optional parameters for the initial distribution of household wealth on the transition path, `initial_hhwealth_dist` (an `S x J` matrix of shares of aggregate wealth, summing to one, that sets the shape of the initial distribution) and `initial_wealth_ratio` (the target ratio of initial aggregate household wealth to initial GDP, which sets its level). Both default to null, in which case `TPI` starts from the steady-state distribution of savings as before: `get_initial_SS_values` uses `initial_hhwealth_dist` for the shape only when it is not `None`, and `run_TPI` updates `B[0]` toward `initial_wealth_ratio * Y[0]` in each outer-loop iteration (rescaling the initial savings and refreshing `initial_values` for the inner loop) only when the ratio is not `None`. A reform run with either parameter set starts from the first-period wealth of the baseline transition path. `Specifications.compute_default_params` normalizes a null or cleared value of either parameter to `None` and checks the shape and sum of a supplied distribution. Documented in the calibration chapter (`SecCalibOther_InitW`) and the parameters list, with a test of `run_TPI` with both parameters set.
