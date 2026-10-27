@@ -1,7 +1,7 @@
 import numpy as np
 import copy
 import pytest
-from ogcore import pensions
+from ogcore import pensions, tax
 from ogcore.parameters import Specifications
 
 p = Specifications()
@@ -539,7 +539,21 @@ p4.replacement_rate_adjust = np.ones((p4.T, p4.J))
 pension_expected_ss = [0, 0, 0, 0, 0.404, 0.396, 0.32]
 method = "TPI"
 shift = False
-args_ss = (r, w_ss, n_ss, Y, theta, t, j, shift, method, e_ss, factor, p4)
+# the cohort (1D) path takes the unadjusted scalar theta for group j
+args_ss = (
+    r,
+    w_ss,
+    n_ss,
+    Y,
+    theta[j],
+    t,
+    j,
+    shift,
+    method,
+    e_ss,
+    factor,
+    p4,
+)
 
 
 test_data = [
@@ -1421,9 +1435,145 @@ def test_replacement_rate_adjustment_indexes_by_cohort_year():
     )
     assert np.allclose(three_d[:, 0, j], expected)
 
+    # a 1D array is one cohort's remaining lifetime from period t, so
+    # it takes the same per-year slice rather than a single adjust[t]
+    one_d = pensions.replacement_rate_adjustment(
+        np.ones(length), t, j, "TPI", p
+    )
+    assert np.allclose(one_d, expected)
+
     # the steady state takes the terminal value
     ss = pensions.replacement_rate_adjustment(np.ones(p.S), None, j, "SS", p)
     assert np.isclose(ss, adjust[-1, j])
+
+
+def _glide_params(j, switch_year, cut):
+    """
+    Specifications with replacement_rate_adjust = 1 before switch_year
+    and = cut from switch_year on, for lifetime income group j only.
+    """
+    p = Specifications()
+    adjust = np.ones((p.T + p.S, p.J))
+    adjust[switch_year:, j] = cut
+    p.replacement_rate_adjust = adjust
+    return p
+
+
+def test_household_path_pension_uses_year_of_payment():
+    """
+    On the household (cohort) path the replacement rate adjustment must
+    be the factor for the year each benefit is paid, applied once.
+
+    TPI used to pre-scale theta by the factor before passing it to the
+    household problem, and SS_amount then scaled it again. For a uniform
+    cut the household saw the factor squared. For a glide path it saw
+    the factor for its entry year, so a cohort entering before the cut
+    planned on full benefits that the aggregates never paid.
+    """
+    j, t, theta_j, cut = 2, 5, 0.4, 0.5
+    switch_year = 30
+    p = _glide_params(j, switch_year, cut)
+    w = np.ones(p.S)
+    n = 0.3 * np.ones(p.S)
+    pension = pensions.pension_amount(
+        np.full(p.S, 0.04),
+        w,
+        n,
+        1.0,
+        theta_j,
+        t,
+        j,
+        False,
+        "TPI",
+        p.e[t, :, j],
+        1.0,
+        p,
+    )
+    retire = p.retire[t]
+    years_paid = t + np.arange(retire, p.S)
+    expected = theta_j * p.replacement_rate_adjust[years_paid, j] * w[retire:]
+    assert np.all(expected[years_paid >= switch_year] == theta_j * cut)
+    assert np.all(expected[years_paid < switch_year] == theta_j)
+    assert np.allclose(pension[:retire], 0.0)
+    assert np.allclose(pension[retire:], expected)
+
+    # the same holds through net_taxes, which is what the FOCs call
+    z = np.zeros(p.S)
+    num_params = len(p.etr_params[0][0])
+    etr = np.array(
+        [
+            [p.etr_params[t + s][s][i] for i in range(num_params)]
+            for s in range(p.S)
+        ]
+    )
+
+    def net_tax(p_):
+        return tax.net_taxes(
+            np.full(p.S, 0.04),
+            w,
+            np.full(p.S, 0.5),
+            n,
+            z,
+            1.0,
+            z,
+            z,
+            theta_j,
+            t,
+            j,
+            False,
+            "TPI",
+            p.e[t, :, j],
+            etr,
+            p_,
+        )
+
+    p_full = _glide_params(j, switch_year, 1.0)
+    multiplier = 1 - (net_tax(p) - net_tax(p_full))[retire:] / theta_j
+    assert np.allclose(multiplier, p.replacement_rate_adjust[years_paid, j])
+
+
+def test_household_path_pension_matches_pension_mat():
+    """
+    The pension a cohort faces in its own household problem must equal the
+    diagonal of the (T, S, J) pension array that TPI saves and aggregates.
+    """
+    j, t = 1, 7
+    p = _glide_params(j, 20, 0.6)
+    rng = np.random.default_rng(0)
+    w_path = 1.0 + 0.1 * rng.random(p.T + p.S)
+    n_path = 0.2 + 0.3 * rng.random((p.T + p.S, p.S, p.J))
+    theta = 0.3 + 0.1 * np.arange(p.J)
+
+    pension_mat = pensions.pension_amount(
+        np.full(p.T, 0.04),
+        w_path[: p.T],
+        n_path[: p.T, :, :],
+        1.0,
+        theta,
+        0,
+        None,
+        False,
+        "TPI",
+        p.e,
+        1.0,
+        p,
+    )
+    cohort = pensions.pension_amount(
+        np.full(p.S, 0.04),
+        w_path[t : t + p.S],
+        np.diag(n_path[t : t + p.S, :, j]),
+        1.0,
+        theta[j],
+        t,
+        j,
+        False,
+        "TPI",
+        p.e[t, :, j],
+        1.0,
+        p,
+    )
+    assert np.any(cohort > 0.0), "test would be vacuous with a zero benefit"
+    assert np.allclose(cohort, np.diag(pension_mat[t : t + p.S, :, j]))
 
 
 @pytest.mark.local

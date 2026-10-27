@@ -133,7 +133,13 @@ def replacement_rate_adjustment(pension, t, j, method, p):
     US-Style Social Security applies this itself inside SS_amount. The
     other three systems do not, so pension_amount applies it for them.
     Along the time path the multiplier varies with each cohort's own year,
-    so it is indexed at t + tt for row tt.
+    so it is indexed at t + tt for row tt. A 1D pension array is one
+    cohort's remaining lifetime starting in period t, so entry tt is
+    paid in period t + tt and gets that year's multiplier.
+
+    The steady state uses the final value of the parameter, so a
+    permanent adjustment carries into the steady state that the time
+    path converges to.
 
     The multiplier scales the whole pension array, while SS_amount scales
     only the entries from retirement on. These are equivalent only because
@@ -156,9 +162,9 @@ def replacement_rate_adjustment(pension, t, j, method, p):
         return adjust[-1, :] if j is None else adjust[-1, j]
     if method == "TPI_scalar":
         return adjust[0, j]
-    if pension.ndim == 1:
-        return adjust[t, j]
     length = pension.shape[0]
+    if pension.ndim == 1:
+        return adjust[t : t + length, j]
     if pension.ndim == 2:
         return adjust[t : t + length, j].reshape(length, 1)
     return adjust[t : t + length, :].reshape(length, 1, p.J)
@@ -225,8 +231,10 @@ def SS_amount(w, n, theta, t, j, shift, method, e, p):
     Args:
         w (array_like): real wage rate
         n (Numpy array): labor supply
-        theta (Numpy array): social security replacement rate value for
-            lifetime income group j
+        theta (array_like): social security replacement rate before
+            replacement_rate_adjust scaling. A length J vector when j is
+            None; a scalar (or length 1 array) for group j when n is 1D
+            or method is 'TPI_scalar'
         t (int): time period
         j (int): index of lifetime income group
         shift (bool): whether computing for periods 0--s or 1--(s+1),
@@ -238,6 +246,14 @@ def SS_amount(w, n, theta, t, j, shift, method, e, p):
 
     Returns:
         pension (Numpy array): pension amount for each household
+
+    Notes:
+        replacement_rate_adjust is applied here, and only here, for the
+        US-style system, so callers pass the unadjusted theta. Along the
+        time path the factor is indexed by the year the benefit is paid.
+        The steady state uses the final value of the parameter, so a
+        permanent adjustment carries into the steady state that the time
+        path converges to.
 
     """
     if j is not None:
@@ -273,13 +289,14 @@ def SS_amount(w, n, theta, t, j, shift, method, e, p):
         else:
             retireTPI = p.retire[t : t + length] - 1 - p.S
         if len(n.shape) == 1:
+            # One cohort's remaining lifetime: entry tt is paid in
+            # period t + tt, so the adjustment is indexed by that year.
             if not shift:
                 retireTPI = p.retire[t] - p.S
             else:
                 retireTPI = p.retire[t] - 1 - p.S
-            pension[retireTPI:] = (
-                theta[j] * p.replacement_rate_adjust[t, j] * w[retireTPI:]
-            )
+            adjust = p.replacement_rate_adjust[t : t + length, j]
+            pension[retireTPI:] = theta * adjust[retireTPI:] * w[retireTPI:]
         elif len(n.shape) == 2:
             for tt in range(pension.shape[0]):
                 pension[tt, retireTPI[tt] :] = (
