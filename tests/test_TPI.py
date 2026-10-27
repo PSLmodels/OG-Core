@@ -432,6 +432,11 @@ def test_twist_doughnut(file_inputs, file_outputs):
     ) = input_tuple
     p_tilde = np.ones_like(r)  # needed for multi-industry version
     p_i = np.ones((r.shape[0], 1))  # needed for multi-industry version
+    # The pickled inputs predate the change to passing the unadjusted
+    # scalar replacement rate; they hold a constant vector over the
+    # cohort's lifetime, so take its single value.
+    assert np.unique(theta).size == 1
+    theta = float(np.unique(theta)[0])
     p = Specifications()
     input_tuple2 = (
         guesses,

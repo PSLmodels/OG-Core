@@ -4445,7 +4445,7 @@
         "param_notation": "$\\theta_{adj,t}$",
         "section_1": "Fiscal Policy Parameters",
         "section_2": "Government Pension Parameters",
-        "notes": "This parameter willy only vary along the time path.  It is assumed to be one in the steady state.  The steady state retirement rate can be adjusted by changing the parameters of the retirement benefits function.",
+        "notes": "This parameter varies along the time path and is indexed by the year the benefit is paid. The steady state uses the final value entered, so a permanent adjustment carries into the steady state that the time path converges to. The steady state replacement rate itself can also be adjusted by changing the parameters of the retirement benefits function.",
         "type": "float",
         "number_dims": 2,
         "value": [
