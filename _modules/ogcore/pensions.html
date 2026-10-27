@@ -556,7 +556,13 @@
 <span class="sd">    US-Style Social Security applies this itself inside SS_amount. The</span>
 <span class="sd">    other three systems do not, so pension_amount applies it for them.</span>
 <span class="sd">    Along the time path the multiplier varies with each cohort's own year,</span>
-<span class="sd">    so it is indexed at t + tt for row tt.</span>
+<span class="sd">    so it is indexed at t + tt for row tt. A 1D pension array is one</span>
+<span class="sd">    cohort's remaining lifetime starting in period t, so entry tt is</span>
+<span class="sd">    paid in period t + tt and gets that year's multiplier.</span>
+
+<span class="sd">    The steady state uses the final value of the parameter, so a</span>
+<span class="sd">    permanent adjustment carries into the steady state that the time</span>
+<span class="sd">    path converges to.</span>
 
 <span class="sd">    The multiplier scales the whole pension array, while SS_amount scales</span>
 <span class="sd">    only the entries from retirement on. These are equivalent only because</span>
@@ -579,9 +585,9 @@
         <span class="k">return</span> <span class="n">adjust</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="p">:]</span> <span class="k">if</span> <span class="n">j</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">adjust</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span>
     <span class="k">if</span> <span class="n">method</span> <span class="o">==</span> <span class="s2">"TPI_scalar"</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">adjust</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span>
-    <span class="k">if</span> <span class="n">pension</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
-        <span class="k">return</span> <span class="n">adjust</span><span class="p">[</span><span class="n">t</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span>
     <span class="n">length</span> <span class="o">=</span> <span class="n">pension</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="k">if</span> <span class="n">pension</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">adjust</span><span class="p">[</span><span class="n">t</span> <span class="p">:</span> <span class="n">t</span> <span class="o">+</span> <span class="n">length</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span>
     <span class="k">if</span> <span class="n">pension</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">adjust</span><span class="p">[</span><span class="n">t</span> <span class="p">:</span> <span class="n">t</span> <span class="o">+</span> <span class="n">length</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">length</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">adjust</span><span class="p">[</span><span class="n">t</span> <span class="p">:</span> <span class="n">t</span> <span class="o">+</span> <span class="n">length</span><span class="p">,</span> <span class="p">:]</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">length</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">p</span><span class="o">.</span><span class="n">J</span><span class="p">)</span>
@@ -653,8 +659,10 @@
 <span class="sd">    Args:</span>
 <span class="sd">        w (array_like): real wage rate</span>
 <span class="sd">        n (Numpy array): labor supply</span>
-<span class="sd">        theta (Numpy array): social security replacement rate value for</span>
-<span class="sd">            lifetime income group j</span>
+<span class="sd">        theta (array_like): social security replacement rate before</span>
+<span class="sd">            replacement_rate_adjust scaling. A length J vector when j is</span>
+<span class="sd">            None; a scalar (or length 1 array) for group j when n is 1D</span>
+<span class="sd">            or method is 'TPI_scalar'</span>
 <span class="sd">        t (int): time period</span>
 <span class="sd">        j (int): index of lifetime income group</span>
 <span class="sd">        shift (bool): whether computing for periods 0--s or 1--(s+1),</span>
@@ -666,6 +674,14 @@
 
 <span class="sd">    Returns:</span>
 <span class="sd">        pension (Numpy array): pension amount for each household</span>
+
+<span class="sd">    Notes:</span>
+<span class="sd">        replacement_rate_adjust is applied here, and only here, for the</span>
+<span class="sd">        US-style system, so callers pass the unadjusted theta. Along the</span>
+<span class="sd">        time path the factor is indexed by the year the benefit is paid.</span>
+<span class="sd">        The steady state uses the final value of the parameter, so a</span>
+<span class="sd">        permanent adjustment carries into the steady state that the time</span>
+<span class="sd">        path converges to.</span>
 
 <span class="sd">    """</span>
     <span class="k">if</span> <span class="n">j</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
@@ -701,13 +717,14 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="n">retireTPI</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">retire</span><span class="p">[</span><span class="n">t</span> <span class="p">:</span> <span class="n">t</span> <span class="o">+</span> <span class="n">length</span><span class="p">]</span> <span class="o">-</span> <span class="mi">1</span> <span class="o">-</span> <span class="n">p</span><span class="o">.</span><span class="n">S</span>
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">n</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="c1"># One cohort's remaining lifetime: entry tt is paid in</span>
+            <span class="c1"># period t + tt, so the adjustment is indexed by that year.</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="n">shift</span><span class="p">:</span>
                 <span class="n">retireTPI</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">retire</span><span class="p">[</span><span class="n">t</span><span class="p">]</span> <span class="o">-</span> <span class="n">p</span><span class="o">.</span><span class="n">S</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="n">retireTPI</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">retire</span><span class="p">[</span><span class="n">t</span><span class="p">]</span> <span class="o">-</span> <span class="mi">1</span> <span class="o">-</span> <span class="n">p</span><span class="o">.</span><span class="n">S</span>
-            <span class="n">pension</span><span class="p">[</span><span class="n">retireTPI</span><span class="p">:]</span> <span class="o">=</span> <span class="p">(</span>
-                <span class="n">theta</span><span class="p">[</span><span class="n">j</span><span class="p">]</span> <span class="o">*</span> <span class="n">p</span><span class="o">.</span><span class="n">replacement_rate_adjust</span><span class="p">[</span><span class="n">t</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span> <span class="o">*</span> <span class="n">w</span><span class="p">[</span><span class="n">retireTPI</span><span class="p">:]</span>
-            <span class="p">)</span>
+            <span class="n">adjust</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">replacement_rate_adjust</span><span class="p">[</span><span class="n">t</span> <span class="p">:</span> <span class="n">t</span> <span class="o">+</span> <span class="n">length</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span>
+            <span class="n">pension</span><span class="p">[</span><span class="n">retireTPI</span><span class="p">:]</span> <span class="o">=</span> <span class="n">theta</span> <span class="o">*</span> <span class="n">adjust</span><span class="p">[</span><span class="n">retireTPI</span><span class="p">:]</span> <span class="o">*</span> <span class="n">w</span><span class="p">[</span><span class="n">retireTPI</span><span class="p">:]</span>
         <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="n">n</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
             <span class="k">for</span> <span class="n">tt</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">pension</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]):</span>
                 <span class="n">pension</span><span class="p">[</span><span class="n">tt</span><span class="p">,</span> <span class="n">retireTPI</span><span class="p">[</span><span class="n">tt</span><span class="p">]</span> <span class="p">:]</span> <span class="o">=</span> <span class="p">(</span>

@@ -844,8 +844,10 @@ a US-style social security system.</p>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>w</strong> (<em>array_like</em>) – real wage rate</p></li>
 <li><p><strong>n</strong> (<em>Numpy array</em>) – labor supply</p></li>
-<li><p><strong>theta</strong> (<em>Numpy array</em>) – social security replacement rate value for
-lifetime income group j</p></li>
+<li><p><strong>theta</strong> (<em>array_like</em>) – social security replacement rate before
+replacement_rate_adjust scaling. A length J vector when j is
+None; a scalar (or length 1 array) for group j when n is 1D
+or method is ‘TPI_scalar’</p></li>
 <li><p><strong>t</strong> (<em>int</em>) – time period</p></li>
 <li><p><strong>j</strong> (<em>int</em>) – index of lifetime income group</p></li>
 <li><p><strong>shift</strong> (<em>bool</em>) – whether computing for periods 0–s or 1–(s+1),
@@ -863,6 +865,13 @@ lifetime income group j</p></li>
 <dd class="field-odd"><p>pension (Numpy array)</p>
 </dd>
 </dl>
+<p class="rubric">Notes</p>
+<p>replacement_rate_adjust is applied here, and only here, for the
+US-style system, so callers pass the unadjusted theta. Along the
+time path the factor is indexed by the year the benefit is paid.
+The steady state uses the final value of the parameter, so a
+permanent adjustment carries into the steady state that the time
+path converges to.</p>
 </dd></dl>
 
 <dl class="py function">
