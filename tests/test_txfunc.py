@@ -1,5 +1,6 @@
 from ogcore import txfunc
 from distributed import Client, LocalCluster
+import dask
 import pytest
 import pandas as pd
 import numpy as np
@@ -973,3 +974,36 @@ def test_monotone_spline():
     assert np.allclose(wsse_cstr2, wsse_cstr_expected)
     assert np.allclose(y_uncstr2, y_uncstr_expected)
     assert np.allclose(wsse_uncstr2, wsse_uncstr_expected)
+
+
+@pytest.mark.local
+def test_tax_func_estimate_age_specific_warmstart():
+    """
+    Age-specific estimation warm-starts each age from the previous age's
+    fit (issue #1031). Check that the age-specific loop runs end to end
+    and returns a finite, correctly shaped parameter array for every age.
+    """
+    micro_data = utils.safe_read_pickle(
+        os.path.join(CUR_PATH, "test_io_data", "micro_data_dict_for_tests.pkl")
+    )
+    # Run synchronously (client=None, single worker) to exercise the
+    # sequential age loop deterministically.
+    with dask.config.set(scheduler="synchronous"):
+        test_dict = txfunc.tax_func_estimate(
+            micro_data,
+            1,
+            80,
+            20,
+            100,
+            start_year=2030,
+            tax_func_type="HSV",
+            age_specific=True,
+            client=None,
+            num_workers=1,
+        )
+    etr_params = np.array(test_dict["tfunc_etr_params_S"])
+    # one budget year, S ages, HSV has two parameters
+    assert etr_params.shape == (1, 80, 2)
+    assert np.all(np.isfinite(etr_params))
+    # every age was estimated (no age left at all-zero parameters)
+    assert np.all(np.any(etr_params[0] != 0, axis=1))
