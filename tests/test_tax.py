@@ -970,7 +970,7 @@ p.p_wealth = np.ones(p.T + p.S) * 2
 p.m_wealth = np.ones(p.T + p.S) * 3
 p.tau_payroll = np.ones((p.T + p.S, p.J)) * 0.15
 p.tau_bq = np.ones(p.T + p.S) * 0.1
-p.retire = (np.ones(p.T + p.S) * 2).astype(int)
+p.retire = np.full((p.T + p.S, p.S), 2)
 p1 = copy.deepcopy(p)
 p2 = copy.deepcopy(p)
 p3 = copy.deepcopy(p)
@@ -1210,7 +1210,8 @@ p6.tau_bq = np.array([0.05, 0.2, 0.0])
 
 p7 = copy.deepcopy(p5)
 p7.tau_bq = np.array([0.05, 0.2, 0.0])
-p7.retire = (np.array([1, 2, 2])).astype(int)
+# retirement age by calendar year, the same for every age
+p7.retire = np.tile(np.array([[1], [2], [2], [2], [2], [2]]), (1, p7.S))
 
 p8 = copy.deepcopy(p6)
 p8.replacement_rate_adjust = np.array([[1.5, 1.5], [0.6, 0.6], [1.0, 1.0]])
@@ -1255,7 +1256,7 @@ p_u.p_wealth = np.ones(p_u.T + p_u.S) * 2
 p_u.m_wealth = np.ones(p_u.T + p_u.S) * 3
 p_u.tau_payroll = np.ones((p_u.T + p_u.S, p_u.J)) * 0.15
 p_u.tau_bq = np.ones(p_u.T + p_u.S) * 0.1
-p_u.retire = (np.ones(p_u.T + p_u.S) * 2).astype(int)
+p_u.retire = np.full((p_u.T + p_u.S, p_u.S), 2)
 
 factor_u = 105000
 ubi_u = p_u.ubi_nom_array / factor_u
