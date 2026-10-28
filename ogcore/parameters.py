@@ -714,8 +714,9 @@ class Specifications(paramtools.Parameters):
                         f"{int(self.start_year + period * ypp)}) the "
                         f"cohort aged {int(self.starting_age + age * ypp)} "
                         f"years, retired since period {prev}, moves to "
-                        f"retirement period {new}. Raise max_age_at_start "
-                        "so the regime excludes cohorts already retired."
+                        f"retirement period {new}. Lower max_age_at_start "
+                        "(the oldest age the regime covers) so the regime "
+                        "excludes cohorts already retired."
                     )
 
     def update_specifications(self, revision, raise_errors=True):
