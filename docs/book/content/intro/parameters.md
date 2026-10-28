@@ -315,8 +315,8 @@ _Out-of-Range Action:_ error
 
 
 ####  `pension_regimes`  
-_Description:_ List of pension reforms applied in order. Each is a dict with a calendar `year` from which it applies, an optional `max_age_at_start` (the oldest age in years, in that calendar year, to which it applies; `null` or omitted means everyone including current retirees; cohorts not yet born always qualify), and the new values of the parameters it changes. Only `retirement_age` can be set this way at present. A regime that leaves a parameter out leaves it unchanged. A `year` before the start year with `max_age_at_start` 0 is a birth-year cutoff (born in that year or later). Example: `[{"year": 2030, "max_age_at_start": 54, "retirement_age": 67}, {"year": 2030, "max_age_at_start": 44, "retirement_age": 68}]` raises the retirement age to 67 for those 54 or younger in 2030 and to 68 for those 44 or younger.  
-_Notes:_ Entered with `update_specifications`, as a list in a dict or a JSON string, and kept outside the ParamTools validation. The model raises an error for a regime that would raise the retirement age of a cohort after it has retired, or that leaves the final period of the time path with more than one retirement age.  
+_Description:_ List of pension reforms applied in order. Each is a dict with a calendar `year` from which it applies, an optional `max_age_at_start` (the oldest age in years, in that calendar year, to which it applies; `null` or omitted means everyone including current retirees; cohorts not yet born always qualify), and the new values of the parameters it changes: `retirement_age`, the defined benefit parameters `alpha_db` (a single number or a list with one value per lifetime income group), `avg_earn_num_years`, and `yr_contrib`, and the notional defined contribution parameters `tau_p`, `k_ret`, and `indR`. A regime that leaves a parameter out leaves it unchanged. A `year` before the start year with `max_age_at_start` 0 is a birth-year cutoff (born in that year or later). Example: `[{"year": 2030, "max_age_at_start": 54, "retirement_age": 67}, {"year": 2030, "max_age_at_start": 44, "retirement_age": 68}]` raises the retirement age to 67 for those 54 or younger in 2030 and to 68 for those 44 or younger.  
+_Notes:_ Entered with `update_specifications`, as a list in a dict or a JSON string, and kept outside the ParamTools validation. Each parameter a regime may set is expanded to an array by model period and age (and lifetime income group for `alpha_db`) holding each cohort's own value; the pension formulas read a cohort's values down its diagonal and the steady state uses the final period. The model raises an error for a regime that would raise the retirement age of a cohort after it has retired, or that leaves the final period of the time path with more than one value of any of these parameters.  
 _Value Type:_ list of dicts  
 _Default:_ `[]`  
 
@@ -329,6 +329,7 @@ _Valid Choices:_['US-Style Social Security', 'Defined Benefits', 'Notional Defin
 
 ####  `tau_p`  
 _Description:_ Pension system contribution tax rate under a notional defined contribution system.  
+_Notes:_ A single base value; changes by birth cohort or calendar year are entered through `pension_regimes`. Contributions are credited at the rate the household's cohort faced at the age they were made.  
 _Value Type:_ float  
 _Valid Range:_ min = 0.0 and max = 1.0  
 _Out-of-Range Action:_ error  
@@ -336,7 +337,7 @@ _Out-of-Range Action:_ error
 
 ####  `indR`  
 _Description:_ Adjustment for survivor benefits under a notional defined contribution system.  
-_Notes:_ indR = 0.0 for no survivor benefits, indR = 0.5 for survivor benefits  
+_Notes:_ indR = 0.0 for no survivor benefits, indR = 0.5 for survivor benefits. A single base value; changes by birth cohort or calendar year are entered through `pension_regimes`.  
 _Value Type:_ float  
 _Valid Range:_ min = 0.0 and max = 1.0  
 _Out-of-Range Action:_ error  
@@ -344,7 +345,7 @@ _Out-of-Range Action:_ error
 
 ####  `k_ret`  
 _Description:_ Adjustment for frequency of pension payments under a notional defined contribution system.  
-_Notes:_ k = 0.5 - (6/13n), where n is the number of payments per year  
+_Notes:_ k = 0.5 - (6/13n), where n is the number of payments per year. A single base value; changes by birth cohort or calendar year are entered through `pension_regimes`.  
 _Value Type:_ float  
 _Valid Range:_ min = 0.0 and max = 1.0  
 _Out-of-Range Action:_ error  
@@ -366,7 +367,7 @@ _Valid Choices:_['r', 'Curr GDP', 'LR GDP']
 
 ####  `alpha_db`  
 _Description:_ Replacement rate per year of contribution under a defined benefits system. Set value for base year, click '+' to add value for next year.  All future years not specified are set to last value entered.  
-_Notes:_ Can be specified to vary by type J and over year T. The rate applied is the one in effect in the period the benefit is paid.  
+_Notes:_ Can be specified to vary by type J and over year T. The rate applied is the one in effect in the period the benefit is paid, for current and future retirees alike. To change the rate only for cohorts not yet retired, enter the change through `pension_regimes` with a `max_age_at_start`.  
 _Value Type:_ float  
 _Valid Range:_ min = 0.0 and max = 1.0  
 _Out-of-Range Action:_ error  
@@ -388,7 +389,7 @@ _Valid Choices:_['r', 'Curr GDP', 'LR GDP']
 
 ####  `yr_contrib`  
 _Description:_ Number of years of contributions made to defined benefits pension system.  
-_Notes:_ Since there is not exit from the labor force in the model, the number of years of contributions is set exogenously.  
+_Notes:_ Since there is not exit from the labor force in the model, the number of years of contributions is set exogenously. A single base value; changes by birth cohort or calendar year are entered through `pension_regimes`.  
 _Value Type:_ int  
 _Valid Range:_ min = 0 and max = retirement_age  
 _Out-of-Range Action:_ error  
@@ -396,7 +397,7 @@ _Out-of-Range Action:_ error
 
 ####  `avg_earn_num_years`  
 _Description:_ Number of years used to compute average earnings for pension benefits.  
-_Notes:_ US-styel Social Security AIME is computed using average earnings from the highest earnings years for the number of years specified here.  
+_Notes:_ US-style Social Security AIME is computed using average earnings from the highest earnings years for the number of years specified here; the defined benefit system averages the last years before retirement. A single base value; changes by birth cohort or calendar year are entered through `pension_regimes`.  
 _Value Type:_ int  
 _Valid Range:_ min = 1 and max = retirement_age  
 _Out-of-Range Action:_ error  

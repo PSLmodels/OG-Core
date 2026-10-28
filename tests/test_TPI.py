@@ -1348,11 +1348,40 @@ def test_run_TPI_serial_no_client(tmpdir, monkeypatch):
 
 
 @pytest.mark.local
-def test_run_TPI_pension_regime(tmpdir, dask_client):
+@pytest.mark.parametrize(
+    "system_params,regime_params",
+    [
+        ({}, {}),
+        (
+            {
+                "pension_system": "Defined Benefits",
+                "alpha_db": [[0.02]],
+                "yr_contrib": 35,
+                "avg_earn_num_years": 30,
+            },
+            {"alpha_db": 0.015, "avg_earn_num_years": 35, "yr_contrib": 30},
+        ),
+        (
+            {
+                "pension_system": "Notional Defined Contribution",
+                "tau_p": 0.1,
+                "ndc_growth_rate": "LR GDP",
+                "dir_growth_rate": "LR GDP",
+            },
+            {"tau_p": 0.12, "k_ret": 0.3},
+        ),
+    ],
+    ids=["US-Style Social Security", "Defined Benefits", "NDC"],
+)
+def test_run_TPI_pension_regime(
+    system_params, regime_params, tmpdir, dask_client
+):
     """
-    A grandfathered retirement-age regime runs through the time path, and
-    the saved pension benefits start at each cohort's own retirement
-    period: later for cohorts the regime covers, unchanged for the rest.
+    A grandfathered regime that raises the retirement age (and, for the
+    DB and NDC systems, changes the benefit formula) runs through the
+    time path, and the saved pension benefits start at each cohort's
+    own retirement period: later for cohorts the regime covers,
+    unchanged for the rest.
     """
     baseline_dir = os.path.join(tmpdir, "baseline")
     p = Specifications(
@@ -1362,12 +1391,16 @@ def test_run_TPI_pension_regime(tmpdir, dask_client):
         num_workers=NUM_WORKERS,
     )
     test_params = TEST_PARAM_DICT.copy()
+    test_params.update(system_params)
     test_params["pension_regimes"] = [
-        {
-            "year": p.start_year + 10,
-            "max_age_at_start": 54,
-            "retirement_age": 67,
-        }
+        dict(
+            {
+                "year": p.start_year + 10,
+                "max_age_at_start": 54,
+                "retirement_age": 67,
+            },
+            **regime_params,
+        )
     ]
     p.update_specifications(test_params)
     p.maxiter = 2  # two iterations are enough to exercise the paths

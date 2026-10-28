@@ -354,7 +354,7 @@ The `OG-Core` model allows for four different systems for public pensions:
 
 These can be selected with the `pension_system` parameter.  Accepted values are `US-Style Social Security`, `Defined Benefits`, `Notional Defined Contribution`, `Points System`.  We discuss each of these in turn below.
 
-For all systems, $R$ represents the age at which the individual becomes eligible to receive the government provided retirement benefit. The retirement age is a property of a birth cohort rather than of a calendar year: a household born in period $t-s$ (of age $s$ in period $t$) faces the retirement age $R_{t-s}$, and it faces the same $R_{t-s}$ in every period of its life unless a reform moves its cohort to a new value. The base value is the parameter `retirement_age`. Changes are entered through `pension_regimes`, a list of reforms applied in order, each with a calendar `year` from which it applies, an optional `max_age_at_start` (the oldest age, in that calendar year, to which the reform applies; cohorts not yet born always qualify, and leaving it out applies the reform to everyone including current retirees), and the new parameter values. This is how a phased-in increase in the retirement age that exempts those near retirement is expressed. The model expands these inputs into an array over periods and ages, so the household problem, the aggregates, and the steady state (which uses the final period's value) all read the same cohort-specific retirement age. The replacement-rate adjustment `replacement_rate_adjust` and the defined-benefit rate $\alpha^{DB}_{j,t}$ are, by contrast, indexed by the calendar year in which a benefit is paid.
+For all systems, $R$ represents the age at which the individual becomes eligible to receive the government provided retirement benefit. The retirement age is a property of a birth cohort rather than of a calendar year: a household born in period $t-s$ (of age $s$ in period $t$) faces the retirement age $R_{t-s}$, and it faces the same $R_{t-s}$ in every period of its life unless a reform moves its cohort to a new value. The base value is the parameter `retirement_age`. Changes are entered through `pension_regimes`, a list of reforms applied in order, each with a calendar `year` from which it applies, an optional `max_age_at_start` (the oldest age, in that calendar year, to which the reform applies; cohorts not yet born always qualify, and leaving it out applies the reform to everyone including current retirees), and the new parameter values. This is how a phased-in increase in the retirement age that exempts those near retirement is expressed. The model expands these inputs into an array over periods and ages, so the household problem, the aggregates, and the steady state (which uses the final period's value) all read the same cohort-specific retirement age. The parameters of the defined benefit system (`alpha_db`, `avg_earn_num_years`, `yr_contrib`) and of the notional defined contribution system (`tau_p`, `k_ret`, `indR`) can be changed by cohort in the same way, so a reform of the benefit formula can also be phased in by birth cohort. With no regimes, the base `alpha_db` is a path by lifetime income group and the calendar year in which a benefit is paid, and the other parameters are single values. The replacement-rate adjustment `replacement_rate_adjust` is, by contrast, always indexed by the calendar year in which a benefit is paid.
 
 ##### US-style social security system
 
@@ -402,13 +402,14 @@ The defined benefit system pension amount is given as:
 
   ```{math}
   :label: eqn:db_pension
-  pension_{j,s,t} = \biggl[\frac{\sum_{s=R-ny}^{R-1}w_{t}e_{j,s,t}n_{j,s,t}}{ny}\biggr]\times Cy \times \alpha^{DB}_{j,t} \quad \forall s \geq R_{t-s}
+  pension_{j,s,t} = \biggl[\frac{\sum_{u=R-ny}^{R-1}w_{t-s+u}e_{j,u,t-s+u}n_{j,u,t-s+u}}{ny}\biggr]\times Cy \times \alpha^{DB}_{j,s,t} \quad \forall s \geq R
   ```
 
-where:
-  - $ny$ are the number of years over which average earnings are calculated
-  - $Cy$ are the number of years of contributions.  In our model, there is no exit from the labor force, so workers will contribute for $R$ years, but $Cy$ could be some number less than $R$ if there is a maximum number of years of contributions one can accrue under the DB system.
-  - $\alpha^{DB}_{j,t}$ is the replacement rate per year of contribution.  This rate may vary over time and across lifetime income groups.  The rate applied to a benefit is the one in effect in the period in which the benefit is paid, so a change in the rate affects the benefits of current retirees as well as those of future retirees.
+where the sum runs over the household's own earnings history (the wage, effective labor units, and labor supply at each working age $u$ were those of period $t-s+u$), and:
+  - $ny$ are the number of years over which average earnings are calculated (`avg_earn_num_years`)
+  - $Cy$ are the number of years of contributions (`yr_contrib`).  In our model, there is no exit from the labor force, so workers will contribute for $R$ years, but $Cy$ could be some number less than $R$ if there is a maximum number of years of contributions one can accrue under the DB system.
+  - $\alpha^{DB}_{j,s,t}$ is the replacement rate per year of contribution (`alpha_db`), which may vary across lifetime income groups.
+  - $R$, $ny$, $Cy$, and $\alpha^{DB}$ are the values that apply to the household's birth cohort $t-s$ at the age and period in which the benefit is paid. With no `pension_regimes`, $R$, $ny$, and $Cy$ are the same for every cohort and $\alpha^{DB}_{j,t}$ is a path by the calendar year of payment, so a change in it affects the benefits of current retirees as well as those of future retirees. A regime with a `max_age_at_start` instead changes the formula only for the cohorts it covers, so the benefits of those already retired are unchanged.
 
   Given this pension system and the fact that there is only variation in labor supply along the intensive margin (so we don't need to consider changes in $Cy$), the partial derivatives from the household section are given by:
 
@@ -428,17 +429,17 @@ The pension amount under a notional defined contribution system is given as:
 
   ```{math}
   :label: eqn:ndc_pension
-   pension_{j,s,t} = \biggl[\sum_{s=E}^{R-1}\tau^{p}_{t}w_{t}e_{j,s,t}n_{j,s,t}(1 + g_{NDC,t})^{R-s-1}\biggr]\delta_{R, t} \quad \forall s \geq R_{t-s}
+   pension_{j,s,t} = \biggl[\sum_{u=E}^{R-1}\tau^{p}_{u,t-s+u}w_{t-s+u}e_{j,u,t-s+u}n_{j,u,t-s+u}(1 + g_{NDC,t})^{R-u-1}\biggr]\delta_{R,s,t} \quad \forall s \geq R
   ```
 
-where:
+where the sum runs over the household's own contribution history and:
 
-  * $\tau^p$ is the pension contribution tax rate
+  * $\tau^{p}_{u,t-s+u}$ is the pension contribution tax rate (`tau_p`) that the household's cohort faced at working age $u$, in period $t-s+u$
   * $g_{NDC,t}$ the rate of growth applied to contributions.
     * For example, In the Italian system, $g_{NDC,t}$ is the mean nominal GDP growth rate in the 5 years before seniority
     * i.e., $g_{NDC,t}=\prod_{j=i}^{R-1}\bar{g}_{j}$
     * Note, this is not $g_y$. In the SS, it's $(\bar{g}_{y} + \bar{g}_{n})$, and in the transition path equilibrium, it's not a function of exogenous variables since the growth rate of nominal GDP is endogenous.
-  * $\delta_{R, t}$ is the conversion coefficient at time $t$ and its calculation is detailed below.
+  * $\delta_{R,s,t}$ is the conversion coefficient and its calculation is detailed below. It, like $R$ and $\tau^p$, takes the values (`k_ret`, `indR`) that apply to the household's birth cohort at the age and period in which the benefit is paid, so that a reform entered through `pension_regimes` with a `max_age_at_start` changes the formula only for the cohorts it covers.
 
   ```{math}
   \delta_{R} = (dir_{R} + ind_{R} - k)^{-1}
