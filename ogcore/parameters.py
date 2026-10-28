@@ -100,6 +100,36 @@ class Specifications(paramtools.Parameters):
         self.T = int(self.T)
         self.J = len(self.lambdas)
 
+        # The initial household wealth parameters are optional: a null
+        # value in the JSON (or None in a revision) means the time path
+        # starts from the steady-state distribution of savings, which is
+        # what TPI does when the attribute is None. paramtools stores a
+        # null float as NaN and a cleared value as an empty array, so
+        # normalize both to None here, and check a supplied distribution.
+        for name in ("initial_wealth_ratio", "initial_hhwealth_dist"):
+            value = getattr(self, name, None)
+            if (
+                value is None
+                or np.size(value) == 0
+                or np.all(np.isnan(np.asarray(value, dtype=float)))
+            ):
+                setattr(self, name, None)
+            elif name == "initial_hhwealth_dist":
+                dist = np.asarray(value, dtype=float)
+                if dist.shape != (self.S, self.J):
+                    raise ValueError(
+                        "initial_hhwealth_dist must have shape (S, J) = "
+                        f"({self.S}, {self.J}); got {dist.shape}"
+                    )
+                if not np.isclose(dist.sum(), 1.0, atol=1e-6):
+                    raise ValueError(
+                        "initial_hhwealth_dist must sum to one; got "
+                        f"{dist.sum()}"
+                    )
+                self.initial_hhwealth_dist = dist
+            else:
+                self.initial_wealth_ratio = float(np.squeeze(value))
+
         # beta_annual and chi_b carry one value per lifetime-income group, but
         # paramtools validates values and nesting depth, not list length, so a
         # wrong-length vector used to flow through silently: a short one

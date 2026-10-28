@@ -37,6 +37,35 @@ def test_compute_default_params():
     assert specs.alpha_G[10] == 1
 
 
+def test_initial_wealth_parameters_default_to_none():
+    """
+    The optional initial wealth parameters are None unless set, round-trip
+    through update_specifications, and a supplied distribution must be
+    S x J and sum to one.
+    """
+    specs = Specifications()
+    assert specs.initial_wealth_ratio is None
+    assert specs.initial_hhwealth_dist is None
+    specs.update_specifications({"initial_wealth_ratio": 3.0})
+    assert specs.initial_wealth_ratio == 3.0
+    specs.update_specifications({"initial_wealth_ratio": None})
+    assert specs.initial_wealth_ratio is None
+    dist = np.ones((specs.S, specs.J)) / (specs.S * specs.J)
+    specs.update_specifications({"initial_hhwealth_dist": dist.tolist()})
+    assert specs.initial_hhwealth_dist.shape == (specs.S, specs.J)
+    assert np.isclose(specs.initial_hhwealth_dist.sum(), 1.0)
+    specs.update_specifications({"initial_hhwealth_dist": None})
+    assert specs.initial_hhwealth_dist is None
+    with pytest.raises(ValueError, match="sum to one"):
+        specs.update_specifications(
+            {"initial_hhwealth_dist": (2 * dist).tolist()}
+        )
+    with pytest.raises(ValueError, match="shape"):
+        specs.update_specifications(
+            {"initial_hhwealth_dist": dist[:-1, :].tolist()}
+        )
+
+
 def test_alpha_FA_extended_over_time_path():
     # alpha_FA is a GDP-share fiscal parameter that may vary over the time
     # path, so it should be extrapolated to length T+S with the last value

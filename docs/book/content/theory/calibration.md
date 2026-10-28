@@ -129,7 +129,81 @@ In the following section, we detail a list of items to calibrate for a country a
 ```
 
 
-(SecCalibFootnotes)=
+(SecCalibOther)=
+## Other parameters to calibrate
+
+(SecCalibOther_InitW)=
+### Initial distribution of capital $\Gamma_1$ and aggregate household wealth $B_1$
+
+  [The content in this section is just a placeholder and will need to be updated as the initial distribution of wealth is incorporated as an exogenous input parameter of the model.]
+
+  One of the initial state parameters in the transition path equilibrium solution algorithm is the initial distribution of wealth held by households $\mathbf{\hat{\Gamma}}_1 \equiv \{b_{j,s,1}\}_{j=1,s=E+1}^{J,E+S}$. Note also that the initial value of aggregate household wealth $\hat{B}_1$ is a function of the initial distribution of capital $\mathbf{\hat{\Gamma}}_1$ and the pre-initial period population distribution $\{\hat{\omega}_{s,0}\}_{s=E+1}^{E+S}$ (see equation {eq}`EqStnrz_Bt`).
+
+  ```{math}
+  :label: EqMarkClr_B1
+    \hat{B}_1 \equiv \frac{1}{1 + \tilde{g}_{n,1}}\sum_{s=E+2}^{E+S+1}\sum_{j=1}^{J}\Bigl(\hat{\omega}_{s-1,0}\lambda_j\hat{b}_{j,s,1} + i_s\hat{\omega}_{s,0}\lambda_j\hat{b}_{j,s,1}\Bigr) \quad\text{where}\quad \frac{1}{1 + \tilde{g}_{n,1}} = \frac{\tilde{N}_0}{\tilde{N}_1}
+  ```
+
+  OG-Core has two parameter objects for calibrating this initial distribution of capital $\mathbf{\hat{\Gamma}}_1 \equiv \{b_{j,s,1}\}_{j=1,s=E+1}^{J,E+S}$:
+  - `initial_hhwealth_dist`
+  - `initial_wealth_ratio`
+
+  The `initial_hhwealth_dist` parameter object is an $S \times J$ matrix of percentages representing the percent of total household wealth in the initial period held by households of age $s$ and lifetime income group $j$. The elements of this distribution must sum to 1.
+
+  ```{math}
+  :label: EqInitHHwealth
+    \mathbf{\hat{\Gamma}}_1\equiv \{\hat{b}_{j,s,1}\}_{j=1,s=E+1}^{J,E+S} = \texttt{initial_hhwealth_dist}\,\times\, \hat{B}_1
+  ```
+
+  {numref}`TabWealthGDPcountries` shows the aggregate household wealth to GDP ratios in seven countries, with values ranging from 1.695 to 5.594. The range of valid values for the `initial_BY_ratio` parameter is 0.8 to 7.0.
+
+  ```{list-table} **Aggregate household wealth as a percent of GDP in select countries**
+  :header-rows: 1
+  :name: TabWealthGDPcountries
+  * - **Country**
+    - **Aggr. HH wealth ($B_1$)**
+    - **Nominal GDP ($Y_1$)**
+    - **Aggr. HH wealth/GDP**
+    - **Data year**
+  * - United States
+    - $185.65 T
+    - $32.56 T
+    - 570.2%
+    - 2026
+  * - United Kingdom
+    - $18.06 T
+    - $3.70 T
+    - 488.1%
+    - 2024
+  * - India
+    - $16.01 T
+    - $3.76 T
+    - 425.8%
+    - 2024
+  * - Indonesia
+    - $3.59 T
+    - $1.40 T
+    - 256.4%
+    - 2024
+  * - South Africa
+    - $1.03 T
+    - $0.401 T
+    - 256.2%
+    - 2024
+  * - Philippines
+    - $1.011 T
+    - $0.404 T
+    - 250.2%
+    - 2022
+  * - Ethiopia
+    - $0.300 T
+    - $0.177 T
+    - 169.5%
+    - 2022
+  ```
+
+
+<!--(SecCalibFootnotes)=
 ## Footnotes
 
-<!-- [^citation_note]: See {cite}`AuerbachEtAl:1981,AuerbachEtAl:1983`, {cite}`AuerbachKotlikoff:1983a,AuerbachKotlikoff:1983b,AuerbachKotlikoff:1983c`, and {cite}`AuerbachKotlikoff:1985`. -->
+[^citation_note]: See {cite}`AuerbachEtAl:1981,AuerbachEtAl:1983`, {cite}`AuerbachKotlikoff:1983a,AuerbachKotlikoff:1983b,AuerbachKotlikoff:1983c`, and {cite}`AuerbachKotlikoff:1985`. -->
