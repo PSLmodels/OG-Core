@@ -457,6 +457,24 @@
 <span class="n">MIN_INC_GRAPH</span> <span class="o">=</span> <span class="mi">5</span>
 <span class="n">MAX_INC_GRAPH</span> <span class="o">=</span> <span class="mi">500000</span>
 
+
+<span class="k">def</span><span class="w"> </span><span class="nf">local_scheduler</span><span class="p">():</span>
+<span class="w">    </span><span class="sd">"""</span>
+<span class="sd">    Return the Dask scheduler to use for a local (no distributed client)</span>
+<span class="sd">    compute call, chosen for the current platform.</span>
+
+<span class="sd">    The multiprocessing scheduler relies on forking, which is not</span>
+<span class="sd">    available on Windows, so the threaded scheduler is used there instead</span>
+<span class="sd">    (see issue #1051). os.name is "nt" on Windows, as used elsewhere in</span>
+<span class="sd">    the package (e.g. demographics.py).</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        scheduler: "threads" on Windows, otherwise</span>
+<span class="sd">            dask.multiprocessing.get</span>
+<span class="sd">    """</span>
+    <span class="k">return</span> <span class="s2">"threads"</span> <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="s2">"nt"</span> <span class="k">else</span> <span class="n">dask</span><span class="o">.</span><span class="n">multiprocessing</span><span class="o">.</span><span class="n">get</span>
+
+
 <span class="sd">"""</span>
 <span class="sd">------------------------------------------------------------------------</span>
 <span class="sd">Define Functions</span>
@@ -2143,7 +2161,7 @@
     <span class="k">else</span><span class="p">:</span>
         <span class="n">results</span> <span class="o">=</span> <span class="n">compute</span><span class="p">(</span>
             <span class="o">*</span><span class="n">lazy_values</span><span class="p">,</span>
-            <span class="n">scheduler</span><span class="o">=</span><span class="n">dask</span><span class="o">.</span><span class="n">multiprocessing</span><span class="o">.</span><span class="n">get</span><span class="p">,</span>
+            <span class="n">scheduler</span><span class="o">=</span><span class="n">local_scheduler</span><span class="p">(),</span>
             <span class="n">num_workers</span><span class="o">=</span><span class="n">num_workers</span><span class="p">,</span>
         <span class="p">)</span>
 
