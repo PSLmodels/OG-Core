@@ -1,5 +1,6 @@
 from ogcore import txfunc
 from distributed import Client, LocalCluster
+import dask.multiprocessing
 import pytest
 import pandas as pd
 import numpy as np
@@ -973,3 +974,16 @@ def test_monotone_spline():
     assert np.allclose(wsse_cstr2, wsse_cstr_expected)
     assert np.allclose(y_uncstr2, y_uncstr_expected)
     assert np.allclose(wsse_uncstr2, wsse_uncstr_expected)
+
+
+def test_local_scheduler(monkeypatch):
+    """
+    local_scheduler returns the threaded scheduler on Windows (where the
+    multiprocessing scheduler's fork is unavailable) and the
+    multiprocessing scheduler otherwise. See issue #1051.
+    """
+    monkeypatch.setattr(os, "name", "nt")
+    assert txfunc.local_scheduler() == "threads"
+
+    monkeypatch.setattr(os, "name", "posix")
+    assert txfunc.local_scheduler() is dask.multiprocessing.get
