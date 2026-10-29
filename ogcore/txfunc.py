@@ -1363,12 +1363,16 @@ def tax_func_loop(
             if graph_data:
                 pp.gen_3Dscatters_hist(df_etr, s, t, output_dir)
 
-            # Estimate effective tax rate function ETR(x,y)
+            # Estimate effective tax rate function ETR(x,y). Warm-start
+            # the optimizer from the previous age's estimate by feeding
+            # the returned parameters back into params_init_etr for the
+            # next age (see issue #1031). On the first estimated age this
+            # is the all-ages estimate computed above.
             (
                 etrparams,
                 etr_wsumsq_arr[s - s_min],
                 etr_obs_arr[s - s_min],
-                params_init,
+                params_init_etr,
             ) = txfunc_est(
                 df_etr,
                 s,
@@ -1389,7 +1393,7 @@ def tax_func_loop(
                 mtrxparams,
                 mtrx_wsumsq_arr[s - s_min],
                 mtrx_obs_arr[s - s_min],
-                params_init,
+                params_init_mtrx,
             ) = txfunc_est(
                 df_mtrx,
                 s,
@@ -1409,7 +1413,7 @@ def tax_func_loop(
                 mtryparams,
                 mtry_wsumsq_arr[s - s_min],
                 mtry_obs_arr[s - s_min],
-                params_init,
+                params_init_mtry,
             ) = txfunc_est(
                 df_mtry,
                 s,
