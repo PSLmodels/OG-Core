@@ -307,10 +307,18 @@ _Out-of-Range Action:_ error
 ### Government Pension Parameters
 
 ####  `retirement_age`  
-_Description:_ Age at which agents can collect Social Security benefits. Set value for base year, click '+' to add value for next year.  All future years not specified are set to last value entered.  
+_Description:_ Age at which agents can collect public pension benefits. A single value. The retirement age belongs to a birth cohort, so changes along the time path are entered through `pension_regimes`.  
+_Notes:_ Internally expanded to the array `retire` of retirement periods by model period and age, which the household problem, the aggregates, and the steady state (final period) all read.  
 _Value Type:_ int  
 _Valid Range:_ min = 0 and max = 100  
 _Out-of-Range Action:_ error  
+
+
+####  `pension_regimes`  
+_Description:_ List of pension reforms applied in order. Each is a dict with a calendar `year` from which it applies, an optional `max_age_at_start` (the oldest age in years, in that calendar year, to which it applies; `null` or omitted means everyone including current retirees; cohorts not yet born always qualify), and the new values of the parameters it changes. Only `retirement_age` can be set this way at present. A regime that leaves a parameter out leaves it unchanged. A `year` before the start year with `max_age_at_start` 0 is a birth-year cutoff (born in that year or later). Example: `[{"year": 2030, "max_age_at_start": 54, "retirement_age": 67}, {"year": 2030, "max_age_at_start": 44, "retirement_age": 68}]` raises the retirement age to 67 for those 54 or younger in 2030 and to 68 for those 44 or younger.  
+_Notes:_ Entered with `update_specifications`, as a list in a dict or a JSON string, and kept outside the ParamTools validation. The model raises an error for a regime that would raise the retirement age of a cohort after it has retired, or that leaves the final period of the time path with more than one retirement age.  
+_Value Type:_ list of dicts  
+_Default:_ `[]`  
 
 
 ####  `pension_system`  

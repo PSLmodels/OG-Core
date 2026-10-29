@@ -1,4 +1,5 @@
 import os
+import json
 import tempfile
 import pytest
 import numpy as np
@@ -335,3 +336,228 @@ def test_J_dimensioned_length_guard():
     specs3 = Specifications()
     with pytest.raises(ValueError, match="beta_annual"):
         specs3.update_specifications({"beta_annual": [0.94, 0.95, 0.96]})
+
+
+def test_retire_is_a_period_by_age_array():
+    """
+    retire is a (T + S) x S array of the retirement period for the
+    household of age s in period t. With no pension regimes every entry
+    is the base retirement age. retirement_age itself is a single value;
+    a uniform list collapses and a year-varying list is an error that
+    points at pension_regimes.
+    """
+    p = Specifications()
+    assert p.retire.shape == (p.T + p.S, p.S)
+    assert p.retire.dtype.kind == "i"
+    assert np.all(p.retire == 44)  # age 65 with starting_age 20
+    assert p.retirement_age.shape == (1,)
+    assert p.pension_regimes == []
+
+    p.update_specifications({"retirement_age": [67, 67]})
+    assert p.retirement_age.shape == (1,)
+    assert np.all(p.retire == 46)
+
+    with pytest.raises(ValueError, match="pension_regimes"):
+        Specifications().update_specifications({"retirement_age": [65, 67]})
+
+
+def test_pension_regime_calendar_only():
+    """A regime with no cohort cutoff applies to everyone from its year."""
+    p = Specifications()
+    p.update_specifications(
+        {"pension_regimes": [{"year": 2030, "retirement_age": 60}]}
+    )
+    t_switch = 2030 - p.start_year
+    assert np.all(p.retire[:t_switch, :] == 44)
+    assert np.all(p.retire[t_switch:, :] == 39)
+
+
+def test_pension_regime_grandfathered():
+    """
+    A regime with max_age_at_start applies only to households at or
+    below that age in its start year, in that year and every later one,
+    so each cohort keeps one retirement age down its diagonal.
+    """
+    p = Specifications()
+    p.update_specifications(
+        {
+            "pension_regimes": [
+                {"year": 2030, "max_age_at_start": 54, "retirement_age": 67}
+            ]
+        }
+    )
+    base, raised = 44, 46
+    E = p.starting_age
+    # before 2030 nothing changes
+    assert np.all(p.retire[: 2030 - p.start_year, :] == base)
+    # in 2030 ages up to 54 move, 55 and over stay
+    t = 2030 - p.start_year
+    assert np.all(p.retire[t, : 54 - E + 1] == raised)
+    assert np.all(p.retire[t, 55 - E :] == base)
+    # in 2045 the cutoff cohort is 69
+    t = 2045 - p.start_year
+    assert np.all(p.retire[t, : 69 - E + 1] == raised)
+    assert np.all(p.retire[t, 70 - E :] == base)
+    # the steady state is in the new regime
+    assert np.all(p.retire[-1, :] == raised)
+    # cohort diagonals: aged 40 in 2030 (35 in 2025) switches in 2030,
+    # aged 60 in 2030 never does, born in 2032 always has the new age
+    forty = np.diagonal(p.retire, offset=35 - E)
+    assert np.all(forty[:5] == base) and np.all(forty[5:] == raised)
+    sixty = np.diagonal(p.retire, offset=55 - E)
+    assert np.all(sixty == base)
+    born_2032 = np.diagonal(p.retire[7 : 7 + p.S, :])
+    assert np.all(born_2032 == raised)
+
+
+def test_pension_regime_birth_year_form():
+    """
+    A regime dated before start_year with max_age_at_start 0 is a
+    birth-year cutoff: year 1980 covers everyone born in 1980 or later.
+    """
+    p = Specifications()
+    p.update_specifications(
+        {
+            "pension_regimes": [
+                {"year": 1980, "max_age_at_start": 0, "retirement_age": 67}
+            ]
+        }
+    )
+    E = p.starting_age
+    # in 2025 those born in 1980 are 45
+    assert np.all(p.retire[0, : 45 - E + 1] == 46)
+    assert np.all(p.retire[0, 46 - E :] == 44)
+
+
+def test_pension_regimes_apply_in_list_order():
+    """
+    Later regimes overwrite earlier ones where both apply, so a phased
+    schedule lists the narrower (younger) cutoffs last.
+    """
+    schedule = [
+        {"year": 2030, "max_age_at_start": 54, "retirement_age": 67},
+        {"year": 2030, "max_age_at_start": 44, "retirement_age": 68},
+    ]
+    p = Specifications()
+    p.update_specifications({"pension_regimes": schedule})
+    E = p.starting_age
+    t = 2030 - p.start_year
+    assert p.retire[t, 44 - E] == 47
+    assert p.retire[t, 45 - E] == 46
+    assert p.retire[t, 55 - E] == 44
+
+    reversed_schedule = list(reversed(schedule))
+    q = Specifications()
+    q.update_specifications({"pension_regimes": reversed_schedule})
+    # the 67 regime now comes last and covers the under-45s too
+    assert q.retire[t, 44 - E] == 46
+    assert q.retire[t, 45 - E] == 46
+
+
+def test_pension_regime_with_fewer_periods_than_years():
+    """
+    With S = 40 each model period spans two years, so the calendar
+    year of period t is start_year + 2t and ages run 20, 22, ...
+    """
+    with open(os.path.join(CUR_PATH, "testing_params.json")) as f:
+        small = json.load(f)
+    p = Specifications()
+    small["pension_regimes"] = [
+        {"year": 2030, "max_age_at_start": 54, "retirement_age": 67}
+    ]
+    p.update_specifications(small)
+    assert p.S == 40
+    assert p.retire.shape == (p.T + p.S, p.S)
+    base = int(np.round((65 - p.starting_age) * 40 / 80.0) - 1)
+    raised = int(np.round((67 - p.starting_age) * 40 / 80.0) - 1)
+    assert raised > base
+    # 2029 (t = 2) is before the regime, 2031 (t = 3) is after
+    assert np.all(p.retire[2, :] == base)
+    # at t = 3, age 20 + 2s, age in 2030 = 20 + 2s - 6 + 5 <= 54 means
+    # s <= 17
+    assert np.all(p.retire[3, :18] == raised)
+    assert np.all(p.retire[3, 18:] == base)
+
+
+@pytest.mark.parametrize(
+    "regimes,match",
+    [
+        ("not a list", "list of dicts"),
+        ([{"year": 2030, "retirement_age": 67, "foo": 1}], "unknown keys"),
+        ([{"retirement_age": 67}], "missing the required 'year'"),
+        ([{"year": 2030.5, "retirement_age": 67}], "integer calendar year"),
+        ([{"year": 9999, "retirement_age": 67}], "after the end"),
+        ([{"year": 2030}], "sets none of the pension parameters"),
+        ([{"year": 2030, "retirement_age": [67]}], "single number"),
+        ([{"year": 2030, "retirement_age": 120}], "above the maximum"),
+        (
+            [{"year": 2030, "max_age_at_start": -1, "retirement_age": 67}],
+            "max_age_at_start",
+        ),
+        (
+            # everyone at or below 70 in 2030 includes households already
+            # retired at 65, whose benefits would stop
+            [{"year": 2030, "max_age_at_start": 70, "retirement_age": 67}],
+            "after it has retired",
+        ),
+        (
+            # a cutoff so late that the final period still has cohorts
+            # on the old age
+            [{"year": 2423, "max_age_at_start": 54, "retirement_age": 67}],
+            "spans more than one pension regime",
+        ),
+        ([{"year": 2030, "retirement_age": 101}], "above the maximum"),
+        ([{"year": 2030, "retirement_age": 18}], "inside the working life"),
+    ],
+    ids=[
+        "not a list",
+        "unknown key",
+        "missing year",
+        "non-integer year",
+        "year past path",
+        "no parameters",
+        "list value",
+        "out of range",
+        "negative age",
+        "raises age of retirees",
+        "steady state split",
+        "above validator max",
+        "retire before working life",
+    ],
+)
+def test_pension_regimes_validation(regimes, match):
+    p = Specifications()
+    with pytest.raises(ValueError, match=match):
+        p.update_specifications({"pension_regimes": regimes})
+
+
+def test_pension_regimes_lowering_age_for_retirees_is_allowed():
+    """
+    Lowering the retirement age for everyone, including households
+    already retired, withdraws no benefits and is accepted.
+    """
+    p = Specifications()
+    p.update_specifications(
+        {"pension_regimes": [{"year": 2030, "retirement_age": 62}]}
+    )
+    assert np.all(p.retire[-1, :] == 41)
+
+
+def test_pension_regimes_from_json_string_and_dict_left_intact():
+    """
+    pension_regimes can arrive in a JSON string, and a revision dict is
+    not modified by update_specifications.
+    """
+    revision = {
+        "pension_regimes": [{"year": 2030, "retirement_age": 60}],
+        "frisch": 0.5,
+    }
+    p = Specifications()
+    p.update_specifications(json.dumps(revision))
+    assert np.all(p.retire[-1, :] == 39)
+    assert p.frisch == 0.5
+
+    q = Specifications()
+    q.update_specifications(revision)
+    assert "pension_regimes" in revision
+    assert np.all(q.retire[-1, :] == 39)

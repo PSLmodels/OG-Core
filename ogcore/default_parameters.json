@@ -4040,13 +4040,13 @@
             }
     },
     "retirement_age": {
-        "title": "Age at which agents can collect Social Security benefits",
-        "description": "Age at which agents can collect Social Security benefits. Set value for base year, click '+' to add value for next year.  All future years not specified are set to last value entered.",
+        "title": "Age at which agents can collect public pension benefits",
+        "description": "Age at which agents can collect public pension benefits. A single value. The retirement age belongs to a birth cohort, so changes along the time path are entered through pension_regimes.",
         "short_description": "Retirement age",
         "param_notation": "$R$",
         "section_1": "Fiscal Policy Parameters",
         "section_2": "Government Pension Parameters",
-        "notes": "",
+        "notes": "Internally expanded to the array retire of retirement periods by model period and age, which the household problem, the aggregates, and the steady state (final period) all read. pension_regimes is a list of dicts, each with a calendar year, an optional max_age_at_start, and the new retirement_age, applied in order.",
         "type": "int",
         "number_dims": 1,
         "value": [

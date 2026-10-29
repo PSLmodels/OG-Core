@@ -29,7 +29,7 @@ new_param_values = {
     "imm_rates_preTP": np.zeros((4, 1)).tolist(),
 }
 p.update_specifications(new_param_values)
-p.retire = [3, 3, 3, 3, 3, 3, 3, 3]
+p.retire = np.full((p.T + p.S, p.S), 3)
 p1 = Specifications()
 p1.update_specifications(
     {
@@ -54,7 +54,7 @@ p1.update_specifications(
         "imm_rates_preTP": np.zeros((4, 2)).tolist(),
     }
 )
-p1.retire = [3, 3, 3, 3, 3, 3, 3, 3]
+p1.retire = np.full((p1.T + p1.S, p1.S), 3)
 p2 = copy.deepcopy(p1)
 p3 = copy.deepcopy(p1)
 # Use just a column of e
@@ -529,7 +529,7 @@ args_ps = (r, w_db, n_db, Y, theta, t, j, shift, method, e_db, factor, p3)
 p4 = Specifications()
 p4.pension_system = "US-Style Social Security"
 p4.S = 7
-p4.retire = (np.ones(p4.T) * 4).astype(int)
+p4.retire = np.full((p4.T + p4.S, p4.S), 4)
 w_ss = np.array([1.2, 1.1, 1.21, 1.0, 1.01, 0.99, 0.8])
 e_ss = np.array([1.1, 1.11, 0.9, 0.87, 0.87, 0.7, 0.6])
 n_ss = np.array([0.4, 0.45, 0.4, 0.42, 0.3, 0.2, 0.2])
@@ -1249,7 +1249,7 @@ def test_pension_amount_with_real_specifications(system, updates):
     pension = pensions.pension_amount(
         r, w, n, Y, theta, None, j, False, "SS", e, factor, p
     )
-    S_ret = int(p.retire[-1])
+    S_ret = int(p.retire[-1, -1])
     assert pension.shape == (p.S,)
     assert np.all(pension[:S_ret] == 0.0)
     assert np.all(pension[S_ret:] > 0.0)
@@ -1357,15 +1357,15 @@ def test_pension_periods_conversion_and_bounds():
         }
     )
     ny, cy, S_ret = pensions.pension_periods(p)
-    assert (ny, cy, S_ret) == (35, 40, int(p.retire[-1]))
+    assert (ny, cy, S_ret) == (35, 40, int(p.retire[-1, -1]))
     n = np.linspace(0.5, 0.2, p.S)
     e = np.asarray(p.e)[-1, :, 0]
     assert np.isfinite(pensions.DB_amount(1.0, e, n, None, 0, "SS", p)).all()
     # window exactly the working life is allowed
-    p.avg_earn_num_years = int(p.retire[-1])
-    assert pensions.pension_periods(p)[0] == int(p.retire[-1])
+    p.avg_earn_num_years = int(p.retire[-1, -1])
+    assert pensions.pension_periods(p)[0] == int(p.retire[-1, -1])
     # one year longer would index before the first period of life
-    p.avg_earn_num_years = int(p.retire[-1]) + 1
+    p.avg_earn_num_years = int(p.retire[-1, -1]) + 1
     with pytest.raises(ValueError, match="working life"):
         pensions.DB_amount(1.0, e, n, None, 0, "SS", p)
     with pytest.raises(ValueError, match="working life"):
@@ -1447,16 +1447,89 @@ def test_replacement_rate_adjustment_indexes_by_cohort_year():
     assert np.isclose(ss, adjust[-1, j])
 
 
-def _glide_params(j, switch_year, cut):
+def _glide_params(j, switch_year, cut, regimes=None):
     """
     Specifications with replacement_rate_adjust = 1 before switch_year
-    and = cut from switch_year on, for lifetime income group j only.
+    and = cut from switch_year on, for lifetime income group j only,
+    and optionally a list of pension regimes.
     """
     p = Specifications()
+    if regimes is not None:
+        p.update_specifications({"pension_regimes": regimes})
     adjust = np.ones((p.T + p.S, p.J))
     adjust[switch_year:, j] = cut
     p.replacement_rate_adjust = adjust
     return p
+
+
+# retirement age 67 from 2030 for everyone at or below age 54 in 2030;
+# older households keep the base retirement age of 65
+GRANDFATHERED_67 = [
+    {"year": 2030, "max_age_at_start": 54, "retirement_age": 67}
+]
+
+
+def test_retirement_mask_follows_each_cohort():
+    """
+    retirement_mask must read each household's own retirement age: on
+    the household (cohort) path that is the diagonal of p.retire, and
+    the cross-section masks must agree with it cell by cell.
+    """
+    p = Specifications()
+    p.update_specifications({"pension_regimes": GRANDFATHERED_67})
+    S, T = p.S, p.T
+    ages = np.arange(S)
+    base, raised = 44, 46  # model periods for ages 65 and 67
+    assert np.unique(p.retire).tolist() == [base, raised]
+
+    # steady state: the final row, one age earlier when shift is True
+    ss = pensions.retirement_mask(None, None, False, "SS", 1, p)
+    assert np.array_equal(ss, ages >= raised)
+    ss_shift = pensions.retirement_mask(None, None, True, "SS", 1, p)
+    assert np.array_equal(ss_shift, ages >= raised - 1)
+    assert pensions.retirement_mask(None, None, False, "SS", 2, p).shape == (
+        S,
+        1,
+    )
+
+    # the oldest household in period 0 is retired
+    assert pensions.retirement_mask(None, None, False, "TPI_scalar", 1, p)
+
+    # a cohort born in 2032 (t = 7) is under the regime for its whole life
+    born_later = pensions.retirement_mask(7, S, False, "TPI", 1, p)
+    assert np.array_equal(born_later, ages >= raised)
+
+    # households alive in period 0 solve partial lifetimes from t = 0.
+    # Aged 60 in 2030 (55 in 2025, 45 periods left): above the cutoff,
+    # so the base age applies. Aged 50 in 2030 (45 in 2025, 55 periods
+    # left): the regime applies.
+    for age_2025, expected in [(55, base), (45, raised)]:
+        s0 = age_2025 - p.starting_age
+        length = S - s0
+        mask = pensions.retirement_mask(0, length, False, "TPI", 1, p)
+        assert mask.shape == (length,)
+        assert np.array_equal(mask, ages[s0:] >= expected)
+
+    # cross sections agree with the cohort paths cell by cell
+    two_d = pensions.retirement_mask(0, T, False, "TPI", 2, p)
+    three_d = pensions.retirement_mask(0, T, False, "TPI", 3, p)
+    assert two_d.shape == (T, S) and three_d.shape == (T, S, 1)
+    assert np.array_equal(three_d[:, :, 0], two_d)
+    assert np.array_equal(np.diagonal(two_d[7 : 7 + S, :]), born_later)
+    s0 = 45 - p.starting_age
+    assert np.array_equal(
+        np.diagonal(two_d[:S, :], offset=s0),
+        pensions.retirement_mask(0, S - s0, False, "TPI", 1, p),
+    )
+    # In 2045 (t = 20) the household aged 65 (age 50 in 2030) is under
+    # the regime and not yet retired, while the one aged 66 (51 in
+    # 2030) is retired. In 2029 (t = 4) age 65 is retired under the
+    # base age.
+    assert not two_d[20, base] and two_d[20, raised]
+    assert two_d[4, base]
+
+    with pytest.raises(ValueError, match="method"):
+        pensions.retirement_mask(0, S, False, "nope", 1, p)
 
 
 def test_household_path_pension_uses_year_of_payment():
@@ -1489,7 +1562,9 @@ def test_household_path_pension_uses_year_of_payment():
         1.0,
         p,
     )
-    retire = p.retire[t]
+    cohort_retire = np.diagonal(p.retire[t : t + p.S, :])
+    assert np.all(cohort_retire == cohort_retire[0])
+    retire = int(cohort_retire[0])
     years_paid = t + np.arange(retire, p.S)
     expected = theta_j * p.replacement_rate_adjust[years_paid, j] * w[retire:]
     assert np.all(expected[years_paid >= switch_year] == theta_j * cut)
@@ -1532,22 +1607,28 @@ def test_household_path_pension_uses_year_of_payment():
     assert np.allclose(multiplier, p.replacement_rate_adjust[years_paid, j])
 
 
-def test_household_path_pension_matches_pension_mat():
+@pytest.mark.parametrize(
+    "regimes", [None, GRANDFATHERED_67], ids=["no regime", "grandfathered"]
+)
+def test_household_path_pension_matches_pension_mat(regimes):
     """
     The pension a cohort faces in its own household problem must equal the
-    diagonal of the (T, S, J) pension array that TPI saves and aggregates.
+    diagonal of the (T, S, J) pension array that TPI saves and aggregates,
+    both for a cohort born along the path and for one alive at t = 0,
+    whether or not a regime changes the retirement age by cohort.
     """
-    j, t = 1, 7
-    p = _glide_params(j, 20, 0.6)
+    j = 1
+    p = _glide_params(j, 20, 0.6, regimes)
+    S, T = p.S, p.T
     rng = np.random.default_rng(0)
-    w_path = 1.0 + 0.1 * rng.random(p.T + p.S)
-    n_path = 0.2 + 0.3 * rng.random((p.T + p.S, p.S, p.J))
+    w_path = 1.0 + 0.1 * rng.random(T + S)
+    n_path = 0.2 + 0.3 * rng.random((T + S, S, p.J))
     theta = 0.3 + 0.1 * np.arange(p.J)
 
     pension_mat = pensions.pension_amount(
-        np.full(p.T, 0.04),
-        w_path[: p.T],
-        n_path[: p.T, :, :],
+        np.full(T, 0.04),
+        w_path[:T],
+        n_path[:T, :, :],
         1.0,
         theta,
         0,
@@ -1558,22 +1639,38 @@ def test_household_path_pension_matches_pension_mat():
         1.0,
         p,
     )
-    cohort = pensions.pension_amount(
-        np.full(p.S, 0.04),
-        w_path[t : t + p.S],
-        np.diag(n_path[t : t + p.S, :, j]),
-        1.0,
-        theta[j],
-        t,
-        j,
-        False,
-        "TPI",
-        p.e[t, :, j],
-        1.0,
-        p,
-    )
-    assert np.any(cohort > 0.0), "test would be vacuous with a zero benefit"
-    assert np.allclose(cohort, np.diag(pension_mat[t : t + p.S, :, j]))
+
+    def cohort_pension(t, length):
+        return pensions.pension_amount(
+            np.full(length, 0.04),
+            w_path[t : t + length],
+            np.diag(n_path[t : t + S, :, j], S - length),
+            1.0,
+            theta[j],
+            t,
+            j,
+            False,
+            "TPI",
+            p.e[t, :, j],
+            1.0,
+            p,
+        )
+
+    # a cohort born in period 7, and one aged 45 in 2025 (35 periods in,
+    # 45 left) that the grandfathered regime does and does not cover
+    first_retired = []
+    for t, length in [(7, S), (0, S - 25), (0, S - 35)]:
+        cohort = cohort_pension(t, length)
+        expected = np.diagonal(pension_mat[t : t + S, :, j], S - length)
+        assert np.any(cohort > 0.0), "vacuous with a zero benefit"
+        assert np.allclose(cohort, expected)
+        first_retired.append(S - length + np.argmax(cohort > 0.0))
+    if regimes is None:
+        assert first_retired == [44, 44, 44]
+    else:
+        # born in 2032 and aged 50 in 2030 retire at 67; aged 60 in 2030
+        # keeps 65
+        assert first_retired == [46, 46, 44]
 
 
 @pytest.mark.local

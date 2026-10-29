@@ -31,9 +31,10 @@ def pension_periods(p):
     per_year = p.S / 80.0
     equiv_periods = int(round(per_year * p.avg_earn_num_years))
     equiv_yr_contrib = int(round(per_year * p.yr_contrib))
-    # Retirement age is potentially time varying (PR #433), but the
-    # pension systems support a single retirement age for now; use the
-    # steady-state value (see Issue #1014)
+    # retire is a (T + S) x S array by period and age, but the DB, NDC,
+    # and PS systems support a single retirement age for now (see Issue
+    # #1014); use the steady-state value, which is the final row (the
+    # parameters module checks that the final row is constant)
     S_ret = int(np.asarray(p.retire).flat[-1])
     if equiv_periods < 1:
         raise ValueError(
@@ -220,13 +221,83 @@ def pension_amount(r, w, n, Y, theta, t, j, shift, method, e, factor, p):
     return pension
 
 
+def retirement_mask(t, length, shift, method, ndim, p):
+    """
+    Boolean array marking the households that are at or past their own
+    retirement age.
+
+    ``p.retire`` is a (T + S) x S integer array giving, for the household
+    of age s in period t, the model period at which it becomes eligible
+    for the public pension. A cohort's path runs down a diagonal of that
+    array, so the household path reads the cohort's own retirement age
+    rather than the one in force in a single calendar year.
+
+    Args:
+        t (int): first model period covered by the arrays (ignored for
+            'SS' and 'TPI_scalar')
+        length (int): number of periods covered by the arrays along the
+            time path; for a 1D cohort path this is the number of
+            periods of life remaining
+        shift (bool): whether computing for periods 0--s or 1--(s+1),
+            =True for 1--(s+1), which moves eligibility one age earlier
+        method (str): 'SS', 'TPI', or 'TPI_scalar'
+        ndim (int): number of dimensions of the labor supply array the
+            mask must broadcast against: 1 for a single cohort path or
+            an S vector, 2 for S x J or (length) x S, 3 for
+            (length) x S x J
+        p (OG-Core Specifications object): model parameters
+
+    Returns:
+        mask (Numpy array): boolean, shaped to broadcast against the
+            pension array
+
+    """
+    retire = np.asarray(p.retire)
+    S = p.S
+    ages = np.arange(S)
+    offset = 1 if shift else 0
+    if method == "SS":
+        # the steady state uses the final period's retirement age
+        mask = ages >= retire[-1, :] - offset
+        if ndim == 2:
+            mask = mask.reshape(S, 1)
+    elif method == "TPI_scalar":
+        # the oldest household in period 0
+        mask = np.array(S - 1 >= retire[0, S - 1] - offset)
+    elif method == "TPI":
+        if ndim == 1:
+            # One cohort with ``length`` periods of life remaining,
+            # starting in period t at age S - length: its own retirement
+            # ages run down the diagonal of retire with offset
+            # S - length, the same extraction the household problem
+            # uses for chi_n and rho.
+            cohort_retire = np.diagonal(
+                retire[t : t + S, :], offset=S - length
+            )
+            mask = ages[S - length :] >= cohort_retire - offset
+        else:
+            # cross sections for periods t, ..., t + length - 1
+            mask = ages.reshape(1, S) >= retire[t : t + length, :] - offset
+            if ndim == 3:
+                mask = mask[:, :, np.newaxis]
+    else:
+        raise ValueError(
+            "method must be one of 'SS', 'TPI', or 'TPI_scalar', got "
+            f"{method!r}"
+        )
+    return mask
+
+
 def SS_amount(w, n, theta, t, j, shift, method, e, p):
     r"""
     Calculate public pension benefit amounts for each household under
     a US-style social security system.
 
     .. math::
-        pension_{j,s,t} = \theta_j \times w_t \quad \forall s > R
+        pension_{j,s,t} = \theta_j \times w_t \quad \forall s \geq R_{t-s}
+
+    where $R_{t-s}$ is the retirement age of the cohort born in period
+    $t - s$, read from the (T + S) x S array ``p.retire``.
 
     Args:
         w (array_like): real wage rate
@@ -250,70 +321,60 @@ def SS_amount(w, n, theta, t, j, shift, method, e, p):
     Notes:
         replacement_rate_adjust is applied here, and only here, for the
         US-style system, so callers pass the unadjusted theta. Along the
-        time path the factor is indexed by the year the benefit is paid.
-        The steady state uses the final value of the parameter, so a
-        permanent adjustment carries into the steady state that the time
-        path converges to.
+        time path the factor is indexed by the year the benefit is paid
+        and the retirement age by the household's own cohort, so the
+        single-cohort path agrees with the (T, S, J) array that the
+        aggregates use. The steady state uses the final values of both.
 
     """
-    if j is not None:
-        if method == "TPI":
-            if n.ndim == 2:
-                w = w.reshape(w.shape[0], 1)
-    else:
-        if method == "TPI":
-            w = utils.to_timepath_shape(w)
-
-    pension = np.zeros_like(n)
+    n = np.asarray(n)
+    w = np.asarray(w)
+    theta = np.asarray(theta)
+    adjust = p.replacement_rate_adjust
     if method == "SS":
         # Depending on if we are looking at b_s or b_s+1, the
         # entry for retirement will change (it shifts back one).
         # The shift boolean makes sure we start replacement rates
         # at the correct age.
         if j is None:
-            replace_rate_adjust = p.replacement_rate_adjust[-1, :]
+            # a scalar when J = 1 and n is an S vector, else (1, J)
+            benefit = np.squeeze(adjust[-1, :] * theta * w)
+            if n.ndim == 2:
+                benefit = benefit.reshape(1, -1)
         else:
-            replace_rate_adjust = p.replacement_rate_adjust[-1, j]
-        if shift is False:
-            pension[p.retire[-1] :] = replace_rate_adjust * theta * w
-        else:
-            pension[p.retire[-1] - 1 :] = replace_rate_adjust * theta * w
+            benefit = adjust[-1, j] * theta * w
+        benefit = np.broadcast_to(benefit, n.shape)
+        mask = retirement_mask(None, None, shift, method, n.ndim, p)
     elif method == "TPI":
         length = w.shape[0]
-        if not shift:
-            # retireTPI is different from retire, because in TP income
-            # we are counting backwards with different length lists.
-            # This will always be the correct location of retirement,
-            # depending on the shape of the lists.
-            retireTPI = p.retire[t : t + length] - p.S
-        else:
-            retireTPI = p.retire[t : t + length] - 1 - p.S
-        if len(n.shape) == 1:
+        if n.ndim == 1:
             # One cohort's remaining lifetime: entry tt is paid in
             # period t + tt, so the adjustment is indexed by that year.
-            if not shift:
-                retireTPI = p.retire[t] - p.S
-            else:
-                retireTPI = p.retire[t] - 1 - p.S
-            adjust = p.replacement_rate_adjust[t : t + length, j]
-            pension[retireTPI:] = theta * adjust[retireTPI:] * w[retireTPI:]
-        elif len(n.shape) == 2:
-            for tt in range(pension.shape[0]):
-                pension[tt, retireTPI[tt] :] = (
-                    theta * p.replacement_rate_adjust[t + tt, j] * w[tt]
-                )
+            benefit = theta * adjust[t : t + length, j] * w
+        elif n.ndim == 2:
+            benefit = (
+                theta
+                * adjust[t : t + length, j].reshape(length, 1)
+                * w.reshape(length, 1)
+            )
         else:
-            for tt in range(pension.shape[0]):
-                pension[tt, retireTPI[tt] :, :] = (
-                    theta.reshape(1, p.J)
-                    * p.replacement_rate_adjust[t + tt, :].reshape(1, p.J)
-                    * w[tt]
-                )
+            benefit = (
+                theta.reshape(1, 1, p.J)
+                * adjust[t : t + length, :].reshape(length, 1, p.J)
+                * utils.to_timepath_shape(w)
+            )
+        mask = retirement_mask(t, length, shift, method, n.ndim, p)
     elif method == "TPI_scalar":
         # The above methods won't work if scalars are used.  This option
         # is only called by the SS_TPI_firstdoughnutring function in TPI.
-        pension = theta * p.replacement_rate_adjust[0, j] * w
-
+        benefit = theta * adjust[0, j] * w
+        mask = retirement_mask(None, None, shift, method, 1, p)
+    else:
+        raise ValueError(
+            "method must be one of 'SS', 'TPI', or 'TPI_scalar', got "
+            f"{method!r}"
+        )
+    pension = np.where(mask, benefit, 0.0)
     return pension
 
 

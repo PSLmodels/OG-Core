@@ -1345,3 +1345,65 @@ def test_run_TPI_serial_no_client(tmpdir, monkeypatch):
 
     with pytest.raises(_ReachedTPILoop):
         TPI.run_TPI(p, client=None)
+
+
+@pytest.mark.local
+def test_run_TPI_pension_regime(tmpdir, dask_client):
+    """
+    A grandfathered retirement-age regime runs through the time path, and
+    the saved pension benefits start at each cohort's own retirement
+    period: later for cohorts the regime covers, unchanged for the rest.
+    """
+    baseline_dir = os.path.join(tmpdir, "baseline")
+    p = Specifications(
+        baseline=True,
+        baseline_dir=baseline_dir,
+        output_base=baseline_dir,
+        num_workers=NUM_WORKERS,
+    )
+    test_params = TEST_PARAM_DICT.copy()
+    test_params["pension_regimes"] = [
+        {
+            "year": p.start_year + 10,
+            "max_age_at_start": 54,
+            "retirement_age": 67,
+        }
+    ]
+    p.update_specifications(test_params)
+    p.maxiter = 2  # two iterations are enough to exercise the paths
+    assert len(np.unique(p.retire)) == 2
+
+    SS.ENFORCE_SOLUTION_CHECKS = False
+    ss_outputs = SS.run_SS(p, client=None)
+    utils.mkdirs(os.path.join(p.baseline_dir, "SS"))
+    with open(os.path.join(p.baseline_dir, "SS", "SS_vars.pkl"), "wb") as f:
+        pickle.dump(ss_outputs, f)
+    TPI.ENFORCE_SOLUTION_CHECKS = False
+    tpi_vars = TPI.run_TPI(p, client=dask_client)
+    pension = tpi_vars["pension_benefits"]  # (T, S, J)
+    assert pension.shape == (p.T, p.S, p.J)
+
+    def first_paid(t, length):
+        # cohort of age S - length in period t, followed until age S - 1
+        diag = np.diagonal(pension[t : t + p.S, :, 0], offset=p.S - length)
+        retire = np.diagonal(p.retire[t : t + p.S, :], offset=p.S - length)
+        s0 = p.S - length
+        assert np.all(diag[: retire[-1] - s0] == 0.0)
+        assert np.all(diag[retire[-1] - s0 :] > 0.0)
+        return int(retire[-1])
+
+    base = int(p.retire[0, 0])
+    raised = int(p.retire[-1, 0])
+    assert raised > base
+    # born after the regime starts, and aged 50 or 60 (in years) when it
+    # starts, with two years per period in this S = 40 model
+    years_per_period = 80 / p.S
+    t_switch = int(10 / years_per_period)
+    born_later = first_paid(t_switch + 2, p.S)
+    young = first_paid(
+        0, p.S - int((50 - 10 - p.starting_age) / years_per_period)
+    )
+    old = first_paid(
+        0, p.S - int((60 - 10 - p.starting_age) / years_per_period)
+    )
+    assert (born_later, young, old) == (raised, raised, base)
