@@ -307,7 +307,8 @@ _Out-of-Range Action:_ error
 ### Government Pension Parameters
 
 ####  `retirement_age`  
-_Description:_ Age at which agents can collect Social Security benefits. Set value for base year, click '+' to add value for next year.  All future years not specified are set to last value entered.  
+_Description:_ Age at which agents can collect public pension benefits. A single value. The retirement age belongs to a birth cohort, so changes along the time path are entered through pension_regimes.  
+_Notes:_ Internally expanded to the array retire of retirement periods by model period and age, which the household problem, the aggregates, and the steady state (final period) all read. pension_regimes is a list of dicts, each with a calendar year, an optional max_age_at_start, and the new retirement_age, applied in order.  
 _Value Type:_ int  
 _Valid Range:_ min = 0 and max = 100  
 _Out-of-Range Action:_ error  

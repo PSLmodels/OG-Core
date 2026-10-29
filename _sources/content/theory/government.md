@@ -354,11 +354,11 @@ The `OG-Core` model allows for four different systems for public pensions:
 
 These can be selected with the `pension_system` parameter.  Accepted values are `US-Style Social Security`, `Defined Benefits`, `Notional Defined Contribution`, `Points System`.  We discuss each of these in turn below.
 
-For all systems, $R$ represents the age at which the individual becomes eligible to receive the government provided retirement benefit.
+For all systems, $R$ represents the age at which the individual becomes eligible to receive the government provided retirement benefit. The retirement age is a property of a birth cohort rather than of a calendar year: a household born in period $t-s$ (of age $s$ in period $t$) faces the retirement age $R_{t-s}$, and it faces the same $R_{t-s}$ in every period of its life unless a reform moves its cohort to a new value. The base value is the parameter `retirement_age`. Changes are entered through `pension_regimes`, a list of reforms applied in order, each with a calendar `year` from which it applies, an optional `max_age_at_start` (the oldest age, in that calendar year, to which the reform applies; cohorts not yet born always qualify, and leaving it out applies the reform to everyone including current retirees), and the new parameter values. This is how a phased-in increase in the retirement age that exempts those near retirement is expressed. The model expands these inputs into an array over periods and ages, so the household problem, the aggregates, and the steady state (which uses the final period's value) all read the same cohort-specific retirement age. The replacement-rate adjustment `replacement_rate_adjust` and the defined-benefit rate $\alpha^{DB}_{j,t}$ are, by contrast, indexed by the calendar year in which a benefit is paid.
 
 ##### US-style social security system
 
-Under the U.S.-style social security system, households over age $R$ received a pension amount that is a function of their earnings history.  The earings history includes the highest earning `AIME_num_periods` prior to retirement (which OG-Core assumes happens at age $R$).  This history determines the Average Indexed Monthly Earnings (AIME):
+Under the U.S.-style social security system, households over age $R$ received a pension amount that is a function of their earnings history.  The earnings history includes the highest earning `avg_earn_num_years` prior to retirement (which OG-Core assumes happens at age $R$).  This history determines the Average Indexed Monthly Earnings (AIME):
 
   ```{math}
   :label: eqn:AIME
@@ -392,7 +392,7 @@ Under the U.S.-style social security system, households over age $R$ received a 
 
   ```{math}
   :label: eqn:ss_pension
-    pension_{j,s,t} = \theta_j \times w_t \quad \forall s > R
+    pension_{j,s,t} = \theta_j \times w_t \quad \forall s \geq R_{t-s}
   ```
 
 
@@ -402,7 +402,7 @@ The defined benefit system pension amount is given as:
 
   ```{math}
   :label: eqn:db_pension
-  pension_{j,s,t} = \biggl[\frac{\sum_{s=R-ny}^{R-1}w_{t}e_{j,s,t}n_{j,s,t}}{ny}\biggr]\times Cy \times \alpha^{DB}_{j,t} \quad \forall s > R
+  pension_{j,s,t} = \biggl[\frac{\sum_{s=R-ny}^{R-1}w_{t}e_{j,s,t}n_{j,s,t}}{ny}\biggr]\times Cy \times \alpha^{DB}_{j,t} \quad \forall s \geq R_{t-s}
   ```
 
 where:
@@ -428,7 +428,7 @@ The pension amount under a notional defined contribution system is given as:
 
   ```{math}
   :label: eqn:ndc_pension
-   pension_{j,s,t} = \biggl[\sum_{s=E}^{R-1}\tau^{p}_{t}w_{t}e_{j,s,t}n_{j,s,t}(1 + g_{NDC,t})^{R-s-1}\biggr]\delta_{R, t} \quad \forall s > R
+   pension_{j,s,t} = \biggl[\sum_{s=E}^{R-1}\tau^{p}_{t}w_{t}e_{j,s,t}n_{j,s,t}(1 + g_{NDC,t})^{R-s-1}\biggr]\delta_{R, t} \quad \forall s \geq R_{t-s}
   ```
 
 where:
@@ -473,7 +473,7 @@ Under a points system, the pension amount is given as:
 
   ```{math}
   :label: eqn:ps_pension
-  pension_{j,s,t} = \sum_{s=E}^{R-1}w_{t}e_{j,s,t}n_{j,s,t}\times v_{t} \quad \forall s > R
+  pension_{j,s,t} = \sum_{s=E}^{R-1}w_{t}e_{j,s,t}n_{j,s,t}\times v_{t} \quad \forall s \geq R_{t-s}
   ```
 
 where $v_{t}$ is the value of a point at time $t$

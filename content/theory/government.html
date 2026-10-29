@@ -821,10 +821,10 @@
 <li><p>Points system</p></li>
 </ol>
 <p>These can be selected with the <code class="docutils literal notranslate"><span class="pre">pension_system</span></code> parameter.  Accepted values are <code class="docutils literal notranslate"><span class="pre">US-Style</span> <span class="pre">Social</span> <span class="pre">Security</span></code>, <code class="docutils literal notranslate"><span class="pre">Defined</span> <span class="pre">Benefits</span></code>, <code class="docutils literal notranslate"><span class="pre">Notional</span> <span class="pre">Defined</span> <span class="pre">Contribution</span></code>, <code class="docutils literal notranslate"><span class="pre">Points</span> <span class="pre">System</span></code>.  We discuss each of these in turn below.</p>
-<p>For all systems, <span class="math notranslate nohighlight">\(R\)</span> represents the age at which the individual becomes eligible to receive the government provided retirement benefit.</p>
+<p>For all systems, <span class="math notranslate nohighlight">\(R\)</span> represents the age at which the individual becomes eligible to receive the government provided retirement benefit. The retirement age is a property of a birth cohort rather than of a calendar year: a household born in period <span class="math notranslate nohighlight">\(t-s\)</span> (of age <span class="math notranslate nohighlight">\(s\)</span> in period <span class="math notranslate nohighlight">\(t\)</span>) faces the retirement age <span class="math notranslate nohighlight">\(R_{t-s}\)</span>, and it faces the same <span class="math notranslate nohighlight">\(R_{t-s}\)</span> in every period of its life unless a reform moves its cohort to a new value. The base value is the parameter <code class="docutils literal notranslate"><span class="pre">retirement_age</span></code>. Changes are entered through <code class="docutils literal notranslate"><span class="pre">pension_regimes</span></code>, a list of reforms applied in order, each with a calendar <code class="docutils literal notranslate"><span class="pre">year</span></code> from which it applies, an optional <code class="docutils literal notranslate"><span class="pre">max_age_at_start</span></code> (the oldest age, in that calendar year, to which the reform applies; cohorts not yet born always qualify, and leaving it out applies the reform to everyone including current retirees), and the new parameter values. This is how a phased-in increase in the retirement age that exempts those near retirement is expressed. The model expands these inputs into an array over periods and ages, so the household problem, the aggregates, and the steady state (which uses the final period’s value) all read the same cohort-specific retirement age. The replacement-rate adjustment <code class="docutils literal notranslate"><span class="pre">replacement_rate_adjust</span></code> and the defined-benefit rate <span class="math notranslate nohighlight">\(\alpha^{DB}_{j,t}\)</span> are, by contrast, indexed by the calendar year in which a benefit is paid.</p>
 <section id="us-style-social-security-system">
 <h5>US-style social security system<a class="headerlink" href="#us-style-social-security-system" title="Link to this heading">#</a></h5>
-<p>Under the U.S.-style social security system, households over age <span class="math notranslate nohighlight">\(R\)</span> received a pension amount that is a function of their earnings history.  The earings history includes the highest earning <code class="docutils literal notranslate"><span class="pre">AIME_num_periods</span></code> prior to retirement (which OG-Core assumes happens at age <span class="math notranslate nohighlight">\(R\)</span>).  This history determines the Average Indexed Monthly Earnings (AIME):</p>
+<p>Under the U.S.-style social security system, households over age <span class="math notranslate nohighlight">\(R\)</span> received a pension amount that is a function of their earnings history.  The earnings history includes the highest earning <code class="docutils literal notranslate"><span class="pre">avg_earn_num_years</span></code> prior to retirement (which OG-Core assumes happens at age <span class="math notranslate nohighlight">\(R\)</span>).  This history determines the Average Indexed Monthly Earnings (AIME):</p>
 <div class="math notranslate nohighlight" id="equation-eqn-aime">
 <span class="eqno">(70)<a class="headerlink" href="#equation-eqn-aime" title="Link to this equation">#</a></span>\[AIME_{j,R,t+R} = {\sum_{u=0}^{AIMEper} w_{t+u}e_{j,u,t+u}n_{j,u,t+u}}{ 12 * AIMEper}\]</div>
 <p>The AIME in turn, determines a household’s (PIA) based on three rates and brackets:</p>
@@ -842,13 +842,13 @@
 <p>Note that <span class="math notranslate nohighlight">\(AIME_{j,R,t+R}\)</span> is a function of each households’ earning history, but their choice of earning may depend on their retirement benefit.  Solving this exactly would introduce and additional fixed point problem in both the steady state solution and in the time path solution.  The latter would be extremely computationally taxing.  Therefore, we make the simplification of determining the AIME for each type <span class="math notranslate nohighlight">\(j\)</span> using the steady state solution and earnings for type <span class="math notranslate nohighlight">\(j\)</span> in the steady state.  This leads to some approximation error, but because <span class="math notranslate nohighlight">\(\theta_j\)</span> is adjusted by the current wage rate, this approximation error is minized.</p>
 <p>The pension amount for households under the US-style social security system is then:</p>
 <div class="math notranslate nohighlight" id="equation-eqn-ss-pension">
-<span class="eqno">(73)<a class="headerlink" href="#equation-eqn-ss-pension" title="Link to this equation">#</a></span>\[  pension_{j,s,t} = \theta_j \times w_t \quad \forall s &gt; R\]</div>
+<span class="eqno">(73)<a class="headerlink" href="#equation-eqn-ss-pension" title="Link to this equation">#</a></span>\[  pension_{j,s,t} = \theta_j \times w_t \quad \forall s \geq R_{t-s}\]</div>
 </section>
 <section id="defined-benefit-system">
 <h5>Defined benefit system<a class="headerlink" href="#defined-benefit-system" title="Link to this heading">#</a></h5>
 <p>The defined benefit system pension amount is given as:</p>
 <div class="math notranslate nohighlight" id="equation-eqn-db-pension">
-<span class="eqno">(74)<a class="headerlink" href="#equation-eqn-db-pension" title="Link to this equation">#</a></span>\[pension_{j,s,t} = \biggl[\frac{\sum_{s=R-ny}^{R-1}w_{t}e_{j,s,t}n_{j,s,t}}{ny}\biggr]\times Cy \times \alpha^{DB}_{j,t} \quad \forall s &gt; R\]</div>
+<span class="eqno">(74)<a class="headerlink" href="#equation-eqn-db-pension" title="Link to this equation">#</a></span>\[pension_{j,s,t} = \biggl[\frac{\sum_{s=R-ny}^{R-1}w_{t}e_{j,s,t}n_{j,s,t}}{ny}\biggr]\times Cy \times \alpha^{DB}_{j,t} \quad \forall s \geq R_{t-s}\]</div>
 <p>where:</p>
 <ul class="simple">
 <li><p><span class="math notranslate nohighlight">\(ny\)</span> are the number of years over which average earnings are calculated</p></li>
@@ -868,7 +868,7 @@
 <h5>Notional defined contribution system<a class="headerlink" href="#notional-defined-contribution-system" title="Link to this heading">#</a></h5>
 <p>The pension amount under a notional defined contribution system is given as:</p>
 <div class="math notranslate nohighlight" id="equation-eqn-ndc-pension">
-<span class="eqno">(76)<a class="headerlink" href="#equation-eqn-ndc-pension" title="Link to this equation">#</a></span>\[ pension_{j,s,t} = \biggl[\sum_{s=E}^{R-1}\tau^{p}_{t}w_{t}e_{j,s,t}n_{j,s,t}(1 + g_{NDC,t})^{R-s-1}\biggr]\delta_{R, t} \quad \forall s &gt; R\]</div>
+<span class="eqno">(76)<a class="headerlink" href="#equation-eqn-ndc-pension" title="Link to this equation">#</a></span>\[ pension_{j,s,t} = \biggl[\sum_{s=E}^{R-1}\tau^{p}_{t}w_{t}e_{j,s,t}n_{j,s,t}(1 + g_{NDC,t})^{R-s-1}\biggr]\delta_{R, t} \quad \forall s \geq R_{t-s}\]</div>
 <p>where:</p>
 <ul class="simple">
 <li><p><span class="math notranslate nohighlight">\(\tau^p\)</span> is the pension contribution tax rate</p></li>
@@ -901,7 +901,7 @@
 <h5>Points system<a class="headerlink" href="#points-system" title="Link to this heading">#</a></h5>
 <p>Under a points system, the pension amount is given as:</p>
 <div class="math notranslate nohighlight" id="equation-eqn-ps-pension">
-<span class="eqno">(78)<a class="headerlink" href="#equation-eqn-ps-pension" title="Link to this equation">#</a></span>\[pension_{j,s,t} = \sum_{s=E}^{R-1}w_{t}e_{j,s,t}n_{j,s,t}\times v_{t} \quad \forall s &gt; R\]</div>
+<span class="eqno">(78)<a class="headerlink" href="#equation-eqn-ps-pension" title="Link to this equation">#</a></span>\[pension_{j,s,t} = \sum_{s=E}^{R-1}w_{t}e_{j,s,t}n_{j,s,t}\times v_{t} \quad \forall s \geq R_{t-s}\]</div>
 <p>where <span class="math notranslate nohighlight">\(v_{t}\)</span> is the value of a point at time <span class="math notranslate nohighlight">\(t\)</span></p>
 <p>Given this pension system, the partial derivatives from the household section are given by:</p>
 <div class="math notranslate nohighlight" id="equation-eqn-ps-deriv">

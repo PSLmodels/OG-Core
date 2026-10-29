@@ -1003,7 +1003,8 @@ organization of the theory in the <code class="docutils literal notranslate"><sp
 <h3>Government Pension Parameters<a class="headerlink" href="#government-pension-parameters" title="Link to this heading">#</a></h3>
 <section id="retirement-age">
 <h4><code class="docutils literal notranslate"><span class="pre">retirement_age</span></code><a class="headerlink" href="#retirement-age" title="Link to this heading">#</a></h4>
-<p><em>Description:</em> Age at which agents can collect Social Security benefits. Set value for base year, click ‘+’ to add value for next year.  All future years not specified are set to last value entered.<br />
+<p><em>Description:</em> Age at which agents can collect public pension benefits. A single value. The retirement age belongs to a birth cohort, so changes along the time path are entered through pension_regimes.<br />
+<em>Notes:</em> Internally expanded to the array retire of retirement periods by model period and age, which the household problem, the aggregates, and the steady state (final period) all read. pension_regimes is a list of dicts, each with a calendar year, an optional max_age_at_start, and the new retirement_age, applied in order.<br />
 <em>Value Type:</em> int<br />
 <em>Valid Range:</em> min = 0 and max = 100<br />
 <em>Out-of-Range Action:</em> error</p>

@@ -838,7 +838,9 @@ dollars</p></li>
 <dd><p>Calculate public pension benefit amounts for each household under
 a US-style social security system.</p>
 <div class="math notranslate nohighlight">
-\[pension_{j,s,t} = \theta_j \times w_t \quad \forall s &gt; R\]</div>
+\[pension_{j,s,t} = \theta_j \times w_t \quad \forall s \geq R_{t-s}\]</div>
+<p>where $R_{t-s}$ is the retirement age of the cohort born in period
+$t - s$, read from the (T + S) x S array <code class="docutils literal notranslate"><span class="pre">p.retire</span></code>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
@@ -868,10 +870,10 @@ or method is ‘TPI_scalar’</p></li>
 <p class="rubric">Notes</p>
 <p>replacement_rate_adjust is applied here, and only here, for the
 US-style system, so callers pass the unadjusted theta. Along the
-time path the factor is indexed by the year the benefit is paid.
-The steady state uses the final value of the parameter, so a
-permanent adjustment carries into the steady state that the time
-path converges to.</p>
+time path the factor is indexed by the year the benefit is paid
+and the retirement age by the household’s own cohort, so the
+single-cohort path agrees with the (T, S, J) array that the
+aggregates use. The steady state uses the final values of both.</p>
 </dd></dl>
 
 <dl class="py function">
