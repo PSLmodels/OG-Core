@@ -4046,7 +4046,7 @@
         "param_notation": "$R$",
         "section_1": "Fiscal Policy Parameters",
         "section_2": "Government Pension Parameters",
-        "notes": "Internally expanded to the array retire of retirement periods by model period and age, which the household problem, the aggregates, and the steady state (final period) all read. pension_regimes is a list of dicts, each with a calendar year, an optional max_age_at_start, and the new retirement_age, applied in order.",
+        "notes": "Internally expanded to the array retire of retirement periods by model period and age, which the household problem, the aggregates, and the steady state (final period) all read. pension_regimes is a list of dicts, each with a calendar year, an optional max_age_at_start, and the new values of the parameters it sets (retirement_age and the defined benefit and notional defined contribution parameters), applied in order.",
         "type": "int",
         "number_dims": 1,
         "value": [
@@ -4091,7 +4091,7 @@
         "description": "Pension system contribution tax rate under a notional defined contribution system.",
         "section_1": "Fiscal Policy Parameters",
         "section_2": "Government Pension Parameters",
-        "notes": "",
+        "notes": "A single base value; changes by birth cohort or calendar year are entered through pension_regimes. Contributions are credited at the rate the household's cohort faced at the age they were made.",
         "type": "float",
         "value": [
             {
@@ -4110,7 +4110,7 @@
         "description": "Adjustment for survivor benefits under a notional defined contribution system.",
         "section_1": "Fiscal Policy Parameters",
         "section_2": "Government Pension Parameters",
-        "notes": "indR = 0.0 for no survivor benefits, indR = 0.5 for survivor benefits",
+        "notes": "indR = 0.0 for no survivor benefits, indR = 0.5 for survivor benefits. A single base value; changes by birth cohort or calendar year are entered through pension_regimes.",
         "type": "float",
         "value": [
             {
@@ -4129,7 +4129,7 @@
         "description": "Adjustment for frequency of pension payments under a notional defined contribution system.",
         "section_1": "Fiscal Policy Parameters",
         "section_2": "Government Pension Parameters",
-        "notes": "k = 0.5 - (6/13n), where n is the number of payments per year",
+        "notes": "k = 0.5 - (6/13n), where n is the number of payments per year. A single base value; changes by birth cohort or calendar year are entered through pension_regimes.",
         "type": "float",
         "value": [
             {
@@ -4193,7 +4193,7 @@
         "param_notation": "$\\alpha^{DB}_{j,t}$",
         "section_1": "Fiscal Policy Parameters",
         "section_2": "Government Pension Parameters",
-        "notes": "Can be specified to vary by type J and over year T. The rate applied is the one in effect in the period the benefit is paid.",
+        "notes": "Can be specified to vary by type J and over year T. The rate applied is the one in effect in the period the benefit is paid. To change the rate only for cohorts not yet retired, enter the change through pension_regimes with a max_age_at_start.",
         "type": "float",
         "number_dims": 2,
         "value": [
@@ -4256,7 +4256,7 @@
         "description": "Number of years of contributions made to defined benefits pension system.",
         "section_1": "Fiscal Policy Parameters",
         "section_2": "Government Pension Parameters",
-        "notes": "Since there is not exit from the labor force in the model, the number of years of contributions is set exogenously.",
+        "notes": "Since there is not exit from the labor force in the model, the number of years of contributions is set exogenously. A single base value; changes by birth cohort or calendar year are entered through pension_regimes.",
         "type": "int",
         "value": [
             {
@@ -4277,7 +4277,7 @@
         "param_notation": "$\\texttt{avg_earn_num_years}$",
         "section_1": "Fiscal Policy Parameters",
         "section_2": "Government Pension Parameters",
-        "notes": "US-styel Social Security AIME is computed using average earnings from the highest earnings years for the number of years specified here.",
+        "notes": "US-style Social Security AIME is computed using average earnings from the highest earnings years for the number of years specified here; the defined benefit system averages the last years before retirement. A single base value; changes by birth cohort or calendar year are entered through pension_regimes.",
         "type": "int",
         "value": [
             {

@@ -561,3 +561,149 @@ def test_pension_regimes_from_json_string_and_dict_left_intact():
     q.update_specifications(revision)
     assert "pension_regimes" in revision
     assert np.all(q.retire[-1, :] == 39)
+
+
+def test_pension_regimes_expand_db_and_ndc_parameters():
+    """
+    The DB and NDC parameters are expanded to arrays by period and age
+    (and lifetime income group for alpha_db), and a grandfathered regime
+    changes them only for the cohorts it covers. The regime sets some
+    parameters and leaves the others at their base values.
+    """
+    p = Specifications()
+    p.update_specifications(
+        {
+            "alpha_db": [[0.02]],
+            "tau_p": 0.1,
+            "pension_regimes": [
+                {
+                    "year": 2030,
+                    "max_age_at_start": 54,
+                    "alpha_db": 0.015,
+                    "avg_earn_num_years": 45,
+                    "tau_p": 0.12,
+                    "k_ret": 0.4,
+                }
+            ],
+        }
+    )
+    n_rows = p.T + p.S
+    for name in ["avg_earn_num_years", "yr_contrib", "tau_p", "k_ret", "indR"]:
+        assert np.asarray(getattr(p, name)).shape == (n_rows, p.S), name
+    assert p.alpha_db.shape == (n_rows, p.S, p.J)
+    assert p.retire.shape == (n_rows, p.S)
+    # the regime covers the same cells for every parameter it sets, so
+    # one mask describes them all; it is False before 2030 and True in
+    # the steady state
+    covered = p.tau_p == 0.12
+    assert not covered[: 2030 - p.start_year].any()
+    assert covered[-1].all()
+    assert np.array_equal(p.alpha_db[:, :, 0] == 0.015, covered)
+    assert np.array_equal(p.avg_earn_num_years == 45, covered)
+    assert np.array_equal(p.k_ret == 0.4, covered)
+    assert np.all(p.tau_p[~covered] == 0.1)
+    assert np.all(p.alpha_db[~covered] == 0.02)
+    assert np.all(p.avg_earn_num_years[~covered] == 35)
+    # untouched parameters keep their base values everywhere
+    assert np.all(p.yr_contrib == 40)
+    assert np.all(p.indR == 0.0)
+    assert np.all(p.retire == 44)
+    # the cutoff in 2030 is age 54: cohorts aged 40 in 2030 switch that
+    # year and never switch back, cohorts aged 60 never switch
+    E = p.starting_age
+    forty = np.diagonal(p.tau_p, offset=35 - E)
+    assert np.all(forty[:5] == 0.1) and np.all(forty[5:] == 0.12)
+    assert np.all(np.diagonal(p.tau_p, offset=55 - E) == 0.1)
+    # a second update that does not mention the regimes rebuilds the
+    # same arrays from the base values rather than layering on the
+    # expanded ones
+    p.update_specifications({"frisch": 0.5})
+    assert np.array_equal(p.tau_p == 0.12, covered)
+    assert np.all(p.tau_p[~covered] == 0.1)
+    # and dropping the regimes restores the base values
+    p.update_specifications({"pension_regimes": []})
+    assert np.all(p.tau_p == 0.1) and np.all(p.alpha_db == 0.02)
+
+
+def test_pension_regime_alpha_db_by_group_and_year_of_payment():
+    """
+    alpha_db keeps its base form, a path by calendar year of payment and
+    lifetime income group, and a regime overrides it by cohort with a
+    single number or one value per group.
+    """
+    p = Specifications()
+    J = p.J
+    base_rows = [[0.02] * J, [0.02] * J, [0.04] * J]
+    reform_vals = [0.01 + 0.001 * jj for jj in range(J)]
+    p.update_specifications(
+        {
+            "alpha_db": base_rows,
+            "pension_regimes": [
+                {
+                    "year": 2030,
+                    "max_age_at_start": 54,
+                    "alpha_db": reform_vals,
+                }
+            ],
+        }
+    )
+    assert p.alpha_db.shape == (p.T + p.S, p.S, J)
+    # year-of-payment base: the same at every age in a period
+    assert np.all(p.alpha_db[0] == 0.02)
+    assert np.all(p.alpha_db[1] == 0.02)
+    assert np.all(p.alpha_db[2] == 0.04)
+    assert np.all(p.alpha_db[4] == 0.04)  # extrapolated
+    # from 2030 the covered cohorts get the regime's values by group
+    # and the older cohorts keep the base path
+    t = 2030 - p.start_year
+    E = p.starting_age
+    assert np.allclose(p.alpha_db[t, : 54 - E + 1], reform_vals)
+    assert np.all(p.alpha_db[t, 55 - E :] == 0.04)
+    assert np.allclose(p.alpha_db[-1], reform_vals)
+
+
+def test_pension_regime_calendar_only_for_db_parameters():
+    """
+    With no max_age_at_start a regime applies to everyone from its
+    start year, current retirees included, so the arrays change by
+    row rather than by cohort.
+    """
+    p = Specifications()
+    p.update_specifications(
+        {
+            "pension_regimes": [
+                {"year": 2030, "alpha_db": 0.05, "yr_contrib": 30}
+            ]
+        }
+    )
+    t = 2030 - p.start_year
+    assert np.all(p.alpha_db[:t] == 0.0) and np.all(p.alpha_db[t:] == 0.05)
+    assert np.all(p.yr_contrib[:t] == 40) and np.all(p.yr_contrib[t:] == 30)
+
+
+@pytest.mark.parametrize(
+    "regimes,match",
+    [
+        ([{"year": 2030, "tau_p": 1.5}], "above the maximum"),
+        ([{"year": 2030, "alpha_db": [0.01, 0.02]}], "list of J"),
+        ([{"year": 2030, "alpha_db": "high"}], "list of J"),
+        ([{"year": 2030, "avg_earn_num_years": [30]}], "single number"),
+        ([{"year": 2030, "k_ret": -0.1}], "below the minimum"),
+        (
+            [{"year": 2423, "max_age_at_start": 54, "tau_p": 0.2}],
+            "single value of tau_p",
+        ),
+    ],
+    ids=[
+        "tau_p above max",
+        "alpha_db wrong length",
+        "alpha_db not numeric",
+        "list for scalar parameter",
+        "k_ret below min",
+        "steady state split on tau_p",
+    ],
+)
+def test_pension_regimes_validation_db_ndc(regimes, match):
+    p = Specifications()
+    with pytest.raises(ValueError, match=match):
+        p.update_specifications({"pension_regimes": regimes})
