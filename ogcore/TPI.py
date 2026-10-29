@@ -168,7 +168,10 @@ def get_initial_SS_values(p):
         (tuple): initial period and steady state values:
 
             * initial_values (tuple): initial period variable values,
-                (B0, b_sinit, b_splus1init, factor, initial_n)
+                (B0, b_sinit, b_splus1init, factor, initial_n), where
+                B0 is aggregate household wealth and b_sinit and
+                b_splus1init the S x J wealth held and savings chosen in
+                the initial period
             * ss_vars (dictionary): dictionary with steady state
                 solution results
             * theta (Numpy array): steady-state retirement replacement
@@ -181,8 +184,24 @@ def get_initial_SS_values(p):
     baseline_ss = os.path.join(p.baseline_dir, "SS", "SS_vars.pkl")
     ss_baseline_vars = utils.safe_read_pickle(baseline_ss)
     factor = ss_baseline_vars["factor"]
+    # Initial distribution of savings, b_sp1 chosen at age s and held at
+    # s+1, scaled so that aggregate household wealth evaluated with the
+    # period-0 population equals the steady-state aggregate. Its shape is
+    # the steady-state distribution unless initial_hhwealth_dist (an S x J
+    # matrix of shares of aggregate wealth) is given. When
+    # initial_wealth_ratio is given, the level is revised inside run_TPI
+    # so that initial wealth is that ratio times initial GDP.
     B0 = aggr.get_B(ss_baseline_vars["b_sp1"], p, "SS", True)
-    initial_b_sp1 = ss_baseline_vars["b_sp1"] * (ss_baseline_vars["B"] / B0)
+    if p.initial_hhwealth_dist is None:
+        initial_b_sp1 = ss_baseline_vars["b_sp1"] * (
+            ss_baseline_vars["B"] / B0
+        )
+    else:
+        initial_b_sp1_prelim = p.initial_hhwealth_dist * ss_baseline_vars["B"]
+        initial_b_sp1 = initial_b_sp1_prelim * (
+            ss_baseline_vars["B"]
+            / aggr.get_B(initial_b_sp1_prelim, p, "SS", True)
+        )
     initial_b = np.zeros((p.S, p.J))
     initial_b[1:, :] = initial_b_sp1[:-1, :]
     initial_n = ss_baseline_vars["n"]
@@ -233,17 +252,31 @@ def get_initial_SS_values(p):
     if not p.baseline:
         baseline_tpi = os.path.join(p.baseline_dir, "TPI", "TPI_vars.pkl")
         tpi_baseline_vars = utils.safe_read_pickle(baseline_tpi)
+        if (
+            p.initial_wealth_ratio is not None
+            or p.initial_hhwealth_dist is not None
+        ):
+            # The baseline's initial wealth was set by the initial wealth
+            # parameters (and, for the ratio, solved for along with the
+            # baseline path), so the reform must start from the same
+            # period-0 wealth rather than from the steady-state values.
+            # b_sp1_preTP is the savings chosen before the time path
+            # began (held at t=0); an older baseline pickle without it is
+            # rebuilt from the wealth held at t=0, keeping the current
+            # last row (savings of the oldest cohort, which only enter
+            # period-0 bequests)
+            B0 = tpi_baseline_vars["B"][0]
+            b_sinit = tpi_baseline_vars["b_s"][0, :, :]
+            if "b_sp1_preTP" in tpi_baseline_vars:
+                b_splus1init = tpi_baseline_vars["b_sp1_preTP"]
+            else:
+                b_splus1init = b_splus1init.copy()
+                b_splus1init[:-1, :] = b_sinit[1:, :]
         D0_baseline = tpi_baseline_vars["D"][0]
-        K0_baseline = tpi_baseline_vars["K"][0]
-        Kd0_baseline = tpi_baseline_vars["K_d"][0]
         Kg0_baseline = tpi_baseline_vars["K_g"][0]
-        Km0_baseline = tpi_baseline_vars["K_m"][0, :]
     else:
         D0_baseline = None
-        K0_baseline = None
-        Kd0_baseline = None
         Kg0_baseline = None
-        Km0_baseline = None
 
     initial_values = (B0, b_sinit, b_splus1init, factor, initial_n)
     baseline_values = (
@@ -252,10 +285,7 @@ def get_initial_SS_values(p):
         Gbaseline,
         Ig_baseline,
         D0_baseline,
-        K0_baseline,
-        Kd0_baseline,
         Kg0_baseline,
-        Km0_baseline,
     )
 
     return initial_values, ss_vars, theta, baseline_values
@@ -914,10 +944,7 @@ def run_TPI(p, client=None):
         Gbaseline,
         Ig_baseline,
         D0_baseline,
-        K0_baseline,
-        Kd0_baseline,
         Kg0_baseline,
-        Km0_baseline,
     ) = baseline_values
 
     # Create time path of UBI household benefits and aggregate UBI outlays
@@ -942,34 +969,22 @@ def run_TPI(p, client=None):
     L_init = np.ones((p.T + p.S,)) * ss_vars["L"]
     B_init = utils.get_initial_path(B0, ss_vars["B"], p, "quadratic")
     L_init[: p.T] = aggr.get_L(n_mat[: p.T], p, "TPI")
-    # Get initial paths for aggregate capital. In the baseline, scale the
-    # steady-state capital stocks by the path of B; in a reform, start
-    # from the period-0 capital stocks of the baseline time path
-    if p.baseline:
-        K_init = B_init * ss_vars["K"] / ss_vars["B"]
-        K_d = K_init * ss_vars["K_d"] / ss_vars["K"]
-        K_g = np.ones_like(K_init) * ss_vars["K_g"]
-        K_vec_init = (
-            np.ones((p.T + p.S, p.M))
-            * ss_vars["K_m"].reshape(1, p.M)
-            * np.tile((K_init / ss_vars["K"]).reshape(p.T + p.S, 1), (1, p.M))
-        )
-    else:
-        K_init = utils.get_initial_path(
-            K0_baseline, ss_vars["K"], p, "quadratic"
-        )
-        K_d = utils.get_initial_path(
-            Kd0_baseline, ss_vars["K_d"], p, "quadratic"
-        )
-        K_g = utils.get_initial_path(
-            Kg0_baseline, ss_vars["K_g"], p, "quadratic"
-        )
-        K_vec_init = utils.get_initial_path(
-            Km0_baseline.reshape(1, p.M),
-            ss_vars["K_m"].reshape(1, p.M),
-            p,
-            "quadratic",
-        )
+    # Get initial paths for aggregate capital by scaling the steady-state
+    # capital stocks with the path of B. These paths only serve as guesses
+    # for the first iteration: inside the loop K, K_d, K_f, and K_m are
+    # recomputed from household wealth and K_g from the fiscal rule.
+    # Starting a reform instead from the period-0 capital stocks of the
+    # baseline time path was found to send the outer loop off on a
+    # divergent track in the multi-industry example, so the same guesses
+    # are used for baseline and reform runs.
+    K_init = B_init * ss_vars["K"] / ss_vars["B"]
+    K_d = K_init * ss_vars["K_d"] / ss_vars["K"]
+    K_g = np.ones_like(K_init) * ss_vars["K_g"]
+    K_vec_init = (
+        np.ones((p.T + p.S, p.M))
+        * ss_vars["K_m"].reshape(1, p.M)
+        * np.tile((K_init / ss_vars["K"]).reshape(p.T + p.S, 1), (1, p.M))
+    )
     K = K_init
     K_f = K_init - K_d
     L = L_init
@@ -1666,6 +1681,20 @@ def run_TPI(p, client=None):
         # policy warm-starts stay on the damped update.
         r_gov[: p.T] = utils.convex_combo(r_gov_new[: p.T], r_gov[: p.T], p.nu)
         D[: p.T] = Dnew[: p.T]
+        if p.baseline and p.initial_wealth_ratio is not None:
+            # Initial aggregate household wealth is a target ratio to
+            # initial GDP, which is endogenous: move B[0] toward the
+            # target with the outer-loop damping and scale the initial
+            # distribution of savings (whose shape is fixed) to match, so
+            # that the next inner loop starts households from it
+            B0 = utils.convex_combo(p.initial_wealth_ratio * Y[0], B[0], p.nu)
+            B[0] = B0
+            b_splus1init = b_splus1init * (
+                B0 / aggr.get_B(b_splus1init, p, "SS", True)
+            )
+            b_sinit = np.zeros((p.S, p.J))
+            b_sinit[1:, :] = b_splus1init[:-1, :]
+            initial_values = (B0, b_sinit, b_splus1init, factor, initial_n)
         guesses_b = utils.convex_combo(b_mat, guesses_b, p.nu)
         guesses_n = utils.convex_combo(n_mat, guesses_n, p.nu)
         logger.info(
@@ -1982,6 +2011,7 @@ def run_TPI(p, client=None):
         "p_tilde": p_tilde[: p.T, ...],
         "b_sp1": bmat_splus1[: p.T, ...],
         "b_s": bmat_s[: p.T, ...],
+        "b_sp1_preTP": b_splus1init,
         "n": n_mat[: p.T, ...],
         "c": c_mat[: p.T, ...],
         "c_i": c_i[: p.T, ...],

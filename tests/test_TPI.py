@@ -896,11 +896,42 @@ filename4 = os.path.join(
 )
 
 
+def _initial_hhwealth_dist():
+    """
+    An S x J initial distribution of wealth for tests of the initial
+    wealth parameters: the steady-state savings of the tests' baseline
+    fixture tilted toward older ages, normalized to sum to one. A shape
+    close to the steady state keeps the household problems of the
+    cohorts alive at t=0 well posed.
+    """
+    ss_vars = utils.safe_read_pickle(
+        os.path.join(CUR_PATH, "test_io_data", "OUTPUT2", "SS", "SS_vars.pkl")
+    )
+    b_sp1 = np.asarray(ss_vars[SS_VAR_NAME_MAPPING.get("b_sp1", "b_sp1")])
+    S = b_sp1.shape[0]
+    tilt = 1.0 + 0.3 * (np.arange(S) / (S - 1) - 0.5)
+    dist = b_sp1 * tilt.reshape(S, 1)
+    return (dist / dist.sum()).tolist()
+
+
+param_updates_iw = {
+    "initial_wealth_ratio": 3.0,
+    "initial_hhwealth_dist": _initial_hhwealth_dist(),
+}
+filename_iw = os.path.join(
+    CUR_PATH, "test_io_data", "run_TPI_outputs_baseline_initial_wealth.pkl"
+)
+
+
 @pytest.mark.local
 @pytest.mark.parametrize(
     "baseline,param_updates,filename",
-    [(True, {}, filename1), (False, {}, filename3)],
-    ids=["Baseline", "Reform"],
+    [
+        (True, {}, filename1),
+        (False, {}, filename3),
+        (True, param_updates_iw, filename_iw),
+    ],
+    ids=["Baseline", "Reform", "Baseline, initial wealth parameters"],
 )
 def test_run_TPI(baseline, param_updates, filename, tmpdir, dask_client):
     """
@@ -1314,3 +1345,65 @@ def test_run_TPI_serial_no_client(tmpdir, monkeypatch):
 
     with pytest.raises(_ReachedTPILoop):
         TPI.run_TPI(p, client=None)
+
+
+@pytest.mark.local
+def test_run_TPI_pension_regime(tmpdir, dask_client):
+    """
+    A grandfathered retirement-age regime runs through the time path, and
+    the saved pension benefits start at each cohort's own retirement
+    period: later for cohorts the regime covers, unchanged for the rest.
+    """
+    baseline_dir = os.path.join(tmpdir, "baseline")
+    p = Specifications(
+        baseline=True,
+        baseline_dir=baseline_dir,
+        output_base=baseline_dir,
+        num_workers=NUM_WORKERS,
+    )
+    test_params = TEST_PARAM_DICT.copy()
+    test_params["pension_regimes"] = [
+        {
+            "year": p.start_year + 10,
+            "max_age_at_start": 54,
+            "retirement_age": 67,
+        }
+    ]
+    p.update_specifications(test_params)
+    p.maxiter = 2  # two iterations are enough to exercise the paths
+    assert len(np.unique(p.retire)) == 2
+
+    SS.ENFORCE_SOLUTION_CHECKS = False
+    ss_outputs = SS.run_SS(p, client=None)
+    utils.mkdirs(os.path.join(p.baseline_dir, "SS"))
+    with open(os.path.join(p.baseline_dir, "SS", "SS_vars.pkl"), "wb") as f:
+        pickle.dump(ss_outputs, f)
+    TPI.ENFORCE_SOLUTION_CHECKS = False
+    tpi_vars = TPI.run_TPI(p, client=dask_client)
+    pension = tpi_vars["pension_benefits"]  # (T, S, J)
+    assert pension.shape == (p.T, p.S, p.J)
+
+    def first_paid(t, length):
+        # cohort of age S - length in period t, followed until age S - 1
+        diag = np.diagonal(pension[t : t + p.S, :, 0], offset=p.S - length)
+        retire = np.diagonal(p.retire[t : t + p.S, :], offset=p.S - length)
+        s0 = p.S - length
+        assert np.all(diag[: retire[-1] - s0] == 0.0)
+        assert np.all(diag[retire[-1] - s0 :] > 0.0)
+        return int(retire[-1])
+
+    base = int(p.retire[0, 0])
+    raised = int(p.retire[-1, 0])
+    assert raised > base
+    # born after the regime starts, and aged 50 or 60 (in years) when it
+    # starts, with two years per period in this S = 40 model
+    years_per_period = 80 / p.S
+    t_switch = int(10 / years_per_period)
+    born_later = first_paid(t_switch + 2, p.S)
+    young = first_paid(
+        0, p.S - int((50 - 10 - p.starting_age) / years_per_period)
+    )
+    old = first_paid(
+        0, p.S - int((60 - 10 - p.starting_age) / years_per_period)
+    )
+    assert (born_later, young, old) == (raised, raised, base)

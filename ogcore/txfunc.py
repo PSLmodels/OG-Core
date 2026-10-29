@@ -37,6 +37,24 @@ MIN_INCOME = 5
 MIN_INC_GRAPH = 5
 MAX_INC_GRAPH = 500000
 
+
+def local_scheduler():
+    """
+    Return the Dask scheduler to use for a local (no distributed client)
+    compute call, chosen for the current platform.
+
+    The multiprocessing scheduler relies on forking, which is not
+    available on Windows, so the threaded scheduler is used there instead
+    (see issue #1051). os.name is "nt" on Windows, as used elsewhere in
+    the package (e.g. demographics.py).
+
+    Returns:
+        scheduler: "threads" on Windows, otherwise
+            dask.multiprocessing.get
+    """
+    return "threads" if os.name == "nt" else dask.multiprocessing.get
+
+
 """
 ------------------------------------------------------------------------
 Define Functions
@@ -1704,7 +1722,7 @@ def tax_func_estimate(
     else:
         results = compute(
             *lazy_values,
-            scheduler=dask.multiprocessing.get,
+            scheduler=local_scheduler(),
             num_workers=num_workers,
         )
 
