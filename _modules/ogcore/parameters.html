@@ -436,8 +436,35 @@
 <span class="c1"># Pension parameters that a pension regime may set. A regime assigns its</span>
 <span class="c1"># values by birth cohort (see Specifications._build_cohort_pension_arrays),</span>
 <span class="c1"># so each parameter listed here is expanded to a (T + S) x S array indexed</span>
-<span class="c1"># by period t and age s.</span>
-<span class="n">COHORT_PENSION_PARAMS</span> <span class="o">=</span> <span class="p">(</span><span class="s2">"retirement_age"</span><span class="p">,)</span>
+<span class="c1"># by period t and age s (a (T + S) x S x J array for those that also vary</span>
+<span class="c1"># by lifetime income group, listed in COHORT_PENSION_PARAMS_J).</span>
+<span class="n">COHORT_PENSION_PARAMS</span> <span class="o">=</span> <span class="p">(</span>
+    <span class="s2">"retirement_age"</span><span class="p">,</span>
+    <span class="s2">"avg_earn_num_years"</span><span class="p">,</span>
+    <span class="s2">"yr_contrib"</span><span class="p">,</span>
+    <span class="s2">"alpha_db"</span><span class="p">,</span>
+    <span class="s2">"tau_p"</span><span class="p">,</span>
+    <span class="s2">"k_ret"</span><span class="p">,</span>
+    <span class="s2">"indR"</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="n">COHORT_PENSION_PARAMS_J</span> <span class="o">=</span> <span class="p">(</span><span class="s2">"alpha_db"</span><span class="p">,)</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_is_number</span><span class="p">(</span><span class="n">value</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""</span>
+<span class="sd">    Whether ``value`` is a single real number (and not a bool).</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        value (object): value to check</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        bool: True if ``value`` is an int, float, or NumPy number</span>
+<span class="sd">    """</span>
+    <span class="k">return</span> <span class="nb">isinstance</span><span class="p">(</span>
+        <span class="n">value</span><span class="p">,</span> <span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">integer</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">floating</span><span class="p">)</span>
+    <span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="nb">bool</span><span class="p">)</span>
+
+
 <span class="c1"># The keys of a pension regime that describe when and to whom it applies</span>
 <span class="n">PENSION_REGIME_KEYS</span> <span class="o">=</span> <span class="p">(</span><span class="s2">"year"</span><span class="p">,</span> <span class="s2">"max_age_at_start"</span><span class="p">)</span>
 
@@ -702,7 +729,6 @@
             <span class="s2">"income_tax_filer"</span><span class="p">,</span>
             <span class="s2">"wealth_tax_filer"</span><span class="p">,</span>
             <span class="s2">"tau_payroll"</span><span class="p">,</span>
-            <span class="s2">"alpha_db"</span><span class="p">,</span>
         <span class="p">]</span>
         <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">tp_param_list3</span><span class="p">:</span>
             <span class="n">param_in</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">))</span>
@@ -803,7 +829,9 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">S</span><span class="p">,</span>
         <span class="p">)</span>
 
-        <span class="c1"># set period of retirement for each period t and age s</span>
+        <span class="c1"># expand the cohort-specific pension parameters (retirement age</span>
+        <span class="c1"># and the DB and NDC system parameters) to arrays by period and</span>
+        <span class="c1"># age, and set the period of retirement, retire</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_build_cohort_pension_arrays</span><span class="p">()</span>
 
         <span class="c1"># Calculations for business income taxes</span>
@@ -986,44 +1014,106 @@
                 <span class="p">)</span>
             <span class="k">for</span> <span class="n">q</span> <span class="ow">in</span> <span class="n">set_params</span><span class="p">:</span>
                 <span class="n">value</span> <span class="o">=</span> <span class="n">regime</span><span class="p">[</span><span class="n">q</span><span class="p">]</span>
-                <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span>
-                    <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">integer</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">floating</span><span class="p">))</span>
-                    <span class="ow">and</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="nb">bool</span><span class="p">)</span>
-                <span class="p">):</span>
+                <span class="k">if</span> <span class="n">q</span> <span class="ow">in</span> <span class="n">COHORT_PENSION_PARAMS_J</span><span class="p">:</span>
+                    <span class="n">values</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">value</span><span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+                    <span class="n">ok</span> <span class="o">=</span> <span class="n">values</span><span class="o">.</span><span class="n">size</span> <span class="ow">in</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">J</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">all</span><span class="p">(</span>
+                        <span class="n">_is_number</span><span class="p">(</span><span class="n">v</span><span class="p">)</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">values</span>
+                    <span class="p">)</span>
+                    <span class="n">what</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">"a single number or a list of J = </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">J</span><span class="si">}</span><span class="s2">"</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">values</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">value</span><span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+                    <span class="n">ok</span> <span class="o">=</span> <span class="n">_is_number</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+                    <span class="n">what</span> <span class="o">=</span> <span class="s2">"a single number"</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">ok</span><span class="p">:</span>
                     <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                        <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">label</span><span class="si">}</span><span class="s2">['</span><span class="si">{</span><span class="n">q</span><span class="si">}</span><span class="s2">'] must be a single number, got "</span>
-                        <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">value</span><span class="si">!r}</span><span class="s2">"</span>
+                        <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">label</span><span class="si">}</span><span class="s2">['</span><span class="si">{</span><span class="n">q</span><span class="si">}</span><span class="s2">'] must be </span><span class="si">{</span><span class="n">what</span><span class="si">}</span><span class="s2">, got </span><span class="si">{</span><span class="n">value</span><span class="si">!r}</span><span class="s2">"</span>
                     <span class="p">)</span>
                 <span class="n">rng</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_data</span><span class="p">[</span><span class="n">q</span><span class="p">][</span><span class="s2">"validators"</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"range"</span><span class="p">,</span> <span class="p">{})</span>
                 <span class="n">lo</span><span class="p">,</span> <span class="n">hi</span> <span class="o">=</span> <span class="n">rng</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"min"</span><span class="p">),</span> <span class="n">rng</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"max"</span><span class="p">)</span>
-                <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">lo</span><span class="p">,</span> <span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">))</span> <span class="ow">and</span> <span class="n">value</span> <span class="o">&lt;</span> <span class="n">lo</span><span class="p">:</span>
+                <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">lo</span><span class="p">,</span> <span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">))</span> <span class="ow">and</span> <span class="n">np</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">values</span> <span class="o">&lt;</span> <span class="n">lo</span><span class="p">):</span>
                     <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
                         <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">label</span><span class="si">}</span><span class="s2">['</span><span class="si">{</span><span class="n">q</span><span class="si">}</span><span class="s2">']=</span><span class="si">{</span><span class="n">value</span><span class="si">}</span><span class="s2"> is below the minimum </span><span class="si">{</span><span class="n">lo</span><span class="si">}</span><span class="s2">"</span>
                     <span class="p">)</span>
-                <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">hi</span><span class="p">,</span> <span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">))</span> <span class="ow">and</span> <span class="n">value</span> <span class="o">&gt;</span> <span class="n">hi</span><span class="p">:</span>
+                <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">hi</span><span class="p">,</span> <span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">))</span> <span class="ow">and</span> <span class="n">np</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">values</span> <span class="o">&gt;</span> <span class="n">hi</span><span class="p">):</span>
                     <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
                         <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">label</span><span class="si">}</span><span class="s2">['</span><span class="si">{</span><span class="n">q</span><span class="si">}</span><span class="s2">']=</span><span class="si">{</span><span class="n">value</span><span class="si">}</span><span class="s2"> is above the maximum </span><span class="si">{</span><span class="n">hi</span><span class="si">}</span><span class="s2">"</span>
                     <span class="p">)</span>
 
+    <span class="k">def</span><span class="w"> </span><span class="nf">_pension_base_value</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        Return the value of a cohort pension parameter as the user</span>
+<span class="sd">        entered it (before any expansion by regime), read from the</span>
+<span class="sd">        ParamTools data rather than from the attribute, which holds the</span>
+<span class="sd">        expanded array once compute_default_params has run.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            name (str): parameter name, one of COHORT_PENSION_PARAMS</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            base (Numpy array): a 1-element array for the scalar</span>
+<span class="sd">                parameters, a (T + S) x J array for those that vary by</span>
+<span class="sd">                lifetime income group</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            ValueError: for a year-varying ``retirement_age`` (changes</span>
+<span class="sd">                go through ``pension_regimes``)</span>
+
+<span class="sd">        """</span>
+        <span class="n">base</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">to_array</span><span class="p">(</span><span class="n">name</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">COHORT_PENSION_PARAMS_J</span><span class="p">:</span>
+            <span class="n">base</span> <span class="o">=</span> <span class="n">base</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">base</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span> <span class="k">if</span> <span class="n">base</span><span class="o">.</span><span class="n">ndim</span> <span class="o">&gt;</span> <span class="mi">1</span> <span class="k">else</span> <span class="n">base</span>
+            <span class="c1"># as in compute_default_params for the J x time parameters:</span>
+            <span class="c1"># if J has changed since the value was entered and the</span>
+            <span class="c1"># groups share a value, collapse to one column</span>
+            <span class="k">if</span> <span class="p">(</span>
+                <span class="n">base</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">2</span>
+                <span class="ow">and</span> <span class="n">base</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">J</span>
+                <span class="ow">and</span> <span class="n">np</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="n">base</span> <span class="o">==</span> <span class="n">base</span><span class="p">[:,</span> <span class="p">:</span><span class="mi">1</span><span class="p">])</span>
+            <span class="p">):</span>
+                <span class="n">base</span> <span class="o">=</span> <span class="n">base</span><span class="p">[:,</span> <span class="p">:</span><span class="mi">1</span><span class="p">]</span>
+            <span class="k">return</span> <span class="n">extrapolate_array</span><span class="p">(</span>
+                <span class="n">base</span><span class="p">,</span> <span class="n">dims</span><span class="o">=</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">T</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">S</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">J</span><span class="p">),</span> <span class="n">item</span><span class="o">=</span><span class="n">name</span>
+            <span class="p">)</span>
+        <span class="n">base</span> <span class="o">=</span> <span class="n">base</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">name</span> <span class="o">==</span> <span class="s2">"retirement_age"</span> <span class="ow">and</span> <span class="n">base</span><span class="o">.</span><span class="n">size</span> <span class="o">!=</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="n">base</span> <span class="o">==</span> <span class="n">base</span><span class="p">[</span><span class="mi">0</span><span class="p">]):</span>
+                <span class="n">base</span> <span class="o">=</span> <span class="n">base</span><span class="p">[:</span><span class="mi">1</span><span class="p">]</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                    <span class="s2">"retirement_age takes a single value. A retirement age "</span>
+                    <span class="s2">"that changes along the time path is a property of "</span>
+                    <span class="s2">"birth cohorts, so enter the change as a pension "</span>
+                    <span class="s2">"regime: pension_regimes=[{'year': Y, "</span>
+                    <span class="s2">"'max_age_at_start': A, 'retirement_age': R}] applies "</span>
+                    <span class="s2">"R to households at or below age A in calendar year "</span>
+                    <span class="s2">"Y, from that year on."</span>
+                <span class="p">)</span>
+        <span class="k">return</span> <span class="n">base</span>
+
     <span class="k">def</span><span class="w"> </span><span class="nf">_build_cohort_pension_arrays</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">"""</span>
-<span class="sd">        Expand the cohort-specific pension parameters to (T + S) x S</span>
-<span class="sd">        arrays indexed by model period t and age s, and set ``retire``.</span>
+<span class="sd">        Expand the cohort-specific pension parameters to arrays indexed</span>
+<span class="sd">        by model period t and age s, and set ``retire``.</span>
 
-<span class="sd">        Each pension parameter in COHORT_PENSION_PARAMS has a single base</span>
-<span class="sd">        value (``retirement_age``). Changes to it are entered through</span>
-<span class="sd">        ``pension_regimes``, a list of dicts applied in order. A regime</span>
-<span class="sd">        has a calendar ``year`` from which it applies, an optional</span>
-<span class="sd">        ``max_age_at_start`` (the oldest age, in years, at that calendar</span>
-<span class="sd">        year to which it applies; None means everyone, including those</span>
-<span class="sd">        already retired), and the new values of the parameters it sets.</span>
-<span class="sd">        A regime that leaves a parameter out leaves it unchanged, so a</span>
-<span class="sd">        later regime can change one parameter for a narrow set of</span>
-<span class="sd">        cohorts while an earlier one still governs the rest. The regime</span>
-<span class="sd">        applies to the household of age s in period t when the calendar</span>
-<span class="sd">        year of t is at or after ``year`` and the household's age in</span>
-<span class="sd">        that calendar year is at or below ``max_age_at_start``. Cohorts</span>
-<span class="sd">        not yet born at ``year`` always qualify.</span>
+<span class="sd">        Each pension parameter in COHORT_PENSION_PARAMS has a base value</span>
+<span class="sd">        as entered: a single number for ``retirement_age``,</span>
+<span class="sd">        ``avg_earn_num_years``, ``yr_contrib``, ``tau_p``, ``k_ret``,</span>
+<span class="sd">        and ``indR``, and a path by calendar year of payment and</span>
+<span class="sd">        lifetime income group for ``alpha_db``. Changes by birth cohort</span>
+<span class="sd">        are entered through ``pension_regimes``, a list of dicts</span>
+<span class="sd">        applied in order. A regime has a calendar ``year`` from which</span>
+<span class="sd">        it applies, an optional ``max_age_at_start`` (the oldest age,</span>
+<span class="sd">        in years, at that calendar year to which it applies; None means</span>
+<span class="sd">        everyone, including those already retired), and the new values</span>
+<span class="sd">        of the parameters it sets (for ``alpha_db``, a single number or</span>
+<span class="sd">        a list with one value per lifetime income group). A regime that</span>
+<span class="sd">        leaves a parameter out leaves it unchanged, so a later regime</span>
+<span class="sd">        can change one parameter for a narrow set of cohorts while an</span>
+<span class="sd">        earlier one still governs the rest. The regime applies to the</span>
+<span class="sd">        household of age s in period t when the calendar year of t is</span>
+<span class="sd">        at or after ``year`` and the household's age in that calendar</span>
+<span class="sd">        year is at or below ``max_age_at_start``. Cohorts not yet born</span>
+<span class="sd">        at ``year`` always qualify.</span>
 
 <span class="sd">        With S model periods over 80 years of life, the calendar year of</span>
 <span class="sd">        period t is start_year + t * 80 / S, the age of the household at</span>
@@ -1031,9 +1121,15 @@
 <span class="sd">        is the same as a cutoff by age at start: born in or after</span>
 <span class="sd">        ``year - max_age_at_start``.</span>
 
-<span class="sd">        ``retire`` is the (T + S) x S integer array of the model period</span>
-<span class="sd">        at which each household becomes eligible for the public</span>
-<span class="sd">        pension. The steady state uses the final row.</span>
+<span class="sd">        After this method runs, ``retire`` is the (T + S) x S integer</span>
+<span class="sd">        array of the model period at which each household becomes</span>
+<span class="sd">        eligible for the public pension, ``alpha_db`` is a</span>
+<span class="sd">        (T + S) x S x J array, and ``avg_earn_num_years``,</span>
+<span class="sd">        ``yr_contrib`` (both still in years), ``tau_p``, ``k_ret``, and</span>
+<span class="sd">        ``indR`` are (T + S) x S arrays. ``retirement_age`` keeps its</span>
+<span class="sd">        single base value. The pension functions read a cohort's own</span>
+<span class="sd">        values down the diagonal of these arrays; the steady state uses</span>
+<span class="sd">        the final row.</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            None</span>
@@ -1051,29 +1147,12 @@
 <span class="sd">        """</span>
         <span class="n">regimes</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">"pension_regimes"</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">or</span> <span class="p">[]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_validate_pension_regimes</span><span class="p">(</span><span class="n">regimes</span><span class="p">)</span>
-        <span class="n">base</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">retirement_age</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">base</span><span class="o">.</span><span class="n">size</span> <span class="o">!=</span> <span class="mi">1</span><span class="p">:</span>
-            <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="n">base</span> <span class="o">==</span> <span class="n">base</span><span class="p">[</span><span class="mi">0</span><span class="p">]):</span>
-                <span class="n">base</span> <span class="o">=</span> <span class="n">base</span><span class="p">[:</span><span class="mi">1</span><span class="p">]</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                    <span class="s2">"retirement_age takes a single value. A retirement age "</span>
-                    <span class="s2">"that changes along the time path is a property of "</span>
-                    <span class="s2">"birth cohorts, so enter the change as a pension "</span>
-                    <span class="s2">"regime: pension_regimes=[{'year': Y, "</span>
-                    <span class="s2">"'max_age_at_start': A, 'retirement_age': R}] applies "</span>
-                    <span class="s2">"R to households at or below age A in calendar year "</span>
-                    <span class="s2">"Y, from that year on."</span>
-                <span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">retirement_age</span> <span class="o">=</span> <span class="n">base</span>
         <span class="n">n_rows</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">T</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">S</span>
         <span class="n">ypp</span> <span class="o">=</span> <span class="mf">80.0</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">S</span>
         <span class="n">t_idx</span><span class="p">,</span> <span class="n">s_idx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">indices</span><span class="p">((</span><span class="n">n_rows</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">S</span><span class="p">))</span>
         <span class="n">year_t</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">start_year</span> <span class="o">+</span> <span class="n">t_idx</span> <span class="o">*</span> <span class="n">ypp</span>
-        <span class="n">ret_age</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">full</span><span class="p">((</span><span class="n">n_rows</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">S</span><span class="p">),</span> <span class="n">base</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+        <span class="n">masks</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">for</span> <span class="n">regime</span> <span class="ow">in</span> <span class="n">regimes</span><span class="p">:</span>
-            <span class="k">if</span> <span class="s2">"retirement_age"</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">regime</span><span class="p">:</span>
-                <span class="k">continue</span>
             <span class="n">mask</span> <span class="o">=</span> <span class="n">year_t</span> <span class="o">&gt;=</span> <span class="n">regime</span><span class="p">[</span><span class="s2">"year"</span><span class="p">]</span>
             <span class="n">max_age</span> <span class="o">=</span> <span class="n">regime</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"max_age_at_start"</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">max_age</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
@@ -1083,11 +1162,60 @@
                     <span class="o">+</span> <span class="p">(</span><span class="n">regime</span><span class="p">[</span><span class="s2">"year"</span><span class="p">]</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">start_year</span><span class="p">)</span>
                 <span class="p">)</span>
                 <span class="n">mask</span> <span class="o">&amp;=</span> <span class="n">age_at_start</span> <span class="o">&lt;=</span> <span class="n">max_age</span>
-            <span class="n">ret_age</span><span class="p">[</span><span class="n">mask</span><span class="p">]</span> <span class="o">=</span> <span class="n">regime</span><span class="p">[</span><span class="s2">"retirement_age"</span><span class="p">]</span>
+            <span class="n">masks</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">mask</span><span class="p">)</span>
+        <span class="n">arrays</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">COHORT_PENSION_PARAMS</span><span class="p">:</span>
+            <span class="n">base</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pension_base_value</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">COHORT_PENSION_PARAMS_J</span><span class="p">:</span>
+                <span class="n">arr</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">broadcast_to</span><span class="p">(</span>
+                    <span class="n">base</span><span class="p">[:,</span> <span class="n">np</span><span class="o">.</span><span class="n">newaxis</span><span class="p">,</span> <span class="p">:],</span> <span class="p">(</span><span class="n">n_rows</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">S</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">J</span><span class="p">)</span>
+                <span class="p">)</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">arr</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">full</span><span class="p">((</span><span class="n">n_rows</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">S</span><span class="p">),</span> <span class="n">base</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+            <span class="k">for</span> <span class="n">regime</span><span class="p">,</span> <span class="n">mask</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">regimes</span><span class="p">,</span> <span class="n">masks</span><span class="p">):</span>
+                <span class="k">if</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">regime</span><span class="p">:</span>
+                    <span class="n">arr</span><span class="p">[</span><span class="n">mask</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">regime</span><span class="p">[</span><span class="n">name</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
+            <span class="n">arrays</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">arr</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">retirement_age</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pension_base_value</span><span class="p">(</span><span class="s2">"retirement_age"</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">retire</span> <span class="o">=</span> <span class="p">(</span>
-            <span class="n">np</span><span class="o">.</span><span class="n">round</span><span class="p">(((</span><span class="n">ret_age</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">starting_age</span><span class="p">)</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">S</span><span class="p">)</span> <span class="o">/</span> <span class="mf">80.0</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span>
+            <span class="n">np</span><span class="o">.</span><span class="n">round</span><span class="p">(</span>
+                <span class="p">((</span><span class="n">arrays</span><span class="p">[</span><span class="s2">"retirement_age"</span><span class="p">]</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">starting_age</span><span class="p">)</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">S</span><span class="p">)</span>
+                <span class="o">/</span> <span class="mf">80.0</span>
+            <span class="p">)</span>
+            <span class="o">-</span> <span class="mi">1</span>
         <span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">COHORT_PENSION_PARAMS</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">name</span> <span class="o">!=</span> <span class="s2">"retirement_age"</span><span class="p">:</span>
+                <span class="nb">setattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">arrays</span><span class="p">[</span><span class="n">name</span><span class="p">])</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_check_retire_schedule</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_check_pension_steady_state</span><span class="p">(</span><span class="n">arrays</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_check_pension_steady_state</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">arrays</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        Check that the final period of the time path sits in a single</span>
+<span class="sd">        pension regime, so that the steady state has one value of each</span>
+<span class="sd">        cohort pension parameter.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            arrays (dict): the expanded (T + S) x S or (T + S) x S x J</span>
+<span class="sd">                array of each parameter in COHORT_PENSION_PARAMS</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            None</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            ValueError: if the final row of any array varies by age</span>
+
+<span class="sd">        """</span>
+        <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">arr</span> <span class="ow">in</span> <span class="n">arrays</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">last</span> <span class="o">=</span> <span class="n">arr</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+            <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">last</span> <span class="o">!=</span> <span class="n">last</span><span class="p">[</span><span class="mi">0</span><span class="p">]):</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                    <span class="s2">"the final period of the time path spans more than "</span>
+                    <span class="s2">"one pension regime, so the steady state has no "</span>
+                    <span class="sa">f</span><span class="s2">"single value of </span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">. Increase T or lower "</span>
+                    <span class="s2">"max_age_at_start in pension_regimes."</span>
+                <span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_check_retire_schedule</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">"""</span>
@@ -1102,10 +1230,9 @@
 
 <span class="sd">        Raises:</span>
 <span class="sd">            ValueError: if any retirement period is outside the working</span>
-<span class="sd">                life, if a cohort's retirement period rises after the</span>
+<span class="sd">                life, or if a cohort's retirement period rises after the</span>
 <span class="sd">                cohort has already retired (its benefits would be</span>
-<span class="sd">                withdrawn), or if the final period spans more than one</span>
-<span class="sd">                regime (the steady state needs a single retirement age)</span>
+<span class="sd">                withdrawn)</span>
 
 <span class="sd">        """</span>
         <span class="n">retire</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">retire</span>
@@ -1117,13 +1244,6 @@
                 <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">S</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="mi">1</span><span class="si">}</span><span class="s2">, but retire ranges from </span><span class="si">{</span><span class="n">retire</span><span class="o">.</span><span class="n">min</span><span class="p">()</span><span class="si">}</span><span class="s2"> to "</span>
                 <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">retire</span><span class="o">.</span><span class="n">max</span><span class="p">()</span><span class="si">}</span><span class="s2"> (retirement_age </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">retirement_age</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="s2"> "</span>
                 <span class="sa">f</span><span class="s2">"and pension_regimes </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">pension_regimes</span><span class="si">}</span><span class="s2">)"</span>
-            <span class="p">)</span>
-        <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">retire</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="p">:]</span> <span class="o">!=</span> <span class="n">retire</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">]):</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                <span class="s2">"the final period of the time path spans more than one "</span>
-                <span class="s2">"pension regime, so the steady state has no single "</span>
-                <span class="s2">"retirement age. Increase T or lower max_age_at_start in "</span>
-                <span class="s2">"pension_regimes."</span>
             <span class="p">)</span>
         <span class="n">ypp</span> <span class="o">=</span> <span class="mf">80.0</span> <span class="o">/</span> <span class="n">S</span>
         <span class="c1"># Each diagonal of retire is one birth cohort: offset k holds</span>
