@@ -1,12 +1,10 @@
 """
-------------------------------------------------------------------------
 This script reads in data generated from a tax-benefit microsimulation model.
 It then estimates tax functions tau_{s,t}(x,y), where
 tau_{s,t} is the effective tax rate, marginal tax rate on labor income,
 or the marginal tax rate on capital income, for a given age (s) in a
 particular year (t). x is total labor income, and y is total capital
 income.
-------------------------------------------------------------------------
 """
 
 # Import packages

@@ -57,12 +57,12 @@ dev = [
     "linecheck",
 ]
 docs = [
-    "jupyter-book",
+    "jupyter-book>=2.1.7,<3",
     "jupyter",
     "ipykernel",
-    "sphinx>=3.5.4",
-    "sphinx-argparse",
-    "sphinxcontrib-bibtex>=2.0.0",
+    "sphinx>=8,<10",
+    "pybtex>=0.24",
+    "pyyaml>=6",
     "sphinx-math-dollar",
     "pydata-sphinx-theme",
 ]

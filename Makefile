@@ -61,11 +61,7 @@ endif
 
 .PHONY: documentation
 documentation:
-	uv run --extra docs python -m ipykernel install --user --name=ogcore-dev
-	uv run --extra docs jupyter-book clean docs/book
-	uv run --extra docs python docs/make_params.py
-	uv run --extra docs python docs/make_vars.py
-	uv run --extra docs jupyter-book build docs/book
+	uv run --extra docs python docs/build_docs.py
 
 .PHONY: format
 format:

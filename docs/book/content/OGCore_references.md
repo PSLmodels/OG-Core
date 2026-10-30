@@ -1,5 +1,4 @@
 # References
 
-```{bibliography} ../OGCore_references.bib
-:style: alpha
+```{include} ../_generated/references.md
 ```

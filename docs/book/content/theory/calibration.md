@@ -152,7 +152,7 @@ In the following section, we detail a list of items to calibrate for a country a
 
   ```{math}
   :label: EqInitHHwealth
-    \mathbf{\hat{\Gamma}}_1\equiv \{\hat{b}_{j,s,1}\}_{j=1,s=E+1}^{J,E+S} = \texttt{initial_hhwealth_dist}\,\times\, \hat{B}_1
+    \mathbf{\hat{\Gamma}}_1\equiv \{\hat{b}_{j,s,1}\}_{j=1,s=E+1}^{J,E+S} = \texttt{initial\_hhwealth\_dist}\,\times\, \hat{B}_1
   ```
 
   {numref}`TabWealthGDPcountries` shows the aggregate household wealth to GDP ratios in seven countries, with values ranging from 1.695 to 5.594. The range of valid values for the `initial_BY_ratio` parameter is 0.8 to 7.0.

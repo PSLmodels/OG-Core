@@ -3,12 +3,13 @@ on:
   pull_request:
     branches: [master]
     paths:
-      - 'docs/**.png'
-      - 'docs/book/content/theory/images/**.png'
-      - 'docs/book/**.yml'
-      - 'docs/book/**.bib'
+      - 'Makefile'
+      - 'pyproject.toml'
+      - 'uv.lock'
+      - 'docs/**'
+      - '.github/workflows/docs_check.yml'
+      - '.github/workflows/deploy_docs.yml'
       - '**.md'
-      - 'docs/book/content/api/**.rst'
       - 'ogcore/**.py'
 
 jobs:
@@ -26,9 +27,19 @@ jobs:
         with:
           python-version: "3.13"
 
+      - name: Install Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
       - name: Install package and dependencies
         run: uv sync --extra dev --extra docs
 
+      - name: Check documentation build tooling
+        run: uv run --extra dev --extra docs pytest docs/test_build_docs.py
+
       - name: Build # Build Jupyter Book
+        env:
+          BASE_URL: /OG-Core
         run: |
           uv run make documentation
