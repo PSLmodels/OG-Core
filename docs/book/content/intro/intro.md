@@ -4,7 +4,7 @@
 | | |
 | --- | --- |
 | Org | [PSL catalog](https://www.PSLmodels.org) · [CC0 license](https://github.com/PSLmodels/OG-Core/blob/master/LICENSE) · [Documentation](https://pslmodels.github.io/OG-Core/) |
-| Package | Python 3.12–3.13 · [PyPI releases and downloads](https://pypi.org/project/ogcore/) · [Ruff](https://github.com/astral-sh/ruff) |
+| Package | Python 3.12–3.15 · [PyPI releases and downloads](https://pypi.org/project/ogcore/) · [Ruff](https://github.com/astral-sh/ruff) |
 | Testing | [Tests](https://github.com/PSLmodels/OG-Core/actions/workflows/build_and_test.yml) · [Documentation builds](https://github.com/PSLmodels/OG-Core/actions/workflows/deploy_docs.yml) · [Formatting](https://github.com/PSLmodels/OG-Core/actions/workflows/check_ruff.yml) · [Coverage](https://codecov.io/gh/PSLmodels/OG-Core) |
 
 `OG-Core` is the core logic for a country-agnostic overlapping-generations (OG) model of an economy that allows for dynamic general equilibrium analysis of fiscal policy. The source code is openly available for download or collaboration at the GitHub repository [www.github.com/PSLmodels/OG-Core](https://github.com/PSLmodels/OG-Core), or you can click on the GitHub icon at the top right of this page.
