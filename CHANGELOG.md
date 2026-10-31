@@ -5,6 +5,21 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.24.0] - 2026-10-31
+
+### Added
+- Adds the parameter `alpha_bs_FA` (default 1.0, time varying), the proportional adjustment to foreign aid relative to its baseline level when `baseline_spending=True`, analogous to `alpha_bs_G`, `alpha_bs_T`, and `alpha_bs_I`.
+- Adds `fiscal.get_foreign_aid`, which returns `alpha_FA * Y`, or `alpha_bs_FA` times the baseline level of foreign aid when `baseline_spending=True`. This replaces the separate `alpha_FA * Y` calculations in `D_G_path`, `get_G_ss`, `get_TR`, and the steady-state and transition path resource constraints.
+- The steady-state and transition path output dictionaries now include `foreign_aid`.
+- Adds `utils.get_baseline_foreign_aid`, which reads foreign aid from saved baseline output and, for baseline output saved before this change, reconstructs it as `alpha_FA` times baseline GDP (with a warning).
+
+### Updated
+- When `baseline_spending=True`, foreign aid in the reform is now held at its level in the baseline equilibrium (scaled by `alpha_bs_FA`) in both the steady state and the transition path, as is already done for transfers and infrastructure investment. Previously it was `alpha_FA` times reform GDP, so it changed with GDP. Changes to `alpha_FA` in the reform now have no effect when `baseline_spending=True`.
+- `alpha_bs_I` is now applied on the transition path when `baseline_spending=True`. Previously `run_TPI` used the unscaled baseline path of infrastructure investment, so `alpha_bs_I` affected only the steady state.
+- The titles and descriptions of `alpha_bs_T`, `alpha_bs_G`, and `alpha_bs_I` now say they apply when `baseline_spending` is True (they previously said "when budget balance is true").
+- The resource constraint check inside `SS.inner_loop` now uses `aggregates.resource_constraint` and includes remittances and foreign aid.
+- Breaking signature changes: `fiscal.get_G_ss` and `fiscal.get_TR` take a `foreign_aid` argument; the `dg_fixed_values` tuple passed to `fiscal.D_G_path` includes `foreign_aid` after `I_g`; `SS.SS_solver`, the `SS.inner_loop` `outer_loop_vars` tuple, and the `SS.SS_fsolve` args take `FA_baseline` after `Ig_baseline`; and the `baseline_values` tuple returned by `TPI.get_initial_SS_values` includes `FAbaseline` after `Ig_baseline`.
+
 ## [0.23.1] - 2026-10-30
 
 ### Updated
@@ -810,6 +825,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Any earlier versions of OG-USA can be found in the [`OG-Core`](https://github.com/PSLmodels/OG-Core) repository [release history](https://github.com/PSLmodels/OG-Core/releases) from [v.0.6.4](https://github.com/PSLmodels/OG-Core/releases/tag/v0.6.4) (Jul. 20, 2021) or earlier.
 
 
+[0.24.0]: https://github.com/PSLmodels/OG-Core/compare/v0.23.1...v0.24.0
 [0.23.1]: https://github.com/PSLmodels/OG-Core/compare/v0.23.0...v0.23.1
 [0.23.0]: https://github.com/PSLmodels/OG-Core/compare/v0.22.0...v0.23.0
 [0.22.0]: https://github.com/PSLmodels/OG-Core/compare/v0.21.2...v0.22.0

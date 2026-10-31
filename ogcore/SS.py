@@ -272,8 +272,8 @@ def inner_loop(outer_loop_vars, p, client, scattered_p=None):
 
     Args:
         outer_loop_vars (tuple): tuple of outer loop variables,
-            (bssmat, nssmat, r_p, r, w, p_m, BQ, RM, TR, factor) or
-            (bssmat, nssmat, r_p, r, w, p_m, BQ, RM, Y, TR, factor)
+            (bssmat, nssmat, r_p, r, w, p_m, Y, BQ, TR, Ig_baseline,
+            FA_baseline, factor)
         bssmat (Numpy array): initial guess at savings, size = SxJ
         nssmat (Numpy array): initial guess at labor supply, size = SxJ
         r_p (scalar): return on household investment portfolio
@@ -283,6 +283,10 @@ def inner_loop(outer_loop_vars, p, client, scattered_p=None):
         BQ (array_like): aggregate bequest amount(s)
         TR (scalar): lump sum transfer amount
         Y (scalar): real GDP
+        Ig_baseline (scalar): public infrastructure investment in the
+            baseline steady state, used only if baseline_spending=True
+        FA_baseline (scalar): foreign aid in the baseline steady
+            state, used only if baseline_spending=True
         factor (scalar): scaling factor converting model units to dollars
         p (OG-Core Specifications object): model parameters
         client (Dask client object): client
@@ -316,9 +320,20 @@ def inner_loop(outer_loop_vars, p, client, scattered_p=None):
 
     """
     # unpack variables to pass to function
-    bssmat, nssmat, r_p, r, w, p_m, Y, BQ, TR, Ig_baseline, factor = (
-        outer_loop_vars
-    )
+    (
+        bssmat,
+        nssmat,
+        r_p,
+        r,
+        w,
+        p_m,
+        Y,
+        BQ,
+        TR,
+        Ig_baseline,
+        FA_baseline,
+        factor,
+    ) = outer_loop_vars
 
     p_m = np.array(p_m)  # TODO: why is this a list otherwise?
     p_i = np.dot(p.io_matrix, p_m)
@@ -521,6 +536,7 @@ def inner_loop(outer_loop_vars, p, client, scattered_p=None):
     Y = (p_m * Y_vec).sum()
     I_g = fiscal.get_I_g(Y, Ig_baseline, p, "SS")
     K_g = fiscal.get_K_g(0, I_g, p, "SS")
+    foreign_aid = fiscal.get_foreign_aid(Y, FA_baseline, p, "SS")
     if p.zeta_K[-1] == 1.0:
         new_r = p.world_int_rate[-1]
     else:
@@ -648,6 +664,7 @@ def inner_loop(outer_loop_vars, p, client, scattered_p=None):
         TR,
         UBI_outlays,
         I_g,
+        foreign_aid,
         new_borrowing,
         debt_service,
         p,
@@ -660,6 +677,7 @@ def inner_loop(outer_loop_vars, p, client, scattered_p=None):
         agg_pension_outlays,
         UBI_outlays,
         I_g,
+        foreign_aid,
         p,
         "SS",
     )
@@ -678,9 +696,21 @@ def inner_loop(outer_loop_vars, p, client, scattered_p=None):
     )
     net_capital_outflows_vec = np.zeros(p.M)
     net_capital_outflows_vec[-1] = net_capital_outflows
-    rc_error = (
-        Y_vec - C_m_vec - G_vec - I_d_vec - I_g_vec - net_capital_outflows_vec
+    RM_vec = np.zeros(p.M)
+    RM_vec[-1] = new_RM
+    foreign_aid_vec = np.zeros(p.M)
+    foreign_aid_vec[-1] = foreign_aid
+    rc_error = aggr.resource_constraint(
+        Y_vec,
+        C_m_vec,
+        G_vec,
+        I_d_vec,
+        I_g_vec,
+        net_capital_outflows_vec,
+        RM_vec,
+        foreign_aid_vec,
     )
+    logger.debug(f"Inner loop resource constraint error: {rc_error}")
 
     return (
         euler_errors,
@@ -714,6 +744,7 @@ def SS_solver(
     BQ,
     TR,
     Ig_baseline,
+    FA_baseline,
     factor,
     p,
     client,
@@ -734,6 +765,10 @@ def SS_solver(
         Y (scalar): real GDP
         BQ (array_like): aggregate bequest amount(s)
         TR (scalar): lump sum transfer amount
+        Ig_baseline (scalar): public infrastructure investment in the
+            baseline steady state, used only if baseline_spending=True
+        FA_baseline (scalar): foreign aid in the baseline steady
+            state, used only if baseline_spending=True
         factor (scalar): scaling factor converting model units to dollars
         p (OG-Core Specifications object): model parameters
         client (Dask client object): client
@@ -776,6 +811,7 @@ def SS_solver(
             BQ,
             TR,
             Ig_baseline,
+            FA_baseline,
             factor,
         )
 
@@ -900,6 +936,7 @@ def SS_solver(
     # Yss = firm.get_Y(Kss, K_g_ss, Lss, p, 'SS')
     I_g_ss = fiscal.get_I_g(Yss, Ig_baseline, p, "SS")
     K_g_ss = fiscal.get_K_g(0, I_g_ss, p, "SS")
+    foreign_aid_ss = fiscal.get_foreign_aid(Yss, FA_baseline, p, "SS")
     MPKg_vec = np.zeros(p.M)
     for m in range(p.M):
         MPKg_vec[m] = firm.get_MPx(
@@ -1132,6 +1169,7 @@ def SS_solver(
         TR_ss,
         UBI_outlays,
         I_g_ss,
+        foreign_aid_ss,
         new_borrowing,
         debt_service,
         p,
@@ -1161,7 +1199,7 @@ def SS_solver(
     RM_vec_ss = np.zeros(p.M)
     RM_vec_ss[-1] = RM_ss
     foreign_aid_vec_ss = np.zeros(p.M)
-    foreign_aid_vec_ss[-1] = p.alpha_FA[-1] * Yss
+    foreign_aid_vec_ss[-1] = foreign_aid_ss
     RC = aggr.resource_constraint(
         Y_vec_ss,
         C_m_vec_ss,
@@ -1215,6 +1253,7 @@ def SS_solver(
         "I_d": I_d_ss,
         "K_g": K_g_ss,
         "I_g": I_g_ss,
+        "foreign_aid": foreign_aid_ss,
         "BQ": BQss,
         "RM": RM_ss,
         "Y_m": Y_vec_ss,
@@ -1298,14 +1337,19 @@ def SS_fsolve(guesses, *args):
         guesses (list): initial guesses outer loop variables (r_p, r,
             w, p_m, BQ, TR (or Y), factor)
         args (tuple): tuple of arguments (bssmat, nssmat, TR_ss,
-            factor_ss, p, client)
+            Ig_baseline, FA_baseline, factor_ss, p, client[,
+            scattered_p])
         bssmat (Numpy array): initial guess at savings, size = SxJ
         nssmat (Numpy array): initial guess at labor supply, size = SxJ
         TR_ss (scalar): lump sum transfer amount
+        Ig_baseline (scalar): public infrastructure investment in the
+            baseline steady state, used only if baseline_spending=True
+        FA_baseline (scalar): foreign aid in the baseline steady
+            state, used only if baseline_spending=True
         factor_ss (scalar): scaling factor converting model units to dollars
         p (OG-Core Specifications object): model parameters
         client (Dask client object): client
-        scattered_p (Dask Future or None): optional eighth element of
+        scattered_p (Dask Future or None): optional ninth element of
             args, a future pointing to the model parameters already
             scattered to the Dask workers
 
@@ -1314,19 +1358,29 @@ def SS_fsolve(guesses, *args):
             implied outer loop variables
 
     """
-    if len(args) == 8:
+    if len(args) == 9:
         (
             bssmat,
             nssmat,
             TR_ss,
             Ig_baseline,
+            FA_baseline,
             factor_ss,
             p,
             client,
             scattered_p,
         ) = args
     else:
-        bssmat, nssmat, TR_ss, Ig_baseline, factor_ss, p, client = args
+        (
+            bssmat,
+            nssmat,
+            TR_ss,
+            Ig_baseline,
+            FA_baseline,
+            factor_ss,
+            p,
+            client,
+        ) = args
         scattered_p = None
 
     # Rename the inputs
@@ -1359,6 +1413,7 @@ def SS_fsolve(guesses, *args):
         BQ,
         TR,
         Ig_baseline,
+        FA_baseline,
         factor,
     )
 
@@ -1542,9 +1597,13 @@ def run_SS(p, client=None):
                 if p.baseline_spending:
                     TR_baseline = TRguess
                     Ig_baseline = ss_solutions["I_g"]
+                    FA_baseline = utils.get_baseline_foreign_aid(
+                        ss_solutions, p, "SS"
+                    )
                 else:
                     TR_baseline = None
                     Ig_baseline = None
+                    FA_baseline = None
                 BQ_items = [BQguess] if p.use_zeta else list(BQguess)
                 guesses = (
                     [r_p_guess, rguess, wguess]
@@ -1563,6 +1622,7 @@ def run_SS(p, client=None):
                     n_guess,
                     TR_baseline,
                     Ig_baseline,
+                    FA_baseline,
                     factor_ss,
                     p,
                     client,
@@ -1606,6 +1666,7 @@ def run_SS(p, client=None):
                     None,
                     None,
                     None,
+                    None,
                     p,
                     client,
                 )
@@ -1620,9 +1681,13 @@ def run_SS(p, client=None):
                 if p.baseline_spending:
                     TR_baseline = ss_solutions["TR"]
                     Ig_baseline = ss_solutions["I_g"]
+                    FA_baseline = utils.get_baseline_foreign_aid(
+                        ss_solutions, p, "SS"
+                    )
                 else:
                     TR_baseline = None
                     Ig_baseline = None
+                    FA_baseline = None
                 # Scatter the parameters to the workers once, rather
                 # than once per residual evaluation
                 scattered_p = scatter_params(p, client)
@@ -1631,6 +1696,7 @@ def run_SS(p, client=None):
                     n_guess,
                     TR_baseline,
                     Ig_baseline,
+                    FA_baseline,
                     factor_ss,
                     p,
                     client,
@@ -1674,6 +1740,7 @@ def run_SS(p, client=None):
     # Return SS values of variables
     if p.baseline or not p.baseline_spending:
         Ig_baseline = None
+        FA_baseline = None
     output = SS_solver(
         b_guess,
         n_guess,
@@ -1685,6 +1752,7 @@ def run_SS(p, client=None):
         BQss,
         TR_ss,
         Ig_baseline,
+        FA_baseline,
         factor_ss,
         p,
         client,

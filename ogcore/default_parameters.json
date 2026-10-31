@@ -862,9 +862,9 @@
         }
     },
     "alpha_bs_T": {
-        "title": "Proportional adjustment to government transfers relative to baseline amount when budget balance is true",
-        "description": "Proportional adjustment to government transfers relative to baseline amount when budget balance is true. Set value for base year, click '+' to add value for next year.  All future years not specified are set to last value entered.",
-        "short_description": "Proportional adjustment to government transfers relative to baseline amount when budget balance is true",
+        "title": "Proportional adjustment to government transfers relative to baseline amount when baseline_spending is True",
+        "description": "Proportional adjustment to government transfers relative to baseline amount when baseline_spending is True. Set value for base year, click '+' to add value for next year.  All future years not specified are set to last value entered.",
+        "short_description": "Proportional adjustment to government transfers relative to baseline amount when baseline_spending is True",
         "param_notation": "$\\alpha^{BS}_{T,t}$",
         "section_1": "Fiscal Policy Parameters",
         "section_2": "Spending",
@@ -886,9 +886,9 @@
         }
     },
     "alpha_bs_G": {
-        "title": "Proportional adjustment to government consumption expenditures relative to baseline amount when budget balance is true",
-        "description": "Proportional adjustment to government consumption expenditures relative to baseline amount when budget balance is true. Set value for base year, click '+' to add value for next year.  All future years not specified are set to last value entered.",
-        "short_description": "Proportional adjustment to government consumption expenditures relative to baseline amount when budget balance is true",
+        "title": "Proportional adjustment to government consumption expenditures relative to baseline amount when baseline_spending is True",
+        "description": "Proportional adjustment to government consumption expenditures relative to baseline amount when baseline_spending is True. Set value for base year, click '+' to add value for next year.  All future years not specified are set to last value entered.",
+        "short_description": "Proportional adjustment to government consumption expenditures relative to baseline amount when baseline_spending is True",
         "param_notation": "$\\alpha^{BS}_{G,t}$",
         "section_1": "Fiscal Policy Parameters",
         "section_2": "Spending",
@@ -910,10 +910,34 @@
         }
     },
     "alpha_bs_I": {
-        "title": "Proportional adjustment to  infrastructure (public capital) spending relative to baseline amount when balanced budget is true",
-        "description": "Proportional adjustment to  infrastructure (public capital) spending relative to baseline amount when balanced budget is true.",
-        "short_description": "Proportional adjustment to infrastructure spending relative to baseline amount when budget balance is true",
+        "title": "Proportional adjustment to infrastructure (public capital) spending relative to baseline amount when baseline_spending is True",
+        "description": "Proportional adjustment to infrastructure (public capital) spending relative to baseline amount when baseline_spending is True.",
+        "short_description": "Proportional adjustment to infrastructure spending relative to baseline amount when baseline_spending is True",
         "param_notation": "$\\alpha^{BS}_{I,t}$",
+        "section_1": "Fiscal Policy Parameters",
+        "section_2": "Spending",
+        "notes": "",
+        "type": "float",
+        "number_dims": 1,
+        "value": [
+            {
+                "value": [
+                    1.0
+                ]
+            }
+        ],
+        "validators": {
+            "range": {
+                "min": 0.0,
+                "max": 99999e99
+            }
+        }
+    },
+    "alpha_bs_FA": {
+        "title": "Proportional adjustment to foreign aid payments to the domestic government relative to baseline amount when baseline_spending is True",
+        "description": "Proportional adjustment to foreign aid payments to the domestic government relative to baseline amount when baseline_spending is True. In that case, foreign aid in the reform is this factor times the level of foreign aid in the baseline equilibrium, and alpha_FA is not used.",
+        "short_description": "Proportional adjustment to foreign aid relative to baseline amount when baseline_spending is True",
+        "param_notation": "$\\alpha^{BS}_{FA,t}$",
         "section_1": "Fiscal Policy Parameters",
         "section_2": "Spending",
         "notes": "",
@@ -956,7 +980,7 @@
     },
     "alpha_FA": {
         "title": "Foreign aid payments to domestic government as a share of GDP",
-        "description": "Foreign aid payments to domestic government as a share of GDP. Set value for base year, click '+' to add value for next year.  All future years not specified are set to last value entered.",
+        "description": "Foreign aid payments to domestic government as a share of GDP. Set value for base year, click '+' to add value for next year.  All future years not specified are set to last value entered. Not used when baseline_spending=True, in which case foreign aid is the baseline level of foreign aid scaled by alpha_bs_FA.",
         "short_description": "Foreign aid as a share of GDP",
         "param_notation": "$\\alpha_{FA,t}$",
         "section_1": "Fiscal Policy Parameters",
