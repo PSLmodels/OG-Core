@@ -415,14 +415,16 @@ functions require time-path calculation.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>r_gov</strong> (<em>Numpy array</em>) – interest rate on government debt over the
+<li><p><strong>r</strong> (<em>Numpy array</em>) – interest rate on private capital over the
 time path</p></li>
 <li><p><strong>dg_fixed_values</strong> (<em>tuple</em>) – (Y, total_tax_revenue,
-agg_pension_outlays, UBI_outlays,TR, D0, G0) values of variables
-that are taken as given in the government budget constraint</p></li>
-<li><p><strong>Gbaseline</strong> (<em>Numpy array</em>) – government spending over the time path
-in the baseline equilibrium, used only if
-baseline_spending=True</p></li>
+agg_pension_outlays, UBI_outlays, TR, I_g, foreign_aid,
+Gbaseline, D0_baseline) values of variables that are taken
+as given in the government budget constraint, where
+Gbaseline is government spending over the time path in the
+baseline equilibrium (used only if baseline_spending=True)
+and D0_baseline is initial debt in the baseline equilibrium
+(used only if baseline=False)</p></li>
 <li><p><strong>p</strong> (<em>OG-Core Specifications object</em>) – model parameters</p></li>
 </ul>
 </dd>
@@ -498,11 +500,12 @@ baseline_spending=True</p></li>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="ogcore.fiscal.get_G_ss">
-<span class="sig-prename descclassname"><span class="pre">ogcore.fiscal.</span></span><span class="sig-name descname"><span class="pre">get_G_ss</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">Y</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">total_tax_revenue</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">agg_pension_outlays</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">TR</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">UBI_outlays</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">I_g</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">new_borrowing</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">debt_service</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ogcore/fiscal.html#get_G_ss"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogcore.fiscal.get_G_ss" title="Link to this definition">#</a></dt>
+<span class="sig-prename descclassname"><span class="pre">ogcore.fiscal.</span></span><span class="sig-name descname"><span class="pre">get_G_ss</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">Y</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">total_tax_revenue</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">agg_pension_outlays</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">TR</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">UBI_outlays</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">I_g</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">foreign_aid</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">new_borrowing</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">debt_service</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ogcore/fiscal.html#get_G_ss"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogcore.fiscal.get_G_ss" title="Link to this definition">#</a></dt>
 <dd><p>Calculate the steady-state values of government spending.</p>
 <div class="math notranslate nohighlight">
-\[\bar{G} = \bar{Rev} + \bar{D}\bigl[(1 + \bar{g}_n)e^{g_y} -
-(1 + \bar{r}_{gov})\bigr] - \bar{I}_g - \bar{TR} - \overline{UBI}\]</div>
+\[\bar{G} = \bar{Rev} + \overline{FA}
++ \bar{D}\bigl[(1 + \bar{g}_n)e^{g_y} - (1 + \bar{r}_{gov})\bigr]
+- \bar{I}_g - \bar{TR} - \overline{UBI}\]</div>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
@@ -512,6 +515,8 @@ baseline_spending=True</p></li>
 <li><p><strong>TR</strong> (<em>scalar</em>) – steady-state transfer spending</p></li>
 <li><p><strong>UBI_outlays</strong> (<em>scalar</em>) – steady-state total UBI outlays</p></li>
 <li><p><strong>I_g</strong> (<em>scalar</em>) – steady-state public infrastructure investment</p></li>
+<li><p><strong>foreign_aid</strong> (<em>scalar</em>) – steady-state foreign aid payments to the
+domestic government</p></li>
 <li><p><strong>new_borrowing</strong> (<em>scalar</em>) – steady-state amount of new borrowing</p></li>
 <li><p><strong>debt_service</strong> (<em>scalar</em>) – steady-state debt service costs</p></li>
 <li><p><strong>p</strong> (<em>OG-Core Specifications object</em>) – model parameters</p></li>
@@ -545,7 +550,7 @@ baseline_spending=True</p></li>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="ogcore.fiscal.get_TR">
-<span class="sig-prename descclassname"><span class="pre">ogcore.fiscal.</span></span><span class="sig-name descname"><span class="pre">get_TR</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">Y</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">TR</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">G</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">total_tax_revenue</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">agg_pension_outlays</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">UBI_outlays</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">I_g</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">method</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ogcore/fiscal.html#get_TR"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogcore.fiscal.get_TR" title="Link to this definition">#</a></dt>
+<span class="sig-prename descclassname"><span class="pre">ogcore.fiscal.</span></span><span class="sig-name descname"><span class="pre">get_TR</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">Y</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">TR</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">G</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">total_tax_revenue</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">agg_pension_outlays</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">UBI_outlays</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">I_g</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">foreign_aid</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">method</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ogcore/fiscal.html#get_TR"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogcore.fiscal.get_TR" title="Link to this definition">#</a></dt>
 <dd><p>Function to compute aggregate transfers.  Note that this excludes
 transfer spending through the public pension system.</p>
 <div class="math notranslate nohighlight">
@@ -567,6 +572,8 @@ government pension benefits</p></li>
 outlays</p></li>
 <li><p><strong>UBI_outlays</strong> (<em>array_like</em>) – total universal basic income (UBI) outlays</p></li>
 <li><p><strong>I_g</strong> (<em>array_like</em>) – public infrastructure investment</p></li>
+<li><p><strong>foreign_aid</strong> (<em>array_like</em>) – foreign aid payments to the domestic
+government</p></li>
 <li><p><strong>p</strong> (<em>OG-Core Specifications object</em>) – model parameters</p></li>
 <li><p><strong>method</strong> (<em>str</em>) – whether doing SS or TP calculation</p></li>
 </ul>
@@ -618,13 +625,17 @@ transition path</p></li>
 <span class="sig-prename descclassname"><span class="pre">ogcore.fiscal.</span></span><span class="sig-name descname"><span class="pre">get_I_g</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">Y</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Ig_baseline</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">method</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'SS'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ogcore/fiscal.html#get_I_g"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogcore.fiscal.get_I_g" title="Link to this definition">#</a></dt>
 <dd><p>Find investment in public capital</p>
 <div class="math notranslate nohighlight">
-\[I_{g,t} = \alpha_{I,t}Y_{t}\]</div>
+\[\begin{split}I_{g,t} =
+\begin{cases}
+    \alpha_{bs,I,t}I_{g,t}^{baseline}, &amp; \text{if baseline spending}\\
+    \alpha_{I,t}Y_{t}, &amp; \text{otherwise}
+\end{cases}\end{split}\]</div>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>Y</strong> (<em>array_like</em>) – aggregate output</p></li>
 <li><p><strong>Ig_baseline</strong> (<em>array_like</em>) – public infrastructure investment in
-the baseline simulation</p></li>
+the baseline simulation, used only if baseline_spending=True</p></li>
 <li><p><strong>p</strong> (<em>OG-Core Specifications object</em>) – model parameters</p></li>
 <li><p><strong>method</strong> (<em>str</em>) – either ‘SS’ for steady-state or ‘TPI’ for transition path</p></li>
 </ul>
@@ -632,6 +643,36 @@ the baseline simulation</p></li>
 </dl>
 <dl class="simple">
 <dt>Returns</dt><dd><p>I_g (array_like): investment in public capital</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="ogcore.fiscal.get_foreign_aid">
+<span class="sig-prename descclassname"><span class="pre">ogcore.fiscal.</span></span><span class="sig-name descname"><span class="pre">get_foreign_aid</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">Y</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">FA_baseline</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">method</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'SS'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ogcore/fiscal.html#get_foreign_aid"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogcore.fiscal.get_foreign_aid" title="Link to this definition">#</a></dt>
+<dd><p>Find foreign aid payments to the domestic government.</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}FA_{t} =
+\begin{cases}
+    \alpha_{bs,FA,t}FA_{t}^{baseline}, &amp; \text{if baseline spending}\\
+    \alpha_{FA,t}Y_{t}, &amp; \text{otherwise}
+\end{cases}\end{split}\]</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>Y</strong> (<em>array_like</em>) – aggregate output</p></li>
+<li><p><strong>FA_baseline</strong> (<em>array_like</em>) – foreign aid payments in the baseline
+simulation, used only if baseline_spending=True</p></li>
+<li><p><strong>p</strong> (<em>OG-Core Specifications object</em>) – model parameters</p></li>
+<li><p><strong>method</strong> (<em>str</em>) – either ‘SS’ for steady-state or ‘TPI’ for transition path</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="simple">
+<dt>Returns</dt><dd><dl class="simple">
+<dt>foreign_aid (array_like): foreign aid payments to the domestic</dt><dd><p>government</p>
+</dd>
+</dl>
 </dd>
 </dl>
 </dd></dl>
@@ -720,6 +761,7 @@ there is no leakage and the formula reduces to the baseline.</p>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.fiscal.get_TR"><code class="docutils literal notranslate"><span class="pre">get_TR()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.fiscal.get_r_gov"><code class="docutils literal notranslate"><span class="pre">get_r_gov()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.fiscal.get_I_g"><code class="docutils literal notranslate"><span class="pre">get_I_g()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.fiscal.get_foreign_aid"><code class="docutils literal notranslate"><span class="pre">get_foreign_aid()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.fiscal.get_K_g"><code class="docutils literal notranslate"><span class="pre">get_K_g()</span></code></a></li>
 </ul>
 </li>

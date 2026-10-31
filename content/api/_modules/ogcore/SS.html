@@ -637,8 +637,8 @@
 
 <span class="sd">    Args:</span>
 <span class="sd">        outer_loop_vars (tuple): tuple of outer loop variables,</span>
-<span class="sd">            (bssmat, nssmat, r_p, r, w, p_m, BQ, RM, TR, factor) or</span>
-<span class="sd">            (bssmat, nssmat, r_p, r, w, p_m, BQ, RM, Y, TR, factor)</span>
+<span class="sd">            (bssmat, nssmat, r_p, r, w, p_m, Y, BQ, TR, Ig_baseline,</span>
+<span class="sd">            FA_baseline, factor)</span>
 <span class="sd">        bssmat (Numpy array): initial guess at savings, size = SxJ</span>
 <span class="sd">        nssmat (Numpy array): initial guess at labor supply, size = SxJ</span>
 <span class="sd">        r_p (scalar): return on household investment portfolio</span>
@@ -648,6 +648,10 @@
 <span class="sd">        BQ (array_like): aggregate bequest amount(s)</span>
 <span class="sd">        TR (scalar): lump sum transfer amount</span>
 <span class="sd">        Y (scalar): real GDP</span>
+<span class="sd">        Ig_baseline (scalar): public infrastructure investment in the</span>
+<span class="sd">            baseline steady state, used only if baseline_spending=True</span>
+<span class="sd">        FA_baseline (scalar): foreign aid in the baseline steady</span>
+<span class="sd">            state, used only if baseline_spending=True</span>
 <span class="sd">        factor (scalar): scaling factor converting model units to dollars</span>
 <span class="sd">        p (OG-Core Specifications object): model parameters</span>
 <span class="sd">        client (Dask client object): client</span>
@@ -681,9 +685,20 @@
 
 <span class="sd">    """</span>
     <span class="c1"># unpack variables to pass to function</span>
-    <span class="n">bssmat</span><span class="p">,</span> <span class="n">nssmat</span><span class="p">,</span> <span class="n">r_p</span><span class="p">,</span> <span class="n">r</span><span class="p">,</span> <span class="n">w</span><span class="p">,</span> <span class="n">p_m</span><span class="p">,</span> <span class="n">Y</span><span class="p">,</span> <span class="n">BQ</span><span class="p">,</span> <span class="n">TR</span><span class="p">,</span> <span class="n">Ig_baseline</span><span class="p">,</span> <span class="n">factor</span> <span class="o">=</span> <span class="p">(</span>
-        <span class="n">outer_loop_vars</span>
-    <span class="p">)</span>
+    <span class="p">(</span>
+        <span class="n">bssmat</span><span class="p">,</span>
+        <span class="n">nssmat</span><span class="p">,</span>
+        <span class="n">r_p</span><span class="p">,</span>
+        <span class="n">r</span><span class="p">,</span>
+        <span class="n">w</span><span class="p">,</span>
+        <span class="n">p_m</span><span class="p">,</span>
+        <span class="n">Y</span><span class="p">,</span>
+        <span class="n">BQ</span><span class="p">,</span>
+        <span class="n">TR</span><span class="p">,</span>
+        <span class="n">Ig_baseline</span><span class="p">,</span>
+        <span class="n">FA_baseline</span><span class="p">,</span>
+        <span class="n">factor</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">=</span> <span class="n">outer_loop_vars</span>
 
     <span class="n">p_m</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">p_m</span><span class="p">)</span>  <span class="c1"># TODO: why is this a list otherwise?</span>
     <span class="n">p_i</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">io_matrix</span><span class="p">,</span> <span class="n">p_m</span><span class="p">)</span>
@@ -886,6 +901,7 @@
     <span class="n">Y</span> <span class="o">=</span> <span class="p">(</span><span class="n">p_m</span> <span class="o">*</span> <span class="n">Y_vec</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
     <span class="n">I_g</span> <span class="o">=</span> <span class="n">fiscal</span><span class="o">.</span><span class="n">get_I_g</span><span class="p">(</span><span class="n">Y</span><span class="p">,</span> <span class="n">Ig_baseline</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="s2">"SS"</span><span class="p">)</span>
     <span class="n">K_g</span> <span class="o">=</span> <span class="n">fiscal</span><span class="o">.</span><span class="n">get_K_g</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">I_g</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="s2">"SS"</span><span class="p">)</span>
+    <span class="n">foreign_aid</span> <span class="o">=</span> <span class="n">fiscal</span><span class="o">.</span><span class="n">get_foreign_aid</span><span class="p">(</span><span class="n">Y</span><span class="p">,</span> <span class="n">FA_baseline</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="s2">"SS"</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">p</span><span class="o">.</span><span class="n">zeta_K</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="mf">1.0</span><span class="p">:</span>
         <span class="n">new_r</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">world_int_rate</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
     <span class="k">else</span><span class="p">:</span>
@@ -1013,6 +1029,7 @@
         <span class="n">TR</span><span class="p">,</span>
         <span class="n">UBI_outlays</span><span class="p">,</span>
         <span class="n">I_g</span><span class="p">,</span>
+        <span class="n">foreign_aid</span><span class="p">,</span>
         <span class="n">new_borrowing</span><span class="p">,</span>
         <span class="n">debt_service</span><span class="p">,</span>
         <span class="n">p</span><span class="p">,</span>
@@ -1025,6 +1042,7 @@
         <span class="n">agg_pension_outlays</span><span class="p">,</span>
         <span class="n">UBI_outlays</span><span class="p">,</span>
         <span class="n">I_g</span><span class="p">,</span>
+        <span class="n">foreign_aid</span><span class="p">,</span>
         <span class="n">p</span><span class="p">,</span>
         <span class="s2">"SS"</span><span class="p">,</span>
     <span class="p">)</span>
@@ -1043,9 +1061,21 @@
     <span class="p">)</span>
     <span class="n">net_capital_outflows_vec</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">M</span><span class="p">)</span>
     <span class="n">net_capital_outflows_vec</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">net_capital_outflows</span>
-    <span class="n">rc_error</span> <span class="o">=</span> <span class="p">(</span>
-        <span class="n">Y_vec</span> <span class="o">-</span> <span class="n">C_m_vec</span> <span class="o">-</span> <span class="n">G_vec</span> <span class="o">-</span> <span class="n">I_d_vec</span> <span class="o">-</span> <span class="n">I_g_vec</span> <span class="o">-</span> <span class="n">net_capital_outflows_vec</span>
+    <span class="n">RM_vec</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">M</span><span class="p">)</span>
+    <span class="n">RM_vec</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">new_RM</span>
+    <span class="n">foreign_aid_vec</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">M</span><span class="p">)</span>
+    <span class="n">foreign_aid_vec</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">foreign_aid</span>
+    <span class="n">rc_error</span> <span class="o">=</span> <span class="n">aggr</span><span class="o">.</span><span class="n">resource_constraint</span><span class="p">(</span>
+        <span class="n">Y_vec</span><span class="p">,</span>
+        <span class="n">C_m_vec</span><span class="p">,</span>
+        <span class="n">G_vec</span><span class="p">,</span>
+        <span class="n">I_d_vec</span><span class="p">,</span>
+        <span class="n">I_g_vec</span><span class="p">,</span>
+        <span class="n">net_capital_outflows_vec</span><span class="p">,</span>
+        <span class="n">RM_vec</span><span class="p">,</span>
+        <span class="n">foreign_aid_vec</span><span class="p">,</span>
     <span class="p">)</span>
+    <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Inner loop resource constraint error: </span><span class="si">{</span><span class="n">rc_error</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="p">(</span>
         <span class="n">euler_errors</span><span class="p">,</span>
@@ -1082,6 +1112,7 @@
     <span class="n">BQ</span><span class="p">,</span>
     <span class="n">TR</span><span class="p">,</span>
     <span class="n">Ig_baseline</span><span class="p">,</span>
+    <span class="n">FA_baseline</span><span class="p">,</span>
     <span class="n">factor</span><span class="p">,</span>
     <span class="n">p</span><span class="p">,</span>
     <span class="n">client</span><span class="p">,</span>
@@ -1102,6 +1133,10 @@
 <span class="sd">        Y (scalar): real GDP</span>
 <span class="sd">        BQ (array_like): aggregate bequest amount(s)</span>
 <span class="sd">        TR (scalar): lump sum transfer amount</span>
+<span class="sd">        Ig_baseline (scalar): public infrastructure investment in the</span>
+<span class="sd">            baseline steady state, used only if baseline_spending=True</span>
+<span class="sd">        FA_baseline (scalar): foreign aid in the baseline steady</span>
+<span class="sd">            state, used only if baseline_spending=True</span>
 <span class="sd">        factor (scalar): scaling factor converting model units to dollars</span>
 <span class="sd">        p (OG-Core Specifications object): model parameters</span>
 <span class="sd">        client (Dask client object): client</span>
@@ -1144,6 +1179,7 @@
             <span class="n">BQ</span><span class="p">,</span>
             <span class="n">TR</span><span class="p">,</span>
             <span class="n">Ig_baseline</span><span class="p">,</span>
+            <span class="n">FA_baseline</span><span class="p">,</span>
             <span class="n">factor</span><span class="p">,</span>
         <span class="p">)</span>
 
@@ -1268,6 +1304,7 @@
     <span class="c1"># Yss = firm.get_Y(Kss, K_g_ss, Lss, p, 'SS')</span>
     <span class="n">I_g_ss</span> <span class="o">=</span> <span class="n">fiscal</span><span class="o">.</span><span class="n">get_I_g</span><span class="p">(</span><span class="n">Yss</span><span class="p">,</span> <span class="n">Ig_baseline</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="s2">"SS"</span><span class="p">)</span>
     <span class="n">K_g_ss</span> <span class="o">=</span> <span class="n">fiscal</span><span class="o">.</span><span class="n">get_K_g</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">I_g_ss</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="s2">"SS"</span><span class="p">)</span>
+    <span class="n">foreign_aid_ss</span> <span class="o">=</span> <span class="n">fiscal</span><span class="o">.</span><span class="n">get_foreign_aid</span><span class="p">(</span><span class="n">Yss</span><span class="p">,</span> <span class="n">FA_baseline</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="s2">"SS"</span><span class="p">)</span>
     <span class="n">MPKg_vec</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">M</span><span class="p">)</span>
     <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">M</span><span class="p">):</span>
         <span class="n">MPKg_vec</span><span class="p">[</span><span class="n">m</span><span class="p">]</span> <span class="o">=</span> <span class="n">firm</span><span class="o">.</span><span class="n">get_MPx</span><span class="p">(</span>
@@ -1500,6 +1537,7 @@
         <span class="n">TR_ss</span><span class="p">,</span>
         <span class="n">UBI_outlays</span><span class="p">,</span>
         <span class="n">I_g_ss</span><span class="p">,</span>
+        <span class="n">foreign_aid_ss</span><span class="p">,</span>
         <span class="n">new_borrowing</span><span class="p">,</span>
         <span class="n">debt_service</span><span class="p">,</span>
         <span class="n">p</span><span class="p">,</span>
@@ -1529,7 +1567,7 @@
     <span class="n">RM_vec_ss</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">M</span><span class="p">)</span>
     <span class="n">RM_vec_ss</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">RM_ss</span>
     <span class="n">foreign_aid_vec_ss</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">M</span><span class="p">)</span>
-    <span class="n">foreign_aid_vec_ss</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">alpha_FA</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="n">Yss</span>
+    <span class="n">foreign_aid_vec_ss</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">foreign_aid_ss</span>
     <span class="n">RC</span> <span class="o">=</span> <span class="n">aggr</span><span class="o">.</span><span class="n">resource_constraint</span><span class="p">(</span>
         <span class="n">Y_vec_ss</span><span class="p">,</span>
         <span class="n">C_m_vec_ss</span><span class="p">,</span>
@@ -1583,6 +1621,7 @@
         <span class="s2">"I_d"</span><span class="p">:</span> <span class="n">I_d_ss</span><span class="p">,</span>
         <span class="s2">"K_g"</span><span class="p">:</span> <span class="n">K_g_ss</span><span class="p">,</span>
         <span class="s2">"I_g"</span><span class="p">:</span> <span class="n">I_g_ss</span><span class="p">,</span>
+        <span class="s2">"foreign_aid"</span><span class="p">:</span> <span class="n">foreign_aid_ss</span><span class="p">,</span>
         <span class="s2">"BQ"</span><span class="p">:</span> <span class="n">BQss</span><span class="p">,</span>
         <span class="s2">"RM"</span><span class="p">:</span> <span class="n">RM_ss</span><span class="p">,</span>
         <span class="s2">"Y_m"</span><span class="p">:</span> <span class="n">Y_vec_ss</span><span class="p">,</span>
@@ -1669,14 +1708,19 @@
 <span class="sd">        guesses (list): initial guesses outer loop variables (r_p, r,</span>
 <span class="sd">            w, p_m, BQ, TR (or Y), factor)</span>
 <span class="sd">        args (tuple): tuple of arguments (bssmat, nssmat, TR_ss,</span>
-<span class="sd">            factor_ss, p, client)</span>
+<span class="sd">            Ig_baseline, FA_baseline, factor_ss, p, client[,</span>
+<span class="sd">            scattered_p])</span>
 <span class="sd">        bssmat (Numpy array): initial guess at savings, size = SxJ</span>
 <span class="sd">        nssmat (Numpy array): initial guess at labor supply, size = SxJ</span>
 <span class="sd">        TR_ss (scalar): lump sum transfer amount</span>
+<span class="sd">        Ig_baseline (scalar): public infrastructure investment in the</span>
+<span class="sd">            baseline steady state, used only if baseline_spending=True</span>
+<span class="sd">        FA_baseline (scalar): foreign aid in the baseline steady</span>
+<span class="sd">            state, used only if baseline_spending=True</span>
 <span class="sd">        factor_ss (scalar): scaling factor converting model units to dollars</span>
 <span class="sd">        p (OG-Core Specifications object): model parameters</span>
 <span class="sd">        client (Dask client object): client</span>
-<span class="sd">        scattered_p (Dask Future or None): optional eighth element of</span>
+<span class="sd">        scattered_p (Dask Future or None): optional ninth element of</span>
 <span class="sd">            args, a future pointing to the model parameters already</span>
 <span class="sd">            scattered to the Dask workers</span>
 
@@ -1685,19 +1729,29 @@
 <span class="sd">            implied outer loop variables</span>
 
 <span class="sd">    """</span>
-    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">args</span><span class="p">)</span> <span class="o">==</span> <span class="mi">8</span><span class="p">:</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">args</span><span class="p">)</span> <span class="o">==</span> <span class="mi">9</span><span class="p">:</span>
         <span class="p">(</span>
             <span class="n">bssmat</span><span class="p">,</span>
             <span class="n">nssmat</span><span class="p">,</span>
             <span class="n">TR_ss</span><span class="p">,</span>
             <span class="n">Ig_baseline</span><span class="p">,</span>
+            <span class="n">FA_baseline</span><span class="p">,</span>
             <span class="n">factor_ss</span><span class="p">,</span>
             <span class="n">p</span><span class="p">,</span>
             <span class="n">client</span><span class="p">,</span>
             <span class="n">scattered_p</span><span class="p">,</span>
         <span class="p">)</span> <span class="o">=</span> <span class="n">args</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="n">bssmat</span><span class="p">,</span> <span class="n">nssmat</span><span class="p">,</span> <span class="n">TR_ss</span><span class="p">,</span> <span class="n">Ig_baseline</span><span class="p">,</span> <span class="n">factor_ss</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">client</span> <span class="o">=</span> <span class="n">args</span>
+        <span class="p">(</span>
+            <span class="n">bssmat</span><span class="p">,</span>
+            <span class="n">nssmat</span><span class="p">,</span>
+            <span class="n">TR_ss</span><span class="p">,</span>
+            <span class="n">Ig_baseline</span><span class="p">,</span>
+            <span class="n">FA_baseline</span><span class="p">,</span>
+            <span class="n">factor_ss</span><span class="p">,</span>
+            <span class="n">p</span><span class="p">,</span>
+            <span class="n">client</span><span class="p">,</span>
+        <span class="p">)</span> <span class="o">=</span> <span class="n">args</span>
         <span class="n">scattered_p</span> <span class="o">=</span> <span class="kc">None</span>
 
     <span class="c1"># Rename the inputs</span>
@@ -1730,6 +1784,7 @@
         <span class="n">BQ</span><span class="p">,</span>
         <span class="n">TR</span><span class="p">,</span>
         <span class="n">Ig_baseline</span><span class="p">,</span>
+        <span class="n">FA_baseline</span><span class="p">,</span>
         <span class="n">factor</span><span class="p">,</span>
     <span class="p">)</span>
 
@@ -1919,9 +1974,13 @@
                 <span class="k">if</span> <span class="n">p</span><span class="o">.</span><span class="n">baseline_spending</span><span class="p">:</span>
                     <span class="n">TR_baseline</span> <span class="o">=</span> <span class="n">TRguess</span>
                     <span class="n">Ig_baseline</span> <span class="o">=</span> <span class="n">ss_solutions</span><span class="p">[</span><span class="s2">"I_g"</span><span class="p">]</span>
+                    <span class="n">FA_baseline</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">get_baseline_foreign_aid</span><span class="p">(</span>
+                        <span class="n">ss_solutions</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="s2">"SS"</span>
+                    <span class="p">)</span>
                 <span class="k">else</span><span class="p">:</span>
                     <span class="n">TR_baseline</span> <span class="o">=</span> <span class="kc">None</span>
                     <span class="n">Ig_baseline</span> <span class="o">=</span> <span class="kc">None</span>
+                    <span class="n">FA_baseline</span> <span class="o">=</span> <span class="kc">None</span>
                 <span class="n">BQ_items</span> <span class="o">=</span> <span class="p">[</span><span class="n">BQguess</span><span class="p">]</span> <span class="k">if</span> <span class="n">p</span><span class="o">.</span><span class="n">use_zeta</span> <span class="k">else</span> <span class="nb">list</span><span class="p">(</span><span class="n">BQguess</span><span class="p">)</span>
                 <span class="n">guesses</span> <span class="o">=</span> <span class="p">(</span>
                     <span class="p">[</span><span class="n">r_p_guess</span><span class="p">,</span> <span class="n">rguess</span><span class="p">,</span> <span class="n">wguess</span><span class="p">]</span>
@@ -1940,6 +1999,7 @@
                     <span class="n">n_guess</span><span class="p">,</span>
                     <span class="n">TR_baseline</span><span class="p">,</span>
                     <span class="n">Ig_baseline</span><span class="p">,</span>
+                    <span class="n">FA_baseline</span><span class="p">,</span>
                     <span class="n">factor_ss</span><span class="p">,</span>
                     <span class="n">p</span><span class="p">,</span>
                     <span class="n">client</span><span class="p">,</span>
@@ -1983,6 +2043,7 @@
                     <span class="kc">None</span><span class="p">,</span>
                     <span class="kc">None</span><span class="p">,</span>
                     <span class="kc">None</span><span class="p">,</span>
+                    <span class="kc">None</span><span class="p">,</span>
                     <span class="n">p</span><span class="p">,</span>
                     <span class="n">client</span><span class="p">,</span>
                 <span class="p">)</span>
@@ -1997,9 +2058,13 @@
                 <span class="k">if</span> <span class="n">p</span><span class="o">.</span><span class="n">baseline_spending</span><span class="p">:</span>
                     <span class="n">TR_baseline</span> <span class="o">=</span> <span class="n">ss_solutions</span><span class="p">[</span><span class="s2">"TR"</span><span class="p">]</span>
                     <span class="n">Ig_baseline</span> <span class="o">=</span> <span class="n">ss_solutions</span><span class="p">[</span><span class="s2">"I_g"</span><span class="p">]</span>
+                    <span class="n">FA_baseline</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">get_baseline_foreign_aid</span><span class="p">(</span>
+                        <span class="n">ss_solutions</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="s2">"SS"</span>
+                    <span class="p">)</span>
                 <span class="k">else</span><span class="p">:</span>
                     <span class="n">TR_baseline</span> <span class="o">=</span> <span class="kc">None</span>
                     <span class="n">Ig_baseline</span> <span class="o">=</span> <span class="kc">None</span>
+                    <span class="n">FA_baseline</span> <span class="o">=</span> <span class="kc">None</span>
                 <span class="c1"># Scatter the parameters to the workers once, rather</span>
                 <span class="c1"># than once per residual evaluation</span>
                 <span class="n">scattered_p</span> <span class="o">=</span> <span class="n">scatter_params</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">client</span><span class="p">)</span>
@@ -2008,6 +2073,7 @@
                     <span class="n">n_guess</span><span class="p">,</span>
                     <span class="n">TR_baseline</span><span class="p">,</span>
                     <span class="n">Ig_baseline</span><span class="p">,</span>
+                    <span class="n">FA_baseline</span><span class="p">,</span>
                     <span class="n">factor_ss</span><span class="p">,</span>
                     <span class="n">p</span><span class="p">,</span>
                     <span class="n">client</span><span class="p">,</span>
@@ -2051,6 +2117,7 @@
     <span class="c1"># Return SS values of variables</span>
     <span class="k">if</span> <span class="n">p</span><span class="o">.</span><span class="n">baseline</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">p</span><span class="o">.</span><span class="n">baseline_spending</span><span class="p">:</span>
         <span class="n">Ig_baseline</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="n">FA_baseline</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="n">output</span> <span class="o">=</span> <span class="n">SS_solver</span><span class="p">(</span>
         <span class="n">b_guess</span><span class="p">,</span>
         <span class="n">n_guess</span><span class="p">,</span>
@@ -2062,6 +2129,7 @@
         <span class="n">BQss</span><span class="p">,</span>
         <span class="n">TR_ss</span><span class="p">,</span>
         <span class="n">Ig_baseline</span><span class="p">,</span>
+        <span class="n">FA_baseline</span><span class="p">,</span>
         <span class="n">factor_ss</span><span class="p">,</span>
         <span class="n">p</span><span class="p">,</span>
         <span class="n">client</span><span class="p">,</span>

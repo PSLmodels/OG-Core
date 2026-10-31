@@ -449,8 +449,8 @@ function solves the households’ problems in the SS.</p>
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>outer_loop_vars</strong> (<em>tuple</em>) – tuple of outer loop variables,
-(bssmat, nssmat, r_p, r, w, p_m, BQ, RM, TR, factor) or
-(bssmat, nssmat, r_p, r, w, p_m, BQ, RM, Y, TR, factor)</p></li>
+(bssmat, nssmat, r_p, r, w, p_m, Y, BQ, TR, Ig_baseline,
+FA_baseline, factor)</p></li>
 <li><p><strong>bssmat</strong> (<em>Numpy array</em>) – initial guess at savings, size = SxJ</p></li>
 <li><p><strong>nssmat</strong> (<em>Numpy array</em>) – initial guess at labor supply, size = SxJ</p></li>
 <li><p><strong>r_p</strong> (<em>scalar</em>) – return on household investment portfolio</p></li>
@@ -460,6 +460,10 @@ function solves the households’ problems in the SS.</p>
 <li><p><strong>BQ</strong> (<em>array_like</em>) – aggregate bequest amount(s)</p></li>
 <li><p><strong>TR</strong> (<em>scalar</em>) – lump sum transfer amount</p></li>
 <li><p><strong>Y</strong> (<em>scalar</em>) – real GDP</p></li>
+<li><p><strong>Ig_baseline</strong> (<em>scalar</em>) – public infrastructure investment in the
+baseline steady state, used only if baseline_spending=True</p></li>
+<li><p><strong>FA_baseline</strong> (<em>scalar</em>) – foreign aid in the baseline steady
+state, used only if baseline_spending=True</p></li>
 <li><p><strong>factor</strong> (<em>scalar</em>) – scaling factor converting model units to dollars</p></li>
 <li><p><strong>p</strong> (<em>OG-Core Specifications object</em>) – model parameters</p></li>
 <li><p><strong>client</strong> (<em>Dask client object</em>) – client</p></li>
@@ -516,7 +520,7 @@ None and a client is provided, <cite>p</cite> is scattered here.</p></li>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="ogcore.SS.SS_solver">
-<span class="sig-prename descclassname"><span class="pre">ogcore.SS.</span></span><span class="sig-name descname"><span class="pre">SS_solver</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">bmat</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nmat</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">r_p</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">r</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">w</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_m</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Y</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">BQ</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">TR</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Ig_baseline</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">factor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">client</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fsolve_flag</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scattered_p</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ogcore/SS.html#SS_solver"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogcore.SS.SS_solver" title="Link to this definition">#</a></dt>
+<span class="sig-prename descclassname"><span class="pre">ogcore.SS.</span></span><span class="sig-name descname"><span class="pre">SS_solver</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">bmat</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nmat</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">r_p</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">r</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">w</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_m</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Y</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">BQ</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">TR</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Ig_baseline</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">FA_baseline</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">factor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">client</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fsolve_flag</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scattered_p</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ogcore/SS.html#SS_solver"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogcore.SS.SS_solver" title="Link to this definition">#</a></dt>
 <dd><p>Solves for the steady state distribution of capital, labor, as well
 as w, r, TR and the scaling factor, using functional iteration.</p>
 <dl class="field-list simple">
@@ -531,6 +535,10 @@ as w, r, TR and the scaling factor, using functional iteration.</p>
 <li><p><strong>Y</strong> (<em>scalar</em>) – real GDP</p></li>
 <li><p><strong>BQ</strong> (<em>array_like</em>) – aggregate bequest amount(s)</p></li>
 <li><p><strong>TR</strong> (<em>scalar</em>) – lump sum transfer amount</p></li>
+<li><p><strong>Ig_baseline</strong> (<em>scalar</em>) – public infrastructure investment in the
+baseline steady state, used only if baseline_spending=True</p></li>
+<li><p><strong>FA_baseline</strong> (<em>scalar</em>) – foreign aid in the baseline steady
+state, used only if baseline_spending=True</p></li>
 <li><p><strong>factor</strong> (<em>scalar</em>) – scaling factor converting model units to dollars</p></li>
 <li><p><strong>p</strong> (<em>OG-Core Specifications object</em>) – model parameters</p></li>
 <li><p><strong>client</strong> (<em>Dask client object</em>) – client</p></li>
@@ -563,14 +571,19 @@ as w, r, TR and the scaling factor, using a root finder.</p>
 <li><p><strong>guesses</strong> (<em>list</em>) – initial guesses outer loop variables (r_p, r,
 w, p_m, BQ, TR (or Y), factor)</p></li>
 <li><p><strong>args</strong> (<em>tuple</em>) – tuple of arguments (bssmat, nssmat, TR_ss,
-factor_ss, p, client)</p></li>
+Ig_baseline, FA_baseline, factor_ss, p, client[,
+scattered_p])</p></li>
 <li><p><strong>bssmat</strong> (<em>Numpy array</em>) – initial guess at savings, size = SxJ</p></li>
 <li><p><strong>nssmat</strong> (<em>Numpy array</em>) – initial guess at labor supply, size = SxJ</p></li>
 <li><p><strong>TR_ss</strong> (<em>scalar</em>) – lump sum transfer amount</p></li>
+<li><p><strong>Ig_baseline</strong> (<em>scalar</em>) – public infrastructure investment in the
+baseline steady state, used only if baseline_spending=True</p></li>
+<li><p><strong>FA_baseline</strong> (<em>scalar</em>) – foreign aid in the baseline steady
+state, used only if baseline_spending=True</p></li>
 <li><p><strong>factor_ss</strong> (<em>scalar</em>) – scaling factor converting model units to dollars</p></li>
 <li><p><strong>p</strong> (<em>OG-Core Specifications object</em>) – model parameters</p></li>
 <li><p><strong>client</strong> (<em>Dask client object</em>) – client</p></li>
-<li><p><strong>scattered_p</strong> (<em>Dask Future</em><em> or </em><em>None</em>) – optional eighth element of
+<li><p><strong>scattered_p</strong> (<em>Dask Future</em><em> or </em><em>None</em>) – optional ninth element of
 args, a future pointing to the model parameters already
 scattered to the Dask workers</p></li>
 </ul>

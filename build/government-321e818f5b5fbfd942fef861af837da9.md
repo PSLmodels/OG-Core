@@ -583,6 +583,14 @@ With the assumption of `baseline_spending=True`, the level of spending in the re
     G^{reform}_t = \alpha^{BS}_{G,t}G^{baseline}_{t}
   ```
 
+Foreign aid to the domestic government, $FA_t$, is treated the same way. In the baseline simulation, and in the reform when `baseline_spending=False`, foreign aid is a fraction $\alpha_{FA,t}$ of GDP. When `baseline_spending=True`, foreign aid in the reform is held to its level in the baseline, scaled by the time-varying parameter `alpha_bs_FA`:
+
+  ```{math}
+    FA^{reform}_t = \alpha^{BS}_{FA,t}FA^{baseline}_{t}
+  ```
+
+This means that changes to `alpha_FA` in the reform have no effect when `baseline_spending=True`; use `alpha_bs_FA` to change the level of foreign aid relative to the baseline instead.
+
 Note that the budget closure rule (described in Section ref{`SecUnbalGBCcloseRule`}) still takes effect in the case of `baseline_spending=True`.  What this means is that the relation described above holds until the period in which the closure rules takes effect.  Once the closure rule begins, the path of $G$ (and/or $TR$, depending on the closure rule used) will adjust as determined by the rule to close the government budget in the long run.
 
 (SecUnbalGBCrev)=

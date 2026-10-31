@@ -298,7 +298,7 @@ _Out-of-Range Action:_ error
 ### Fiscal Policy Parameters
 
 ####  `alpha_FA`  
-_Description:_ Foreign aid payments to domestic government as a share of GDP. Set value for base year, click '+' to add value for next year.  All future years not specified are set to last value entered.  
+_Description:_ Foreign aid payments to domestic government as a share of GDP. Set value for base year, click '+' to add value for next year.  All future years not specified are set to last value entered. Not used when baseline_spending=True, in which case foreign aid is the baseline level of foreign aid scaled by alpha_bs_FA.  
 _Value Type:_ float  
 _Valid Range:_ min = 0.0 and max = 1.0  
 _Out-of-Range Action:_ error  
@@ -491,21 +491,28 @@ _Out-of-Range Action:_ error
 
 
 ####  `alpha_bs_T`  
-_Description:_ Proportional adjustment to government transfers relative to baseline amount when budget balance is true. Set value for base year, click '+' to add value for next year.  All future years not specified are set to last value entered.  
+_Description:_ Proportional adjustment to government transfers relative to baseline amount when baseline_spending is True. Set value for base year, click '+' to add value for next year.  All future years not specified are set to last value entered.  
 _Value Type:_ float  
 _Valid Range:_ min = 0.0 and max = 9.9999e+103  
 _Out-of-Range Action:_ error  
 
 
 ####  `alpha_bs_G`  
-_Description:_ Proportional adjustment to government consumption expenditures relative to baseline amount when budget balance is true. Set value for base year, click '+' to add value for next year.  All future years not specified are set to last value entered.  
+_Description:_ Proportional adjustment to government consumption expenditures relative to baseline amount when baseline_spending is True. Set value for base year, click '+' to add value for next year.  All future years not specified are set to last value entered.  
 _Value Type:_ float  
 _Valid Range:_ min = 0.0 and max = 9.9999e+103  
 _Out-of-Range Action:_ error  
 
 
 ####  `alpha_bs_I`  
-_Description:_ Proportional adjustment to  infrastructure (public capital) spending relative to baseline amount when balanced budget is true.  
+_Description:_ Proportional adjustment to infrastructure (public capital) spending relative to baseline amount when baseline_spending is True.  
+_Value Type:_ float  
+_Valid Range:_ min = 0.0 and max = 9.9999e+103  
+_Out-of-Range Action:_ error  
+
+
+####  `alpha_bs_FA`  
+_Description:_ Proportional adjustment to foreign aid payments to the domestic government relative to baseline amount when baseline_spending is True. In that case, foreign aid in the reform is this factor times the level of foreign aid in the baseline equilibrium, and alpha_FA is not used.  
 _Value Type:_ float  
 _Valid Range:_ min = 0.0 and max = 9.9999e+103  
 _Out-of-Range Action:_ error  

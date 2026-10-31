@@ -536,8 +536,10 @@
 <span class="sd">            * theta (Numpy array): steady-state retirement replacement</span>
 <span class="sd">                rates, length J</span>
 <span class="sd">            * baseline_values (tuple): (Ybaseline, TRbaseline, Gbaseline,</span>
-<span class="sd">                D0_baseline), GDP, lump sum transfer, and government spending</span>
-<span class="sd">                amounts from the baseline model run</span>
+<span class="sd">                Ig_baseline, FAbaseline, D0_baseline, Kg0_baseline), GDP,</span>
+<span class="sd">                lump sum transfer, government spending, infrastructure</span>
+<span class="sd">                investment, and foreign aid paths and initial government</span>
+<span class="sd">                debt and public capital from the baseline model run</span>
 
 <span class="sd">    """</span>
     <span class="n">baseline_ss</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">baseline_dir</span><span class="p">,</span> <span class="s2">"SS"</span><span class="p">,</span> <span class="s2">"SS_vars.pkl"</span><span class="p">)</span>
@@ -576,6 +578,7 @@
     <span class="n">TRbaseline</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="n">Gbaseline</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="n">Ig_baseline</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">FAbaseline</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">p</span><span class="o">.</span><span class="n">baseline</span><span class="p">:</span>
         <span class="n">baseline_tpi</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">baseline_dir</span><span class="p">,</span> <span class="s2">"TPI"</span><span class="p">,</span> <span class="s2">"TPI_vars.pkl"</span><span class="p">)</span>
         <span class="n">tpi_baseline_vars</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">safe_read_pickle</span><span class="p">(</span><span class="n">baseline_tpi</span><span class="p">)</span>
@@ -586,6 +589,9 @@
         <span class="n">TRbaseline</span> <span class="o">=</span> <span class="n">tpi_baseline_vars</span><span class="p">[</span><span class="s2">"TR"</span><span class="p">]</span>
         <span class="n">Gbaseline</span> <span class="o">=</span> <span class="n">tpi_baseline_vars</span><span class="p">[</span><span class="s2">"G"</span><span class="p">]</span>
         <span class="n">Ig_baseline</span> <span class="o">=</span> <span class="n">tpi_baseline_vars</span><span class="p">[</span><span class="s2">"I_g"</span><span class="p">]</span>
+        <span class="n">FAbaseline</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">get_baseline_foreign_aid</span><span class="p">(</span>
+            <span class="n">tpi_baseline_vars</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="s2">"TPI"</span>
+        <span class="p">)</span>
 
     <span class="k">if</span> <span class="n">p</span><span class="o">.</span><span class="n">baseline</span><span class="p">:</span>
         <span class="n">ss_vars</span> <span class="o">=</span> <span class="n">ss_baseline_vars</span>
@@ -643,6 +649,7 @@
         <span class="n">TRbaseline</span><span class="p">,</span>
         <span class="n">Gbaseline</span><span class="p">,</span>
         <span class="n">Ig_baseline</span><span class="p">,</span>
+        <span class="n">FAbaseline</span><span class="p">,</span>
         <span class="n">D0_baseline</span><span class="p">,</span>
         <span class="n">Kg0_baseline</span><span class="p">,</span>
     <span class="p">)</span>
@@ -1314,6 +1321,7 @@
         <span class="n">TRbaseline</span><span class="p">,</span>
         <span class="n">Gbaseline</span><span class="p">,</span>
         <span class="n">Ig_baseline</span><span class="p">,</span>
+        <span class="n">FAbaseline</span><span class="p">,</span>
         <span class="n">D0_baseline</span><span class="p">,</span>
         <span class="n">Kg0_baseline</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">=</span> <span class="n">baseline_values</span>
@@ -1429,7 +1437,7 @@
         <span class="n">D</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">T</span> <span class="o">+</span> <span class="n">p</span><span class="o">.</span><span class="n">S</span><span class="p">)</span>
         <span class="n">D_d</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">T</span> <span class="o">+</span> <span class="n">p</span><span class="o">.</span><span class="n">S</span><span class="p">)</span>
         <span class="n">D_f</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">T</span> <span class="o">+</span> <span class="n">p</span><span class="o">.</span><span class="n">S</span><span class="p">)</span>
-        <span class="n">I_g</span> <span class="o">=</span> <span class="n">fiscal</span><span class="o">.</span><span class="n">get_I_g</span><span class="p">(</span><span class="n">Y</span><span class="p">[:</span> <span class="n">p</span><span class="o">.</span><span class="n">T</span><span class="p">],</span> <span class="kc">None</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="s2">"TPI"</span><span class="p">)</span>
+        <span class="n">I_g</span> <span class="o">=</span> <span class="n">fiscal</span><span class="o">.</span><span class="n">get_I_g</span><span class="p">(</span><span class="n">Y</span><span class="p">[:</span> <span class="n">p</span><span class="o">.</span><span class="n">T</span><span class="p">],</span> <span class="n">Ig_baseline</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="s2">"TPI"</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="k">if</span> <span class="n">p</span><span class="o">.</span><span class="n">baseline_spending</span><span class="p">:</span>
             <span class="c1"># Will set to TRbaseline here, but will be updated in TPI loop</span>
@@ -1437,10 +1445,13 @@
             <span class="n">TR</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">(</span>
                 <span class="p">(</span><span class="n">TRbaseline</span><span class="p">[:</span> <span class="n">p</span><span class="o">.</span><span class="n">T</span><span class="p">],</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">S</span><span class="p">)</span> <span class="o">*</span> <span class="n">ss_vars</span><span class="p">[</span><span class="s2">"TR"</span><span class="p">])</span>
             <span class="p">)</span>
-            <span class="c1"># Will set to Ig_baseline here, but will be updated in TPI loop</span>
-            <span class="c1"># with call to fiscal.get_I_g</span>
+            <span class="c1"># Infrastructure investment is the baseline path scaled by</span>
+            <span class="c1"># alpha_bs_I</span>
             <span class="n">I_g</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">(</span>
-                <span class="p">(</span><span class="n">Ig_baseline</span><span class="p">[:</span> <span class="n">p</span><span class="o">.</span><span class="n">T</span><span class="p">],</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">S</span><span class="p">)</span> <span class="o">*</span> <span class="n">ss_vars</span><span class="p">[</span><span class="s2">"I_g"</span><span class="p">])</span>
+                <span class="p">(</span>
+                    <span class="n">fiscal</span><span class="o">.</span><span class="n">get_I_g</span><span class="p">(</span><span class="n">Y</span><span class="p">[:</span> <span class="n">p</span><span class="o">.</span><span class="n">T</span><span class="p">],</span> <span class="n">Ig_baseline</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="s2">"TPI"</span><span class="p">),</span>
+                    <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">S</span><span class="p">)</span> <span class="o">*</span> <span class="n">ss_vars</span><span class="p">[</span><span class="s2">"I_g"</span><span class="p">],</span>
+                <span class="p">)</span>
             <span class="p">)</span>
             <span class="c1"># Will set to Gbaseline here, but will be updated in TPI loop</span>
             <span class="c1"># with call to fiscal.D_G_path, which also does closure rule</span>
@@ -1452,6 +1463,9 @@
         <span class="n">D</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">T</span> <span class="o">+</span> <span class="n">p</span><span class="o">.</span><span class="n">S</span><span class="p">)</span> <span class="o">*</span> <span class="n">ss_vars</span><span class="p">[</span><span class="s2">"D"</span><span class="p">]</span>
         <span class="n">D_d</span> <span class="o">=</span> <span class="n">D</span> <span class="o">*</span> <span class="n">ss_vars</span><span class="p">[</span><span class="s2">"D_d"</span><span class="p">]</span> <span class="o">/</span> <span class="n">ss_vars</span><span class="p">[</span><span class="s2">"D"</span><span class="p">]</span>
         <span class="n">D_f</span> <span class="o">=</span> <span class="n">D</span> <span class="o">*</span> <span class="n">ss_vars</span><span class="p">[</span><span class="s2">"D_f"</span><span class="p">]</span> <span class="o">/</span> <span class="n">ss_vars</span><span class="p">[</span><span class="s2">"D"</span><span class="p">]</span>
+    <span class="c1"># Foreign aid is alpha_FA * Y, or the baseline path scaled by</span>
+    <span class="c1"># alpha_bs_FA if baseline_spending=True</span>
+    <span class="n">foreign_aid</span> <span class="o">=</span> <span class="n">fiscal</span><span class="o">.</span><span class="n">get_foreign_aid</span><span class="p">(</span><span class="n">Y</span><span class="p">[:</span> <span class="n">p</span><span class="o">.</span><span class="n">T</span><span class="p">],</span> <span class="n">FAbaseline</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="s2">"TPI"</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">p</span><span class="o">.</span><span class="n">baseline</span><span class="p">:</span>
         <span class="n">K_g0</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">initial_Kg_ratio</span> <span class="o">*</span> <span class="n">Y</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
     <span class="k">else</span><span class="p">:</span>
@@ -1851,8 +1865,8 @@
             <span class="s2">"TPI"</span><span class="p">,</span>
         <span class="p">)</span>
         <span class="n">total_tax_revenue</span><span class="p">[:</span> <span class="n">p</span><span class="o">.</span><span class="n">T</span><span class="p">]</span> <span class="o">=</span> <span class="n">total_tax_rev</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">p</span><span class="o">.</span><span class="n">baseline_spending</span><span class="p">:</span>
-            <span class="n">I_g</span> <span class="o">=</span> <span class="n">fiscal</span><span class="o">.</span><span class="n">get_I_g</span><span class="p">(</span><span class="n">Y</span><span class="p">[:</span> <span class="n">p</span><span class="o">.</span><span class="n">T</span><span class="p">],</span> <span class="kc">None</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="s2">"TPI"</span><span class="p">)</span>
+        <span class="n">I_g</span> <span class="o">=</span> <span class="n">fiscal</span><span class="o">.</span><span class="n">get_I_g</span><span class="p">(</span><span class="n">Y</span><span class="p">[:</span> <span class="n">p</span><span class="o">.</span><span class="n">T</span><span class="p">],</span> <span class="n">Ig_baseline</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="s2">"TPI"</span><span class="p">)</span>
+        <span class="n">foreign_aid</span> <span class="o">=</span> <span class="n">fiscal</span><span class="o">.</span><span class="n">get_foreign_aid</span><span class="p">(</span><span class="n">Y</span><span class="p">[:</span> <span class="n">p</span><span class="o">.</span><span class="n">T</span><span class="p">],</span> <span class="n">FAbaseline</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="s2">"TPI"</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">p</span><span class="o">.</span><span class="n">baseline</span><span class="p">:</span>
             <span class="n">K_g0</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">initial_Kg_ratio</span> <span class="o">*</span> <span class="n">Y</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
         <span class="n">K_g</span> <span class="o">=</span> <span class="n">fiscal</span><span class="o">.</span><span class="n">get_K_g</span><span class="p">(</span><span class="n">K_g0</span><span class="p">,</span> <span class="n">I_g</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="s2">"TPI"</span><span class="p">)</span>
@@ -1863,6 +1877,7 @@
             <span class="n">UBI_outlays</span><span class="p">,</span>
             <span class="n">TR</span><span class="p">,</span>
             <span class="n">I_g</span><span class="p">,</span>
+            <span class="n">foreign_aid</span><span class="p">,</span>
             <span class="n">Gbaseline</span><span class="p">,</span>
             <span class="n">D0_baseline</span><span class="p">,</span>
         <span class="p">)</span>
@@ -1971,6 +1986,7 @@
             <span class="n">agg_pension_outlays</span><span class="p">[:</span> <span class="n">p</span><span class="o">.</span><span class="n">T</span><span class="p">],</span>
             <span class="n">UBI_outlays</span><span class="p">[:</span> <span class="n">p</span><span class="o">.</span><span class="n">T</span><span class="p">],</span>
             <span class="n">I_g</span><span class="p">[:</span> <span class="n">p</span><span class="o">.</span><span class="n">T</span><span class="p">],</span>
+            <span class="n">foreign_aid</span><span class="p">[:</span> <span class="n">p</span><span class="o">.</span><span class="n">T</span><span class="p">],</span>
             <span class="n">p</span><span class="p">,</span>
             <span class="s2">"TPI"</span><span class="p">,</span>
         <span class="p">)</span>
@@ -2278,7 +2294,7 @@
     <span class="n">RM_vec</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">p</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="n">p</span><span class="o">.</span><span class="n">M</span><span class="p">))</span>
     <span class="n">RM_vec</span><span class="p">[:,</span> <span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">RM</span><span class="p">[:</span> <span class="n">p</span><span class="o">.</span><span class="n">T</span><span class="p">]</span>
     <span class="n">foreign_aid_vec</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">p</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="n">p</span><span class="o">.</span><span class="n">M</span><span class="p">))</span>
-    <span class="n">foreign_aid_vec</span><span class="p">[:,</span> <span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">alpha_FA</span><span class="p">[:</span> <span class="n">p</span><span class="o">.</span><span class="n">T</span><span class="p">]</span> <span class="o">*</span> <span class="n">Y</span><span class="p">[:</span> <span class="n">p</span><span class="o">.</span><span class="n">T</span><span class="p">]</span>
+    <span class="n">foreign_aid_vec</span><span class="p">[:,</span> <span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">foreign_aid</span><span class="p">[:</span> <span class="n">p</span><span class="o">.</span><span class="n">T</span><span class="p">]</span>
     <span class="n">RC_error</span> <span class="o">=</span> <span class="n">aggr</span><span class="o">.</span><span class="n">resource_constraint</span><span class="p">(</span>
         <span class="n">Y_vec</span><span class="p">,</span>
         <span class="n">C_m_vec</span><span class="p">,</span>
@@ -2333,6 +2349,7 @@
         <span class="s2">"I_d"</span><span class="p">:</span> <span class="n">I_d</span><span class="p">[:</span> <span class="n">p</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="o">...</span><span class="p">],</span>
         <span class="s2">"K_g"</span><span class="p">:</span> <span class="n">K_g</span><span class="p">[:</span> <span class="n">p</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="o">...</span><span class="p">],</span>
         <span class="s2">"I_g"</span><span class="p">:</span> <span class="n">I_g</span><span class="p">[:</span> <span class="n">p</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="o">...</span><span class="p">],</span>
+        <span class="s2">"foreign_aid"</span><span class="p">:</span> <span class="n">foreign_aid</span><span class="p">[:</span> <span class="n">p</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="o">...</span><span class="p">],</span>
         <span class="s2">"BQ"</span><span class="p">:</span> <span class="n">BQ</span><span class="p">[:</span> <span class="n">p</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="o">...</span><span class="p">],</span>
         <span class="s2">"RM"</span><span class="p">:</span> <span class="n">RM</span><span class="p">[:</span> <span class="n">p</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="o">...</span><span class="p">],</span>
         <span class="s2">"Y_m"</span><span class="p">:</span> <span class="n">Y_vec</span><span class="p">[:</span> <span class="n">p</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="o">...</span><span class="p">],</span>

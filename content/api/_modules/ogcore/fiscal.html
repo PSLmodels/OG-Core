@@ -407,14 +407,16 @@
 <span class="sd">        \end{split}</span>
 
 <span class="sd">    Args:</span>
-<span class="sd">        r_gov (Numpy array): interest rate on government debt over the</span>
+<span class="sd">        r (Numpy array): interest rate on private capital over the</span>
 <span class="sd">            time path</span>
 <span class="sd">        dg_fixed_values (tuple): (Y, total_tax_revenue,</span>
-<span class="sd">            agg_pension_outlays, UBI_outlays,TR, D0, G0) values of variables</span>
-<span class="sd">            that are taken as given in the government budget constraint</span>
-<span class="sd">        Gbaseline (Numpy array): government spending over the time path</span>
-<span class="sd">            in the baseline equilibrium, used only if</span>
-<span class="sd">            baseline_spending=True</span>
+<span class="sd">            agg_pension_outlays, UBI_outlays, TR, I_g, foreign_aid,</span>
+<span class="sd">            Gbaseline, D0_baseline) values of variables that are taken</span>
+<span class="sd">            as given in the government budget constraint, where</span>
+<span class="sd">            Gbaseline is government spending over the time path in the</span>
+<span class="sd">            baseline equilibrium (used only if baseline_spending=True)</span>
+<span class="sd">            and D0_baseline is initial debt in the baseline equilibrium</span>
+<span class="sd">            (used only if baseline=False)</span>
 <span class="sd">        p (OG-Core Specifications object): model parameters</span>
 
 <span class="sd">    Returns:</span>
@@ -436,6 +438,7 @@
         <span class="n">UBI_outlays</span><span class="p">,</span>
         <span class="n">TR</span><span class="p">,</span>
         <span class="n">I_g</span><span class="p">,</span>
+        <span class="n">foreign_aid</span><span class="p">,</span>
         <span class="n">Gbaseline</span><span class="p">,</span>
         <span class="n">D0_baseline</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">=</span> <span class="n">dg_fixed_values</span>
@@ -452,9 +455,6 @@
         <span class="n">G</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">alpha_bs_G</span><span class="p">[:</span> <span class="n">p</span><span class="o">.</span><span class="n">T</span><span class="p">]</span> <span class="o">*</span> <span class="n">Gbaseline</span><span class="p">[:</span> <span class="n">p</span><span class="o">.</span><span class="n">T</span><span class="p">]</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="n">G</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">alpha_G</span><span class="p">[:</span> <span class="n">p</span><span class="o">.</span><span class="n">T</span><span class="p">]</span> <span class="o">*</span> <span class="n">Y</span><span class="p">[:</span> <span class="n">p</span><span class="o">.</span><span class="n">T</span><span class="p">]</span>
-
-    <span class="c1"># direct foreign aid</span>
-    <span class="n">foreign_aid</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">alpha_FA</span><span class="p">[:</span> <span class="n">p</span><span class="o">.</span><span class="n">T</span><span class="p">]</span> <span class="o">*</span> <span class="n">Y</span><span class="p">[:</span> <span class="n">p</span><span class="o">.</span><span class="n">T</span><span class="p">]</span>
 
     <span class="k">if</span> <span class="n">p</span><span class="o">.</span><span class="n">budget_balance</span><span class="p">:</span>
         <span class="n">D</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">T</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
@@ -630,6 +630,7 @@
     <span class="n">TR</span><span class="p">,</span>
     <span class="n">UBI_outlays</span><span class="p">,</span>
     <span class="n">I_g</span><span class="p">,</span>
+    <span class="n">foreign_aid</span><span class="p">,</span>
     <span class="n">new_borrowing</span><span class="p">,</span>
     <span class="n">debt_service</span><span class="p">,</span>
     <span class="n">p</span><span class="p">,</span>
@@ -638,8 +639,9 @@
 <span class="sd">    Calculate the steady-state values of government spending.</span>
 
 <span class="sd">    .. math::</span>
-<span class="sd">            \bar{G} = \bar{Rev} + \bar{D}\bigl[(1 + \bar{g}_n)e^{g_y} -</span>
-<span class="sd">            (1 + \bar{r}_{gov})\bigr] - \bar{I}_g - \bar{TR} - \overline{UBI}</span>
+<span class="sd">            \bar{G} = \bar{Rev} + \overline{FA}</span>
+<span class="sd">            + \bar{D}\bigl[(1 + \bar{g}_n)e^{g_y} - (1 + \bar{r}_{gov})\bigr]</span>
+<span class="sd">            - \bar{I}_g - \bar{TR} - \overline{UBI}</span>
 
 <span class="sd">    Args:</span>
 <span class="sd">        Y (scalar): aggregate output</span>
@@ -648,6 +650,8 @@
 <span class="sd">        TR (scalar): steady-state transfer spending</span>
 <span class="sd">        UBI_outlays (scalar): steady-state total UBI outlays</span>
 <span class="sd">        I_g (scalar): steady-state public infrastructure investment</span>
+<span class="sd">        foreign_aid (scalar): steady-state foreign aid payments to the</span>
+<span class="sd">            domestic government</span>
 <span class="sd">        new_borrowing (scalar): steady-state amount of new borrowing</span>
 <span class="sd">        debt_service (scalar): steady-state debt service costs</span>
 <span class="sd">        p (OG-Core Specifications object): model parameters</span>
@@ -656,7 +660,6 @@
 <span class="sd">        G (tuple): steady-state government spending</span>
 
 <span class="sd">    """</span>
-    <span class="n">foreign_aid</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">alpha_FA</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="n">Y</span>
     <span class="k">if</span> <span class="n">p</span><span class="o">.</span><span class="n">budget_balance</span><span class="p">:</span>
         <span class="n">G</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">alpha_G</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="n">Y</span>
     <span class="k">else</span><span class="p">:</span>
@@ -702,6 +705,7 @@
     <span class="n">agg_pension_outlays</span><span class="p">,</span>
     <span class="n">UBI_outlays</span><span class="p">,</span>
     <span class="n">I_g</span><span class="p">,</span>
+    <span class="n">foreign_aid</span><span class="p">,</span>
     <span class="n">p</span><span class="p">,</span>
     <span class="n">method</span><span class="p">,</span>
 <span class="p">):</span>
@@ -727,6 +731,8 @@
 <span class="sd">            outlays</span>
 <span class="sd">        UBI_outlays (array_like): total universal basic income (UBI) outlays</span>
 <span class="sd">        I_g (array_like): public infrastructure investment</span>
+<span class="sd">        foreign_aid (array_like): foreign aid payments to the domestic</span>
+<span class="sd">            government</span>
 <span class="sd">        p (OG-Core Specifications object): model parameters</span>
 <span class="sd">        method (str): whether doing SS or TP calculation</span>
 
@@ -735,10 +741,6 @@
 
 <span class="sd">    """</span>
     <span class="k">if</span> <span class="n">p</span><span class="o">.</span><span class="n">budget_balance</span><span class="p">:</span>
-        <span class="k">if</span> <span class="n">method</span> <span class="o">==</span> <span class="s2">"SS"</span><span class="p">:</span>
-            <span class="n">foreign_aid</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">alpha_FA</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="n">Y</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="n">foreign_aid</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">alpha_FA</span><span class="p">[:</span> <span class="n">p</span><span class="o">.</span><span class="n">T</span><span class="p">]</span> <span class="o">*</span> <span class="n">Y</span><span class="p">[:</span> <span class="n">p</span><span class="o">.</span><span class="n">T</span><span class="p">]</span>
         <span class="n">new_TR</span> <span class="o">=</span> <span class="p">(</span>
             <span class="n">total_tax_revenue</span>
             <span class="o">+</span> <span class="n">foreign_aid</span>
@@ -812,12 +814,16 @@
 <span class="sd">    Find investment in public capital</span>
 
 <span class="sd">    .. math::</span>
-<span class="sd">        I_{g,t} = \alpha_{I,t}Y_{t}</span>
+<span class="sd">        I_{g,t} =</span>
+<span class="sd">        \begin{cases}</span>
+<span class="sd">            \alpha_{bs,I,t}I_{g,t}^{baseline}, &amp; \text{if baseline spending}\\</span>
+<span class="sd">            \alpha_{I,t}Y_{t}, &amp; \text{otherwise}</span>
+<span class="sd">        \end{cases}</span>
 
 <span class="sd">    Args:</span>
 <span class="sd">        Y (array_like): aggregate output</span>
 <span class="sd">        Ig_baseline (array_like): public infrastructure investment in</span>
-<span class="sd">            the baseline simulation</span>
+<span class="sd">            the baseline simulation, used only if baseline_spending=True</span>
 <span class="sd">        p (OG-Core Specifications object): model parameters</span>
 <span class="sd">        method (str): either 'SS' for steady-state or 'TPI' for transition path</span>
 
@@ -828,14 +834,53 @@
         <span class="k">if</span> <span class="n">method</span> <span class="o">==</span> <span class="s2">"SS"</span><span class="p">:</span>
             <span class="n">I_g</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">alpha_bs_I</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="n">Ig_baseline</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">I_g</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">alpha_bs_I</span><span class="p">[:</span> <span class="n">p</span><span class="o">.</span><span class="n">T</span><span class="p">]</span> <span class="o">*</span> <span class="n">Ig_baseline</span>
+            <span class="n">I_g</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">alpha_bs_I</span><span class="p">[:</span> <span class="n">p</span><span class="o">.</span><span class="n">T</span><span class="p">]</span> <span class="o">*</span> <span class="n">Ig_baseline</span><span class="p">[:</span> <span class="n">p</span><span class="o">.</span><span class="n">T</span><span class="p">]</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="k">if</span> <span class="n">method</span> <span class="o">==</span> <span class="s2">"SS"</span><span class="p">:</span>
             <span class="n">I_g</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">alpha_I</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="n">Y</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">I_g</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">alpha_I</span><span class="p">[:</span> <span class="n">p</span><span class="o">.</span><span class="n">T</span><span class="p">]</span> <span class="o">*</span> <span class="n">Y</span>
+            <span class="n">I_g</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">alpha_I</span><span class="p">[:</span> <span class="n">p</span><span class="o">.</span><span class="n">T</span><span class="p">]</span> <span class="o">*</span> <span class="n">Y</span><span class="p">[:</span> <span class="n">p</span><span class="o">.</span><span class="n">T</span><span class="p">]</span>
 
     <span class="k">return</span> <span class="n">I_g</span></div>
+
+
+
+<div class="viewcode-block" id="get_foreign_aid">
+<a class="viewcode-back" href="../../fiscal.html#ogcore.fiscal.get_foreign_aid">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">get_foreign_aid</span><span class="p">(</span><span class="n">Y</span><span class="p">,</span> <span class="n">FA_baseline</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s2">"SS"</span><span class="p">):</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">"""</span>
+<span class="sd">    Find foreign aid payments to the domestic government.</span>
+
+<span class="sd">    .. math::</span>
+<span class="sd">        FA_{t} =</span>
+<span class="sd">        \begin{cases}</span>
+<span class="sd">            \alpha_{bs,FA,t}FA_{t}^{baseline}, &amp; \text{if baseline spending}\\</span>
+<span class="sd">            \alpha_{FA,t}Y_{t}, &amp; \text{otherwise}</span>
+<span class="sd">        \end{cases}</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        Y (array_like): aggregate output</span>
+<span class="sd">        FA_baseline (array_like): foreign aid payments in the baseline</span>
+<span class="sd">            simulation, used only if baseline_spending=True</span>
+<span class="sd">        p (OG-Core Specifications object): model parameters</span>
+<span class="sd">        method (str): either 'SS' for steady-state or 'TPI' for transition path</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">        foreign_aid (array_like): foreign aid payments to the domestic</span>
+<span class="sd">            government</span>
+<span class="sd">    """</span>
+    <span class="k">if</span> <span class="n">p</span><span class="o">.</span><span class="n">baseline_spending</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">method</span> <span class="o">==</span> <span class="s2">"SS"</span><span class="p">:</span>
+            <span class="n">foreign_aid</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">alpha_bs_FA</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="n">FA_baseline</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">foreign_aid</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">alpha_bs_FA</span><span class="p">[:</span> <span class="n">p</span><span class="o">.</span><span class="n">T</span><span class="p">]</span> <span class="o">*</span> <span class="n">FA_baseline</span><span class="p">[:</span> <span class="n">p</span><span class="o">.</span><span class="n">T</span><span class="p">]</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">method</span> <span class="o">==</span> <span class="s2">"SS"</span><span class="p">:</span>
+            <span class="n">foreign_aid</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">alpha_FA</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="n">Y</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">foreign_aid</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">alpha_FA</span><span class="p">[:</span> <span class="n">p</span><span class="o">.</span><span class="n">T</span><span class="p">]</span> <span class="o">*</span> <span class="n">Y</span><span class="p">[:</span> <span class="n">p</span><span class="o">.</span><span class="n">T</span><span class="p">]</span>
+
+    <span class="k">return</span> <span class="n">foreign_aid</span></div>
 
 
 
