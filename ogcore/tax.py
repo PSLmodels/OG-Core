@@ -269,6 +269,8 @@ def net_taxes(
     e,
     etr_params,
     p,
+    inc_pay_tax_liab=None,
+    w_tax_liab=None,
 ):
     """
     Calculate net taxes paid for each household.
@@ -294,18 +296,32 @@ def net_taxes(
         e (Numpy array): effective labor units
         etr_params (list): list of effective tax rate function parameters
         p (OG-Core Specifications object): model parameters
+        inc_pay_tax_liab (Numpy array): income and payroll tax liability
+            of each household, if already computed (with idiosyncratic
+            shocks, the mean over each age and type's distribution);
+            computed from b, n and e if None
+        w_tax_liab (Numpy array): wealth tax liability of each
+            household, if already computed; computed from b if None
 
     Returns:
         net_tax (Numpy array): net taxes paid for each household
 
     """
-    T_I = income_tax_liab(r, w, b, n, factor, t, j, method, e, etr_params, p)
+    if inc_pay_tax_liab is None:
+        T_I = income_tax_liab(
+            r, w, b, n, factor, t, j, method, e, etr_params, p
+        )
+    else:
+        T_I = inc_pay_tax_liab
     # TODO: replace "1" with Y in the args below when want NDC functions
     pension = pensions.pension_amount(
         r, w, n, 1, theta, t, j, shift, method, e, factor, p
     )
     T_BQ = bequest_tax_liab(r, b, bq, t, j, method, p)
-    T_W = wealth_tax_liab(r, b, t, j, method, p)
+    if w_tax_liab is None:
+        T_W = wealth_tax_liab(r, b, t, j, method, p)
+    else:
+        T_W = w_tax_liab
     # print("Net taxes shapes = ", T_I.shape, pension.shape,
     #        T_BQ.shape, T_W.shape)
     net_tax = T_I - pension + T_BQ + T_W - tr - ubi

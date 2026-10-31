@@ -218,6 +218,18 @@ The computational algorithm for solving for the steady-state follows the steps b
 
 Under alternative model configurations, the solution algorithm changes slightly.  For example, when `baseline = False`, one need not solve for the $factor$, as it is determined in the baseline model solution.  When `budget_balance = True`, the guess of $\overline{TR}$ in the outer loop is replaced by the guess of $\bar{Y}$ and transfers are determined a residual from the government budget constraint given revenues and other spending policy.  When `baseline_spending = True`, $\overline{TR}$ is determined from the baseline model solution and not updated in the outer loop described above.  In this case, $\bar{Y}$ becomes an outer loop variable.
 
+(SecEqlbSSsolnShocks)=
+#### Steady state with idiosyncratic productivity shocks
+
+With `household_solver = 'egm'`, households also face an idiosyncratic productivity shock $z$ that follows a Markov chain with `nz` states (parameters `nz`, `z_persistence`, `z_innovation_sd`, or `z_grid` and `z_trans`), so that labor income is $w e_{j,s} z n$. The outer loop is unchanged; only the household block in step 2.7 and the aggregation of household variables differ.
+
+1. In place of step 2.7, the household problem of all $J$ types is solved on an asset grid for each type by the endogenous grid method, and the stationary distribution of households over assets and shocks within each age and type, scaled to the population shares $\bar{\omega}_s\lambda_j$, is found by Young's method (`ogcore.household_stoch.solve_all_households_ss`).
+2. Within an age and type, the budget constraint, aggregate labor, savings, bequests, consumption and investment, and the income factor are linear in household savings, consumption and effective labor $z n$. These use the means of $b_{j,s+1}$, $c_{j,s}$ and $z n_{j,s}$ (in place of $n_{j,s}$) over the distribution of each age and type. Tax liabilities and tax rates are nonlinear in income and wealth, so they are computed at each point of the distribution and averaged.
+3. Pension benefits are computed from each type's mean effective earnings profile $\mathbb{E}[z n_{j,s}]$, not from individual earnings histories. With shocks, earnings histories differ within a type, so this is an approximation; benefits are made consistent with the households' own mean effective earnings at the given prices.
+4. The asset grids stay fixed while the root finder solves for the outer-loop variables, so that the errors it sees are smooth in the guesses. They are fitted to the distribution at the initial guesses and refitted, and the steady state solved again from the solution, if they do not fit the distribution at the solution.
+
+With one shock state ($z = 1$) the model is the one described above, and the steady state matches the one from the default solver up to the approximation error of the asset grid. The steady-state output then also holds the distribution, the policy functions, the grids, and inequality measures computed over the full distribution. The transition path is not yet implemented for this solver.
+
 (SecSSeqlbResults)=
 ### Steady-state results: default specification
 

@@ -303,6 +303,113 @@
             }
         }
     },
+    "nz": {
+        "title": "Number of idiosyncratic productivity shock states",
+        "description": "Number of states of the idiosyncratic productivity shock z.",
+        "short_description": "Number of productivity shock states",
+        "param_notation": "$n_z$",
+        "section_1": "Household Parameters",
+        "section_2": "Endowments",
+        "notes": "With one state (the default) there are no idiosyncratic shocks and z = 1. More than one state requires household_solver = 'egm'.",
+        "type": "int",
+        "value": [
+            {
+                "value": 1
+            }
+        ],
+        "validators": {
+            "range": {
+                "min": 1,
+                "max": 25
+            }
+        }
+    },
+    "z_persistence": {
+        "title": "Persistence of idiosyncratic productivity shocks",
+        "description": "Autocorrelation of log idiosyncratic productivity per model period.",
+        "short_description": "Persistence of productivity shocks",
+        "param_notation": "$\\rho_z$",
+        "section_1": "Household Parameters",
+        "section_2": "Endowments",
+        "notes": "Log productivity follows an AR(1), discretized by the Rouwenhorst method into nz states. Used only when nz > 1 and z_grid is not given.",
+        "type": "float",
+        "value": [
+            {
+                "value": 0.9
+            }
+        ],
+        "validators": {
+            "range": {
+                "min": 0.0,
+                "max": 0.999
+            }
+        }
+    },
+    "z_innovation_sd": {
+        "title": "Standard deviation of innovations to idiosyncratic productivity",
+        "description": "Standard deviation of the innovation to log idiosyncratic productivity per model period.",
+        "short_description": "Innovation s.d. of productivity shocks",
+        "param_notation": "$\\sigma_{\\varepsilon}$",
+        "section_1": "Household Parameters",
+        "section_2": "Endowments",
+        "notes": "Used only when nz > 1 and z_grid is not given.",
+        "type": "float",
+        "value": [
+            {
+                "value": 0.15
+            }
+        ],
+        "validators": {
+            "range": {
+                "min": 0.0,
+                "max": 2.0
+            }
+        }
+    },
+    "z_grid": {
+        "title": "Idiosyncratic productivity levels",
+        "description": "Levels of the idiosyncratic productivity shock z, which multiplies the deterministic ability e in labor income.",
+        "short_description": "Productivity shock levels",
+        "param_notation": "$z$",
+        "section_1": "Household Parameters",
+        "section_2": "Endowments",
+        "notes": "A vector of nz positive levels, given together with z_trans. If empty (the default), the levels come from the Rouwenhorst discretization of the AR(1) given by z_persistence and z_innovation_sd, scaled so that the mean of z under the stationary distribution is one.",
+        "type": "float",
+        "number_dims": 1,
+        "value": [
+            {
+                "value": []
+            }
+        ],
+        "validators": {
+            "range": {
+                "min": 0.0,
+                "max": 100.0
+            }
+        }
+    },
+    "z_trans": {
+        "title": "Transition matrix of idiosyncratic productivity shocks",
+        "description": "Markov transition matrix of the idiosyncratic productivity shock z.",
+        "short_description": "Productivity shock transition matrix",
+        "param_notation": "$\\pi_{z,z'}$",
+        "section_1": "Household Parameters",
+        "section_2": "Endowments",
+        "notes": "An nz x nz matrix whose entry [i, k] is the probability of moving from z_grid[i] to z_grid[k], given together with z_grid. If empty (the default), it comes from the Rouwenhorst discretization. Newborns draw z from its stationary distribution.",
+        "type": "float",
+        "number_dims": 2,
+        "value": [
+            {
+                "value": []
+            }
+        ],
+        "validators": {
+            "range": {
+                "min": 0.0,
+                "max": 1.0
+            }
+        }
+    },
     "starting_age": {
         "title": "Age at which households become economically active",
         "description": "Age at which households become economically active.",
@@ -4895,6 +5002,80 @@
                     "krylov",
                     "df-sane"
                 ]
+            }
+        }
+    },
+    "household_solver": {
+        "title": "Household solution method",
+        "description": "Method used to solve the household problem.",
+        "section_1": "Model Solution Parameters",
+        "notes": "'root' solves the first order conditions of each lifetime income group with scipy.optimize.root (see FOC_root_method) and does not allow idiosyncratic shocks. 'egm' solves the household problem with idiosyncratic productivity shocks on an asset grid by the endogenous grid method, and the distribution of households over assets and shocks by Young's method (household_stoch.py). 'egm' is available for the steady state; the transition path is not yet implemented for it.",
+        "type": "str",
+        "value": [
+            {
+                "value": "root"
+            }
+        ],
+        "validators": {
+            "choice": {
+                "choices": [
+                    "root",
+                    "egm"
+                ]
+            }
+        }
+    },
+    "nb": {
+        "title": "Number of points in the household asset grid",
+        "description": "Number of points in the asset grid of each lifetime income group.",
+        "section_1": "Model Solution Parameters",
+        "notes": "Used when household_solver = 'egm'.",
+        "type": "int",
+        "value": [
+            {
+                "value": 100
+            }
+        ],
+        "validators": {
+            "range": {
+                "min": 10,
+                "max": 2000
+            }
+        }
+    },
+    "b_grid_curvature": {
+        "title": "Curvature of the household asset grid",
+        "description": "Curvature of the household asset grid.",
+        "section_1": "Model Solution Parameters",
+        "notes": "Grid points are b_max x^curvature for x evenly spaced on [0, 1], so larger values put more points near zero assets. Used when household_solver = 'egm'.",
+        "type": "float",
+        "value": [
+            {
+                "value": 4.0
+            }
+        ],
+        "validators": {
+            "range": {
+                "min": 1.0,
+                "max": 10.0
+            }
+        }
+    },
+    "b_grid_margin": {
+        "title": "Top of the household asset grid relative to savings",
+        "description": "Top of each household asset grid as a multiple of the highest savings chosen where the distribution has mass.",
+        "section_1": "Model Solution Parameters",
+        "notes": "The top of each lifetime income group's grid is resized until it is close to this multiple. Used when household_solver = 'egm'.",
+        "type": "float",
+        "value": [
+            {
+                "value": 1.5
+            }
+        ],
+        "validators": {
+            "range": {
+                "min": 1.0,
+                "max": 5.0
             }
         }
     },
