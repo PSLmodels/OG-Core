@@ -3,12 +3,13 @@ on:
   push:
     branches: [master]
     paths:
-      - 'docs/**.png'
-      - 'docs/book/content/theory/images/**.png'
-      - 'docs/book/**.yml'
-      - 'docs/book/**.bib'
+      - 'Makefile'
+      - 'pyproject.toml'
+      - 'uv.lock'
+      - 'docs/**'
+      - '.github/workflows/docs_check.yml'
+      - '.github/workflows/deploy_docs.yml'
       - '**.md'
-      - 'docs/book/content/api/**.rst'
       - 'ogcore/**.py'
 jobs:
   build-and-deploy:
@@ -23,12 +24,19 @@ jobs:
       - name: Install uv
         uses: astral-sh/setup-uv@v7
         with:
-          python-version: "3.13"
+          python-version: "3.15"
+
+      - name: Install Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
 
       - name: Install package and dependencies
         run: uv sync --extra dev --extra docs
 
       - name: Build # Build Jupyter Book
+        env:
+          BASE_URL: /OG-Core
         run: |
           uv run make documentation
 

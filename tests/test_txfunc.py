@@ -842,6 +842,7 @@ def test_monotone_spline():
         2. test that the function give the correct outputs
         3. test that y_cstr, wsse_cstr, y_uncstr, wsse_uncstr are correct
     """
+    pytest.importorskip("pygam")
     # Simulate some data
     np.random.seed(10)
 

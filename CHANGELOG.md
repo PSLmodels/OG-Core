@@ -5,6 +5,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.23.1] - 2026-10-30
+
+### Updated
+- Adds support for Python 3.15 in the `pyproject.toml` classifiers and the GitHub Actions build matrix.
+- Makes pyGAM optional through the `pygam` extra on Python 3.12--3.14. Base installations and the Eilers smoother no longer import pyGAM; Python 3.15 uses SciPy 1.18.1 or newer, which provides compatible wheels.
+
 ## [0.23.0] - 2026-10-29
 
 ### Added
@@ -804,6 +810,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Any earlier versions of OG-USA can be found in the [`OG-Core`](https://github.com/PSLmodels/OG-Core) repository [release history](https://github.com/PSLmodels/OG-Core/releases) from [v.0.6.4](https://github.com/PSLmodels/OG-Core/releases/tag/v0.6.4) (Jul. 20, 2021) or earlier.
 
 
+[0.23.1]: https://github.com/PSLmodels/OG-Core/compare/v0.23.0...v0.23.1
 [0.23.0]: https://github.com/PSLmodels/OG-Core/compare/v0.22.0...v0.23.0
 [0.22.0]: https://github.com/PSLmodels/OG-Core/compare/v0.21.2...v0.22.0
 [0.21.2]: https://github.com/PSLmodels/OG-Core/compare/v0.21.1...v0.21.2
