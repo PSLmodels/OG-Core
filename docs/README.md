@@ -49,7 +49,17 @@ Every build imports the local `ogcore` source and regenerates signatures and
 docstrings. There are no manually copied function descriptions or signatures.
 The API retains source-code links, equations, class methods, its Python object
 inventory, and its own search. The API uses a Sphinx theme and search; the
-narrative book uses the MyST theme and search. Navigation links connect them.
+narrative book uses the MyST theme and search. Both sections provide Book,
+Theory, and API reference navigation. The book also links directly to API
+search, and the API search identifies its scope and links back to the book.
+The small `docs/book/navigation.js` handler makes API links load a new document
+instead of being handled as MyST chapter routes, including after navigation
+within the book.
+
+The root `objects.inv` combines the book's narrative references with Python
+objects from the API, with their URLs adjusted to `content/api/`. Existing
+intersphinx configurations can keep using the book root. The API-only inventory
+also remains available at `content/api/objects.inv`.
 
 When changing an existing function or docstring, rebuild the documentation.
 To expose an additional function, add its name to the relevant `:members:`
@@ -68,6 +78,16 @@ The theory references and the list of OG-Core use cases are generated separately
 from `OGCore_references.bib` and `citations.bib`, preserving uncited use cases
 and their `C-` labels. Inline citations and per-page references are rendered by
 MyST. Edit the BibTeX inputs rather than generated bibliography text.
+
+The bibliographies use stable anchors derived from BibTeX keys, aligned labels,
+and compact Source/PDF/DOI links. `docs/bibliography_anchors.json` records the
+published Jupyter Book 1 citation IDs; the legacy-page redirects map those IDs
+to the stable anchors. Keep that mapping when adding or reordering references.
+
+Equations, figures, and tables are numbered continuously across the book.
+`docs/book/ogcore.css` styles the reference lists, stacks their labels on narrow
+screens, and hides the repeated metadata/download toolbar. Author metadata
+is retained, with author blocks hidden through the MyST theme configuration.
 
 Documentation-build regression tests can be run with:
 
