@@ -2087,7 +2087,7 @@ requires-dist = [
     { name = "pyyaml", marker = "extra == 'docs'", specifier = ">=6" },
     { name = "requests" },
     { name = "ruff", marker = "extra == 'dev'" },
-    { name = "scipy", specifier = ">=1.7.1" },
+    { name = "scipy", specifier = ">=1.15" },
     { name = "sphinx", marker = "extra == 'docs'", specifier = ">=8,<10" },
     { name = "sphinx-math-dollar", marker = "extra == 'docs'" },
 ]
