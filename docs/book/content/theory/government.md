@@ -18,10 +18,12 @@ Income taxes are modeled through the net tax liability function for each househo
 
 ```{math}
 :label: EqHHBC2_gov
+\begin{aligned}
   p_t c_{j,s,t} + &\sum_{i=1}^I (1 + \tau^{c}_{i,t})p_{i,t}c_{min,i} + b_{j,s+1,t+1} = \\
   &(1 + r_{p,t})b_{j,s,t} + w_t e_{j,s} n_{j,s,t} ... \\
   &\qquad +\: bq_{j,s,t} + rm_{j,s,t} + tr_{j,s,t} + ubi_{j,s,t} + pension_{j,s,t} - tax_{j,s,t}  \\
   &\qquad\quad\forall j,t\quad\text{and}\quad E+1\leq s\leq E+S \quad\text{where}\quad b_{j,E+1,t}=0
+\end{aligned}
 ```
 
 Incorporating realistic tax and incentive detail into a general equilibrium model is notoriously difficult for two reasons. First, it is impossible in a dynamic general equilibrium model to capture all of the dimensions of heterogeneity on which the real-world tax rate depends. For example, a household's tax liability in reality depends on filing status, number of dependents, many types of income, and some characteristics correlated with age. A good heterogeneous agent DGE model tries to capture the most important dimensions of heterogeneity, and necessarily neglects the other dimensions.
@@ -48,8 +50,10 @@ The second difficulty in modeling realistic tax and incentive detail is the need
 
   ```{math}
   :label: EqTaxCalcLiabETR2
+  \begin{aligned}
     tax_{j,s,t} &= tax^{x+y}_{j,s,t} + tax^w_{j,s,t} \\
     &=\tau^{etr,xy}_{s,t}(x_{j,s,t}, y_{j,s,t})\left(x_{j,s,t} + y_{j,s,t}\right) + \tau^{etr,w}_{t}\bigl(b_{j,s,t}\bigr)b_{j,s,t}
+  \end{aligned}
   ```
 
   where the wealth tax function is described in Section {ref}`SecGovWealthTax` of this chapter. Rearranging the first term on the right-hand-side of {eq}`EqTaxCalcLiabETR2` gives the definition of an effective tax rate on income ($\tau_{s,t}^{etr,xy}$) as total tax liability, minus the wealth tax liability, divided by unadjusted gross income. And the definition of the effective tax rate on wealth ($\tau_{t}^{etr,w}$) as total tax liability, minus the income tax liability, divided by wealth.
@@ -97,11 +101,13 @@ The second difficulty in modeling realistic tax and incentive detail is the need
   For the default option, `OG-Core` follows the approach of {cite}`DeBackerEtAl:2019` in using the following functional form to estimate tax functions for each age $s=E+1, E+2, ... E+S$ in each time period $t$. This option can be manually selected by setting the parameter `tax_func_type="DEP"`. Alternative specifications are outlined in Section {ref}`SecTaxCalcFuncs_Alt` below. Equation {eq}`EqTaxCalcTaxFuncForm` is written as a generic tax rate, but we use this same functional form for $ETR$'s, $MTRx$'s, and $MTRy$'s.
   ```{math}
   :label: EqTaxCalcTaxFuncForm
+  \begin{aligned}
     \tau(x,y) = &\Bigl[\tau(x) + shift_x\Bigr]^\phi\Bigl[\tau(y) + shift_y\Bigr]^{1-\phi} + shift \\
     &\text{where}\quad \tau(x) \equiv (max_x - min_x)\left(\frac{Ax^2 + Bx}{Ax^2 + Bx + 1}\right) + min_x \\
     &\quad\text{and}\quad \tau(y) \equiv (max_y - min_y)\left(\frac{Cy^2 + Dy}{Cy^2 + Dy + 1}\right) + min_y \\
     &\text{where}\quad A,B,C,D,max_x,max_y,shift_x,shift_y > 0 \quad\text{and}\quad\phi\in[0,1] \\
     &\quad\text{and}\quad max_x > min_x \quad\text{and}\quad max_y > min_y
+  \end{aligned}
   ```
 
   The parameters values will, in general, differ across the different functions (effective and marginal rate functions) and by age, $s$, and tax year, $t$.  We drop the subscripts for age and year from the above exposition for clarity.
@@ -128,17 +134,17 @@ The second difficulty in modeling realistic tax and incentive detail is the need
   * - $D$
     - Coefficient on capital income term *y* in $\tau(y)$
   * - $max_{x}$
-    - Maximum tax rate on labor income $x$ given $y$ = 0
+    - Maximum tax rate on labor income $x$ given $y = 0$
   * - $min_{x}$
-    - Minimum tax rate on labor income $x$ given $y$ = 0
+    - Minimum tax rate on labor income $x$ given $y = 0$
   * - $max_{y}$
-    - Maximum tax rate on capital income $y$ given $x$ = 0
+    - Maximum tax rate on capital income $y$ given $x = 0$
   * - $min_{y}$
-    - Minimum tax rate on capital income $y$ given $x$ = 0
+    - Minimum tax rate on capital income $y$ given $x = 0$
   * - $shift_{x}$
-    - shifter  $> \|min_{x}\|$ ensures that $\tau(x,y)$ + $shift_{x} \geq 0$ despite potentially negative values for $\tau(x)$
+    - shifter $>\,\|min_{x}\|$ ensures that $\tau(x,y)$ + $shift_{x}\,\geq\,0$ despite potentially negative values for $\tau(x)$
   * - $shift_{y}$
-    - shifter  $> \|min_{y}\|$ ensures that $\tau(x,y)$ + $shift_{y} \geq 0$ despite potentially negative values for $\tau(y)$
+    - shifter $>\,\|min_{y}\|$ ensures that $\tau(x,y)$ + $shift_{y}\,\geq\,0$ despite potentially negative values for $\tau(y)$
   * - $shift$
     - shifter (can be negative) allows for support of $\tau(x,y)$ to include negative tax rates
   * - $\phi$
@@ -232,8 +238,10 @@ The second difficulty in modeling realistic tax and incentive detail is the need
 
   ```{math}
   :label: EqTaxCalcThetaWSSQ
+  \begin{aligned}
       \boldsymbol{\hat{\theta}}_{s,t} = \tilde{\boldsymbol{\theta}}_{s,t}:\quad &\min_{\tilde{\boldsymbol{\theta}}_{s,t}}\sum_{i=1}^{N} \Bigl[\tau_{i}-\tau_{s,t}\bigl(x_i,y_i|\tilde{\boldsymbol{\theta}}_{s,t},\bar{\boldsymbol{\theta}}_{s,t}\bigr)\Bigr]^{2} w_i, \\
       &\qquad\text{subject to}\quad A, B, C, D > 0 \quad\text{and}\quad \phi\in[0,1]
+  \end{aligned}
   ```
 
   where $\tau_{i}$ is the tax rate for observation $i$ from the microsimulation output, $\tau_{s,t}(x_i,y_i|\tilde{\boldsymbol{\theta}}_{s,t},\bar{\boldsymbol{\theta}}_{s,t})$ is the predicted tax rate for filing-unit $i$ with $x_{i}$ labor income and $y_{i}$ capital income given parameters $\boldsymbol{\theta}_{s,t}$, and $w_{i}$ is the CPS sampling weight of this observation. The number $N$ is the total number of observations from the microsimulation output for age $s$ and year $t$. {numref}`Figure %s <FigTaxCalc3DvsPred>` shows the typical fit of an estimated tax function $\tau_{s,t}\bigl(x,y|\hat{\boldsymbol{\theta}}_{s,t}\bigr)$ to the data for $s=42$ and year $t=2017$.
@@ -368,7 +376,7 @@ Under the U.S.-style social security system, households over age $R$ received a 
  The AIME in turn, determines a household's (PIA) based on three rates and brackets:
 
    ```{math}
-  :label: eqn:PIA
+   :label: eqn:PIA
     PIAbase_{j,R,t+R} =
       \begin{cases}
         PIArate_1 \times AIME_{j,R,t+R}, \text{for } AIME_{j,R,t+R} \leq AIMEbkt_1 \\
@@ -530,10 +538,10 @@ Total pension spending is the sum of the pension payments to each household in t
   ```{math}
   :label: EqUBIubi_nom_jst0
     \begin{split}
-      ubi^{nom}_{j,s,t=0} = \min\Bigl(&\texttt{ubi_nom_max}, \\
-      &\texttt{ubi_nom_017} * \texttt{ubi_num_017_mat}_{j,s} + \\
-      &\texttt{ubi_nom_1864} * \texttt{ubi_num_1864_mat}_{j,s} + \\
-      &\texttt{ubi_nom_65p} * \texttt{ubi_num_65p_mat}_{j,s}\Bigr) \quad\forall j,s
+      ubi^{nom}_{j,s,t=0} = \min\Bigl(&\texttt{ubi\_nom\_max}, \\
+      &\texttt{ubi\_nom\_017} * \texttt{ubi\_num\_017\_mat}_{j,s} + \\
+      &\texttt{ubi\_nom\_1864} * \texttt{ubi\_num\_1864\_mat}_{j,s} + \\
+      &\texttt{ubi\_nom\_65p} * \texttt{ubi\_num\_65p\_mat}_{j,s}\Bigr) \quad\forall j,s
     \end{split}
   ```
 
@@ -592,30 +600,36 @@ Note that the budget closure rule (described in Section ref{`SecUnbalGBCcloseRul
 
   ```{math}
   :label: EqHHBC3
+  \begin{aligned}
     p_t c_{j,s,t} + &\sum_{i=1}^I (1 + \tau^{c}_{i,t})p_{i,t}c_{min,i} + b_{j,s+1,t+1} = \\
     &(1 + r_{p,t})b_{j,s,t} + w_t e_{j,s} n_{j,s,t} ... \\
     &\qquad +\: (1-\tau^{bq}_t)bq_{j,s,t} + rm_{j,s,t} + tr_{j,s,t} + ubi_{j,s,t} + pension_{j,s,t} - tax_{j,s,t}  \\
     &\qquad\quad\forall j,t\quad\text{and}\quad E+1\leq s\leq E+S \quad\text{where}\quad b_{j,E+1,t}=0
+  \end{aligned}
   ```
 
   where we defined the tax liability function $tax_{j,s,t}$ in {eq}`EqTaxCalcLiabETR` as effective tax rate times respective total income and wealth. The transfer distribution function $\eta_{j,s,t}$ can vary by lifetime ability group $j$, age $s$, and time period $t$. Households also remit tax on bequests received ($\tau^{bq}$) and on consumption ($\tau^c$). And government revenue from the corporate income tax rate schedule $\tau^{corp}_{m,t}$ and the tax on depreciation expensing schedule $\delta^\tau_{m,t}$ enters the firms' profit function in each industry $m$.
 
   ```{math}
   :label: EqFirmsProfit2
+  \begin{aligned}
     PR_{m,t} &= (1 - \tau^{corp}_{m,t})\Bigl[p_{m,t}F(K_{m,t},K_{g,m,t},L_{m,t}) - w_t L_{m,t}\Bigr] - \\
     &\quad\quad\quad\quad\quad \bigl(r_t + \delta_{M,t}\bigr)K_{m,t} + \left(\tau^{corp}_{m,t}\delta^\tau_{m,t} + \tau^{inv}_{m,t}\delta_{M,t}\right)K_{m,t} \quad\forall m,t
+  \end{aligned}
   ```
 
   We define total government revenue from taxes in terms of the numeraire good as the following,
 
   ```{math}
   :label: EqUnbalGBCgovRev
+  \begin{aligned}
     Rev_t &= \underbrace{\sum_{m=1}^M\Bigl[\tau^{corp}_{m,t}\bigl(p_{m,t}Y_{m,t} - w_t L_{m,t}\bigr) - \bigl(\tau^{corp}_{m,t}\delta^\tau_{m,t} + \tau^{inv}_{m,t}\delta_{M,t}\bigr)K_{m,t}\Bigr]}_{\text{corporate income tax revenue}} \\
     &\quad + \underbrace{\sum_{s=E+1}^{E+S}\sum_{j=1}^J\lambda_j\omega_{s,t}\tau^{etr,xy}_{s,t}\left(x_{j,s,t},y_{j,s,t}\right)\bigl(x_{j,s,t} + y_{j,s,t}\bigr)}_{\text{household income tax revenue}} \\
     &\quad + \underbrace{\sum_{s=E+1}^{E+S}\sum_{j=1}^J\sum_{i=1}^I\lambda_j\omega_{s,t}\tau^{c}_{i,t}p_{i,t}c_{i,j,s,t}}_{\text{consumption tax revenue}} \\
     &\quad + \underbrace{\sum_{s=E+1}^{E+S}\sum_{j=1}^J\lambda_j\omega_{s,t}\tau^{etr,w}_{t}b_{j,s,t}}_{\text{wealth tax revenue}}\\
     &\quad + \underbrace{\sum_{s=E+1}^{E+S}\sum_{j=1}^J\lambda_j\omega_{s,t}\tau^{bq}_{t}bq_{j,s,t}}_{\text{bequest tax revenue}}
     \quad\forall t
+  \end{aligned}
   ```
 
   where household labor income is defined as $x_{j,s,t}\equiv w_t e_{j,s}n_{j,s,t}$ and capital income $y_{j,s,t}\equiv r_{p,t} b_{j,s,t}$.
@@ -679,7 +693,7 @@ Note that the budget closure rule (described in Section ref{`SecUnbalGBCcloseRul
   Despite the model having no aggregate risk, it may be helpful to build in an interest rate differential between the rate of return on private capital and the interest rate on government debt. Doing so helps to add realism by including a risk premium. `OG-Core` allows users to set an exogenous wedge between these two rates. `OG-Core` also allows for the risk premium on debt to be a quadratic function of the debt-to-GDP ratio. The interest rate on government debt is given by:
 
   ```{math}
-    :label: EqUnbalGBC_rate_wedge
+  :label: EqUnbalGBC_rate_wedge
     r_{gov, t} = (1 - \tau_{d, t})r_{t} - \mu_{d} + \beta_{1}\frac{D_t}{Y_t} + \beta_{2}\left(\frac{D_t}{Y_t}\right)^2
   ```
 

@@ -129,6 +129,26 @@ In the following section, we detail a list of items to calibrate for a country a
 ```
 
 
+### Optional pyGAM tax-function fitting
+
+Estimating `tax_func_type="mono2D"`, or calling `monotone_spline` with
+`method="pygam"`, requires the optional pyGAM dependency. On Python 3.12--3.14,
+install it with:
+
+```sh
+pip install "ogcore[pygam]"
+```
+
+For a source checkout managed with uv, use `uv sync --extra pygam` (add
+`--extra dev` for development dependencies). The current pyGAM release does
+not support Python 3.15, so the extra does not install it on that version.
+The base package, the parametric tax functions, and the one-dimensional
+`mono` estimator using the Eilers smoother do not require pyGAM.
+
+Previously saved tax-function estimates containing pyGAM models still require
+pyGAM when loaded, even if no new estimation is performed. Install the extra
+in a compatible Python environment to use those estimates.
+
 (SecCalibOther)=
 ## Other parameters to calibrate
 
@@ -152,7 +172,7 @@ In the following section, we detail a list of items to calibrate for a country a
 
   ```{math}
   :label: EqInitHHwealth
-    \mathbf{\hat{\Gamma}}_1\equiv \{\hat{b}_{j,s,1}\}_{j=1,s=E+1}^{J,E+S} = \texttt{initial_hhwealth_dist}\,\times\, \hat{B}_1
+    \mathbf{\hat{\Gamma}}_1\equiv \{\hat{b}_{j,s,1}\}_{j=1,s=E+1}^{J,E+S} = \texttt{initial\_hhwealth\_dist}\,\times\, \hat{B}_1
   ```
 
   {numref}`TabWealthGDPcountries` shows the aggregate household wealth to GDP ratios in seven countries, with values ranging from 1.695 to 5.594. The range of valid values for the `initial_BY_ratio` parameter is 0.8 to 7.0.

@@ -3,7 +3,7 @@
 | | |
 | --- | --- |
 | Org | [![PSL cataloged](https://img.shields.io/badge/PSL-cataloged-a0a0a0.svg)](https://www.PSLmodels.org) [![OS License: CCO-1.0](https://img.shields.io/badge/OS%20License-CCO%201.0-yellow)](https://github.com/PSLmodels/OG-Core/blob/master/LICENSE) [![Jupyter Book Badge](https://raw.githubusercontent.com/jupyter-book/jupyter-book/next/docs/media/images/badge.svg)](https://pslmodels.github.io/OG-Core/) |
-| Package | [![Python 3.12](https://img.shields.io/badge/python-3.12-blue.svg)](https://www.python.org/downloads/release/python-3129/) [![Python 3.13](https://img.shields.io/badge/python-3.13-blue.svg)](https://www.python.org/downloads/release/python-3137/)  [![PyPI Latest Release](https://img.shields.io/pypi/v/ogcore.svg)](https://pypi.org/project/ogcore/) [![PyPI Downloads](https://img.shields.io/pypi/dm/ogcore.svg?label=PyPI%20downloads)](https://pypi.org/project/ogcore/) [![Ruff](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ruff/main/assets/badge/v2.json)](https://github.com/astral-sh/ruff) |
+| Package | [![Python 3.12](https://img.shields.io/badge/python-3.12-blue.svg)](https://www.python.org/downloads/release/python-3129/) [![Python 3.13](https://img.shields.io/badge/python-3.13-blue.svg)](https://www.python.org/downloads/release/python-3137/) [![Python 3.14](https://img.shields.io/badge/python-3.14-blue.svg)](https://www.python.org/downloads/release/python-3140/) [![Python 3.15](https://img.shields.io/badge/python-3.15-blue.svg)](https://www.python.org/downloads/release/python-3150/) [![PyPI Latest Release](https://img.shields.io/pypi/v/ogcore.svg)](https://pypi.org/project/ogcore/) [![PyPI Downloads](https://img.shields.io/pypi/dm/ogcore.svg?label=PyPI%20downloads)](https://pypi.org/project/ogcore/) [![Ruff](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ruff/main/assets/badge/v2.json)](https://github.com/astral-sh/ruff) |
 | Testing | ![example event parameter](https://github.com/PSLmodels/OG-Core/actions/workflows/build_and_test.yml/badge.svg?branch=master) ![example event parameter](https://github.com/PSLmodels/OG-Core/actions/workflows/deploy_docs.yml/badge.svg?branch=master) ![example event parameter](https://github.com/PSLmodels/OG-Core/actions/workflows/check_ruff.yml/badge.svg?branch=master) [![Codecov](https://codecov.io/gh/PSLmodels/OG-Core/branch/master/graph/badge.svg)](https://codecov.io/gh/PSLmodels/OG-Core) |
 
 
@@ -26,6 +26,15 @@ The model is constantly under development, and model components could change sig
 
 There are two primary methods for installing and running OG-Core on your computer locally. The first and simplest method is to download the most recent `ogcore` Python package from the Python Package Index ([PyPI.org](https://pypi.org/project/ogcore/)). A second option is to fork and clone the most recent version of OG-Core from its GitHub repository and install the `ogcore` package with its development dependencies using `uv`. We detail both of these methods below.
 
+
+### Optional pyGAM tax-function fitting
+
+The base installation does not require pyGAM. To estimate `mono2D` tax
+functions or use `monotone_spline(method="pygam")`, install the optional
+dependency with `pip install "ogcore[pygam]"` or, from a source checkout,
+`uv sync --extra pygam`. This extra is available on Python 3.12--3.14; the
+current pyGAM release does not support Python 3.15. Existing saved tax
+estimates containing pyGAM models also require this extra when loaded.
 
 ### Installing and Running OG-Core from Python Package Index (PyPI.org)
 
