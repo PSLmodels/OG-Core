@@ -1,0 +1,41 @@
+/* User Provided Stylesheet */
+
+/* Keep book pages focused on their title and content, without a repeated
+   metadata/download toolbar. Repository access remains in the main navigation. */
+.myst-fm-block-header {
+  display: none;
+}
+
+/* Keep reference labels aligned without shrinking the reference text. */
+.ogcore-bibliography dl {
+  display: grid;
+  grid-template-columns: 7.5rem minmax(0, 1fr);
+  column-gap: 1rem;
+  margin: 1.25rem 0;
+}
+
+.ogcore-bibliography dt,
+.ogcore-bibliography dd,
+.ogcore-bibliography dd > p {
+  margin: 0;
+}
+
+.ogcore-bibliography dt {
+  font-weight: 600;
+}
+
+.ogcore-bibliography dd {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+/* Put the label above the entry when a hanging layout would crowd the text. */
+@media (max-width: 600px) {
+  .ogcore-bibliography dl {
+    display: block;
+  }
+
+  .ogcore-bibliography dd {
+    margin-top: 0.25rem;
+  }
+}

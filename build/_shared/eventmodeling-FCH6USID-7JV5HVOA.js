@@ -1,0 +1,1 @@
+import{a as e,b as o}from"/OG-Core/build/_shared/chunk-QHRY52Y4.js";import"/OG-Core/build/_shared/chunk-GEZIJWLJ.js";import"/OG-Core/build/_shared/chunk-RAQ24GF6.js";export{e as EventModelingModule,o as createEventModelingServices};

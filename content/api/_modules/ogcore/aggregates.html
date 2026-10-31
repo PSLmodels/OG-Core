@@ -1,0 +1,1197 @@
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ogcore.aggregates &#8212; OG-Core API</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../_static/styles/theme.css?digest=18bd87630a240e9c25be" rel="stylesheet" />
+<link href="../../_static/styles/pydata-sphinx-theme.css?digest=18bd87630a240e9c25be" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=8f2a1f02" />
+  
+  <!-- So that users can add custom icons -->
+  <script defer src="../../_static/scripts/fontawesome.js?digest=18bd87630a240e9c25be"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=18bd87630a240e9c25be" />
+<link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=18bd87630a240e9c25be" />
+
+    <script src="../../_static/documentation_options.js?v=5929fcd5"></script>
+    <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = '_modules/ogcore/aggregates';</script>
+    <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="color-scheme" content="light dark"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="" />
+  
+    
+    <script src="../../_static/searchtools.js"></script>
+    <script src="../../_static/language_data.js"></script>
+    <script src="../../searchindex.js"></script>
+  
+  </head>
+  <body data-default-mode="">
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+  
+  
+  
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search the Python API …"
+         aria-label="Search the Python API …"
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header id="pst-header" class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button type="button" class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+     
+  
+
+<a class="navbar-brand logo" href="/OG-Core/">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../../_static/OG-Core_logo.png" class="logo__image only-light" alt="OG-Core API - Home"/>
+    <img src="../../_static/OG-Core_logo.png" class="logo__image only-dark pst-js-only" alt="OG-Core API - Home"/>
+  
+  
+</a></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item"><nav aria-label="Documentation sections">
+  <ul class="navbar-nav">
+    
+    <li class="nav-item">
+      <a class="nav-link"
+         href="/OG-Core/">Book</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-link"
+         href="/OG-Core/content/theory/intro/">Theory</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-link active"
+         href="/OG-Core/content/api/public_api.html" aria-current="true">API reference</a>
+    </li>
+    
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+<button type="button" class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+        </div>
+      
+      
+        <div class="navbar-item">
+
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button type="button" class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
+      
+        <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/PSLmodels/OG-Core" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
+        </li>
+</ul></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+<button type="button" class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+    </div>
+  
+
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+        
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar hide-on-wide">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item"><nav aria-label="Documentation sections">
+  <ul class="navbar-nav">
+    
+    <li class="nav-item">
+      <a class="nav-link"
+         href="/OG-Core/">Book</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-link"
+         href="/OG-Core/content/theory/intro/">Theory</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-link active"
+         href="/OG-Core/content/api/public_api.html" aria-current="true">API reference</a>
+    </li>
+    
+  </ul>
+</nav></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button type="button" class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
+        
+          <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/PSLmodels/OG-Core" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
+        </li>
+</ul></div>
+        
+      </div>
+    
+  </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../../public_api.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    
+    <li class="breadcrumb-item"><a href="../index.html" class="nav-link">Module code</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">ogcore.aggregates</span></li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <h1>Source code for ogcore.aggregates</h1><div class="highlight"><pre>
+<span></span><span class="sd">"""</span>
+<span class="sd">-------------------------------------------------------------------------------</span>
+<span class="sd">Functions to compute economic aggregates.</span>
+<span class="sd">-------------------------------------------------------------------------------</span>
+<span class="sd">"""</span>
+
+<span class="c1"># Packages</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">ogcore</span><span class="w"> </span><span class="kn">import</span> <span class="n">tax</span><span class="p">,</span> <span class="n">pensions</span>
+
+<span class="sd">"""</span>
+<span class="sd">-------------------------------------------------------------------------------</span>
+<span class="sd">    Functions</span>
+<span class="sd">-------------------------------------------------------------------------------</span>
+<span class="sd">"""</span>
+
+
+<div class="viewcode-block" id="get_L">
+<a class="viewcode-back" href="../../aggregates.html#ogcore.aggregates.get_L">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">get_L</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">method</span><span class="p">):</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">"""</span>
+<span class="sd">    Calculate aggregate labor supply.</span>
+
+<span class="sd">    .. math::</span>
+<span class="sd">        L_{t} = \sum_{s=E}^{E+S}\sum_{j=0}^{J}\omega_{s,t}\lambda_{j}n_{j,s,t}</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        n (Numpy array): labor supply of households</span>
+<span class="sd">        p (OG-Core Specifications object): model parameters</span>
+<span class="sd">        method (str): adjusts calculation dimensions based on 'SS' or</span>
+<span class="sd">            'TPI'</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        L (array_like): aggregate labor supply</span>
+
+<span class="sd">    """</span>
+    <span class="k">if</span> <span class="n">method</span> <span class="o">==</span> <span class="s2">"SS"</span><span class="p">:</span>
+        <span class="c1"># NOTE: avoid np.squeeze on p.e[-1, :, :] here — for J=1 it collapses</span>
+        <span class="c1"># the J axis to a 1-D array, and the subsequent multiplication against</span>
+        <span class="c1"># the (S, J) weight broadcasts into an (S, S) outer product, producing</span>
+        <span class="c1"># a labor aggregate S times too large. p.e[-1, :, :] is already (S, J).</span>
+        <span class="n">L_presum</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">e</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="p">:,</span> <span class="p">:]</span> <span class="o">*</span> <span class="n">p</span><span class="o">.</span><span class="n">omega_SS</span> <span class="o">*</span> <span class="n">n</span>
+        <span class="n">L</span> <span class="o">=</span> <span class="n">L_presum</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+    <span class="k">elif</span> <span class="n">method</span> <span class="o">==</span> <span class="s2">"TPI"</span><span class="p">:</span>
+        <span class="n">L_presum</span> <span class="o">=</span> <span class="n">n</span> <span class="o">*</span> <span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">e</span> <span class="o">*</span> <span class="n">p</span><span class="o">.</span><span class="n">omega</span><span class="p">[:</span> <span class="n">p</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="p">:,</span> <span class="p">:])</span>
+        <span class="n">L</span> <span class="o">=</span> <span class="n">L_presum</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">L</span></div>
+
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">get_N</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">method</span><span class="p">):</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">"""</span>
+<span class="sd">    Calculate aggregate hours worked.</span>
+
+<span class="sd">    Unlike aggregate labor supply :math:`L`, this measure does not weight</span>
+<span class="sd">    hours by the effective-labor-units profile :math:`e_{j,s,t}`, so it</span>
+<span class="sd">    reports raw hours rather than productivity-adjusted labor:</span>
+
+<span class="sd">    .. math::</span>
+<span class="sd">        N_{t} = \sum_{s=E}^{E+S}\sum_{j=0}^{J}\omega_{s,t}\lambda_{j}n_{j,s,t}</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        n (Numpy array): labor supply of households</span>
+<span class="sd">        p (OG-Core Specifications object): model parameters</span>
+<span class="sd">        method (str): adjusts calculation dimensions based on 'SS' or</span>
+<span class="sd">            'TPI'</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        N (array_like): aggregate hours worked</span>
+
+<span class="sd">    """</span>
+    <span class="k">if</span> <span class="n">method</span> <span class="o">==</span> <span class="s2">"SS"</span><span class="p">:</span>
+        <span class="c1"># p.omega_SS is the (S, J) population weight and already carries the</span>
+        <span class="c1"># lambda_j type shares (its columns sum to lambdas), so no separate</span>
+        <span class="c1"># lambda multiplication is needed, mirroring get_L.</span>
+        <span class="n">N_presum</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">omega_SS</span> <span class="o">*</span> <span class="n">n</span>
+        <span class="n">N</span> <span class="o">=</span> <span class="n">N_presum</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+    <span class="k">elif</span> <span class="n">method</span> <span class="o">==</span> <span class="s2">"TPI"</span><span class="p">:</span>
+        <span class="n">N_presum</span> <span class="o">=</span> <span class="n">n</span> <span class="o">*</span> <span class="n">p</span><span class="o">.</span><span class="n">omega</span><span class="p">[:</span> <span class="n">p</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="p">:,</span> <span class="p">:]</span>
+        <span class="n">N</span> <span class="o">=</span> <span class="n">N_presum</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">N</span>
+
+
+<div class="viewcode-block" id="get_I">
+<a class="viewcode-back" href="../../aggregates.html#ogcore.aggregates.get_I">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">get_I</span><span class="p">(</span><span class="n">b_splus1</span><span class="p">,</span> <span class="n">K_p1</span><span class="p">,</span> <span class="n">K</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">method</span><span class="p">):</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">"""</span>
+<span class="sd">    Calculate aggregate investment.</span>
+
+<span class="sd">    .. math::</span>
+<span class="sd">        I_{t} = (1 + g_{n,t+1})e^{g_{y}}(K_{t+1} - \sum_{s=E}^{E+S}</span>
+<span class="sd">        \sum_{j=0}^{J}\omega_{s+1,t}i_{s+1,t}\lambda_{j}b_{j,s+1,t+1} \</span>
+<span class="sd">        (1+ g_{n,t+1})) - (1 - \delta)K_{t}</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        b_splus1 (Numpy array): savings of households</span>
+<span class="sd">        K_p1 (array_like): aggregate capital, one period ahead</span>
+<span class="sd">        K (array_like): aggregate capital</span>
+<span class="sd">        p (OG-Core Specifications object): model parameters</span>
+<span class="sd">        method (str): adjusts calculation dimensions based on 'SS' or</span>
+<span class="sd">            'TPI', also compute total investment (not net of immigrants)</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        aggI (array_like): aggregate investment</span>
+
+<span class="sd">    """</span>
+    <span class="k">if</span> <span class="n">method</span> <span class="o">==</span> <span class="s2">"SS"</span><span class="p">:</span>
+        <span class="n">omega_extended</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+            <span class="n">p</span><span class="o">.</span><span class="n">omega_SS</span><span class="p">[</span><span class="mi">1</span><span class="p">:,</span> <span class="p">:],</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="mi">1</span><span class="p">,</span> <span class="n">p</span><span class="o">.</span><span class="n">J</span><span class="p">)),</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span>
+        <span class="p">)</span>
+        <span class="n">imm_extended</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+            <span class="n">p</span><span class="o">.</span><span class="n">imm_rates</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">:,</span> <span class="p">:],</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="mi">1</span><span class="p">,</span> <span class="n">p</span><span class="o">.</span><span class="n">J</span><span class="p">)),</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span>
+        <span class="p">)</span>
+        <span class="n">part2</span> <span class="o">=</span> <span class="p">((</span><span class="n">b_splus1</span> <span class="o">*</span> <span class="n">omega_extended</span> <span class="o">*</span> <span class="n">imm_extended</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">())</span> <span class="o">/</span> <span class="p">(</span>
+            <span class="mi">1</span> <span class="o">+</span> <span class="n">p</span><span class="o">.</span><span class="n">g_n_ss</span>
+        <span class="p">)</span>
+        <span class="n">aggI</span> <span class="o">=</span> <span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="n">p</span><span class="o">.</span><span class="n">g_n_ss</span><span class="p">)</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">g_y</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="n">K_p1</span> <span class="o">-</span> <span class="n">part2</span><span class="p">)</span> <span class="o">-</span> <span class="p">(</span>
+            <span class="mf">1.0</span> <span class="o">-</span> <span class="n">p</span><span class="o">.</span><span class="n">delta</span>
+        <span class="p">)</span> <span class="o">*</span> <span class="n">K</span>
+    <span class="k">elif</span> <span class="n">method</span> <span class="o">==</span> <span class="s2">"TPI"</span><span class="p">:</span>
+        <span class="n">omega_shift</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+            <span class="n">p</span><span class="o">.</span><span class="n">omega</span><span class="p">[:</span> <span class="n">p</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="mi">1</span><span class="p">:,</span> <span class="p">:],</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">p</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">p</span><span class="o">.</span><span class="n">J</span><span class="p">)),</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span>
+        <span class="p">)</span>
+        <span class="n">imm_shift</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+            <span class="n">p</span><span class="o">.</span><span class="n">imm_rates</span><span class="p">[:</span> <span class="n">p</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="mi">1</span><span class="p">:,</span> <span class="p">:],</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">p</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">p</span><span class="o">.</span><span class="n">J</span><span class="p">)),</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span>
+        <span class="p">)</span>
+        <span class="n">part2</span> <span class="o">=</span> <span class="p">((</span><span class="n">b_splus1</span> <span class="o">*</span> <span class="n">imm_shift</span> <span class="o">*</span> <span class="n">omega_shift</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="mi">1</span><span class="p">))</span> <span class="o">/</span> <span class="p">(</span>
+            <span class="mi">1</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">squeeze</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">hstack</span><span class="p">((</span><span class="n">p</span><span class="o">.</span><span class="n">g_n</span><span class="p">[:</span> <span class="n">p</span><span class="o">.</span><span class="n">T</span> <span class="o">-</span> <span class="mi">1</span><span class="p">],</span> <span class="n">p</span><span class="o">.</span><span class="n">g_n_ss</span><span class="p">)))</span>
+        <span class="p">)</span>
+        <span class="n">aggI</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="mi">1</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">squeeze</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">hstack</span><span class="p">((</span><span class="n">p</span><span class="o">.</span><span class="n">g_n</span><span class="p">[:</span> <span class="n">p</span><span class="o">.</span><span class="n">T</span> <span class="o">-</span> <span class="mi">1</span><span class="p">],</span> <span class="n">p</span><span class="o">.</span><span class="n">g_n_ss</span><span class="p">)))</span>
+        <span class="p">)</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">g_y</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="n">K_p1</span> <span class="o">-</span> <span class="n">part2</span><span class="p">)</span> <span class="o">-</span> <span class="p">(</span><span class="mf">1.0</span> <span class="o">-</span> <span class="n">p</span><span class="o">.</span><span class="n">delta</span><span class="p">)</span> <span class="o">*</span> <span class="n">K</span>
+    <span class="k">elif</span> <span class="n">method</span> <span class="o">==</span> <span class="s2">"total_ss"</span><span class="p">:</span>
+        <span class="n">aggI</span> <span class="o">=</span> <span class="p">((</span><span class="mi">1</span> <span class="o">+</span> <span class="n">p</span><span class="o">.</span><span class="n">g_n_ss</span><span class="p">)</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">g_y</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span> <span class="o">+</span> <span class="n">p</span><span class="o">.</span><span class="n">delta</span><span class="p">)</span> <span class="o">*</span> <span class="n">K</span>
+    <span class="k">elif</span> <span class="n">method</span> <span class="o">==</span> <span class="s2">"total_tpi"</span><span class="p">:</span>
+        <span class="n">aggI</span> <span class="o">=</span> <span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="n">p</span><span class="o">.</span><span class="n">g_n</span><span class="p">[:</span> <span class="n">p</span><span class="o">.</span><span class="n">T</span><span class="p">])</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">g_y</span><span class="p">)</span> <span class="o">*</span> <span class="n">K_p1</span> <span class="o">-</span> <span class="p">(</span><span class="mf">1.0</span> <span class="o">-</span> <span class="n">p</span><span class="o">.</span><span class="n">delta</span><span class="p">)</span> <span class="o">*</span> <span class="n">K</span>
+
+    <span class="k">return</span> <span class="n">aggI</span></div>
+
+
+
+<div class="viewcode-block" id="get_B">
+<a class="viewcode-back" href="../../aggregates.html#ogcore.aggregates.get_B">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">get_B</span><span class="p">(</span><span class="n">b</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">method</span><span class="p">,</span> <span class="n">preTP</span><span class="p">):</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">"""</span>
+<span class="sd">    Calculate aggregate savings</span>
+
+<span class="sd">    .. math::</span>
+<span class="sd">        \hat{B}_{t} = \frac{1}{1 + \tilde{g}_{n,t}}</span>
+<span class="sd">        \sum_{s=E+2}^{E+S+1}\sum_{j=1}^{J}</span>
+<span class="sd">        \Bigl(\hat{\omega}_{s-1,t-1}\lambda_{j}\hat{b}_{j,s,t} +</span>
+<span class="sd">        i_{s,t}\hat{\omega}_{s,t-1}\lambda_{j}\hat{b}_{j,s,t}\Bigr)</span>
+<span class="sd">        \quad\forall t</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        b (Numpy array): savings of households</span>
+<span class="sd">        p (OG-Core Specifications object): model parameters</span>
+<span class="sd">        method (str): adjusts calculation dimensions based on 'SS' or</span>
+<span class="sd">            'TPI'</span>
+<span class="sd">        preTP (bool): whether calculation is for the pre-time path</span>
+<span class="sd">            period amount of savings.  If True, then need to use</span>
+<span class="sd">            `omega_S_preTP`.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        B (array_like): aggregate supply of savings</span>
+
+<span class="sd">    """</span>
+    <span class="k">if</span> <span class="n">method</span> <span class="o">==</span> <span class="s2">"SS"</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">preTP</span><span class="p">:</span>
+            <span class="n">part1</span> <span class="o">=</span> <span class="n">b</span> <span class="o">*</span> <span class="n">p</span><span class="o">.</span><span class="n">omega_S_preTP</span>
+            <span class="n">omega_extended</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                <span class="n">p</span><span class="o">.</span><span class="n">omega_S_preTP</span><span class="p">[</span><span class="mi">1</span><span class="p">:,</span> <span class="p">:],</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="mi">1</span><span class="p">,</span> <span class="n">p</span><span class="o">.</span><span class="n">J</span><span class="p">)),</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span>
+            <span class="p">)</span>
+            <span class="n">imm_extended</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                <span class="n">p</span><span class="o">.</span><span class="n">imm_rates_preTP</span><span class="p">[</span><span class="mi">1</span><span class="p">:,</span> <span class="p">:],</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="mi">1</span><span class="p">,</span> <span class="n">p</span><span class="o">.</span><span class="n">J</span><span class="p">)),</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span>
+            <span class="p">)</span>
+            <span class="n">pop_growth_rate</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">g_n_preTP</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">part1</span> <span class="o">=</span> <span class="n">b</span> <span class="o">*</span> <span class="n">p</span><span class="o">.</span><span class="n">omega_SS</span>
+            <span class="n">omega_extended</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                <span class="n">p</span><span class="o">.</span><span class="n">omega_SS</span><span class="p">[</span><span class="mi">1</span><span class="p">:,</span> <span class="p">:],</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="mi">1</span><span class="p">,</span> <span class="n">p</span><span class="o">.</span><span class="n">J</span><span class="p">)),</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span>
+            <span class="p">)</span>
+            <span class="n">imm_extended</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                <span class="n">p</span><span class="o">.</span><span class="n">imm_rates</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">:,</span> <span class="p">:],</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="mi">1</span><span class="p">,</span> <span class="n">p</span><span class="o">.</span><span class="n">J</span><span class="p">)),</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span>
+            <span class="p">)</span>
+            <span class="n">pop_growth_rate</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">g_n_ss</span>
+        <span class="n">part2</span> <span class="o">=</span> <span class="n">b</span> <span class="o">*</span> <span class="n">omega_extended</span> <span class="o">*</span> <span class="n">imm_extended</span>
+        <span class="n">B_presum</span> <span class="o">=</span> <span class="n">part1</span> <span class="o">+</span> <span class="n">part2</span>
+        <span class="n">B</span> <span class="o">=</span> <span class="n">B_presum</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+        <span class="n">B</span> <span class="o">/=</span> <span class="mf">1.0</span> <span class="o">+</span> <span class="n">pop_growth_rate</span>
+    <span class="k">elif</span> <span class="n">method</span> <span class="o">==</span> <span class="s2">"TPI"</span><span class="p">:</span>
+        <span class="n">part1</span> <span class="o">=</span> <span class="n">b</span> <span class="o">*</span> <span class="n">p</span><span class="o">.</span><span class="n">omega</span><span class="p">[:</span> <span class="n">p</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="p">:,</span> <span class="p">:]</span>
+        <span class="n">omega_shift</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+            <span class="n">p</span><span class="o">.</span><span class="n">omega</span><span class="p">[:</span> <span class="n">p</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="mi">1</span><span class="p">:,</span> <span class="p">:],</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">p</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">p</span><span class="o">.</span><span class="n">J</span><span class="p">)),</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span>
+        <span class="p">)</span>
+        <span class="n">imm_shift</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+            <span class="n">p</span><span class="o">.</span><span class="n">imm_rates</span><span class="p">[:</span> <span class="n">p</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="mi">1</span><span class="p">:,</span> <span class="p">:],</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">p</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">p</span><span class="o">.</span><span class="n">J</span><span class="p">)),</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span>
+        <span class="p">)</span>
+        <span class="n">part2</span> <span class="o">=</span> <span class="n">b</span> <span class="o">*</span> <span class="n">omega_shift</span> <span class="o">*</span> <span class="n">imm_shift</span>
+        <span class="n">B_presum</span> <span class="o">=</span> <span class="n">part1</span> <span class="o">+</span> <span class="n">part2</span>
+        <span class="n">B</span> <span class="o">=</span> <span class="n">B_presum</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">B</span> <span class="o">/=</span> <span class="mf">1.0</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">hstack</span><span class="p">((</span><span class="n">p</span><span class="o">.</span><span class="n">g_n</span><span class="p">[:</span> <span class="n">p</span><span class="o">.</span><span class="n">T</span> <span class="o">-</span> <span class="mi">1</span><span class="p">],</span> <span class="n">p</span><span class="o">.</span><span class="n">g_n_ss</span><span class="p">))</span>
+    <span class="k">return</span> <span class="n">B</span></div>
+
+
+
+<div class="viewcode-block" id="get_BQ">
+<a class="viewcode-back" href="../../aggregates.html#ogcore.aggregates.get_BQ">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">get_BQ</span><span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="n">b_splus1</span><span class="p">,</span> <span class="n">j</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">method</span><span class="p">,</span> <span class="n">preTP</span><span class="p">):</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">"""</span>
+<span class="sd">    Calculation of aggregate bequests.  If `use_zeta` is False, then</span>
+<span class="sd">    computes aggregate bequests within each lifetime income group.</span>
+
+<span class="sd">    .. math::</span>
+<span class="sd">        BQ_{t} = \sum_{s=E}^{E+S}\sum_{j=0}^{J}\rho_{s}\omega_{s,t}</span>
+<span class="sd">        \lambda_{j}b_{j,s+1,1}</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        r (array_like): the real interest rate</span>
+<span class="sd">        b_splus1 (numpy array): household savings one period ahead</span>
+<span class="sd">        j (int): index of lifetime income group</span>
+<span class="sd">        p (OG-Core Specifications object): model parameters</span>
+<span class="sd">        method (str): adjusts calculation dimensions based on SS or</span>
+<span class="sd">            TPI</span>
+<span class="sd">        preTP (bool): whether calculation is for the pre-time path</span>
+<span class="sd">            period amount of savings.  If True, then need to use</span>
+<span class="sd">            `omega_S_preTP`.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        BQ (array_like): aggregate bequests, overall or by lifetime</span>
+<span class="sd">            income group, depending on `use_zeta` value.</span>
+
+<span class="sd">    """</span>
+    <span class="k">if</span> <span class="n">method</span> <span class="o">==</span> <span class="s2">"SS"</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">preTP</span><span class="p">:</span>
+            <span class="n">omega</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">omega_S_preTP</span>
+            <span class="n">pop_growth_rate</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">g_n_preTP</span>
+            <span class="n">rho</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">rho_preTP</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">omega</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">omega_SS</span>
+            <span class="n">pop_growth_rate</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">g_n_ss</span>
+            <span class="n">rho</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">rho</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="p">:]</span>
+        <span class="k">if</span> <span class="n">j</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">BQ_presum</span> <span class="o">=</span> <span class="n">omega</span><span class="p">[:,</span> <span class="n">j</span><span class="p">]</span> <span class="o">*</span> <span class="n">rho</span><span class="p">[:,</span> <span class="n">j</span><span class="p">]</span> <span class="o">*</span> <span class="n">b_splus1</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">BQ_presum</span> <span class="o">=</span> <span class="n">omega</span> <span class="o">*</span> <span class="n">rho</span> <span class="o">*</span> <span class="n">b_splus1</span>
+        <span class="n">BQ</span> <span class="o">=</span> <span class="n">BQ_presum</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+        <span class="n">BQ</span> <span class="o">*=</span> <span class="p">(</span><span class="mf">1.0</span> <span class="o">+</span> <span class="n">r</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="mf">1.0</span> <span class="o">+</span> <span class="n">pop_growth_rate</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">method</span> <span class="o">==</span> <span class="s2">"TPI"</span><span class="p">:</span>
+        <span class="n">pop</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+            <span class="n">p</span><span class="o">.</span><span class="n">omega_S_preTP</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">p</span><span class="o">.</span><span class="n">S</span><span class="p">,</span> <span class="n">p</span><span class="o">.</span><span class="n">J</span><span class="p">),</span>
+            <span class="n">p</span><span class="o">.</span><span class="n">omega</span><span class="p">[:</span> <span class="n">p</span><span class="o">.</span><span class="n">T</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="p">:,</span> <span class="p">:],</span>
+            <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="n">rho</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+            <span class="n">p</span><span class="o">.</span><span class="n">rho_preTP</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">p</span><span class="o">.</span><span class="n">S</span><span class="p">,</span> <span class="n">p</span><span class="o">.</span><span class="n">J</span><span class="p">),</span> <span class="n">p</span><span class="o">.</span><span class="n">rho</span><span class="p">[:</span> <span class="n">p</span><span class="o">.</span><span class="n">T</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="p">:,</span> <span class="p">:],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span>
+        <span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">j</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">BQ_presum</span> <span class="o">=</span> <span class="n">b_splus1</span> <span class="o">*</span> <span class="n">pop</span><span class="p">[:,</span> <span class="p">:,</span> <span class="n">j</span><span class="p">]</span> <span class="o">*</span> <span class="n">rho</span><span class="p">[:,</span> <span class="p">:,</span> <span class="n">j</span><span class="p">]</span>
+            <span class="n">BQ</span> <span class="o">=</span> <span class="n">BQ_presum</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+            <span class="n">BQ</span> <span class="o">*=</span> <span class="p">(</span><span class="mf">1.0</span> <span class="o">+</span> <span class="n">r</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="mf">1.0</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">g_n_preTP</span><span class="p">,</span> <span class="n">p</span><span class="o">.</span><span class="n">g_n</span><span class="p">[:</span> <span class="n">p</span><span class="o">.</span><span class="n">T</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]))</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">BQ_presum</span> <span class="o">=</span> <span class="n">b_splus1</span> <span class="o">*</span> <span class="n">pop</span> <span class="o">*</span> <span class="n">rho</span>
+            <span class="n">BQ</span> <span class="o">=</span> <span class="n">BQ_presum</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+            <span class="n">BQ</span> <span class="o">*=</span> <span class="n">np</span><span class="o">.</span><span class="n">tile</span><span class="p">(</span>
+                <span class="n">np</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span>
+                    <span class="p">(</span><span class="mf">1.0</span> <span class="o">+</span> <span class="n">r</span><span class="p">)</span>
+                    <span class="o">/</span> <span class="p">(</span><span class="mf">1.0</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">g_n_preTP</span><span class="p">,</span> <span class="n">p</span><span class="o">.</span><span class="n">g_n</span><span class="p">[:</span> <span class="n">p</span><span class="o">.</span><span class="n">T</span> <span class="o">-</span> <span class="mi">1</span><span class="p">])),</span>
+                    <span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span>
+                <span class="p">),</span>
+                <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">p</span><span class="o">.</span><span class="n">J</span><span class="p">),</span>
+            <span class="p">)</span>
+    <span class="k">if</span> <span class="n">p</span><span class="o">.</span><span class="n">use_zeta</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">method</span> <span class="o">==</span> <span class="s2">"SS"</span><span class="p">:</span>
+            <span class="n">BQ</span> <span class="o">=</span> <span class="n">BQ</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">j</span><span class="p">:</span>
+                <span class="n">BQ</span> <span class="o">=</span> <span class="n">BQ</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">BQ</span></div>
+
+
+
+<div class="viewcode-block" id="get_RM">
+<a class="viewcode-back" href="../../aggregates.html#ogcore.aggregates.get_RM">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">get_RM</span><span class="p">(</span><span class="n">Y</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">method</span><span class="p">):</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">"""</span>
+<span class="sd">    Calculation of aggregate remittances.</span>
+
+<span class="sd">    .. math::</span>
+<span class="sd">        \hat{RM}_{t} = \begin{cases}</span>
+<span class="sd">            \alpha_{RM,1}\hat{Y}_t \quad\text{for}\quad t=1 \\</span>
+<span class="sd">            \frac{(1+g_{RM,t})}{e^{g_y}(1+\tilde{g}_{n,t})}\hat{RM}_{t-1}</span>
+<span class="sd">            \quad\text{for}\quad 2\leq t\leq T_{G1} \\</span>
+<span class="sd">            \rho_{RM}\alpha_{RM,T}\hat{Y}_t</span>
+<span class="sd">            + (1-\rho_{RM})\frac{(1+g_{RM,t})}{e^{g_y}(1+\tilde{g}_{n,t})}</span>
+<span class="sd">            \hat{RM}_{t-1} \quad\text{for}\quad T_{G1}&lt; t&lt;T_{G2} \\</span>
+<span class="sd">            \alpha_{RM,T}\hat{Y}_t \quad\text{for}\quad t\geq T_{G2}</span>
+<span class="sd">        \end{cases}</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        Y (array_like): GDP steady state or time path</span>
+<span class="sd">        p (OG-Core Specifications object): model parameters</span>
+<span class="sd">        method (str): adjusts calculation dimensions based on SS or TPI</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        RM (array_like): aggregate remittances</span>
+
+<span class="sd">    """</span>
+    <span class="k">if</span> <span class="n">method</span> <span class="o">==</span> <span class="s2">"SS"</span><span class="p">:</span>
+        <span class="n">RM</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">alpha_RM_T</span> <span class="o">*</span> <span class="n">Y</span>
+    <span class="k">elif</span> <span class="n">method</span> <span class="o">==</span> <span class="s2">"TPI"</span><span class="p">:</span>
+        <span class="n">RM</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">Y</span><span class="p">)</span>
+        <span class="n">RM</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">alpha_RM_1</span> <span class="o">*</span> <span class="n">Y</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">p</span><span class="o">.</span><span class="n">tG1</span><span class="p">):</span>
+            <span class="n">RM</span><span class="p">[</span><span class="n">t</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="n">p</span><span class="o">.</span><span class="n">g_RM</span><span class="p">[</span><span class="n">t</span><span class="p">])</span> <span class="o">/</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">g_y</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="n">p</span><span class="o">.</span><span class="n">g_n</span><span class="p">[</span><span class="n">t</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]))</span>
+            <span class="p">)</span> <span class="o">*</span> <span class="n">RM</span><span class="p">[</span><span class="n">t</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span>
+        <span class="n">rho_vec</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">p</span><span class="o">.</span><span class="n">tG2</span> <span class="o">-</span> <span class="n">p</span><span class="o">.</span><span class="n">tG1</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">tG1</span><span class="p">,</span> <span class="n">p</span><span class="o">.</span><span class="n">tG2</span> <span class="o">-</span> <span class="mi">1</span><span class="p">):</span>
+            <span class="n">RM</span><span class="p">[</span><span class="n">t</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="n">rho_vec</span><span class="p">[</span><span class="n">t</span> <span class="o">-</span> <span class="n">p</span><span class="o">.</span><span class="n">tG1</span><span class="p">]</span> <span class="o">*</span> <span class="n">p</span><span class="o">.</span><span class="n">alpha_RM_T</span> <span class="o">*</span> <span class="n">Y</span><span class="p">[</span><span class="n">t</span><span class="p">]</span>
+                <span class="o">+</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">rho_vec</span><span class="p">[</span><span class="n">t</span> <span class="o">-</span> <span class="n">p</span><span class="o">.</span><span class="n">tG1</span><span class="p">])</span>
+                <span class="o">*</span> <span class="p">((</span><span class="mi">1</span> <span class="o">+</span> <span class="n">p</span><span class="o">.</span><span class="n">g_RM</span><span class="p">[</span><span class="n">t</span><span class="p">])</span> <span class="o">/</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">g_y</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="n">p</span><span class="o">.</span><span class="n">g_n</span><span class="p">[</span><span class="n">t</span> <span class="o">-</span> <span class="mi">1</span><span class="p">])))</span>
+                <span class="o">*</span> <span class="n">RM</span><span class="p">[</span><span class="n">t</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span>
+            <span class="p">)</span>
+        <span class="n">RM</span><span class="p">[</span><span class="n">p</span><span class="o">.</span><span class="n">tG2</span> <span class="o">-</span> <span class="mi">1</span> <span class="p">:]</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">alpha_RM_T</span> <span class="o">*</span> <span class="n">Y</span><span class="p">[</span><span class="n">p</span><span class="o">.</span><span class="n">tG2</span> <span class="o">-</span> <span class="mi">1</span> <span class="p">:]</span>
+
+    <span class="k">return</span> <span class="n">RM</span></div>
+
+
+
+<div class="viewcode-block" id="get_C">
+<a class="viewcode-back" href="../../aggregates.html#ogcore.aggregates.get_C">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">get_C</span><span class="p">(</span><span class="n">c</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">method</span><span class="p">):</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">"""</span>
+<span class="sd">    Calculation of aggregate consumption.</span>
+
+<span class="sd">    Set up to only take one consumption good at a time. This</span>
+<span class="sd">    function is called in a loop to get consumption for all goods.</span>
+
+<span class="sd">    .. math::</span>
+<span class="sd">        C_{t} = \sum_{s=E}^{E+S}\sum_{j=0}^{J}\omega_{s,t}</span>
+<span class="sd">        \lambda_{j}c_{j,s,t}</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        c (Numpy array): consumption of households</span>
+<span class="sd">        p (OG-Core Specifications object): model parameters</span>
+<span class="sd">        method (str): adjusts calculation dimensions based on 'SS' or</span>
+<span class="sd">            'TPI'</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        C (array_like): aggregate consumption</span>
+
+<span class="sd">    """</span>
+
+    <span class="k">if</span> <span class="n">method</span> <span class="o">==</span> <span class="s2">"SS"</span><span class="p">:</span>
+        <span class="n">aggC</span> <span class="o">=</span> <span class="p">(</span><span class="n">c</span> <span class="o">*</span> <span class="n">p</span><span class="o">.</span><span class="n">omega_SS</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">method</span> <span class="o">==</span> <span class="s2">"TPI"</span><span class="p">:</span>
+        <span class="n">aggC</span> <span class="o">=</span> <span class="p">(</span><span class="n">c</span> <span class="o">*</span> <span class="n">p</span><span class="o">.</span><span class="n">omega</span><span class="p">[:</span> <span class="n">p</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="p">:,</span> <span class="p">:])</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">aggC</span></div>
+
+
+
+<div class="viewcode-block" id="revenue">
+<a class="viewcode-back" href="../../aggregates.html#ogcore.aggregates.revenue">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">revenue</span><span class="p">(</span>
+    <span class="n">r</span><span class="p">,</span>
+    <span class="n">w</span><span class="p">,</span>
+    <span class="n">b</span><span class="p">,</span>
+    <span class="n">n</span><span class="p">,</span>
+    <span class="n">bq</span><span class="p">,</span>
+    <span class="n">c</span><span class="p">,</span>
+    <span class="n">Y</span><span class="p">,</span>
+    <span class="n">L</span><span class="p">,</span>
+    <span class="n">K</span><span class="p">,</span>
+    <span class="n">p_m</span><span class="p">,</span>
+    <span class="n">factor</span><span class="p">,</span>
+    <span class="n">ubi</span><span class="p">,</span>
+    <span class="n">theta</span><span class="p">,</span>
+    <span class="n">etr_params</span><span class="p">,</span>
+    <span class="n">e</span><span class="p">,</span>
+    <span class="n">p</span><span class="p">,</span>
+    <span class="n">m</span><span class="p">,</span>
+    <span class="n">method</span><span class="p">,</span>
+<span class="p">):</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">"""</span>
+<span class="sd">    Calculate aggregate tax revenue.</span>
+
+<span class="sd">    .. math::</span>
+<span class="sd">        \begin{split}</span>
+<span class="sd">            R_{t} &amp;= \sum_{s=E}^{E+S}\sum_{j=0}^{J}\omega_{s,t}\lambda_{j}</span>
+<span class="sd">        (T_{j,s,t} + \tau^{p}_{t}w_{t}e_{j,s}n_{j,s,t} - \theta_{j}</span>
+<span class="sd">        w_{t} + \tau^{bq}bq_{j,s,t} + \tau^{c}_{s,t}c_{j,s,t} +</span>
+<span class="sd">        \tau^{w}_{t}b_{j,s,t}) ... \\</span>
+<span class="sd">            &amp;\qquad + \sum_{m=1}^{M}\tau^{b}_{m,t}(Y_{m,t}-w_{t}L_{m,t}) -</span>
+<span class="sd">        \tau^{b}_{m,t}\delta^{\tau}_{m,t}K^{\tau}_{m,t}</span>
+<span class="sd">        \end{split}</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        r (array_like): the real interest rate</span>
+<span class="sd">        w (array_like): the real wage rate</span>
+<span class="sd">        b (Numpy array): household savings</span>
+<span class="sd">        n (Numpy array): household labor supply</span>
+<span class="sd">        bq (Numpy array): household bequests received</span>
+<span class="sd">        c (Numpy array): household consumption</span>
+<span class="sd">        Y (array_like): aggregate output</span>
+<span class="sd">        L (array_like): aggregate labor</span>
+<span class="sd">        K (array_like): aggregate capital</span>
+<span class="sd">        p_m (array_like): output prices</span>
+<span class="sd">        factor (scalar): scaling factor converting model units to</span>
+<span class="sd">            dollars</span>
+<span class="sd">        ubi (array_like): universal basic income household distributions</span>
+<span class="sd">        theta (Numpy array): social security replacement rate for each</span>
+<span class="sd">            lifetime income group</span>
+<span class="sd">        etr_params (list): list of parameters of the effective tax rate</span>
+<span class="sd">            functions</span>
+<span class="sd">        e (Numpy array): effective labor units</span>
+<span class="sd">        p (OG-Core Specifications object): model parameters</span>
+<span class="sd">        method (str): adjusts calculation dimensions based on 'SS' or</span>
+<span class="sd">            'TPI'</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        (tuple): aggregate tax revenue and outlay components:</span>
+
+<span class="sd">            * total_tax_revenue (array_like): aggregate tax revenue</span>
+<span class="sd">            * iit_payroll_tax_revenue (array_like): aggregate income and</span>
+<span class="sd">              payroll tax revenue</span>
+<span class="sd">            * agg_pension_outlays (array_like): aggregate outlays for gov't</span>
+<span class="sd">              pensions</span>
+<span class="sd">            * UBI_outlays (array_like): aggregate universal basic income (UBI)</span>
+<span class="sd">              outlays</span>
+<span class="sd">            * bequest_tax_revenue (array_like): aggregate bequest tax revenue</span>
+<span class="sd">            * wealth_tax_revenue (array_like): aggregate wealth tax revenue</span>
+<span class="sd">            * cons_tax_revenue (array_like): aggregate consumption tax revenue</span>
+<span class="sd">            * business_tax_revenue (array_like): aggregate business tax revenue</span>
+<span class="sd">            * payroll_tax_revenue (array_like): aggregate payroll tax revenue</span>
+<span class="sd">            * iit_tax_revenue (array_like): aggregate income tax revenue</span>
+
+<span class="sd">    """</span>
+    <span class="n">inc_pay_tax_liab</span> <span class="o">=</span> <span class="n">tax</span><span class="o">.</span><span class="n">income_tax_liab</span><span class="p">(</span>
+        <span class="n">r</span><span class="p">,</span> <span class="n">w</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">factor</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="n">method</span><span class="p">,</span> <span class="n">e</span><span class="p">,</span> <span class="n">etr_params</span><span class="p">,</span> <span class="n">p</span>
+    <span class="p">)</span>
+    <span class="n">pension_benefits</span> <span class="o">=</span> <span class="n">pensions</span><span class="o">.</span><span class="n">pension_amount</span><span class="p">(</span>
+        <span class="n">r</span><span class="p">,</span> <span class="n">w</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">Y</span><span class="p">,</span> <span class="n">theta</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">False</span><span class="p">,</span> <span class="n">method</span><span class="p">,</span> <span class="n">e</span><span class="p">,</span> <span class="n">factor</span><span class="p">,</span> <span class="n">p</span>
+    <span class="p">)</span>
+    <span class="n">bq_tax_liab</span> <span class="o">=</span> <span class="n">tax</span><span class="o">.</span><span class="n">bequest_tax_liab</span><span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">bq</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="n">method</span><span class="p">,</span> <span class="n">p</span><span class="p">)</span>
+    <span class="n">w_tax_liab</span> <span class="o">=</span> <span class="n">tax</span><span class="o">.</span><span class="n">wealth_tax_liab</span><span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="n">method</span><span class="p">,</span> <span class="n">p</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">method</span> <span class="o">==</span> <span class="s2">"SS"</span><span class="p">:</span>
+        <span class="n">p_i</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">io_matrix</span><span class="p">,</span> <span class="n">p_m</span><span class="p">)</span>
+        <span class="n">pop_weights</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">omega_SS</span>
+        <span class="n">iit_payroll_tax_revenue</span> <span class="o">=</span> <span class="p">(</span><span class="n">inc_pay_tax_liab</span> <span class="o">*</span> <span class="n">pop_weights</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+        <span class="n">agg_pension_outlays</span> <span class="o">=</span> <span class="p">(</span><span class="n">pension_benefits</span> <span class="o">*</span> <span class="n">pop_weights</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+        <span class="n">UBI_outlays</span> <span class="o">=</span> <span class="p">(</span><span class="n">ubi</span> <span class="o">*</span> <span class="n">pop_weights</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+        <span class="n">wealth_tax_revenue</span> <span class="o">=</span> <span class="p">(</span><span class="n">w_tax_liab</span> <span class="o">*</span> <span class="n">pop_weights</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+        <span class="n">bequest_tax_revenue</span> <span class="o">=</span> <span class="p">(</span><span class="n">bq_tax_liab</span> <span class="o">*</span> <span class="n">pop_weights</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+        <span class="n">cons_tax_revenue</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="n">tax</span><span class="o">.</span><span class="n">cons_tax_liab</span><span class="p">(</span><span class="n">c</span><span class="p">,</span> <span class="n">p_i</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">method</span><span class="p">)</span> <span class="o">*</span> <span class="n">pop_weights</span>
+        <span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+    <span class="k">elif</span> <span class="n">method</span> <span class="o">==</span> <span class="s2">"TPI"</span><span class="p">:</span>
+        <span class="n">p_i</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="n">np</span><span class="o">.</span><span class="n">tile</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">io_matrix</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">p</span><span class="o">.</span><span class="n">I</span><span class="p">,</span> <span class="n">p</span><span class="o">.</span><span class="n">M</span><span class="p">),</span> <span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
+            <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">tile</span><span class="p">(</span><span class="n">p_m</span><span class="p">[:</span> <span class="n">p</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="p">:]</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">p</span><span class="o">.</span><span class="n">M</span><span class="p">),</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">p</span><span class="o">.</span><span class="n">I</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
+        <span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+        <span class="n">pop_weights</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">omega</span><span class="p">[:</span> <span class="n">p</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="p">:,</span> <span class="p">:]</span>
+        <span class="n">iit_payroll_tax_revenue</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="p">(</span><span class="n">inc_pay_tax_liab</span> <span class="o">*</span> <span class="n">pop_weights</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+        <span class="p">)</span>
+        <span class="n">agg_pension_outlays</span> <span class="o">=</span> <span class="p">(</span><span class="n">pension_benefits</span> <span class="o">*</span> <span class="n">pop_weights</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">UBI_outlays</span> <span class="o">=</span> <span class="p">(</span><span class="n">ubi</span><span class="p">[:</span> <span class="n">p</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="p">:,</span> <span class="p">:]</span> <span class="o">*</span> <span class="n">pop_weights</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">wealth_tax_revenue</span> <span class="o">=</span> <span class="p">(</span><span class="n">w_tax_liab</span> <span class="o">*</span> <span class="n">pop_weights</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">bequest_tax_revenue</span> <span class="o">=</span> <span class="p">(</span><span class="n">bq_tax_liab</span> <span class="o">*</span> <span class="n">pop_weights</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">cons_tax_revenue</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="p">(</span><span class="n">tax</span><span class="o">.</span><span class="n">cons_tax_liab</span><span class="p">(</span><span class="n">c</span><span class="p">,</span> <span class="n">p_i</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">method</span><span class="p">)</span> <span class="o">*</span> <span class="n">pop_weights</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+        <span class="p">)</span>
+    <span class="c1"># Payroll tax revenue is already inside iit_payroll_tax_revenue: each</span>
+    <span class="c1"># household's income_payroll_tax_liab includes T_P = tau_payroll *</span>
+    <span class="c1"># labor_income (see tax.income_tax_liab). get_payroll_tax_revenue just</span>
+    <span class="c1"># re-derives that same amount from the aggregate wage bill so the</span>
+    <span class="c1"># income vs payroll split can be reported; it must NOT be added into</span>
+    <span class="c1"># the total again (that double-counted payroll revenue -- Issue #1199).</span>
+    <span class="n">payroll_tax_revenue</span> <span class="o">=</span> <span class="n">get_payroll_tax_revenue</span><span class="p">(</span>
+        <span class="n">w</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">e</span><span class="p">,</span> <span class="n">pop_weights</span><span class="p">,</span> <span class="n">iit_payroll_tax_revenue</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">method</span>
+    <span class="p">)</span>
+    <span class="n">business_tax_revenue</span> <span class="o">=</span> <span class="n">tax</span><span class="o">.</span><span class="n">get_biz_tax</span><span class="p">(</span><span class="n">w</span><span class="p">,</span> <span class="n">Y</span><span class="p">,</span> <span class="n">L</span><span class="p">,</span> <span class="n">K</span><span class="p">,</span> <span class="n">p_m</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">m</span><span class="p">,</span> <span class="n">method</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span>
+        <span class="o">-</span><span class="mi">1</span>
+    <span class="p">)</span>
+    <span class="n">iit_revenue</span> <span class="o">=</span> <span class="n">iit_payroll_tax_revenue</span> <span class="o">-</span> <span class="n">payroll_tax_revenue</span>
+
+    <span class="n">total_tax_revenue</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="n">iit_payroll_tax_revenue</span>
+        <span class="o">+</span> <span class="n">wealth_tax_revenue</span>
+        <span class="o">+</span> <span class="n">bequest_tax_revenue</span>
+        <span class="o">+</span> <span class="n">cons_tax_revenue</span>
+        <span class="o">+</span> <span class="n">business_tax_revenue</span>
+    <span class="p">)</span>
+
+    <span class="k">return</span> <span class="p">(</span>
+        <span class="n">total_tax_revenue</span><span class="p">,</span>
+        <span class="n">iit_payroll_tax_revenue</span><span class="p">,</span>
+        <span class="n">agg_pension_outlays</span><span class="p">,</span>
+        <span class="n">UBI_outlays</span><span class="p">,</span>
+        <span class="n">bequest_tax_revenue</span><span class="p">,</span>
+        <span class="n">wealth_tax_revenue</span><span class="p">,</span>
+        <span class="n">cons_tax_revenue</span><span class="p">,</span>
+        <span class="n">business_tax_revenue</span><span class="p">,</span>
+        <span class="n">payroll_tax_revenue</span><span class="p">,</span>
+        <span class="n">iit_revenue</span><span class="p">,</span>
+    <span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="get_payroll_tax_revenue">
+<a class="viewcode-back" href="../../aggregates.html#ogcore.aggregates.get_payroll_tax_revenue">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">get_payroll_tax_revenue</span><span class="p">(</span>
+    <span class="n">w</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">e</span><span class="p">,</span> <span class="n">pop_weights</span><span class="p">,</span> <span class="n">iit_payroll_tax_revenue</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">method</span>
+<span class="p">):</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">"""</span>
+<span class="sd">    Calculate aggregate payroll tax revenue.</span>
+
+<span class="sd">    How payroll tax revenue is computed depends on how the user has</span>
+<span class="sd">    chosen to represent payroll taxes in the model.  If payroll taxes</span>
+<span class="sd">    are included directly through the ``tau_payroll`` parameter, then</span>
+<span class="sd">    revenue is the sum across households of the (type-specific) payroll</span>
+<span class="sd">    tax rate times household labor income:</span>
+
+<span class="sd">    .. math::</span>
+<span class="sd">        PR_{t} = \sum_{s=E}^{E+S}\sum_{j=0}^{J}\omega_{s,j,t}</span>
+<span class="sd">        \tau^{p}_{j,t}w_{t}e_{j,s,t}n_{j,s,t}</span>
+
+<span class="sd">    Otherwise, payroll taxes are assumed to be embedded in the estimated</span>
+<span class="sd">    income and payroll tax functions (the default), and payroll tax</span>
+<span class="sd">    revenue is separated out as a fraction ``frac_tax_payroll`` of the</span>
+<span class="sd">    combined income and payroll tax revenue.  These two calculations are</span>
+<span class="sd">    identical when ``tau_payroll`` is zero.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        w (array_like): the real wage rate</span>
+<span class="sd">        n (Numpy array): household labor supply (S x J for SS, or</span>
+<span class="sd">            T x S x J for TPI)</span>
+<span class="sd">        e (Numpy array): effective labor units (S x J for SS, or</span>
+<span class="sd">            T x S x J for TPI)</span>
+<span class="sd">        pop_weights (Numpy array): population weights for each</span>
+<span class="sd">            household (S x J for SS, or T x S x J for TPI)</span>
+<span class="sd">        iit_payroll_tax_revenue (array_like): aggregate income and</span>
+<span class="sd">            payroll tax revenue</span>
+<span class="sd">        p (OG-Core Specifications object): model parameters</span>
+<span class="sd">        method (str): adjusts calculation dimensions based on 'SS' or</span>
+<span class="sd">            'TPI'</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        payroll_tax_revenue (array_like): aggregate payroll tax revenue</span>
+
+<span class="sd">    """</span>
+    <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">tau_payroll</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">):</span>
+        <span class="c1"># Payroll taxes are modeled explicitly via tau_payroll, so</span>
+        <span class="c1"># revenue is the (type-specific) payroll tax rate times</span>
+        <span class="c1"># household labor income, summed over all households.</span>
+        <span class="k">if</span> <span class="n">method</span> <span class="o">==</span> <span class="s2">"SS"</span><span class="p">:</span>
+            <span class="n">tau_payroll</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">tau_payroll</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="p">:]</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">p</span><span class="o">.</span><span class="n">J</span><span class="p">)</span>
+            <span class="n">labor_income</span> <span class="o">=</span> <span class="n">w</span> <span class="o">*</span> <span class="n">e</span> <span class="o">*</span> <span class="n">n</span>
+            <span class="n">payroll_tax_revenue</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="n">tau_payroll</span> <span class="o">*</span> <span class="n">labor_income</span> <span class="o">*</span> <span class="n">pop_weights</span>
+            <span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+        <span class="k">else</span><span class="p">:</span>  <span class="c1"># TPI</span>
+            <span class="n">tau_payroll</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">tau_payroll</span><span class="p">[:</span> <span class="n">p</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="p">:]</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">p</span><span class="o">.</span><span class="n">J</span><span class="p">)</span>
+            <span class="n">w</span> <span class="o">=</span> <span class="n">w</span><span class="p">[:</span> <span class="n">p</span><span class="o">.</span><span class="n">T</span><span class="p">]</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+            <span class="n">labor_income</span> <span class="o">=</span> <span class="n">w</span> <span class="o">*</span> <span class="n">e</span><span class="p">[:</span> <span class="n">p</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="p">:,</span> <span class="p">:]</span> <span class="o">*</span> <span class="n">n</span><span class="p">[:</span> <span class="n">p</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="p">:,</span> <span class="p">:]</span>
+            <span class="n">payroll_tax_revenue</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="p">(</span><span class="n">tau_payroll</span> <span class="o">*</span> <span class="n">labor_income</span> <span class="o">*</span> <span class="n">pop_weights</span><span class="p">[:</span> <span class="n">p</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="p">:,</span> <span class="p">:])</span>
+                <span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+                <span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+            <span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="c1"># Payroll taxes are embedded in the income and payroll tax</span>
+        <span class="c1"># functions, so revenue is a fraction of the combined revenue.</span>
+        <span class="k">if</span> <span class="n">method</span> <span class="o">==</span> <span class="s2">"SS"</span><span class="p">:</span>
+            <span class="n">payroll_tax_revenue</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="n">p</span><span class="o">.</span><span class="n">frac_tax_payroll</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="n">iit_payroll_tax_revenue</span>
+            <span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>  <span class="c1"># TPI</span>
+            <span class="n">payroll_tax_revenue</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="n">p</span><span class="o">.</span><span class="n">frac_tax_payroll</span><span class="p">[:</span> <span class="n">p</span><span class="o">.</span><span class="n">T</span><span class="p">]</span> <span class="o">*</span> <span class="n">iit_payroll_tax_revenue</span>
+            <span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">payroll_tax_revenue</span></div>
+
+
+
+<div class="viewcode-block" id="get_r_p">
+<a class="viewcode-back" href="../../aggregates.html#ogcore.aggregates.get_r_p">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">get_r_p</span><span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="n">r_gov</span><span class="p">,</span> <span class="n">p_m</span><span class="p">,</span> <span class="n">K_vec</span><span class="p">,</span> <span class="n">K_g</span><span class="p">,</span> <span class="n">D</span><span class="p">,</span> <span class="n">MPKg_vec</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">method</span><span class="p">):</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">"""</span>
+<span class="sd">    Compute the interest rate on the household's portfolio of assets,</span>
+<span class="sd">    a mix of government debt and private equity.</span>
+
+<span class="sd">    .. math::</span>
+<span class="sd">        r_{p,t} = \frac{r_{gov,t}D_{t} + r_{K,t}K_{t}}{D_{t} + K_{t}}</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        r (array_like): the real interest rate</span>
+<span class="sd">        r_gov (array_like): the real interest rate on government debt</span>
+<span class="sd">        p_m (array_like): good prices</span>
+<span class="sd">        K_vec (array_like): aggregate capital demand from each industry</span>
+<span class="sd">        K_g (array_like): aggregate public capital</span>
+<span class="sd">        D (array_like): aggregate government debt</span>
+<span class="sd">        MPKg_vec (array_like): marginal product of government capital</span>
+<span class="sd">            for each industry</span>
+<span class="sd">        p (OG-Core Specifications object): model parameters</span>
+<span class="sd">        method (str): adjusts calculation dimensions based on 'SS' or</span>
+<span class="sd">            'TPI'</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        r_p (array_like): the real interest rate on the household portfolio</span>
+
+<span class="sd">    """</span>
+    <span class="k">if</span> <span class="n">method</span> <span class="o">==</span> <span class="s2">"SS"</span><span class="p">:</span>
+        <span class="n">tau_b</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">tau_b</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="p">:]</span>
+        <span class="n">T</span> <span class="o">=</span> <span class="mi">1</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">T</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">T</span>
+        <span class="n">tau_b</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">tau_b</span><span class="p">[:</span> <span class="n">p</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="p">:]</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="n">p</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="n">p</span><span class="o">.</span><span class="n">M</span><span class="p">))</span>
+        <span class="n">K_g</span> <span class="o">=</span> <span class="n">K_g</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="n">p</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
+        <span class="n">r</span> <span class="o">=</span> <span class="n">r</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="n">p</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
+        <span class="n">r_gov</span> <span class="o">=</span> <span class="n">r_gov</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="n">p</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
+        <span class="n">D</span> <span class="o">=</span> <span class="n">D</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="n">p</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
+        <span class="n">p_m</span> <span class="o">=</span> <span class="n">p_m</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="n">p</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="n">p</span><span class="o">.</span><span class="n">M</span><span class="p">))</span>
+        <span class="n">MPKg_vec</span> <span class="o">=</span> <span class="n">MPKg_vec</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="n">p</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="n">p</span><span class="o">.</span><span class="n">M</span><span class="p">))</span>
+        <span class="n">K_vec</span> <span class="o">=</span> <span class="n">K_vec</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="n">p</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="n">p</span><span class="o">.</span><span class="n">M</span><span class="p">))</span>
+    <span class="n">r_K</span> <span class="o">=</span> <span class="n">r</span> <span class="o">+</span> <span class="p">(</span>
+        <span class="p">((</span><span class="mi">1</span> <span class="o">-</span> <span class="n">tau_b</span><span class="p">)</span> <span class="o">*</span> <span class="n">p_m</span> <span class="o">*</span> <span class="n">MPKg_vec</span> <span class="o">*</span> <span class="n">K_g</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">axis</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="n">T</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
+        <span class="o">/</span> <span class="n">K_vec</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">axis</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="n">T</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
+    <span class="p">)</span>
+    <span class="n">r_p</span> <span class="o">=</span> <span class="p">((</span><span class="n">r_gov</span> <span class="o">*</span> <span class="n">D</span><span class="p">)</span> <span class="o">+</span> <span class="p">(</span><span class="n">r_K</span> <span class="o">*</span> <span class="n">K_vec</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">axis</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="n">T</span><span class="p">,</span> <span class="mi">1</span><span class="p">))))</span> <span class="o">/</span> <span class="p">(</span>
+        <span class="n">D</span> <span class="o">+</span> <span class="n">K_vec</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">axis</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="n">T</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
+    <span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">squeeze</span><span class="p">(</span><span class="n">r_p</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="resource_constraint">
+<a class="viewcode-back" href="../../aggregates.html#ogcore.aggregates.resource_constraint">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">resource_constraint</span><span class="p">(</span><span class="n">Y</span><span class="p">,</span> <span class="n">C</span><span class="p">,</span> <span class="n">G</span><span class="p">,</span> <span class="n">I_d</span><span class="p">,</span> <span class="n">I_g</span><span class="p">,</span> <span class="n">net_capital_flows</span><span class="p">,</span> <span class="n">RM</span><span class="p">,</span> <span class="n">foreign_aid</span><span class="p">):</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">"""</span>
+<span class="sd">    Compute the error in the resource constraint.</span>
+
+<span class="sd">    .. math::</span>
+<span class="sd">      \begin{split}</span>
+<span class="sd">        \text{rc_error} &amp;= \hat{Y}_t - \hat{C}_t -</span>
+<span class="sd">      \Bigl(e^{g_y}\bigl[1 + \tilde{g}_{n,t+1}\bigr]\hat{K}^d_{t+1} -</span>
+<span class="sd">      \hat{K}^d_t\Bigr) - \delta\hat{K}_t - \hat{G}_t - \hat{I}_{g,t} ... \\</span>
+<span class="sd">        &amp;\qquad -\: \hat{\text{net capital outflows}}_t + \hat{RM}_t +</span>
+<span class="sd">        \hat{\text{foreign aid}}_t</span>
+<span class="sd">      \end{split}</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        Y (array_like): aggregate output by industry</span>
+<span class="sd">        C (array_like): aggregate consumption by industry</span>
+<span class="sd">        G (array_like): aggregate government spending by industry</span>
+<span class="sd">        I_d (array_like): aggregate private investment from domestic households</span>
+<span class="sd">        I_g (array_like): investment in government capital</span>
+<span class="sd">        net_capital_flows (array_like): net capital outflows</span>
+<span class="sd">        RM (array_like): aggregate remittances</span>
+<span class="sd">        foreign_aid (array_like): foreign aid payments</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        rc_error (array_like): error in the resource constraint</span>
+
+<span class="sd">    """</span>
+    <span class="n">rc_error</span> <span class="o">=</span> <span class="n">Y</span> <span class="o">-</span> <span class="n">C</span> <span class="o">-</span> <span class="n">I_d</span> <span class="o">-</span> <span class="n">I_g</span> <span class="o">-</span> <span class="n">G</span> <span class="o">-</span> <span class="n">net_capital_flows</span> <span class="o">+</span> <span class="n">RM</span> <span class="o">+</span> <span class="n">foreign_aid</span>
+
+    <span class="k">return</span> <span class="n">rc_error</span></div>
+
+
+
+<div class="viewcode-block" id="get_capital_outflows">
+<a class="viewcode-back" href="../../aggregates.html#ogcore.aggregates.get_capital_outflows">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">get_capital_outflows</span><span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="n">K_f</span><span class="p">,</span> <span class="n">new_borrowing_f</span><span class="p">,</span> <span class="n">debt_service_f</span><span class="p">,</span> <span class="n">p</span><span class="p">):</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">"""</span>
+<span class="sd">    Compute net capital outflows for open economy parameterizations</span>
+
+<span class="sd">    .. math::</span>
+<span class="sd">      \text{net capital flows} &amp;= r_{p,t}\hat{K}^f_t ... \\</span>
+<span class="sd">      &amp;\quad\quad + \Bigl(e^{g_y}\bigl[1 +</span>
+<span class="sd">      \tilde{g}_{n,t+1}\bigr]\hat{D}^f_{t+1} - \hat{D}^f_t\Bigr) -</span>
+<span class="sd">      r_{p,t}\hat{D}^f_t \quad\forall t</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        r (array_like): the real interest rate</span>
+<span class="sd">        K_f (array_like): aggregate capital that is foreign-owned</span>
+<span class="sd">        new_borrowing_f (array_like): new borrowing of government debt</span>
+<span class="sd">            from foreign investors</span>
+<span class="sd">        debt_service_f (array_like): interest payments on government</span>
+<span class="sd">            debt owned by foreigners</span>
+<span class="sd">        p (OG-Core Specifications object): model parameters</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        new_flow (array_like): net capital outflows</span>
+<span class="sd">    """</span>
+    <span class="n">net_flow</span> <span class="o">=</span> <span class="p">(</span><span class="n">r</span> <span class="o">+</span> <span class="n">p</span><span class="o">.</span><span class="n">delta</span><span class="p">)</span> <span class="o">*</span> <span class="n">K_f</span> <span class="o">-</span> <span class="n">new_borrowing_f</span> <span class="o">+</span> <span class="n">debt_service_f</span>
+
+    <span class="k">return</span> <span class="n">net_flow</span></div>
+
+
+
+<div class="viewcode-block" id="get_K_splits">
+<a class="viewcode-back" href="../../aggregates.html#ogcore.aggregates.get_K_splits">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">get_K_splits</span><span class="p">(</span><span class="n">B</span><span class="p">,</span> <span class="n">K_demand_open</span><span class="p">,</span> <span class="n">D_d</span><span class="p">,</span> <span class="n">zeta_K</span><span class="p">):</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">"""</span>
+<span class="sd">    Returns total domestic capital as well as amounts of domestic</span>
+<span class="sd">    capital held by domestic and foreign investors separately.</span>
+
+<span class="sd">    .. math::</span>
+<span class="sd">        \begin{split}</span>
+<span class="sd">            \hat{K}_{t} &amp;= \hat{K}^{f}_{t} + \hat{K}^{d}_{t}\\</span>
+<span class="sd">            \hat{K}^{d}_{t} &amp;= \hat{B}_{t} + \hat{D}^{d}_{t}\\</span>
+<span class="sd">            \hat{K}^{f}_{t} &amp;= \zeta_{D}\left(\hat{K}^{open}_{t} -</span>
+<span class="sd">                K^{d}_{t}\right)</span>
+<span class="sd">        \end{split}</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        B (array_like): aggregate savings by domestic households</span>
+<span class="sd">        K_demand_open (array_like): capital demand at the world</span>
+<span class="sd">            interest rate</span>
+<span class="sd">        D_d (array_like): governmet debt held by domestic households</span>
+<span class="sd">        zeta_K (array_like): fraction of excess capital demand satisfied</span>
+<span class="sd">            by foreign investors</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        (tuple): series of capital stocks:</span>
+
+<span class="sd">            * K (array_like): total capital</span>
+<span class="sd">            * K_d (array_like): capital held by domestic households</span>
+<span class="sd">            * K_f (array_like): capital held by foreign households</span>
+
+<span class="sd">    """</span>
+    <span class="n">K_d</span> <span class="o">=</span> <span class="n">B</span> <span class="o">-</span> <span class="n">D_d</span>
+    <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">K_d</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">):</span>
+        <span class="nb">print</span><span class="p">(</span>
+            <span class="s2">"K_d has negative elements. Setting them "</span>
+            <span class="o">+</span> <span class="s2">"positive to prevent NAN."</span>
+        <span class="p">)</span>
+        <span class="n">K_d</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">fmax</span><span class="p">(</span><span class="n">K_d</span><span class="p">,</span> <span class="mf">0.05</span> <span class="o">*</span> <span class="n">B</span><span class="p">)</span>
+    <span class="n">K_f</span> <span class="o">=</span> <span class="n">zeta_K</span> <span class="o">*</span> <span class="p">(</span><span class="n">K_demand_open</span> <span class="o">-</span> <span class="n">B</span> <span class="o">+</span> <span class="n">D_d</span><span class="p">)</span>
+    <span class="n">K</span> <span class="o">=</span> <span class="n">K_f</span> <span class="o">+</span> <span class="n">K_d</span>
+
+    <span class="k">return</span> <span class="n">K</span><span class="p">,</span> <span class="n">K_d</span><span class="p">,</span> <span class="n">K_f</span></div>
+
+
+
+<div class="viewcode-block" id="get_ptilde">
+<a class="viewcode-back" href="../../aggregates.html#ogcore.aggregates.get_ptilde">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">get_ptilde</span><span class="p">(</span><span class="n">p_i</span><span class="p">,</span> <span class="n">tau_c</span><span class="p">,</span> <span class="n">alpha_c</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s2">"SS"</span><span class="p">):</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">"""</span>
+<span class="sd">    Calculate price of composite good.</span>
+
+<span class="sd">    .. math::</span>
+<span class="sd">        \tilde{p}_{t} = \prod_{i=1}^{I} \left(\frac{(1 +</span>
+<span class="sd">        \tau^{c}_{i,t})p_{i,j}}{\alpha_{i,j}}\right)^{\alpha_{i,j}}</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        p_i (array_like): prices for consumption good i</span>
+<span class="sd">        tau_c (array_like): consumption taxes on good i</span>
+<span class="sd">        alpha_c (array_like): consumption share parameters</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        p_tilde (array_like): tax-inclusive price of composite good</span>
+<span class="sd">    """</span>
+    <span class="k">if</span> <span class="n">method</span> <span class="o">==</span> <span class="s2">"SS"</span><span class="p">:</span>
+        <span class="n">p_tilde</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">prod</span><span class="p">((((</span><span class="mi">1</span> <span class="o">+</span> <span class="n">tau_c</span><span class="p">)</span> <span class="o">*</span> <span class="n">p_i</span><span class="p">)</span> <span class="o">/</span> <span class="n">alpha_c</span><span class="p">)</span> <span class="o">**</span> <span class="n">alpha_c</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>  <span class="c1"># TPI case</span>
+        <span class="n">alpha_c</span> <span class="o">=</span> <span class="n">alpha_c</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">alpha_c</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+        <span class="n">p_tilde</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">prod</span><span class="p">((((</span><span class="mi">1</span> <span class="o">+</span> <span class="n">tau_c</span><span class="p">)</span> <span class="o">*</span> <span class="n">p_i</span><span class="p">)</span> <span class="o">/</span> <span class="n">alpha_c</span><span class="p">)</span> <span class="o">**</span> <span class="n">alpha_c</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">p_tilde</span></div>
+
+</pre></div>
+
+                </article>
+              
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../../_static/scripts/bootstrap.js?digest=18bd87630a240e9c25be"></script>
+<script defer src="../../_static/scripts/pydata-sphinx-theme.js?digest=18bd87630a240e9c25be"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="sphinx-version">
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 9.2.0.
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item">
+<p class="theme-version">
+  <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.23.0.
+</p></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>
