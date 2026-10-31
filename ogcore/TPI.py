@@ -177,8 +177,10 @@ def get_initial_SS_values(p):
             * theta (Numpy array): steady-state retirement replacement
                 rates, length J
             * baseline_values (tuple): (Ybaseline, TRbaseline, Gbaseline,
-                D0_baseline), GDP, lump sum transfer, and government spending
-                amounts from the baseline model run
+                Ig_baseline, FAbaseline, D0_baseline, Kg0_baseline), GDP,
+                lump sum transfer, government spending, infrastructure
+                investment, and foreign aid paths and initial government
+                debt and public capital from the baseline model run
 
     """
     baseline_ss = os.path.join(p.baseline_dir, "SS", "SS_vars.pkl")
@@ -217,6 +219,7 @@ def get_initial_SS_values(p):
     TRbaseline = None
     Gbaseline = None
     Ig_baseline = None
+    FAbaseline = None
     if not p.baseline:
         baseline_tpi = os.path.join(p.baseline_dir, "TPI", "TPI_vars.pkl")
         tpi_baseline_vars = utils.safe_read_pickle(baseline_tpi)
@@ -227,6 +230,9 @@ def get_initial_SS_values(p):
         TRbaseline = tpi_baseline_vars["TR"]
         Gbaseline = tpi_baseline_vars["G"]
         Ig_baseline = tpi_baseline_vars["I_g"]
+        FAbaseline = utils.get_baseline_foreign_aid(
+            tpi_baseline_vars, p, "TPI"
+        )
 
     if p.baseline:
         ss_vars = ss_baseline_vars
@@ -284,6 +290,7 @@ def get_initial_SS_values(p):
         TRbaseline,
         Gbaseline,
         Ig_baseline,
+        FAbaseline,
         D0_baseline,
         Kg0_baseline,
     )
@@ -943,6 +950,7 @@ def run_TPI(p, client=None):
         TRbaseline,
         Gbaseline,
         Ig_baseline,
+        FAbaseline,
         D0_baseline,
         Kg0_baseline,
     ) = baseline_values
@@ -1058,7 +1066,7 @@ def run_TPI(p, client=None):
         D = np.zeros(p.T + p.S)
         D_d = np.zeros(p.T + p.S)
         D_f = np.zeros(p.T + p.S)
-        I_g = fiscal.get_I_g(Y[: p.T], None, p, "TPI")
+        I_g = fiscal.get_I_g(Y[: p.T], Ig_baseline, p, "TPI")
     else:
         if p.baseline_spending:
             # Will set to TRbaseline here, but will be updated in TPI loop
@@ -1066,10 +1074,13 @@ def run_TPI(p, client=None):
             TR = np.concatenate(
                 (TRbaseline[: p.T], np.ones(p.S) * ss_vars["TR"])
             )
-            # Will set to Ig_baseline here, but will be updated in TPI loop
-            # with call to fiscal.get_I_g
+            # Infrastructure investment is the baseline path scaled by
+            # alpha_bs_I
             I_g = np.concatenate(
-                (Ig_baseline[: p.T], np.ones(p.S) * ss_vars["I_g"])
+                (
+                    fiscal.get_I_g(Y[: p.T], Ig_baseline, p, "TPI"),
+                    np.ones(p.S) * ss_vars["I_g"],
+                )
             )
             # Will set to Gbaseline here, but will be updated in TPI loop
             # with call to fiscal.D_G_path, which also does closure rule
@@ -1081,6 +1092,9 @@ def run_TPI(p, client=None):
         D = np.ones(p.T + p.S) * ss_vars["D"]
         D_d = D * ss_vars["D_d"] / ss_vars["D"]
         D_f = D * ss_vars["D_f"] / ss_vars["D"]
+    # Foreign aid is alpha_FA * Y, or the baseline path scaled by
+    # alpha_bs_FA if baseline_spending=True
+    foreign_aid = fiscal.get_foreign_aid(Y[: p.T], FAbaseline, p, "TPI")
     if p.baseline:
         K_g0 = p.initial_Kg_ratio * Y[0]
     else:
@@ -1480,8 +1494,8 @@ def run_TPI(p, client=None):
             "TPI",
         )
         total_tax_revenue[: p.T] = total_tax_rev
-        if not p.baseline_spending:
-            I_g = fiscal.get_I_g(Y[: p.T], None, p, "TPI")
+        I_g = fiscal.get_I_g(Y[: p.T], Ig_baseline, p, "TPI")
+        foreign_aid = fiscal.get_foreign_aid(Y[: p.T], FAbaseline, p, "TPI")
         if p.baseline:
             K_g0 = p.initial_Kg_ratio * Y[0]
         K_g = fiscal.get_K_g(K_g0, I_g, p, "TPI")
@@ -1492,6 +1506,7 @@ def run_TPI(p, client=None):
             UBI_outlays,
             TR,
             I_g,
+            foreign_aid,
             Gbaseline,
             D0_baseline,
         )
@@ -1600,6 +1615,7 @@ def run_TPI(p, client=None):
             agg_pension_outlays[: p.T],
             UBI_outlays[: p.T],
             I_g[: p.T],
+            foreign_aid[: p.T],
             p,
             "TPI",
         )
@@ -1907,7 +1923,7 @@ def run_TPI(p, client=None):
     RM_vec = np.zeros((p.T, p.M))
     RM_vec[:, -1] = RM[: p.T]
     foreign_aid_vec = np.zeros((p.T, p.M))
-    foreign_aid_vec[:, -1] = p.alpha_FA[: p.T] * Y[: p.T]
+    foreign_aid_vec[:, -1] = foreign_aid[: p.T]
     RC_error = aggr.resource_constraint(
         Y_vec,
         C_m_vec,
@@ -1962,6 +1978,7 @@ def run_TPI(p, client=None):
         "I_d": I_d[: p.T, ...],
         "K_g": K_g[: p.T, ...],
         "I_g": I_g[: p.T, ...],
+        "foreign_aid": foreign_aid[: p.T, ...],
         "BQ": BQ[: p.T, ...],
         "RM": RM[: p.T, ...],
         "Y_m": Y_vec[: p.T, ...],

@@ -255,6 +255,7 @@ class Specifications(paramtools.Parameters):
             "alpha_bs_G",
             "alpha_bs_T",
             "alpha_bs_I",
+            "alpha_bs_FA",
             "world_int_rate_annual",
             "adjustment_factor_for_cit_receipts",
             "tau_bq",

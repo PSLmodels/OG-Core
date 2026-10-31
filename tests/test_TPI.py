@@ -249,6 +249,14 @@ def test_get_initial_SS_values(baseline, param_updates, filename, tmpdir):
         assert np.allclose(test_initial_values[k], v, equal_nan=True)
 
     if p.baseline_spending:
+        # The expected values were saved before foreign aid was added to
+        # baseline_values (after Ig_baseline). The saved baseline output
+        # has no foreign aid, so it is reconstructed as alpha_FA * Y.
+        exp_baseline_values = list(exp_baseline_values)
+        exp_baseline_values.insert(
+            4, p.alpha_FA[: p.T] * tpi_vars_new["Y"][: p.T]
+        )
+        assert len(test_baseline_values) == len(exp_baseline_values)
         for k, v in enumerate(exp_baseline_values):
             assert np.allclose(test_baseline_values[k], v, equal_nan=True)
 
