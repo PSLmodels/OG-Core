@@ -44,6 +44,9 @@ jobs:
         run: uv sync --extra dev
       - name: Test
         run: uv run python -m pytest -m "not local and not benchmark" --cov=./ --cov-report=xml
+      - name: Test optional pyGAM fitting
+        if: matrix.os == 'ubuntu-latest' && matrix.python-version == '3.12'
+        run: uv run --extra dev --extra pygam python -m pytest tests/test_optional_pygam.py
       - name: Upload coverage to Codecov
         if: matrix.os == 'ubuntu-latest' && contains(github.repository, 'PSLmodels/OG-Core') && github.actor != 'dependabot[bot]'
         uses: codecov/codecov-action@v7

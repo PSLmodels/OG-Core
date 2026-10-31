@@ -27,6 +27,15 @@ The model is constantly under development, and model components could change sig
 There are two primary methods for installing and running OG-Core on your computer locally. The first and simplest method is to download the most recent `ogcore` Python package from the Python Package Index ([PyPI.org](https://pypi.org/project/ogcore/)). A second option is to fork and clone the most recent version of OG-Core from its GitHub repository and install the `ogcore` package with its development dependencies using `uv`. We detail both of these methods below.
 
 
+### Optional pyGAM tax-function fitting
+
+The base installation does not require pyGAM. To estimate `mono2D` tax
+functions or use `monotone_spline(method="pygam")`, install the optional
+dependency with `pip install "ogcore[pygam]"` or, from a source checkout,
+`uv sync --extra pygam`. This extra is available on Python 3.12--3.14; the
+current pyGAM release does not support Python 3.15. Existing saved tax
+estimates containing pyGAM models also require this extra when loaded.
+
 ### Installing and Running OG-Core from Python Package Index (PyPI.org)
 
 * Open your terminal and install the [`ogcore`](https://pypi.org/project/ogcore/) package from the Python Package Index by typing `pip install ogcore`.

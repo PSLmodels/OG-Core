@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Updated
 - Adds support for Python 3.15 in the `pyproject.toml` classifiers and the GitHub Actions build matrix.
+- Makes pyGAM optional through the `pygam` extra on Python 3.12--3.14. Base installations and the Eilers smoother no longer import pyGAM; Python 3.15 uses SciPy 1.18.1 or newer, which provides compatible wheels.
 
 ## [0.23.0] - 2026-10-29
 

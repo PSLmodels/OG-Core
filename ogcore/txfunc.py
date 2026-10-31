@@ -22,7 +22,6 @@ import ogcore.parameter_plots as pp
 from ogcore.constants import DEFAULT_START_YEAR, SHOW_RUNTIME
 from ogcore import utils
 import warnings
-from pygam import LinearGAM, s
 
 if not SHOW_RUNTIME:
     warnings.simplefilter("ignore", RuntimeWarning)
@@ -2059,9 +2058,26 @@ def monotone_spline(
             entry of xWeight
         weightsNew (numpy array): 1d with length same as yNew, weight
             corresponding to each xNew, yNew row
+
+    Raises:
+        ImportError: if method is 'pygam' and the optional pyGAM package
+            is not installed. Install ``ogcore[pygam]`` on Python 3.12--3.14
+            to use this method or estimate ``mono2D`` tax functions.
     """
 
     if method == "pygam":
+        try:
+            from pygam import LinearGAM, s
+        except ModuleNotFoundError as exc:
+            if exc.name != "pygam":
+                raise
+            raise ImportError(
+                "The pyGAM fitting method (including tax_func_type='mono2D') "
+                "requires the optional pyGAM dependency. Install it with "
+                "`pip install 'ogcore[pygam]'` or `uv sync --extra pygam` "
+                "on Python 3.12--3.14. The current pyGAM release does not "
+                "support Python 3.15."
+            ) from exc
         if len(x.shape) == 1:
             x = np.expand_dims(x, axis=1)
         if splines is not None and len(splines) != x.shape[1]:
