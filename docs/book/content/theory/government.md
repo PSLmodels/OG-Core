@@ -437,16 +437,26 @@ The pension amount under a notional defined contribution system is given as:
 
   ```{math}
   :label: eqn:ndc_pension
-   pension_{j,s,t} = \biggl[\sum_{u=E}^{R-1}\tau^{p}_{u,t-s+u}w_{t-s+u}e_{j,u,t-s+u}n_{j,u,t-s+u}(1 + g_{NDC,t})^{R-u-1}\biggr]\delta_{R,s,t} \quad \forall s \geq R
+   pension_{j,s,t} = \biggl[\sum_{u=E}^{R-1}\tau^{p}_{u,t-s+u}w_{t-s+u}e_{j,u,t-s+u}n_{j,u,t-s+u}\prod_{a=u+1}^{R-1}(1 + g_{NDC,t-s+a})\biggr]\delta_{R,s,t} \quad \forall s \geq R
   ```
 
-where the sum runs over the household's own contribution history and:
+where the sum runs over the household's own contribution history, quantities are in real, non-stationarized units, and:
 
   * $\tau^{p}_{u,t-s+u}$ is the pension contribution tax rate (`tau_p`) that the household's cohort faced at working age $u$, in period $t-s+u$
-  * $g_{NDC,t}$ the rate of growth applied to contributions.
-    * For example, In the Italian system, $g_{NDC,t}$ is the mean nominal GDP growth rate in the 5 years before seniority
-    * i.e., $g_{NDC,t}=\prod_{j=i}^{R-1}\bar{g}_{j}$
-    * Note, this is not $g_y$. In the SS, it's $(\bar{g}_{y} + \bar{g}_{n})$, and in the transition path equilibrium, it's not a function of exogenous variables since the growth rate of nominal GDP is endogenous.
+  * $g_{NDC,t}$ is the rate credited to notional balances in period $t$. A contribution made at age $u$ earns the rates credited in each period from the next one through the period before retirement. The credited rate is the growth realized from period $t-1$ to period $t$ of the measure chosen with `ndc_growth_rate`. Because model aggregates are stationarized by $e^{g_y t}$ and by population, the growth of an aggregate $X$ is recovered from its stationarized value $\hat{X}$ as
+
+    ```{math}
+    1 + g_{X,t} = \frac{\hat{X}_{t}}{\hat{X}_{t-1}}e^{g_y}(1 + g_{n,t-1})
+    ```
+
+    where $g_{n,t-1}$ is population growth from period $t-1$ to $t$. The options are:
+    * `'Curr GDP'`: the growth of real GDP, $X = Y$
+    * `'wage bill'`: the growth of total real labor earnings, $X = wL$ (as in Latvia and Poland)
+    * `'avg wage'`: the growth of real labor earnings per person, $\frac{\hat{w}_t\hat{L}_t}{\hat{w}_{t-1}\hat{L}_{t-1}}e^{g_y} - 1$ (as in Sweden and Norway)
+    * `'r'`: the interest rate on household savings, $r_{p,t}$
+    * `'LR GDP'` (the default): the constant long-run growth rate of real GDP, $e^{g_y}(1 + \bar{g}_{n}) - 1$
+
+    All of these equal their long-run values in the steady state, except `'r'`, which equals the steady-state interest rate. Growth into period 0 uses the period-0 level as the level of the period before, and periods before the transition path take the period-0 rate. Some countries credit an average of past growth (for example, Italy credits the 5-year average of GDP growth); the parameter `ndc_growth_avg_years` sets the number of years averaged, with the rate credited in period $t$ being the arithmetic mean of the rates in that period and the preceding periods in the window.
   * $\delta_{R,s,t}$ is the conversion coefficient and its calculation is detailed below. It, like $R$ and $\tau^p$, takes the values (`k_ret`, `indR`) that apply to the household's birth cohort at the age and period in which the benefit is paid, so that a reform entered through `pension_regimes` with a `max_age_at_start` changes the formula only for the cohorts it covers.
 
   ```{math}
@@ -461,7 +471,7 @@ The $dir_{R, t}$ term is an adjustment to make the payments actuarially fair giv
   dir_{R, t} = \sum_{k=0}^{E+S-R}\left[\prod_{i=0}^{k-1}(1-\hat{\rho}_{R+i, t+i})\right](1+\hat{g}_{y, t})^{-k}
   ```
 
-where the empty product (for $k=0$) equals one. The timing follows the household's problem: $\rho_{s}$ is the probability that a household of age $s$ dies before reaching age $s+1$, so the first payment, at age $R$, is certain and the payment at age $R+k$ is received only if the household survives ages $R$ through $R+k-1$. $\hat{g}_{y, t}$ is the long run expected nominal GDP growth rate used in the pension system at time $t$ (`dir_growth_rate`).
+where the empty product (for $k=0$) equals one. The timing follows the household's problem: $\rho_{s}$ is the probability that a household of age $s$ dies before reaching age $s+1$, so the first payment, at age $R$, is certain and the payment at age $R+k$ is received only if the household survives ages $R$ through $R+k-1$. $\hat{g}_{y, t}$ is the rate used to discount payments, chosen with `dir_growth_rate` from the same options as `ndc_growth_rate` (without averaging). A household that retires in period $t$ uses the value of that rate in period $t$ for all of its payments, as countries typically fix a norm rate in the divisor when a pension is awarded.
 
 $\hat{\rho}_{s,t}$ are the mortality rates used in the pension system, the model's mortality rates averaged over lifetime income groups with the population weights $\lambda_j$. The parameter `ndc_mortality` determines which rates apply. With `'cohort'` (the default), $\hat{\rho}_{R+i, t+i}$ are the rates the retiring cohort faces at each age as it ages through the transition path, as written above. With `'period'`, the rates are those of the period of retirement, $\hat{\rho}_{R+i, t}$ (a period life table). With `'steady state'`, every cohort uses the steady-state rates $\hat{\rho}_{R+i}$. The three coincide in the steady state.
 

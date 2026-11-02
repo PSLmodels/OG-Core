@@ -1,6 +1,7 @@
 # Packages
 import numpy as np
 import numba
+from typing import NamedTuple
 from ogcore import utils
 
 # set constants
@@ -241,13 +242,20 @@ def replacement_rate_adjustment(pension, t, j, method, p):
     return adjust[t : t + length, :].reshape(length, 1, p.J)
 
 
-def pension_amount(r, w, n, Y, theta, t, j, shift, method, e, factor, p):
+def pension_amount(
+    r, w, n, ndc_rates, theta, t, j, shift, method, e, factor, p
+):
     """
     Calculate public pension benefit amounts for each household.
 
     Args:
+        r (array_like): real interest rate
         w (array_like): real wage rate
         n (Numpy array): labor supply
+        ndc_rates (NDCRates): calendar paths of the NDC credited and
+            discount rates (``ndc_rates_path``), used only by the
+            notional defined contribution system; None for the
+            steady-state rates
         theta (Numpy array): social security replacement rate value for
             lifetime income group j
         t (int): time period
@@ -273,7 +281,7 @@ def pension_amount(r, w, n, Y, theta, t, j, shift, method, e, factor, p):
             pension, t, j, method, p
         )
     elif p.pension_system == "Notional Defined Contribution":
-        pension = NDC_amount(w, e, n, r, Y, t, j, method, p)
+        pension = NDC_amount(w, e, n, r, ndc_rates, t, j, method, p)
         pension = pension * replacement_rate_adjustment(
             pension, t, j, method, p
         )
@@ -615,14 +623,15 @@ def DB_amount(w, e, n, t, j, method, p):
     return DB
 
 
-def NDC_amount(w, e, n, r, Y, t, j, method, p):
+def NDC_amount(w, e, n, r, ndc_rates, t, j, method, p):
     r"""
     Calculate public pension from a notional defined contribution
     system.
 
     .. math::
         pension_{j,s,t} = \biggl[\sum_{u=E}^{R-1}\tau^{p}_{u,t-s+u}
-            w_{t-s+u}e_{j,u,t-s+u}n_{j,u,t-s+u}(1 + g_{NDC,t})^{R-u-1}
+            w_{t-s+u}e_{j,u,t-s+u}n_{j,u,t-s+u}
+            \prod_{a=u+1}^{R-1}(1 + g_{NDC,t-s+a})
             \biggr]\delta_{R,s,t} \quad \forall s \geq R
 
     where the retirement age $R$ and the conversion coefficient
@@ -630,7 +639,10 @@ def NDC_amount(w, e, n, r, Y, t, j, method, p):
     household's own birth cohort at the age and period the benefit is
     paid, and the contribution rate $\tau^{p}_{u,t-s+u}$ is the one the
     cohort faced at each working age u, all read from the period-by-age
-    arrays that ``pension_regimes`` builds.
+    arrays that ``pension_regimes`` builds. Each contribution earns
+    the rate credited in each period between the contribution and
+    retirement, $g_{NDC,t}$, and the conversion coefficient discounts
+    payments at the rate in the period the household retires.
 
     Args:
         w (array_like): real wage rate
@@ -639,8 +651,12 @@ def NDC_amount(w, e, n, r, Y, t, j, method, p):
             (length < S, for cohorts alive when the time path begins),
             a steady-state vector (S,) or matrix (S, J), or the full
             time path (T, S, J)
-        r (array_like): interest rate
-        Y (array_like): GDP
+        r (array_like): interest rate, used for the steady-state rates
+            when ``ndc_rates`` is not given
+        ndc_rates (NDCRates): calendar paths of the credited and
+            discount rates from ``ndc_rates_path``; anything else (such
+            as None) uses the steady-state rates, with the 'r' options
+            reading the last element of ``r``
         t (int): model period of the first element of ``n`` (for a
             partial or full lifetime path) or of the first row of ``n``
             (for the full time path)
@@ -652,7 +668,12 @@ def NDC_amount(w, e, n, r, Y, t, j, method, p):
     Returns:
         NDC (Numpy array): pension amount for each household
     """
-    g_ndc_amount = g_ndc(r, Y, p)
+    if not isinstance(ndc_rates, NDCRates):
+        ndc_rates = NDCRates(
+            np.array([g_ndc(r, None, p)]), np.array([g_dir(r, None, p)])
+        )
+    credit = np.ascontiguousarray(ndc_rates.credit, dtype=float)
+    discount = ndc_rates.discount
     S_ret = cohort_array("retire", p).astype(int)
     tau_p = cohort_array("tau_p", p)
     indR = cohort_array("indR", p)
@@ -681,14 +702,16 @@ def NDC_amount(w, e, n, r, Y, t, j, method, p):
         tau_p_u = cohort_path(tau_p, t, per_rmn, p)
         # the household is age S - per_rmn in period t, so it reaches
         # retirement age R in period t - (S - per_rmn) + R
+        t_birth = t - (p.S - per_rmn)
         delta_ret_u = delta_ret(
             r,
-            Y,
+            None,
             p,
             S_ret_u,
             cohort_path(indR, t, per_rmn, p),
             cohort_path(k_ret, t, per_rmn, p),
-            t_ret=t - (p.S - per_rmn) + S_ret_u,
+            t_ret=t_birth + S_ret_u,
+            g_dir_path=discount,
         )
         NDC = NDC_1dim_loop(
             w_S,
@@ -699,7 +722,8 @@ def NDC_amount(w, e, n, r, Y, t, j, method, p):
             p.S,
             g_y_arr,
             tau_p_u,
-            g_ndc_amount,
+            credit,
+            t_birth,
             delta_ret_u,
             np.zeros(p.S),
         )
@@ -719,12 +743,14 @@ def NDC_amount(w, e, n, r, Y, t, j, method, p):
                 tau_p_u = cohort_path(tau_p, t, p.S, p)
                 indR_u = cohort_path(indR, t, p.S, p)
                 k_ret_u = cohort_path(k_ret, t, p.S, p)
-                t_ret_u = t + S_ret_u
+                t_birth = t
             else:
                 S_ret_u, tau_p_u = S_ret[row], tau_p[row]
                 indR_u, k_ret_u = indR[row], k_ret[row]
-                # steady state, or the cross-section of period 0
-                t_ret_u = None if row == -1 else row - np.arange(p.S) + S_ret_u
+                # the steady state (rates do not vary), or a household
+                # born in period 0
+                t_birth = 0
+            t_ret_u = None if row == -1 else t_birth + S_ret_u
             NDC = NDC_1dim_loop(
                 w,
                 e,
@@ -733,8 +759,18 @@ def NDC_amount(w, e, n, r, Y, t, j, method, p):
                 p.S,
                 g_y_arr,
                 tau_p_u,
-                g_ndc_amount,
-                delta_ret(r, Y, p, S_ret_u, indR_u, k_ret_u, t_ret_u),
+                credit,
+                t_birth,
+                delta_ret(
+                    r,
+                    None,
+                    p,
+                    S_ret_u,
+                    indR_u,
+                    k_ret_u,
+                    t_ret_u,
+                    g_dir_path=discount,
+                ),
                 np.zeros(p.S),
             )
         elif np.ndim(n) == 2:
@@ -756,8 +792,18 @@ def NDC_amount(w, e, n, r, Y, t, j, method, p):
                 p.S,
                 g_y_arr,
                 tau_p[row],
-                g_ndc_amount,
-                delta_ret(r, Y, p, S_ret[row], indR[row], k_ret[row], t_ret_u),
+                credit,
+                0 if row == -1 else row,
+                delta_ret(
+                    r,
+                    None,
+                    p,
+                    S_ret[row],
+                    indR[row],
+                    k_ret[row],
+                    t_ret_u,
+                    g_dir_path=discount,
+                ),
                 np.zeros((p.S, p.J)),
             )
         elif np.ndim(n) == 3:
@@ -783,15 +829,17 @@ def NDC_amount(w, e, n, r, Y, t, j, method, p):
                 p.J,
                 float(g_y_arr[-1]),
                 np.ascontiguousarray(tau_p[rows]),
-                g_ndc_amount,
+                # the loop counts periods from the first row of n
+                credit[min(t, credit.size - 1) :],
                 delta_ret(
                     r,
-                    Y,
+                    None,
                     p,
                     S_ret[rows],
                     indR[rows],
                     k_ret[rows],
                     t_ret_path,
+                    g_dir_path=discount,
                 ),
             )
 
@@ -1107,56 +1155,205 @@ def delta_point(r, Y, g_n, g_y, p):
     return delta_point
 
 
-def g_ndc(r, Y, p):
+NDC_GROWTH_CHOICES = ("r", "Curr GDP", "LR GDP", "wage bill", "avg wage")
+
+
+class NDCRates(NamedTuple):
     """
-    Compute growth rate used for contributions to NDC pension
+    Calendar paths of the rates used in a notional defined contribution
+    system, built by ``ndc_rates_path``.
+
+    Attributes:
+        credit (Numpy array): rate credited to notional balances in each
+            model period, the growth realized from the previous period
+            (after any averaging set by ``ndc_growth_avg_years``)
+        discount (Numpy array): rate used to discount payments in the
+            conversion coefficient of a household retiring in each
+            model period
+
+    Both are length T + S on the time path, or length 1 for a steady
+    state. Periods before the path read the first element and periods
+    after it the last.
+    """
+
+    credit: np.ndarray
+    discount: np.ndarray
+
+
+def _ss_growth_rate(choice, r, p):
+    """
+    Steady-state value of an NDC growth rate.
+
+    Stationarized aggregates are constant in the steady state, so GDP
+    and the wage bill grow at the rate of productivity and population
+    growth, exp(g_y)(1 + g_n) - 1, and the average wage at the rate of
+    productivity growth, exp(g_y) - 1.
 
     Args:
-        r (array_like): interest rate
-        Y (array_like): GDP
+        choice (str): one of ``NDC_GROWTH_CHOICES``
+        r (array_like): interest rate; its last element is used
         p (OG-Core Specifications object): model parameters
 
     Returns:
-        g_ndc (Numpy array): growth rate used for contributions to NDC
+        rate (scalar): steady-state growth rate per model period
 
     """
-    # r and g_y are scalars in the SS but paths in the TPI; take the
-    # last element robustly in either case (see Issue #1169)
-    if p.ndc_growth_rate == "r":
-        g_ndc = np.asarray(r).flat[-1]
-    elif p.ndc_growth_rate == "Curr GDP":
-        g_ndc = (Y[1:] - Y[:-1]) / Y[:-1]
-    else:  # "LR GDP"
-        g_ndc = np.asarray(p.g_y).flat[-1] + np.asarray(p.g_n).flat[-1]
+    g_y = float(np.asarray(p.g_y).flat[-1])
+    g_n_ss = float(getattr(p, "g_n_ss", np.asarray(p.g_n).flat[-1]))
+    if choice == "r":
+        return float(np.asarray(r).flat[-1])
+    elif choice in ("LR GDP", "Curr GDP", "wage bill"):
+        return np.exp(g_y) * (1.0 + g_n_ss) - 1.0
+    elif choice == "avg wage":
+        return np.exp(g_y) - 1.0
+    raise ValueError(
+        f"NDC growth rate must be one of {NDC_GROWTH_CHOICES}, got "
+        f"{choice!r}"
+    )
 
-    return g_ndc
 
+def growth_rate_path(choice, r, Y, w, L, p, method):
+    r"""
+    Calendar path of an NDC growth rate.
 
-def g_dir(r, Y, g_y, g_n, dir_growth_rate):
-    """
-    Compute growth rate used for contributions to NDC pension
+    Element t is the growth realized from period t - 1 to period t,
+    in real, non-stationarized terms. Stationarized aggregates are
+    divided by $e^{g_y t}$ and by population, and ``p.g_n[t]`` is
+    population growth from t to t + 1, so for an aggregate X
+
+    .. math::
+        g_{t} = \frac{\hat{X}_{t}}{\hat{X}_{t-1}}e^{g_y}
+            (1 + g_{n,t-1}) - 1
+
+    where X is GDP for 'Curr GDP' and the wage bill wL for
+    'wage bill'. 'avg wage' is the growth of earnings per person,
+    the same expression without population growth. 'r' is the
+    interest rate path and 'LR GDP' the constant steady-state growth
+    of GDP. Growth into period 0 uses the period-0 level as the level
+    of the period before.
 
     Args:
-        r (array_like): interest rate
-        Y (array_like): GDP
-        g_y (array_like): GDP growth rate
-        g_n (array_like): population growth rate
-        dir_growth_rate (str): growth rate used for contributions to NDC
+        choice (str): one of ``NDC_GROWTH_CHOICES``
+        r (array_like): interest rate path
+        Y (array_like): GDP path, used for 'Curr GDP'
+        w (array_like): real wage path, used for 'wage bill' and
+            'avg wage'
+        L (array_like): aggregate labor path, used for 'wage bill' and
+            'avg wage'
+        p (OG-Core Specifications object): model parameters
+        method (str): 'SS' for the steady-state value or 'TPI' for the
+            time path
 
     Returns:
-        g_dir (Numpy array): growth rate used for contributions to NDC
+        rate (Numpy array): length 1 in the steady state, else T + S
 
     """
-    # r and g_y are scalars in the SS but paths in the TPI; take the
-    # last element robustly in either case (see Issue #1169)
-    if dir_growth_rate == "r":
-        g_dir = np.asarray(r).flat[-1]
-    elif dir_growth_rate == "Curr GDP":
-        g_dir = (Y[1:] - Y[:-1]) / Y[:-1]
-    else:  # "LR GDP"
-        g_dir = np.asarray(g_y).flat[-1] + np.asarray(g_n).flat[-1]
+    if method == "SS" or choice == "LR GDP":
+        return np.array([_ss_growth_rate(choice, r, p)])
+    n_per = p.T + p.S
 
-    return g_dir
+    def _extend(x):
+        # paths may stop at T; hold the last value
+        x = np.atleast_1d(np.asarray(x, dtype=float)).ravel()[:n_per]
+        return np.append(x, np.full(n_per - x.size, x[-1]))
+
+    if choice == "r":
+        return _extend(r)
+    if choice == "Curr GDP":
+        X = _extend(Y)
+    elif choice in ("wage bill", "avg wage"):
+        X = _extend(w) * _extend(L)
+    else:
+        raise ValueError(
+            f"NDC growth rate must be one of {NDC_GROWTH_CHOICES}, got "
+            f"{choice!r}"
+        )
+    g_y = float(np.asarray(p.g_y).flat[-1])
+    X_prev = np.append(X[0], X[:-1])
+    rate = X / X_prev * np.exp(g_y)
+    if choice == "wage bill" or choice == "Curr GDP":
+        g_n_ss = float(getattr(p, "g_n_ss", np.asarray(p.g_n).flat[-1]))
+        g_n_preTP = float(getattr(p, "g_n_preTP", g_n_ss))
+        # population growth from t - 1 to t
+        g_n_prev = np.append(g_n_preTP, _extend_pop(p.g_n, n_per, g_n_ss))
+        rate = rate * (1.0 + g_n_prev[:n_per])
+    return rate - 1.0
+
+
+def _extend_pop(g_n, n_per, g_n_ss):
+    """
+    Population growth path g_n[t] (growth from t to t + 1) for
+    t = 0, ..., n_per - 2, padded with the steady-state rate.
+    """
+    g_n = np.atleast_1d(np.asarray(g_n, dtype=float)).ravel()[: n_per - 1]
+    return np.append(g_n, np.full(n_per - 1 - g_n.size, g_n_ss))
+
+
+def ndc_rates_path(r, Y, w, L, p, method):
+    """
+    Credited return and annuity discount rate paths for an NDC system.
+
+    The credited return is ``ndc_growth_rate`` averaged over the
+    ``ndc_growth_avg_years`` years up to and including each period
+    (periods before the path take the period-0 rate). The discount
+    rate is ``dir_growth_rate``; a household's conversion coefficient
+    uses its value in the period the household retires.
+
+    Args:
+        r (array_like): interest rate path (scalar in the steady state)
+        Y (array_like): GDP path
+        w (array_like): real wage path
+        L (array_like): aggregate labor path
+        p (OG-Core Specifications object): model parameters
+        method (str): 'SS' or 'TPI'
+
+    Returns:
+        rates (NDCRates): credit and discount rate paths
+
+    """
+    credit = growth_rate_path(p.ndc_growth_rate, r, Y, w, L, p, method)
+    years = float(getattr(p, "ndc_growth_avg_years", 1))
+    window = max(1, int(np.rint(years * p.S / 80.0)))
+    if window > 1 and credit.size > 1:
+        padded = np.append(np.full(window - 1, credit[0]), credit)
+        credit = np.convolve(padded, np.ones(window) / window, "valid")
+    discount = growth_rate_path(p.dir_growth_rate, r, Y, w, L, p, method)
+    return NDCRates(credit, discount)
+
+
+def g_ndc(r, Y, p):
+    """
+    Steady-state growth rate credited to NDC balances.
+
+    Args:
+        r (array_like): interest rate; its last element is used
+        Y (array_like): GDP (unused: GDP growth in the steady state
+            follows from g_y and g_n)
+        p (OG-Core Specifications object): model parameters
+
+    Returns:
+        g_ndc (scalar): growth rate credited to NDC balances
+
+    """
+    return _ss_growth_rate(p.ndc_growth_rate, r, p)
+
+
+def g_dir(r, Y, p):
+    """
+    Steady-state rate used to discount payments in the NDC conversion
+    coefficient.
+
+    Args:
+        r (array_like): interest rate; its last element is used
+        Y (array_like): GDP (unused: GDP growth in the steady state
+            follows from g_y and g_n)
+        p (OG-Core Specifications object): model parameters
+
+    Returns:
+        g_dir (scalar): discount rate in the conversion coefficient
+
+    """
+    return _ss_growth_rate(p.dir_growth_rate, r, p)
 
 
 def annuity_mort_rates(p):
@@ -1190,7 +1387,9 @@ def annuity_mort_rates(p):
     return np.broadcast_to(rho, (p.T + p.S, rho.shape[-1]))
 
 
-def delta_ret(r, Y, p, S_ret=None, indR=None, k_ret=None, t_ret=None):
+def delta_ret(
+    r, Y, p, S_ret=None, indR=None, k_ret=None, t_ret=None, g_dir_path=None
+):
     r"""
     Compute conversion coefficient for the NDC pension amount
 
@@ -1208,6 +1407,11 @@ def delta_ret(r, Y, p, S_ret=None, indR=None, k_ret=None, t_ret=None):
       faces at each age after retirement (a projected cohort life
       table), the rates that also enter the household's problem
 
+    Payments are discounted at ``dir_growth_rate``. Given a calendar
+    path of that rate (``g_dir_path``), each household uses its value
+    in the period it retires, held fixed over the payments; otherwise
+    the steady-state rate is used.
+
     Args:
         r (array_like): interest rate
         Y (array_like): GDP
@@ -1224,6 +1428,9 @@ def delta_ret(r, Y, p, S_ret=None, indR=None, k_ret=None, t_ret=None):
             before 0 or after T + S - 1, in which case the first or
             last row of the mortality rates is used. None for the
             steady state.
+        g_dir_path (array_like): calendar path of the discount rate
+            (``NDCRates.discount``), read at ``t_ret`` (clipped to the
+            path); None to use the steady-state rate
 
     Returns:
         delta_ret (scalar or Numpy array): conversion coefficient for
@@ -1239,6 +1446,13 @@ def delta_ret(r, Y, p, S_ret=None, indR=None, k_ret=None, t_ret=None):
     if k_ret is None:
         k_ret = cohort_array("k_ret", p)[-1, -1]
     S_ret = np.asarray(S_ret, dtype=int)
+    # discount rate of each household: the rate in its retirement period
+    if g_dir_path is None or t_ret is None:
+        g_dir_value = np.full(S_ret.shape, g_dir(r, Y, p))
+    else:
+        g_dir_path = np.atleast_1d(np.asarray(g_dir_path, dtype=float))
+        idx = np.clip(np.asarray(t_ret, dtype=int), 0, g_dir_path.size - 1)
+        g_dir_value = np.broadcast_to(g_dir_path[idx], S_ret.shape)
     method = getattr(p, "ndc_mortality", "steady state")
     if t_ret is None or method == "steady state":
         t_ret = np.full(S_ret.shape, n_rows - 1)
@@ -1255,26 +1469,27 @@ def delta_ret(r, Y, p, S_ret=None, indR=None, k_ret=None, t_ret=None):
             f"or 'cohort', got {method!r}"
         )
     t_ret = np.broadcast_to(t_ret, S_ret.shape)
-    g_dir_value = g_dir(r, Y, p.g_y, p.g_n, p.dir_growth_rate)
-    # the annuity factor depends only on the retirement age and the
-    # period of retirement, so compute it once per distinct pair
-    pairs, inverse = np.unique(
-        np.stack([S_ret.ravel(), t_ret.ravel()], axis=1),
+    # the annuity factor depends only on the retirement age, the
+    # mortality rates' period of retirement, and the discount rate, so
+    # compute it once per distinct combination
+    keys, inverse = np.unique(
+        np.stack(
+            [S_ret.ravel(), t_ret.ravel(), np.ravel(g_dir_value)], axis=1
+        ),
         axis=0,
         return_inverse=True,
     )
     ages = np.arange(n_ages)
-    dir_delta_pairs = np.zeros(pairs.shape[0])
-    for i, (R, tR) in enumerate(pairs):
+    dir_delta_pairs = np.zeros(keys.shape[0])
+    for i, (R, tR, g) in enumerate(keys):
+        R, tR = int(R), int(tR)
         if method == "cohort":
             # age a is reached in period tR + a - R
             rows = np.clip(tR - R + ages, 0, n_rows - 1)
         else:
             rows = np.full(n_ages, tR)
         surv_rates = np.ascontiguousarray(1.0 - mort_rates[rows, ages])
-        dir_delta_pairs[i] = delta_ret_loop(
-            p.S, int(R), surv_rates, g_dir_value
-        )
+        dir_delta_pairs[i] = delta_ret_loop(p.S, R, surv_rates, g)
     dir_delta = dir_delta_pairs[np.ravel(inverse)].reshape(S_ret.shape)
     delta_ret = 1 / (dir_delta + np.asarray(indR) - np.asarray(k_ret))
     if delta_ret.ndim == 0:
@@ -1653,10 +1868,20 @@ def DB_3dim_loop(
     return DB
 
 
-def NDC_1dim_loop(w, e, n, S_ret, S, g_y, tau_p, g_ndc, delta_ret, NDC):
-    """
+def NDC_1dim_loop(
+    w, e, n, S_ret, S, g_y, tau_p, g_ndc, t_birth, delta_ret, NDC
+):
+    r"""
     Calculate public pension from a notional defined contribution
     system for one household over its lifetime.
+
+    The contribution made at working age s earns the rate credited in
+    each later period up to the period before retirement:
+
+    .. math::
+        \prod_{a=s+1}^{R-1}(1 + g_{NDC,t_0 + a})
+
+    where $t_0$ is the household's period of birth (age 0).
 
     Args:
         w (array_like): real wage rate at each age, length S
@@ -1668,7 +1893,10 @@ def NDC_1dim_loop(w, e, n, S_ret, S, g_y, tau_p, g_ndc, delta_ret, NDC):
         g_y (array_like): GDP growth rate
         tau_p (Numpy array): contribution rate the household faced at
             each working age s, length S
-        g_ndc (scalar): growth rate of NDC pension
+        g_ndc (Numpy array): calendar path of the credited rate
+            (``NDCRates.credit``); periods outside it read the first or
+            last element
+        t_birth (int): model period in which the household is age 0
         delta_ret (Numpy array): conversion coefficient for the NDC
             pension amount that applies at each age u, length S
         NDC (Numpy array): pension amount for each household (filled
@@ -1678,29 +1906,41 @@ def NDC_1dim_loop(w, e, n, S_ret, S, g_y, tau_p, g_ndc, delta_ret, NDC):
         NDC (Numpy array): pension amount for each household
 
     """
+    g_ndc = np.atleast_1d(np.asarray(g_ndc, dtype=float))
+    # credited rate at each age of the household's life
+    g_age = g_ndc[np.clip(t_birth + np.arange(S), 0, g_ndc.size - 1)]
     for u in range(S):
         R = S_ret[u]
         if u < R:
             continue
         NDC_s = 0.0
-        for s in range(0, R):
+        growth = 1.0
+        for s in range(R - 1, -1, -1):
             # TODO: update so can take g_y from period t
             NDC_s += (
                 tau_p[s]
                 * (w[s] / np.exp(g_y[-1] * (u - s)))
                 * e[s]
                 * n[s]
-                * ((1 + g_ndc) ** (R - s - 1))
+                * growth
             )
+            growth *= 1.0 + g_age[s]
         NDC[u] = delta_ret[u] * NDC_s
     return NDC
 
 
 @numba.jit(nopython=True)
-def NDC_2dim_loop(w, e, n, S_ret, S, g_y, tau_p, g_ndc, delta_ret, NDC):
+def NDC_2dim_loop(
+    w, e, n, S_ret, S, g_y, tau_p, g_ndc, t_cross, delta_ret, NDC
+):
     """
     Calculate public pension from a notional defined contribution
     system for a cross section of S x J households in one period.
+
+    As in ``NDC_1dim_loop``, contributions compound at the rates
+    credited in the periods the household lived through: the household
+    of age u in period ``t_cross`` was age s in period
+    t_cross - u + s.
 
     Args:
         w (array_like): real wage rate, length S
@@ -1712,7 +1952,8 @@ def NDC_2dim_loop(w, e, n, S_ret, S, g_y, tau_p, g_ndc, delta_ret, NDC):
         g_y (array_like): GDP growth rate
         tau_p (Numpy array): contribution rate of the household of each
             age s, length S
-        g_ndc (scalar): growth rate of NDC pension
+        g_ndc (Numpy array): calendar path of the credited rate
+        t_cross (int): model period of the cross section
         delta_ret (Numpy array): conversion coefficient for the NDC
             pension amount of the household of each age u, length S
         NDC (Numpy array): pension amount for each household (filled
@@ -1722,19 +1963,23 @@ def NDC_2dim_loop(w, e, n, S_ret, S, g_y, tau_p, g_ndc, delta_ret, NDC):
         NDC (Numpy array): pension amount for each household
 
     """
+    n_g = g_ndc.shape[0]
     for u in range(S):
         R = S_ret[u]
         if u < R:
             continue
         NDC_s = np.zeros(NDC.shape[1])
-        for s in range(0, R):
+        growth = 1.0
+        for s in range(R - 1, -1, -1):
             NDC_s += (
                 tau_p[s]
                 * (w[s] / np.exp(g_y[-1] * (u - s)))
                 * e[s, :]
                 * n[s, :]
-                * ((1 + g_ndc) ** (R - s - 1))
+                * growth
             )
+            idx = min(max(t_cross - u + s, 0), n_g - 1)
+            growth *= 1.0 + g_ndc[idx]
         NDC[u, :] = delta_ret[u] * NDC_s
     return NDC
 
@@ -1752,9 +1997,11 @@ def NDC_3dim_loop(
     benefit is built from their own cohort's history: the contribution
     at age s of a household aged u at time t was made in period
     t - (u - s), at that period's wage, labor supply, and contribution
-    rate. Histories that predate the time path use the period-0 wage
-    and contribution rate and the model's initial labor supply, so
-    this reproduces what the per-cohort household solves compute.
+    rate, and earns the rates credited in periods t - (u - s) + 1
+    through t - (u - R) - 1. Histories that predate the time path use
+    the period-0 wage, contribution rate, and credited rate and the
+    model's initial labor supply, so this reproduces what the
+    per-cohort household solves compute.
 
     Args:
         w_path (Numpy array): real wage rate path, length T
@@ -1768,7 +2015,7 @@ def NDC_3dim_loop(
         g_y (scalar): growth rate of technology
         tau_p (Numpy array): contribution rate by period and age,
             size T x S
-        g_ndc (scalar): growth rate of NDC pension
+        g_ndc (Numpy array): calendar path of the credited rate
         delta_ret (Numpy array): conversion coefficient for the NDC
             pension amount by period and age, size T x S
 
@@ -1777,6 +2024,7 @@ def NDC_3dim_loop(
             TxSxJ
     """
     T = n.shape[0]
+    n_g = g_ndc.shape[0]
     NDC = np.zeros((T, S, J))
     for t in range(T):
         for u in range(S):
@@ -1793,14 +2041,17 @@ def NDC_3dim_loop(
                 n_preTP[s_idx, :],
             )
             contrib = np.zeros(R)
-            for i in range(R):
+            growth = 1.0
+            for i in range(R - 1, -1, -1):
                 s = s_idx[i]
                 contrib[i] = (
                     tau_p[rows[i], s]
                     * w_hist[i]
                     / np.exp(g_y * (u - s))
-                    * (1 + g_ndc) ** (R - s - 1)
+                    * growth
                 )
+                idx = min(max(tau[i], 0), n_g - 1)
+                growth *= 1.0 + g_ndc[idx]
             L = contrib[:, None] * e_ss[s_idx, :] * n_hist
             NDC[t, u, :] = delta_ret[t, u] * L.sum(axis=0)
 
