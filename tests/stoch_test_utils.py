@@ -166,6 +166,7 @@ def ogcore_inner_loop(p, bssmat, nssmat, r, w, BQ, TR, factor, Y=1.4):
         BQ,
         float(np.squeeze(TR)),
         0.0,  # Ig_baseline
+        0.0,  # FA_baseline
         factor,
     )
     euler_errors, b, n = SS.inner_loop(outer_loop_vars, p, None)[:3]

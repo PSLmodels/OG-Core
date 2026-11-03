@@ -225,7 +225,9 @@ def param_table(p, table_format="tex", path=None):
             elif isinstance(value, str):
                 report = value
             else:
-                if value < 0.0001:
+                if value is None:
+                    report = "None"
+                elif value < 0.0001:
                     report = "{:.2E}".format(value)
                 else:
                     report = "{0:1.3f}".format(value)

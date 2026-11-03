@@ -34,7 +34,7 @@ def _one_state_specs():
     # euler_equation_solver recomputes US-style benefits from the
     # profile it is given; with zero PIA rates they are zero, as here
     p.retirement_age = np.array([p.S + p.E + 1])
-    p.retire = np.array([p.S + p.E + 1])
+    p.retire = np.full((p.T + p.S, p.S), p.S + p.E + 1)
     p.PIA_rate_bkt_1 = p.PIA_rate_bkt_2 = p.PIA_rate_bkt_3 = 0.0
     return p
 
@@ -279,8 +279,8 @@ def test_pension_ss_matches_ogcore_by_type(system):
             p,
         )
         assert np.allclose(pension[:, j], expected, rtol=1e-12, atol=1e-14)
-    assert np.allclose(pension[: p.retire[-1]], 0.0)
-    assert (pension[p.retire[-1] :] > 0).all()
+    assert np.allclose(pension[: p.retire[-1, -1]], 0.0)
+    assert (pension[p.retire[-1, -1] :] > 0).all()
     with pytest.raises(ValueError):
         household.pension_ss(p, W, FACTOR)
 
@@ -297,4 +297,4 @@ def test_pension_fixed_point_other_systems(system):
     implied = household.pension_ss(p, W, FACTOR, n_eff=n_eff, r=R)
     assert sol.iterations["pension"] >= 2
     assert np.abs(implied - sol.pension).max() < 1e-9
-    assert (sol.pension[p.retire[-1] :] > 0).all()
+    assert (sol.pension[p.retire[-1, -1] :] > 0).all()

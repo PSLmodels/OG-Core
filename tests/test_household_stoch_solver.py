@@ -143,7 +143,7 @@ def test_pension_ss_us_style():
     p = default_specs()
     p.replacement_rate_adjust = np.full((p.T + p.S, p.J), 1.1)
     pension = household.pension_ss(p, W, FACTOR, theta=THETA)
-    retire = p.retire[-1]
+    retire = p.retire[-1, -1]
     assert np.allclose(pension[:retire], 0.0)
     assert np.allclose(pension[retire:], 1.1 * THETA * W)
     n_eff = np.full((p.S, p.J), 0.35)

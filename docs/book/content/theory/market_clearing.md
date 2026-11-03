@@ -122,9 +122,11 @@
   where
   ```{math}
   :label: EqMarkClrGoods_IMt
+  \begin{aligned}
     I_{M,t} &\equiv \sum_{m=1}^M K_{m,t+1} - (1 - \delta_{M,t})\sum_{m=1}^M K_{m,t} \quad\forall t \\
     &= K_{t+1} - (1 - \delta_{M,t})K_t \\
     &= (K^d_{t+1} + K^f_{t+1}) - (1 - \delta_{M,t})(K^d_t + K^f_t)
+  \end{aligned}
   ```
 
   In the partially open economy, we must add to the right-hand-side of {eq}`EqMarkClrGoods_M` the output paid to the foreign owners of capital $r_{p,t} K^f_t$ and to the foreign holders of government debt $r_{p,t}D^f_t$. And we must subtract off the foreign inflow component $K^f_{t+1} - K^f_t$ from private capital investment as shown in the first term in parentheses on the right-hand-side of {eq}`EqMarkClrGoods_M`. You can see in the definition of private investment {eq}`EqMarkClrGoods_IMt` where this amount of foreign capital is part of $I_{M,t}$.

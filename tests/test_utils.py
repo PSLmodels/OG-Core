@@ -492,6 +492,39 @@ def test_safe_read_pickle(filename):
     assert True
 
 
+@pytest.mark.parametrize(
+    "method,has_key",
+    [("SS", True), ("SS", False), ("TPI", True), ("TPI", False)],
+    ids=[
+        "SS, saved",
+        "SS, reconstructed",
+        "TPI, saved",
+        "TPI, reconstructed",
+    ],
+)
+def test_get_baseline_foreign_aid(method, has_key):
+    """
+    Test of utils.get_baseline_foreign_aid() function
+    """
+    p = Specifications()
+    p.update_specifications({"alpha_FA": [0.02]})
+    if method == "SS":
+        Y = 1.5
+        expected = 0.02 * Y if not has_key else 0.123
+    else:
+        Y = np.linspace(1.0, 2.0, p.T)
+        expected = 0.02 * Y if not has_key else np.ones(p.T) * 0.123
+    baseline_vars = {"Y": Y}
+    if has_key:
+        baseline_vars["foreign_aid"] = expected
+        test_val = utils.get_baseline_foreign_aid(baseline_vars, p, method)
+    else:
+        with pytest.warns(UserWarning, match="foreign aid"):
+            test_val = utils.get_baseline_foreign_aid(baseline_vars, p, method)
+
+    assert np.allclose(test_val, expected)
+
+
 @pytest.fixture
 def picklefile1():
     x = {"a": 1}

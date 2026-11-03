@@ -3925,11 +3925,10 @@ def pension_tpi(p, r, w, factor, theta=None, n_eff=None):
     steady state (see ``pension_ss``).
 
     Benefits are scaled by ``p.replacement_rate_adjust`` of the period
-    they are paid in, as OG-Core's aggregate pension outlays are, so
-    that what households receive is what the government pays.
-    (OG-Core's household problem applies the adjustment of a cohort's
-    first period on the path; the two agree when the adjustment does
-    not change over time.)
+    they are paid in, as OG-Core's household problem and aggregate
+    pension outlays are, so that what households receive is what the
+    government pays. Each household retires at the retirement age of its
+    own birth cohort (``p.retire`` by period and age).
 
     Args:
         p (OG-Core Specifications object): model parameters
@@ -3950,7 +3949,10 @@ def pension_tpi(p, r, w, factor, theta=None, n_eff=None):
     if p.pension_system == "US-Style Social Security":
         if theta is None:
             raise ValueError("US-style Social Security benefits need theta")
-        retired = np.arange(S)[None, :] >= np.asarray(p.retire)[:TS, None]
+        # retirement age of the household of age s in period t, that of
+        # its own birth cohort
+        retire = pensions.cohort_array("retire", p)[:TS]
+        retired = np.arange(S)[None, :] >= retire
         amount = (
             np.asarray(theta, dtype=float).reshape(1, 1, J)
             * np.asarray(p.replacement_rate_adjust)[:TS].reshape(TS, 1, J)
@@ -3976,7 +3978,9 @@ def pension_tpi(p, r, w, factor, theta=None, n_eff=None):
                 amount = pensions.DB_amount(w_c, e_c, n_c, t, j, "TPI", p)
             elif p.pension_system == "Notional Defined Contribution":
                 # Y = 1, as tax.net_taxes passes to pension_amount
-                amount = pensions.NDC_amount(w_c, e_c, n_c, r[times], 1, j, p)
+                amount = pensions.NDC_amount(
+                    w_c, e_c, n_c, r[times], 1, t, j, "TPI", p
+                )
             elif p.pension_system == "Points System":
                 amount = pensions.PS_amount(w_c, e_c, n_c, j, factor, p)
             else:

@@ -92,10 +92,12 @@ The usual definition of equilibrium would be allocations and prices such that ho
 
   ```{math}
   :label: EqStnrzHHBC
+  \begin{aligned}
     p_t\hat{c}_{j,s,t} + &\sum_{i=1}^I (1 + \tau^{c}_{i,t})p_{i,t}\hat{c}_{min,i} + e^{g_y}\hat{b}_{j,s+1,t+1} = \\
     &(1 + r_{p,t})\hat{b}_{j,s,t} + \hat{w}_t e_{j,s} n_{j,s,t} ... \\
     &\qquad +\: (1-\tau^{bq}_t)\hat{bq}_{j,s,t} + \hat{rm}_{j,s,t} + \hat{tr}_{j,s,t} + \hat{ubi}_{j,s,t} + \hat{pension}_{j,s,t} - \hat{tax}_{j,s,t}  \\
     &\quad\forall j,t\quad\text{and}\quad E+1\leq s\leq E+S \quad\text{where}\quad \hat{b}_{j,E+1,t}=0
+  \end{aligned}
   ```
 
   Because total bequests $BQ_t$ in $bq_{j,s,t}$ and total government transfers $TR_t$ in $tr_{j,s,t}$ grow at both the labor productivity growth rate and the population growth rate, we have to multiply and divide each of those terms by the economically relevant population $\tilde{N}_t$. This stationarizes total bequests $\hat{BQ}_t$, total transfers $\hat{TR}_t$, and the respective population level in the denominator $\hat{\omega}_{s,t}$.
@@ -104,17 +106,21 @@ The usual definition of equilibrium would be allocations and prices such that ho
 
   ```{math}
   :label: EqStnrz_eul_n
+  \begin{aligned}
     &\frac{\hat{w}_t e_{j,s}}{p_t}\bigl(1 - \tau^{mtrx}_{s,t}\bigr)(\hat{c}_{j,s,t})^{-\sigma} = \chi^n_{s}\biggl(\frac{b}{\tilde{l}}\biggr)\biggl(\frac{n_{j,s,t}}{\tilde{l}}\biggr)^{\upsilon-1}\Biggl[1 - \biggl(\frac{n_{j,s,t}}{\tilde{l}}\biggr)^\upsilon\Biggr]^{\frac{1-\upsilon}{\upsilon}} \\
     &\qquad\qquad\qquad\qquad\qquad\qquad\qquad\qquad\forall j,t, \quad\text{and}\quad E+1\leq s\leq E+S \\
+  \end{aligned}
   ```
 
   We stationarize the Euler equations for savings {eq}`EqHHeul_b` and {eq}`EqHHeul_bS` by dividing both sides of the respective equations by $e^{-\sigma g_y t}$. On the right-hand-side of the equation, we then need to multiply and divide both terms by $e^{-\sigma g_y(t+1)}$, which leaves a multiplicative coefficient $e^{-\sigma g_y}$,
 
   ```{math}
   :label: EqStnrz_eul_b
+  \begin{aligned}
     \frac{(\hat{c}_{j,s,t})^{-\sigma}}{p_t} &= e^{-\sigma g_y}\Biggl[\chi^b_j\rho_s(\hat{b}_{j,s+1,t+1})^{-\sigma} + \\
     &\qquad\qquad\quad \beta_j\bigl(1 - \rho_s\bigr)\left(\frac{1 + r_{p,t+1}\bigl[1 - \tau^{mtry}_{s+1,t+1}\bigr] - \tau^{mtrw}_{t+1}}{p_{t+1}}\right)(\hat{c}_{j,s+1,t+1})^{-\sigma}\Biggr] \\
     &\qquad\qquad\qquad\qquad\qquad\qquad\qquad\forall j,t, \quad\text{and}\quad E+1\leq s\leq E+S-1 \\
+  \end{aligned}
   ```
 
   ```{math}
@@ -160,8 +166,10 @@ The usual definition of equilibrium would be allocations and prices such that ho
 
   ```{math}
   :label: EqStnrzProfit
+  \begin{aligned}
     \hat{PR}_{m,t} &= (1 - \tau^{corp}_{m,t})\Bigl[F(\hat{K}_{m,t},\hat{K}_{g,m,t},\hat{L}_{m,t}) - \hat{w}_t \hat{L}_{m,t}\Bigr] - ... \\
     &\qquad\qquad\quad \bigl(r_t + \delta_{M,t}\bigr)\hat{K}_{m,t} + \tau^{corp}_{m,t}\delta^\tau_{m,t}\hat{K}_{m,t} + \tau^{inv}_{m,t}\delta_{M,t}\hat{K}_{m,t} \quad\forall m,t
+  \end{aligned}
   ```
 
   The firms' first order equation for labor demand {eq}`EqFirmFOC_L` is stationarized by dividing both sides by $e^{g_y t}$. This stationarizes the wage $\hat{w}_t$ on the left-hand-side and cancels out the $e^{g_y t}$ term in front of the right-hand-side. To complete the stationarization, we multiply and divide the $\frac{Y_{m,t}}{e^{g_y t}L_{m,t}}$ term on the right-hand-side by $\tilde{N}_t$.
@@ -232,12 +240,14 @@ The usual definition of equilibrium would be allocations and prices such that ho
   We can stationarize the expression for total government revenue $Rev_t$ in {eq}`EqUnbalGBCgovRev` by dividing both sides of the equation by $e^{g_y t}\tilde{N}_t$.
   ```{math}
   :label: EqStnrzGovRev
+  \begin{aligned}
     \hat{Rev}_t &= \underbrace{\sum_{m=1}^M\Bigl[\tau^{corp}_{m,t}\bigl(p_{m,t}\hat{Y}_{m,t} - \hat{w}_t\hat{L}_{m,t}\bigr) - \tau^{corp}_{m,t}\delta^\tau_{m,t}\hat{K}_{m,t} - \tau^{inv}_{m,t}\hat{I}_{m,t}\Bigr]}_{\text{corporate tax revenue}} \\
     &\qquad + \underbrace{\sum_{s=E+1}^{E+S}\sum_{j=1}^J\lambda_j\hat{\omega}_{s,t}\tau^{etr,xy}_{s,t}\left(\hat{x}_{j,s,t},\hat{y}_{j,s,t}\right)\bigl(\hat{x}_{j,s,t} + \hat{y}_{j,s,t}\bigr)}_{\text{household tax revenue}} \\
     &\quad + \underbrace{\sum_{s=E+1}^{E+S}\sum_{j=1}^J\sum_{i=1}^I\lambda_j\omega_{s,t}\tau^{c}_{i,t}p_{i,t}\hat{c}_{i,j,s,t}}_{\text{consumption tax revenue}} \\
     &\quad + \underbrace{\sum_{s=E+1}^{E+S}\sum_{j=1}^J\lambda_j\omega_{s,t}\tau^{etr,w}_{t}\hat{b}_{j,s,t}}_{\text{wealth tax revenue}} \\
     &\quad + \underbrace{\sum_{s=E+1}^{E+S}\sum_{j=1}^J\lambda_j\omega_{s,t}\tau^{bq}_{t}\hat{bq}_{j,s,t}}_{\text{bequest tax revenue}} \\
     &\quad\forall t
+  \end{aligned}
   ```
 
   Every term in the government budget constraint {eq}`EqUnbalGBCbudgConstr` is growing at both the productivity growth rate and the population growth rate, so we stationarize it by dividing both sides by $e^{g_y t}\tilde{N}_t$. We also have to multiply and divide the next period debt term $D_{t+1}$ by $e^{g_y(t+1)}\tilde{N}_{t+1}$, leaving the term $e^{g_y}(1 + \tilde{g}_{n,t+1})$.
@@ -278,7 +288,7 @@ The usual definition of equilibrium would be allocations and prices such that ho
   The expression for the interest rate on government debt $r_{gov,t}$ in {eq}`EqUnbalGBC_rate_wedge` is already stationary because every term on the right-hand-side is already stationary. The net return on capital, $r_{K,t}$ is also stationary as shown in {eq}`EqStnrz_rKt`. The expression for the return to household savings $r_{p,t}$ in {eq}`eq_portfolio_return` is equivalent to its stationary representation because the same macroeconomic variables occur linearly in both the numerator and denominator.
 
   ```{math}
-    :label: EqStnrz_rate_p
+  :label: EqStnrz_rate_p
     r_{p,t} = \frac{r_{gov,t}\hat{D}_{t} + r_{K,t}\hat{K}_{t}}{\hat{D}_{t} + \hat{K}_{t}} \quad\forall t \quad\text{where}\quad \hat{K}_t \equiv \sum_{m=1}^M \hat{K}_{m,t}
   ```
 
@@ -493,8 +503,10 @@ Stationarized pension amount derivative:
   ```
   ```{math}
   :label: EqStnrzMarkClrGoods_M
+  \begin{aligned}
     \hat{Y}_{M,t} &= \hat{C}_{M,t} + \hat{I}_{M,t} + \hat{I}_{g,t} + \hat{G}_t + r_{p,t} \hat{K}^f_t + r_{p,t}\hat{D}^f_t ... \\
     &\quad - \Bigl(e^{g_y}\bigl[1 + \tilde{g}_{n,t+1}\bigr]\hat{K}^f_{t+1} - \hat{K}^f_t\Bigr) - \Bigl(e^{g_y}\bigl[1 + \tilde{g}_{n,t+1}\bigr]\hat{D}^f_{t+1} - \hat{D}^f_t\Bigr) - \hat{RM}_t \quad\forall t
+  \end{aligned}
   ```
   where
   ```{math}
@@ -504,9 +516,11 @@ Stationarized pension amount derivative:
   and
   ```{math}
   :label: EqStnrzMarkClrGoods_IMt
+  \begin{aligned}
     \hat{I}_{M,t} &\equiv e^{g_y}\bigl(1 + \tilde{g}_{n,t+1}\bigr)\sum_{m=1}^M \hat{K}_{m,t+1} - (1 - \delta_{M,t})\sum_{m=1}^M \hat{K}_{m,t} \quad\forall t \\
     &= e^{g_y}\bigl(1 + \tilde{g}_{n,t+1}\bigr)\hat{K}_{t+1} - (1 - \delta_{M,t})\hat{K}_t \\
     &= e^{g_y}\bigl(1 + \tilde{g}_{n,t+1}\bigr)(\hat{K}^d_{t+1} + \hat{K}^f_{t+1}) - (1 - \delta_{M,t})(\hat{K}^d_t + \hat{K}^f_t)
+  \end{aligned}
   ```
 
   We stationarize the law of motion for total bequests $BQ_t$ in {eq}`EqMarkClrBQ` by dividing both sides by $e^{g_y t}\tilde{N}_t$. Because the population levels in the summation are from period $t-1$, we must multiply and divide the summed term by $\tilde{N}_{t-1}$ leaving the term in the denominator of $1+\tilde{g}_{n,t}$.

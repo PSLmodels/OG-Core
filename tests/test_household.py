@@ -606,7 +606,7 @@ p1.h_wealth = np.array([0.1])
 p1.m_wealth = np.array([1.0])
 p1.p_wealth = np.array([0.0])
 p1.tau_payroll = np.ones((1, p1.J)) * 0.15
-p1.retire = np.array([2]).astype(int)
+p1.retire = np.full((p1.T + p1.S, p1.S), 2)
 
 test_params_ss = p1
 r = 0.05
@@ -665,7 +665,9 @@ method_tpi = "TPI"
 test_params_tpi = copy.deepcopy(p1)
 test_params_tpi.tau_payroll = np.ones((3, p1.J)) * 0.15
 test_params_tpi.tau_bq = np.array([0.0, 0.0, 0.0])
-test_params_tpi.retire = np.array([2, 2, 2]).astype(int)
+test_params_tpi.retire = np.full(
+    (test_params_tpi.T + test_params_tpi.S, test_params_tpi.S), 2
+)
 test_params_tpi.h_wealth = np.array([0.1, 0.1, 0.1])
 test_params_tpi.m_wealth = np.array([1.0, 1.0, 1.0])
 test_params_tpi.p_wealth = np.array([0.0, 0.0, 0.0])
@@ -927,7 +929,7 @@ p1.h_wealth = np.array([0.1])
 p1.m_wealth = np.array([1.0])
 p1.p_wealth = np.array([0.0])
 p1.tau_payroll = np.ones((1, p1.J)) * 0.15
-p1.retire = np.array([2]).astype(int)
+p1.retire = np.full((p1.T + p1.S, p1.S), 2)
 theta = np.array([0.1])
 j = 0
 method = "SS"
@@ -966,7 +968,9 @@ expected_ss = np.array([4.77647028, 0.14075522, -0.14196852])
 method_tpi = "TPI"
 test_params_tpi = copy.deepcopy(p1)
 j = 0
-test_params_tpi.retire = np.array([2, 2, 2]).astype(int)
+test_params_tpi.retire = np.full(
+    (test_params_tpi.T + test_params_tpi.S, test_params_tpi.S), 2
+)
 test_params_tpi.h_wealth = np.array([0.1, 0.1, 0.1])
 test_params_tpi.m_wealth = np.array([1.0, 1.0, 1.0])
 test_params_tpi.p_wealth = np.array([0.0, 0.0, 0.0])
@@ -1013,7 +1017,9 @@ expected_tpi = np.array(
 # Define variables/params for test of TPI version
 method_tpi = "TPI"
 test_params_tau_pay = copy.deepcopy(p1)
-test_params_tau_pay.retire = np.array([2, 2, 2]).astype(int)
+test_params_tau_pay.retire = np.full(
+    (test_params_tau_pay.T + test_params_tau_pay.S, test_params_tau_pay.S), 2
+)
 test_params_tau_pay.h_wealth = np.array([0.1, 0.1, 0.1])
 test_params_tau_pay.m_wealth = np.array([1.0, 1.0, 1.0])
 test_params_tau_pay.p_wealth = np.array([0.0, 0.0, 0.0])

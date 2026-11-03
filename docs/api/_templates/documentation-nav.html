@@ -1,0 +1,10 @@
+<nav aria-label="Documentation sections">
+  <ul class="navbar-nav">
+    {% for title, url in documentation_links %}
+    <li class="nav-item">
+      <a class="nav-link{% if title == 'API reference' %} active{% endif %}"
+         href="{{ url }}"{% if title == 'API reference' %} aria-current="true"{% endif %}>{{ title }}</a>
+    </li>
+    {% endfor %}
+  </ul>
+</nav>

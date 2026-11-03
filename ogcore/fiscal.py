@@ -48,14 +48,16 @@ def D_G_path(r, dg_fixed_values, p):
         \end{split}
 
     Args:
-        r_gov (Numpy array): interest rate on government debt over the
+        r (Numpy array): interest rate on private capital over the
             time path
         dg_fixed_values (tuple): (Y, total_tax_revenue,
-            agg_pension_outlays, UBI_outlays,TR, D0, G0) values of variables
-            that are taken as given in the government budget constraint
-        Gbaseline (Numpy array): government spending over the time path
-            in the baseline equilibrium, used only if
-            baseline_spending=True
+            agg_pension_outlays, UBI_outlays, TR, I_g, foreign_aid,
+            Gbaseline, D0_baseline) values of variables that are taken
+            as given in the government budget constraint, where
+            Gbaseline is government spending over the time path in the
+            baseline equilibrium (used only if baseline_spending=True)
+            and D0_baseline is initial debt in the baseline equilibrium
+            (used only if baseline=False)
         p (OG-Core Specifications object): model parameters
 
     Returns:
@@ -77,6 +79,7 @@ def D_G_path(r, dg_fixed_values, p):
         UBI_outlays,
         TR,
         I_g,
+        foreign_aid,
         Gbaseline,
         D0_baseline,
     ) = dg_fixed_values
@@ -93,9 +96,6 @@ def D_G_path(r, dg_fixed_values, p):
         G = p.alpha_bs_G[: p.T] * Gbaseline[: p.T]
     else:
         G = p.alpha_G[: p.T] * Y[: p.T]
-
-    # direct foreign aid
-    foreign_aid = p.alpha_FA[: p.T] * Y[: p.T]
 
     if p.budget_balance:
         D = np.zeros(p.T + 1)
@@ -265,6 +265,7 @@ def get_G_ss(
     TR,
     UBI_outlays,
     I_g,
+    foreign_aid,
     new_borrowing,
     debt_service,
     p,
@@ -273,8 +274,9 @@ def get_G_ss(
     Calculate the steady-state values of government spending.
 
     .. math::
-            \bar{G} = \bar{Rev} + \bar{D}\bigl[(1 + \bar{g}_n)e^{g_y} -
-            (1 + \bar{r}_{gov})\bigr] - \bar{I}_g - \bar{TR} - \overline{UBI}
+            \bar{G} = \bar{Rev} + \overline{FA}
+            + \bar{D}\bigl[(1 + \bar{g}_n)e^{g_y} - (1 + \bar{r}_{gov})\bigr]
+            - \bar{I}_g - \bar{TR} - \overline{UBI}
 
     Args:
         Y (scalar): aggregate output
@@ -283,6 +285,8 @@ def get_G_ss(
         TR (scalar): steady-state transfer spending
         UBI_outlays (scalar): steady-state total UBI outlays
         I_g (scalar): steady-state public infrastructure investment
+        foreign_aid (scalar): steady-state foreign aid payments to the
+            domestic government
         new_borrowing (scalar): steady-state amount of new borrowing
         debt_service (scalar): steady-state debt service costs
         p (OG-Core Specifications object): model parameters
@@ -291,7 +295,6 @@ def get_G_ss(
         G (tuple): steady-state government spending
 
     """
-    foreign_aid = p.alpha_FA[-1] * Y
     if p.budget_balance:
         G = p.alpha_G[-1] * Y
     else:
@@ -331,6 +334,7 @@ def get_TR(
     agg_pension_outlays,
     UBI_outlays,
     I_g,
+    foreign_aid,
     p,
     method,
 ):
@@ -356,6 +360,8 @@ def get_TR(
             outlays
         UBI_outlays (array_like): total universal basic income (UBI) outlays
         I_g (array_like): public infrastructure investment
+        foreign_aid (array_like): foreign aid payments to the domestic
+            government
         p (OG-Core Specifications object): model parameters
         method (str): whether doing SS or TP calculation
 
@@ -364,10 +370,6 @@ def get_TR(
 
     """
     if p.budget_balance:
-        if method == "SS":
-            foreign_aid = p.alpha_FA[-1] * Y
-        else:
-            foreign_aid = p.alpha_FA[: p.T] * Y[: p.T]
         new_TR = (
             total_tax_revenue
             + foreign_aid
@@ -435,12 +437,16 @@ def get_I_g(Y, Ig_baseline, p, method="SS"):
     Find investment in public capital
 
     .. math::
-        I_{g,t} = \alpha_{I,t}Y_{t}
+        I_{g,t} =
+        \begin{cases}
+            \alpha_{bs,I,t}I_{g,t}^{baseline}, & \text{if baseline spending}\\
+            \alpha_{I,t}Y_{t}, & \text{otherwise}
+        \end{cases}
 
     Args:
         Y (array_like): aggregate output
         Ig_baseline (array_like): public infrastructure investment in
-            the baseline simulation
+            the baseline simulation, used only if baseline_spending=True
         p (OG-Core Specifications object): model parameters
         method (str): either 'SS' for steady-state or 'TPI' for transition path
 
@@ -451,14 +457,50 @@ def get_I_g(Y, Ig_baseline, p, method="SS"):
         if method == "SS":
             I_g = p.alpha_bs_I[-1] * Ig_baseline
         else:
-            I_g = p.alpha_bs_I[: p.T] * Ig_baseline
+            I_g = p.alpha_bs_I[: p.T] * Ig_baseline[: p.T]
     else:
         if method == "SS":
             I_g = p.alpha_I[-1] * Y
         else:
-            I_g = p.alpha_I[: p.T] * Y
+            I_g = p.alpha_I[: p.T] * Y[: p.T]
 
     return I_g
+
+
+def get_foreign_aid(Y, FA_baseline, p, method="SS"):
+    r"""
+    Find foreign aid payments to the domestic government.
+
+    .. math::
+        FA_{t} =
+        \begin{cases}
+            \alpha_{bs,FA,t}FA_{t}^{baseline}, & \text{if baseline spending}\\
+            \alpha_{FA,t}Y_{t}, & \text{otherwise}
+        \end{cases}
+
+    Args:
+        Y (array_like): aggregate output
+        FA_baseline (array_like): foreign aid payments in the baseline
+            simulation, used only if baseline_spending=True
+        p (OG-Core Specifications object): model parameters
+        method (str): either 'SS' for steady-state or 'TPI' for transition path
+
+    Returns
+        foreign_aid (array_like): foreign aid payments to the domestic
+            government
+    """
+    if p.baseline_spending:
+        if method == "SS":
+            foreign_aid = p.alpha_bs_FA[-1] * FA_baseline
+        else:
+            foreign_aid = p.alpha_bs_FA[: p.T] * FA_baseline[: p.T]
+    else:
+        if method == "SS":
+            foreign_aid = p.alpha_FA[-1] * Y
+        else:
+            foreign_aid = p.alpha_FA[: p.T] * Y[: p.T]
+
+    return foreign_aid
 
 
 def get_K_g(K_g0, I_g, p, method):

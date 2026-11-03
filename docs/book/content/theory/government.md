@@ -18,10 +18,12 @@ Income taxes are modeled through the net tax liability function for each househo
 
 ```{math}
 :label: EqHHBC2_gov
+\begin{aligned}
   p_t c_{j,s,t} + &\sum_{i=1}^I (1 + \tau^{c}_{i,t})p_{i,t}c_{min,i} + b_{j,s+1,t+1} = \\
   &(1 + r_{p,t})b_{j,s,t} + w_t e_{j,s} n_{j,s,t} ... \\
   &\qquad +\: bq_{j,s,t} + rm_{j,s,t} + tr_{j,s,t} + ubi_{j,s,t} + pension_{j,s,t} - tax_{j,s,t}  \\
   &\qquad\quad\forall j,t\quad\text{and}\quad E+1\leq s\leq E+S \quad\text{where}\quad b_{j,E+1,t}=0
+\end{aligned}
 ```
 
 Incorporating realistic tax and incentive detail into a general equilibrium model is notoriously difficult for two reasons. First, it is impossible in a dynamic general equilibrium model to capture all of the dimensions of heterogeneity on which the real-world tax rate depends. For example, a household's tax liability in reality depends on filing status, number of dependents, many types of income, and some characteristics correlated with age. A good heterogeneous agent DGE model tries to capture the most important dimensions of heterogeneity, and necessarily neglects the other dimensions.
@@ -48,8 +50,10 @@ The second difficulty in modeling realistic tax and incentive detail is the need
 
   ```{math}
   :label: EqTaxCalcLiabETR2
+  \begin{aligned}
     tax_{j,s,t} &= tax^{x+y}_{j,s,t} + tax^w_{j,s,t} \\
     &=\tau^{etr,xy}_{s,t}(x_{j,s,t}, y_{j,s,t})\left(x_{j,s,t} + y_{j,s,t}\right) + \tau^{etr,w}_{t}\bigl(b_{j,s,t}\bigr)b_{j,s,t}
+  \end{aligned}
   ```
 
   where the wealth tax function is described in Section {ref}`SecGovWealthTax` of this chapter. Rearranging the first term on the right-hand-side of {eq}`EqTaxCalcLiabETR2` gives the definition of an effective tax rate on income ($\tau_{s,t}^{etr,xy}$) as total tax liability, minus the wealth tax liability, divided by unadjusted gross income. And the definition of the effective tax rate on wealth ($\tau_{t}^{etr,w}$) as total tax liability, minus the income tax liability, divided by wealth.
@@ -97,11 +101,13 @@ The second difficulty in modeling realistic tax and incentive detail is the need
   For the default option, `OG-Core` follows the approach of {cite}`DeBackerEtAl:2019` in using the following functional form to estimate tax functions for each age $s=E+1, E+2, ... E+S$ in each time period $t$. This option can be manually selected by setting the parameter `tax_func_type="DEP"`. Alternative specifications are outlined in Section {ref}`SecTaxCalcFuncs_Alt` below. Equation {eq}`EqTaxCalcTaxFuncForm` is written as a generic tax rate, but we use this same functional form for $ETR$'s, $MTRx$'s, and $MTRy$'s.
   ```{math}
   :label: EqTaxCalcTaxFuncForm
+  \begin{aligned}
     \tau(x,y) = &\Bigl[\tau(x) + shift_x\Bigr]^\phi\Bigl[\tau(y) + shift_y\Bigr]^{1-\phi} + shift \\
     &\text{where}\quad \tau(x) \equiv (max_x - min_x)\left(\frac{Ax^2 + Bx}{Ax^2 + Bx + 1}\right) + min_x \\
     &\quad\text{and}\quad \tau(y) \equiv (max_y - min_y)\left(\frac{Cy^2 + Dy}{Cy^2 + Dy + 1}\right) + min_y \\
     &\text{where}\quad A,B,C,D,max_x,max_y,shift_x,shift_y > 0 \quad\text{and}\quad\phi\in[0,1] \\
     &\quad\text{and}\quad max_x > min_x \quad\text{and}\quad max_y > min_y
+  \end{aligned}
   ```
 
   The parameters values will, in general, differ across the different functions (effective and marginal rate functions) and by age, $s$, and tax year, $t$.  We drop the subscripts for age and year from the above exposition for clarity.
@@ -128,17 +134,17 @@ The second difficulty in modeling realistic tax and incentive detail is the need
   * - $D$
     - Coefficient on capital income term *y* in $\tau(y)$
   * - $max_{x}$
-    - Maximum tax rate on labor income $x$ given $y$ = 0
+    - Maximum tax rate on labor income $x$ given $y = 0$
   * - $min_{x}$
-    - Minimum tax rate on labor income $x$ given $y$ = 0
+    - Minimum tax rate on labor income $x$ given $y = 0$
   * - $max_{y}$
-    - Maximum tax rate on capital income $y$ given $x$ = 0
+    - Maximum tax rate on capital income $y$ given $x = 0$
   * - $min_{y}$
-    - Minimum tax rate on capital income $y$ given $x$ = 0
+    - Minimum tax rate on capital income $y$ given $x = 0$
   * - $shift_{x}$
-    - shifter  $> \|min_{x}\|$ ensures that $\tau(x,y)$ + $shift_{x} \geq 0$ despite potentially negative values for $\tau(x)$
+    - shifter $>\,\|min_{x}\|$ ensures that $\tau(x,y)$ + $shift_{x}\,\geq\,0$ despite potentially negative values for $\tau(x)$
   * - $shift_{y}$
-    - shifter  $> \|min_{y}\|$ ensures that $\tau(x,y)$ + $shift_{y} \geq 0$ despite potentially negative values for $\tau(y)$
+    - shifter $>\,\|min_{y}\|$ ensures that $\tau(x,y)$ + $shift_{y}\,\geq\,0$ despite potentially negative values for $\tau(y)$
   * - $shift$
     - shifter (can be negative) allows for support of $\tau(x,y)$ to include negative tax rates
   * - $\phi$
@@ -232,8 +238,10 @@ The second difficulty in modeling realistic tax and incentive detail is the need
 
   ```{math}
   :label: EqTaxCalcThetaWSSQ
+  \begin{aligned}
       \boldsymbol{\hat{\theta}}_{s,t} = \tilde{\boldsymbol{\theta}}_{s,t}:\quad &\min_{\tilde{\boldsymbol{\theta}}_{s,t}}\sum_{i=1}^{N} \Bigl[\tau_{i}-\tau_{s,t}\bigl(x_i,y_i|\tilde{\boldsymbol{\theta}}_{s,t},\bar{\boldsymbol{\theta}}_{s,t}\bigr)\Bigr]^{2} w_i, \\
       &\qquad\text{subject to}\quad A, B, C, D > 0 \quad\text{and}\quad \phi\in[0,1]
+  \end{aligned}
   ```
 
   where $\tau_{i}$ is the tax rate for observation $i$ from the microsimulation output, $\tau_{s,t}(x_i,y_i|\tilde{\boldsymbol{\theta}}_{s,t},\bar{\boldsymbol{\theta}}_{s,t})$ is the predicted tax rate for filing-unit $i$ with $x_{i}$ labor income and $y_{i}$ capital income given parameters $\boldsymbol{\theta}_{s,t}$, and $w_{i}$ is the CPS sampling weight of this observation. The number $N$ is the total number of observations from the microsimulation output for age $s$ and year $t$. {numref}`Figure %s <FigTaxCalc3DvsPred>` shows the typical fit of an estimated tax function $\tau_{s,t}\bigl(x,y|\hat{\boldsymbol{\theta}}_{s,t}\bigr)$ to the data for $s=42$ and year $t=2017$.
@@ -354,11 +362,11 @@ The `OG-Core` model allows for four different systems for public pensions:
 
 These can be selected with the `pension_system` parameter.  Accepted values are `US-Style Social Security`, `Defined Benefits`, `Notional Defined Contribution`, `Points System`.  We discuss each of these in turn below.
 
-For all systems, $R$ represents the age at which the individual becomes eligible to receive the government provided retirement benefit.
+For all systems, $R$ represents the age at which the individual becomes eligible to receive the government provided retirement benefit. The retirement age is a property of a birth cohort rather than of a calendar year: a household born in period $t-s$ (of age $s$ in period $t$) faces the retirement age $R_{t-s}$, and it faces the same $R_{t-s}$ in every period of its life unless a reform moves its cohort to a new value. The base value is the parameter `retirement_age`. Changes are entered through `pension_regimes`, a list of reforms applied in order, each with a calendar `year` from which it applies, an optional `max_age_at_start` (the oldest age, in that calendar year, to which the reform applies; cohorts not yet born always qualify, and leaving it out applies the reform to everyone including current retirees), and the new parameter values. This is how a phased-in increase in the retirement age that exempts those near retirement is expressed. The model expands these inputs into an array over periods and ages, so the household problem, the aggregates, and the steady state (which uses the final period's value) all read the same cohort-specific retirement age. The parameters of the defined benefit system (`alpha_db`, `avg_earn_num_years`, `yr_contrib`) and of the notional defined contribution system (`tau_p`, `k_ret`, `indR`) can be changed by cohort in the same way, so a reform of the benefit formula can also be phased in by birth cohort. With no regimes, the base `alpha_db` is a path by lifetime income group and the calendar year in which a benefit is paid, and the other parameters are single values. The replacement-rate adjustment `replacement_rate_adjust` is, by contrast, always indexed by the calendar year in which a benefit is paid.
 
 ##### US-style social security system
 
-Under the U.S.-style social security system, households over age $R$ received a pension amount that is a function of their earnings history.  The earings history includes the highest earning `AIME_num_periods` prior to retirement (which OG-Core assumes happens at age $R$).  This history determines the Average Indexed Monthly Earnings (AIME):
+Under the U.S.-style social security system, households over age $R$ received a pension amount that is a function of their earnings history.  The earnings history includes the highest earning `avg_earn_num_years` prior to retirement (which OG-Core assumes happens at age $R$).  This history determines the Average Indexed Monthly Earnings (AIME):
 
   ```{math}
   :label: eqn:AIME
@@ -368,7 +376,7 @@ Under the U.S.-style social security system, households over age $R$ received a 
  The AIME in turn, determines a household's (PIA) based on three rates and brackets:
 
    ```{math}
-  :label: eqn:PIA
+   :label: eqn:PIA
     PIAbase_{j,R,t+R} =
       \begin{cases}
         PIArate_1 \times AIME_{j,R,t+R}, \text{for } AIME_{j,R,t+R} \leq AIMEbkt_1 \\
@@ -392,7 +400,7 @@ Under the U.S.-style social security system, households over age $R$ received a 
 
   ```{math}
   :label: eqn:ss_pension
-    pension_{j,s,t} = \theta_j \times w_t \quad \forall s > R
+    pension_{j,s,t} = \theta_j \times w_t \quad \forall s \geq R_{t-s}
   ```
 
 
@@ -402,13 +410,14 @@ The defined benefit system pension amount is given as:
 
   ```{math}
   :label: eqn:db_pension
-  pension_{j,s,t} = \biggl[\frac{\sum_{s=R-ny}^{R-1}w_{t}e_{j,s,t}n_{j,s,t}}{ny}\biggr]\times Cy \times \alpha^{DB}_{j,t} \quad \forall s > R
+  pension_{j,s,t} = \biggl[\frac{\sum_{u=R-ny}^{R-1}w_{t-s+u}e_{j,u,t-s+u}n_{j,u,t-s+u}}{ny}\biggr]\times Cy \times \alpha^{DB}_{j,s,t} \quad \forall s \geq R
   ```
 
-where:
-  - $ny$ are the number of years over which average earnings are calculated
-  - $Cy$ are the number of years of contributions.  In our model, there is no exit from the labor force, so workers will contribute for $R$ years, but $Cy$ could be some number less than $R$ if there is a maximum number of years of contributions one can accrue under the DB system.
-  - $\alpha^{DB}_{j,t}$ is the replacement rate per year of contribution.  This rate may vary over time and across lifetime income groups.  The rate applied to a benefit is the one in effect in the period in which the benefit is paid, so a change in the rate affects the benefits of current retirees as well as those of future retirees.
+where the sum runs over the household's own earnings history (the wage, effective labor units, and labor supply at each working age $u$ were those of period $t-s+u$), and:
+  - $ny$ are the number of years over which average earnings are calculated (`avg_earn_num_years`)
+  - $Cy$ are the number of years of contributions (`yr_contrib`).  In our model, there is no exit from the labor force, so workers will contribute for $R$ years, but $Cy$ could be some number less than $R$ if there is a maximum number of years of contributions one can accrue under the DB system.
+  - $\alpha^{DB}_{j,s,t}$ is the replacement rate per year of contribution (`alpha_db`), which may vary across lifetime income groups.
+  - $R$, $ny$, $Cy$, and $\alpha^{DB}$ are the values that apply to the household's birth cohort $t-s$ at the age and period in which the benefit is paid. With no `pension_regimes`, $R$, $ny$, and $Cy$ are the same for every cohort and $\alpha^{DB}_{j,t}$ is a path by the calendar year of payment, so a change in it affects the benefits of current retirees as well as those of future retirees. A regime with a `max_age_at_start` instead changes the formula only for the cohorts it covers, so the benefits of those already retired are unchanged.
 
   Given this pension system and the fact that there is only variation in labor supply along the intensive margin (so we don't need to consider changes in $Cy$), the partial derivatives from the household section are given by:
 
@@ -428,17 +437,17 @@ The pension amount under a notional defined contribution system is given as:
 
   ```{math}
   :label: eqn:ndc_pension
-   pension_{j,s,t} = \biggl[\sum_{s=E}^{R-1}\tau^{p}_{t}w_{t}e_{j,s,t}n_{j,s,t}(1 + g_{NDC,t})^{R-s-1}\biggr]\delta_{R, t} \quad \forall s > R
+   pension_{j,s,t} = \biggl[\sum_{u=E}^{R-1}\tau^{p}_{u,t-s+u}w_{t-s+u}e_{j,u,t-s+u}n_{j,u,t-s+u}(1 + g_{NDC,t})^{R-u-1}\biggr]\delta_{R,s,t} \quad \forall s \geq R
   ```
 
-where:
+where the sum runs over the household's own contribution history and:
 
-  * $\tau^p$ is the pension contribution tax rate
+  * $\tau^{p}_{u,t-s+u}$ is the pension contribution tax rate (`tau_p`) that the household's cohort faced at working age $u$, in period $t-s+u$
   * $g_{NDC,t}$ the rate of growth applied to contributions.
     * For example, In the Italian system, $g_{NDC,t}$ is the mean nominal GDP growth rate in the 5 years before seniority
     * i.e., $g_{NDC,t}=\prod_{j=i}^{R-1}\bar{g}_{j}$
     * Note, this is not $g_y$. In the SS, it's $(\bar{g}_{y} + \bar{g}_{n})$, and in the transition path equilibrium, it's not a function of exogenous variables since the growth rate of nominal GDP is endogenous.
-  * $\delta_{R, t}$ is the conversion coefficient at time $t$ and its calculation is detailed below.
+  * $\delta_{R,s,t}$ is the conversion coefficient and its calculation is detailed below. It, like $R$ and $\tau^p$, takes the values (`k_ret`, `indR`) that apply to the household's birth cohort at the age and period in which the benefit is paid, so that a reform entered through `pension_regimes` with a `max_age_at_start` changes the formula only for the cohorts it covers.
 
   ```{math}
   \delta_{R} = (dir_{R} + ind_{R} - k)^{-1}
@@ -446,13 +455,15 @@ where:
 
 where $k$ is an adjustment that takes into account the number of payments per year.  In particular, $k=0.5 - (6/13n)$, where $n$ is the number of payments per year.  So if the payments are made monthly, $n=12$ and thus $k=0.4615$.
 
-The $dir_{R, t}$ term is an adjustment to make the payments actuarially fair given mortality risk:
+The $dir_{R, t}$ term is an adjustment to make the payments actuarially fair given mortality risk. It is the expected discounted number of payments to a household that is alive at retirement age $R$ and retires in period $t$:
 
   ```{math}
-  dir_{R, t} = \sum_{u=0}^{E+S-R}\left[\prod_{s=R}^{u}(1-\hat{\rho}_{s, t})\right](1+\hat{g}_{y, t})^{-u}
+  dir_{R, t} = \sum_{k=0}^{E+S-R}\left[\prod_{i=0}^{k-1}(1-\hat{\rho}_{R+i, t+i})\right](1+\hat{g}_{y, t})^{-k}
   ```
 
-where $\hat{\rho}_{s,t}$ are the mortality tables used in the pension system at time $t$ and $\hat{g}_{y, t}$ is the long run expected nominal GDP growth rate used in the pension system at time $t$.
+where the empty product (for $k=0$) equals one. The timing follows the household's problem: $\rho_{s}$ is the probability that a household of age $s$ dies before reaching age $s+1$, so the first payment, at age $R$, is certain and the payment at age $R+k$ is received only if the household survives ages $R$ through $R+k-1$. $\hat{g}_{y, t}$ is the long run expected nominal GDP growth rate used in the pension system at time $t$ (`dir_growth_rate`).
+
+$\hat{\rho}_{s,t}$ are the mortality rates used in the pension system, the model's mortality rates averaged over lifetime income groups with the population weights $\lambda_j$. The parameter `ndc_mortality` determines which rates apply. With `'cohort'` (the default), $\hat{\rho}_{R+i, t+i}$ are the rates the retiring cohort faces at each age as it ages through the transition path, as written above. With `'period'`, the rates are those of the period of retirement, $\hat{\rho}_{R+i, t}$ (a period life table). With `'steady state'`, every cohort uses the steady-state rates $\hat{\rho}_{R+i}$. The three coincide in the steady state.
 
 Finally, $ind_{R}$ is an adjustment for survivor benefits.  Since we model households (and not individuals), we set $ind_{R} = 0$ by default.  This can be changed with the parameter `indR` if one would like to account for the fact that households lose members over time.
 
@@ -473,7 +484,7 @@ Under a points system, the pension amount is given as:
 
   ```{math}
   :label: eqn:ps_pension
-  pension_{j,s,t} = \sum_{s=E}^{R-1}w_{t}e_{j,s,t}n_{j,s,t}\times v_{t} \quad \forall s > R
+  pension_{j,s,t} = \sum_{s=E}^{R-1}w_{t}e_{j,s,t}n_{j,s,t}\times v_{t} \quad \forall s \geq R_{t-s}
   ```
 
 where $v_{t}$ is the value of a point at time $t$
@@ -529,10 +540,10 @@ Total pension spending is the sum of the pension payments to each household in t
   ```{math}
   :label: EqUBIubi_nom_jst0
     \begin{split}
-      ubi^{nom}_{j,s,t=0} = \min\Bigl(&\texttt{ubi_nom_max}, \\
-      &\texttt{ubi_nom_017} * \texttt{ubi_num_017_mat}_{j,s} + \\
-      &\texttt{ubi_nom_1864} * \texttt{ubi_num_1864_mat}_{j,s} + \\
-      &\texttt{ubi_nom_65p} * \texttt{ubi_num_65p_mat}_{j,s}\Bigr) \quad\forall j,s
+      ubi^{nom}_{j,s,t=0} = \min\Bigl(&\texttt{ubi\_nom\_max}, \\
+      &\texttt{ubi\_nom\_017} * \texttt{ubi\_num\_017\_mat}_{j,s} + \\
+      &\texttt{ubi\_nom\_1864} * \texttt{ubi\_num\_1864\_mat}_{j,s} + \\
+      &\texttt{ubi\_nom\_65p} * \texttt{ubi\_num\_65p\_mat}_{j,s}\Bigr) \quad\forall j,s
     \end{split}
   ```
 
@@ -574,6 +585,14 @@ With the assumption of `baseline_spending=True`, the level of spending in the re
     G^{reform}_t = \alpha^{BS}_{G,t}G^{baseline}_{t}
   ```
 
+Foreign aid to the domestic government, $FA_t$, is treated the same way. In the baseline simulation, and in the reform when `baseline_spending=False`, foreign aid is a fraction $\alpha_{FA,t}$ of GDP. When `baseline_spending=True`, foreign aid in the reform is held to its level in the baseline, scaled by the time-varying parameter `alpha_bs_FA`:
+
+  ```{math}
+    FA^{reform}_t = \alpha^{BS}_{FA,t}FA^{baseline}_{t}
+  ```
+
+This means that changes to `alpha_FA` in the reform have no effect when `baseline_spending=True`; use `alpha_bs_FA` to change the level of foreign aid relative to the baseline instead.
+
 Note that the budget closure rule (described in Section ref{`SecUnbalGBCcloseRule`}) still takes effect in the case of `baseline_spending=True`.  What this means is that the relation described above holds until the period in which the closure rules takes effect.  Once the closure rule begins, the path of $G$ (and/or $TR$, depending on the closure rule used) will adjust as determined by the rule to close the government budget in the long run.
 
 (SecUnbalGBCrev)=
@@ -583,30 +602,36 @@ Note that the budget closure rule (described in Section ref{`SecUnbalGBCcloseRul
 
   ```{math}
   :label: EqHHBC3
+  \begin{aligned}
     p_t c_{j,s,t} + &\sum_{i=1}^I (1 + \tau^{c}_{i,t})p_{i,t}c_{min,i} + b_{j,s+1,t+1} = \\
     &(1 + r_{p,t})b_{j,s,t} + w_t e_{j,s} n_{j,s,t} ... \\
     &\qquad +\: (1-\tau^{bq}_t)bq_{j,s,t} + rm_{j,s,t} + tr_{j,s,t} + ubi_{j,s,t} + pension_{j,s,t} - tax_{j,s,t}  \\
     &\qquad\quad\forall j,t\quad\text{and}\quad E+1\leq s\leq E+S \quad\text{where}\quad b_{j,E+1,t}=0
+  \end{aligned}
   ```
 
   where we defined the tax liability function $tax_{j,s,t}$ in {eq}`EqTaxCalcLiabETR` as effective tax rate times respective total income and wealth. The transfer distribution function $\eta_{j,s,t}$ can vary by lifetime ability group $j$, age $s$, and time period $t$. Households also remit tax on bequests received ($\tau^{bq}$) and on consumption ($\tau^c$). And government revenue from the corporate income tax rate schedule $\tau^{corp}_{m,t}$ and the tax on depreciation expensing schedule $\delta^\tau_{m,t}$ enters the firms' profit function in each industry $m$.
 
   ```{math}
   :label: EqFirmsProfit2
+  \begin{aligned}
     PR_{m,t} &= (1 - \tau^{corp}_{m,t})\Bigl[p_{m,t}F(K_{m,t},K_{g,m,t},L_{m,t}) - w_t L_{m,t}\Bigr] - \\
     &\quad\quad\quad\quad\quad \bigl(r_t + \delta_{M,t}\bigr)K_{m,t} + \left(\tau^{corp}_{m,t}\delta^\tau_{m,t} + \tau^{inv}_{m,t}\delta_{M,t}\right)K_{m,t} \quad\forall m,t
+  \end{aligned}
   ```
 
   We define total government revenue from taxes in terms of the numeraire good as the following,
 
   ```{math}
   :label: EqUnbalGBCgovRev
+  \begin{aligned}
     Rev_t &= \underbrace{\sum_{m=1}^M\Bigl[\tau^{corp}_{m,t}\bigl(p_{m,t}Y_{m,t} - w_t L_{m,t}\bigr) - \bigl(\tau^{corp}_{m,t}\delta^\tau_{m,t} + \tau^{inv}_{m,t}\delta_{M,t}\bigr)K_{m,t}\Bigr]}_{\text{corporate income tax revenue}} \\
     &\quad + \underbrace{\sum_{s=E+1}^{E+S}\sum_{j=1}^J\lambda_j\omega_{s,t}\tau^{etr,xy}_{s,t}\left(x_{j,s,t},y_{j,s,t}\right)\bigl(x_{j,s,t} + y_{j,s,t}\bigr)}_{\text{household income tax revenue}} \\
     &\quad + \underbrace{\sum_{s=E+1}^{E+S}\sum_{j=1}^J\sum_{i=1}^I\lambda_j\omega_{s,t}\tau^{c}_{i,t}p_{i,t}c_{i,j,s,t}}_{\text{consumption tax revenue}} \\
     &\quad + \underbrace{\sum_{s=E+1}^{E+S}\sum_{j=1}^J\lambda_j\omega_{s,t}\tau^{etr,w}_{t}b_{j,s,t}}_{\text{wealth tax revenue}}\\
     &\quad + \underbrace{\sum_{s=E+1}^{E+S}\sum_{j=1}^J\lambda_j\omega_{s,t}\tau^{bq}_{t}bq_{j,s,t}}_{\text{bequest tax revenue}}
     \quad\forall t
+  \end{aligned}
   ```
 
   where household labor income is defined as $x_{j,s,t}\equiv w_t e_{j,s}n_{j,s,t}$ and capital income $y_{j,s,t}\equiv r_{p,t} b_{j,s,t}$.
@@ -670,7 +695,7 @@ Note that the budget closure rule (described in Section ref{`SecUnbalGBCcloseRul
   Despite the model having no aggregate risk, it may be helpful to build in an interest rate differential between the rate of return on private capital and the interest rate on government debt. Doing so helps to add realism by including a risk premium. `OG-Core` allows users to set an exogenous wedge between these two rates. `OG-Core` also allows for the risk premium on debt to be a quadratic function of the debt-to-GDP ratio. The interest rate on government debt is given by:
 
   ```{math}
-    :label: EqUnbalGBC_rate_wedge
+  :label: EqUnbalGBC_rate_wedge
     r_{gov, t} = (1 - \tau_{d, t})r_{t} - \mu_{d} + \beta_{1}\frac{D_t}{Y_t} + \beta_{2}\left(\frac{D_t}{Y_t}\right)^2
   ```
 

@@ -1,12 +1,10 @@
 """
-------------------------------------------------------------------------
 This script reads in data generated from a tax-benefit microsimulation model.
 It then estimates tax functions tau_{s,t}(x,y), where
 tau_{s,t} is the effective tax rate, marginal tax rate on labor income,
 or the marginal tax rate on capital income, for a given age (s) in a
 particular year (t). x is total labor income, and y is total capital
 income.
-------------------------------------------------------------------------
 """
 
 # Import packages
@@ -24,7 +22,6 @@ import ogcore.parameter_plots as pp
 from ogcore.constants import DEFAULT_START_YEAR, SHOW_RUNTIME
 from ogcore import utils
 import warnings
-from pygam import LinearGAM, s
 
 if not SHOW_RUNTIME:
     warnings.simplefilter("ignore", RuntimeWarning)
@@ -36,6 +33,24 @@ MAX_MTR = 0.99
 MIN_INCOME = 5
 MIN_INC_GRAPH = 5
 MAX_INC_GRAPH = 500000
+
+
+def local_scheduler():
+    """
+    Return the Dask scheduler to use for a local (no distributed client)
+    compute call, chosen for the current platform.
+
+    The multiprocessing scheduler relies on forking, which is not
+    available on Windows, so the threaded scheduler is used there instead
+    (see issue #1051). os.name is "nt" on Windows, as used elsewhere in
+    the package (e.g. demographics.py).
+
+    Returns:
+        scheduler: "threads" on Windows, otherwise
+            dask.multiprocessing.get
+    """
+    return "threads" if os.name == "nt" else dask.multiprocessing.get
+
 
 """
 ------------------------------------------------------------------------
@@ -1345,12 +1360,16 @@ def tax_func_loop(
             if graph_data:
                 pp.gen_3Dscatters_hist(df_etr, s, t, output_dir)
 
-            # Estimate effective tax rate function ETR(x,y)
+            # Estimate effective tax rate function ETR(x,y). Warm-start
+            # the optimizer from the previous age's estimate by feeding
+            # the returned parameters back into params_init_etr for the
+            # next age (see issue #1031). On the first estimated age this
+            # is the all-ages estimate computed above.
             (
                 etrparams,
                 etr_wsumsq_arr[s - s_min],
                 etr_obs_arr[s - s_min],
-                params_init,
+                params_init_etr,
             ) = txfunc_est(
                 df_etr,
                 s,
@@ -1371,7 +1390,7 @@ def tax_func_loop(
                 mtrxparams,
                 mtrx_wsumsq_arr[s - s_min],
                 mtrx_obs_arr[s - s_min],
-                params_init,
+                params_init_mtrx,
             ) = txfunc_est(
                 df_mtrx,
                 s,
@@ -1391,7 +1410,7 @@ def tax_func_loop(
                 mtryparams,
                 mtry_wsumsq_arr[s - s_min],
                 mtry_obs_arr[s - s_min],
-                params_init,
+                params_init_mtry,
             ) = txfunc_est(
                 df_mtry,
                 s,
@@ -1700,7 +1719,7 @@ def tax_func_estimate(
     else:
         results = compute(
             *lazy_values,
-            scheduler=dask.multiprocessing.get,
+            scheduler=local_scheduler(),
             num_workers=num_workers,
         )
 
@@ -2039,9 +2058,26 @@ def monotone_spline(
             entry of xWeight
         weightsNew (numpy array): 1d with length same as yNew, weight
             corresponding to each xNew, yNew row
+
+    Raises:
+        ImportError: if method is 'pygam' and the optional pyGAM package
+            is not installed. Install ``ogcore[pygam]`` on Python 3.12--3.14
+            to use this method or estimate ``mono2D`` tax functions.
     """
 
     if method == "pygam":
+        try:
+            from pygam import LinearGAM, s
+        except ModuleNotFoundError as exc:
+            if exc.name != "pygam":
+                raise
+            raise ImportError(
+                "The pyGAM fitting method (including tax_func_type='mono2D') "
+                "requires the optional pyGAM dependency. Install it with "
+                "`pip install 'ogcore[pygam]'` or `uv sync --extra pygam` "
+                "on Python 3.12--3.14. The current pyGAM release does not "
+                "support Python 3.15."
+            ) from exc
         if len(x.shape) == 1:
             x = np.expand_dims(x, axis=1)
         if splines is not None and len(splines) != x.shape[1]:

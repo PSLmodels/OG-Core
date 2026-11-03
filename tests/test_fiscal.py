@@ -120,6 +120,7 @@ def test_D_G_path(
     net_revenue = Revenue
     pension_amount = np.zeros_like(net_revenue)
     UBI_outlays = np.zeros_like(net_revenue)
+    foreign_aid = p.alpha_FA[: p.T] * Y[: p.T]
     dg_fixed_values = (
         Y,
         Revenue,
@@ -127,6 +128,7 @@ def test_D_G_path(
         UBI_outlays,
         TR,
         I_g,
+        foreign_aid,
         Gbaseline,
         D0_baseline,
     )
@@ -194,6 +196,7 @@ def test_get_G_ss(budget_balance, expected_G):
     TR = 1.6
     I_g = 0.0
     UBI = 0.0
+    foreign_aid = 0.0
     new_borrowing = 0.072076633
     debt_service = 0.042345192
     p = Specifications()
@@ -205,6 +208,7 @@ def test_get_G_ss(budget_balance, expected_G):
         TR,
         UBI,
         I_g,
+        foreign_aid,
         new_borrowing,
         debt_service,
         p,
@@ -256,6 +260,7 @@ def test_get_TR(
     agg_pension_outlays = 0.0
     UBI_outlays = 0.0
     I_g = 0.0
+    foreign_aid = 0.0
     total_tax_revenue = 1.9
     p = Specifications(baseline=baseline)
     p.budget_balance = budget_balance
@@ -272,6 +277,7 @@ def test_get_TR(
         agg_pension_outlays,
         UBI_outlays,
         I_g,
+        foreign_aid,
         p,
         method,
     )
@@ -377,7 +383,7 @@ def test_get_r_gov(r, p, DY_ratio, method, t, r_gov_expected):
     "baseline_spending,Ig_baseline,method",
     [
         (True, 3.5, "SS"),
-        (False, [3.5, 4.2], "TPI"),
+        (True, np.array([3.5, 4.2]), "TPI"),
         (False, None, "SS"),
         (False, None, "TPI"),
     ],
@@ -402,6 +408,41 @@ def test_get_I_g(baseline_spending, Ig_baseline, method):
         test_val = fiscal.get_I_g(Y, Ig_baseline, p, method)
         if baseline_spending:
             expected = np.array([0.35, 4.2])
+        else:
+            expected = np.array([0.02, 2.0])
+
+    assert np.allclose(test_val, expected)
+
+
+@pytest.mark.parametrize(
+    "baseline_spending,FA_baseline,method",
+    [
+        (True, 3.5, "SS"),
+        (True, np.array([3.5, 4.2]), "TPI"),
+        (False, None, "SS"),
+        (False, None, "TPI"),
+    ],
+    ids=["baseline spend, SS", "baseline spend, TPI", "SS", "TPI"],
+)
+def test_get_foreign_aid(baseline_spending, FA_baseline, method):
+    """
+    Test function to determine foreign aid payments to the government
+    """
+    p = Specifications()
+    p.baseline_spending = baseline_spending
+    Y = np.array([0.2, 4.0])
+    p.alpha_FA = np.array([0.1, 0.5])
+    p.alpha_bs_FA = np.array([0.1, 0.8])
+    if method == "SS":
+        test_val = fiscal.get_foreign_aid(Y[-1], FA_baseline, p, method)
+        if baseline_spending:
+            expected = np.array([0.8 * 3.5])
+        else:
+            expected = np.array([2.0])
+    else:
+        test_val = fiscal.get_foreign_aid(Y, FA_baseline, p, method)
+        if baseline_spending:
+            expected = np.array([0.35, 0.8 * 4.2])
         else:
             expected = np.array([0.02, 2.0])
 

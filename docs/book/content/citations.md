@@ -1,6 +1,4 @@
 # Citations and use cases of OG-Core
 
-```{bibliography} ../citations.bib
-:all:
-:labelprefix: C-
+```{include} ../_generated/citations.md
 ```

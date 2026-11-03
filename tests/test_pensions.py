@@ -1,7 +1,7 @@
 import numpy as np
 import copy
 import pytest
-from ogcore import pensions
+from ogcore import pensions, tax
 from ogcore.parameters import Specifications
 
 p = Specifications()
@@ -29,7 +29,7 @@ new_param_values = {
     "imm_rates_preTP": np.zeros((4, 1)).tolist(),
 }
 p.update_specifications(new_param_values)
-p.retire = [3, 3, 3, 3, 3, 3, 3, 3]
+p.retire = np.full((p.T + p.S, p.S), 3)
 p1 = Specifications()
 p1.update_specifications(
     {
@@ -54,7 +54,7 @@ p1.update_specifications(
         "imm_rates_preTP": np.zeros((4, 2)).tolist(),
     }
 )
-p1.retire = [3, 3, 3, 3, 3, 3, 3, 3]
+p1.retire = np.full((p1.T + p1.S, p1.S), 3)
 p2 = copy.deepcopy(p1)
 p3 = copy.deepcopy(p1)
 # Use just a column of e
@@ -135,26 +135,24 @@ e = np.array([1.1, 1.11, 0.9, 0.87, 0.87, 0.7, 0.6])
 n = np.array([0.4, 0.45, 0.4, 0.42, 0.3, 0.2, 0.2])
 equiv_periods = int(round((p.S / 80.0) * p.avg_earn_num_years)) - 1
 equiv_contrib_periods = int(round((p.S / 80.0) * p.yr_contrib)) - 1
-L_inc_avg = np.zeros(0)
-L_inc_avg_s = np.zeros(equiv_periods)
 DB = np.zeros(p.S)
 DB_loop_expected1 = np.array(
     [0, 0, 0, 0, 0.337864778, 0.327879365, 0.318189065]
 )
 
+# the loop takes the household's own retirement period, averaging
+# window, replacement rate, and credited periods at each age u
 args1 = (
     w,
     e,
     n,
-    p.retire,
+    np.full(p.S, p.retire),
     p.S,
     p.g_y,
-    L_inc_avg_s,
-    L_inc_avg,
     DB,
-    equiv_periods,
+    np.full(p.S, equiv_periods),
     np.full(p.S, 0.2),  # rate in effect at each age u
-    equiv_contrib_periods,
+    np.full(p.S, equiv_contrib_periods),
 )
 
 test_data = [(args1, DB_loop_expected1)]
@@ -168,34 +166,7 @@ def test_DB_1dim_loop(args, DB_loop_expected):
     Test of the pensions.DB_1dim_loop() function.
     """
 
-    (
-        w,
-        e,
-        n,
-        S_ret,
-        S,
-        g_y,
-        L_inc_avg_s,
-        L_inc_avg,
-        DB,
-        last_career_yrs,
-        rep_rate_py,
-        yr_contrib,
-    ) = args
-    DB_loop = pensions.DB_1dim_loop(
-        w,
-        e,
-        n,
-        S_ret,
-        S,
-        g_y,
-        L_inc_avg_s,
-        L_inc_avg,
-        DB,
-        last_career_yrs,
-        rep_rate_py,
-        yr_contrib,
-    )
+    DB_loop = pensions.DB_1dim_loop(*args)
     assert np.allclose(DB_loop, DB_loop_expected)
 
 
@@ -418,7 +389,8 @@ p.mort_rates_SS = np.array([0.01, 0.05, 0.3, 1])
 w = np.array([1.2, 1.1, 1.21, 1])
 e = np.array([1.1, 1.11, 0.9, 0.87])
 r = np.ones(p.T) * 0.02
-d_NDC_expected1 = np.array([0.757437326, 0.680222841, 0.0, 0.0])
+# annuity factor 1 + 0.7 / 1.02 (survival timing fixed in Issue #1268)
+d_NDC_expected1 = np.array([0.33302457, 0.29907546, 0.0, 0.0])
 args1 = (r, w, e, None, per_rmn, p)
 
 #############Incomplete lifetimes###################
@@ -437,7 +409,7 @@ p2.mort_rates_SS = np.array([0.1, 0.2, 0.4, 0.6, 1.0])
 w2 = np.array([1.1, 1.21, 1.25])
 e2 = np.array([1.11, 0.9, 1.0])
 r2 = np.ones(p2.T) * 0.04
-d_NDC_expected2 = np.array([0.396808466, 0.0, 0.0])
+d_NDC_expected2 = np.array([0.32839557, 0.0, 0.0])
 args2 = (r2, w2, e2, None, per_rmn2, p2)
 
 test_data = [(args1, d_NDC_expected1), (args2, d_NDC_expected2)]
@@ -503,7 +475,7 @@ p2.k_ret = 0.4615
 p2.mort_rates_SS = np.array([0.01, 0.05, 0.3, 0.4, 1])
 omegas = None
 lambdas = 1
-pension_expected_ndc = [0, 0, 0.27992856, 0.27165542]
+pension_expected_ndc = [0, 0, 0.25761736, 0.25000362]
 args_ndc = (r, w_ndc, n_ndc, Y, theta, t, j, shift, method, e_ndc, factor, p2)
 
 ################pension benefit: PS############
@@ -529,7 +501,7 @@ args_ps = (r, w_db, n_db, Y, theta, t, j, shift, method, e_db, factor, p3)
 p4 = Specifications()
 p4.pension_system = "US-Style Social Security"
 p4.S = 7
-p4.retire = (np.ones(p4.T) * 4).astype(int)
+p4.retire = np.full((p4.T + p4.S, p4.S), 4)
 w_ss = np.array([1.2, 1.1, 1.21, 1.0, 1.01, 0.99, 0.8])
 e_ss = np.array([1.1, 1.11, 0.9, 0.87, 0.87, 0.7, 0.6])
 n_ss = np.array([0.4, 0.45, 0.4, 0.42, 0.3, 0.2, 0.2])
@@ -539,7 +511,21 @@ p4.replacement_rate_adjust = np.ones((p4.T, p4.J))
 pension_expected_ss = [0, 0, 0, 0, 0.404, 0.396, 0.32]
 method = "TPI"
 shift = False
-args_ss = (r, w_ss, n_ss, Y, theta, t, j, shift, method, e_ss, factor, p4)
+# the cohort (1D) path takes the unadjusted scalar theta for group j
+args_ss = (
+    r,
+    w_ss,
+    n_ss,
+    Y,
+    theta[j],
+    t,
+    j,
+    shift,
+    method,
+    e_ss,
+    factor,
+    p4,
+)
 
 
 test_data = [
@@ -579,10 +565,10 @@ e = np.array([1.1, 1.11, 0.9])
 r = np.ones(p.T) * 0.02
 p.tau_p = 0.3
 p.k_ret = 0.4615
-delta_ret = 1.857010214
+delta_ret = 0.816476822
 g_ndc = p.g_y[-1] + p.g_n_SS
 p.mort_rates_SS = np.array([0.1, 0.2, 0.4, 1.0])
-deriv_NDC_loop_expected1 = np.array([0.757437326, 0.680222841, 0.0])
+deriv_NDC_loop_expected1 = np.array([0.33302457, 0.29907546, 0.0])
 d_theta_empty = np.zeros_like(w)
 args3 = (w, e, per_rmn, g_ndc, delta_ret, d_theta_empty, p)
 
@@ -600,10 +586,10 @@ p2.dir_growth_rate = "r"
 r = np.array([0.03, 0.04, 0.03])
 p2.tau_p = 0.3
 p2.k_ret = 0.4615
-delta_ret2 = 1.083288196
+delta_ret2 = 0.896520810
 g_ndc2 = p2.g_y[-1] + p2.g_n_SS
 p2.mort_rates_SS = np.array([0.2, 0.4, 1.0])
-deriv_NDC_loop_expected2 = np.array([0.396808466, 0.0, 0.0])
+deriv_NDC_loop_expected2 = np.array([0.32839557, 0.0, 0.0])
 d_theta_empty = np.zeros(per_rmn)
 args4 = (w2, e2, per_rmn2, g_ndc2, delta_ret2, d_theta_empty, p2)
 
@@ -650,7 +636,8 @@ r = 0.02
 g_ndc_amount = p.g_y[-1] + p.g_n_SS
 p.mort_rates_SS = np.array([0.1, 0.2, 0.4, 0.6, 1.0])
 dir_delta_s_empty = np.zeros(p.S - p.retire + 1)
-dir_delta_ret_expected1 = 1.384615385
+# 1 + (1 - 0.4) / 1.04: payments at ages 2 and 3
+dir_delta_ret_expected1 = 1.576923077
 surv_rates = np.zeros(p.S - p.retire + 1)
 surv_rates = 1 - p.mort_rates_SS
 args5 = (surv_rates, g_ndc_amount, dir_delta_s_empty, p)
@@ -663,9 +650,7 @@ def test_delta_ret_loop(args, dir_delta_ret_expected):
     Test of the pensions.delta_ret_loop() function.
     """
     surv_rates, g_ndc_value, dir_delta_s_empty, p = args
-    dir_delta = pensions.delta_ret_loop(
-        p.S, p.retire, surv_rates, g_ndc_value, dir_delta_s_empty
-    )
+    dir_delta = pensions.delta_ret_loop(p.S, p.retire, surv_rates, g_ndc_value)
 
     assert np.allclose(dir_delta, dir_delta_ret_expected)
 
@@ -963,10 +948,9 @@ r_dndc = np.ones(p2.T) * 0.02
 p2.tau_p = 0.3
 p2.k_ret = 0.4615
 p2.mort_rates_SS = np.array([0.01, 0.05, 0.3, 1])
-d_theta_expected_dndc = np.array([0.75838653, 0.680222841, 0, 0])
-# TODO: has to change first element from the below to above. Why?
-# check by hand calculation spreadsheet
-# d_theta_expected_dndc = np.array([0.757437326, 0.680222841, 0, 0])
+d_theta_expected_dndc = np.array([0.33344191, 0.29907546, 0, 0])
+# TODO: the first element differs from test_deriv_NDC
+# (0.33302457). Why? Check by hand calculation spreadsheet
 Y = None
 factor = 2
 args_dndc = (r_dndc, w_dndc, e_dndc, Y, per_rmn, factor, 0, 1, p2)
@@ -1025,9 +1009,9 @@ r = np.ones(p.T) * 0.03
 p.tau_p = 0.3
 p.k_ret = 0.4615
 p.mort_rates_SS = np.array([0.01, 0.05, 0.3, 0.4, 1])
-NDC_expected1 = np.array([0, 0, 0.27992856, 0.27165542])
+NDC_expected1 = np.array([0, 0, 0.25761736, 0.25000362])
 # NDC_expected1 = np.array([0, 0, 0.279756794, 0.271488732])
-args1 = (w, e, n, r, None, j, p)
+args1 = (w, e, n, r, None, None, j, "SS", p)
 
 #############incomplete lifetimes###################
 p2 = Specifications()
@@ -1054,8 +1038,8 @@ p2.e = e
 # NDC_expected2 = np.array([0, 0.25185784, 0.24441432])
 # TODO: why move from numbers below to those above ?  Diff in numpy rounding??
 # NDC_expected2 = np.array([0, 0.251721214, 0.244281728])
-NDC_expected2 = np.array([0, 0.25705613, 0.24945897])
-args2 = (w, e, n, r, None, j, p2)
+NDC_expected2 = np.array([0, 0.23656794, 0.2295763])
+args2 = (w, e, n, r, None, 0, j, "TPI", p2)
 
 test_data = [(args1, NDC_expected1), (args2, NDC_expected2)]
 
@@ -1067,8 +1051,8 @@ def test_NDC(args, NDC_expected):
     """
     Test of the pensions.NDC() function.
     """
-    w, e, n, r, Y, j, p = args
-    NDC = pensions.NDC_amount(w, e, n, r, Y, j, p)
+    w, e, n, r, Y, t, j, method, p = args
+    NDC = pensions.NDC_amount(w, e, n, r, Y, t, j, method, p)
     assert np.allclose(NDC, NDC_expected)
 
 
@@ -1235,7 +1219,7 @@ def test_pension_amount_with_real_specifications(system, updates):
     pension = pensions.pension_amount(
         r, w, n, Y, theta, None, j, False, "SS", e, factor, p
     )
-    S_ret = int(p.retire[-1])
+    S_ret = int(p.retire[-1, -1])
     assert pension.shape == (p.S,)
     assert np.all(pension[:S_ret] == 0.0)
     assert np.all(pension[S_ret:] > 0.0)
@@ -1343,15 +1327,20 @@ def test_pension_periods_conversion_and_bounds():
         }
     )
     ny, cy, S_ret = pensions.pension_periods(p)
-    assert (ny, cy, S_ret) == (35, 40, int(p.retire[-1]))
+    assert ny.shape == cy.shape == S_ret.shape == (p.T + p.S, p.S)
+    assert (ny[-1, -1], cy[-1, -1], S_ret[-1, -1]) == (
+        35,
+        40,
+        int(p.retire[-1, -1]),
+    )
     n = np.linspace(0.5, 0.2, p.S)
     e = np.asarray(p.e)[-1, :, 0]
     assert np.isfinite(pensions.DB_amount(1.0, e, n, None, 0, "SS", p)).all()
     # window exactly the working life is allowed
-    p.avg_earn_num_years = int(p.retire[-1])
-    assert pensions.pension_periods(p)[0] == int(p.retire[-1])
+    p.avg_earn_num_years = int(p.retire[-1, -1])
+    assert np.all(pensions.pension_periods(p)[0] == int(p.retire[-1, -1]))
     # one year longer would index before the first period of life
-    p.avg_earn_num_years = int(p.retire[-1]) + 1
+    p.avg_earn_num_years = int(p.retire[-1, -1]) + 1
     with pytest.raises(ValueError, match="working life"):
         pensions.DB_amount(1.0, e, n, None, 0, "SS", p)
     with pytest.raises(ValueError, match="working life"):
@@ -1421,9 +1410,242 @@ def test_replacement_rate_adjustment_indexes_by_cohort_year():
     )
     assert np.allclose(three_d[:, 0, j], expected)
 
+    # a 1D array is one cohort's remaining lifetime from period t, so
+    # it takes the same per-year slice rather than a single adjust[t]
+    one_d = pensions.replacement_rate_adjustment(
+        np.ones(length), t, j, "TPI", p
+    )
+    assert np.allclose(one_d, expected)
+
     # the steady state takes the terminal value
     ss = pensions.replacement_rate_adjustment(np.ones(p.S), None, j, "SS", p)
     assert np.isclose(ss, adjust[-1, j])
+
+
+def _glide_params(j, switch_year, cut, regimes=None):
+    """
+    Specifications with replacement_rate_adjust = 1 before switch_year
+    and = cut from switch_year on, for lifetime income group j only,
+    and optionally a list of pension regimes.
+    """
+    p = Specifications()
+    if regimes is not None:
+        p.update_specifications({"pension_regimes": regimes})
+    adjust = np.ones((p.T + p.S, p.J))
+    adjust[switch_year:, j] = cut
+    p.replacement_rate_adjust = adjust
+    return p
+
+
+# retirement age 67 from 2030 for everyone at or below age 54 in 2030;
+# older households keep the base retirement age of 65
+GRANDFATHERED_67 = [
+    {"year": 2030, "max_age_at_start": 54, "retirement_age": 67}
+]
+
+
+def test_retirement_mask_follows_each_cohort():
+    """
+    retirement_mask must read each household's own retirement age: on
+    the household (cohort) path that is the diagonal of p.retire, and
+    the cross-section masks must agree with it cell by cell.
+    """
+    p = Specifications()
+    p.update_specifications({"pension_regimes": GRANDFATHERED_67})
+    S, T = p.S, p.T
+    ages = np.arange(S)
+    base, raised = 44, 46  # model periods for ages 65 and 67
+    assert np.unique(p.retire).tolist() == [base, raised]
+
+    # steady state: the final row, one age earlier when shift is True
+    ss = pensions.retirement_mask(None, None, False, "SS", 1, p)
+    assert np.array_equal(ss, ages >= raised)
+    ss_shift = pensions.retirement_mask(None, None, True, "SS", 1, p)
+    assert np.array_equal(ss_shift, ages >= raised - 1)
+    assert pensions.retirement_mask(None, None, False, "SS", 2, p).shape == (
+        S,
+        1,
+    )
+
+    # the oldest household in period 0 is retired
+    assert pensions.retirement_mask(None, None, False, "TPI_scalar", 1, p)
+
+    # a cohort born in 2032 (t = 7) is under the regime for its whole life
+    born_later = pensions.retirement_mask(7, S, False, "TPI", 1, p)
+    assert np.array_equal(born_later, ages >= raised)
+
+    # households alive in period 0 solve partial lifetimes from t = 0.
+    # Aged 60 in 2030 (55 in 2025, 45 periods left): above the cutoff,
+    # so the base age applies. Aged 50 in 2030 (45 in 2025, 55 periods
+    # left): the regime applies.
+    for age_2025, expected in [(55, base), (45, raised)]:
+        s0 = age_2025 - p.starting_age
+        length = S - s0
+        mask = pensions.retirement_mask(0, length, False, "TPI", 1, p)
+        assert mask.shape == (length,)
+        assert np.array_equal(mask, ages[s0:] >= expected)
+
+    # cross sections agree with the cohort paths cell by cell
+    two_d = pensions.retirement_mask(0, T, False, "TPI", 2, p)
+    three_d = pensions.retirement_mask(0, T, False, "TPI", 3, p)
+    assert two_d.shape == (T, S) and three_d.shape == (T, S, 1)
+    assert np.array_equal(three_d[:, :, 0], two_d)
+    assert np.array_equal(np.diagonal(two_d[7 : 7 + S, :]), born_later)
+    s0 = 45 - p.starting_age
+    assert np.array_equal(
+        np.diagonal(two_d[:S, :], offset=s0),
+        pensions.retirement_mask(0, S - s0, False, "TPI", 1, p),
+    )
+    # In 2045 (t = 20) the household aged 65 (age 50 in 2030) is under
+    # the regime and not yet retired, while the one aged 66 (51 in
+    # 2030) is retired. In 2029 (t = 4) age 65 is retired under the
+    # base age.
+    assert not two_d[20, base] and two_d[20, raised]
+    assert two_d[4, base]
+
+    with pytest.raises(ValueError, match="method"):
+        pensions.retirement_mask(0, S, False, "nope", 1, p)
+
+
+def test_household_path_pension_uses_year_of_payment():
+    """
+    On the household (cohort) path the replacement rate adjustment must
+    be the factor for the year each benefit is paid, applied once.
+
+    TPI used to pre-scale theta by the factor before passing it to the
+    household problem, and SS_amount then scaled it again. For a uniform
+    cut the household saw the factor squared. For a glide path it saw
+    the factor for its entry year, so a cohort entering before the cut
+    planned on full benefits that the aggregates never paid.
+    """
+    j, t, theta_j, cut = 2, 5, 0.4, 0.5
+    switch_year = 30
+    p = _glide_params(j, switch_year, cut)
+    w = np.ones(p.S)
+    n = 0.3 * np.ones(p.S)
+    pension = pensions.pension_amount(
+        np.full(p.S, 0.04),
+        w,
+        n,
+        1.0,
+        theta_j,
+        t,
+        j,
+        False,
+        "TPI",
+        p.e[t, :, j],
+        1.0,
+        p,
+    )
+    cohort_retire = np.diagonal(p.retire[t : t + p.S, :])
+    assert np.all(cohort_retire == cohort_retire[0])
+    retire = int(cohort_retire[0])
+    years_paid = t + np.arange(retire, p.S)
+    expected = theta_j * p.replacement_rate_adjust[years_paid, j] * w[retire:]
+    assert np.all(expected[years_paid >= switch_year] == theta_j * cut)
+    assert np.all(expected[years_paid < switch_year] == theta_j)
+    assert np.allclose(pension[:retire], 0.0)
+    assert np.allclose(pension[retire:], expected)
+
+    # the same holds through net_taxes, which is what the FOCs call
+    z = np.zeros(p.S)
+    num_params = len(p.etr_params[0][0])
+    etr = np.array(
+        [
+            [p.etr_params[t + s][s][i] for i in range(num_params)]
+            for s in range(p.S)
+        ]
+    )
+
+    def net_tax(p_):
+        return tax.net_taxes(
+            np.full(p.S, 0.04),
+            w,
+            np.full(p.S, 0.5),
+            n,
+            z,
+            1.0,
+            z,
+            z,
+            theta_j,
+            t,
+            j,
+            False,
+            "TPI",
+            p.e[t, :, j],
+            etr,
+            p_,
+        )
+
+    p_full = _glide_params(j, switch_year, 1.0)
+    multiplier = 1 - (net_tax(p) - net_tax(p_full))[retire:] / theta_j
+    assert np.allclose(multiplier, p.replacement_rate_adjust[years_paid, j])
+
+
+@pytest.mark.parametrize(
+    "regimes", [None, GRANDFATHERED_67], ids=["no regime", "grandfathered"]
+)
+def test_household_path_pension_matches_pension_mat(regimes):
+    """
+    The pension a cohort faces in its own household problem must equal the
+    diagonal of the (T, S, J) pension array that TPI saves and aggregates,
+    both for a cohort born along the path and for one alive at t = 0,
+    whether or not a regime changes the retirement age by cohort.
+    """
+    j = 1
+    p = _glide_params(j, 20, 0.6, regimes)
+    S, T = p.S, p.T
+    rng = np.random.default_rng(0)
+    w_path = 1.0 + 0.1 * rng.random(T + S)
+    n_path = 0.2 + 0.3 * rng.random((T + S, S, p.J))
+    theta = 0.3 + 0.1 * np.arange(p.J)
+
+    pension_mat = pensions.pension_amount(
+        np.full(T, 0.04),
+        w_path[:T],
+        n_path[:T, :, :],
+        1.0,
+        theta,
+        0,
+        None,
+        False,
+        "TPI",
+        p.e,
+        1.0,
+        p,
+    )
+
+    def cohort_pension(t, length):
+        return pensions.pension_amount(
+            np.full(length, 0.04),
+            w_path[t : t + length],
+            np.diag(n_path[t : t + S, :, j], S - length),
+            1.0,
+            theta[j],
+            t,
+            j,
+            False,
+            "TPI",
+            p.e[t, :, j],
+            1.0,
+            p,
+        )
+
+    # a cohort born in period 7, and one aged 45 in 2025 (35 periods in,
+    # 45 left) that the grandfathered regime does and does not cover
+    first_retired = []
+    for t, length in [(7, S), (0, S - 25), (0, S - 35)]:
+        cohort = cohort_pension(t, length)
+        expected = np.diagonal(pension_mat[t : t + S, :, j], S - length)
+        assert np.any(cohort > 0.0), "vacuous with a zero benefit"
+        assert np.allclose(cohort, expected)
+        first_retired.append(S - length + np.argmax(cohort > 0.0))
+    if regimes is None:
+        assert first_retired == [44, 44, 44]
+    else:
+        # born in 2032 and aged 50 in 2030 retire at 67; aged 60 in 2030
+        # keeps 65
+        assert first_retired == [46, 46, 44]
 
 
 @pytest.mark.local
@@ -1476,3 +1698,377 @@ def test_SS_solve_points_system(tmp_path):
     Y = np.asarray(ss["Y"]).sum()
     assert ss["agg_pension_outlays"] > 0.0
     assert 0.0 < ss["agg_pension_outlays"] / Y < 1.0
+
+
+# A reform that moves cohorts aged 54 or younger in 2030 to a later
+# retirement age and new DB and NDC parameters; older households keep
+# the base system
+DB_NDC_REFORM = [
+    {
+        "year": 2030,
+        "max_age_at_start": 54,
+        "retirement_age": 67,
+        "alpha_db": 0.015,
+        "avg_earn_num_years": 45,
+        "yr_contrib": 38,
+        "tau_p": 0.15,
+        "k_ret": 0.3,
+        "indR": 0.1,
+    }
+]
+
+
+def _full_path_and_cohort_pensions(p, j, T_path):
+    """
+    Pension benefits for the full (T_path, S, J) time path and, for a
+    set of cohorts, from the household's own lifetime path, with a
+    constant wage and labor supply so that both read the same history.
+    """
+    S = p.S
+    p.n_preTP = np.full((S, p.J), 0.4)
+    n3 = np.full((T_path, S, p.J), 0.4)
+    w = np.full(T_path, 1.2)
+    theta = np.zeros(p.J)
+    full = pensions.pension_amount(
+        np.full(T_path, 0.05),
+        w,
+        n3,
+        np.ones(T_path),
+        theta,
+        0,
+        None,
+        False,
+        "TPI",
+        p.e,
+        1e5,
+        p,
+    )
+    cohorts = {}
+    # households alive at t = 0 of age a (S - a periods remaining)
+    for a in [0, 10, 25, 30, 35, 50, 60, 70, S - 1]:
+        per_rmn = S - a
+        cohorts[("alive", a)] = pensions.pension_amount(
+            np.full(per_rmn, 0.05),
+            np.full(per_rmn, 1.2),
+            0.4 * np.ones(per_rmn),
+            1.0,
+            theta[j],
+            0,
+            j,
+            False,
+            "TPI",
+            p.e[-1, a:, j],
+            1e5,
+            p,
+        )
+    # households born in period t0 with full lifetimes
+    for t0 in [0, 5, 20]:
+        cohorts[("born", t0)] = pensions.pension_amount(
+            np.full(S, 0.05),
+            np.full(S, 1.2),
+            0.4 * np.ones(S),
+            1.0,
+            theta[j],
+            t0,
+            j,
+            False,
+            "TPI",
+            p.e[-1, :, j],
+            1e5,
+            p,
+        )
+    return full, cohorts
+
+
+@pytest.mark.parametrize(
+    "system,updates",
+    [
+        (
+            "Defined Benefits",
+            {"alpha_db": [[0.02]], "yr_contrib": 35, "avg_earn_num_years": 40},
+        ),
+        (
+            "Notional Defined Contribution",
+            {
+                "tau_p": 0.1,
+                "ndc_growth_rate": "LR GDP",
+                "dir_growth_rate": "r",
+            },
+        ),
+    ],
+    ids=["DB", "NDC"],
+)
+@pytest.mark.parametrize(
+    "regimes", [None, DB_NDC_REFORM], ids=["base", "reform"]
+)
+def test_db_ndc_household_path_matches_full_path(system, updates, regimes):
+    """
+    Under the DB and NDC systems the benefit computed on a household's
+    own lifetime path (the partial- and full-lifetime branches used in
+    the household solves) must equal the diagonal of the (T, S, J)
+    array used for the aggregates, both with the base parameters and
+    under a grandfathered reform that changes the retirement age and
+    the system parameters by cohort. Each cohort's first benefit must
+    arrive at its own retirement age.
+    """
+    p = Specifications()
+    revision = dict(updates, pension_system=system)
+    if regimes is not None:
+        revision["pension_regimes"] = regimes
+    p.update_specifications(revision)
+    j = 0
+    S, T_path = p.S, 120
+    full, cohorts = _full_path_and_cohort_pensions(p, j, T_path)
+    assert full.shape == (T_path, S, p.J)
+    assert np.all(full >= 0.0)
+    for (kind, k), cohort in cohorts.items():
+        if kind == "alive":
+            a, t0 = k, 0
+        else:
+            a, t0 = 0, k
+        length = len(cohort)
+        on_path = min(length, T_path - t0)
+        expected = np.array(
+            [full[t0 + tt, a + tt, j] for tt in range(on_path)]
+        )
+        assert np.allclose(cohort[:on_path], expected), (kind, k)
+        assert np.any(cohort > 0.0), (kind, k)
+        first = a + np.argmax(cohort > 0.0)
+        # the first age at which the cohort is at or past its own
+        # retirement period, read down its diagonal of p.retire
+        ages = np.arange(a, S)
+        own = np.diagonal(p.retire[t0 : t0 + S, :], offset=a)
+        assert first == ages[np.argmax(ages >= own)], (kind, k, first)
+    if regimes is None:
+        # everyone retires at 65 (period 44)
+        assert np.all(p.retire == 44)
+        assert np.argmax(cohorts[("alive", 30)] > 0.0) + 30 == 44
+    else:
+        # households aged 55 and 60 in 2030 (ages 30 and 35 model
+        # periods in at t = 0) keep 65; aged 50 in 2030 and all later
+        # cohorts move to 67
+        assert np.argmax(cohorts[("alive", 35)] > 0.0) + 35 == 44
+        assert np.argmax(cohorts[("alive", 30)] > 0.0) + 30 == 44
+        assert np.argmax(cohorts[("alive", 25)] > 0.0) + 25 == 46
+        assert np.argmax(cohorts[("born", 20)] > 0.0) == 46
+        # the reform's parameters are in force for the new cohorts
+        t = 2030 - p.start_year
+        row = full[t + 30, :, j]
+        assert row[46] > 0.0 and row[45] == 0.0
+
+
+def test_db_regime_changes_benefit_by_cohort():
+    """
+    With a constant history, a regime that only changes the DB formula
+    for cohorts at or below the cutoff age scales their benefits and
+    leaves older cohorts' benefits unchanged.
+    """
+    base = Specifications()
+    base.update_specifications(
+        {
+            "pension_system": "Defined Benefits",
+            "alpha_db": [[0.02]],
+            "yr_contrib": 40,
+            "avg_earn_num_years": 40,
+        }
+    )
+    reform = Specifications()
+    reform.update_specifications(
+        {
+            "pension_system": "Defined Benefits",
+            "alpha_db": [[0.02]],
+            "yr_contrib": 40,
+            "avg_earn_num_years": 40,
+            "pension_regimes": [
+                {
+                    "year": 2030,
+                    "max_age_at_start": 54,
+                    "alpha_db": 0.01,
+                    "yr_contrib": 30,
+                }
+            ],
+        }
+    )
+    j, T_path = 0, 120
+    full_base, _ = _full_path_and_cohort_pensions(base, j, T_path)
+    full_reform, _ = _full_path_and_cohort_pensions(reform, j, T_path)
+    t = 2030 - base.start_year
+    E = base.starting_age
+    # retirees aged 65 and over in 2030 were older than 54 and are paid
+    # the base benefit in every later year, the covered cohorts get
+    # 0.01 * 30 / (0.02 * 40) of it once they retire
+    for tt in range(t, T_path):
+        row_b, row_r = full_base[tt, :, j], full_reform[tt, :, j]
+        cutoff_age = 54 - E + (tt - t)  # oldest covered age in period tt
+        covered = np.arange(base.S) <= cutoff_age
+        retired = row_b > 0.0
+        assert np.allclose(
+            row_r[retired & ~covered], row_b[retired & ~covered]
+        )
+        assert np.allclose(
+            row_r[retired & covered], row_b[retired & covered] * 0.375
+        )
+    assert np.any(full_reform[-1, :, j] > 0.0)
+
+
+def test_delta_ret_by_cohort():
+    """
+    delta_ret returns the steady-state coefficient by default and an
+    array shaped like the retirement periods it is given, with the
+    survivor and payment adjustments applied cell by cell.
+    """
+    p = Specifications()
+    p.update_specifications(
+        {
+            "pension_system": "Notional Defined Contribution",
+            "tau_p": 0.1,
+            "dir_growth_rate": "LR GDP",
+        }
+    )
+    ss = pensions.delta_ret(0.05, 1.0, p)
+    assert isinstance(ss, float) and ss > 0.0
+    S_ret = np.array([[44, 46], [46, 44]])
+    out = pensions.delta_ret(0.05, 1.0, p, S_ret, 0.0, 0.0)
+    assert out.shape == (2, 2)
+    assert out[0, 0] == out[1, 1] == ss
+    assert out[0, 1] == out[1, 0] > ss  # fewer years of payment
+    # the adjustments shift the denominator; a repeated call gives the
+    # same values (the survival rates are not modified in place)
+    adj = pensions.delta_ret(0.05, 1.0, p, S_ret, 0.1, 0.3)
+    assert np.allclose(1.0 / adj - 1.0 / out, 0.1 - 0.3)
+    assert np.allclose(pensions.delta_ret(0.05, 1.0, p, S_ret, 0.0, 0.0), out)
+
+
+def test_delta_ret_loop_survival_timing():
+    """
+    The annuity factor counts the payment at retirement age R with
+    certainty and the payment at age R + k with the probability of
+    surviving ages R, ..., R + k - 1 (1 - rho[s] is the probability of
+    surviving from age s to s + 1). With two payment periods, 20%
+    mortality after the first, certain death after the second, and no
+    discounting, the factor is 1 + 0.8 (Issue #1268).
+    """
+    surv_rates = 1.0 - np.array([0.0, 0.0, 0.2, 1.0])
+    assert np.isclose(pensions.delta_ret_loop(4, 2, surv_rates, 0.0), 1.8)
+    # general case against the closed form
+    S, R, g = 10, 6, 0.03
+    mort = np.linspace(0.05, 1.0, S)
+    expected = sum(
+        np.prod(1.0 - mort[R : R + k]) / (1.0 + g) ** k for k in range(S - R)
+    )
+    assert np.isclose(pensions.delta_ret_loop(S, R, 1.0 - mort, g), expected)
+
+
+def _time_varying_mortality(p):
+    """
+    Mortality rates that are lower early in the transition and converge
+    to the (unchanged) steady-state rates by period 60.
+    """
+    scale = np.ones(p.T + p.S)
+    scale[:60] = np.linspace(0.5, 1.0, 60)
+    rho = p.rho[-1][None, :, :] * scale[:, None, None]
+    rho[:, -1, :] = 1.0
+    return rho
+
+
+@pytest.mark.parametrize("method", ["steady state", "period", "cohort"])
+def test_delta_ret_ndc_mortality(method):
+    """
+    ndc_mortality chooses the mortality rates in the annuity factor:
+    the steady-state rates, the rates of the period of retirement, or
+    the rates the retiring cohort faces as it ages. All three agree in
+    the steady state.
+    """
+    p = Specifications()
+    p.update_specifications(
+        {
+            "pension_system": "Notional Defined Contribution",
+            "tau_p": 0.1,
+            "dir_growth_rate": "LR GDP",
+            "ndc_mortality": method,
+        }
+    )
+    p.rho = _time_varying_mortality(p)
+    lam = np.asarray(p.lambdas).ravel()
+    mort = p.rho @ lam
+    R, r, S = 44, 0.05, p.S
+    g = pensions.g_dir(r, 1.0, p.g_y, p.g_n, p.dir_growth_rate)
+    cohort_k = float(pensions.cohort_array("k_ret", p)[-1, -1])
+    k = cohort_k
+    indR = float(pensions.cohort_array("indR", p)[-1, -1])
+
+    def delta(surv):
+        return 1.0 / (pensions.delta_ret_loop(S, R, surv, g) + indR - k)
+
+    ss = delta(1.0 - mort[-1])
+    # the steady state is the same under every option
+    assert np.isclose(pensions.delta_ret(r, 1.0, p, R), ss)
+    assert np.isclose(pensions.delta_ret(r, 1.0, p, R, t_ret=None), ss)
+    t_ret = np.array([-50, -10, 0, 20, 45, 300, 500])
+    out = pensions.delta_ret(
+        r, 1.0, p, np.full(t_ret.shape, R), indR, cohort_k, t_ret
+    )
+    ages = np.arange(S)
+    n_rows = p.T + p.S
+    for tR, val in zip(t_ret, out):
+        if method == "steady state":
+            surv = 1.0 - mort[-1]
+        elif method == "period":
+            surv = 1.0 - mort[np.clip(tR, 0, n_rows - 1)]
+        else:
+            rows = np.clip(tR - R + ages, 0, n_rows - 1)
+            surv = 1.0 - mort[rows, ages]
+        assert np.isclose(val, delta(surv)), (method, tR)
+    # cohorts retiring once mortality has converged get the
+    # steady-state coefficient
+    assert np.isclose(out[-1], ss)
+    if method == "steady state":
+        assert np.allclose(out, ss)
+    else:
+        # lower mortality early in the path means a longer expected
+        # payout and a smaller coefficient
+        assert out[2] < ss
+    if method == "cohort":
+        # a cohort retiring at period 20 lives through the converging
+        # rates, so its survival is lower than the period-20 table
+        p_period = Specifications()
+        p_period.update_specifications({"ndc_mortality": "period"})
+        p_period.rho = p.rho
+        p_period.dir_growth_rate = p.dir_growth_rate
+        assert out[3] > pensions.delta_ret(
+            r, 1.0, p_period, R, indR, cohort_k, 20
+        )
+
+
+@pytest.mark.parametrize("method", ["period", "cohort"])
+def test_ndc_household_path_matches_full_path_mortality(method):
+    """
+    With mortality that changes over the transition path, the NDC
+    benefit computed on a household's own lifetime path must still
+    equal the diagonal of the (T, S, J) array used for the aggregates,
+    so that every branch of NDC_amount assigns the same retirement
+    period to the household.
+    """
+    p = Specifications()
+    p.update_specifications(
+        {
+            "pension_system": "Notional Defined Contribution",
+            "tau_p": 0.1,
+            "ndc_growth_rate": "LR GDP",
+            "dir_growth_rate": "r",
+            "ndc_mortality": method,
+            "pension_regimes": DB_NDC_REFORM,
+        }
+    )
+    p.rho = _time_varying_mortality(p)
+    j, T_path = 0, 120
+    full, cohorts = _full_path_and_cohort_pensions(p, j, T_path)
+    # the coefficient varies across cohorts retiring at the same age
+    assert not np.isclose(full[0, 50, j], full[T_path - 1, 50, j])
+    for (kind, k), cohort in cohorts.items():
+        a, t0 = (k, 0) if kind == "alive" else (0, k)
+        on_path = min(len(cohort), T_path - t0)
+        expected = np.array(
+            [full[t0 + tt, a + tt, j] for tt in range(on_path)]
+        )
+        assert np.allclose(cohort[:on_path], expected), (kind, k)

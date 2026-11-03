@@ -13,6 +13,41 @@ from ogcore.constants import BASELINE_DIR
 
 CURRENT_PATH = os.path.abspath(os.path.dirname(__file__))
 
+# Pension parameters that a pension regime may set. A regime assigns its
+# values by birth cohort (see Specifications._build_cohort_pension_arrays),
+# so each parameter listed here is expanded to a (T + S) x S array indexed
+# by period t and age s (a (T + S) x S x J array for those that also vary
+# by lifetime income group, listed in COHORT_PENSION_PARAMS_J).
+COHORT_PENSION_PARAMS = (
+    "retirement_age",
+    "avg_earn_num_years",
+    "yr_contrib",
+    "alpha_db",
+    "tau_p",
+    "k_ret",
+    "indR",
+)
+COHORT_PENSION_PARAMS_J = ("alpha_db",)
+
+
+def _is_number(value):
+    """
+    Whether ``value`` is a single real number (and not a bool).
+
+    Args:
+        value (object): value to check
+
+    Returns:
+        bool: True if ``value`` is an int, float, or NumPy number
+    """
+    return isinstance(
+        value, (int, float, np.integer, np.floating)
+    ) and not isinstance(value, bool)
+
+
+# The keys of a pension regime that describe when and to whom it applies
+PENSION_REGIME_KEYS = ("year", "max_age_at_start")
+
 
 class Specifications(paramtools.Parameters):
     """
@@ -38,6 +73,11 @@ class Specifications(paramtools.Parameters):
 
         # put OG-Core version in parameters to save for reference
         self.ogcore_version = ogcore.__version__
+
+        # Pension regimes are entered through update_specifications and
+        # kept outside of paramtools, which cannot validate a list of
+        # dicts. See _build_cohort_pension_arrays for their meaning.
+        self.pension_regimes = []
 
         # does cheap calculations to find parameter values
         self.initialize()
@@ -86,6 +126,36 @@ class Specifications(paramtools.Parameters):
         self.S = int(self.S)
         self.T = int(self.T)
         self.J = len(self.lambdas)
+
+        # The initial household wealth parameters are optional: a null
+        # value in the JSON (or None in a revision) means the time path
+        # starts from the steady-state distribution of savings, which is
+        # what TPI does when the attribute is None. paramtools stores a
+        # null float as NaN and a cleared value as an empty array, so
+        # normalize both to None here, and check a supplied distribution.
+        for name in ("initial_wealth_ratio", "initial_hhwealth_dist"):
+            value = getattr(self, name, None)
+            if (
+                value is None
+                or np.size(value) == 0
+                or np.all(np.isnan(np.asarray(value, dtype=float)))
+            ):
+                setattr(self, name, None)
+            elif name == "initial_hhwealth_dist":
+                dist = np.asarray(value, dtype=float)
+                if dist.shape != (self.S, self.J):
+                    raise ValueError(
+                        "initial_hhwealth_dist must have shape (S, J) = "
+                        f"({self.S}, {self.J}); got {dist.shape}"
+                    )
+                if not np.isclose(dist.sum(), 1.0, atol=1e-6):
+                    raise ValueError(
+                        "initial_hhwealth_dist must sum to one; got "
+                        f"{dist.sum()}"
+                    )
+                self.initial_hhwealth_dist = dist
+            else:
+                self.initial_wealth_ratio = float(np.squeeze(value))
 
         # beta_annual and chi_b carry one value per lifetime-income group, but
         # paramtools validates values and nesting depth, not list length, so a
@@ -185,13 +255,13 @@ class Specifications(paramtools.Parameters):
             "alpha_bs_G",
             "alpha_bs_T",
             "alpha_bs_I",
+            "alpha_bs_FA",
             "world_int_rate_annual",
             "adjustment_factor_for_cit_receipts",
             "tau_bq",
             "h_wealth",
             "m_wealth",
             "p_wealth",
-            "retirement_age",
             "zeta_D",
             "zeta_K",
             "r_gov_scale",
@@ -233,7 +303,6 @@ class Specifications(paramtools.Parameters):
             "income_tax_filer",
             "wealth_tax_filer",
             "tau_payroll",
-            "alpha_db",
         ]
         for item in tp_param_list3:
             param_in = np.asarray(getattr(self, item))
@@ -334,13 +403,10 @@ class Specifications(paramtools.Parameters):
             self.S,
         )
 
-        # set period of retirement
-        self.retire = (
-            np.round(
-                ((self.retirement_age - self.starting_age) * self.S) / 80.0
-            )
-            - 1
-        ).astype(int)
+        # expand the cohort-specific pension parameters (retirement age
+        # and the DB and NDC system parameters) to arrays by period and
+        # age, and set the period of retirement, retire
+        self._build_cohort_pension_arrays()
 
         # Calculations for business income taxes
         # at some point, we will want to make Cost of Capital Calculator
@@ -468,6 +534,332 @@ class Specifications(paramtools.Parameters):
 
         return ubi_nom_array
 
+    def _validate_pension_regimes(self, regimes):
+        """
+        Check the structure and values of the pension regimes list.
+
+        Args:
+            regimes (list): list of dicts, each with a ``year``, an
+                optional ``max_age_at_start``, and the pension parameters
+                the regime sets (see COHORT_PENSION_PARAMS)
+
+        Returns:
+            None
+
+        Raises:
+            ValueError: naming the offending regime and the problem
+
+        """
+        allowed = set(PENSION_REGIME_KEYS) | set(COHORT_PENSION_PARAMS)
+        if not isinstance(regimes, (list, tuple)):
+            raise ValueError(
+                "pension_regimes must be a list of dicts, each with a "
+                "'year', an optional 'max_age_at_start', and the pension "
+                "parameters the regime sets: "
+                + ", ".join(COHORT_PENSION_PARAMS)
+            )
+        ypp = 80.0 / self.S
+        last_year = self.start_year + (self.T + self.S - 1) * ypp
+        for k, regime in enumerate(regimes):
+            label = f"pension_regimes[{k}]"
+            if not isinstance(regime, dict):
+                raise ValueError(f"{label} must be a dict, got {regime!r}")
+            unknown = set(regime) - allowed
+            if unknown:
+                raise ValueError(
+                    f"{label} has unknown keys {sorted(unknown)}; allowed "
+                    f"keys are {sorted(allowed)}"
+                )
+            if "year" not in regime:
+                raise ValueError(f"{label} is missing the required 'year'")
+            year = regime["year"]
+            if not (
+                isinstance(year, (int, np.integer))
+                and not isinstance(year, bool)
+            ):
+                raise ValueError(
+                    f"{label}['year'] must be an integer calendar year, "
+                    f"got {year!r}"
+                )
+            if year > last_year:
+                raise ValueError(
+                    f"{label}['year']={year} is after the end of the time "
+                    f"path ({int(last_year)})"
+                )
+            max_age = regime.get("max_age_at_start")
+            if max_age is not None and not (
+                isinstance(max_age, (int, float, np.integer, np.floating))
+                and not isinstance(max_age, bool)
+                and max_age >= 0
+            ):
+                raise ValueError(
+                    f"{label}['max_age_at_start'] must be a non-negative "
+                    f"age in years or None, got {max_age!r}"
+                )
+            set_params = [q for q in COHORT_PENSION_PARAMS if q in regime]
+            if not set_params:
+                raise ValueError(
+                    f"{label} sets none of the pension parameters "
+                    f"{list(COHORT_PENSION_PARAMS)}"
+                )
+            for q in set_params:
+                value = regime[q]
+                if q in COHORT_PENSION_PARAMS_J:
+                    values = np.asarray(value).reshape(-1)
+                    ok = values.size in (1, self.J) and all(
+                        _is_number(v) for v in values
+                    )
+                    what = f"a single number or a list of J = {self.J}"
+                else:
+                    values = np.asarray(value).reshape(-1)
+                    ok = _is_number(value)
+                    what = "a single number"
+                if not ok:
+                    raise ValueError(
+                        f"{label}['{q}'] must be {what}, got {value!r}"
+                    )
+                rng = self._data[q]["validators"].get("range", {})
+                lo, hi = rng.get("min"), rng.get("max")
+                if isinstance(lo, (int, float)) and np.any(values < lo):
+                    raise ValueError(
+                        f"{label}['{q}']={value} is below the minimum {lo}"
+                    )
+                if isinstance(hi, (int, float)) and np.any(values > hi):
+                    raise ValueError(
+                        f"{label}['{q}']={value} is above the maximum {hi}"
+                    )
+
+    def _pension_base_value(self, name):
+        """
+        Return the value of a cohort pension parameter as the user
+        entered it (before any expansion by regime), read from the
+        ParamTools data rather than from the attribute, which holds the
+        expanded array once compute_default_params has run.
+
+        Args:
+            name (str): parameter name, one of COHORT_PENSION_PARAMS
+
+        Returns:
+            base (Numpy array): a 1-element array for the scalar
+                parameters, a (T + S) x J array for those that vary by
+                lifetime income group
+
+        Raises:
+            ValueError: for a year-varying ``retirement_age`` (changes
+                go through ``pension_regimes``)
+
+        """
+        base = np.asarray(self.to_array(name), dtype=float)
+        if name in COHORT_PENSION_PARAMS_J:
+            base = base.reshape(base.shape[0], -1) if base.ndim > 1 else base
+            # as in compute_default_params for the J x time parameters:
+            # if J has changed since the value was entered and the
+            # groups share a value, collapse to one column
+            if (
+                base.ndim == 2
+                and base.shape[1] != self.J
+                and np.all(base == base[:, :1])
+            ):
+                base = base[:, :1]
+            return extrapolate_array(
+                base, dims=(self.T + self.S, self.J), item=name
+            )
+        base = base.reshape(-1)
+        if name == "retirement_age" and base.size != 1:
+            if np.all(base == base[0]):
+                base = base[:1]
+            else:
+                raise ValueError(
+                    "retirement_age takes a single value. A retirement age "
+                    "that changes along the time path is a property of "
+                    "birth cohorts, so enter the change as a pension "
+                    "regime: pension_regimes=[{'year': Y, "
+                    "'max_age_at_start': A, 'retirement_age': R}] applies "
+                    "R to households at or below age A in calendar year "
+                    "Y, from that year on."
+                )
+        return base
+
+    def _build_cohort_pension_arrays(self):
+        """
+        Expand the cohort-specific pension parameters to arrays indexed
+        by model period t and age s, and set ``retire``.
+
+        Each pension parameter in COHORT_PENSION_PARAMS has a base value
+        as entered: a single number for ``retirement_age``,
+        ``avg_earn_num_years``, ``yr_contrib``, ``tau_p``, ``k_ret``,
+        and ``indR``, and a path by calendar year of payment and
+        lifetime income group for ``alpha_db``. Changes by birth cohort
+        are entered through ``pension_regimes``, a list of dicts
+        applied in order. A regime has a calendar ``year`` from which
+        it applies, an optional ``max_age_at_start`` (the oldest age,
+        in years, at that calendar year to which it applies; None means
+        everyone, including those already retired), and the new values
+        of the parameters it sets (for ``alpha_db``, a single number or
+        a list with one value per lifetime income group). A regime that
+        leaves a parameter out leaves it unchanged, so a later regime
+        can change one parameter for a narrow set of cohorts while an
+        earlier one still governs the rest. The regime applies to the
+        household of age s in period t when the calendar year of t is
+        at or after ``year`` and the household's age in that calendar
+        year is at or below ``max_age_at_start``. Cohorts not yet born
+        at ``year`` always qualify.
+
+        With S model periods over 80 years of life, the calendar year of
+        period t is start_year + t * 80 / S, the age of the household at
+        (t, s) is starting_age + s * 80 / S, and a cutoff by birth year
+        is the same as a cutoff by age at start: born in or after
+        ``year - max_age_at_start``.
+
+        After this method runs, ``retire`` is the (T + S) x S integer
+        array of the model period at which each household becomes
+        eligible for the public pension, ``alpha_db`` is a
+        (T + S) x S x J array, and ``avg_earn_num_years``,
+        ``yr_contrib`` (both still in years), ``tau_p``, ``k_ret``, and
+        ``indR`` are (T + S) x S arrays. ``retirement_age`` keeps its
+        single base value. The pension functions read a cohort's own
+        values down the diagonal of these arrays; the steady state uses
+        the final row.
+
+        Args:
+            None
+
+        Returns:
+            None
+
+        Raises:
+            ValueError: for a year-varying ``retirement_age`` (changes
+                go through ``pension_regimes``), for a malformed regime,
+                for a regime that raises a cohort's retirement age after
+                it has retired, and for a final period that spans more
+                than one regime
+
+        """
+        regimes = getattr(self, "pension_regimes", None) or []
+        self._validate_pension_regimes(regimes)
+        n_rows = self.T + self.S
+        ypp = 80.0 / self.S
+        t_idx, s_idx = np.indices((n_rows, self.S))
+        year_t = self.start_year + t_idx * ypp
+        masks = []
+        for regime in regimes:
+            mask = year_t >= regime["year"]
+            max_age = regime.get("max_age_at_start")
+            if max_age is not None:
+                age_at_start = (
+                    self.starting_age
+                    + (s_idx - t_idx) * ypp
+                    + (regime["year"] - self.start_year)
+                )
+                mask &= age_at_start <= max_age
+            masks.append(mask)
+        arrays = {}
+        for name in COHORT_PENSION_PARAMS:
+            base = self._pension_base_value(name)
+            if name in COHORT_PENSION_PARAMS_J:
+                arr = np.broadcast_to(
+                    base[:, np.newaxis, :], (n_rows, self.S, self.J)
+                ).copy()
+            else:
+                arr = np.full((n_rows, self.S), base[0])
+            for regime, mask in zip(regimes, masks):
+                if name in regime:
+                    arr[mask] = np.asarray(regime[name], dtype=float)
+            arrays[name] = arr
+        self.retirement_age = self._pension_base_value("retirement_age")
+        self.retire = (
+            np.round(
+                ((arrays["retirement_age"] - self.starting_age) * self.S)
+                / 80.0
+            )
+            - 1
+        ).astype(int)
+        for name in COHORT_PENSION_PARAMS:
+            if name != "retirement_age":
+                setattr(self, name, arrays[name])
+        self._check_retire_schedule()
+        self._check_pension_steady_state(arrays)
+
+    def _check_pension_steady_state(self, arrays):
+        """
+        Check that the final period of the time path sits in a single
+        pension regime, so that the steady state has one value of each
+        cohort pension parameter.
+
+        Args:
+            arrays (dict): the expanded (T + S) x S or (T + S) x S x J
+                array of each parameter in COHORT_PENSION_PARAMS
+
+        Returns:
+            None
+
+        Raises:
+            ValueError: if the final row of any array varies by age
+
+        """
+        for name, arr in arrays.items():
+            last = arr[-1]
+            if np.any(last != last[0]):
+                raise ValueError(
+                    "the final period of the time path spans more than "
+                    "one pension regime, so the steady state has no "
+                    f"single value of {name}. Increase T or lower "
+                    "max_age_at_start in pension_regimes."
+                )
+
+    def _check_retire_schedule(self):
+        """
+        Check that the (T + S) x S ``retire`` array describes a
+        schedule the model can solve.
+
+        Args:
+            None
+
+        Returns:
+            None
+
+        Raises:
+            ValueError: if any retirement period is outside the working
+                life, or if a cohort's retirement period rises after the
+                cohort has already retired (its benefits would be
+                withdrawn)
+
+        """
+        retire = self.retire
+        n_rows, S = retire.shape
+        if np.any(retire < 1) or np.any(retire >= S):
+            raise ValueError(
+                "retirement must fall inside the working life: the "
+                "retirement period must be between 1 and S - 1 = "
+                f"{S - 1}, but retire ranges from {retire.min()} to "
+                f"{retire.max()} (retirement_age {self.retirement_age[0]} "
+                f"and pension_regimes {self.pension_regimes})"
+            )
+        ypp = 80.0 / S
+        # Each diagonal of retire is one birth cohort: offset k holds
+        # retire[i, i + k], the cohort of age k in period 0 (k >= 0) or
+        # born in period -k (k < 0).
+        for k in range(-(n_rows - 1), S):
+            diag = np.diagonal(retire, offset=k)
+            if diag.size < 2:
+                continue
+            ages = np.arange(diag.size) + max(k, 0)
+            for i in np.nonzero(np.diff(diag))[0]:
+                age, prev, new = ages[i + 1], diag[i], diag[i + 1]
+                if age >= prev and new > age:
+                    period = i + 1 + max(-k, 0)
+                    raise ValueError(
+                        "pension_regimes raises the retirement age of a "
+                        "cohort after it has retired: in model period "
+                        f"{period} (calendar year "
+                        f"{int(self.start_year + period * ypp)}) the "
+                        f"cohort aged {int(self.starting_age + age * ypp)} "
+                        f"years, retired since period {prev}, moves to "
+                        f"retirement period {new}. Lower max_age_at_start "
+                        "(the oldest age the regime covers) so the regime "
+                        "excludes cohorts already retired."
+                    )
+
     def update_specifications(self, revision, raise_errors=True):
         """
         Updates parameter specification with values in revision
@@ -508,6 +900,15 @@ class Specifications(paramtools.Parameters):
         """
         if not (isinstance(revision, dict) or isinstance(revision, str)):
             raise ValueError("ERROR: revision is not a dictionary or string")
+        if isinstance(revision, str):
+            # a JSON string or a path to a JSON file
+            revision = self.read_params(revision)
+        # Pension regimes are a list of dicts, which paramtools cannot
+        # validate, so set them aside and check them in
+        # _build_cohort_pension_arrays (called by compute_default_params)
+        if "pension_regimes" in revision:
+            revision = dict(revision)  # leave the caller's dict alone
+            self.pension_regimes = revision.pop("pension_regimes")
         # Skip over the adjust method if the tax parameters passed in
         # are functions (e.g., in the case of tax_func_type = mono)
         tax_update_dict = {}

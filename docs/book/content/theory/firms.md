@@ -35,8 +35,10 @@ Industry $M$ in the model is unique in two respects.  First, we will define indu
 
   ```{math}
   :label: EqFirmsProfit
+  \begin{aligned}
     PR_{m,t} &= (1 - \tau^{corp}_{m,t})\Bigl[p_{m,t}F(K_{m,t},K_{g,m,t},L_{m,t}) - w_t L_{m,t}\Bigr] - \\
     &\qquad\qquad\quad \bigl(r_t + \delta_{M,t}\bigr)K_{m,t} + \tau^{corp}_{m,t}\delta^\tau_{m,t}K_{m,t} + \tau^{inv}_{m,t}\delta_{M,t}K_{m,t} \quad\forall m,t
+  \end{aligned}
   ```
 
   Gross income for the firms is $p_{m,t}F(K_{m,t},K_{g,m,t},L_{m,t})$. Labor costs to the firm are $w_t L_{m,t}$, and capital costs are $(r_t +\delta_{M,t})K_{m,t}$. The government supplies public capital $K_{g,m,t}$ to the firms at no cost. The per-period interest rate (rental rate) of capital for firms is $r_t$. The per-period economic depreciation rate for private capital is $\delta_{M,t}\in[0,1]$.[^delta_M] The $\delta^\tau_{m,t}$ parameter in the second-to-last term of the profit function governs how much of capital depreciation can be deducted from the corporate income tax. Note that the last term above represents the benefits from any investment tax credit $\tau^{inv}_{m,t}$. While this should be applied to all investment, firms in `OG-Core` are making static decisions each period about the amount of capital to rent. We therefore proxy for investment with $\delta_{M,t}K_{m,t}$, which is accurate in the steady-state, but is an approximation over the transition to the steady-state.

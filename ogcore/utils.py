@@ -14,6 +14,7 @@ import urllib3
 import ssl
 import json
 import collections
+import warnings
 
 EPSILON = 1e-10  # tolerance or comparison functions
 
@@ -398,6 +399,45 @@ def safe_read_pickle(file_path):
         except TypeError:  # pragma no cover
             obj = pickle.load(f)  # pragma no cover
     return obj
+
+
+def get_baseline_foreign_aid(baseline_vars, p, method):
+    """
+    Return the level of foreign aid from saved baseline equilibrium
+    output, for use when baseline_spending=True.
+
+    Baseline output saved by versions of OG-Core prior to foreign aid
+    being included in the output dictionaries does not have a
+    "foreign_aid" key. In that case, foreign aid is reconstructed as
+    alpha_FA times baseline GDP, which is exact so long as alpha_FA is
+    the same in the baseline and reform parameterizations.
+
+    Args:
+        baseline_vars (dict): steady-state or transition path output
+            from the baseline equilibrium
+        p (OG-Core Specifications object): model parameters
+        method (str): either 'SS' for steady-state or 'TPI' for
+            transition path
+
+    Returns:
+        FA_baseline (array_like): foreign aid in the baseline
+            equilibrium
+
+    """
+    if "foreign_aid" in baseline_vars:
+        return baseline_vars["foreign_aid"]
+    warnings.warn(
+        "Baseline output does not include foreign aid; reconstructing "
+        + "baseline foreign aid as alpha_FA * baseline Y. This assumes "
+        + "alpha_FA is the same in the baseline and the reform. Re-run "
+        + "the baseline to save foreign aid directly."
+    )
+    if method == "SS":
+        FA_baseline = p.alpha_FA[-1] * baseline_vars["Y"]
+    else:
+        FA_baseline = p.alpha_FA[: p.T] * baseline_vars["Y"][: p.T]
+
+    return FA_baseline
 
 
 def rate_conversion(annual_rate, start_age, end_age, S):

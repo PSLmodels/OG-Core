@@ -73,7 +73,8 @@ def household_solution(p, ss, b_grid=None):
         ss["Y"],
         ss["BQ"],
         ss["TR"],
-        None,
+        None,  # Ig_baseline
+        None,  # FA_baseline
         ss["factor"],
     )
     if b_grid is None:
@@ -364,7 +365,8 @@ def test_SS_solver_keeps_grids(ss_one_state, monkeypatch):
         ss["Y"],
         ss["BQ"],
         ss["TR"],
-        None,
+        None,  # Ig_baseline
+        None,  # FA_baseline
         ss["factor"],
         p,
         None,

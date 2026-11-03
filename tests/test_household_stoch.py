@@ -535,19 +535,20 @@ def test_get_net_taxes_matches_ogcore():
         p,
     )
     assert np.allclose(test, expected, rtol=1e-12, atol=1e-14)
-    assert (pension[: p.retire[-1]] == 0).all()
-    assert (pension[p.retire[-1] :] > 0).all()
+    assert (pension[: p.retire[-1, -1]] == 0).all()
+    assert (pension[p.retire[-1, -1] :] > 0).all()
 
 
 def test_pensions_by_age_at_one_point():
     """
-    At a single retirement age, OG-Core's net_taxes gives no pension
-    (benefits are placed by array position), which is why the household
-    grid solve takes pensions by age; get_net_taxes at that age equals
-    the whole-life calculation.
+    At a single retirement age, OG-Core's net_taxes does not give the
+    pension at that age (its retirement mask runs over all S ages, so a
+    single point comes back as S values, one with each age's pension),
+    which is why the household grid solve takes pensions by age;
+    get_net_taxes at that age equals the whole-life calculation.
     """
     p, a = _net_tax_setup()
-    j, s = 3, p.retire[-1] + 2
+    j, s = 3, p.retire[-1, -1] + 2
     e = p.e[-1, :, j]
     etr = np.array(p.etr_params[-1])
     theta = np.full(p.J, 0.25)
@@ -606,8 +607,12 @@ def test_pensions_by_age_at_one_point():
         p,
     )
     assert np.isclose(at_age, whole_life, rtol=1e-12)
-    # OG-Core's version misses the pension at a single age
-    assert np.isclose(ogcore_at_age - at_age, pension[s], rtol=1e-12)
+    # OG-Core's version gives the net taxes with the pension of every
+    # age in turn, rather than that of age s
+    assert np.shape(ogcore_at_age) == (p.S,)
+    assert np.allclose(
+        ogcore_at_age - at_age, pension[s] - pension, rtol=1e-12, atol=1e-14
+    )
 
 
 # %%
@@ -624,7 +629,7 @@ def setup_c_from_b_splus1_params(taxes=False):
     p.g_y = 0.02
     p.chi_b = np.array([2.0])
     p.e = np.tile(np.linspace(1.0, 1.2, p.S).reshape(1, p.S, 1), (p.T, 1, 1))
-    p.retire = p.S + 1  # Everyone works
+    p.retire = np.full((p.T + p.S, p.S), p.S + 1)  # Everyone works
 
     # Tax parameters
     p.capital_income_tax_noncompliance_rate = np.zeros((p.T, p.J))
@@ -1111,7 +1116,7 @@ def _solve_hh_problem():
     p.ltilde = 1.0
     p.b_ellipse = 5.0
     p.upsilon = 2.0
-    p.retire = np.array([p.S + 1])
+    p.retire = np.full((p.T + p.S, p.S), p.S + 1)
     p.e = np.tile(np.linspace(1.0, 1.2, p.S).reshape(1, p.S, 1), (p.T, 1, 1))
     p.chi_n = np.tile(
         np.array([0.5, 0.6, 0.7, 0.8]).reshape(1, p.S, 1), (p.T, 1, 1)
@@ -1323,7 +1328,8 @@ def test_ogcore_HH_soln():
         1.4,  # Y (only enters remittances, which are zero)
         BQ,
         float(TR[0]),
-        0.0,
+        0.0,  # Ig_baseline
+        0.0,  # FA_baseline
         factor,
     )
     euler, b_core, n_core = SS.inner_loop(outer_loop_vars, p, None)[:3]
@@ -1403,7 +1409,7 @@ def _replication_specs(pensions_on, full_budget=False):
         p.eta_RM = np.zeros((p.T + p.S, p.S, p.J))
         p.ubi_nom_array = np.zeros((p.T + p.S, p.S, p.J))
         p.retirement_age = np.array([p.S + p.E + 1])
-        p.retire = np.array([p.S + p.E + 1])
+        p.retire = np.full((p.T + p.S, p.S), p.S + p.E + 1)
         p.PIA_rate_bkt_1 = 0.0
         p.PIA_rate_bkt_2 = 0.0
         p.PIA_rate_bkt_3 = 0.0
@@ -1605,7 +1611,7 @@ def test_replication_with_pensions(ss_comparison_pensions):
     assert np.allclose(theta_own, setup["theta_core"], rtol=1e-4)
     # pensions are paid from the retirement age on
     pension = setup["sol"].pension
-    retire = setup["p"].retire[-1]
+    retire = setup["p"].retire[-1, -1]
     assert (pension[:retire] == 0).all() and (pension[retire:] > 0).all()
 
 
