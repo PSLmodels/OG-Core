@@ -813,11 +813,49 @@ labor supply</p>
 </dd></dl>
 
 <dl class="py function">
+<dt class="sig sig-object py" id="ogcore.pensions.annuity_mort_rates">
+<span class="sig-prename descclassname"><span class="pre">ogcore.pensions.</span></span><span class="sig-name descname"><span class="pre">annuity_mort_rates</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">p</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ogcore/pensions.html#annuity_mort_rates"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogcore.pensions.annuity_mort_rates" title="Link to this definition">#</a></dt>
+<dd><p>Mortality rates by period and age used to annuitize NDC balances.</p>
+<p>These are the model’s mortality rates <code class="docutils literal notranslate"><span class="pre">rho</span></code>, averaged over
+lifetime income groups with their population weights <code class="docutils literal notranslate"><span class="pre">lambdas</span></code>,
+so that a single conversion coefficient applies to every income
+group. A <code class="docutils literal notranslate"><span class="pre">mort_rates_SS</span></code> attribute set on <code class="docutils literal notranslate"><span class="pre">p</span></code> by hand (a vector
+by age) overrides <code class="docutils literal notranslate"><span class="pre">rho</span></code> and is used in every period.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>p</strong> (<em>OG-Core Specifications object</em>) – model parameters</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><dl class="simple">
+<dt>(T + S) x S mortality rates, where</dt><dd><p>row t, column s is the probability that a household of age
+s in period t dies before period t + 1</p>
+</dd>
+</dl>
+</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>mort_rates (Numpy array)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
 <dt class="sig sig-object py" id="ogcore.pensions.delta_ret">
-<span class="sig-prename descclassname"><span class="pre">ogcore.pensions.</span></span><span class="sig-name descname"><span class="pre">delta_ret</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">r</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Y</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">S_ret</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">indR</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">k_ret</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ogcore/pensions.html#delta_ret"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogcore.pensions.delta_ret" title="Link to this definition">#</a></dt>
+<span class="sig-prename descclassname"><span class="pre">ogcore.pensions.</span></span><span class="sig-name descname"><span class="pre">delta_ret</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">r</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Y</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">S_ret</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">indR</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">k_ret</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">t_ret</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ogcore/pensions.html#delta_ret"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogcore.pensions.delta_ret" title="Link to this definition">#</a></dt>
 <dd><p>Compute conversion coefficient for the NDC pension amount</p>
 <div class="math notranslate nohighlight">
 \[\delta_{R} = (dir_{R} + ind_{R} - k)^{-1}\]</div>
+<p>The mortality rates entering <span class="math notranslate nohighlight">\(dir_{R}\)</span> are set by the parameter
+<code class="docutils literal notranslate"><span class="pre">ndc_mortality</span></code>:</p>
+<ul class="simple">
+<li><p>‘steady state’: the steady-state mortality rates, for every
+cohort</p></li>
+<li><p>‘period’: the mortality rates by age in the period in which the
+household retires (a period life table)</p></li>
+<li><p>‘cohort’: the mortality rates the household’s own birth cohort
+faces at each age after retirement (a projected cohort life
+table), the rates that also enter the household’s problem</p></li>
+</ul>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
@@ -831,6 +869,11 @@ None for the steady-state value (the final row of
 against <code class="docutils literal notranslate"><span class="pre">S_ret</span></code>, or None for the steady-state value</p></li>
 <li><p><strong>k_ret</strong> (<em>array_like</em>) – payment frequency adjustment, broadcastable
 against <code class="docutils literal notranslate"><span class="pre">S_ret</span></code>, or None for the steady-state value</p></li>
+<li><p><strong>t_ret</strong> (<em>array_like</em>) – model period in which the household reaches
+age <code class="docutils literal notranslate"><span class="pre">S_ret</span></code>, broadcastable against <code class="docutils literal notranslate"><span class="pre">S_ret</span></code>; may lie
+before 0 or after T + S - 1, in which case the first or
+last row of the mortality rates is used. None for the
+steady state.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -945,22 +988,30 @@ another unit of labor supply</p></li>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="ogcore.pensions.delta_ret_loop">
-<span class="sig-prename descclassname"><span class="pre">ogcore.pensions.</span></span><span class="sig-name descname"><span class="pre">delta_ret_loop</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">S</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">S_ret</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">surv_rates</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">g_dir_value</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dir_delta_s</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ogcore/pensions.html#delta_ret_loop"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogcore.pensions.delta_ret_loop" title="Link to this definition">#</a></dt>
-<dd><p>Compute conversion coefficient for the NDC pension amount</p>
+<span class="sig-prename descclassname"><span class="pre">ogcore.pensions.</span></span><span class="sig-name descname"><span class="pre">delta_ret_loop</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">S</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">S_ret</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">surv_rates</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">g_dir_value</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ogcore/pensions.html#delta_ret_loop"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogcore.pensions.delta_ret_loop" title="Link to this definition">#</a></dt>
+<dd><p>Compute the annuity factor in the NDC conversion coefficient</p>
+<div class="math notranslate nohighlight">
+\[dir_{R} = \sum_{k=0}^{S-R-1}\left[\prod_{i=0}^{k-1}
+    (1 - \hat{\rho}_{R+i})\right](1 + g_{dir})^{-k}\]</div>
+<p>The pension is paid at ages R, …, S - 1. Following the household
+mortality convention, <code class="docutils literal notranslate"><span class="pre">1</span> <span class="pre">-</span> <span class="pre">rho[s]</span></code> is the probability of
+surviving from age s to age s + 1, so the payment at age R + k is
+received with probability prod_{i=0}^{k-1} (1 - rho[R + i]) by a
+household alive at retirement age R.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>S</strong> (<em>int</em>) – number of periods in the model</p></li>
 <li><p><strong>S_ret</strong> (<em>int</em>) – retirement age</p></li>
-<li><p><strong>surv_rates</strong> (<em>Numpy array</em>) – survival rates</p></li>
-<li><p><strong>g_dir_value</strong> (<em>scalar</em>) – growth rate of NDC pension</p></li>
-<li><p><strong>dir_delta_s</strong> (<em>Numpy array</em>) – conversion coefficient for the NDC
-pension amount</p></li>
+<li><p><strong>surv_rates</strong> (<em>Numpy array</em>) – length S survival rates by age,
+1 - rho</p></li>
+<li><p><strong>g_dir_value</strong> (<em>scalar</em>) – discount rate used in the conversion
+coefficient</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p><dl class="simple">
-<dt>conversion coefficient for the NDC pension</dt><dd><p>amount</p>
+<dt>expected discounted number of pension</dt><dd><p>payments per unit of annual benefit</p>
 </dd>
 </dl>
 </p>
@@ -1274,6 +1325,7 @@ in and returned), size S x J</p></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.pensions.delta_point"><code class="docutils literal notranslate"><span class="pre">delta_point()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.pensions.g_ndc"><code class="docutils literal notranslate"><span class="pre">g_ndc()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.pensions.g_dir"><code class="docutils literal notranslate"><span class="pre">g_dir()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.pensions.annuity_mort_rates"><code class="docutils literal notranslate"><span class="pre">annuity_mort_rates()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.pensions.delta_ret"><code class="docutils literal notranslate"><span class="pre">delta_ret()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.pensions.deriv_DB_loop"><code class="docutils literal notranslate"><span class="pre">deriv_DB_loop()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.pensions.deriv_PS_loop"><code class="docutils literal notranslate"><span class="pre">deriv_PS_loop()</span></code></a></li>

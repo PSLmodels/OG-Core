@@ -1050,6 +1050,8 @@
         <span class="c1"># this household's own cohort parameters, by age</span>
         <span class="n">S_ret_u</span> <span class="o">=</span> <span class="n">cohort_path</span><span class="p">(</span><span class="n">S_ret</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="n">per_rmn</span><span class="p">,</span> <span class="n">p</span><span class="p">)</span>
         <span class="n">tau_p_u</span> <span class="o">=</span> <span class="n">cohort_path</span><span class="p">(</span><span class="n">tau_p</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="n">per_rmn</span><span class="p">,</span> <span class="n">p</span><span class="p">)</span>
+        <span class="c1"># the household is age S - per_rmn in period t, so it reaches</span>
+        <span class="c1"># retirement age R in period t - (S - per_rmn) + R</span>
         <span class="n">delta_ret_u</span> <span class="o">=</span> <span class="n">delta_ret</span><span class="p">(</span>
             <span class="n">r</span><span class="p">,</span>
             <span class="n">Y</span><span class="p">,</span>
@@ -1057,6 +1059,7 @@
             <span class="n">S_ret_u</span><span class="p">,</span>
             <span class="n">cohort_path</span><span class="p">(</span><span class="n">indR</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="n">per_rmn</span><span class="p">,</span> <span class="n">p</span><span class="p">),</span>
             <span class="n">cohort_path</span><span class="p">(</span><span class="n">k_ret</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="n">per_rmn</span><span class="p">,</span> <span class="n">p</span><span class="p">),</span>
+            <span class="n">t_ret</span><span class="o">=</span><span class="n">t</span> <span class="o">-</span> <span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">S</span> <span class="o">-</span> <span class="n">per_rmn</span><span class="p">)</span> <span class="o">+</span> <span class="n">S_ret_u</span><span class="p">,</span>
         <span class="p">)</span>
         <span class="n">NDC</span> <span class="o">=</span> <span class="n">NDC_1dim_loop</span><span class="p">(</span>
             <span class="n">w_S</span><span class="p">,</span>
@@ -1087,9 +1090,12 @@
                 <span class="n">tau_p_u</span> <span class="o">=</span> <span class="n">cohort_path</span><span class="p">(</span><span class="n">tau_p</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="n">p</span><span class="o">.</span><span class="n">S</span><span class="p">,</span> <span class="n">p</span><span class="p">)</span>
                 <span class="n">indR_u</span> <span class="o">=</span> <span class="n">cohort_path</span><span class="p">(</span><span class="n">indR</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="n">p</span><span class="o">.</span><span class="n">S</span><span class="p">,</span> <span class="n">p</span><span class="p">)</span>
                 <span class="n">k_ret_u</span> <span class="o">=</span> <span class="n">cohort_path</span><span class="p">(</span><span class="n">k_ret</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="n">p</span><span class="o">.</span><span class="n">S</span><span class="p">,</span> <span class="n">p</span><span class="p">)</span>
+                <span class="n">t_ret_u</span> <span class="o">=</span> <span class="n">t</span> <span class="o">+</span> <span class="n">S_ret_u</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="n">S_ret_u</span><span class="p">,</span> <span class="n">tau_p_u</span> <span class="o">=</span> <span class="n">S_ret</span><span class="p">[</span><span class="n">row</span><span class="p">],</span> <span class="n">tau_p</span><span class="p">[</span><span class="n">row</span><span class="p">]</span>
                 <span class="n">indR_u</span><span class="p">,</span> <span class="n">k_ret_u</span> <span class="o">=</span> <span class="n">indR</span><span class="p">[</span><span class="n">row</span><span class="p">],</span> <span class="n">k_ret</span><span class="p">[</span><span class="n">row</span><span class="p">]</span>
+                <span class="c1"># steady state, or the cross-section of period 0</span>
+                <span class="n">t_ret_u</span> <span class="o">=</span> <span class="kc">None</span> <span class="k">if</span> <span class="n">row</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span> <span class="k">else</span> <span class="n">row</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">S</span><span class="p">)</span> <span class="o">+</span> <span class="n">S_ret_u</span>
             <span class="n">NDC</span> <span class="o">=</span> <span class="n">NDC_1dim_loop</span><span class="p">(</span>
                 <span class="n">w</span><span class="p">,</span>
                 <span class="n">e</span><span class="p">,</span>
@@ -1099,7 +1105,7 @@
                 <span class="n">g_y_arr</span><span class="p">,</span>
                 <span class="n">tau_p_u</span><span class="p">,</span>
                 <span class="n">g_ndc_amount</span><span class="p">,</span>
-                <span class="n">delta_ret</span><span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="n">Y</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">S_ret_u</span><span class="p">,</span> <span class="n">indR_u</span><span class="p">,</span> <span class="n">k_ret_u</span><span class="p">),</span>
+                <span class="n">delta_ret</span><span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="n">Y</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">S_ret_u</span><span class="p">,</span> <span class="n">indR_u</span><span class="p">,</span> <span class="n">k_ret_u</span><span class="p">,</span> <span class="n">t_ret_u</span><span class="p">),</span>
                 <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">S</span><span class="p">),</span>
             <span class="p">)</span>
         <span class="k">elif</span> <span class="n">np</span><span class="o">.</span><span class="n">ndim</span><span class="p">(</span><span class="n">n</span><span class="p">)</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
@@ -1110,6 +1116,9 @@
                 <span class="n">row</span> <span class="o">=</span> <span class="mi">0</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="n">row</span> <span class="o">=</span> <span class="n">t</span>
+            <span class="c1"># the household of age u in period `row` retired in period</span>
+            <span class="c1"># row - u + R (None in the steady state)</span>
+            <span class="n">t_ret_u</span> <span class="o">=</span> <span class="kc">None</span> <span class="k">if</span> <span class="n">row</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span> <span class="k">else</span> <span class="n">row</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">S</span><span class="p">)</span> <span class="o">+</span> <span class="n">S_ret</span><span class="p">[</span><span class="n">row</span><span class="p">]</span>
             <span class="n">NDC</span> <span class="o">=</span> <span class="n">NDC_2dim_loop</span><span class="p">(</span>
                 <span class="n">w</span><span class="p">,</span>
                 <span class="n">e</span><span class="p">,</span>
@@ -1119,7 +1128,7 @@
                 <span class="n">g_y_arr</span><span class="p">,</span>
                 <span class="n">tau_p</span><span class="p">[</span><span class="n">row</span><span class="p">],</span>
                 <span class="n">g_ndc_amount</span><span class="p">,</span>
-                <span class="n">delta_ret</span><span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="n">Y</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">S_ret</span><span class="p">[</span><span class="n">row</span><span class="p">],</span> <span class="n">indR</span><span class="p">[</span><span class="n">row</span><span class="p">],</span> <span class="n">k_ret</span><span class="p">[</span><span class="n">row</span><span class="p">]),</span>
+                <span class="n">delta_ret</span><span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="n">Y</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">S_ret</span><span class="p">[</span><span class="n">row</span><span class="p">],</span> <span class="n">indR</span><span class="p">[</span><span class="n">row</span><span class="p">],</span> <span class="n">k_ret</span><span class="p">[</span><span class="n">row</span><span class="p">],</span> <span class="n">t_ret_u</span><span class="p">),</span>
                 <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">p</span><span class="o">.</span><span class="n">S</span><span class="p">,</span> <span class="n">p</span><span class="o">.</span><span class="n">J</span><span class="p">)),</span>
             <span class="p">)</span>
         <span class="k">elif</span> <span class="n">np</span><span class="o">.</span><span class="n">ndim</span><span class="p">(</span><span class="n">n</span><span class="p">)</span> <span class="o">==</span> <span class="mi">3</span><span class="p">:</span>
@@ -1130,6 +1139,11 @@
             <span class="n">e_ss</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">e</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">ndim</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">e</span><span class="p">)</span> <span class="o">==</span> <span class="mi">3</span> <span class="k">else</span> <span class="n">p</span><span class="o">.</span><span class="n">e</span>
             <span class="c1"># parameters in effect for each (period, age) of the path</span>
             <span class="n">rows</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">clip</span><span class="p">(</span><span class="n">t</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">T</span><span class="p">),</span> <span class="mi">0</span><span class="p">,</span> <span class="n">S_ret</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
+            <span class="c1"># the household of age u in period t + i retired in period</span>
+            <span class="c1"># t + i - u + R</span>
+            <span class="n">t_ret_path</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="p">(</span><span class="n">t</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">T</span><span class="p">))[:,</span> <span class="kc">None</span><span class="p">]</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">S</span><span class="p">)[</span><span class="kc">None</span><span class="p">,</span> <span class="p">:]</span>
+            <span class="p">)</span> <span class="o">+</span> <span class="n">S_ret</span><span class="p">[</span><span class="n">rows</span><span class="p">]</span>
             <span class="n">NDC</span> <span class="o">=</span> <span class="n">NDC_3dim_loop</span><span class="p">(</span>
                 <span class="n">w_path</span><span class="p">,</span>
                 <span class="n">e_ss</span><span class="p">,</span>
@@ -1141,7 +1155,15 @@
                 <span class="nb">float</span><span class="p">(</span><span class="n">g_y_arr</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]),</span>
                 <span class="n">np</span><span class="o">.</span><span class="n">ascontiguousarray</span><span class="p">(</span><span class="n">tau_p</span><span class="p">[</span><span class="n">rows</span><span class="p">]),</span>
                 <span class="n">g_ndc_amount</span><span class="p">,</span>
-                <span class="n">delta_ret</span><span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="n">Y</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">S_ret</span><span class="p">[</span><span class="n">rows</span><span class="p">],</span> <span class="n">indR</span><span class="p">[</span><span class="n">rows</span><span class="p">],</span> <span class="n">k_ret</span><span class="p">[</span><span class="n">rows</span><span class="p">]),</span>
+                <span class="n">delta_ret</span><span class="p">(</span>
+                    <span class="n">r</span><span class="p">,</span>
+                    <span class="n">Y</span><span class="p">,</span>
+                    <span class="n">p</span><span class="p">,</span>
+                    <span class="n">S_ret</span><span class="p">[</span><span class="n">rows</span><span class="p">],</span>
+                    <span class="n">indR</span><span class="p">[</span><span class="n">rows</span><span class="p">],</span>
+                    <span class="n">k_ret</span><span class="p">[</span><span class="n">rows</span><span class="p">],</span>
+                    <span class="n">t_ret_path</span><span class="p">,</span>
+                <span class="p">),</span>
             <span class="p">)</span>
 
     <span class="k">return</span> <span class="n">NDC</span></div>
@@ -1533,14 +1555,59 @@
 
 
 
+<div class="viewcode-block" id="annuity_mort_rates">
+<a class="viewcode-back" href="../../pensions.html#ogcore.pensions.annuity_mort_rates">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">annuity_mort_rates</span><span class="p">(</span><span class="n">p</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""</span>
+<span class="sd">    Mortality rates by period and age used to annuitize NDC balances.</span>
+
+<span class="sd">    These are the model's mortality rates ``rho``, averaged over</span>
+<span class="sd">    lifetime income groups with their population weights ``lambdas``,</span>
+<span class="sd">    so that a single conversion coefficient applies to every income</span>
+<span class="sd">    group. A ``mort_rates_SS`` attribute set on ``p`` by hand (a vector</span>
+<span class="sd">    by age) overrides ``rho`` and is used in every period.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        p (OG-Core Specifications object): model parameters</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        mort_rates (Numpy array): (T + S) x S mortality rates, where</span>
+<span class="sd">            row t, column s is the probability that a household of age</span>
+<span class="sd">            s in period t dies before period t + 1</span>
+
+<span class="sd">    """</span>
+    <span class="n">mort_rates_SS</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="s2">"mort_rates_SS"</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">mort_rates_SS</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">mort_rates_SS</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">mort_rates_SS</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span><span class="o">.</span><span class="n">ravel</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">broadcast_to</span><span class="p">(</span>
+            <span class="n">mort_rates_SS</span><span class="p">,</span> <span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">T</span> <span class="o">+</span> <span class="n">p</span><span class="o">.</span><span class="n">S</span><span class="p">,</span> <span class="n">mort_rates_SS</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+        <span class="p">)</span>
+    <span class="n">rho</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">rho</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">rho</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">3</span><span class="p">:</span>
+        <span class="n">rho</span> <span class="o">=</span> <span class="n">rho</span> <span class="o">@</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">lambdas</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span><span class="o">.</span><span class="n">ravel</span><span class="p">()</span>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">broadcast_to</span><span class="p">(</span><span class="n">rho</span><span class="p">,</span> <span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">T</span> <span class="o">+</span> <span class="n">p</span><span class="o">.</span><span class="n">S</span><span class="p">,</span> <span class="n">rho</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]))</span></div>
+
+
+
 <div class="viewcode-block" id="delta_ret">
 <a class="viewcode-back" href="../../pensions.html#ogcore.pensions.delta_ret">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">delta_ret</span><span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="n">Y</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">S_ret</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">indR</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">k_ret</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">delta_ret</span><span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="n">Y</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">S_ret</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">indR</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">k_ret</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">t_ret</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">"""</span>
 <span class="sd">    Compute conversion coefficient for the NDC pension amount</span>
 
 <span class="sd">    .. math::</span>
 <span class="sd">        \delta_{R} = (dir_{R} + ind_{R} - k)^{-1}</span>
+
+<span class="sd">    The mortality rates entering $dir_{R}$ are set by the parameter</span>
+<span class="sd">    ``ndc_mortality``:</span>
+
+<span class="sd">    * 'steady state': the steady-state mortality rates, for every</span>
+<span class="sd">      cohort</span>
+<span class="sd">    * 'period': the mortality rates by age in the period in which the</span>
+<span class="sd">      household retires (a period life table)</span>
+<span class="sd">    * 'cohort': the mortality rates the household's own birth cohort</span>
+<span class="sd">      faces at each age after retirement (a projected cohort life</span>
+<span class="sd">      table), the rates that also enter the household's problem</span>
 
 <span class="sd">    Args:</span>
 <span class="sd">        r (array_like): interest rate</span>
@@ -1553,20 +1620,19 @@
 <span class="sd">            against ``S_ret``, or None for the steady-state value</span>
 <span class="sd">        k_ret (array_like): payment frequency adjustment, broadcastable</span>
 <span class="sd">            against ``S_ret``, or None for the steady-state value</span>
+<span class="sd">        t_ret (array_like): model period in which the household reaches</span>
+<span class="sd">            age ``S_ret``, broadcastable against ``S_ret``; may lie</span>
+<span class="sd">            before 0 or after T + S - 1, in which case the first or</span>
+<span class="sd">            last row of the mortality rates is used. None for the</span>
+<span class="sd">            steady state.</span>
 
 <span class="sd">    Returns:</span>
 <span class="sd">        delta_ret (scalar or Numpy array): conversion coefficient for</span>
 <span class="sd">            the NDC pension amount, shaped like ``S_ret``</span>
 
 <span class="sd">    """</span>
-    <span class="c1"># A real Specifications object has no mort_rates_SS attribute; fall</span>
-    <span class="c1"># back to the steady-state mortality rates implied by rho, averaged</span>
-    <span class="c1"># over lifetime-income groups with their population weights (see</span>
-    <span class="c1"># Issue #1169)</span>
-    <span class="n">mort_rates_SS</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="s2">"mort_rates_SS"</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
-    <span class="k">if</span> <span class="n">mort_rates_SS</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="n">mort_rates_SS</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">rho</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">@</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">lambdas</span><span class="p">)</span><span class="o">.</span><span class="n">ravel</span><span class="p">()</span>
-    <span class="n">surv_rates</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">-</span> <span class="n">mort_rates_SS</span>
+    <span class="n">mort_rates</span> <span class="o">=</span> <span class="n">annuity_mort_rates</span><span class="p">(</span><span class="n">p</span><span class="p">)</span>
+    <span class="n">n_rows</span><span class="p">,</span> <span class="n">n_ages</span> <span class="o">=</span> <span class="n">mort_rates</span><span class="o">.</span><span class="n">shape</span>
     <span class="k">if</span> <span class="n">S_ret</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">S_ret</span> <span class="o">=</span> <span class="n">cohort_array</span><span class="p">(</span><span class="s2">"retire"</span><span class="p">,</span> <span class="n">p</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">]</span>
     <span class="k">if</span> <span class="n">indR</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
@@ -1574,16 +1640,43 @@
     <span class="k">if</span> <span class="n">k_ret</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">k_ret</span> <span class="o">=</span> <span class="n">cohort_array</span><span class="p">(</span><span class="s2">"k_ret"</span><span class="p">,</span> <span class="n">p</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">]</span>
     <span class="n">S_ret</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">S_ret</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">int</span><span class="p">)</span>
-    <span class="n">g_dir_value</span> <span class="o">=</span> <span class="n">g_dir</span><span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="n">Y</span><span class="p">,</span> <span class="n">p</span><span class="o">.</span><span class="n">g_y</span><span class="p">,</span> <span class="n">p</span><span class="o">.</span><span class="n">g_n</span><span class="p">,</span> <span class="n">p</span><span class="o">.</span><span class="n">dir_growth_rate</span><span class="p">)</span>
-    <span class="c1"># the annuity factor depends on the retirement period only, so</span>
-    <span class="c1"># compute it once per distinct value (delta_ret_loop writes into</span>
-    <span class="c1"># the survival-rate array it is given, so pass it a copy)</span>
-    <span class="n">dir_delta</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">S_ret</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
-    <span class="k">for</span> <span class="n">R</span> <span class="ow">in</span> <span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">S_ret</span><span class="p">):</span>
-        <span class="n">R</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">R</span><span class="p">)</span>
-        <span class="n">dir_delta</span><span class="p">[</span><span class="n">S_ret</span> <span class="o">==</span> <span class="n">R</span><span class="p">]</span> <span class="o">=</span> <span class="n">delta_ret_loop</span><span class="p">(</span>
-            <span class="n">p</span><span class="o">.</span><span class="n">S</span><span class="p">,</span> <span class="n">R</span><span class="p">,</span> <span class="n">surv_rates</span><span class="o">.</span><span class="n">copy</span><span class="p">(),</span> <span class="n">g_dir_value</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">S</span> <span class="o">-</span> <span class="n">R</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+    <span class="n">method</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="s2">"ndc_mortality"</span><span class="p">,</span> <span class="s2">"steady state"</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">t_ret</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">method</span> <span class="o">==</span> <span class="s2">"steady state"</span><span class="p">:</span>
+        <span class="n">t_ret</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">full</span><span class="p">(</span><span class="n">S_ret</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">n_rows</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">method</span> <span class="o">==</span> <span class="s2">"period"</span><span class="p">:</span>
+        <span class="n">t_ret</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">clip</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">t_ret</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">int</span><span class="p">),</span> <span class="mi">0</span><span class="p">,</span> <span class="n">n_rows</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">method</span> <span class="o">==</span> <span class="s2">"cohort"</span><span class="p">:</span>
+        <span class="c1"># a cohort retiring S periods or more before the path begins</span>
+        <span class="c1"># reads the first row at every age, and one retiring after it</span>
+        <span class="c1"># ends reads the last row</span>
+        <span class="n">t_ret</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">clip</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">t_ret</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">int</span><span class="p">),</span> <span class="o">-</span><span class="n">p</span><span class="o">.</span><span class="n">S</span><span class="p">,</span> <span class="n">n_rows</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+            <span class="s2">"ndc_mortality must be one of 'steady state', 'period', "</span>
+            <span class="sa">f</span><span class="s2">"or 'cohort', got </span><span class="si">{</span><span class="n">method</span><span class="si">!r}</span><span class="s2">"</span>
         <span class="p">)</span>
+    <span class="n">t_ret</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">broadcast_to</span><span class="p">(</span><span class="n">t_ret</span><span class="p">,</span> <span class="n">S_ret</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+    <span class="n">g_dir_value</span> <span class="o">=</span> <span class="n">g_dir</span><span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="n">Y</span><span class="p">,</span> <span class="n">p</span><span class="o">.</span><span class="n">g_y</span><span class="p">,</span> <span class="n">p</span><span class="o">.</span><span class="n">g_n</span><span class="p">,</span> <span class="n">p</span><span class="o">.</span><span class="n">dir_growth_rate</span><span class="p">)</span>
+    <span class="c1"># the annuity factor depends only on the retirement age and the</span>
+    <span class="c1"># period of retirement, so compute it once per distinct pair</span>
+    <span class="n">pairs</span><span class="p">,</span> <span class="n">inverse</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span>
+        <span class="n">np</span><span class="o">.</span><span class="n">stack</span><span class="p">([</span><span class="n">S_ret</span><span class="o">.</span><span class="n">ravel</span><span class="p">(),</span> <span class="n">t_ret</span><span class="o">.</span><span class="n">ravel</span><span class="p">()],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">),</span>
+        <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+        <span class="n">return_inverse</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">ages</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">n_ages</span><span class="p">)</span>
+    <span class="n">dir_delta_pairs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">pairs</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+    <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="p">(</span><span class="n">R</span><span class="p">,</span> <span class="n">tR</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">pairs</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">method</span> <span class="o">==</span> <span class="s2">"cohort"</span><span class="p">:</span>
+            <span class="c1"># age a is reached in period tR + a - R</span>
+            <span class="n">rows</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">clip</span><span class="p">(</span><span class="n">tR</span> <span class="o">-</span> <span class="n">R</span> <span class="o">+</span> <span class="n">ages</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">n_rows</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">rows</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">full</span><span class="p">(</span><span class="n">n_ages</span><span class="p">,</span> <span class="n">tR</span><span class="p">)</span>
+        <span class="n">surv_rates</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ascontiguousarray</span><span class="p">(</span><span class="mf">1.0</span> <span class="o">-</span> <span class="n">mort_rates</span><span class="p">[</span><span class="n">rows</span><span class="p">,</span> <span class="n">ages</span><span class="p">])</span>
+        <span class="n">dir_delta_pairs</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">delta_ret_loop</span><span class="p">(</span>
+            <span class="n">p</span><span class="o">.</span><span class="n">S</span><span class="p">,</span> <span class="nb">int</span><span class="p">(</span><span class="n">R</span><span class="p">),</span> <span class="n">surv_rates</span><span class="p">,</span> <span class="n">g_dir_value</span>
+        <span class="p">)</span>
+    <span class="n">dir_delta</span> <span class="o">=</span> <span class="n">dir_delta_pairs</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ravel</span><span class="p">(</span><span class="n">inverse</span><span class="p">)]</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">S_ret</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
     <span class="n">delta_ret</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">/</span> <span class="p">(</span><span class="n">dir_delta</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">indR</span><span class="p">)</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">k_ret</span><span class="p">))</span>
     <span class="k">if</span> <span class="n">delta_ret</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
         <span class="k">return</span> <span class="nb">float</span><span class="p">(</span><span class="n">delta_ret</span><span class="p">)</span>
@@ -1707,31 +1800,39 @@
 <div class="viewcode-block" id="delta_ret_loop">
 <a class="viewcode-back" href="../../pensions.html#ogcore.pensions.delta_ret_loop">[docs]</a>
 <span class="nd">@numba</span><span class="o">.</span><span class="n">jit</span><span class="p">(</span><span class="n">nopython</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-<span class="k">def</span><span class="w"> </span><span class="nf">delta_ret_loop</span><span class="p">(</span><span class="n">S</span><span class="p">,</span> <span class="n">S_ret</span><span class="p">,</span> <span class="n">surv_rates</span><span class="p">,</span> <span class="n">g_dir_value</span><span class="p">,</span> <span class="n">dir_delta_s</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">"""</span>
-<span class="sd">    Compute conversion coefficient for the NDC pension amount</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">delta_ret_loop</span><span class="p">(</span><span class="n">S</span><span class="p">,</span> <span class="n">S_ret</span><span class="p">,</span> <span class="n">surv_rates</span><span class="p">,</span> <span class="n">g_dir_value</span><span class="p">):</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">"""</span>
+<span class="sd">    Compute the annuity factor in the NDC conversion coefficient</span>
+
+<span class="sd">    .. math::</span>
+<span class="sd">        dir_{R} = \sum_{k=0}^{S-R-1}\left[\prod_{i=0}^{k-1}</span>
+<span class="sd">            (1 - \hat{\rho}_{R+i})\right](1 + g_{dir})^{-k}</span>
+
+<span class="sd">    The pension is paid at ages R, ..., S - 1. Following the household</span>
+<span class="sd">    mortality convention, ``1 - rho[s]`` is the probability of</span>
+<span class="sd">    surviving from age s to age s + 1, so the payment at age R + k is</span>
+<span class="sd">    received with probability prod_{i=0}^{k-1} (1 - rho[R + i]) by a</span>
+<span class="sd">    household alive at retirement age R.</span>
 
 <span class="sd">    Args:</span>
 <span class="sd">        S (int): number of periods in the model</span>
 <span class="sd">        S_ret (int): retirement age</span>
-<span class="sd">        surv_rates (Numpy array): survival rates</span>
-<span class="sd">        g_dir_value (scalar): growth rate of NDC pension</span>
-<span class="sd">        dir_delta_s (Numpy array): conversion coefficient for the NDC</span>
-<span class="sd">            pension amount</span>
+<span class="sd">        surv_rates (Numpy array): length S survival rates by age,</span>
+<span class="sd">            1 - rho</span>
+<span class="sd">        g_dir_value (scalar): discount rate used in the conversion</span>
+<span class="sd">            coefficient</span>
 
 <span class="sd">    Returns:</span>
-<span class="sd">        dir_delta (scalar): conversion coefficient for the NDC pension</span>
-<span class="sd">            amount</span>
+<span class="sd">        dir_delta (scalar): expected discounted number of pension</span>
+<span class="sd">            payments per unit of annual benefit</span>
 <span class="sd">    """</span>
-    <span class="n">cumul_surv_rates</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">S</span> <span class="o">-</span> <span class="n">S_ret</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
-    <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">S</span> <span class="o">-</span> <span class="n">S_ret</span> <span class="o">+</span> <span class="mi">1</span><span class="p">):</span>
-        <span class="n">surv_rates_vec</span> <span class="o">=</span> <span class="n">surv_rates</span><span class="p">[</span><span class="n">S_ret</span> <span class="p">:</span> <span class="n">S_ret</span> <span class="o">+</span> <span class="n">s</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span>
-        <span class="n">surv_rates_vec</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="mf">1.0</span>
-        <span class="n">cumul_surv_rates</span><span class="p">[</span><span class="n">s</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">prod</span><span class="p">(</span><span class="n">surv_rates_vec</span><span class="p">)</span>
-        <span class="n">cumul_g_y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">S</span> <span class="o">-</span> <span class="n">S_ret</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
-        <span class="n">cumul_g_y</span><span class="p">[</span><span class="n">s</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="mi">1</span> <span class="o">/</span> <span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="n">g_dir_value</span><span class="p">))</span> <span class="o">**</span> <span class="n">s</span>
-        <span class="n">dir_delta_s</span><span class="p">[</span><span class="n">s</span><span class="p">]</span> <span class="o">=</span> <span class="n">cumul_surv_rates</span><span class="p">[</span><span class="n">s</span><span class="p">]</span> <span class="o">*</span> <span class="n">cumul_g_y</span><span class="p">[</span><span class="n">s</span><span class="p">]</span>
-    <span class="n">dir_delta</span> <span class="o">=</span> <span class="n">dir_delta_s</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+    <span class="n">dir_delta</span> <span class="o">=</span> <span class="mf">0.0</span>
+    <span class="n">cumul_surv</span> <span class="o">=</span> <span class="mf">1.0</span>
+    <span class="n">discount</span> <span class="o">=</span> <span class="mf">1.0</span>
+    <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">S</span> <span class="o">-</span> <span class="n">S_ret</span><span class="p">):</span>
+        <span class="n">dir_delta</span> <span class="o">+=</span> <span class="n">cumul_surv</span> <span class="o">*</span> <span class="n">discount</span>
+        <span class="n">cumul_surv</span> <span class="o">*=</span> <span class="n">surv_rates</span><span class="p">[</span><span class="n">S_ret</span> <span class="o">+</span> <span class="n">k</span><span class="p">]</span>
+        <span class="n">discount</span> <span class="o">/=</span> <span class="mi">1</span> <span class="o">+</span> <span class="n">g_dir_value</span>
     <span class="k">return</span> <span class="n">dir_delta</span></div>
 
 
