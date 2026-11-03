@@ -28,6 +28,7 @@ tax rates are before the noncompliance and filer adjustments that
 ------------------------------------------------------------------------
 """
 
+import contextlib
 import os
 
 import numpy as np
@@ -62,6 +63,24 @@ def _jit_parallel(func):
 
 
 prange = range if numba is None else numba.prange
+
+
+@contextlib.contextmanager
+def num_threads(n):
+    """
+    Run the parallel kernels on at most n threads inside the block, for
+    example in Dask workers that already run side by side; with n None,
+    or without numba, numba's setting is left as it is.
+    """
+    if n is None or numba is None:
+        yield
+        return
+    previous = numba.get_num_threads()
+    numba.set_num_threads(max(1, min(int(n), numba.config.NUMBA_NUM_THREADS)))
+    try:
+        yield
+    finally:
+        numba.set_num_threads(previous)
 
 
 # Stitching points, as in ogcore.household.marg_ut_cons/marg_ut_labor and

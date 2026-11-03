@@ -3843,3 +3843,936 @@ def euler_errors(sol, ages=None, options=None):
         "nan_with_mass": int((nan & with_mass).sum()),
         "b": b_mid,
     }
+
+
+"""
+------------------------------------------------------------------------
+    Transition path household block
+
+    Each cohort is solved over the ages it lives on the time path by
+    ``solve_lifecycle``, with the prices, receipts and policy along its
+    diagonal (period t0 + s at age s for the cohort born in period t0),
+    and its distribution is moved forward from its first period on the
+    path: newborns hold zero assets and draw shocks from ``p.z_dist0``,
+    and households alive in period 0 start from the initial
+    distribution (``initial_distribution_tpi``). Mortality and
+    immigration do not depend on assets or shocks, so the distribution
+    within a (period, age, type) cell follows from the cohort's policies
+    alone, and cells are weighted by the population shares ``p.omega``.
+    Only means within each cell in periods t < T are kept (and, on the
+    final pass, tax rates, Euler errors and moments of the
+    distribution), so memory does not grow with the length of the path,
+    and cohorts can be solved in any order or in parallel.
+------------------------------------------------------------------------
+"""
+
+# means by (period, age, type) that every pass of the household block
+# returns
+TPI_CELL_MEANS = (
+    "b_s",
+    "b_sp1",
+    "n",
+    "n_eff",
+    "c",
+    "inc_pay_tax_liab",
+    "w_tax_liab",
+    "failed",
+    "above_grid",
+)
+# variables whose variance of logs is reported by period
+TPI_LOG_MOMENTS = ("c", "labor_income", "before_tax_income")
+
+
+def tpi_cohorts(p):
+    """
+    Birth periods of the cohorts alive in periods 0, ..., T - 1, from
+    -(S - 1) (age S - 1 in period 0) to T - 1.
+    """
+    return np.arange(-(p.S - 1), p.T)
+
+
+def ss_mean_effective_labor(ss_vars):
+    """
+    Mean effective labor E[z n | s, j], (S, J), of a steady state solved
+    with ``household_solver = 'egm'`` (the output of ``SS.run_SS``).
+    """
+    missing = {"dist", "n_policy", "z_grid"} - set(ss_vars)
+    if missing:
+        raise ValueError(
+            "The transition path with household_solver = 'egm' needs "
+            "steady states solved with household_solver = 'egm' (missing "
+            f"{sorted(missing)})"
+        )
+    return mean_effective_labor(
+        ss_vars["dist"], ss_vars["n_policy"], ss_vars["z_grid"]
+    )
+
+
+def pension_tpi(p, r, w, factor, theta=None, n_eff=None):
+    """
+    Pension benefits by period, age and type along the time path,
+    (T+S, S, J), which households take as given (OG-Core's first-order
+    conditions also ignore the effect of labor supply on benefits).
+
+    US-style Social Security pays theta_j times the wage from the
+    retirement age on, as ``pensions.SS_amount`` does along the time
+    path. The other systems pay benefits that depend on a cohort's
+    earnings history. They are computed cohort by cohort, as in OG-Core's
+    household problem (``pensions.DB_amount``, ``NDC_amount`` and
+    ``PS_amount``), from the mean effective labor E[z n | t, s, j] along
+    the cohort's diagonal (``n_eff``) and, before the time path, from
+    ``p.n_preTP``. With shocks this is an approximation, as in the
+    steady state (see ``pension_ss``).
+
+    Benefits are scaled by ``p.replacement_rate_adjust`` of the period
+    they are paid in, as OG-Core's aggregate pension outlays are, so
+    that what households receive is what the government pays.
+    (OG-Core's household problem applies the adjustment of a cohort's
+    first period on the path; the two agree when the adjustment does
+    not change over time.)
+
+    Args:
+        p (OG-Core Specifications object): model parameters
+        r (array_like): return on the household portfolio, (T+S,)
+        w (array_like): wage, (T+S,)
+        factor (scalar): model-units-to-dollars scaling factor
+        theta (array_like): replacement rates, (J,) (US-style Social
+            Security)
+        n_eff (array_like): mean effective labor by period, age and
+            type, (T+S, S, J) (the other systems)
+
+    Returns:
+        pension (Numpy array): benefits, (T+S, S, J); zero for cohorts
+            born in period T or later
+    """
+    TS, S, J = p.T + p.S, p.S, p.J
+    w = np.asarray(w, dtype=float).reshape(TS)
+    if p.pension_system == "US-Style Social Security":
+        if theta is None:
+            raise ValueError("US-style Social Security benefits need theta")
+        retired = np.arange(S)[None, :] >= np.asarray(p.retire)[:TS, None]
+        amount = (
+            np.asarray(theta, dtype=float).reshape(1, 1, J)
+            * np.asarray(p.replacement_rate_adjust)[:TS].reshape(TS, 1, J)
+            * w.reshape(TS, 1, 1)
+        )
+        return np.where(retired[:, :, None], amount, 0.0)
+    if n_eff is None:
+        raise ValueError(f"{p.pension_system} benefits need n_eff")
+    n_eff = np.asarray(n_eff, dtype=float)
+    r = np.asarray(r, dtype=float).reshape(TS)
+    e = hh_core._get_e_long(p)
+    adjust = np.asarray(p.replacement_rate_adjust, dtype=float)
+    pension = np.zeros((TS, S, J))
+    for t0 in tpi_cohorts(p):
+        ages = np.arange(max(0, -t0), S)
+        times = t0 + ages
+        # households alive in period 0 compute benefits from period 0,
+        # as in TPI.inner_loop
+        t = max(int(t0), 0)
+        for j in range(J):
+            w_c, n_c, e_c = w[times], n_eff[times, ages, j], e[times, ages, j]
+            if p.pension_system == "Defined Benefits":
+                amount = pensions.DB_amount(w_c, e_c, n_c, t, j, "TPI", p)
+            elif p.pension_system == "Notional Defined Contribution":
+                # Y = 1, as tax.net_taxes passes to pension_amount
+                amount = pensions.NDC_amount(w_c, e_c, n_c, r[times], 1, j, p)
+            elif p.pension_system == "Points System":
+                amount = pensions.PS_amount(w_c, e_c, n_c, j, factor, p)
+            else:
+                raise ValueError(
+                    f"Unknown pension_system {p.pension_system!r}"
+                )
+            pension[times, ages, j] = amount * adjust[times, j]
+    return pension
+
+
+def household_inputs_tpi(
+    p, r_p, w, p_m, BQ, RM, TR, factor, ubi, theta=None, n_eff=None
+):
+    """
+    Per-household prices, receipts and pension benefits by period along
+    the time path, computed as in ``ogcore.TPI.inner_loop``, for periods
+    0, ..., T + S - 1 (the last S at their steady-state values).
+
+    Args:
+        p (OG-Core Specifications object): model parameters
+        r_p (array_like): return on the household portfolio, (T+S,)
+        w (array_like): wage, (T+S,)
+        p_m (array_like): output prices, (T+S, M)
+        BQ (array_like): aggregate bequests, (T+S, J) (or (T+S,) if
+            ``p.use_zeta``)
+        RM (array_like): aggregate remittances, (T+S,)
+        TR (array_like): aggregate transfers, (T+S,)
+        factor (scalar): model-units-to-dollars scaling factor
+        ubi (array_like): UBI by period, age and type, (T+S, S, J)
+        theta (array_like): replacement rates, (J,) (US-style Social
+            Security)
+        n_eff (array_like): mean effective labor by period, age and type,
+            (T+S, S, J), for pensions that depend on earnings histories
+            (see ``pension_tpi``)
+
+    Returns:
+        dict: 'r', 'w', 'p_tilde' and 'c_min_exp' (minimum consumption
+        expenditure), (T+S,); 'bq', 'rm', 'tr', 'ubi' and 'pension',
+        (T+S, S, J); 'factor'
+    """
+    TS = p.T + p.S
+    shape = (TS, p.S, p.J)
+    r_p = np.array(r_p, dtype=float).reshape(TS)
+    w = np.array(w, dtype=float).reshape(TS)
+    p_m = np.asarray(p_m, dtype=float).reshape(TS, p.M)
+    p_i = p_m @ np.asarray(p.io_matrix, dtype=float).T
+    tau_c = np.asarray(p.tau_c, dtype=float)[:TS]
+    p_tilde = aggr.get_ptilde(p_i, tau_c, p.alpha_c, "TPI")
+    c_min = np.asarray(p.c_min, dtype=float).reshape(1, p.I)
+
+    def by_cell(x):
+        return np.array(np.broadcast_to(np.asarray(x, dtype=float), shape))
+
+    return {
+        "r": r_p,
+        "w": w,
+        "p_tilde": np.asarray(p_tilde, dtype=float).reshape(TS),
+        "c_min_exp": np.sum((1 + tau_c) * p_i * c_min, axis=1),
+        "bq": by_cell(get_bq(np.asarray(BQ, dtype=float), None, p, "TPI")),
+        "rm": by_cell(get_rm(np.asarray(RM, dtype=float), None, p, "TPI")),
+        "tr": by_cell(get_tr(np.asarray(TR, dtype=float), None, p, "TPI")),
+        "ubi": by_cell(ubi),
+        "pension": pension_tpi(p, r_p, w, factor, theta, n_eff),
+        "factor": float(factor),
+    }
+
+
+def _tax_params_path(p):
+    """
+    Parameters of the ETR, labor income MTR and capital income MTR
+    functions by period and age: (T+S, S, K) arrays, or for
+    nonparametric tax functions the nested lists of functions.
+    """
+    out = []
+    for name in ("etr_params", "mtrx_params", "mtry_params"):
+        params = getattr(p, name)
+        try:
+            out.append(np.asarray(params, dtype=float))
+        except (TypeError, ValueError):
+            out.append(params)
+    return tuple(out)
+
+
+def lifecycle_inputs_tpi(p, paths, t0, js=None, tax_params=None):
+    """
+    ``LifecycleInputs`` of the cohort born in period t0 for the ages it
+    lives on the time path, s = max(0, -t0), ..., S - 1, at age s in
+    period t0 + s: prices, receipts and policy along the cohort's
+    diagonal.
+
+    Args:
+        p (OG-Core Specifications object): model parameters
+        paths (dict): per-household paths (``household_inputs_tpi``)
+        t0 (int): birth period, -(S - 1) <= t0 <= T - 1
+        js (array_like): types to include; all if None
+        tax_params (tuple): tax function parameters by period and age
+            (``_tax_params_path``); taken from p if None
+
+    Returns:
+        inputs (LifecycleInputs): S - max(0, -t0) ages
+        ages (Numpy array): the ages
+        times (Numpy array): the period of each age
+    """
+    S, J = p.S, p.J
+    js = np.arange(J) if js is None else np.atleast_1d(js).astype(int)
+    ages = np.arange(max(0, -int(t0)), S)
+    times = int(t0) + ages
+    if tax_params is None:
+        tax_params = _tax_params_path(p)
+
+    def by_age_type(x):  # (T+S, S, J) -> (ages, types)
+        return np.ascontiguousarray(
+            np.asarray(x, dtype=float)[times, ages][:, js]
+        )
+
+    def by_type(x):  # (T+S, J) -> (ages, types)
+        return np.ascontiguousarray(np.asarray(x, dtype=float)[times][:, js])
+
+    def by_age(x):  # (T+S,) -> (ages,)
+        return np.ascontiguousarray(np.asarray(x, dtype=float)[times])
+
+    def params_by_age(params):
+        if isinstance(params, np.ndarray):
+            return np.ascontiguousarray(params[times, ages])
+        return [params[t][s] for t, s in zip(times, ages)]
+
+    bq = by_age_type(paths["bq"])
+    inputs = LifecycleInputs(
+        js=js,
+        r=by_age(paths["r"]),
+        w=by_age(paths["w"]),
+        p_tilde=by_age(paths["p_tilde"]),
+        chi_n=np.ascontiguousarray(
+            np.asarray(p.chi_n, dtype=float)[times, ages]
+        ),
+        h_wealth=by_age(p.h_wealth),
+        m_wealth=by_age(p.m_wealth),
+        p_wealth=by_age(p.p_wealth),
+        c_min_exp=by_age(paths["c_min_exp"]),
+        etr_params=params_by_age(tax_params[0]),
+        mtrx_params=params_by_age(tax_params[1]),
+        mtry_params=params_by_age(tax_params[2]),
+        e=by_age_type(hh_core._get_e_long(p)),
+        rho=by_age_type(p.rho),
+        tau_payroll=by_type(p.tau_payroll),
+        bq=bq,
+        rm=by_age_type(paths["rm"]),
+        tr=by_age_type(paths["tr"]),
+        ubi=by_age_type(paths["ubi"]),
+        pension=by_age_type(paths["pension"]),
+        bq_tax=by_age(p.tau_bq)[:, None] * bq,
+        income_filer=by_type(p.income_tax_filer),
+        wealth_filer=by_type(p.wealth_tax_filer),
+        labor_nc=by_type(p.labor_income_tax_noncompliance_rate),
+        capital_nc=by_type(p.capital_income_tax_noncompliance_rate),
+        beta=np.asarray(p.beta, dtype=float)[js],
+        chi_b=np.asarray(p.chi_b, dtype=float)[js],
+        factor=float(paths["factor"]),
+        sigma=float(p.sigma),
+        g_y=float(p.g_y),
+        ltilde=float(p.ltilde),
+        b_ellipse=float(p.b_ellipse),
+        upsilon=float(p.upsilon),
+        tax_func_type=p.tax_func_type,
+        analytical_mtrs=bool(p.analytical_mtrs),
+    )
+    return inputs, ages, times
+
+
+def _rebin(mass, x, grid):
+    """
+    Move mass at asset values x onto the nodes of grid by the two-node
+    split of Young's method, which preserves the mean of mass within
+    the grid; mass beyond its ends goes to the end nodes.
+
+    Args:
+        mass (Numpy array): mass at each value, (nx, nz)
+        x (Numpy array): asset values, (nx,)
+        grid (Numpy array): increasing nodes, (nb,)
+
+    Returns:
+        new (Numpy array): mass at the nodes, (nb, nz)
+        above (float): mass above the top of the grid
+    """
+    nb = grid.size
+    xc = np.clip(x, grid[0], grid[-1])
+    k = np.clip(np.searchsorted(grid, xc, side="right") - 1, 0, nb - 2)
+    wt = (xc - grid[k]) / (grid[k + 1] - grid[k])
+    new = np.zeros((nb, mass.shape[1]))
+    np.add.at(new, k, mass * (1 - wt)[:, None])
+    np.add.at(new, k + 1, mass * wt[:, None])
+    return new, float(mass[x > grid[-1]].sum())
+
+
+def initial_distribution_tpi(p, ss_vars, b_sp1_init, b_grid):
+    """
+    Distribution over (asset node, shock) of the households of each age
+    and type alive in period 0 of the time path, summing to one within
+    each age and type. Newborns hold zero assets and draw shocks from
+    ``p.z_dist0``. Households of age s >= 1 have the distribution of
+    their age and type in the baseline steady state, with assets scaled
+    so that their mean is the initial savings OG-Core sets,
+    ``b_sp1_init[s - 1, j]`` (see ``TPI.get_initial_SS_values``), moved
+    onto the asset grids of the time path by the two-node split of
+    Young's method, which preserves the mean.
+
+    Args:
+        p (OG-Core Specifications object): model parameters
+        ss_vars (dict): baseline steady state solved with
+            ``household_solver = 'egm'`` (keys 'dist', 'b_grid' and
+            'z_grid')
+        b_sp1_init (array_like): initial savings by age and type, (S, J)
+        b_grid (array_like): asset grids of the time path, (J, nb)
+
+    Returns:
+        init_dist (Numpy array): (S, J, nb, nz)
+    """
+    missing = {"dist", "b_grid", "z_grid"} - set(ss_vars)
+    if missing:
+        raise ValueError(
+            "The transition path with household_solver = 'egm' needs a "
+            "baseline steady state solved with household_solver = 'egm' "
+            f"(missing {sorted(missing)})"
+        )
+    S, J = p.S, p.J
+    z_grid, _, z_dist0 = _shock_process(p)
+    ss_dist = np.asarray(ss_vars["dist"], dtype=float)
+    ss_grid = np.asarray(ss_vars["b_grid"], dtype=float)
+    if ss_dist.shape[:2] != (S, J) or not (
+        ss_dist.shape[3] == z_grid.size
+        and np.allclose(ss_vars["z_grid"], z_grid)
+    ):
+        raise ValueError(
+            "The baseline steady state's distribution does not match the "
+            "ages, types and shock process of this run"
+        )
+    grid = np.asarray(b_grid, dtype=float)
+    b_sp1_init = np.asarray(b_sp1_init, dtype=float).reshape(S, J)
+    cond = ss_dist / ss_dist.sum(axis=(2, 3), keepdims=True)
+    mean_b = (cond * ss_grid[None, :, :, None]).sum(axis=(2, 3))
+    init = np.zeros((S, J, grid.shape[1], z_grid.size))
+    init[0, :, 0, :] = z_dist0
+    above = np.zeros((S, J))
+    for s in range(1, S):
+        for j in range(J):
+            scale = (
+                b_sp1_init[s - 1, j] / mean_b[s, j]
+                if mean_b[s, j] > 0
+                else 1.0
+            )
+            init[s, j], above[s, j] = _rebin(
+                cond[s, j], scale * ss_grid[j], grid[j]
+            )
+    clipped = (above * p.omega[0]).sum() / p.omega[0].sum()
+    options = SolverOptions()
+    if clipped > options.mass_tol:
+        log = (
+            logger.warning if clipped > options.max_fail_frac else logger.info
+        )
+        log(
+            "%.1e of the initial population holds assets above the top of "
+            "the asset grids; they are moved to the top node",
+            clipped,
+        )
+    return init
+
+
+def _cell_sums(a, m, values, A, M):
+    """Sums of values over points at age index a and type m, (A, M)."""
+    return np.bincount(a * M + m, weights=values, minlength=A * M).reshape(
+        A, M
+    )
+
+
+def _income_tax_rates(p, inp, kind, a, m, b, n, ez):
+    """
+    The effective income tax rate (kind 'etr') or marginal rate on labor
+    ('mtrx') or capital ('mtry') income at points of a cohort, by
+    ``tax.ETR_income`` and ``tax.MTR_income`` with the parameters of each
+    point's age.
+
+    Args:
+        p (OG-Core Specifications object): model parameters
+        inp (LifecycleInputs): the cohort's inputs
+        kind (str): 'etr', 'mtrx' or 'mtry'
+        a, m (Numpy arrays): age index and type index of each point
+        b, n, ez (Numpy arrays): assets, labor supply and effective labor
+            units e z at each point
+
+    Returns:
+        rate (Numpy array): the rate at each point
+    """
+    capital = kind == "mtry"
+    mtr_params = inp.mtry_params if capital else inp.mtrx_params
+    nc = inp.capital_nc if capital else inp.labor_nc
+
+    def rate(sel, etr_params, mtr_params):
+        r, w, filer = inp.r[a][sel], inp.w[a][sel], inp.income_filer[a, m][sel]
+        if kind == "etr":
+            return tax.ETR_income(
+                r,
+                w,
+                b[sel],
+                n[sel],
+                inp.factor,
+                ez[sel],
+                etr_params,
+                inp.labor_nc[a, m][sel],
+                inp.capital_nc[a, m][sel],
+                filer,
+                p,
+            )
+        return tax.MTR_income(
+            r,
+            w,
+            b[sel],
+            n[sel],
+            inp.factor,
+            capital,
+            ez[sel],
+            etr_params,
+            mtr_params,
+            nc[a, m][sel],
+            filer,
+            p,
+        )
+
+    if isinstance(inp.etr_params, np.ndarray):
+        return rate(slice(None), inp.etr_params[a], mtr_params[a])
+    # nonparametric tax functions: one age at a time
+    out = np.empty(b.shape)
+    for age in np.unique(a):
+        sel = a == age
+        out[sel] = rate(sel, inp.etr_params[age], mtr_params[age])
+    return out
+
+
+def _log_moment_sums(a, weight, x, A):
+    """
+    Sums of weight, weight log x and weight (log x)^2 over points with
+    x > 0, by age index, (A, 3).
+    """
+    pos = x > 0
+    a, weight, lx = a[pos], weight[pos], np.log(x[pos])
+    return np.stack(
+        [
+            np.bincount(a, weights=w_x, minlength=A)
+            for w_x in (weight, weight * lx, weight * lx**2)
+        ],
+        axis=1,
+    )
+
+
+def _solve_cohort_tpi(p, paths, t0, init, grid, tax_params, options, final):
+    """
+    Solve the cohort born in period t0 (all types) and move its
+    distribution forward from ``init``, its distribution in its first
+    period on the time path.
+
+    Returns:
+        dict with 'times' and 'ages' of the cohort's cells in periods
+        t < T, the means ``TPI_CELL_MEANS`` in those cells, (A, J) each,
+        and 'diagnostics'; with ``final``, also the cell means of 'etr',
+        'mtrx' and 'mtry', 'euler_savings' (largest Euler error between
+        asset nodes where households are), 'wealth_mass' (population on
+        each asset node, (A, J, nb)) and 'log_moments'
+        (``_log_moment_sums`` of each of ``TPI_LOG_MOMENTS``)
+    """
+    inp, ages, times = lifecycle_inputs_tpi(p, paths, t0, None, tax_params)
+    z_grid, z_trans, _ = _shock_process(p)
+    b_pol, c_pol, n_pol, diag = solve_lifecycle(
+        inp, grid, z_grid, z_trans, options, check=False
+    )
+    L, M, nb, nz = b_pol.shape
+    A = int(np.sum(times < p.T))
+    cond = np.empty((A, M, nb, nz))
+    cond[0] = init
+    for a in range(A - 1):
+        new = kernels.young_step(cond[a], b_pol[a], grid, z_trans)[0]
+        cond[a + 1] = new / new.sum(axis=(1, 2), keepdims=True)
+
+    def mean(x):
+        return (cond * x).sum(axis=(2, 3))
+
+    out = {
+        "times": times[:A],
+        "ages": ages[:A],
+        "b_s": mean(grid[None, :, :, None]),
+        "b_sp1": mean(b_pol[:A]),
+        "n": mean(n_pol[:A]),
+        "n_eff": mean(n_pol[:A] * z_grid),
+        "c": mean(c_pol[:A]),
+        "failed": mean(diag.failed_nodes[:A]),
+        "above_grid": mean(b_pol[:A] > grid[None, :, -1:, None]),
+        "diagnostics": diag,
+    }
+    # taxes are nonlinear: evaluated at every node with mass
+    idx = np.nonzero(cond > 0)
+    a_i, m_i, ib_i, iz_i = idx
+    weight = cond[idx]
+    b = grid[m_i, ib_i]
+    n = n_pol[idx]
+    ez = inp.e[a_i, m_i] * z_grid[iz_i]
+    r, w = inp.r[a_i], inp.w[a_i]
+    labor_income = w * ez * n
+    etr = _income_tax_rates(p, inp, "etr", a_i, m_i, b, n, ez)
+    inc_pay = etr * (r * b + labor_income) + (
+        inp.tau_payroll[a_i, m_i] * labor_income
+    )
+    wealth = (
+        tax.ETR_wealth(
+            b,
+            inp.h_wealth[a_i],
+            inp.m_wealth[a_i],
+            inp.p_wealth[a_i],
+            inp.wealth_filer[a_i, m_i],
+        )
+        * b
+    )
+    out["inc_pay_tax_liab"] = _cell_sums(a_i, m_i, weight * inc_pay, A, M)
+    out["w_tax_liab"] = _cell_sums(a_i, m_i, weight * wealth, A, M)
+    if not final:
+        return out
+    out["etr"] = _cell_sums(a_i, m_i, weight * etr, A, M)
+    for kind in ("mtrx", "mtry"):
+        rate = _income_tax_rates(p, inp, kind, a_i, m_i, b, n, ez)
+        out[kind] = _cell_sums(a_i, m_i, weight * rate, A, M)
+    omega = np.asarray(p.omega, dtype=float)[times[:A], ages[:A]]
+    pop = cond * omega[:, :, None, None]
+    # Euler errors between asset nodes, by cell; the last age has none
+    n_checked = min(A, L - 1)
+    euler = np.zeros((A, M))
+    if n_checked:
+        dist = np.zeros((L, M, nb, nz))
+        dist[:A] = pop
+        sol = HouseholdSolution(
+            b_policy=b_pol,
+            c_policy=c_pol,
+            n_policy=n_pol,
+            b_grid=grid,
+            z_grid=z_grid,
+            z_trans=z_trans,
+            dist=dist,
+            pension=inp.pension,
+            theta=None,
+            inputs=inp,
+            diagnostics=diag,
+            dist_diagnostics={},
+            iterations={},
+        )
+        errors = euler_errors(sol, ages=range(n_checked), options=options)
+        euler[:n_checked] = errors["max_with_mass_by_cell"][:n_checked]
+    out["euler_savings"] = euler
+    out["wealth_mass"] = pop.sum(axis=3)
+    values = {
+        "c": c_pol[idx],
+        "labor_income": labor_income,
+        "before_tax_income": r * b + labor_income,
+    }
+    out["log_moments"] = {
+        k: _log_moment_sums(a_i, pop[idx], values[k], A)
+        for k in TPI_LOG_MOMENTS
+    }
+    return out
+
+
+@dataclass
+class TransitionSolution:
+    """
+    Solution of the household block along the time path at given paths
+    of prices, aggregates and policy: means within each (period, age,
+    type) cell over the distribution of households, for periods
+    t = 0, ..., T - 1, (T, S, J) each (``solve_cohorts_tpi`` and
+    ``combine_transition_solutions``).
+
+    Attributes:
+        b_s, b_sp1, n, n_eff, c (Numpy arrays): assets held, savings b',
+            labor supply, effective labor z n and consumption
+        inc_pay_tax_liab, w_tax_liab (Numpy arrays): income and payroll
+            tax and wealth tax liabilities, the keyword arguments of
+            ``tax.net_taxes`` and ``aggregates.revenue`` that take them
+        failed (Numpy array): share of each cell at grid points where
+            the solver failed
+        above_grid (Numpy array): share of each cell whose savings are
+            above the top of its asset grid (moved to the top node)
+        b_grid (Numpy array): asset grid of each type, (J, nb)
+        z_grid, z_trans (Numpy arrays): shock process
+        diagnostics (SolverDiagnostics): solver counts summed over
+            cohorts; 'failure_ages' are ages, and 'failed_mass' is the
+            largest population share at failed points in any period
+        rates (dict): 'etr', 'mtrx' and 'mtry' cell means (final pass
+            only, else None)
+        euler_savings (Numpy array): largest Euler error between asset
+            nodes where households are, by cell (final pass only)
+        moments (dict): 'wealth_mass', the population on each asset node
+            by period and type, (T, J, nb), and 'log', sums for the
+            variance of logs by period (``_log_moment_sums``) of
+            ``TPI_LOG_MOMENTS``, (T, 3) each (final pass only)
+    """
+
+    b_s: np.ndarray
+    b_sp1: np.ndarray
+    n: np.ndarray
+    n_eff: np.ndarray
+    c: np.ndarray
+    inc_pay_tax_liab: np.ndarray
+    w_tax_liab: np.ndarray
+    failed: np.ndarray
+    above_grid: np.ndarray
+    b_grid: np.ndarray
+    z_grid: np.ndarray
+    z_trans: np.ndarray
+    diagnostics: SolverDiagnostics
+    rates: dict = None
+    euler_savings: np.ndarray = None
+    moments: dict = None
+
+    def tax_liabilities(self):
+        """Liabilities for ``tax.net_taxes`` and ``aggregates.revenue``."""
+        return {
+            "inc_pay_tax_liab": self.inc_pay_tax_liab,
+            "w_tax_liab": self.w_tax_liab,
+        }
+
+
+def _add_diagnostics(total, diag, s0=0):
+    """Add the counts of diag (ages from s0) to total."""
+    for name in (
+        "n_points",
+        "n_knots",
+        "egm_failures",
+        "infeasible_knots",
+        "dropped_knots",
+        "static_failures",
+        "euler_failures",
+        "euler_kinks",
+        "labor_corners",
+        "constrained",
+        "gap",
+        "extrapolated",
+        "direct",
+    ):
+        setattr(total, name, getattr(total, name) + getattr(diag, name))
+    for name in ("max_static_residual", "max_euler_residual"):
+        setattr(total, name, max(getattr(total, name), getattr(diag, name)))
+    total.failure_ages = sorted(
+        set(total.failure_ages) | {s0 + s for s in diag.failure_ages}
+    )
+    total.seconds += diag.seconds
+    total.backend = diag.backend
+
+
+# cell means of the final pass, besides TPI_CELL_MEANS
+TPI_FINAL_CELLS = ("etr", "mtrx", "mtry", "euler_savings")
+
+
+@dataclass
+class TransitionPart:
+    """
+    The household block along the time path for some cohorts
+    (``solve_cohorts_tpi``), compact enough to send between processes.
+
+    Attributes:
+        cells (list): for each cohort, a dict with the 'times' and 'ages'
+            of its cells in periods t < T and its means there,
+            ``TPI_CELL_MEANS`` (and on the final pass
+            ``TPI_FINAL_CELLS``), (A, J) each
+        diagnostics (SolverDiagnostics): solver counts summed over the
+            cohorts
+        b_grid (Numpy array): asset grids, (J, nb)
+        moments (dict): moments of the distribution summed over the
+            cohorts, as ``TransitionSolution.moments`` (final pass only)
+    """
+
+    cells: list
+    diagnostics: SolverDiagnostics
+    b_grid: np.ndarray
+    moments: dict = None
+
+
+def solve_cohorts_tpi(
+    p,
+    paths,
+    init_dist,
+    b_grid,
+    cohorts=None,
+    options=None,
+    final=False,
+    numba_threads=None,
+):
+    """
+    Solve the household block along the time path for some cohorts:
+    each one's policies by ``solve_lifecycle`` on the paths along its
+    diagonal, its distribution moved forward from its first period on
+    the path, and its means in the cells of periods t < T.
+
+    Args:
+        p (OG-Core Specifications object): model parameters
+        paths (dict): per-household paths (``household_inputs_tpi``)
+        init_dist (Numpy array): distribution of the households alive in
+            period 0, (S, J, nb, nz) (``initial_distribution_tpi``)
+        b_grid (array_like): asset grids, (J, nb), fixed along the path
+        cohorts (array_like): birth periods to solve; all cohorts alive
+            in periods 0, ..., T - 1 (``tpi_cohorts``) if None
+        options (SolverOptions): solver settings
+        final (bool): also compute tax rates, Euler errors and moments
+            of the distribution
+        numba_threads (int): threads for the compiled kernels (e.g. 1 in
+            Dask workers); numba's setting if None
+
+    Returns:
+        TransitionPart (failures are not checked; see
+        ``combine_transition_solutions``)
+    """
+    options = options or SolverOptions()
+    T, S, J = p.T, p.S, p.J
+    cohorts = tpi_cohorts(p) if cohorts is None else np.atleast_1d(cohorts)
+    grid = np.ascontiguousarray(b_grid, dtype=float)
+    z_grid, z_trans, z_dist0 = _shock_process(p)
+    nb, nz = grid.shape[1], z_grid.size
+    if np.shape(init_dist) != (S, J, nb, nz):
+        raise ValueError(
+            f"init_dist must be (S, J, nb, nz) = {(S, J, nb, nz)}, got "
+            f"{np.shape(init_dist)}"
+        )
+    tax_params = _tax_params_path(p)
+    newborn = np.zeros((J, nb, nz))
+    newborn[:, 0, :] = z_dist0
+    keys = ("times", "ages") + TPI_CELL_MEANS
+    if final:
+        keys += TPI_FINAL_CELLS
+        moments = {
+            "wealth_mass": np.zeros((T, J, nb)),
+            "log": {k: np.zeros((T, 3)) for k in TPI_LOG_MOMENTS},
+        }
+    cells = []
+    diag = SolverDiagnostics()
+    with kernels.num_threads(numba_threads):
+        for t0 in cohorts:
+            t0 = int(t0)
+            init = newborn if t0 >= 0 else init_dist[-t0]
+            out = _solve_cohort_tpi(
+                p, paths, t0, init, grid, tax_params, options, final
+            )
+            cells.append({k: out[k] for k in keys})
+            _add_diagnostics(diag, out["diagnostics"], max(0, -t0))
+            if final:
+                t = out["times"]
+                moments["wealth_mass"][t] += out["wealth_mass"]
+                for k in TPI_LOG_MOMENTS:
+                    moments["log"][k][t] += out["log_moments"][k]
+    return TransitionPart(
+        cells=cells,
+        diagnostics=diag,
+        b_grid=grid,
+        moments=moments if final else None,
+    )
+
+
+def combine_transition_solutions(parts, p, options=None):
+    """
+    Assemble the solutions for disjoint sets of cohorts that together
+    cover all cohorts (``solve_cohorts_tpi``) into the means by period,
+    age and type, and check failures: raise ``HouseholdSolverError`` if,
+    in any period, more than ``options.max_fail_frac`` of the population
+    is at grid points where the solver failed (or the solver failed at
+    too many endogenous-grid knots). Savings above the top of the asset
+    grids, which are moved to the top node, are logged, with a warning
+    above that share of the population.
+
+    Args:
+        parts (list): TransitionPart for each set of cohorts
+        p (OG-Core Specifications object): model parameters
+        options (SolverOptions): solver settings
+
+    Returns:
+        TransitionSolution
+    """
+    options = options or SolverOptions()
+    parts = list(parts)
+    T, S, J = p.T, p.S, p.J
+    final = parts[0].moments is not None
+    names = TPI_CELL_MEANS + (TPI_FINAL_CELLS if final else ())
+    arrays = {k: np.zeros((T, S, J)) for k in names}
+    total = SolverDiagnostics()
+    for part in parts:
+        _add_diagnostics(total, part.diagnostics)
+        for cohort in part.cells:
+            t, s = cohort["times"], cohort["ages"]
+            for k in names:
+                arrays[k][t, s] = cohort[k]
+    moments = None
+    if final:
+        moments = {
+            "wealth_mass": sum(q.moments["wealth_mass"] for q in parts),
+            "log": {
+                k: sum(q.moments["log"][k] for q in parts)
+                for k in TPI_LOG_MOMENTS
+            },
+        }
+    z_grid, z_trans, _ = _shock_process(p)
+    sol = TransitionSolution(
+        **{k: arrays[k] for k in TPI_CELL_MEANS},
+        b_grid=parts[0].b_grid,
+        z_grid=z_grid,
+        z_trans=z_trans,
+        diagnostics=total,
+        rates={k: arrays[k] for k in ("etr", "mtrx", "mtry")}
+        if final
+        else None,
+        euler_savings=arrays["euler_savings"] if final else None,
+        moments=moments,
+    )
+    omega = np.asarray(p.omega, dtype=float)[:T]
+    pop = omega.sum(axis=(1, 2))
+    total.failed_mass = float(
+        ((omega * sol.failed).sum(axis=(1, 2)) / pop).max()
+    )
+    above = (omega * sol.above_grid).sum(axis=(1, 2)) / pop
+    if above.max() > options.mass_tol:
+        log = (
+            logger.warning
+            if above.max() > options.max_fail_frac
+            else logger.info
+        )
+        log(
+            "Savings above the top of the asset grids for up to %.1e of "
+            "the population (period %d); they are moved to the top node",
+            above.max(),
+            int(np.argmax(above)),
+        )
+    total.check(options)
+    return sol
+
+
+def solve_households_tpi(
+    p, paths, init_dist, b_grid, options=None, final=False
+):
+    """
+    The household block along the time path for all cohorts alive in
+    periods 0, ..., T - 1, in this process (``solve_cohorts_tpi``,
+    ``combine_transition_solutions``).
+
+    Args:
+        p (OG-Core Specifications object): model parameters
+        paths (dict): per-household paths (``household_inputs_tpi``)
+        init_dist (Numpy array): distribution of the households alive in
+            period 0, (S, J, nb, nz) (``initial_distribution_tpi``)
+        b_grid (array_like): asset grids, (J, nb)
+        options (SolverOptions): solver settings
+        final (bool): also compute tax rates, Euler errors and moments
+            of the distribution
+
+    Returns:
+        TransitionSolution
+    """
+    part = solve_cohorts_tpi(
+        p, paths, init_dist, b_grid, options=options, final=final
+    )
+    return combine_transition_solutions([part], p, options)
+
+
+def inequality_tpi(sol):
+    """
+    Inequality by period along the time path: over the full
+    distribution of households, the Gini coefficient and top 10% and 1%
+    shares of wealth held at the start of the period ('b_s'), and the
+    variance of logs of consumption ('c'), labor income w e z n
+    ('labor_income') and before-tax income r b + w e z n
+    ('before_tax_income') over households for which they are positive.
+
+    Args:
+        sol (TransitionSolution): solution of a final pass
+
+    Returns:
+        dict of dicts of (T,) arrays
+    """
+    mass = sol.moments["wealth_mass"]
+    T = mass.shape[0]
+    values = np.asarray(sol.b_grid).ravel()
+    wealth = {k: np.zeros(T) for k in ("gini", "top_10_share", "top_1_share")}
+    for t in range(T):
+        weight = mass[t].ravel()
+        keep = weight > 0
+        ineq = utils.Inequality(
+            values[keep].reshape(-1, 1),
+            (weight[keep] / weight[keep].sum()).reshape(-1, 1),
+            None,
+            1,
+            1,
+        )
+        wealth["gini"][t] = ineq.gini()
+        wealth["top_10_share"][t] = ineq.top_share(0.1)
+        wealth["top_1_share"][t] = ineq.top_share(0.01)
+    out = {"b_s": wealth}
+    for k, sums in sol.moments["log"].items():
+        mean = sums[:, 1] / sums[:, 0]
+        out[k] = {"var_of_logs": sums[:, 2] / sums[:, 0] - mean**2}
+    return out

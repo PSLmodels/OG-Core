@@ -15,10 +15,10 @@ import copy
 
 import numpy as np
 import pytest
-from ogcore import SS, TPI, household_stoch, tax
+from ogcore import SS, household_stoch, tax
 from ogcore import aggregates as aggr
 from ogcore.parameters import Specifications
-from stoch_test_utils import ogcore_test_calibration, set_ar1_shocks
+from stoch_test_utils import egm_specs, hsv_calibration
 
 # General equilibrium variables the one-state steady state must
 # reproduce, and their relative tolerance. Young's method spreads each
@@ -36,32 +36,6 @@ OTHER_AGGREGATES = [
     "theta",
 ]
 REL_TOL = 1e-3
-# HSV tax functions, ETR = 1 - 2.5 income^-0.1 (about 15% to 20% in
-# the test calibration)
-HSV_PARAMS = [[[2.5, 0.1]]]
-
-
-def hsv_calibration():
-    """OG-Core's test calibration with HSV income taxes."""
-    p = ogcore_test_calibration()
-    p.update_specifications(
-        {
-            "tax_func_type": "HSV",
-            "etr_params": HSV_PARAMS,
-            "mtrx_params": HSV_PARAMS,
-            "mtry_params": HSV_PARAMS,
-        }
-    )
-    return p
-
-
-def egm_specs(p, nz=1, rho=0.9, sigma=0.15):
-    """p with the stochastic household solver and nz shock states."""
-    p = copy.deepcopy(p)
-    if nz == 1:
-        p.update_specifications({"household_solver": "egm"})
-        return p
-    return set_ar1_shocks(p, nz, rho, sigma)
 
 
 @pytest.fixture(scope="module")
@@ -399,12 +373,6 @@ def test_SS_solver_keeps_grids(ss_one_state, monkeypatch):
     for b_grid, _ in calls[1:]:
         np.testing.assert_array_equal(b_grid, calls[0][1])
     assert_close(out, ss, GE_VARS)
-
-
-def test_run_TPI_egm_not_implemented():
-    p = egm_specs(ogcore_test_calibration())
-    with pytest.raises(NotImplementedError):
-        TPI.run_TPI(p)
 
 
 @pytest.mark.local

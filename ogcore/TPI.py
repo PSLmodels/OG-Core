@@ -15,6 +15,7 @@ import pickle
 import scipy.optimize as opt
 from scipy.sparse import csr_matrix
 from ogcore import tax, utils, household, firm, fiscal, pensions, solvers
+from ogcore import household_stoch
 from ogcore import aggregates as aggr
 from ogcore.constants import SHOW_RUNTIME
 import os
@@ -186,6 +187,10 @@ def get_initial_SS_values(p):
     initial_b = np.zeros((p.S, p.J))
     initial_b[1:, :] = initial_b_sp1[:-1, :]
     initial_n = ss_baseline_vars["n"]
+    if p.household_solver == "egm":
+        # with idiosyncratic shocks, pension benefits follow mean
+        # effective labor E[z n] by age and type
+        initial_n = household_stoch.ss_mean_effective_labor(ss_baseline_vars)
     # The DB/NDC/PS pension formulas need the labor supplied before the
     # time path begins by cohorts alive at t=0. Use the model's initial
     # labor condition (the same baseline object that initializes wealth);
@@ -882,9 +887,108 @@ def _rc_error_message(RC_error, RC_TPI):
     )
 
 
+def initial_distribution_egm(p, b_splus1init, b_grid):
+    """
+    With ``household_solver = 'egm'``, the distribution over assets and
+    shocks of the households of each age and type alive in period 0:
+    the baseline steady state's distribution, rescaled to the initial
+    savings ``b_splus1init`` (see
+    ``household_stoch.initial_distribution_tpi``).
+
+    Args:
+        p (OG-Core Specifications object): model parameters
+        b_splus1init (Numpy array): initial savings, size = SxJ
+        b_grid (Numpy array): asset grids of each type, size = J x nb
+
+    Returns:
+        init_dist (Numpy array): size = S x J x nb x nz
+    """
+    baseline_ss = os.path.join(p.baseline_dir, "SS", "SS_vars.pkl")
+    return household_stoch.initial_distribution_tpi(
+        p, utils.safe_read_pickle(baseline_ss), b_splus1init, b_grid
+    )
+
+
+def solve_households_egm(
+    p, paths, init_dist, b_grid, client=None, scattered_p=None, final=False
+):
+    """
+    The household block along the time path with
+    ``household_solver = 'egm'``: all cohorts alive in periods 0 to T-1,
+    solved with ``household_stoch.solve_cohorts_tpi``. With a Dask
+    client, the cohorts are split among the workers, each running the
+    compiled kernels on one thread; if that fails, they are solved in
+    this process.
+
+    Args:
+        p (OG-Core Specifications object): model parameters
+        paths (dict): per-household paths
+            (``household_stoch.household_inputs_tpi``)
+        init_dist (Numpy array): distribution of the households alive in
+            period 0, size = S x J x nb x nz
+        b_grid (Numpy array): asset grids of each type, size = J x nb
+        client (Dask client object): client
+        scattered_p (Dask Future or None): future pointing to the model
+            parameters already scattered to the workers
+        final (bool): also compute tax rates, Euler errors and moments of
+            the distribution
+
+    Returns:
+        hh (household_stoch.TransitionSolution): means by period, age
+            and type for periods 0 to T-1
+    """
+    if client:
+        cohorts = household_stoch.tpi_cohorts(p)
+        n_parts = max(1, len(client.scheduler_info()["workers"]))
+        futures = []
+        try:
+            paths_f, init_dist_f = client.scatter(
+                [paths, init_dist], broadcast=True, hash=False
+            )
+            futures = [
+                client.submit(
+                    household_stoch.solve_cohorts_tpi,
+                    scattered_p if scattered_p is not None else p,
+                    paths_f,
+                    init_dist_f,
+                    b_grid,
+                    cohorts[k::n_parts],
+                    final=final,
+                    numba_threads=1,
+                    pure=False,
+                )
+                for k in range(n_parts)
+            ]
+            parts = client.gather(futures)
+            return household_stoch.combine_transition_solutions(parts, p)
+        except household_stoch.HouseholdSolverError:
+            raise
+        except Exception as e:
+            logger.warning(
+                f"Dask computation failed with error: {e}. "
+                "Falling back to serial computation for this iteration."
+            )
+            for future in futures:
+                future.cancel()
+    return household_stoch.solve_households_tpi(
+        p, paths, init_dist, b_grid, final=final
+    )
+
+
 def run_TPI(p, client=None):
     """
     Solve for transition path equilibrium of OG-Core.
+
+    With ``p.household_solver = 'egm'``, households face idiosyncratic
+    productivity shocks: each cohort is solved on asset grids (the
+    steady state's) with the prices and policy along its path, and its
+    distribution is moved forward from the initial distribution
+    (``household_stoch.solve_cohorts_tpi``). Household variables by
+    period, age and type are means over the distribution within each
+    cell, with effective labor E[z n] where labor income enters and tax
+    liabilities averaged over the distribution. Pension benefits that
+    depend on earnings histories follow the mean effective labor of
+    each cohort, updated with the outer loop.
 
     Args:
         p (OG-Core Specifications object): model parameters
@@ -895,11 +999,6 @@ def run_TPI(p, client=None):
             results
 
     """
-    if p.household_solver == "egm":
-        raise NotImplementedError(
-            "The transition path is not yet implemented for "
-            + "household_solver = 'egm'; only the steady state is."
-        )
     if p.use_sparse_FOC_jac and not _HAVE_SPARSE_FD:
         print("[TPI] sparse FOC jacobian unavailable; using dense")
     # Scope the Jacobian sparsity cache to this solve (see
@@ -934,7 +1033,15 @@ def run_TPI(p, client=None):
     guesses_b = utils.get_initial_path(
         b_splus1init, ss_vars["b_sp1"], p, "quadratic"
     )
-    guesses_n = utils.get_initial_path(initial_n, ss_vars["n"], p, "quadratic")
+    ss_n = ss_vars["n"]
+    if p.household_solver == "egm":
+        # the labor path is effective labor E[z n], for pension benefits
+        ss_n = household_stoch.ss_mean_effective_labor(ss_vars)
+        # households solve on this run's steady-state asset grids; those
+        # alive in period 0 start from the baseline distribution
+        b_grid = ss_vars["b_grid"]
+        init_dist = initial_distribution_egm(p, b_splus1init, b_grid)
+    guesses_n = utils.get_initial_path(initial_n, ss_n, p, "quadratic")
     b_mat = guesses_b
     n_mat = guesses_n
     ind = np.arange(p.S)
@@ -1186,7 +1293,25 @@ def run_TPI(p, client=None):
         euler_errors = np.zeros((p.T + p.S, 2 * p.S, p.J))
         # Solve for household decisions
         results = []
-        if client:
+        if p.household_solver == "egm":
+            # all cohorts, from the initial distribution; pensions that
+            # depend on earnings follow the labor path guessed
+            hh_paths = household_stoch.household_inputs_tpi(
+                p, r_p, w, p_m, BQ, RM, TR, factor, ubi, theta, guesses_n
+            )
+            hh = solve_households_egm(
+                p,
+                hh_paths,
+                init_dist,
+                b_grid,
+                client,
+                scattered_p_future if client else None,
+            )
+            # new arrays: on the first iteration b_mat and n_mat are the
+            # guesses themselves
+            b_mat = np.concatenate((hh.b_sp1, b_mat[p.T :]))
+            n_mat = np.concatenate((hh.n, n_mat[p.T :]))
+        elif client:
             futures = []
             for j in range(p.J):
                 guesses = (guesses_b[:, :, j], guesses_n[:, :, j])
@@ -1248,6 +1373,14 @@ def run_TPI(p, client=None):
                 results.append(res)
         for j, result in enumerate(results):
             euler_errors[:, :, j], b_mat[:, :, j], n_mat[:, :, j] = result
+        if p.household_solver == "egm":
+            # effective labor E[z n] takes the place of n in labor
+            # income; tax liabilities are means over the distribution
+            n_eff = hh.n_eff
+            hh_tax_liab = hh.tax_liabilities()
+        else:
+            n_eff = n_mat[: p.T, :, :]
+            hh_tax_liab = {}
 
         bmat_s = np.zeros((p.T, p.S, p.J))
         bmat_s[0, 1:, :] = b_splus1init[:-1, :]
@@ -1274,7 +1407,7 @@ def run_TPI(p, client=None):
             r_p[: p.T],
             w[: p.T],
             bmat_s,
-            n_mat[: p.T, :, :],
+            n_eff,
             bqmat[: p.T, :, :],
             factor,
             trmat[: p.T, :, :],
@@ -1287,24 +1420,28 @@ def run_TPI(p, client=None):
             p.e,
             etr_params_4D,
             p,
+            **hh_tax_liab,
         )
-        income_tax_mat = tax.income_tax_liab(
-            r_p[: p.T],
-            w[: p.T],
-            bmat_s,
-            n_mat[: p.T, :, :],
-            factor,
-            0,
-            None,
-            "TPI",
-            p.e,
-            etr_params_4D,
-            p,
-        )
+        if p.household_solver == "egm":
+            income_tax_mat = hh.inc_pay_tax_liab
+        else:
+            income_tax_mat = tax.income_tax_liab(
+                r_p[: p.T],
+                w[: p.T],
+                bmat_s,
+                n_mat[: p.T, :, :],
+                factor,
+                0,
+                None,
+                "TPI",
+                p.e,
+                etr_params_4D,
+                p,
+            )
         pension_mat = pensions.pension_amount(
             r_p[: p.T],
             w[: p.T],
-            n_mat[: p.T, :, :],
+            n_eff,
             1,
             theta,
             0,
@@ -1318,9 +1455,12 @@ def run_TPI(p, client=None):
         bq_tax_mat = tax.bequest_tax_liab(
             r_p[: p.T], bmat_s, bqmat[: p.T, :, :], 0, None, "TPI", p
         )
-        wealth_tax_mat = tax.wealth_tax_liab(
-            r_p[: p.T], bmat_s, 0, None, "TPI", p
-        )
+        if p.household_solver == "egm":
+            wealth_tax_mat = hh.w_tax_liab
+        else:
+            wealth_tax_mat = tax.wealth_tax_liab(
+                r_p[: p.T], bmat_s, 0, None, "TPI", p
+            )
         r_p_path = utils.to_timepath_shape(r_p)
         p_tilde_path = utils.to_timepath_shape(p_tilde)
 
@@ -1332,7 +1472,7 @@ def run_TPI(p, client=None):
             p_i[: p.T, :],
             bmat_s,
             bmat_splus1,
-            n_mat[: p.T, :, :],
+            n_eff,
             bqmat[: p.T, :, :],
             rmmat[: p.T, :, :],
             tax_mat,
@@ -1366,18 +1506,16 @@ def run_TPI(p, client=None):
             r_p_path[: p.T, :, :],
             wpath[: p.T, :, :],
             bmat_s[: p.T, :, :],
-            n_mat[: p.T, :, :],
+            n_eff,
             p,
             "TPI",
         )
-        labor_income_mat = (
-            w[: p.T].reshape(p.T, 1, 1) * n_mat[: p.T, :, :] * p.e
-        )
+        labor_income_mat = w[: p.T].reshape(p.T, 1, 1) * n_eff * p.e
         capital_income_mat = (
             r_p[: p.T].reshape(p.T, 1, 1) * bmat_s[: p.T, :, :]
         )
         # Update aggregate variables
-        L[: p.T] = aggr.get_L(n_mat[: p.T], p, "TPI")
+        L[: p.T] = aggr.get_L(n_eff, p, "TPI")
         B[1 : p.T] = aggr.get_B(bmat_splus1[: p.T], p, "TPI", False)[: p.T - 1]
         w_open = firm.get_w_from_r(p.world_int_rate[: p.T], p, "TPI")
 
@@ -1449,7 +1587,7 @@ def run_TPI(p, client=None):
             r_p[: p.T],
             w[: p.T],
             bmat_s,
-            n_mat[: p.T, :, :],
+            n_eff,
             bqmat[: p.T, :, :],
             c_i[: p.T, :, :, :],
             Y_vec[: p.T, :],
@@ -1464,6 +1602,7 @@ def run_TPI(p, client=None):
             p,
             None,
             "TPI",
+            **hh_tax_liab,
         )
         total_tax_revenue[: p.T] = total_tax_rev
         if not p.baseline_spending:
@@ -1539,6 +1678,10 @@ def run_TPI(p, client=None):
             p.T, 1
         )  # normalize prices by industry M
 
+        # With household_solver = 'egm', the tax liabilities passed to the
+        # revenue call below are those at the prices the households faced
+        # (the distribution is not kept to reevaluate them at the updated
+        # prices); the two agree at the fixed point
         b_mat_shift = np.append(
             np.reshape(b_splus1init, (1, p.S, p.J)),
             b_mat[: p.T - 1, :, :],
@@ -1561,7 +1704,7 @@ def run_TPI(p, client=None):
             r_p_new[: p.T],
             wnew[: p.T],
             bmat_s,
-            n_mat[: p.T, :, :],
+            n_eff,
             bqmat_new[: p.T, :, :],
             c_i[: p.T, :, :, :],
             Y_vec[: p.T, :],
@@ -1576,6 +1719,7 @@ def run_TPI(p, client=None):
             p,
             None,
             "TPI",
+            **hh_tax_liab,
         )
         total_tax_revenue[: p.T] = total_tax_rev
         TR_new = fiscal.get_TR(
@@ -1668,7 +1812,13 @@ def run_TPI(p, client=None):
         r_gov[: p.T] = utils.convex_combo(r_gov_new[: p.T], r_gov[: p.T], p.nu)
         D[: p.T] = Dnew[: p.T]
         guesses_b = utils.convex_combo(b_mat, guesses_b, p.nu)
-        guesses_n = utils.convex_combo(n_mat, guesses_n, p.nu)
+        if p.household_solver == "egm":
+            # the effective labor path, for pension benefits
+            guesses_n[: p.T] = utils.convex_combo(
+                n_eff, guesses_n[: p.T], p.nu
+            )
+        else:
+            guesses_n = utils.convex_combo(n_mat, guesses_n, p.nu)
         logger.info(
             f"w diff: {(wnew[: p.T] - w[: p.T]).max()}, "
             + f"{(wnew[: p.T] - w[: p.T]).min()}"
@@ -1709,6 +1859,25 @@ def run_TPI(p, client=None):
             # above from the pre-update guess, because the post-update
             # distance can be spuriously ~0 for accelerated steps.
             TPIdist = accel_dist
+        if (
+            p.household_solver == "egm"
+            and p.pension_system != "US-Style Social Security"
+        ):
+            # pension benefits depend on earnings histories: the benefits
+            # households took as given, including those paid after period
+            # T to cohorts born before it, must match those of the labor
+            # they supplied
+            n_eff_path = guesses_n.copy()
+            n_eff_path[: p.T] = n_eff
+            pension_used = hh_paths["pension"]
+            pension_implied = household_stoch.pension_tpi(
+                p, hh_paths["r"], hh_paths["w"], factor, theta, n_eff_path
+            )
+            pension_dist = np.abs(pension_implied - pension_used).max() / max(
+                np.abs(pension_used).max(), 1e-12
+            )
+            logger.info(f"Pension benefits distance: {pension_dist}")
+            TPIdist = max(TPIdist, pension_dist)
 
         TPIdist_vec[TPIiter] = TPIdist
         # Accelerated safety net: if a step raised the distance sharply or went
@@ -1756,96 +1925,114 @@ def run_TPI(p, client=None):
         if stall is not None and p.TPI_stall_action == "stop":
             break
 
-    # Compute effective and marginal tax rates for all agents
-    num_params = len(p.mtrx_params[0][0])
-    etr_params_4D = [
-        [
+    if p.household_solver == "egm":
+        # a last pass of the household block at the prices of the last
+        # iteration, for the tax rates (means over the distribution),
+        # Euler errors and moments of the distribution
+        hh = solve_households_egm(
+            p,
+            hh_paths,
+            init_dist,
+            b_grid,
+            client,
+            scattered_p_future if client else None,
+            final=True,
+        )
+        etr_path = hh.rates["etr"]
+        mtrx_path = hh.rates["mtrx"]
+        mtry_path = hh.rates["mtry"]
+    else:
+        # Compute effective and marginal tax rates for all agents
+        num_params = len(p.mtrx_params[0][0])
+        etr_params_4D = [
             [
-                [p.etr_params[t][s][i] for i in range(num_params)]
-                for j in range(p.J)
+                [
+                    [p.etr_params[t][s][i] for i in range(num_params)]
+                    for j in range(p.J)
+                ]
+                for s in range(p.S)
             ]
-            for s in range(p.S)
+            for t in range(p.T)
         ]
-        for t in range(p.T)
-    ]
-    mtrx_params_4D = [
-        [
+        mtrx_params_4D = [
             [
-                [p.mtrx_params[t][s][i] for i in range(num_params)]
-                for j in range(p.J)
+                [
+                    [p.mtrx_params[t][s][i] for i in range(num_params)]
+                    for j in range(p.J)
+                ]
+                for s in range(p.S)
             ]
-            for s in range(p.S)
+            for t in range(p.T)
         ]
-        for t in range(p.T)
-    ]
-    mtry_params_4D = [
-        [
+        mtry_params_4D = [
             [
-                [p.mtry_params[t][s][i] for i in range(num_params)]
-                for j in range(p.J)
+                [
+                    [p.mtry_params[t][s][i] for i in range(num_params)]
+                    for j in range(p.J)
+                ]
+                for s in range(p.S)
             ]
-            for s in range(p.S)
+            for t in range(p.T)
         ]
-        for t in range(p.T)
-    ]
-    labor_noncompliance_rate_3D = np.tile(
-        np.reshape(
-            p.labor_income_tax_noncompliance_rate[: p.T, :], (p.T, 1, p.J)
-        ),
-        (1, p.S, 1),
-    )
-    capital_noncompliance_rate_3D = np.tile(
-        np.reshape(
-            p.capital_income_tax_noncompliance_rate[: p.T, :], (p.T, 1, p.J)
-        ),
-        (1, p.S, 1),
-    )
-    income_tax_filer_3D = np.tile(
-        np.reshape(p.income_tax_filer[: p.T, :], (p.T, 1, p.J)),
-        (1, p.S, 1),
-    )
-    e_3D = p.e
-    mtry_path = tax.MTR_income(
-        r_p_path[: p.T],
-        wpath[: p.T],
-        bmat_s[: p.T, :, :],
-        n_mat[: p.T, :, :],
-        factor,
-        True,
-        e_3D,
-        etr_params_4D,
-        mtry_params_4D,
-        capital_noncompliance_rate_3D,
-        income_tax_filer_3D,
-        p,
-    )
-    mtrx_path = tax.MTR_income(
-        r_p_path[: p.T],
-        wpath[: p.T],
-        bmat_s[: p.T, :, :],
-        n_mat[: p.T, :, :],
-        factor,
-        False,
-        e_3D,
-        etr_params_4D,
-        mtrx_params_4D,
-        labor_noncompliance_rate_3D,
-        income_tax_filer_3D,
-        p,
-    )
-    etr_path = tax.ETR_income(
-        r_p_path[: p.T],
-        wpath[: p.T],
-        bmat_s[: p.T, :, :],
-        n_mat[: p.T, :, :],
-        factor,
-        e_3D,
-        etr_params_4D,
-        labor_noncompliance_rate_3D,
-        capital_noncompliance_rate_3D,
-        income_tax_filer_3D,
-        p,
-    )
+        labor_noncompliance_rate_3D = np.tile(
+            np.reshape(
+                p.labor_income_tax_noncompliance_rate[: p.T, :], (p.T, 1, p.J)
+            ),
+            (1, p.S, 1),
+        )
+        capital_noncompliance_rate_3D = np.tile(
+            np.reshape(
+                p.capital_income_tax_noncompliance_rate[: p.T, :],
+                (p.T, 1, p.J),
+            ),
+            (1, p.S, 1),
+        )
+        income_tax_filer_3D = np.tile(
+            np.reshape(p.income_tax_filer[: p.T, :], (p.T, 1, p.J)),
+            (1, p.S, 1),
+        )
+        e_3D = p.e
+        mtry_path = tax.MTR_income(
+            r_p_path[: p.T],
+            wpath[: p.T],
+            bmat_s[: p.T, :, :],
+            n_mat[: p.T, :, :],
+            factor,
+            True,
+            e_3D,
+            etr_params_4D,
+            mtry_params_4D,
+            capital_noncompliance_rate_3D,
+            income_tax_filer_3D,
+            p,
+        )
+        mtrx_path = tax.MTR_income(
+            r_p_path[: p.T],
+            wpath[: p.T],
+            bmat_s[: p.T, :, :],
+            n_mat[: p.T, :, :],
+            factor,
+            False,
+            e_3D,
+            etr_params_4D,
+            mtrx_params_4D,
+            labor_noncompliance_rate_3D,
+            income_tax_filer_3D,
+            p,
+        )
+        etr_path = tax.ETR_income(
+            r_p_path[: p.T],
+            wpath[: p.T],
+            bmat_s[: p.T, :, :],
+            n_mat[: p.T, :, :],
+            factor,
+            e_3D,
+            etr_params_4D,
+            labor_noncompliance_rate_3D,
+            capital_noncompliance_rate_3D,
+            income_tax_filer_3D,
+            p,
+        )
     # Note that implicitly in this computation is that immigrants'
     # wealth is all in the form of private capital
     I_d = aggr.get_I(
@@ -1903,8 +2090,18 @@ def run_TPI(p, client=None):
             b_mat[t], n_mat[t], c_mat[t], t, p.ltilde
         )
 
-    eul_savings = euler_errors[:, : p.S, :]
-    eul_laborleisure = euler_errors[:, p.S :, :]
+    if p.household_solver == "egm":
+        # Euler errors between asset nodes, largest where households are,
+        # by period, age and type; the bequest FOC at the last age and the
+        # labor FOC hold at every node up to the solver's tolerance
+        eul_savings = hh.euler_savings
+        eul_laborleisure = np.full(
+            (p.T, p.S, p.J), hh.diagnostics.max_static_residual
+        )
+        logger.info(f"Household solver: {hh.diagnostics.summary()}")
+    else:
+        eul_savings = euler_errors[:, : p.S, :]
+        eul_laborleisure = euler_errors[:, p.S :, :]
 
     logger.info(f"Max Euler error, savings: {np.abs(eul_savings).max()}")
     logger.info(
@@ -2008,6 +2205,17 @@ def run_TPI(p, client=None):
         "euler_labor_leisure": eul_laborleisure[: p.T, ...],
         "resource_constraint_error": RC_error[: p.T, ...],
     }
+    if p.household_solver == "egm":
+        # grids and shock process, and inequality by period over the full
+        # distribution of households
+        output.update(
+            {
+                "b_grid": b_grid,
+                "z_grid": hh.z_grid,
+                "z_trans": hh.z_trans,
+                "inequality": household_stoch.inequality_tpi(hh),
+            }
+        )
 
     tpi_dir = os.path.join(p.output_base, "TPI")
     utils.mkdirs(tpi_dir)
@@ -2040,10 +2248,12 @@ def run_TPI(p, client=None):
     if (np.any(np.absolute(RC_error) >= p.RC_TPI)) and ENFORCE_SOLUTION_CHECKS:
         raise RuntimeError(_rc_error_message(RC_error, p.RC_TPI))
 
+    # With household_solver = 'egm' the household solver checks its own
+    # accuracy and raises if it fails for too many households
     if (
         np.any(np.absolute(eul_savings) >= p.mindist_TPI)
         or (np.any(np.absolute(eul_laborleisure) > p.mindist_TPI))
-    ) and ENFORCE_SOLUTION_CHECKS:
+    ) and (ENFORCE_SOLUTION_CHECKS and p.household_solver != "egm"):
         raise RuntimeError(_euler_error_message(eul_savings, eul_laborleisure))
 
     return output

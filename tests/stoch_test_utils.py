@@ -45,6 +45,34 @@ def ogcore_test_calibration():
     return copy.deepcopy(_ogcore_test_calibration())
 
 
+# HSV tax functions, ETR = 1 - 2.5 income^-0.1 (about 15% to 20% in
+# the test calibration)
+HSV_PARAMS = [[[2.5, 0.1]]]
+
+
+def hsv_calibration():
+    """OG-Core's test calibration with HSV income taxes."""
+    p = ogcore_test_calibration()
+    p.update_specifications(
+        {
+            "tax_func_type": "HSV",
+            "etr_params": HSV_PARAMS,
+            "mtrx_params": HSV_PARAMS,
+            "mtry_params": HSV_PARAMS,
+        }
+    )
+    return p
+
+
+def egm_specs(p, nz=1, rho=0.9, sigma=0.15):
+    """p with the stochastic household solver and nz shock states."""
+    p = copy.deepcopy(p)
+    if nz == 1:
+        p.update_specifications({"household_solver": "egm"})
+        return p
+    return set_ar1_shocks(p, nz, rho, sigma)
+
+
 def set_shocks(p, z_grid, z_trans):
     """
     Give p the shock process (z_grid, z_trans) through its parameters,

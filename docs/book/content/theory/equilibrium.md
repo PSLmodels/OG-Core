@@ -216,7 +216,7 @@ With `household_solver = 'egm'`, households also face an idiosyncratic productiv
 3. Pension benefits are computed from each type's mean effective earnings profile $\mathbb{E}[z n_{j,s}]$, not from individual earnings histories. With shocks, earnings histories differ within a type, so this is an approximation; benefits are made consistent with the households' own mean effective earnings at the given prices.
 4. The asset grids stay fixed while the root finder solves for the outer-loop variables, so that the errors it sees are smooth in the guesses. They are fitted to the distribution at the initial guesses and refitted, and the steady state solved again from the solution, if they do not fit the distribution at the solution.
 
-With one shock state ($z = 1$) the model is the one described above, and the steady state matches the one from the default solver up to the approximation error of the asset grid. The steady-state output then also holds the distribution, the policy functions, the grids, and inequality measures computed over the full distribution. The transition path is not yet implemented for this solver.
+With one shock state ($z = 1$) the model is the one described above, and the steady state matches the one from the default solver up to the approximation error of the asset grid. The steady-state output then also holds the distribution, the policy functions, the grids, and inequality measures computed over the full distribution. The transition path with this solver is described in {ref}`SecEqlbNSSsolnShocks`.
 
 (SecSSeqlbResults)=
 ### Steady-state results: default specification
@@ -428,6 +428,19 @@ The stationary non-steady state (transition path) solution algorithm has followi
     3. Make sure that all the $(T+S)\times2JS$ household Euler equations are solved to a satisfactory tolerance in every period.
 
 Under alternative model configurations, the solution algorithm changes slightly.  When `budget_balance = True`, the guess of $\boldsymbol{\hat{TR}}$ in the outer loop is replaced by the guess of $\boldsymbol{\hat{Y}}$ and transfers are determined a residual from the government budget constraint given revenues and other spending policy.  When `baseline_spending = True`, $\boldsymbol{\hat{TR}}$ is determined from the baseline model solution and not updated in the outer loop described above.  In this case $\boldsymbol{\hat{Y}}$ becomes variable that is updates in the outer loop.
+
+(SecEqlbNSSsolnShocks)=
+#### Transition path with idiosyncratic productivity shocks
+
+With `household_solver = 'egm'` (see {ref}`SecEqlbSSsolnShocks`), the outer loop is unchanged; the household block in step 6 and the aggregation of household variables differ.
+
+1. In place of step 6, the households of each birth cohort alive in periods $1$ to $T$ are solved over the periods they live on the transition path, all $J$ types at once, by the same endogenous grid method as in the steady state, with the prices, transfers, bequests, pensions and tax policy of the period they live each age in (`ogcore.household_stoch.solve_cohorts_tpi`). The asset grids are the steady state's and do not change along the path.
+2. Each cohort's distribution over assets and shocks is moved forward by Young's method from its first period on the path. Households born on the path start with zero assets and draw their shock from the stationary distribution. Households alive in the first period start from the baseline steady state's distribution within their age and type, with assets rescaled so that their mean is the initial savings $\hat{b}_{j,s,1}$ of the default solver, and moved onto the asset grids with the two-node split of Young's method, which preserves means. Mortality and immigration do not depend on assets or shocks, so the distribution within each age and type depends on the cohort's decisions alone and is weighted by the population shares $\hat{\omega}_{s,t}\lambda_j$.
+3. As in the steady state, aggregates that are linear in household decisions use the means of $\hat{b}_{j,s+1,t+1}$, $\hat{c}_{j,s,t}$ and effective labor $z n_{j,s,t}$ over the distribution of each period, age and type, and tax liabilities are computed at each point of the distribution and averaged. Only these means are kept, not the distribution itself, so memory does not grow with $T$, and cohorts can be solved in parallel (with a Dask client, they are split among the workers).
+4. Pension benefits households receive are computed outside the household problem. Under US-style Social Security they are the steady-state replacement rates times the wage of the period. Benefits that depend on earnings histories (defined benefits, notional defined contributions and points) are computed from each cohort's mean effective labor along its path, guessed and updated with the outer loop like the other outer-loop variables; the outer loop also requires these benefits to match those implied by the labor the households supplied. Benefits are scaled by the replacement rate adjustment of the period they are paid in.
+5. The household solver checks its own accuracy at every point of the distribution and stops with an error if it fails for more than a small share of the population, so the check of the household Euler equations in step 24 is replaced by reporting the largest Euler error between asset grid points where households are, by period, age and type.
+
+With one shock state, the transition path matches the one from the default solver up to the approximation error of the asset grid. The output also holds the asset grids and, by period, inequality measures over the full distribution: the Gini coefficient and top shares of wealth and the variance of logs of consumption, labor income and before-tax income.
 
 
 (SecNSSeqlbResults)=
