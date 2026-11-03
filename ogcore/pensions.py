@@ -679,6 +679,8 @@ def NDC_amount(w, e, n, r, Y, t, j, method, p):
         # this household's own cohort parameters, by age
         S_ret_u = cohort_path(S_ret, t, per_rmn, p)
         tau_p_u = cohort_path(tau_p, t, per_rmn, p)
+        # the household is age S - per_rmn in period t, so it reaches
+        # retirement age R in period t - (S - per_rmn) + R
         delta_ret_u = delta_ret(
             r,
             Y,
@@ -686,6 +688,7 @@ def NDC_amount(w, e, n, r, Y, t, j, method, p):
             S_ret_u,
             cohort_path(indR, t, per_rmn, p),
             cohort_path(k_ret, t, per_rmn, p),
+            t_ret=t - (p.S - per_rmn) + S_ret_u,
         )
         NDC = NDC_1dim_loop(
             w_S,
@@ -716,9 +719,12 @@ def NDC_amount(w, e, n, r, Y, t, j, method, p):
                 tau_p_u = cohort_path(tau_p, t, p.S, p)
                 indR_u = cohort_path(indR, t, p.S, p)
                 k_ret_u = cohort_path(k_ret, t, p.S, p)
+                t_ret_u = t + S_ret_u
             else:
                 S_ret_u, tau_p_u = S_ret[row], tau_p[row]
                 indR_u, k_ret_u = indR[row], k_ret[row]
+                # steady state, or the cross-section of period 0
+                t_ret_u = None if row == -1 else row - np.arange(p.S) + S_ret_u
             NDC = NDC_1dim_loop(
                 w,
                 e,
@@ -728,7 +734,7 @@ def NDC_amount(w, e, n, r, Y, t, j, method, p):
                 g_y_arr,
                 tau_p_u,
                 g_ndc_amount,
-                delta_ret(r, Y, p, S_ret_u, indR_u, k_ret_u),
+                delta_ret(r, Y, p, S_ret_u, indR_u, k_ret_u, t_ret_u),
                 np.zeros(p.S),
             )
         elif np.ndim(n) == 2:
@@ -739,6 +745,9 @@ def NDC_amount(w, e, n, r, Y, t, j, method, p):
                 row = 0
             else:
                 row = t
+            # the household of age u in period `row` retired in period
+            # row - u + R (None in the steady state)
+            t_ret_u = None if row == -1 else row - np.arange(p.S) + S_ret[row]
             NDC = NDC_2dim_loop(
                 w,
                 e,
@@ -748,7 +757,7 @@ def NDC_amount(w, e, n, r, Y, t, j, method, p):
                 g_y_arr,
                 tau_p[row],
                 g_ndc_amount,
-                delta_ret(r, Y, p, S_ret[row], indR[row], k_ret[row]),
+                delta_ret(r, Y, p, S_ret[row], indR[row], k_ret[row], t_ret_u),
                 np.zeros((p.S, p.J)),
             )
         elif np.ndim(n) == 3:
@@ -759,6 +768,11 @@ def NDC_amount(w, e, n, r, Y, t, j, method, p):
             e_ss = p.e[-1] if np.ndim(p.e) == 3 else p.e
             # parameters in effect for each (period, age) of the path
             rows = np.clip(t + np.arange(T), 0, S_ret.shape[0] - 1)
+            # the household of age u in period t + i retired in period
+            # t + i - u + R
+            t_ret_path = (
+                (t + np.arange(T))[:, None] - np.arange(p.S)[None, :]
+            ) + S_ret[rows]
             NDC = NDC_3dim_loop(
                 w_path,
                 e_ss,
@@ -770,7 +784,15 @@ def NDC_amount(w, e, n, r, Y, t, j, method, p):
                 float(g_y_arr[-1]),
                 np.ascontiguousarray(tau_p[rows]),
                 g_ndc_amount,
-                delta_ret(r, Y, p, S_ret[rows], indR[rows], k_ret[rows]),
+                delta_ret(
+                    r,
+                    Y,
+                    p,
+                    S_ret[rows],
+                    indR[rows],
+                    k_ret[rows],
+                    t_ret_path,
+                ),
             )
 
     return NDC
@@ -1137,12 +1159,54 @@ def g_dir(r, Y, g_y, g_n, dir_growth_rate):
     return g_dir
 
 
-def delta_ret(r, Y, p, S_ret=None, indR=None, k_ret=None):
+def annuity_mort_rates(p):
+    """
+    Mortality rates by period and age used to annuitize NDC balances.
+
+    These are the model's mortality rates ``rho``, averaged over
+    lifetime income groups with their population weights ``lambdas``,
+    so that a single conversion coefficient applies to every income
+    group. A ``mort_rates_SS`` attribute set on ``p`` by hand (a vector
+    by age) overrides ``rho`` and is used in every period.
+
+    Args:
+        p (OG-Core Specifications object): model parameters
+
+    Returns:
+        mort_rates (Numpy array): (T + S) x S mortality rates, where
+            row t, column s is the probability that a household of age
+            s in period t dies before period t + 1
+
+    """
+    mort_rates_SS = getattr(p, "mort_rates_SS", None)
+    if mort_rates_SS is not None:
+        mort_rates_SS = np.asarray(mort_rates_SS, dtype=float).ravel()
+        return np.broadcast_to(
+            mort_rates_SS, (p.T + p.S, mort_rates_SS.shape[0])
+        )
+    rho = np.asarray(p.rho, dtype=float)
+    if rho.ndim == 3:
+        rho = rho @ np.asarray(p.lambdas, dtype=float).ravel()
+    return np.broadcast_to(rho, (p.T + p.S, rho.shape[-1]))
+
+
+def delta_ret(r, Y, p, S_ret=None, indR=None, k_ret=None, t_ret=None):
     r"""
     Compute conversion coefficient for the NDC pension amount
 
     .. math::
         \delta_{R} = (dir_{R} + ind_{R} - k)^{-1}
+
+    The mortality rates entering $dir_{R}$ are set by the parameter
+    ``ndc_mortality``:
+
+    * 'steady state': the steady-state mortality rates, for every
+      cohort
+    * 'period': the mortality rates by age in the period in which the
+      household retires (a period life table)
+    * 'cohort': the mortality rates the household's own birth cohort
+      faces at each age after retirement (a projected cohort life
+      table), the rates that also enter the household's problem
 
     Args:
         r (array_like): interest rate
@@ -1155,20 +1219,19 @@ def delta_ret(r, Y, p, S_ret=None, indR=None, k_ret=None):
             against ``S_ret``, or None for the steady-state value
         k_ret (array_like): payment frequency adjustment, broadcastable
             against ``S_ret``, or None for the steady-state value
+        t_ret (array_like): model period in which the household reaches
+            age ``S_ret``, broadcastable against ``S_ret``; may lie
+            before 0 or after T + S - 1, in which case the first or
+            last row of the mortality rates is used. None for the
+            steady state.
 
     Returns:
         delta_ret (scalar or Numpy array): conversion coefficient for
             the NDC pension amount, shaped like ``S_ret``
 
     """
-    # A real Specifications object has no mort_rates_SS attribute; fall
-    # back to the steady-state mortality rates implied by rho, averaged
-    # over lifetime-income groups with their population weights (see
-    # Issue #1169)
-    mort_rates_SS = getattr(p, "mort_rates_SS", None)
-    if mort_rates_SS is None:
-        mort_rates_SS = p.rho[-1] @ np.asarray(p.lambdas).ravel()
-    surv_rates = 1 - mort_rates_SS
+    mort_rates = annuity_mort_rates(p)
+    n_rows, n_ages = mort_rates.shape
     if S_ret is None:
         S_ret = cohort_array("retire", p)[-1, -1]
     if indR is None:
@@ -1176,16 +1239,43 @@ def delta_ret(r, Y, p, S_ret=None, indR=None, k_ret=None):
     if k_ret is None:
         k_ret = cohort_array("k_ret", p)[-1, -1]
     S_ret = np.asarray(S_ret, dtype=int)
-    g_dir_value = g_dir(r, Y, p.g_y, p.g_n, p.dir_growth_rate)
-    # the annuity factor depends on the retirement period only, so
-    # compute it once per distinct value (delta_ret_loop writes into
-    # the survival-rate array it is given, so pass it a copy)
-    dir_delta = np.zeros(S_ret.shape)
-    for R in np.unique(S_ret):
-        R = int(R)
-        dir_delta[S_ret == R] = delta_ret_loop(
-            p.S, R, surv_rates.copy(), g_dir_value, np.zeros(p.S - R + 1)
+    method = getattr(p, "ndc_mortality", "steady state")
+    if t_ret is None or method == "steady state":
+        t_ret = np.full(S_ret.shape, n_rows - 1)
+    elif method == "period":
+        t_ret = np.clip(np.asarray(t_ret, dtype=int), 0, n_rows - 1)
+    elif method == "cohort":
+        # a cohort retiring S periods or more before the path begins
+        # reads the first row at every age, and one retiring after it
+        # ends reads the last row
+        t_ret = np.clip(np.asarray(t_ret, dtype=int), -p.S, n_rows - 1)
+    else:
+        raise ValueError(
+            "ndc_mortality must be one of 'steady state', 'period', "
+            f"or 'cohort', got {method!r}"
         )
+    t_ret = np.broadcast_to(t_ret, S_ret.shape)
+    g_dir_value = g_dir(r, Y, p.g_y, p.g_n, p.dir_growth_rate)
+    # the annuity factor depends only on the retirement age and the
+    # period of retirement, so compute it once per distinct pair
+    pairs, inverse = np.unique(
+        np.stack([S_ret.ravel(), t_ret.ravel()], axis=1),
+        axis=0,
+        return_inverse=True,
+    )
+    ages = np.arange(n_ages)
+    dir_delta_pairs = np.zeros(pairs.shape[0])
+    for i, (R, tR) in enumerate(pairs):
+        if method == "cohort":
+            # age a is reached in period tR + a - R
+            rows = np.clip(tR - R + ages, 0, n_rows - 1)
+        else:
+            rows = np.full(n_ages, tR)
+        surv_rates = np.ascontiguousarray(1.0 - mort_rates[rows, ages])
+        dir_delta_pairs[i] = delta_ret_loop(
+            p.S, int(R), surv_rates, g_dir_value
+        )
+    dir_delta = dir_delta_pairs[np.ravel(inverse)].reshape(S_ret.shape)
     delta_ret = 1 / (dir_delta + np.asarray(indR) - np.asarray(k_ret))
     if delta_ret.ndim == 0:
         return float(delta_ret)
@@ -1297,31 +1387,39 @@ def deriv_NDC_loop(
 
 
 @numba.jit(nopython=True)
-def delta_ret_loop(S, S_ret, surv_rates, g_dir_value, dir_delta_s):
-    """
-    Compute conversion coefficient for the NDC pension amount
+def delta_ret_loop(S, S_ret, surv_rates, g_dir_value):
+    r"""
+    Compute the annuity factor in the NDC conversion coefficient
+
+    .. math::
+        dir_{R} = \sum_{k=0}^{S-R-1}\left[\prod_{i=0}^{k-1}
+            (1 - \hat{\rho}_{R+i})\right](1 + g_{dir})^{-k}
+
+    The pension is paid at ages R, ..., S - 1. Following the household
+    mortality convention, ``1 - rho[s]`` is the probability of
+    surviving from age s to age s + 1, so the payment at age R + k is
+    received with probability prod_{i=0}^{k-1} (1 - rho[R + i]) by a
+    household alive at retirement age R.
 
     Args:
         S (int): number of periods in the model
         S_ret (int): retirement age
-        surv_rates (Numpy array): survival rates
-        g_dir_value (scalar): growth rate of NDC pension
-        dir_delta_s (Numpy array): conversion coefficient for the NDC
-            pension amount
+        surv_rates (Numpy array): length S survival rates by age,
+            1 - rho
+        g_dir_value (scalar): discount rate used in the conversion
+            coefficient
 
     Returns:
-        dir_delta (scalar): conversion coefficient for the NDC pension
-            amount
+        dir_delta (scalar): expected discounted number of pension
+            payments per unit of annual benefit
     """
-    cumul_surv_rates = np.ones(S - S_ret + 1)
-    for s in range(S - S_ret + 1):
-        surv_rates_vec = surv_rates[S_ret : S_ret + s + 1]
-        surv_rates_vec[0] = 1.0
-        cumul_surv_rates[s] = np.prod(surv_rates_vec)
-        cumul_g_y = np.ones(S - S_ret + 1)
-        cumul_g_y[s] = (1 / (1 + g_dir_value)) ** s
-        dir_delta_s[s] = cumul_surv_rates[s] * cumul_g_y[s]
-    dir_delta = dir_delta_s.sum()
+    dir_delta = 0.0
+    cumul_surv = 1.0
+    discount = 1.0
+    for k in range(S - S_ret):
+        dir_delta += cumul_surv * discount
+        cumul_surv *= surv_rates[S_ret + k]
+        discount /= 1 + g_dir_value
     return dir_delta
 
 

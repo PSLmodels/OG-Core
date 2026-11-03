@@ -5,6 +5,16 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Added
+- Adds the parameter `ndc_mortality` (default `'cohort'`), which sets the mortality rates in the annuity factor of the NDC conversion coefficient: the rates the retiring cohort faces at each age after retirement (`'cohort'`), the rates by age in the period of retirement (`'period'`), or the steady-state rates for every cohort (`'steady state'`, the previous behavior). The three coincide in the steady state. `pensions.delta_ret` takes the period of retirement as a new `t_ret` argument, and `NDC_amount` passes it from each household's own lifetime in every branch (Issue #1268).
+- Adds `pensions.annuity_mort_rates`, the (T + S) x S mortality rates used to annuitize NDC balances (`rho` averaged over lifetime income groups with `lambdas`, or a hand-set `mort_rates_SS`).
+
+### Fixed
+- Corrects the survival timing in the NDC annuity factor (`pensions.delta_ret_loop`). The payment at retirement age R is now certain and the payment at age R + k is weighted by the probability of surviving ages R through R + k - 1, consistent with the household mortality convention. Previously the mortality rate at age R was skipped, each later payment was weighted with survival one age too far, and the last payment received zero weight, which made the conversion coefficient, and so NDC benefits, too large (Issue #1268). The formula in the documentation is corrected to match.
+- Breaking signature change: `pensions.delta_ret_loop` no longer takes the `dir_delta_s` work array and no longer modifies the survival rates it is given.
+
 ## [0.24.0] - 2026-10-31
 
 ### Added

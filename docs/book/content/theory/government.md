@@ -455,13 +455,15 @@ where the sum runs over the household's own contribution history and:
 
 where $k$ is an adjustment that takes into account the number of payments per year.  In particular, $k=0.5 - (6/13n)$, where $n$ is the number of payments per year.  So if the payments are made monthly, $n=12$ and thus $k=0.4615$.
 
-The $dir_{R, t}$ term is an adjustment to make the payments actuarially fair given mortality risk:
+The $dir_{R, t}$ term is an adjustment to make the payments actuarially fair given mortality risk. It is the expected discounted number of payments to a household that is alive at retirement age $R$ and retires in period $t$:
 
   ```{math}
-  dir_{R, t} = \sum_{u=0}^{E+S-R}\left[\prod_{s=R}^{u}(1-\hat{\rho}_{s, t})\right](1+\hat{g}_{y, t})^{-u}
+  dir_{R, t} = \sum_{k=0}^{E+S-R}\left[\prod_{i=0}^{k-1}(1-\hat{\rho}_{R+i, t+i})\right](1+\hat{g}_{y, t})^{-k}
   ```
 
-where $\hat{\rho}_{s,t}$ are the mortality tables used in the pension system at time $t$ and $\hat{g}_{y, t}$ is the long run expected nominal GDP growth rate used in the pension system at time $t$.
+where the empty product (for $k=0$) equals one. The timing follows the household's problem: $\rho_{s}$ is the probability that a household of age $s$ dies before reaching age $s+1$, so the first payment, at age $R$, is certain and the payment at age $R+k$ is received only if the household survives ages $R$ through $R+k-1$. $\hat{g}_{y, t}$ is the long run expected nominal GDP growth rate used in the pension system at time $t$ (`dir_growth_rate`).
+
+$\hat{\rho}_{s,t}$ are the mortality rates used in the pension system, the model's mortality rates averaged over lifetime income groups with the population weights $\lambda_j$. The parameter `ndc_mortality` determines which rates apply. With `'cohort'` (the default), $\hat{\rho}_{R+i, t+i}$ are the rates the retiring cohort faces at each age as it ages through the transition path, as written above. With `'period'`, the rates are those of the period of retirement, $\hat{\rho}_{R+i, t}$ (a period life table). With `'steady state'`, every cohort uses the steady-state rates $\hat{\rho}_{R+i}$. The three coincide in the steady state.
 
 Finally, $ind_{R}$ is an adjustment for survivor benefits.  Since we model households (and not individuals), we set $ind_{R} = 0$ by default.  This can be changed with the parameter `indR` if one would like to account for the fact that households lose members over time.
 

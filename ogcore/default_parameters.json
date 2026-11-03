@@ -4211,6 +4211,28 @@
             }
         }
     },
+    "ndc_mortality": {
+        "title": "Mortality rates used in the conversion coefficient of a notional defined contribution system.",
+        "description": "Mortality rates used to compute the annuity factor in the conversion coefficient of a notional defined contribution system.",
+        "section_1": "Fiscal Policy Parameters",
+        "section_2": "Government Pension Parameters",
+        "notes": "'cohort' uses the mortality rates the retiring cohort faces at each age after retirement, 'period' the mortality rates by age in the period of retirement, and 'steady state' the steady-state mortality rates for every cohort. All three are averaged over lifetime income groups with the weights lambdas and coincide in the steady state.",
+        "type": "str",
+        "value": [
+            {
+                "value": "cohort"
+            }
+        ],
+        "validators": {
+            "choice": {
+                "choices": [
+                    "cohort",
+                    "period",
+                    "steady state"
+                ]
+            }
+        }
+    },
     "alpha_db": {
         "title": "Replacement rate under a defined benefits system.",
         "description": "Replacement rate per year of contribution under a defined benefits system. Set value for base year, click '+' to add value for next year.  All future years not specified are set to last value entered.",

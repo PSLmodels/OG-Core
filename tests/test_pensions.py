@@ -389,7 +389,8 @@ p.mort_rates_SS = np.array([0.01, 0.05, 0.3, 1])
 w = np.array([1.2, 1.1, 1.21, 1])
 e = np.array([1.1, 1.11, 0.9, 0.87])
 r = np.ones(p.T) * 0.02
-d_NDC_expected1 = np.array([0.757437326, 0.680222841, 0.0, 0.0])
+# annuity factor 1 + 0.7 / 1.02 (survival timing fixed in Issue #1268)
+d_NDC_expected1 = np.array([0.33302457, 0.29907546, 0.0, 0.0])
 args1 = (r, w, e, None, per_rmn, p)
 
 #############Incomplete lifetimes###################
@@ -408,7 +409,7 @@ p2.mort_rates_SS = np.array([0.1, 0.2, 0.4, 0.6, 1.0])
 w2 = np.array([1.1, 1.21, 1.25])
 e2 = np.array([1.11, 0.9, 1.0])
 r2 = np.ones(p2.T) * 0.04
-d_NDC_expected2 = np.array([0.396808466, 0.0, 0.0])
+d_NDC_expected2 = np.array([0.32839557, 0.0, 0.0])
 args2 = (r2, w2, e2, None, per_rmn2, p2)
 
 test_data = [(args1, d_NDC_expected1), (args2, d_NDC_expected2)]
@@ -474,7 +475,7 @@ p2.k_ret = 0.4615
 p2.mort_rates_SS = np.array([0.01, 0.05, 0.3, 0.4, 1])
 omegas = None
 lambdas = 1
-pension_expected_ndc = [0, 0, 0.27992856, 0.27165542]
+pension_expected_ndc = [0, 0, 0.25761736, 0.25000362]
 args_ndc = (r, w_ndc, n_ndc, Y, theta, t, j, shift, method, e_ndc, factor, p2)
 
 ################pension benefit: PS############
@@ -564,10 +565,10 @@ e = np.array([1.1, 1.11, 0.9])
 r = np.ones(p.T) * 0.02
 p.tau_p = 0.3
 p.k_ret = 0.4615
-delta_ret = 1.857010214
+delta_ret = 0.816476822
 g_ndc = p.g_y[-1] + p.g_n_SS
 p.mort_rates_SS = np.array([0.1, 0.2, 0.4, 1.0])
-deriv_NDC_loop_expected1 = np.array([0.757437326, 0.680222841, 0.0])
+deriv_NDC_loop_expected1 = np.array([0.33302457, 0.29907546, 0.0])
 d_theta_empty = np.zeros_like(w)
 args3 = (w, e, per_rmn, g_ndc, delta_ret, d_theta_empty, p)
 
@@ -585,10 +586,10 @@ p2.dir_growth_rate = "r"
 r = np.array([0.03, 0.04, 0.03])
 p2.tau_p = 0.3
 p2.k_ret = 0.4615
-delta_ret2 = 1.083288196
+delta_ret2 = 0.896520810
 g_ndc2 = p2.g_y[-1] + p2.g_n_SS
 p2.mort_rates_SS = np.array([0.2, 0.4, 1.0])
-deriv_NDC_loop_expected2 = np.array([0.396808466, 0.0, 0.0])
+deriv_NDC_loop_expected2 = np.array([0.32839557, 0.0, 0.0])
 d_theta_empty = np.zeros(per_rmn)
 args4 = (w2, e2, per_rmn2, g_ndc2, delta_ret2, d_theta_empty, p2)
 
@@ -635,7 +636,8 @@ r = 0.02
 g_ndc_amount = p.g_y[-1] + p.g_n_SS
 p.mort_rates_SS = np.array([0.1, 0.2, 0.4, 0.6, 1.0])
 dir_delta_s_empty = np.zeros(p.S - p.retire + 1)
-dir_delta_ret_expected1 = 1.384615385
+# 1 + (1 - 0.4) / 1.04: payments at ages 2 and 3
+dir_delta_ret_expected1 = 1.576923077
 surv_rates = np.zeros(p.S - p.retire + 1)
 surv_rates = 1 - p.mort_rates_SS
 args5 = (surv_rates, g_ndc_amount, dir_delta_s_empty, p)
@@ -648,9 +650,7 @@ def test_delta_ret_loop(args, dir_delta_ret_expected):
     Test of the pensions.delta_ret_loop() function.
     """
     surv_rates, g_ndc_value, dir_delta_s_empty, p = args
-    dir_delta = pensions.delta_ret_loop(
-        p.S, p.retire, surv_rates, g_ndc_value, dir_delta_s_empty
-    )
+    dir_delta = pensions.delta_ret_loop(p.S, p.retire, surv_rates, g_ndc_value)
 
     assert np.allclose(dir_delta, dir_delta_ret_expected)
 
@@ -948,10 +948,9 @@ r_dndc = np.ones(p2.T) * 0.02
 p2.tau_p = 0.3
 p2.k_ret = 0.4615
 p2.mort_rates_SS = np.array([0.01, 0.05, 0.3, 1])
-d_theta_expected_dndc = np.array([0.75838653, 0.680222841, 0, 0])
-# TODO: has to change first element from the below to above. Why?
-# check by hand calculation spreadsheet
-# d_theta_expected_dndc = np.array([0.757437326, 0.680222841, 0, 0])
+d_theta_expected_dndc = np.array([0.33344191, 0.29907546, 0, 0])
+# TODO: the first element differs from test_deriv_NDC
+# (0.33302457). Why? Check by hand calculation spreadsheet
 Y = None
 factor = 2
 args_dndc = (r_dndc, w_dndc, e_dndc, Y, per_rmn, factor, 0, 1, p2)
@@ -1010,7 +1009,7 @@ r = np.ones(p.T) * 0.03
 p.tau_p = 0.3
 p.k_ret = 0.4615
 p.mort_rates_SS = np.array([0.01, 0.05, 0.3, 0.4, 1])
-NDC_expected1 = np.array([0, 0, 0.27992856, 0.27165542])
+NDC_expected1 = np.array([0, 0, 0.25761736, 0.25000362])
 # NDC_expected1 = np.array([0, 0, 0.279756794, 0.271488732])
 args1 = (w, e, n, r, None, None, j, "SS", p)
 
@@ -1039,7 +1038,7 @@ p2.e = e
 # NDC_expected2 = np.array([0, 0.25185784, 0.24441432])
 # TODO: why move from numbers below to those above ?  Diff in numpy rounding??
 # NDC_expected2 = np.array([0, 0.251721214, 0.244281728])
-NDC_expected2 = np.array([0, 0.25705613, 0.24945897])
+NDC_expected2 = np.array([0, 0.23656794, 0.2295763])
 args2 = (w, e, n, r, None, 0, j, "TPI", p2)
 
 test_data = [(args1, NDC_expected1), (args2, NDC_expected2)]
@@ -1938,3 +1937,138 @@ def test_delta_ret_by_cohort():
     adj = pensions.delta_ret(0.05, 1.0, p, S_ret, 0.1, 0.3)
     assert np.allclose(1.0 / adj - 1.0 / out, 0.1 - 0.3)
     assert np.allclose(pensions.delta_ret(0.05, 1.0, p, S_ret, 0.0, 0.0), out)
+
+
+def test_delta_ret_loop_survival_timing():
+    """
+    The annuity factor counts the payment at retirement age R with
+    certainty and the payment at age R + k with the probability of
+    surviving ages R, ..., R + k - 1 (1 - rho[s] is the probability of
+    surviving from age s to s + 1). With two payment periods, 20%
+    mortality after the first, certain death after the second, and no
+    discounting, the factor is 1 + 0.8 (Issue #1268).
+    """
+    surv_rates = 1.0 - np.array([0.0, 0.0, 0.2, 1.0])
+    assert np.isclose(pensions.delta_ret_loop(4, 2, surv_rates, 0.0), 1.8)
+    # general case against the closed form
+    S, R, g = 10, 6, 0.03
+    mort = np.linspace(0.05, 1.0, S)
+    expected = sum(
+        np.prod(1.0 - mort[R : R + k]) / (1.0 + g) ** k for k in range(S - R)
+    )
+    assert np.isclose(pensions.delta_ret_loop(S, R, 1.0 - mort, g), expected)
+
+
+def _time_varying_mortality(p):
+    """
+    Mortality rates that are lower early in the transition and converge
+    to the (unchanged) steady-state rates by period 60.
+    """
+    scale = np.ones(p.T + p.S)
+    scale[:60] = np.linspace(0.5, 1.0, 60)
+    rho = p.rho[-1][None, :, :] * scale[:, None, None]
+    rho[:, -1, :] = 1.0
+    return rho
+
+
+@pytest.mark.parametrize("method", ["steady state", "period", "cohort"])
+def test_delta_ret_ndc_mortality(method):
+    """
+    ndc_mortality chooses the mortality rates in the annuity factor:
+    the steady-state rates, the rates of the period of retirement, or
+    the rates the retiring cohort faces as it ages. All three agree in
+    the steady state.
+    """
+    p = Specifications()
+    p.update_specifications(
+        {
+            "pension_system": "Notional Defined Contribution",
+            "tau_p": 0.1,
+            "dir_growth_rate": "LR GDP",
+            "ndc_mortality": method,
+        }
+    )
+    p.rho = _time_varying_mortality(p)
+    lam = np.asarray(p.lambdas).ravel()
+    mort = p.rho @ lam
+    R, r, S = 44, 0.05, p.S
+    g = pensions.g_dir(r, 1.0, p.g_y, p.g_n, p.dir_growth_rate)
+    cohort_k = float(pensions.cohort_array("k_ret", p)[-1, -1])
+    k = cohort_k
+    indR = float(pensions.cohort_array("indR", p)[-1, -1])
+
+    def delta(surv):
+        return 1.0 / (pensions.delta_ret_loop(S, R, surv, g) + indR - k)
+
+    ss = delta(1.0 - mort[-1])
+    # the steady state is the same under every option
+    assert np.isclose(pensions.delta_ret(r, 1.0, p, R), ss)
+    assert np.isclose(pensions.delta_ret(r, 1.0, p, R, t_ret=None), ss)
+    t_ret = np.array([-50, -10, 0, 20, 45, 300, 500])
+    out = pensions.delta_ret(
+        r, 1.0, p, np.full(t_ret.shape, R), indR, cohort_k, t_ret
+    )
+    ages = np.arange(S)
+    n_rows = p.T + p.S
+    for tR, val in zip(t_ret, out):
+        if method == "steady state":
+            surv = 1.0 - mort[-1]
+        elif method == "period":
+            surv = 1.0 - mort[np.clip(tR, 0, n_rows - 1)]
+        else:
+            rows = np.clip(tR - R + ages, 0, n_rows - 1)
+            surv = 1.0 - mort[rows, ages]
+        assert np.isclose(val, delta(surv)), (method, tR)
+    # cohorts retiring once mortality has converged get the
+    # steady-state coefficient
+    assert np.isclose(out[-1], ss)
+    if method == "steady state":
+        assert np.allclose(out, ss)
+    else:
+        # lower mortality early in the path means a longer expected
+        # payout and a smaller coefficient
+        assert out[2] < ss
+    if method == "cohort":
+        # a cohort retiring at period 20 lives through the converging
+        # rates, so its survival is lower than the period-20 table
+        p_period = Specifications()
+        p_period.update_specifications({"ndc_mortality": "period"})
+        p_period.rho = p.rho
+        p_period.dir_growth_rate = p.dir_growth_rate
+        assert out[3] > pensions.delta_ret(
+            r, 1.0, p_period, R, indR, cohort_k, 20
+        )
+
+
+@pytest.mark.parametrize("method", ["period", "cohort"])
+def test_ndc_household_path_matches_full_path_mortality(method):
+    """
+    With mortality that changes over the transition path, the NDC
+    benefit computed on a household's own lifetime path must still
+    equal the diagonal of the (T, S, J) array used for the aggregates,
+    so that every branch of NDC_amount assigns the same retirement
+    period to the household.
+    """
+    p = Specifications()
+    p.update_specifications(
+        {
+            "pension_system": "Notional Defined Contribution",
+            "tau_p": 0.1,
+            "ndc_growth_rate": "LR GDP",
+            "dir_growth_rate": "r",
+            "ndc_mortality": method,
+            "pension_regimes": DB_NDC_REFORM,
+        }
+    )
+    p.rho = _time_varying_mortality(p)
+    j, T_path = 0, 120
+    full, cohorts = _full_path_and_cohort_pensions(p, j, T_path)
+    # the coefficient varies across cohorts retiring at the same age
+    assert not np.isclose(full[0, 50, j], full[T_path - 1, 50, j])
+    for (kind, k), cohort in cohorts.items():
+        a, t0 = (k, 0) if kind == "alive" else (0, k)
+        on_path = min(len(cohort), T_path - t0)
+        expected = np.array(
+            [full[t0 + tt, a + tt, j] for tt in range(on_path)]
+        )
+        assert np.allclose(cohort[:on_path], expected), (kind, k)

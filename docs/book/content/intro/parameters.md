@@ -358,6 +358,13 @@ _Value Type:_ str
 _Valid Choices:_['r', 'Curr GDP', 'LR GDP']  
 
 
+####  `ndc_mortality`  
+_Description:_ Mortality rates used to compute the annuity factor in the conversion coefficient of a notional defined contribution system.  
+_Notes:_ 'cohort' uses the mortality rates the retiring cohort faces at each age after retirement, 'period' the mortality rates by age in the period of retirement, and 'steady state' the steady-state mortality rates for every cohort. All three are averaged over lifetime income groups with the weights lambdas and coincide in the steady state.  
+_Value Type:_ str  
+_Valid Choices:_['cohort', 'period', 'steady state']  
+
+
 ####  `alpha_db`  
 _Description:_ Replacement rate per year of contribution under a defined benefits system. Set value for base year, click '+' to add value for next year.  All future years not specified are set to last value entered.  
 _Notes:_ Can be specified to vary by type J and over year T. The rate applied is the one in effect in the period the benefit is paid. To change the rate only for cohorts not yet retired, enter the change through pension_regimes with a max_age_at_start.  
