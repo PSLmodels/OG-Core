@@ -199,7 +199,9 @@ def get_initial_SS_values(p):
             ss_baseline_vars["B"] / B0
         )
     else:
-        initial_b_sp1_prelim = p.initial_hhwealth_dist * ss_baseline_vars["B"]
+        initial_b_sp1_prelim = (
+            p.initial_hhwealth_dist * ss_baseline_vars["B"]
+        ) / p.omega[0, :, :]
         initial_b_sp1 = initial_b_sp1_prelim * (
             ss_baseline_vars["B"]
             / aggr.get_B(initial_b_sp1_prelim, p, "SS", True)
