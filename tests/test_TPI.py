@@ -1006,7 +1006,6 @@ def test_run_TPI(baseline, param_updates, filename, tmpdir, dask_client):
 
     TPI.ENFORCE_SOLUTION_CHECKS = False
     test_dict = TPI.run_TPI(p, client=dask_client)
-    pickle.dump(test_dict, open(filename, "wb"))
     expected_dict = utils.safe_read_pickle(filename)
 
     for k, v in expected_dict.items():
