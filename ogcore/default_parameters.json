@@ -1096,7 +1096,7 @@
         "param_notation": "$\\Gamma_{1}$",
         "section_1": "Household Parameters",
         "section_2": "Endowments",
-        "notes": "An S x J matrix proportional to the wealth held by a household of each age and lifetime income group at the start of the transition path, normalized so that its elements sum to one; it sets only the shape of the initial distribution, whose level is set so that aggregate household wealth matches its initial value. When null (the default), the shape is that of the steady-state distribution of savings. Should be calibrated from household wealth data by age and lifetime income group; shapes far from the steady state can leave the oldest cohorts without enough wealth to solve their remaining lifetimes.",
+        "notes": "An S x J matrix proportional to the wealth held by households in each age and lifetime income group at the start of the transition path, normalized so that its elements sum to one; it sets only the shape of the initial distribution, whose level is set so that aggregate household wealth matches its initial value. When null (the default), the shape is that of the steady-state distribution of savings. Should be calibrated from household wealth data by age and lifetime income group; shapes far from the steady state can leave the oldest cohorts without enough wealth to solve their remaining lifetimes.",
         "type": "float",
         "number_dims": 2,
         "value": [
