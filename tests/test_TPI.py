@@ -934,12 +934,11 @@ filename_iw = os.path.join(
 @pytest.mark.parametrize(
     "baseline,param_updates,filename",
     [
-        # (True, {}, filename1),
-        # (False, {}, filename3),
+        (True, {}, filename1),
+        (False, {}, filename3),
         (True, param_updates_iw, filename_iw),
     ],
-    # ids=["Baseline", "Reform", "Baseline, initial wealth parameters"],
-    ids=["Baseline, initial wealth parameters"],
+    ids=["Baseline", "Reform", "Baseline, initial wealth parameters"],
 )
 def test_run_TPI(baseline, param_updates, filename, tmpdir, dask_client):
     """
