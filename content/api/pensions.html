@@ -412,13 +412,18 @@ dollars</p></li>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="ogcore.pensions.pension_amount">
-<span class="sig-prename descclassname"><span class="pre">ogcore.pensions.</span></span><span class="sig-name descname"><span class="pre">pension_amount</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">r</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">w</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Y</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">theta</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">t</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">j</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">shift</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">method</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">e</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">factor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ogcore/pensions.html#pension_amount"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogcore.pensions.pension_amount" title="Link to this definition">#</a></dt>
+<span class="sig-prename descclassname"><span class="pre">ogcore.pensions.</span></span><span class="sig-name descname"><span class="pre">pension_amount</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">r</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">w</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ndc_rates</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">theta</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">t</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">j</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">shift</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">method</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">e</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">factor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ogcore/pensions.html#pension_amount"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogcore.pensions.pension_amount" title="Link to this definition">#</a></dt>
 <dd><p>Calculate public pension benefit amounts for each household.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
+<li><p><strong>r</strong> (<em>array_like</em>) – real interest rate</p></li>
 <li><p><strong>w</strong> (<em>array_like</em>) – real wage rate</p></li>
 <li><p><strong>n</strong> (<em>Numpy array</em>) – labor supply</p></li>
+<li><p><strong>ndc_rates</strong> (<a class="reference internal" href="#ogcore.pensions.NDCRates" title="ogcore.pensions.NDCRates"><em>NDCRates</em></a>) – calendar paths of the NDC credited and
+discount rates (<code class="docutils literal notranslate"><span class="pre">ndc_rates_path</span></code>), used only by the
+notional defined contribution system; None for the
+steady-state rates</p></li>
 <li><p><strong>theta</strong> (<em>Numpy array</em>) – social security replacement rate value for
 lifetime income group j</p></li>
 <li><p><strong>t</strong> (<em>int</em>) – time period</p></li>
@@ -529,19 +534,23 @@ partial or full lifetime path) or of the first row of <code class="docutils lite
 
 <dl class="py function">
 <dt class="sig sig-object py" id="ogcore.pensions.NDC_amount">
-<span class="sig-prename descclassname"><span class="pre">ogcore.pensions.</span></span><span class="sig-name descname"><span class="pre">NDC_amount</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">w</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">e</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">r</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Y</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">t</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">j</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">method</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ogcore/pensions.html#NDC_amount"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogcore.pensions.NDC_amount" title="Link to this definition">#</a></dt>
+<span class="sig-prename descclassname"><span class="pre">ogcore.pensions.</span></span><span class="sig-name descname"><span class="pre">NDC_amount</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">w</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">e</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">r</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ndc_rates</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">t</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">j</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">method</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ogcore/pensions.html#NDC_amount"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogcore.pensions.NDC_amount" title="Link to this definition">#</a></dt>
 <dd><p>Calculate public pension from a notional defined contribution
 system.</p>
 <div class="math notranslate nohighlight">
 \[pension_{j,s,t} = \biggl[\sum_{u=E}^{R-1}\tau^{p}_{u,t-s+u}
-    w_{t-s+u}e_{j,u,t-s+u}n_{j,u,t-s+u}(1 + g_{NDC,t})^{R-u-1}
+    w_{t-s+u}e_{j,u,t-s+u}n_{j,u,t-s+u}
+    \prod_{a=u+1}^{R-1}(1 + g_{NDC,t-s+a})
     \biggr]\delta_{R,s,t} \quad \forall s \geq R\]</div>
 <p>where the retirement age <span class="math notranslate nohighlight">\(R\)</span> and the conversion coefficient
 <span class="math notranslate nohighlight">\(\delta_{R,s,t}\)</span> (through <code class="docutils literal notranslate"><span class="pre">k_ret</span></code> and <code class="docutils literal notranslate"><span class="pre">indR</span></code>) are those of the
 household’s own birth cohort at the age and period the benefit is
 paid, and the contribution rate <span class="math notranslate nohighlight">\(\tau^{p}_{u,t-s+u}\)</span> is the one the
 cohort faced at each working age u, all read from the period-by-age
-arrays that <code class="docutils literal notranslate"><span class="pre">pension_regimes</span></code> builds.</p>
+arrays that <code class="docutils literal notranslate"><span class="pre">pension_regimes</span></code> builds. Each contribution earns
+the rate credited in each period between the contribution and
+retirement, <span class="math notranslate nohighlight">\(g_{NDC,t}\)</span>, and the conversion coefficient discounts
+payments at the rate in the period the household retires.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
@@ -551,8 +560,12 @@ arrays that <code class="docutils literal notranslate"><span class="pre">pension
 (length &lt; S, for cohorts alive when the time path begins),
 a steady-state vector (S,) or matrix (S, J), or the full
 time path (T, S, J)</p></li>
-<li><p><strong>r</strong> (<em>array_like</em>) – interest rate</p></li>
-<li><p><strong>Y</strong> (<em>array_like</em>) – GDP</p></li>
+<li><p><strong>r</strong> (<em>array_like</em>) – interest rate, used for the steady-state rates
+when <code class="docutils literal notranslate"><span class="pre">ndc_rates</span></code> is not given</p></li>
+<li><p><strong>ndc_rates</strong> (<a class="reference internal" href="#ogcore.pensions.NDCRates" title="ogcore.pensions.NDCRates"><em>NDCRates</em></a>) – calendar paths of the credited and
+discount rates from <code class="docutils literal notranslate"><span class="pre">ndc_rates_path</span></code>; anything else (such
+as None) uses the steady-state rates, with the ‘r’ options
+reading the last element of <code class="docutils literal notranslate"><span class="pre">r</span></code></p></li>
 <li><p><strong>t</strong> (<em>int</em>) – model period of the first element of <code class="docutils literal notranslate"><span class="pre">n</span></code> (for a
 partial or full lifetime path) or of the first row of <code class="docutils literal notranslate"><span class="pre">n</span></code>
 (for the full time path)</p></li>
@@ -768,46 +781,160 @@ labor supply</p>
 </dl>
 </dd></dl>
 
-<dl class="py function">
-<dt class="sig sig-object py" id="ogcore.pensions.g_ndc">
-<span class="sig-prename descclassname"><span class="pre">ogcore.pensions.</span></span><span class="sig-name descname"><span class="pre">g_ndc</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">r</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Y</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ogcore/pensions.html#g_ndc"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogcore.pensions.g_ndc" title="Link to this definition">#</a></dt>
-<dd><p>Compute growth rate used for contributions to NDC pension</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="ogcore.pensions.NDCRates">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">ogcore.pensions.</span></span><span class="sig-name descname"><span class="pre">NDCRates</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">credit</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">discount</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ogcore/pensions.html#NDCRates"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogcore.pensions.NDCRates" title="Link to this definition">#</a></dt>
+<dd><p>Calendar paths of the rates used in a notional defined contribution
+system, built by <code class="docutils literal notranslate"><span class="pre">ndc_rates_path</span></code>.</p>
+<p>Both fields are length T + S on the time path, or length 1 for a
+steady state. Periods before the path read the first element and
+periods after it the last.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>r</strong> (<em>array_like</em>) – interest rate</p></li>
-<li><p><strong>Y</strong> (<em>array_like</em>) – GDP</p></li>
+<li><p><strong>credit</strong> (<em>ndarray</em>)</p></li>
+<li><p><strong>discount</strong> (<em>ndarray</em>)</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ogcore.pensions.NDCRates.credit">
+<span class="sig-name descname"><span class="pre">credit</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ndarray</span></span><a class="headerlink" href="#ogcore.pensions.NDCRates.credit" title="Link to this definition">#</a></dt>
+<dd><p>rate credited to notional balances in each model
+period, the growth realized from the previous period (after any
+averaging set by <code class="docutils literal notranslate"><span class="pre">ndc_growth_avg_years</span></code>)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Numpy array</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ogcore.pensions.NDCRates.discount">
+<span class="sig-name descname"><span class="pre">discount</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ndarray</span></span><a class="headerlink" href="#ogcore.pensions.NDCRates.discount" title="Link to this definition">#</a></dt>
+<dd><p>rate used to discount payments in the conversion
+coefficient of a household retiring in each model period</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Numpy array</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="ogcore.pensions.growth_rate_path">
+<span class="sig-prename descclassname"><span class="pre">ogcore.pensions.</span></span><span class="sig-name descname"><span class="pre">growth_rate_path</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">choice</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">r</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Y</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">w</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">L</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">method</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ogcore/pensions.html#growth_rate_path"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogcore.pensions.growth_rate_path" title="Link to this definition">#</a></dt>
+<dd><p>Calendar path of an NDC growth rate.</p>
+<p>Element t is the growth realized from period t - 1 to period t,
+in real, non-stationarized terms. Stationarized aggregates are
+divided by <span class="math notranslate nohighlight">\(e^{g_y t}\)</span> and by population, and <code class="docutils literal notranslate"><span class="pre">p.g_n[t]</span></code> is
+population growth from t to t + 1, so for an aggregate X</p>
+<div class="math notranslate nohighlight">
+\[g_{t} = \frac{\hat{X}_{t}}{\hat{X}_{t-1}}e^{g_y}
+    (1 + g_{n,t-1}) - 1\]</div>
+<p>where X is GDP for ‘Curr GDP’ and the wage bill wL for
+‘wage bill’. ‘avg wage’ is the growth of earnings per person,
+the same expression without population growth. ‘r’ is the
+interest rate path and ‘LR GDP’ the constant steady-state growth
+of GDP. Growth into period 0 uses the period-0 level as the level
+of the period before.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>choice</strong> (<em>str</em>) – one of <code class="docutils literal notranslate"><span class="pre">NDC_GROWTH_CHOICES</span></code></p></li>
+<li><p><strong>r</strong> (<em>array_like</em>) – interest rate path</p></li>
+<li><p><strong>Y</strong> (<em>array_like</em>) – GDP path, used for ‘Curr GDP’</p></li>
+<li><p><strong>w</strong> (<em>array_like</em>) – real wage path, used for ‘wage bill’ and
+‘avg wage’</p></li>
+<li><p><strong>L</strong> (<em>array_like</em>) – aggregate labor path, used for ‘wage bill’ and
+‘avg wage’</p></li>
+<li><p><strong>p</strong> (<em>OG-Core Specifications object</em>) – model parameters</p></li>
+<li><p><strong>method</strong> (<em>str</em>) – ‘SS’ for the steady-state value or ‘TPI’ for the
+time path</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>length 1 in the steady state, else T + S</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>rate (Numpy array)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="ogcore.pensions.ndc_rates_path">
+<span class="sig-prename descclassname"><span class="pre">ogcore.pensions.</span></span><span class="sig-name descname"><span class="pre">ndc_rates_path</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">r</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Y</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">w</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">L</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">method</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ogcore/pensions.html#ndc_rates_path"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogcore.pensions.ndc_rates_path" title="Link to this definition">#</a></dt>
+<dd><p>Credited return and annuity discount rate paths for an NDC system.</p>
+<p>The credited return is <code class="docutils literal notranslate"><span class="pre">ndc_growth_rate</span></code> averaged over the
+<code class="docutils literal notranslate"><span class="pre">ndc_growth_avg_years</span></code> years up to and including each period
+(periods before the path take the period-0 rate). The discount
+rate is <code class="docutils literal notranslate"><span class="pre">dir_growth_rate</span></code>; a household’s conversion coefficient
+uses its value in the period the household retires.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>r</strong> (<em>array_like</em>) – interest rate path (scalar in the steady state)</p></li>
+<li><p><strong>Y</strong> (<em>array_like</em>) – GDP path</p></li>
+<li><p><strong>w</strong> (<em>array_like</em>) – real wage path</p></li>
+<li><p><strong>L</strong> (<em>array_like</em>) – aggregate labor path</p></li>
+<li><p><strong>p</strong> (<em>OG-Core Specifications object</em>) – model parameters</p></li>
+<li><p><strong>method</strong> (<em>str</em>) – ‘SS’ or ‘TPI’</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>credit and discount rate paths</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>rates (<a class="reference internal" href="#ogcore.pensions.NDCRates" title="ogcore.pensions.NDCRates">NDCRates</a>)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="ogcore.pensions.g_ndc">
+<span class="sig-prename descclassname"><span class="pre">ogcore.pensions.</span></span><span class="sig-name descname"><span class="pre">g_ndc</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">r</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Y</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ogcore/pensions.html#g_ndc"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogcore.pensions.g_ndc" title="Link to this definition">#</a></dt>
+<dd><p>Steady-state growth rate credited to NDC balances.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>r</strong> (<em>array_like</em>) – interest rate; its last element is used</p></li>
+<li><p><strong>Y</strong> (<em>array_like</em>) – GDP (unused: GDP growth in the steady state
+follows from g_y and g_n)</p></li>
 <li><p><strong>p</strong> (<em>OG-Core Specifications object</em>) – model parameters</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>growth rate used for contributions to NDC</p>
+<dd class="field-even"><p>growth rate credited to NDC balances</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>g_ndc (Numpy array)</p>
+<dd class="field-odd"><p>g_ndc (scalar)</p>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="ogcore.pensions.g_dir">
-<span class="sig-prename descclassname"><span class="pre">ogcore.pensions.</span></span><span class="sig-name descname"><span class="pre">g_dir</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">r</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Y</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">g_y</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">g_n</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dir_growth_rate</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ogcore/pensions.html#g_dir"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogcore.pensions.g_dir" title="Link to this definition">#</a></dt>
-<dd><p>Compute growth rate used for contributions to NDC pension</p>
+<span class="sig-prename descclassname"><span class="pre">ogcore.pensions.</span></span><span class="sig-name descname"><span class="pre">g_dir</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">r</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Y</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ogcore/pensions.html#g_dir"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogcore.pensions.g_dir" title="Link to this definition">#</a></dt>
+<dd><p>Steady-state rate used to discount payments in the NDC conversion
+coefficient.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>r</strong> (<em>array_like</em>) – interest rate</p></li>
-<li><p><strong>Y</strong> (<em>array_like</em>) – GDP</p></li>
-<li><p><strong>g_y</strong> (<em>array_like</em>) – GDP growth rate</p></li>
-<li><p><strong>g_n</strong> (<em>array_like</em>) – population growth rate</p></li>
-<li><p><strong>dir_growth_rate</strong> (<em>str</em>) – growth rate used for contributions to NDC</p></li>
+<li><p><strong>r</strong> (<em>array_like</em>) – interest rate; its last element is used</p></li>
+<li><p><strong>Y</strong> (<em>array_like</em>) – GDP (unused: GDP growth in the steady state
+follows from g_y and g_n)</p></li>
+<li><p><strong>p</strong> (<em>OG-Core Specifications object</em>) – model parameters</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>growth rate used for contributions to NDC</p>
+<dd class="field-even"><p>discount rate in the conversion coefficient</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>g_dir (Numpy array)</p>
+<dd class="field-odd"><p>g_dir (scalar)</p>
 </dd>
 </dl>
 </dd></dl>
@@ -841,7 +968,7 @@ s in period t dies before period t + 1</p>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="ogcore.pensions.delta_ret">
-<span class="sig-prename descclassname"><span class="pre">ogcore.pensions.</span></span><span class="sig-name descname"><span class="pre">delta_ret</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">r</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Y</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">S_ret</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">indR</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">k_ret</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">t_ret</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ogcore/pensions.html#delta_ret"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogcore.pensions.delta_ret" title="Link to this definition">#</a></dt>
+<span class="sig-prename descclassname"><span class="pre">ogcore.pensions.</span></span><span class="sig-name descname"><span class="pre">delta_ret</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">r</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Y</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">S_ret</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">indR</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">k_ret</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">t_ret</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">g_dir_path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ogcore/pensions.html#delta_ret"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogcore.pensions.delta_ret" title="Link to this definition">#</a></dt>
 <dd><p>Compute conversion coefficient for the NDC pension amount</p>
 <div class="math notranslate nohighlight">
 \[\delta_{R} = (dir_{R} + ind_{R} - k)^{-1}\]</div>
@@ -856,6 +983,10 @@ household retires (a period life table)</p></li>
 faces at each age after retirement (a projected cohort life
 table), the rates that also enter the household’s problem</p></li>
 </ul>
+<p>Payments are discounted at <code class="docutils literal notranslate"><span class="pre">dir_growth_rate</span></code>. Given a calendar
+path of that rate (<code class="docutils literal notranslate"><span class="pre">g_dir_path</span></code>), each household uses its value
+in the period it retires, held fixed over the payments; otherwise
+the steady-state rate is used.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
@@ -874,6 +1005,9 @@ age <code class="docutils literal notranslate"><span class="pre">S_ret</span></c
 before 0 or after T + S - 1, in which case the first or
 last row of the mortality rates is used. None for the
 steady state.</p></li>
+<li><p><strong>g_dir_path</strong> (<em>array_like</em>) – calendar path of the discount rate
+(<code class="docutils literal notranslate"><span class="pre">NDCRates.discount</span></code>), read at <code class="docutils literal notranslate"><span class="pre">t_ret</span></code> (clipped to the
+path); None to use the steady-state rate</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -1197,9 +1331,14 @@ period and age, size T x S</p></li>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="ogcore.pensions.NDC_1dim_loop">
-<span class="sig-prename descclassname"><span class="pre">ogcore.pensions.</span></span><span class="sig-name descname"><span class="pre">NDC_1dim_loop</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">w</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">e</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">S_ret</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">S</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">g_y</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tau_p</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">g_ndc</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">delta_ret</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">NDC</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ogcore/pensions.html#NDC_1dim_loop"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogcore.pensions.NDC_1dim_loop" title="Link to this definition">#</a></dt>
+<span class="sig-prename descclassname"><span class="pre">ogcore.pensions.</span></span><span class="sig-name descname"><span class="pre">NDC_1dim_loop</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">w</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">e</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">S_ret</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">S</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">g_y</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tau_p</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">g_ndc</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">t_birth</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">delta_ret</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">NDC</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ogcore/pensions.html#NDC_1dim_loop"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogcore.pensions.NDC_1dim_loop" title="Link to this definition">#</a></dt>
 <dd><p>Calculate public pension from a notional defined contribution
 system for one household over its lifetime.</p>
+<p>The contribution made at working age s earns the rate credited in
+each later period up to the period before retirement:</p>
+<div class="math notranslate nohighlight">
+\[\prod_{a=s+1}^{R-1}(1 + g_{NDC,t_0 + a})\]</div>
+<p>where <span class="math notranslate nohighlight">\(t_0\)</span> is the household’s period of birth (age 0).</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
@@ -1212,7 +1351,10 @@ household at each age u, length S</p></li>
 <li><p><strong>g_y</strong> (<em>array_like</em>) – GDP growth rate</p></li>
 <li><p><strong>tau_p</strong> (<em>Numpy array</em>) – contribution rate the household faced at
 each working age s, length S</p></li>
-<li><p><strong>g_ndc</strong> (<em>scalar</em>) – growth rate of NDC pension</p></li>
+<li><p><strong>g_ndc</strong> (<em>Numpy array</em>) – calendar path of the credited rate
+(<code class="docutils literal notranslate"><span class="pre">NDCRates.credit</span></code>), a 1-D float array; periods outside
+it read the first or last element</p></li>
+<li><p><strong>t_birth</strong> (<em>int</em>) – model period in which the household is age 0</p></li>
 <li><p><strong>delta_ret</strong> (<em>Numpy array</em>) – conversion coefficient for the NDC
 pension amount that applies at each age u, length S</p></li>
 <li><p><strong>NDC</strong> (<em>Numpy array</em>) – pension amount for each household (filled
@@ -1230,9 +1372,13 @@ in and returned), length S</p></li>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="ogcore.pensions.NDC_2dim_loop">
-<span class="sig-prename descclassname"><span class="pre">ogcore.pensions.</span></span><span class="sig-name descname"><span class="pre">NDC_2dim_loop</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">w</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">e</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">S_ret</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">S</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">g_y</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tau_p</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">g_ndc</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">delta_ret</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">NDC</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ogcore/pensions.html#NDC_2dim_loop"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogcore.pensions.NDC_2dim_loop" title="Link to this definition">#</a></dt>
+<span class="sig-prename descclassname"><span class="pre">ogcore.pensions.</span></span><span class="sig-name descname"><span class="pre">NDC_2dim_loop</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">w</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">e</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">S_ret</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">S</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">g_y</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tau_p</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">g_ndc</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">t_cross</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">delta_ret</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">NDC</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ogcore/pensions.html#NDC_2dim_loop"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogcore.pensions.NDC_2dim_loop" title="Link to this definition">#</a></dt>
 <dd><p>Calculate public pension from a notional defined contribution
 system for a cross section of S x J households in one period.</p>
+<p>As in <code class="docutils literal notranslate"><span class="pre">NDC_1dim_loop</span></code>, contributions compound at the rates
+credited in the periods the household lived through: the household
+of age u in period <code class="docutils literal notranslate"><span class="pre">t_cross</span></code> was age s in period
+t_cross - u + s.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
@@ -1245,7 +1391,8 @@ each age u, length S</p></li>
 <li><p><strong>g_y</strong> (<em>array_like</em>) – GDP growth rate</p></li>
 <li><p><strong>tau_p</strong> (<em>Numpy array</em>) – contribution rate of the household of each
 age s, length S</p></li>
-<li><p><strong>g_ndc</strong> (<em>scalar</em>) – growth rate of NDC pension</p></li>
+<li><p><strong>g_ndc</strong> (<em>Numpy array</em>) – calendar path of the credited rate</p></li>
+<li><p><strong>t_cross</strong> (<em>int</em>) – model period of the cross section</p></li>
 <li><p><strong>delta_ret</strong> (<em>Numpy array</em>) – conversion coefficient for the NDC
 pension amount of the household of each age u, length S</p></li>
 <li><p><strong>NDC</strong> (<em>Numpy array</em>) – pension amount for each household (filled
@@ -1323,6 +1470,13 @@ in and returned), size S x J</p></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.pensions.deriv_DB"><code class="docutils literal notranslate"><span class="pre">deriv_DB()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.pensions.deriv_PS"><code class="docutils literal notranslate"><span class="pre">deriv_PS()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.pensions.delta_point"><code class="docutils literal notranslate"><span class="pre">delta_point()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.pensions.NDCRates"><code class="docutils literal notranslate"><span class="pre">NDCRates</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.pensions.NDCRates.credit"><code class="docutils literal notranslate"><span class="pre">NDCRates.credit</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.pensions.NDCRates.discount"><code class="docutils literal notranslate"><span class="pre">NDCRates.discount</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.pensions.growth_rate_path"><code class="docutils literal notranslate"><span class="pre">growth_rate_path()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.pensions.ndc_rates_path"><code class="docutils literal notranslate"><span class="pre">ndc_rates_path()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.pensions.g_ndc"><code class="docutils literal notranslate"><span class="pre">g_ndc()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.pensions.g_dir"><code class="docutils literal notranslate"><span class="pre">g_dir()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.pensions.annuity_mort_rates"><code class="docutils literal notranslate"><span class="pre">annuity_mort_rates()</span></code></a></li>

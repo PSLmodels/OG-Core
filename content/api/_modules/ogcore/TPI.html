@@ -677,6 +677,7 @@
     <span class="n">j</span><span class="p">,</span>
     <span class="n">initial_b</span><span class="p">,</span>
     <span class="n">p</span><span class="p">,</span>
+    <span class="n">ndc_rates</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
 <span class="p">):</span>
 <span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Solves the first entries of the upper triangle of the twist doughnut. This</span>
@@ -699,6 +700,9 @@
 <span class="sd">        j (int): index of ability type</span>
 <span class="sd">        initial_b (Numpy array): SxJ matrix, savings of agents alive at T=0</span>
 <span class="sd">        p (OG-Core Specifications object): model parameters</span>
+<span class="sd">        ndc_rates (NDCRates): calendar paths of the NDC credited and</span>
+<span class="sd">            discount rates (``pensions.ndc_rates_path``); None for the</span>
+<span class="sd">            steady-state rates</span>
 
 <span class="sd">    Returns:</span>
 <span class="sd">        euler errors (Numpy array): errors from first order conditions,</span>
@@ -731,6 +735,7 @@
         <span class="n">j</span><span class="p">,</span>
         <span class="n">p</span><span class="p">,</span>
         <span class="s2">"TPI_scalar"</span><span class="p">,</span>
+        <span class="n">ndc_rates</span><span class="p">,</span>
     <span class="p">)</span>
 
     <span class="n">error2</span> <span class="o">=</span> <span class="n">household</span><span class="o">.</span><span class="n">FOC_labor</span><span class="p">(</span>
@@ -754,6 +759,7 @@
         <span class="n">j</span><span class="p">,</span>
         <span class="n">p</span><span class="p">,</span>
         <span class="s2">"TPI_scalar"</span><span class="p">,</span>
+        <span class="n">ndc_rates</span><span class="p">,</span>
     <span class="p">)</span>
 
     <span class="k">if</span> <span class="n">n</span> <span class="o">&lt;=</span> <span class="mi">0</span> <span class="ow">or</span> <span class="n">n</span> <span class="o">&gt;=</span> <span class="mi">1</span><span class="p">:</span>
@@ -787,6 +793,7 @@
     <span class="n">mtry_params</span><span class="p">,</span>
     <span class="n">initial_b</span><span class="p">,</span>
     <span class="n">p</span><span class="p">,</span>
+    <span class="n">ndc_rates</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
 <span class="p">):</span>
 <span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Solves the upper triangle of time path iterations. These are the agents who</span>
@@ -819,6 +826,9 @@
 <span class="sd">        initial_b (Numpy array): savings of agents alive at T=0,</span>
 <span class="sd">            size = SxJ</span>
 <span class="sd">        p (OG-Core Specifications object): model parameters</span>
+<span class="sd">        ndc_rates (NDCRates): calendar paths of the NDC credited and</span>
+<span class="sd">            discount rates (``pensions.ndc_rates_path``); None for the</span>
+<span class="sd">            steady-state rates</span>
 
 <span class="sd">    Returns:</span>
 <span class="sd">        euler errors (Numpy array): errors from first order conditions,</span>
@@ -864,6 +874,7 @@
         <span class="n">j</span><span class="p">,</span>
         <span class="n">p</span><span class="p">,</span>
         <span class="s2">"TPI"</span><span class="p">,</span>
+        <span class="n">ndc_rates</span><span class="p">,</span>
     <span class="p">)</span>
 
     <span class="n">error2</span> <span class="o">=</span> <span class="n">household</span><span class="o">.</span><span class="n">FOC_labor</span><span class="p">(</span>
@@ -887,6 +898,7 @@
         <span class="n">j</span><span class="p">,</span>
         <span class="n">p</span><span class="p">,</span>
         <span class="s2">"TPI"</span><span class="p">,</span>
+        <span class="n">ndc_rates</span><span class="p">,</span>
     <span class="p">)</span>
 
     <span class="c1"># Check and punish constraint violations</span>
@@ -966,7 +978,9 @@
 <span class="sd">            guesses_n)</span>
 <span class="sd">        outer_loop_vars (tuple): values for factor prices and economic</span>
 <span class="sd">            aggregates used in household problem</span>
-<span class="sd">            (r_p, r, w, p_m, BQ, RM, TR, theta)</span>
+<span class="sd">            (r_p, r, w, p_m, BQ, RM, TR, theta), optionally followed by</span>
+<span class="sd">            ndc_rates (NDCRates), the calendar paths of the NDC credited</span>
+<span class="sd">            and discount rates</span>
 <span class="sd">        r_p (Numpy array): real interest rate on household portfolio</span>
 <span class="sd">        r (Numpy array): real interest rate on private capital</span>
 <span class="sd">        w (Numpy array): real wage rate</span>
@@ -997,7 +1011,8 @@
 <span class="sd">    """</span>
     <span class="n">K0</span><span class="p">,</span> <span class="n">b_sinit</span><span class="p">,</span> <span class="n">b_splus1init</span><span class="p">,</span> <span class="n">factor</span><span class="p">,</span> <span class="n">initial_n</span> <span class="o">=</span> <span class="n">initial_values</span>
     <span class="n">guesses_b</span><span class="p">,</span> <span class="n">guesses_n</span> <span class="o">=</span> <span class="n">guesses</span>
-    <span class="n">r_p</span><span class="p">,</span> <span class="n">r</span><span class="p">,</span> <span class="n">w</span><span class="p">,</span> <span class="n">p_m</span><span class="p">,</span> <span class="n">BQ</span><span class="p">,</span> <span class="n">RM</span><span class="p">,</span> <span class="n">TR</span><span class="p">,</span> <span class="n">theta</span> <span class="o">=</span> <span class="n">outer_loop_vars</span>
+    <span class="n">r_p</span><span class="p">,</span> <span class="n">r</span><span class="p">,</span> <span class="n">w</span><span class="p">,</span> <span class="n">p_m</span><span class="p">,</span> <span class="n">BQ</span><span class="p">,</span> <span class="n">RM</span><span class="p">,</span> <span class="n">TR</span><span class="p">,</span> <span class="n">theta</span> <span class="o">=</span> <span class="n">outer_loop_vars</span><span class="p">[:</span><span class="mi">8</span><span class="p">]</span>
+    <span class="n">ndc_rates</span> <span class="o">=</span> <span class="n">outer_loop_vars</span><span class="p">[</span><span class="mi">8</span><span class="p">]</span> <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">outer_loop_vars</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">8</span> <span class="k">else</span> <span class="kc">None</span>
 
     <span class="c1"># compute composite good price</span>
     <span class="n">p_i</span> <span class="o">=</span> <span class="p">(</span>
@@ -1035,6 +1050,7 @@
         <span class="n">j</span><span class="p">,</span>
         <span class="n">b_splus1init</span><span class="p">,</span>
         <span class="n">p</span><span class="p">,</span>
+        <span class="n">ndc_rates</span><span class="p">,</span>
     <span class="p">)</span>
     <span class="n">solutions</span> <span class="o">=</span> <span class="n">opt</span><span class="o">.</span><span class="n">root</span><span class="p">(</span>
         <span class="n">firstdoughnutring</span><span class="p">,</span>
@@ -1104,6 +1120,7 @@
             <span class="n">mtry_params_to_use</span><span class="p">,</span>
             <span class="n">b_splus1init</span><span class="p">,</span>
             <span class="n">p</span><span class="p">,</span>
+            <span class="n">ndc_rates</span><span class="p">,</span>
         <span class="p">)</span>
         <span class="n">_tri_jac</span> <span class="o">=</span> <span class="n">_banded_jac_for</span><span class="p">(</span>
             <span class="n">twist_doughnut</span><span class="p">,</span> <span class="n">_tri_x0</span><span class="p">,</span> <span class="n">_tri_args</span><span class="p">,</span> <span class="n">p</span><span class="o">.</span><span class="n">use_sparse_FOC_jac</span>
@@ -1188,6 +1205,7 @@
             <span class="n">mtry_params_to_use</span><span class="p">,</span>
             <span class="n">b_splus1init</span><span class="p">,</span>
             <span class="n">p</span><span class="p">,</span>
+            <span class="n">ndc_rates</span><span class="p">,</span>
         <span class="p">)</span>
         <span class="n">_td_x0</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">b_guesses_to_use</span><span class="p">)</span> <span class="o">+</span> <span class="nb">list</span><span class="p">(</span><span class="n">n_guesses_to_use</span><span class="p">)</span>
         <span class="c1"># When p.use_sparse_FOC_jac is set, supply a banded finite-difference</span>
@@ -1575,7 +1593,13 @@
 
     <span class="c1"># TPI loop</span>
     <span class="k">while</span> <span class="p">(</span><span class="n">TPIiter</span> <span class="o">&lt;</span> <span class="n">p</span><span class="o">.</span><span class="n">maxiter</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="n">TPIdist</span> <span class="o">&gt;=</span> <span class="n">p</span><span class="o">.</span><span class="n">mindist_TPI</span><span class="p">):</span>
-        <span class="n">outer_loop_vars</span> <span class="o">=</span> <span class="p">(</span><span class="n">r_p</span><span class="p">,</span> <span class="n">r</span><span class="p">,</span> <span class="n">w</span><span class="p">,</span> <span class="n">p_m</span><span class="p">,</span> <span class="n">BQ</span><span class="p">,</span> <span class="n">RM</span><span class="p">,</span> <span class="n">TR</span><span class="p">,</span> <span class="n">theta</span><span class="p">)</span>
+        <span class="c1"># NDC credited and discount rates by period, from this</span>
+        <span class="c1"># iteration's interest rate, GDP, wage, and labor paths</span>
+        <span class="k">if</span> <span class="n">p</span><span class="o">.</span><span class="n">pension_system</span> <span class="o">==</span> <span class="s2">"Notional Defined Contribution"</span><span class="p">:</span>
+            <span class="n">ndc_rates</span> <span class="o">=</span> <span class="n">pensions</span><span class="o">.</span><span class="n">ndc_rates_path</span><span class="p">(</span><span class="n">r_p</span><span class="p">,</span> <span class="n">Y</span><span class="p">,</span> <span class="n">w</span><span class="p">,</span> <span class="n">L</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="s2">"TPI"</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">ndc_rates</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="n">outer_loop_vars</span> <span class="o">=</span> <span class="p">(</span><span class="n">r_p</span><span class="p">,</span> <span class="n">r</span><span class="p">,</span> <span class="n">w</span><span class="p">,</span> <span class="n">p_m</span><span class="p">,</span> <span class="n">BQ</span><span class="p">,</span> <span class="n">RM</span><span class="p">,</span> <span class="n">TR</span><span class="p">,</span> <span class="n">theta</span><span class="p">,</span> <span class="n">ndc_rates</span><span class="p">)</span>
         <span class="c1"># compute composite good price</span>
         <span class="n">p_i</span> <span class="o">=</span> <span class="p">(</span>
             <span class="n">np</span><span class="o">.</span><span class="n">tile</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">io_matrix</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">p</span><span class="o">.</span><span class="n">I</span><span class="p">,</span> <span class="n">p</span><span class="o">.</span><span class="n">M</span><span class="p">),</span> <span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">T</span> <span class="o">+</span> <span class="n">p</span><span class="o">.</span><span class="n">S</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
@@ -1688,6 +1712,7 @@
             <span class="n">p</span><span class="o">.</span><span class="n">e</span><span class="p">,</span>
             <span class="n">etr_params_4D</span><span class="p">,</span>
             <span class="n">p</span><span class="p">,</span>
+            <span class="n">ndc_rates</span><span class="p">,</span>
         <span class="p">)</span>
         <span class="n">income_tax_mat</span> <span class="o">=</span> <span class="n">tax</span><span class="o">.</span><span class="n">income_tax_liab</span><span class="p">(</span>
             <span class="n">r_p</span><span class="p">[:</span> <span class="n">p</span><span class="o">.</span><span class="n">T</span><span class="p">],</span>
@@ -1706,7 +1731,7 @@
             <span class="n">r_p</span><span class="p">[:</span> <span class="n">p</span><span class="o">.</span><span class="n">T</span><span class="p">],</span>
             <span class="n">w</span><span class="p">[:</span> <span class="n">p</span><span class="o">.</span><span class="n">T</span><span class="p">],</span>
             <span class="n">n_mat</span><span class="p">[:</span> <span class="n">p</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="p">:,</span> <span class="p">:],</span>
-            <span class="mi">1</span><span class="p">,</span>
+            <span class="n">ndc_rates</span><span class="p">,</span>
             <span class="n">theta</span><span class="p">,</span>
             <span class="mi">0</span><span class="p">,</span>
             <span class="kc">None</span><span class="p">,</span>
@@ -1865,6 +1890,7 @@
             <span class="n">p</span><span class="p">,</span>
             <span class="kc">None</span><span class="p">,</span>
             <span class="s2">"TPI"</span><span class="p">,</span>
+            <span class="n">ndc_rates</span><span class="p">,</span>
         <span class="p">)</span>
         <span class="n">total_tax_revenue</span><span class="p">[:</span> <span class="n">p</span><span class="o">.</span><span class="n">T</span><span class="p">]</span> <span class="o">=</span> <span class="n">total_tax_rev</span>
         <span class="n">I_g</span> <span class="o">=</span> <span class="n">fiscal</span><span class="o">.</span><span class="n">get_I_g</span><span class="p">(</span><span class="n">Y</span><span class="p">[:</span> <span class="n">p</span><span class="o">.</span><span class="n">T</span><span class="p">],</span> <span class="n">Ig_baseline</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="s2">"TPI"</span><span class="p">)</span>
@@ -1978,6 +2004,7 @@
             <span class="n">p</span><span class="p">,</span>
             <span class="kc">None</span><span class="p">,</span>
             <span class="s2">"TPI"</span><span class="p">,</span>
+            <span class="n">ndc_rates</span><span class="p">,</span>
         <span class="p">)</span>
         <span class="n">total_tax_revenue</span><span class="p">[:</span> <span class="n">p</span><span class="o">.</span><span class="n">T</span><span class="p">]</span> <span class="o">=</span> <span class="n">total_tax_rev</span>
         <span class="n">TR_new</span> <span class="o">=</span> <span class="n">fiscal</span><span class="o">.</span><span class="n">get_TR</span><span class="p">(</span>

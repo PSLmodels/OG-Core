@@ -643,6 +643,7 @@
     <span class="n">e</span><span class="p">,</span>
     <span class="n">etr_params</span><span class="p">,</span>
     <span class="n">p</span><span class="p">,</span>
+    <span class="n">ndc_rates</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
 <span class="p">):</span>
 <span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Calculate net taxes paid for each household.</span>
@@ -668,15 +669,17 @@
 <span class="sd">        e (Numpy array): effective labor units</span>
 <span class="sd">        etr_params (list): list of effective tax rate function parameters</span>
 <span class="sd">        p (OG-Core Specifications object): model parameters</span>
+<span class="sd">        ndc_rates (NDCRates): calendar paths of the NDC credited and</span>
+<span class="sd">            discount rates (``pensions.ndc_rates_path``); None for the</span>
+<span class="sd">            steady-state rates</span>
 
 <span class="sd">    Returns:</span>
 <span class="sd">        net_tax (Numpy array): net taxes paid for each household</span>
 
 <span class="sd">    """</span>
     <span class="n">T_I</span> <span class="o">=</span> <span class="n">income_tax_liab</span><span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="n">w</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">factor</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="n">j</span><span class="p">,</span> <span class="n">method</span><span class="p">,</span> <span class="n">e</span><span class="p">,</span> <span class="n">etr_params</span><span class="p">,</span> <span class="n">p</span><span class="p">)</span>
-    <span class="c1"># TODO: replace "1" with Y in the args below when want NDC functions</span>
     <span class="n">pension</span> <span class="o">=</span> <span class="n">pensions</span><span class="o">.</span><span class="n">pension_amount</span><span class="p">(</span>
-        <span class="n">r</span><span class="p">,</span> <span class="n">w</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">theta</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="n">j</span><span class="p">,</span> <span class="n">shift</span><span class="p">,</span> <span class="n">method</span><span class="p">,</span> <span class="n">e</span><span class="p">,</span> <span class="n">factor</span><span class="p">,</span> <span class="n">p</span>
+        <span class="n">r</span><span class="p">,</span> <span class="n">w</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">ndc_rates</span><span class="p">,</span> <span class="n">theta</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="n">j</span><span class="p">,</span> <span class="n">shift</span><span class="p">,</span> <span class="n">method</span><span class="p">,</span> <span class="n">e</span><span class="p">,</span> <span class="n">factor</span><span class="p">,</span> <span class="n">p</span>
     <span class="p">)</span>
     <span class="n">T_BQ</span> <span class="o">=</span> <span class="n">bequest_tax_liab</span><span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">bq</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="n">j</span><span class="p">,</span> <span class="n">method</span><span class="p">,</span> <span class="n">p</span><span class="p">)</span>
     <span class="n">T_W</span> <span class="o">=</span> <span class="n">wealth_tax_liab</span><span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="n">j</span><span class="p">,</span> <span class="n">method</span><span class="p">,</span> <span class="n">p</span><span class="p">)</span>
