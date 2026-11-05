@@ -380,7 +380,7 @@ p.retire = 2
 per_rmn = p.S
 p.g_y = np.ones(p.T) * np.ones(p.T) * 0.03
 p.g_n = np.ones(p.T) * 0.0
-p.g_n_SS = 0.0
+p.g_n_ss = 0.0
 p.ndc_growth_rate = "LR GDP"
 p.dir_growth_rate = "r"
 p.tau_p = 0.3
@@ -390,7 +390,7 @@ w = np.array([1.2, 1.1, 1.21, 1])
 e = np.array([1.1, 1.11, 0.9, 0.87])
 r = np.ones(p.T) * 0.02
 # annuity factor 1 + 0.7 / 1.02 (survival timing fixed in Issue #1268)
-d_NDC_expected1 = np.array([0.33302457, 0.29907546, 0.0, 0.0])
+d_NDC_expected1 = np.array([0.33317153, 0.29907546, 0.0, 0.0])
 args1 = (r, w, e, None, per_rmn, p)
 
 #############Incomplete lifetimes###################
@@ -400,7 +400,7 @@ p2.retire = 2
 per_rmn2 = 3
 p2.g_y = np.ones(p2.T) * 0.04
 p2.g_n = np.ones(p2.T) * 0.0
-p2.g_n_SS = 0.0
+p2.g_n_ss = 0.0
 p2.ndc_growth_rate = "LR GDP"
 p2.dir_growth_rate = "LR GDP"
 p2.tau_p = 0.3
@@ -409,7 +409,7 @@ p2.mort_rates_SS = np.array([0.1, 0.2, 0.4, 0.6, 1.0])
 w2 = np.array([1.1, 1.21, 1.25])
 e2 = np.array([1.11, 0.9, 1.0])
 r2 = np.ones(p2.T) * 0.04
-d_NDC_expected2 = np.array([0.32839557, 0.0, 0.0])
+d_NDC_expected2 = np.array([0.32852794, 0.0, 0.0])
 args2 = (r2, w2, e2, None, per_rmn2, p2)
 
 test_data = [(args1, d_NDC_expected1), (args2, d_NDC_expected2)]
@@ -467,7 +467,7 @@ n_ndc = np.array([0.4, 0.45, 0.4, 0.3])
 Y = None
 j = 1
 p2.g_y = np.ones(p2.T) * 0.03
-p2.g_n_SS = 0.0
+p2.g_n_ss = 0.0
 r = np.ones(p2.T) * 0.03
 factor = 2
 p2.tau_p = 0.3
@@ -475,7 +475,7 @@ p2.k_ret = 0.4615
 p2.mort_rates_SS = np.array([0.01, 0.05, 0.3, 0.4, 1])
 omegas = None
 lambdas = 1
-pension_expected_ndc = [0, 0, 0.25761736, 0.25000362]
+pension_expected_ndc = [0, 0, 0.25751495, 0.24990423]
 args_ndc = (r, w_ndc, n_ndc, Y, theta, t, j, shift, method, e_ndc, factor, p2)
 
 ################pension benefit: PS############
@@ -556,7 +556,7 @@ p = Specifications()
 p.S = 3
 p.retire = 2
 per_rmn = p.S
-p.g_n_SS = 0.0
+p.g_n_ss = 0.0
 p.g_y = np.ones(p.T) * np.ones(p.T) * 0.03
 p.ndc_growth_rate = "LR GDP"
 p.dir_growth_rate = "r"
@@ -566,7 +566,7 @@ r = np.ones(p.T) * 0.02
 p.tau_p = 0.3
 p.k_ret = 0.4615
 delta_ret = 0.816476822
-g_ndc = p.g_y[-1] + p.g_n_SS
+g_ndc = p.g_y[-1] + p.g_n_ss
 p.mort_rates_SS = np.array([0.1, 0.2, 0.4, 1.0])
 deriv_NDC_loop_expected1 = np.array([0.33302457, 0.29907546, 0.0])
 d_theta_empty = np.zeros_like(w)
@@ -580,14 +580,14 @@ per_rmn = 3
 w2 = np.array([1.1, 1.21, 1.25])
 e2 = np.array([1.11, 0.9, 1.0])
 p2.g_y = np.ones(p.T) * 0.04
-p2.g_n_SS = 0.0
+p2.g_n_ss = 0.0
 p2.ndc_growth_rate = "LR GDP"
 p2.dir_growth_rate = "r"
 r = np.array([0.03, 0.04, 0.03])
 p2.tau_p = 0.3
 p2.k_ret = 0.4615
 delta_ret2 = 0.896520810
-g_ndc2 = p2.g_y[-1] + p2.g_n_SS
+g_ndc2 = p2.g_y[-1] + p2.g_n_ss
 p2.mort_rates_SS = np.array([0.2, 0.4, 1.0])
 deriv_NDC_loop_expected2 = np.array([0.32839557, 0.0, 0.0])
 d_theta_empty = np.zeros(per_rmn)
@@ -629,11 +629,11 @@ p = Specifications()
 p.S = 4
 p.retire = 2
 p.g_y = np.ones(p.T) * np.ones(p.T) * 0.04
-p.g_n_SS = 0.0
+p.g_n_ss = 0.0
 p.ndc_growth_rate = "LR GDP"
 p.dir_growth_rate = "r"
 r = 0.02
-g_ndc_amount = p.g_y[-1] + p.g_n_SS
+g_ndc_amount = p.g_y[-1] + p.g_n_ss
 p.mort_rates_SS = np.array([0.1, 0.2, 0.4, 0.6, 1.0])
 dir_delta_s_empty = np.zeros(p.S - p.retire + 1)
 # 1 + (1 - 0.4) / 1.04: payments at ages 2 and 3
@@ -941,16 +941,14 @@ per_rmn = p2.S
 w_dndc = np.array([1.2, 1.1, 1.21, 1])
 e_dndc = np.array([1.1, 1.11, 0.9, 0.87])
 p2.g_y = np.ones(p2.T) * 0.03
-p2.g_n_SS = 0.0
+p2.g_n_ss = 0.0
 p2.ndc_growth_rate = "LR GDP"
 p2.dir_growth_rate = "r"
 r_dndc = np.ones(p2.T) * 0.02
 p2.tau_p = 0.3
 p2.k_ret = 0.4615
 p2.mort_rates_SS = np.array([0.01, 0.05, 0.3, 1])
-d_theta_expected_dndc = np.array([0.33344191, 0.29907546, 0, 0])
-# TODO: the first element differs from test_deriv_NDC
-# (0.33302457). Why? Check by hand calculation spreadsheet
+d_theta_expected_dndc = np.array([0.33317153, 0.29907546, 0, 0])
 Y = None
 factor = 2
 args_dndc = (r_dndc, w_dndc, e_dndc, Y, per_rmn, factor, 0, 1, p2)
@@ -1002,14 +1000,14 @@ w = np.array([1.2, 1.1, 1.21, 1])
 e = np.array([1.1, 1.11, 0.9, 0.87])
 n = np.array([0.4, 0.45, 0.4, 0.3])
 p.g_y = np.ones(p.T) * 0.03
-p.g_n_SS = 0.0
+p.g_n_ss = 0.0
 p.ndc_growth_rate = "LR GDP"
 p.dir_growth_rate = "r"
 r = np.ones(p.T) * 0.03
 p.tau_p = 0.3
 p.k_ret = 0.4615
 p.mort_rates_SS = np.array([0.01, 0.05, 0.3, 0.4, 1])
-NDC_expected1 = np.array([0, 0, 0.25761736, 0.25000362])
+NDC_expected1 = np.array([0, 0, 0.25751495, 0.24990423])
 # NDC_expected1 = np.array([0, 0, 0.279756794, 0.271488732])
 args1 = (w, e, n, r, None, None, j, "SS", p)
 
@@ -1024,7 +1022,7 @@ n = np.array([0.45, 0.4, 0.3])
 p2.w_preTP = np.array([1.05])
 p2.n_preTP = np.array([[0.4, 0.4], [0.2, 0.2], [0.3, 0.3], [0.5, 0.5]])
 p2.g_y = np.ones(p2.T) * 0.03
-p2.g_n_SS = 0.0
+p2.g_n_ss = 0.0
 p2.ndc_growth_rate = "LR GDP"
 p2.dir_growth_rate = "r"
 r = np.ones(p2.T) * 0.03
@@ -1038,7 +1036,7 @@ p2.e = e
 # NDC_expected2 = np.array([0, 0.25185784, 0.24441432])
 # TODO: why move from numbers below to those above ?  Diff in numpy rounding??
 # NDC_expected2 = np.array([0, 0.251721214, 0.244281728])
-NDC_expected2 = np.array([0, 0.23656794, 0.2295763])
+NDC_expected2 = np.array([0, 0.23648259, 0.22949347])
 args2 = (w, e, n, r, None, 0, j, "TPI", p2)
 
 test_data = [(args1, NDC_expected1), (args2, NDC_expected2)]
@@ -1357,7 +1355,7 @@ def test_DB_NDC_hybrid_amount_SS(ndim):
     """
     factor1, factor2 = 0.5, 1.5
     p = _hybrid_params(factor1, factor2)
-    r, w, Y = 0.05, 1.2, 1.0
+    r, w, ndc_rates = 0.05, 1.2, None
     if ndim == 1:
         # the top income group, whose earnings reach both bands
         j = p.J - 1
@@ -1367,14 +1365,16 @@ def test_DB_NDC_hybrid_amount_SS(ndim):
         j = None
         e = p.e[-1, :, :]
         n = 0.4 * np.ones((p.S, p.J))
-    hybrid = pensions.DB_NDC_hybrid_amount(w, e, n, r, Y, None, j, "SS", p)
+    hybrid = pensions.DB_NDC_hybrid_amount(
+        w, e, n, r, ndc_rates, None, j, "SS", p
+    )
     # same benefits computed by hand from the labor supply that delivers
     # each band's effective earnings
     en = e * n
     n_db = np.minimum(en, factor1) / e
     n_ndc = np.clip(en - factor1, 0.0, factor2 - factor1) / e
     db = pensions.DB_amount(w, e, n_db, None, j, "SS", p)
-    ndc = pensions.NDC_amount(w, e, n_ndc, r, Y, None, j, "SS", p)
+    ndc = pensions.NDC_amount(w, e, n_ndc, r, ndc_rates, None, j, "SS", p)
     assert np.any(ndc > 0.0) and np.any(db > 0.0)
     assert np.allclose(hybrid, db + ndc)
     # and the band cutoffs bind: both parts are below the uncapped ones
@@ -1389,7 +1389,7 @@ def test_DB_NDC_hybrid_amount_limits(method):
     system. Checked on the full time-path array and the SS cross section.
     """
     big = 100.0
-    r, Y = 0.05, 1.0
+    r, ndc_rates = 0.05, None
     p_db = _hybrid_params(big, big)
     p_ndc = _hybrid_params(0.0, big)
     if method == "SS":
@@ -1400,15 +1400,24 @@ def test_DB_NDC_hybrid_amount_limits(method):
         # the full time-path array has at least S periods
         T = p_db.S + 5
         w, t, j = np.linspace(1.0, 1.2, T), 0, None
+        # time-varying credited and discount rates along the path
+        n_per = p_db.T + p_db.S
+        ndc_rates = pensions.NDCRates(
+            np.linspace(0.01, 0.03, n_per), np.linspace(0.03, 0.02, n_per)
+        )
         e = p_db.e[-1, :, :]
         n = 0.4 * np.ones((T, p_db.S, p_db.J))
     assert np.allclose(
-        pensions.DB_NDC_hybrid_amount(w, e, n, r, Y, t, j, method, p_db),
+        pensions.DB_NDC_hybrid_amount(
+            w, e, n, r, ndc_rates, t, j, method, p_db
+        ),
         pensions.DB_amount(w, e, n, t, j, method, p_db),
     )
     assert np.allclose(
-        pensions.DB_NDC_hybrid_amount(w, e, n, r, Y, t, j, method, p_ndc),
-        pensions.NDC_amount(w, e, n, r, Y, t, j, method, p_ndc),
+        pensions.DB_NDC_hybrid_amount(
+            w, e, n, r, ndc_rates, t, j, method, p_ndc
+        ),
+        pensions.NDC_amount(w, e, n, r, ndc_rates, t, j, method, p_ndc),
     )
 
 
@@ -1417,13 +1426,15 @@ def test_DB_NDC_hybrid_amount_partial_path():
     A cohort alive when the time path begins (partial lifetime path) is
     handled, and matches the DB limit when factor1 exceeds all earnings.
     """
-    r, Y, j, t = 0.05, 1.0, 0, 0
+    r, ndc_rates, j, t = 0.05, None, 0, 0
     p = _hybrid_params(100.0, 100.0)
     per_rmn = p.S // 2
     w = np.ones(per_rmn) * 1.1
     n = 0.4 * np.ones(per_rmn)
     e = p.e[-1, -per_rmn:, j]
-    hybrid = pensions.DB_NDC_hybrid_amount(w, e, n, r, Y, t, j, "TPI", p)
+    hybrid = pensions.DB_NDC_hybrid_amount(
+        w, e, n, r, ndc_rates, t, j, "TPI", p
+    )
     assert hybrid.shape == (per_rmn,)
     assert np.allclose(hybrid, pensions.DB_amount(w, e, n, t, j, "TPI", p))
 
@@ -1434,7 +1445,15 @@ def test_DB_NDC_hybrid_amount_bad_factors():
     p.factor1_db_ndc_hybrid = 3.0
     with pytest.raises(ValueError):
         pensions.DB_NDC_hybrid_amount(
-            1.2, p.e[-1, :, 0], 0.4 * np.ones(p.S), 0.05, 1.0, None, 0, "SS", p
+            1.2,
+            p.e[-1, :, 0],
+            0.4 * np.ones(p.S),
+            0.05,
+            None,
+            None,
+            0,
+            "SS",
+            p,
         )
 
 
@@ -1457,6 +1476,32 @@ def test_SS_solve_defined_benefits(tmp_path):
             "yr_contrib": 35,
             "avg_earn_num_years": 40,
         }
+    )
+    p.baseline_dir = p.output_base = str(tmp_path)
+    runner(p, time_path=False, client=None)
+    ss = utils.safe_read_pickle(str(tmp_path / "SS" / "SS_vars.pkl"))
+    Y = np.asarray(ss["Y"]).sum()
+    assert ss["agg_pension_outlays"] > 0.0
+    assert 0.0 < ss["agg_pension_outlays"] / Y < 1.0
+
+
+@pytest.mark.local
+def test_SS_solve_hybrid_db_ndc(tmp_path):
+    """
+    The steady state must solve with the hybrid DB-NDC pension system
+    and produce positive aggregate pension outlays.
+    """
+    from ogcore.execute import runner
+    from ogcore import utils
+
+    p = Specifications(baseline=True, num_workers=1)
+    p.update_specifications(
+        dict(
+            HYBRID_UPDATES,
+            pension_system="Hybrid DB-NDC",
+            factor1_db_ndc_hybrid=0.5,
+            factor2_db_ndc_hybrid=1.5,
+        )
     )
     p.baseline_dir = p.output_base = str(tmp_path)
     runner(p, time_path=False, client=None)
@@ -1875,7 +1920,7 @@ DB_NDC_REFORM = [
 ]
 
 
-def _full_path_and_cohort_pensions(p, j, T_path):
+def _full_path_and_cohort_pensions(p, j, T_path, ndc_rates=None):
     """
     Pension benefits for the full (T_path, S, J) time path and, for a
     set of cohorts, from the household's own lifetime path, with a
@@ -1890,7 +1935,7 @@ def _full_path_and_cohort_pensions(p, j, T_path):
         np.full(T_path, 0.05),
         w,
         n3,
-        np.ones(T_path),
+        ndc_rates,
         theta,
         0,
         None,
@@ -1908,7 +1953,7 @@ def _full_path_and_cohort_pensions(p, j, T_path):
             np.full(per_rmn, 0.05),
             np.full(per_rmn, 1.2),
             0.4 * np.ones(per_rmn),
-            1.0,
+            ndc_rates,
             theta[j],
             0,
             j,
@@ -1924,7 +1969,7 @@ def _full_path_and_cohort_pensions(p, j, T_path):
             np.full(S, 0.05),
             np.full(S, 1.2),
             0.4 * np.ones(S),
-            1.0,
+            ndc_rates,
             theta[j],
             t0,
             j,
@@ -2149,7 +2194,7 @@ def test_delta_ret_ndc_mortality(method):
     lam = np.asarray(p.lambdas).ravel()
     mort = p.rho @ lam
     R, r, S = 44, 0.05, p.S
-    g = pensions.g_dir(r, 1.0, p.g_y, p.g_n, p.dir_growth_rate)
+    g = pensions.g_dir(r, 1.0, p)
     cohort_k = float(pensions.cohort_array("k_ret", p)[-1, -1])
     k = cohort_k
     indR = float(pensions.cohort_array("indR", p)[-1, -1])
@@ -2229,3 +2274,209 @@ def test_ndc_household_path_matches_full_path_mortality(method):
             [full[t0 + tt, a + tt, j] for tt in range(on_path)]
         )
         assert np.allclose(cohort[:on_path], expected), (kind, k)
+
+
+def _ndc_params(**updates):
+    p = Specifications()
+    p.update_specifications(
+        dict(
+            {
+                "pension_system": "Notional Defined Contribution",
+                "tau_p": 0.1,
+            },
+            **updates,
+        )
+    )
+    return p
+
+
+def test_growth_rate_path_units():
+    """
+    The NDC growth rates are real growth realized from t - 1 to t,
+    recovered from stationarized aggregates with productivity growth
+    exp(g_y) and population growth g_n[t - 1] (g_n_preTP into period
+    0). In the steady state GDP and the wage bill grow at
+    exp(g_y)(1 + g_n_ss) - 1 and the average wage at exp(g_y) - 1.
+    """
+    p = _ndc_params()
+    n_per = p.T + p.S
+    g_y, g_n_ss = p.g_y, p.g_n_ss
+    lr = np.exp(g_y) * (1 + g_n_ss) - 1
+    for choice, expected in [
+        ("LR GDP", lr),
+        ("Curr GDP", lr),
+        ("wage bill", lr),
+        ("avg wage", np.exp(g_y) - 1),
+        ("r", 0.04),
+    ]:
+        ss = pensions.growth_rate_path(choice, 0.04, 1.0, 1.0, 1.0, p, "SS")
+        assert ss.shape == (1,) and np.isclose(ss[0], expected), choice
+    rng = np.random.default_rng(0)
+    Y = 1 + 0.1 * rng.random(p.T)  # a path that stops at T
+    w = 1 + 0.1 * rng.random(n_per)
+    L = 1 + 0.1 * rng.random(n_per)
+    r = 0.03 + 0.01 * rng.random(n_per)
+    g_n_prev = np.append(p.g_n_preTP, p.g_n[: n_per - 1])
+    Y_ext = np.append(Y, np.full(p.S, Y[-1]))
+    Y_prev = np.append(Y_ext[0], Y_ext[:-1])
+    wL = w * L
+    wL_prev = np.append(wL[0], wL[:-1])
+    expected = {
+        "Curr GDP": Y_ext / Y_prev * np.exp(g_y) * (1 + g_n_prev) - 1,
+        "wage bill": wL / wL_prev * np.exp(g_y) * (1 + g_n_prev) - 1,
+        "avg wage": wL / wL_prev * np.exp(g_y) - 1,
+        "r": r,
+        "LR GDP": np.array([lr]),
+    }
+    for choice, exp_path in expected.items():
+        path = pensions.growth_rate_path(choice, r, Y, w, L, p, "TPI")
+        assert np.allclose(path, exp_path), choice
+    # constant stationarized aggregates give the long-run rates
+    ones = np.ones(n_per)
+    path = pensions.growth_rate_path("Curr GDP", r, ones, w, L, p, "TPI")
+    assert np.allclose(path, np.exp(g_y) * (1 + g_n_prev) - 1)
+
+
+def test_ndc_rates_path_averaging():
+    """
+    ndc_growth_avg_years averages the credited rate over that many
+    years (model periods with S = 80) up to and including each period,
+    padding the years before the path with the period-0 rate; the
+    discount rate is not averaged.
+    """
+    p = _ndc_params(
+        ndc_growth_rate="r", dir_growth_rate="r", ndc_growth_avg_years=5
+    )
+    n_per = p.T + p.S
+    r = 0.03 + 0.02 * np.sin(np.arange(n_per) / 7.0)
+    rates = pensions.ndc_rates_path(r, None, None, None, p, "TPI")
+    assert isinstance(rates, pensions.NDCRates)
+    assert np.allclose(rates.discount, r)
+    padded = np.append(np.full(4, r[0]), r)
+    expected = np.array([padded[t : t + 5].mean() for t in range(n_per)])
+    assert np.allclose(rates.credit, expected)
+    p.ndc_growth_avg_years = 1
+    rates = pensions.ndc_rates_path(r, None, None, None, p, "TPI")
+    assert np.allclose(rates.credit, r)
+
+
+def test_NDC_1dim_loop_time_varying_credit():
+    """
+    A contribution made at age s compounds at the rates credited in
+    periods t_birth + s + 1 through t_birth + R - 1.
+    """
+    S, R, t_birth = 6, 4, 3
+    w = np.array([1.0, 1.1, 1.2, 1.3, 1.4, 1.5])
+    e = np.array([1.0, 1.2, 1.1, 0.9, 0.8, 0.7])
+    n = np.array([0.4, 0.5, 0.45, 0.4, 0.2, 0.1])
+    tau_p = np.full(S, 0.2)
+    g_y = np.array([0.02])
+    credit = 0.01 * np.arange(1, 16)  # rate credited in period t
+    delta = np.full(S, 0.3)
+    out = pensions.NDC_1dim_loop(
+        w,
+        e,
+        n,
+        np.full(S, R),
+        S,
+        g_y,
+        tau_p,
+        credit,
+        t_birth,
+        delta,
+        np.zeros(S),
+    )
+    for u in range(S):
+        if u < R:
+            assert out[u] == 0.0
+            continue
+        expected = 0.3 * sum(
+            0.2
+            * w[s]
+            * np.exp(-0.02 * (u - s))
+            * e[s]
+            * n[s]
+            * np.prod(1 + credit[t_birth + s + 1 : t_birth + R])
+            for s in range(R)
+        )
+        assert np.isclose(out[u], expected)
+
+
+def test_delta_ret_discount_at_retirement():
+    """
+    Given a path of discount rates, each household's conversion
+    coefficient discounts all payments at the rate of its retirement
+    period (clipped to the path).
+    """
+    p = _ndc_params(dir_growth_rate="r", ndc_mortality="steady state")
+    R = 44
+    path = np.linspace(0.02, 0.06, 50)
+    t_ret = np.array([-3, 0, 10, 49, 80])
+    out = pensions.delta_ret(
+        0.0, None, p, np.full(5, R), t_ret=t_ret, g_dir_path=path
+    )
+    for tR, val in zip(t_ret, out):
+        g = path[np.clip(tR, 0, 49)]
+        assert np.isclose(val, pensions.delta_ret(g, None, p, R)), tR
+    # no path: the steady-state rate, here the last element of r
+    assert np.isclose(
+        pensions.delta_ret(np.array([0.1, 0.05]), None, p, R, t_ret=10),
+        pensions.delta_ret(0.05, None, p, R),
+    )
+
+
+@pytest.mark.parametrize("choice", ["Curr GDP", "wage bill", "avg wage"])
+def test_NDC_steady_state_growth_options(choice):
+    """
+    Every growth option works in the steady state (the 'Curr GDP'
+    option used to return an array and fail), with or without the
+    rates passed explicitly.
+    """
+    p = _ndc_params(ndc_growth_rate=choice, dir_growth_rate=choice)
+    w = 1.2
+    n = np.full((p.S, p.J), 0.4)
+    e = p.e[-1]
+    out = pensions.NDC_amount(w, e, n, 0.05, None, None, None, "SS", p)
+    rates = pensions.ndc_rates_path(0.05, 1.0, w, 1.0, p, "SS")
+    out2 = pensions.NDC_amount(w, e, n, 0.05, rates, None, None, "SS", p)
+    assert np.allclose(out, out2)
+    assert np.all(np.isfinite(out)) and np.all(out[-1] > 0)
+    retired = np.argmax(out[:, 0] > 0)
+    assert np.all(out[:retired] == 0)
+
+
+@pytest.mark.parametrize(
+    "credit_choice,dir_choice", [("Curr GDP", "r"), ("wage bill", "avg wage")]
+)
+def test_ndc_household_path_matches_full_path_rates(credit_choice, dir_choice):
+    """
+    With credited and discount rates that change over the transition
+    path, the NDC benefit computed on a household's own lifetime path
+    equals the diagonal of the (T, S, J) array used for the aggregates,
+    and differs from the benefit under constant rates.
+    """
+    p = _ndc_params(
+        ndc_growth_rate=credit_choice,
+        dir_growth_rate=dir_choice,
+        ndc_growth_avg_years=3,
+        pension_regimes=DB_NDC_REFORM,
+    )
+    n_per = p.T + p.S
+    t = np.arange(n_per)
+    Y = 1 + 0.2 * np.exp(-t / 30.0) * np.sin(t / 5.0)
+    w = 1 + 0.1 * np.cos(t / 9.0)
+    L = 1 + 0.05 * np.sin(t / 4.0)
+    r = 0.04 + 0.02 * np.exp(-t / 40.0)
+    rates = pensions.ndc_rates_path(r, Y, w, L, p, "TPI")
+    assert np.ptp(rates.credit) > 0 and np.ptp(rates.discount) > 0
+    j, T_path = 0, 120
+    full, cohorts = _full_path_and_cohort_pensions(p, j, T_path, rates)
+    for (kind, k), cohort in cohorts.items():
+        a, t0 = (k, 0) if kind == "alive" else (0, k)
+        on_path = min(len(cohort), T_path - t0)
+        expected = np.array(
+            [full[t0 + tt, a + tt, j] for tt in range(on_path)]
+        )
+        assert np.allclose(cohort[:on_path], expected), (kind, k)
+    const, _ = _full_path_and_cohort_pensions(p, j, T_path, None)
+    assert not np.allclose(full[:60], const[:60])

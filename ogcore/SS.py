@@ -1071,7 +1071,7 @@ def SS_solver(
         r_p_ss,
         wss,
         nssmat,
-        1,
+        None,
         theta,
         0,
         None,

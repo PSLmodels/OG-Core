@@ -1382,8 +1382,23 @@ def test_run_TPI_serial_no_client(tmpdir, monkeypatch):
             },
             {"tau_p": 0.12, "k_ret": 0.3},
         ),
+        (
+            {
+                "pension_system": "Notional Defined Contribution",
+                "tau_p": 0.1,
+                "ndc_growth_rate": "Curr GDP",
+                "ndc_growth_avg_years": 6,
+                "dir_growth_rate": "wage bill",
+            },
+            {"tau_p": 0.12, "k_ret": 0.3},
+        ),
     ],
-    ids=["US-Style Social Security", "Defined Benefits", "NDC"],
+    ids=[
+        "US-Style Social Security",
+        "Defined Benefits",
+        "NDC",
+        "NDC growth paths",
+    ],
 )
 def test_run_TPI_pension_regime(
     system_params, regime_params, tmpdir, dask_client
