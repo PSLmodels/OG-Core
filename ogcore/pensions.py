@@ -1163,20 +1163,17 @@ class NDCRates(NamedTuple):
     Calendar paths of the rates used in a notional defined contribution
     system, built by ``ndc_rates_path``.
 
-    Attributes:
-        credit (Numpy array): rate credited to notional balances in each
-            model period, the growth realized from the previous period
-            (after any averaging set by ``ndc_growth_avg_years``)
-        discount (Numpy array): rate used to discount payments in the
-            conversion coefficient of a household retiring in each
-            model period
-
-    Both are length T + S on the time path, or length 1 for a steady
-    state. Periods before the path read the first element and periods
-    after it the last.
+    Both fields are length T + S on the time path, or length 1 for a
+    steady state. Periods before the path read the first element and
+    periods after it the last.
     """
 
+    #: Numpy array: rate credited to notional balances in each model
+    #: period, the growth realized from the previous period (after any
+    #: averaging set by ``ndc_growth_avg_years``)
     credit: np.ndarray
+    #: Numpy array: rate used to discount payments in the conversion
+    #: coefficient of a household retiring in each model period
     discount: np.ndarray
 
 
