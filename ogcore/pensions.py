@@ -1864,6 +1864,7 @@ def DB_3dim_loop(
     return DB
 
 
+@numba.jit(nopython=True)
 def NDC_1dim_loop(
     w, e, n, S_ret, S, g_y, tau_p, g_ndc, t_birth, delta_ret, NDC
 ):
@@ -1890,8 +1891,8 @@ def NDC_1dim_loop(
         tau_p (Numpy array): contribution rate the household faced at
             each working age s, length S
         g_ndc (Numpy array): calendar path of the credited rate
-            (``NDCRates.credit``); periods outside it read the first or
-            last element
+            (``NDCRates.credit``), a 1-D float array; periods outside
+            it read the first or last element
         t_birth (int): model period in which the household is age 0
         delta_ret (Numpy array): conversion coefficient for the NDC
             pension amount that applies at each age u, length S
@@ -1902,7 +1903,6 @@ def NDC_1dim_loop(
         NDC (Numpy array): pension amount for each household
 
     """
-    g_ndc = np.atleast_1d(np.asarray(g_ndc, dtype=float))
     # credited rate at each age of the household's life
     g_age = g_ndc[np.clip(t_birth + np.arange(S), 0, g_ndc.size - 1)]
     for u in range(S):
