@@ -1200,8 +1200,21 @@ def test_get_PS(args, PS_expected):
                 "dir_growth_rate": "r",
             },
         ),
+        (
+            "Hybrid DB-NDC",
+            {
+                "alpha_db": [[0.02]],
+                "yr_contrib": 35,
+                "avg_earn_num_years": 40,
+                "tau_p": 0.1,
+                "ndc_growth_rate": "LR GDP",
+                "dir_growth_rate": "r",
+                "factor1_db_ndc_hybrid": 0.5,
+                "factor2_db_ndc_hybrid": 1.5,
+            },
+        ),
     ],
-    ids=["DB", "PS", "NDC"],
+    ids=["DB", "PS", "NDC", "Hybrid"],
 )
 def test_pension_amount_with_real_specifications(system, updates):
     """
@@ -1242,8 +1255,21 @@ def test_pension_amount_with_real_specifications(system, updates):
                 "dir_growth_rate": "r",
             },
         ),
+        (
+            "Hybrid DB-NDC",
+            {
+                "alpha_db": [[0.02]],
+                "yr_contrib": 35,
+                "avg_earn_num_years": 40,
+                "tau_p": 0.1,
+                "ndc_growth_rate": "LR GDP",
+                "dir_growth_rate": "r",
+                "factor1_db_ndc_hybrid": 0.5,
+                "factor2_db_ndc_hybrid": 1.5,
+            },
+        ),
     ],
-    ids=["SS", "DB", "PS", "NDC"],
+    ids=["SS", "DB", "PS", "NDC", "Hybrid"],
 )
 def test_replacement_rate_adjust_applies_to_every_system(system, updates):
     """
@@ -1279,6 +1305,137 @@ def test_replacement_rate_adjust_applies_to_every_system(system, updates):
     halved = pension_for(0.5)
     assert np.any(full > 0.0), "test would be vacuous with a zero benefit"
     assert np.allclose(halved, 0.5 * full)
+
+
+HYBRID_UPDATES = {
+    "alpha_db": [[0.02]],
+    "yr_contrib": 35,
+    "avg_earn_num_years": 40,
+    "tau_p": 0.1,
+    "ndc_growth_rate": "LR GDP",
+    "dir_growth_rate": "r",
+}
+
+
+def _hybrid_params(factor1, factor2):
+    p = Specifications()
+    p.update_specifications(
+        dict(
+            HYBRID_UPDATES,
+            pension_system="Hybrid DB-NDC",
+            factor1_db_ndc_hybrid=factor1,
+            factor2_db_ndc_hybrid=factor2,
+        )
+    )
+    # labor supply before the time path, normally set by the TPI solver
+    p.n_preTP = 0.4 * np.ones((p.S, p.J))
+    return p
+
+
+def test_earnings_band():
+    """
+    earnings_band returns the part of e * n between the two cutoffs, and
+    leaves earnings unchanged with the default bounds.
+    """
+    x = np.array([0.2, 0.7, 1.2, 3.0])
+    assert np.allclose(pensions.earnings_band(x, 0.0, np.inf), x)
+    assert np.allclose(
+        pensions.earnings_band(x, 0.0, 1.0), [0.2, 0.7, 1.0, 1.0]
+    )
+    assert np.allclose(
+        pensions.earnings_band(x, 1.0, 2.0), [0.0, 0.0, 0.2, 1.0]
+    )
+    assert np.isclose(pensions.earnings_band(1.2, 1.0, 2.0), 0.2)
+
+
+@pytest.mark.parametrize("ndim", [1, 2], ids=["S", "SxJ"])
+def test_DB_NDC_hybrid_amount_SS(ndim):
+    """
+    In the steady state the hybrid benefit equals the DB benefit on labor
+    income capped at factor1 * w plus the NDC benefit on labor income
+    between factor1 * w and factor2 * w.
+    """
+    factor1, factor2 = 0.5, 1.5
+    p = _hybrid_params(factor1, factor2)
+    r, w, Y = 0.05, 1.2, 1.0
+    if ndim == 1:
+        # the top income group, whose earnings reach both bands
+        j = p.J - 1
+        e = p.e[-1, :, j]
+        n = 0.4 * np.ones(p.S)
+    else:
+        j = None
+        e = p.e[-1, :, :]
+        n = 0.4 * np.ones((p.S, p.J))
+    hybrid = pensions.DB_NDC_hybrid_amount(w, e, n, r, Y, None, j, "SS", p)
+    # same benefits computed by hand from the labor supply that delivers
+    # each band's effective earnings
+    en = e * n
+    n_db = np.minimum(en, factor1) / e
+    n_ndc = np.clip(en - factor1, 0.0, factor2 - factor1) / e
+    db = pensions.DB_amount(w, e, n_db, None, j, "SS", p)
+    ndc = pensions.NDC_amount(w, e, n_ndc, r, Y, None, j, "SS", p)
+    assert np.any(ndc > 0.0) and np.any(db > 0.0)
+    assert np.allclose(hybrid, db + ndc)
+    # and the band cutoffs bind: both parts are below the uncapped ones
+    assert np.all(db <= pensions.DB_amount(w, e, n, None, j, "SS", p) + 1e-12)
+
+
+@pytest.mark.parametrize("method", ["SS", "TPI"])
+def test_DB_NDC_hybrid_amount_limits(method):
+    """
+    With factor1 above all earnings the hybrid is the pure DB system, and
+    with factor1 = 0 and factor2 above all earnings it is the pure NDC
+    system. Checked on the full time-path array and the SS cross section.
+    """
+    big = 100.0
+    r, Y = 0.05, 1.0
+    p_db = _hybrid_params(big, big)
+    p_ndc = _hybrid_params(0.0, big)
+    if method == "SS":
+        w, t, j = 1.2, None, None
+        e = p_db.e[-1, :, :]
+        n = 0.4 * np.ones((p_db.S, p_db.J))
+    else:
+        # the full time-path array has at least S periods
+        T = p_db.S + 5
+        w, t, j = np.linspace(1.0, 1.2, T), 0, None
+        e = p_db.e[-1, :, :]
+        n = 0.4 * np.ones((T, p_db.S, p_db.J))
+    assert np.allclose(
+        pensions.DB_NDC_hybrid_amount(w, e, n, r, Y, t, j, method, p_db),
+        pensions.DB_amount(w, e, n, t, j, method, p_db),
+    )
+    assert np.allclose(
+        pensions.DB_NDC_hybrid_amount(w, e, n, r, Y, t, j, method, p_ndc),
+        pensions.NDC_amount(w, e, n, r, Y, t, j, method, p_ndc),
+    )
+
+
+def test_DB_NDC_hybrid_amount_partial_path():
+    """
+    A cohort alive when the time path begins (partial lifetime path) is
+    handled, and matches the DB limit when factor1 exceeds all earnings.
+    """
+    r, Y, j, t = 0.05, 1.0, 0, 0
+    p = _hybrid_params(100.0, 100.0)
+    per_rmn = p.S // 2
+    w = np.ones(per_rmn) * 1.1
+    n = 0.4 * np.ones(per_rmn)
+    e = p.e[-1, -per_rmn:, j]
+    hybrid = pensions.DB_NDC_hybrid_amount(w, e, n, r, Y, t, j, "TPI", p)
+    assert hybrid.shape == (per_rmn,)
+    assert np.allclose(hybrid, pensions.DB_amount(w, e, n, t, j, "TPI", p))
+
+
+def test_DB_NDC_hybrid_amount_bad_factors():
+    """factor2_db_ndc_hybrid below factor1_db_ndc_hybrid raises."""
+    p = _hybrid_params(1.0, 2.0)
+    p.factor1_db_ndc_hybrid = 3.0
+    with pytest.raises(ValueError):
+        pensions.DB_NDC_hybrid_amount(
+            1.2, p.e[-1, :, 0], 0.4 * np.ones(p.S), 0.05, 1.0, None, 0, "SS", p
+        )
 
 
 @pytest.mark.local

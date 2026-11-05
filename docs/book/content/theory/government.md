@@ -353,14 +353,15 @@ Businesses face a linear tax rate $\tau^{corp}_{m,t}$, which can vary by industr
 (SecGovPensions)=
 #### Pensions
 
-The `OG-Core` model allows for four different systems for public pensions:
+The `OG-Core` model allows for five different systems for public pensions:
 
 1. U.S.-style social security system
 2. Defined benefit system
 3. Notional defined contribution system
 4. Points system
+5. Hybrid defined benefit and notional defined contribution system
 
-These can be selected with the `pension_system` parameter.  Accepted values are `US-Style Social Security`, `Defined Benefits`, `Notional Defined Contribution`, `Points System`.  We discuss each of these in turn below.
+These can be selected with the `pension_system` parameter.  Accepted values are `US-Style Social Security`, `Defined Benefits`, `Notional Defined Contribution`, `Points System`, `Hybrid DB-NDC`.  We discuss each of these in turn below.
 
 For all systems, $R$ represents the age at which the individual becomes eligible to receive the government provided retirement benefit. The retirement age is a property of a birth cohort rather than of a calendar year: a household born in period $t-s$ (of age $s$ in period $t$) faces the retirement age $R_{t-s}$, and it faces the same $R_{t-s}$ in every period of its life unless a reform moves its cohort to a new value. The base value is the parameter `retirement_age`. Changes are entered through `pension_regimes`, a list of reforms applied in order, each with a calendar `year` from which it applies, an optional `max_age_at_start` (the oldest age, in that calendar year, to which the reform applies; cohorts not yet born always qualify, and leaving it out applies the reform to everyone including current retirees), and the new parameter values. This is how a phased-in increase in the retirement age that exempts those near retirement is expressed. The model expands these inputs into an array over periods and ages, so the household problem, the aggregates, and the steady state (which uses the final period's value) all read the same cohort-specific retirement age. The parameters of the defined benefit system (`alpha_db`, `avg_earn_num_years`, `yr_contrib`) and of the notional defined contribution system (`tau_p`, `k_ret`, `indR`) can be changed by cohort in the same way, so a reform of the benefit formula can also be phased in by birth cohort. With no regimes, the base `alpha_db` is a path by lifetime income group and the calendar year in which a benefit is paid, and the other parameters are single values. The replacement-rate adjustment `replacement_rate_adjust` is, by contrast, always indexed by the calendar year in which a benefit is paid.
 
@@ -499,6 +500,37 @@ Given this pension system, the partial derivatives from the household section ar
     w_{t}e_{j,s}v_{t}, & \text{if}\ s \geq R \\
   \end{cases}
  ```
+
+##### Hybrid defined benefit and notional defined contribution system
+
+The hybrid system pays a defined benefit on labor income up to a cutoff and a notional defined contribution benefit on labor income in a band above that cutoff. The two cutoffs are set relative to the wage rate in the period the income is earned, $f_1 w_t$ and $f_2 w_t$ with $0 \leq f_1 \leq f_2$, where $f_1$ is the parameter `factor1_db_ndc_hybrid` and $f_2$ is the parameter `factor2_db_ndc_hybrid`.
+
+Labor income $w_t e_{j,s,t} n_{j,s,t}$ is split into the following parts:
+
+  * Labor income up to $f_1 w_t$ is subject to the payroll tax `tau_payroll`, so the household contributes $\tau^{payroll}_t \min\{w_t e_{j,s,t} n_{j,s,t}, f_1 w_t\}$ to the defined benefit system. This capped income earns a defined benefit computed with the formula and parameters ($R$, $ny$, $Cy$, $\alpha^{DB}$) of the [defined benefit system](#defined-benefit-system).
+  * Labor income between $f_1 w_t$ and $f_2 w_t$ is subject to the contribution rate `tau_p`, so the household contributes $\tau^{p} \max\{\min\{w_t e_{j,s,t} n_{j,s,t}, f_2 w_t\} - f_1 w_t, 0\}$ to its notional account. These contributions earn a notional defined contribution benefit computed with the formula and parameters ($\tau^p$, $g_{NDC}$, $\delta_R$) of the [notional defined contribution system](#notional-defined-contribution-system), paid in addition to the defined benefit.
+  * Labor income above $f_2 w_t$ earns no pension benefit.
+
+Because both cutoffs are multiples of the wage, the split can be written in terms of effective labor earnings $e_{j,s,t} n_{j,s,t}$. Define the effective earnings in each band as
+
+  ```{math}
+  :label: eqn:hybrid_bands
+    x^{DB}_{j,s,t} = \min\{e_{j,s,t}n_{j,s,t}, f_1\} \quad\text{and}\quad x^{NDC}_{j,s,t} = \max\bigl\{\min\{e_{j,s,t}n_{j,s,t}, f_2\} - f_1, 0\bigr\}
+  ```
+
+The pension amount under the hybrid system is then the sum of the two benefits:
+
+  ```{math}
+  :label: eqn:hybrid_pension
+  \begin{split}
+   pension_{j,s,t} = &\biggl[\frac{\sum_{u=R-ny}^{R-1}w_{t-s+u}x^{DB}_{j,u,t-s+u}}{ny}\biggr]\times Cy \times \alpha^{DB}_{j,s,t} \\
+   &+ \biggl[\sum_{u=E}^{R-1}\tau^{p}_{u,t-s+u}w_{t-s+u}x^{NDC}_{j,u,t-s+u}(1 + g_{NDC,t})^{R-u-1}\biggr]\delta_{R,s,t} \quad \forall s \geq R
+  \end{split}
+  ```
+
+where, as in the separate systems, each sum runs over the household's own earnings history and the parameters are those that apply to the household's birth cohort. Setting $f_1$ above all labor income gives the defined benefit system, and setting $f_1 = 0$ with $f_2$ above all labor income gives the notional defined contribution system. As in the other systems, the benefit is scaled by `replacement_rate_adjust`.
+
+Given this pension system, the partial derivative of the benefit with respect to labor supply at a working age $s < R$ is the defined benefit derivative in equation {eq}`eqn:db_deriv` when the household's labor income is below $f_1 w_t$, the notional defined contribution derivative in equation {eq}`eqn:ndc_deriv` when it is between $f_1 w_t$ and $f_2 w_t$, and zero when it is above $f_2 w_t$.
 
 ##### Aggregate Pension Spending
 
