@@ -1207,8 +1207,7 @@ def _ss_growth_rate(choice, r, p):
     elif choice == "avg wage":
         return np.exp(g_y) - 1.0
     raise ValueError(
-        f"NDC growth rate must be one of {NDC_GROWTH_CHOICES}, got "
-        f"{choice!r}"
+        f"NDC growth rate must be one of {NDC_GROWTH_CHOICES}, got {choice!r}"
     )
 
 
