@@ -5,6 +5,20 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.24.2] - 2026-11-05
+
+### Added
+- NDC balances now compound at the rates credited in each period of the cohort's own history, rather than at a single rate. The rates come from a calendar path built each transition path iteration by `pensions.ndc_rates_path` from the interest rate, GDP, wage, and labor paths, and reach the household problem through the new `ndc_rates` argument (an `NDCRates` named tuple of `credit` and `discount` paths) of `tax.net_taxes`, `household.FOC_savings`, `household.FOC_labor`, `TPI.firstdoughnutring`, `TPI.twist_doughnut`, and `aggregates.revenue`, and as an optional ninth element of the `TPI.inner_loop` `outer_loop_vars` tuple. In the steady state, or when `ndc_rates` is None, the steady-state rates are used.
+- Adds the growth-rate options `'wage bill'` (growth of total real labor earnings) and `'avg wage'` (growth of real labor earnings per person) to `ndc_growth_rate` and `dir_growth_rate`.
+- Adds the parameter `ndc_growth_avg_years` (default 1), the number of years over which the credited NDC rate is averaged (e.g., Italy's 5-year average of GDP growth).
+- Adds `pensions.growth_rate_path`, `pensions.ndc_rates_path`, and `pensions.NDCRates`.
+
+### Fixed
+- The `'Curr GDP'` options of `ndc_growth_rate` and `dir_growth_rate` now work. They returned an array where a scalar was expected, which raised errors in the benefit and conversion coefficient calculations, and the household problem received a placeholder of 1 for GDP. The rate is now real GDP growth recovered from stationarized GDP with productivity and population growth, `Y[t] / Y[t-1] * exp(g_y) * (1 + g_n[t-1]) - 1`, credited in period t.
+- The `'LR GDP'` rate is now the exact long-run growth rate of real GDP, `exp(g_y) * (1 + g_n_ss) - 1`, rather than the approximation `g_y + g_n`, and uses the steady-state population growth rate `g_n_ss` rather than the last element of `g_n`. This slightly changes NDC benefits under the default parameters.
+- On the transition path, the NDC conversion coefficient discounts payments at the `dir_growth_rate` in the household's period of retirement, held fixed over its retirement, rather than at the last element of the interest rate path passed in (for `'r'`).
+- Breaking signature changes: the fourth argument of `pensions.pension_amount` and the fifth of `pensions.NDC_amount` are now `ndc_rates` (previously an unused GDP argument `Y`); `pensions.g_dir` takes `(r, Y, p)`; `pensions.NDC_1dim_loop` and `pensions.NDC_2dim_loop` take the credited-rate path and the household's birth period (or the cross-section's period); `pensions.NDC_3dim_loop` takes the credited-rate path; `pensions.delta_ret` takes an optional `g_dir_path`.
+
 ## [0.24.1] - 2026-11-04
 
 ### Added

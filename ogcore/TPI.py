@@ -315,6 +315,7 @@ def firstdoughnutring(
     j,
     initial_b,
     p,
+    ndc_rates=None,
 ):
     """
     Solves the first entries of the upper triangle of the twist doughnut. This
@@ -337,6 +338,9 @@ def firstdoughnutring(
         j (int): index of ability type
         initial_b (Numpy array): SxJ matrix, savings of agents alive at T=0
         p (OG-Core Specifications object): model parameters
+        ndc_rates (NDCRates): calendar paths of the NDC credited and
+            discount rates (``pensions.ndc_rates_path``); None for the
+            steady-state rates
 
     Returns:
         euler errors (Numpy array): errors from first order conditions,
@@ -369,6 +373,7 @@ def firstdoughnutring(
         j,
         p,
         "TPI_scalar",
+        ndc_rates,
     )
 
     error2 = household.FOC_labor(
@@ -392,6 +397,7 @@ def firstdoughnutring(
         j,
         p,
         "TPI_scalar",
+        ndc_rates,
     )
 
     if n <= 0 or n >= 1:
@@ -422,6 +428,7 @@ def twist_doughnut(
     mtry_params,
     initial_b,
     p,
+    ndc_rates=None,
 ):
     """
     Solves the upper triangle of time path iterations. These are the agents who
@@ -454,6 +461,9 @@ def twist_doughnut(
         initial_b (Numpy array): savings of agents alive at T=0,
             size = SxJ
         p (OG-Core Specifications object): model parameters
+        ndc_rates (NDCRates): calendar paths of the NDC credited and
+            discount rates (``pensions.ndc_rates_path``); None for the
+            steady-state rates
 
     Returns:
         euler errors (Numpy array): errors from first order conditions,
@@ -499,6 +509,7 @@ def twist_doughnut(
         j,
         p,
         "TPI",
+        ndc_rates,
     )
 
     error2 = household.FOC_labor(
@@ -522,6 +533,7 @@ def twist_doughnut(
         j,
         p,
         "TPI",
+        ndc_rates,
     )
 
     # Check and punish constraint violations
@@ -598,7 +610,9 @@ def inner_loop(guesses, outer_loop_vars, initial_values, ubi, j, ind, p):
             guesses_n)
         outer_loop_vars (tuple): values for factor prices and economic
             aggregates used in household problem
-            (r_p, r, w, p_m, BQ, RM, TR, theta)
+            (r_p, r, w, p_m, BQ, RM, TR, theta), optionally followed by
+            ndc_rates (NDCRates), the calendar paths of the NDC credited
+            and discount rates
         r_p (Numpy array): real interest rate on household portfolio
         r (Numpy array): real interest rate on private capital
         w (Numpy array): real wage rate
@@ -629,7 +643,8 @@ def inner_loop(guesses, outer_loop_vars, initial_values, ubi, j, ind, p):
     """
     K0, b_sinit, b_splus1init, factor, initial_n = initial_values
     guesses_b, guesses_n = guesses
-    r_p, r, w, p_m, BQ, RM, TR, theta = outer_loop_vars
+    r_p, r, w, p_m, BQ, RM, TR, theta = outer_loop_vars[:8]
+    ndc_rates = outer_loop_vars[8] if len(outer_loop_vars) > 8 else None
 
     # compute composite good price
     p_i = (
@@ -667,6 +682,7 @@ def inner_loop(guesses, outer_loop_vars, initial_values, ubi, j, ind, p):
         j,
         b_splus1init,
         p,
+        ndc_rates,
     )
     solutions = opt.root(
         firstdoughnutring,
@@ -736,6 +752,7 @@ def inner_loop(guesses, outer_loop_vars, initial_values, ubi, j, ind, p):
             mtry_params_to_use,
             b_splus1init,
             p,
+            ndc_rates,
         )
         _tri_jac = _banded_jac_for(
             twist_doughnut, _tri_x0, _tri_args, p.use_sparse_FOC_jac
@@ -820,6 +837,7 @@ def inner_loop(guesses, outer_loop_vars, initial_values, ubi, j, ind, p):
             mtry_params_to_use,
             b_splus1init,
             p,
+            ndc_rates,
         )
         _td_x0 = list(b_guesses_to_use) + list(n_guesses_to_use)
         # When p.use_sparse_FOC_jac is set, supply a banded finite-difference
@@ -1204,7 +1222,13 @@ def run_TPI(p, client=None):
 
     # TPI loop
     while (TPIiter < p.maxiter) and (TPIdist >= p.mindist_TPI):
-        outer_loop_vars = (r_p, r, w, p_m, BQ, RM, TR, theta)
+        # NDC credited and discount rates by period, from this
+        # iteration's interest rate, GDP, wage, and labor paths
+        if p.pension_system == "Notional Defined Contribution":
+            ndc_rates = pensions.ndc_rates_path(r_p, Y, w, L, p, "TPI")
+        else:
+            ndc_rates = None
+        outer_loop_vars = (r_p, r, w, p_m, BQ, RM, TR, theta, ndc_rates)
         # compute composite good price
         p_i = (
             np.tile(p.io_matrix.reshape(1, p.I, p.M), (p.T + p.S, 1, 1))
@@ -1317,6 +1341,7 @@ def run_TPI(p, client=None):
             p.e,
             etr_params_4D,
             p,
+            ndc_rates,
         )
         income_tax_mat = tax.income_tax_liab(
             r_p[: p.T],
@@ -1335,7 +1360,7 @@ def run_TPI(p, client=None):
             r_p[: p.T],
             w[: p.T],
             n_mat[: p.T, :, :],
-            1,
+            ndc_rates,
             theta,
             0,
             None,
@@ -1494,6 +1519,7 @@ def run_TPI(p, client=None):
             p,
             None,
             "TPI",
+            ndc_rates,
         )
         total_tax_revenue[: p.T] = total_tax_rev
         I_g = fiscal.get_I_g(Y[: p.T], Ig_baseline, p, "TPI")
@@ -1607,6 +1633,7 @@ def run_TPI(p, client=None):
             p,
             None,
             "TPI",
+            ndc_rates,
         )
         total_tax_revenue[: p.T] = total_tax_rev
         TR_new = fiscal.get_TR(

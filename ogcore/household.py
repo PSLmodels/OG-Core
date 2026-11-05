@@ -446,6 +446,7 @@ def FOC_savings(
     j,
     p,
     method,
+    ndc_rates=None,
 ):
     r"""
     Computes Euler errors for the FOC for savings in the steady state.
@@ -485,6 +486,9 @@ def FOC_savings(
         p (OG-Core Specifications object): model parameters
         method (str): adjusts calculation dimensions based on 'SS' or
             'TPI'
+        ndc_rates (NDCRates): calendar paths of the NDC credited and
+            discount rates (``pensions.ndc_rates_path``); None for the
+            steady-state rates
 
     Returns:
         euler (Numpy array): Euler error from FOC for savings
@@ -568,6 +572,7 @@ def FOC_savings(
         e,
         etr_params,
         p,
+        ndc_rates,
     )
     cons = get_cons(
         r, w, p_tilde, p_i, b, b_splus1, n, bq, rm, taxes, e, tau_c, p, method
@@ -642,6 +647,7 @@ def FOC_labor(
     j,
     p,
     method,
+    ndc_rates=None,
 ):
     r"""
     Computes errors for the FOC for labor supply in the steady
@@ -683,6 +689,9 @@ def FOC_labor(
         p (OG-Core Specifications object): model parameters
         method (str): adjusts calculation dimensions based on 'SS' or
             'TPI'
+        ndc_rates (NDCRates): calendar paths of the NDC credited and
+            discount rates (``pensions.ndc_rates_path``); None for the
+            steady-state rates
 
     Returns:
         FOC_error (Numpy array): error from FOC for labor supply
@@ -756,6 +765,7 @@ def FOC_labor(
         e,
         etr_params,
         p,
+        ndc_rates,
     )
     cons = get_cons(
         r, w, p_tilde, p_i, b, b_splus1, n, bq, rm, taxes, e, tau_c, p, method
