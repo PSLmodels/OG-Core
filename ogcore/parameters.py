@@ -267,8 +267,6 @@ class Specifications(paramtools.Parameters):
             "r_gov_scale",
             "r_gov_shift",
             "g_RM",
-            "factor1_db_ndc_hybrid",
-            "factor2_db_ndc_hybrid",
         ]
         for item in tp_param_list:
             param_in = getattr(self, item)
@@ -276,6 +274,27 @@ class Specifications(paramtools.Parameters):
                 param_in, dims=(self.T + self.S,), item=item
             )
             setattr(self, item, param_out)
+        # The hybrid DB-NDC cutoff factors are paths of length T + S. A
+        # single value is the initial factor of a path indexed to remove
+        # trend growth, init_val / e^{g_y t}, so the cutoffs stay fixed
+        # in real terms; a list of two or more values is used as given,
+        # with every period after the last value entered keeping it.
+        for name in ("factor1_db_ndc_hybrid", "factor2_db_ndc_hybrid"):
+            value = np.atleast_1d(
+                np.asarray(getattr(self, name), dtype=float)
+            ).ravel()
+            if value.size == 1:
+                value = value[0] * np.exp(
+                    -self.g_y * np.arange(self.T + self.S)
+                )
+            else:
+                value = extrapolate_array(
+                    value, dims=(self.T + self.S,), item=name
+                )
+            setattr(self, name, value)
+        self.avg_labor_inc_t1_model_units = float(
+            np.squeeze(self.avg_labor_inc_t1_model_units)
+        )
         # The hybrid DB-NDC cutoffs are checked against each other here,
         # once both are paths of the same length, rather than with a
         # paramtools validator, which cannot compare lists of different

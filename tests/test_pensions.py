@@ -1209,6 +1209,7 @@ def test_get_PS(args, PS_expected):
                 "dir_growth_rate": "r",
                 "factor1_db_ndc_hybrid": [0.5],
                 "factor2_db_ndc_hybrid": [1.5],
+                "avg_labor_inc_t1_model_units": 0.8,
             },
         ),
     ],
@@ -1264,6 +1265,7 @@ def test_pension_amount_with_real_specifications(system, updates):
                 "dir_growth_rate": "r",
                 "factor1_db_ndc_hybrid": [0.5],
                 "factor2_db_ndc_hybrid": [1.5],
+                "avg_labor_inc_t1_model_units": 0.8,
             },
         ),
     ],
@@ -1315,18 +1317,28 @@ HYBRID_UPDATES = {
 }
 
 
-def _hybrid_params(factor1, factor2):
+def _hybrid_params(factor1, factor2, avg_inc=0.8):
     """
     Specifications for the hybrid system; factor1 and factor2 may be
-    single values or lists of values by year.
+    single values (held constant over time) or lists of values by year,
+    and avg_inc is the average labor income in the first model period,
+    in model units.
     """
+
+    def _path(f):
+        # a single entered value would be indexed to remove trend
+        # growth, so repeat it to hold the factor constant
+        f = np.atleast_1d(f).tolist()
+        return f * 2 if len(f) == 1 else f
+
     p = Specifications()
     p.update_specifications(
         dict(
             HYBRID_UPDATES,
             pension_system="Hybrid DB-NDC",
-            factor1_db_ndc_hybrid=np.atleast_1d(factor1).tolist(),
-            factor2_db_ndc_hybrid=np.atleast_1d(factor2).tolist(),
+            factor1_db_ndc_hybrid=_path(factor1),
+            factor2_db_ndc_hybrid=_path(factor2),
+            avg_labor_inc_t1_model_units=avg_inc,
         )
     )
     # labor supply before the time path, normally set by the TPI solver
@@ -1336,8 +1348,8 @@ def _hybrid_params(factor1, factor2):
 
 def test_earnings_band():
     """
-    earnings_band returns the part of e * n between the two cutoffs, and
-    leaves earnings unchanged with the default bounds.
+    earnings_band returns the part of labor income between the two
+    cutoffs, and leaves it unchanged with the default bounds.
     """
     x = np.array([0.2, 0.7, 1.2, 3.0])
     assert np.allclose(pensions.earnings_band(x, 0.0, np.inf), x)
@@ -1354,8 +1366,8 @@ def test_earnings_band():
 def test_DB_NDC_hybrid_amount_SS(ndim):
     """
     In the steady state the hybrid benefit equals the DB benefit on labor
-    income capped at factor1 * w plus the NDC benefit on labor income
-    between factor1 * w and factor2 * w.
+    income capped at factor1 * avg_inc plus the NDC benefit on labor
+    income between factor1 * avg_inc and factor2 * avg_inc.
     """
     factor1, factor2 = 0.5, 1.5
     p = _hybrid_params(factor1, factor2)
@@ -1373,10 +1385,12 @@ def test_DB_NDC_hybrid_amount_SS(ndim):
         w, e, n, r, ndc_rates, None, j, "SS", p
     )
     # same benefits computed by hand from the labor supply that delivers
-    # each band's effective earnings
-    en = e * n
-    n_db = np.minimum(en, factor1) / e
-    n_ndc = np.clip(en - factor1, 0.0, factor2 - factor1) / e
+    # each band's labor income
+    cut1 = factor1 * p.avg_labor_inc_t1_model_units
+    cut2 = factor2 * p.avg_labor_inc_t1_model_units
+    inc = w * e * n
+    n_db = np.minimum(inc, cut1) / (w * e)
+    n_ndc = np.clip(inc - cut1, 0.0, cut2 - cut1) / (w * e)
     db = pensions.DB_amount(w, e, n_db, None, j, "SS", p)
     ndc = pensions.NDC_amount(w, e, n_ndc, r, ndc_rates, None, j, "SS", p)
     assert np.any(ndc > 0.0) and np.any(db > 0.0)
@@ -1441,6 +1455,65 @@ def test_DB_NDC_hybrid_amount_partial_path():
     )
     assert hybrid.shape == (per_rmn,)
     assert np.allclose(hybrid, pensions.DB_amount(w, e, n, t, j, "TPI", p))
+
+
+@pytest.mark.parametrize("method", ["SS", "TPI"])
+def test_DB_NDC_hybrid_amount_cutoffs_in_levels(method):
+    """
+    The cutoffs are factor * avg_labor_inc_t1_model_units, levels of
+    labor income that do not move with the wage: scaling the factors by
+    c and the average income by 1 / c leaves the benefit unchanged, and
+    raising the wage moves more income above the cutoffs, so the
+    benefit rises less than in proportion.
+    """
+    r, ndc_rates = 0.05, None
+    p = _hybrid_params(0.5, 1.5, avg_inc=0.8)
+    p_scaled = _hybrid_params(0.25, 0.75, avg_inc=1.6)
+    if method == "SS":
+        w, t, j = 1.2, None, None
+        e = p.e[-1, :, :]
+        n = 0.4 * np.ones((p.S, p.J))
+    else:
+        T = p.S + 5
+        w, t, j = np.linspace(1.0, 1.2, T), 0, None
+        e = p.e[-1, :, :]
+        n = 0.4 * np.ones((T, p.S, p.J))
+    base = pensions.DB_NDC_hybrid_amount(
+        w, e, n, r, ndc_rates, t, j, method, p
+    )
+    assert np.any(base > 0.0)
+    assert np.allclose(
+        base,
+        pensions.DB_NDC_hybrid_amount(
+            w, e, n, r, ndc_rates, t, j, method, p_scaled
+        ),
+    )
+    doubled = pensions.DB_NDC_hybrid_amount(
+        2.0 * np.asarray(w), e, n, r, ndc_rates, t, j, method, p
+    )
+    assert np.all(doubled <= 2.0 * base + 1e-12)
+    assert np.any(doubled < 2.0 * base - 1e-12)
+
+
+def test_hybrid_factors_scalar_is_indexed():
+    """
+    A single value entered for a hybrid factor (as in the defaults) is
+    the initial value of a path with trend growth removed,
+    init_val / e^{g_y t}; two or more values are used as given.
+    """
+    p = Specifications()
+    t = np.arange(p.T + p.S)
+    assert np.allclose(p.factor1_db_ndc_hybrid, 1.0 * np.exp(-p.g_y * t))
+    assert np.allclose(p.factor2_db_ndc_hybrid, 2.0 * np.exp(-p.g_y * t))
+    assert p.avg_labor_inc_t1_model_units == 1.0
+    p.update_specifications(
+        {
+            "factor1_db_ndc_hybrid": [0.5],
+            "factor2_db_ndc_hybrid": [1.5, 1.5],
+        }
+    )
+    assert np.allclose(p.factor1_db_ndc_hybrid, 0.5 * np.exp(-p.g_y * t))
+    assert np.allclose(p.factor2_db_ndc_hybrid, 1.5)
 
 
 def test_DB_NDC_hybrid_amount_bad_factors():
@@ -1533,9 +1606,11 @@ def test_DB_NDC_hybrid_amount_time_varying_cohort():
     # the household is age 0 in period t, so age s is lived in t + s
     f1 = p.factor1_db_ndc_hybrid[t : t + p.S]
     f2 = p.factor2_db_ndc_hybrid[t : t + p.S]
-    en = e * n
-    n_db = np.minimum(en, f1) / e
-    n_ndc = np.clip(en - f1, 0.0, f2 - f1) / e
+    cut1 = f1 * p.avg_labor_inc_t1_model_units
+    cut2 = f2 * p.avg_labor_inc_t1_model_units
+    inc = w * e * n
+    n_db = np.minimum(inc, cut1) / (w * e)
+    n_ndc = np.clip(inc - cut1, 0.0, cut2 - cut1) / (w * e)
     db = pensions.DB_amount(w, e, n_db, t, j, "TPI", p)
     ndc = pensions.NDC_amount(w, e, n_ndc, r, ndc_rates, t, j, "TPI", p)
     assert np.any(db > 0.0) and np.any(ndc > 0.0)
@@ -1598,6 +1673,7 @@ def test_SS_solve_hybrid_db_ndc(tmp_path):
             pension_system="Hybrid DB-NDC",
             factor1_db_ndc_hybrid=[0.5],
             factor2_db_ndc_hybrid=[1.5],
+            avg_labor_inc_t1_model_units=0.8,
         )
     )
     p.baseline_dir = p.output_base = str(tmp_path)
