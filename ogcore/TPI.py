@@ -200,7 +200,9 @@ def get_initial_SS_values(p):
             ss_baseline_vars["B"] / B0
         )
     else:
-        initial_b_sp1_prelim = p.initial_hhwealth_dist * ss_baseline_vars["B"]
+        initial_b_sp1_prelim = (
+            p.initial_hhwealth_dist * ss_baseline_vars["B"]
+        ) / p.omega[0, :, :]
         initial_b_sp1 = initial_b_sp1_prelim * (
             ss_baseline_vars["B"]
             / aggr.get_B(initial_b_sp1_prelim, p, "SS", True)
@@ -318,6 +320,7 @@ def firstdoughnutring(
     j,
     initial_b,
     p,
+    ndc_rates=None,
 ):
     """
     Solves the first entries of the upper triangle of the twist doughnut. This
@@ -340,6 +343,9 @@ def firstdoughnutring(
         j (int): index of ability type
         initial_b (Numpy array): SxJ matrix, savings of agents alive at T=0
         p (OG-Core Specifications object): model parameters
+        ndc_rates (NDCRates): calendar paths of the NDC credited and
+            discount rates (``pensions.ndc_rates_path``); None for the
+            steady-state rates
 
     Returns:
         euler errors (Numpy array): errors from first order conditions,
@@ -372,6 +378,7 @@ def firstdoughnutring(
         j,
         p,
         "TPI_scalar",
+        ndc_rates,
     )
 
     error2 = household.FOC_labor(
@@ -395,6 +402,7 @@ def firstdoughnutring(
         j,
         p,
         "TPI_scalar",
+        ndc_rates,
     )
 
     if n <= 0 or n >= 1:
@@ -425,6 +433,7 @@ def twist_doughnut(
     mtry_params,
     initial_b,
     p,
+    ndc_rates=None,
 ):
     """
     Solves the upper triangle of time path iterations. These are the agents who
@@ -457,6 +466,9 @@ def twist_doughnut(
         initial_b (Numpy array): savings of agents alive at T=0,
             size = SxJ
         p (OG-Core Specifications object): model parameters
+        ndc_rates (NDCRates): calendar paths of the NDC credited and
+            discount rates (``pensions.ndc_rates_path``); None for the
+            steady-state rates
 
     Returns:
         euler errors (Numpy array): errors from first order conditions,
@@ -502,6 +514,7 @@ def twist_doughnut(
         j,
         p,
         "TPI",
+        ndc_rates,
     )
 
     error2 = household.FOC_labor(
@@ -525,6 +538,7 @@ def twist_doughnut(
         j,
         p,
         "TPI",
+        ndc_rates,
     )
 
     # Check and punish constraint violations
@@ -601,7 +615,9 @@ def inner_loop(guesses, outer_loop_vars, initial_values, ubi, j, ind, p):
             guesses_n)
         outer_loop_vars (tuple): values for factor prices and economic
             aggregates used in household problem
-            (r_p, r, w, p_m, BQ, RM, TR, theta)
+            (r_p, r, w, p_m, BQ, RM, TR, theta), optionally followed by
+            ndc_rates (NDCRates), the calendar paths of the NDC credited
+            and discount rates
         r_p (Numpy array): real interest rate on household portfolio
         r (Numpy array): real interest rate on private capital
         w (Numpy array): real wage rate
@@ -632,7 +648,8 @@ def inner_loop(guesses, outer_loop_vars, initial_values, ubi, j, ind, p):
     """
     K0, b_sinit, b_splus1init, factor, initial_n = initial_values
     guesses_b, guesses_n = guesses
-    r_p, r, w, p_m, BQ, RM, TR, theta = outer_loop_vars
+    r_p, r, w, p_m, BQ, RM, TR, theta = outer_loop_vars[:8]
+    ndc_rates = outer_loop_vars[8] if len(outer_loop_vars) > 8 else None
 
     # compute composite good price
     p_i = (
@@ -670,6 +687,7 @@ def inner_loop(guesses, outer_loop_vars, initial_values, ubi, j, ind, p):
         j,
         b_splus1init,
         p,
+        ndc_rates,
     )
     solutions = opt.root(
         firstdoughnutring,
@@ -739,6 +757,7 @@ def inner_loop(guesses, outer_loop_vars, initial_values, ubi, j, ind, p):
             mtry_params_to_use,
             b_splus1init,
             p,
+            ndc_rates,
         )
         _tri_jac = _banded_jac_for(
             twist_doughnut, _tri_x0, _tri_args, p.use_sparse_FOC_jac
@@ -823,6 +842,7 @@ def inner_loop(guesses, outer_loop_vars, initial_values, ubi, j, ind, p):
             mtry_params_to_use,
             b_splus1init,
             p,
+            ndc_rates,
         )
         _td_x0 = list(b_guesses_to_use) + list(n_guesses_to_use)
         # When p.use_sparse_FOC_jac is set, supply a banded finite-difference
@@ -934,7 +954,8 @@ def initial_distribution_egm(p, b_splus1init, b_grid):
     shocks of the households of each age and type alive in period 0:
     the baseline steady state's distribution, rescaled to the initial
     savings ``b_splus1init`` (see
-    ``household_stoch.initial_distribution_tpi``).
+    ``household_stoch.initial_distribution_tpi``), and the asset grids
+    that hold it (see ``household_stoch.initial_asset_grids``).
 
     Args:
         p (OG-Core Specifications object): model parameters
@@ -943,11 +964,17 @@ def initial_distribution_egm(p, b_splus1init, b_grid):
 
     Returns:
         init_dist (Numpy array): size = S x J x nb x nz
+        b_grid (Numpy array): asset grids that hold it, size = J x nb
     """
     baseline_ss = os.path.join(p.baseline_dir, "SS", "SS_vars.pkl")
-    return household_stoch.initial_distribution_tpi(
-        p, utils.safe_read_pickle(baseline_ss), b_splus1init, b_grid
+    ss_baseline_vars = utils.safe_read_pickle(baseline_ss)
+    b_grid = household_stoch.initial_asset_grids(
+        p, ss_baseline_vars, b_splus1init, b_grid
     )
+    init_dist = household_stoch.initial_distribution_tpi(
+        p, ss_baseline_vars, b_splus1init, b_grid
+    )
+    return init_dist, b_grid
 
 
 def solve_households_egm(
@@ -1076,10 +1103,12 @@ def run_TPI(p, client=None):
     if p.household_solver == "egm":
         # the labor path is effective labor E[z n], for pension benefits
         ss_n = household_stoch.ss_mean_effective_labor(ss_vars)
-        # households solve on this run's steady-state asset grids; those
-        # alive in period 0 start from the baseline distribution
-        b_grid = ss_vars["b_grid"]
-        init_dist = initial_distribution_egm(p, b_splus1init, b_grid)
+        # households solve on this run's steady-state asset grids,
+        # stretched if they do not hold initial wealth; those alive in
+        # period 0 start from the baseline distribution
+        init_dist, b_grid = initial_distribution_egm(
+            p, b_splus1init, ss_vars["b_grid"]
+        )
     guesses_n = utils.get_initial_path(initial_n, ss_n, p, "quadratic")
     b_mat = guesses_b
     n_mat = guesses_n
@@ -1314,7 +1343,13 @@ def run_TPI(p, client=None):
 
     # TPI loop
     while (TPIiter < p.maxiter) and (TPIdist >= p.mindist_TPI):
-        outer_loop_vars = (r_p, r, w, p_m, BQ, RM, TR, theta)
+        # NDC credited and discount rates by period, from this
+        # iteration's interest rate, GDP, wage, and labor paths
+        if p.pension_system == "Notional Defined Contribution":
+            ndc_rates = pensions.ndc_rates_path(r_p, Y, w, L, p, "TPI")
+        else:
+            ndc_rates = None
+        outer_loop_vars = (r_p, r, w, p_m, BQ, RM, TR, theta, ndc_rates)
         # compute composite good price
         p_i = (
             np.tile(p.io_matrix.reshape(1, p.I, p.M), (p.T + p.S, 1, 1))
@@ -1330,7 +1365,18 @@ def run_TPI(p, client=None):
             # all cohorts, from the initial distribution; pensions that
             # depend on earnings follow the labor path guessed
             hh_paths = household_stoch.household_inputs_tpi(
-                p, r_p, w, p_m, BQ, RM, TR, factor, ubi, theta, guesses_n
+                p,
+                r_p,
+                w,
+                p_m,
+                BQ,
+                RM,
+                TR,
+                factor,
+                ubi,
+                theta,
+                guesses_n,
+                ndc_rates=ndc_rates,
             )
             hh = solve_households_egm(
                 p,
@@ -1453,6 +1499,7 @@ def run_TPI(p, client=None):
             p.e,
             etr_params_4D,
             p,
+            ndc_rates,
             **hh_tax_liab,
         )
         if p.household_solver == "egm":
@@ -1475,7 +1522,7 @@ def run_TPI(p, client=None):
             r_p[: p.T],
             w[: p.T],
             n_eff,
-            1,
+            ndc_rates,
             theta,
             0,
             None,
@@ -1635,6 +1682,7 @@ def run_TPI(p, client=None):
             p,
             None,
             "TPI",
+            ndc_rates,
             **hh_tax_liab,
         )
         total_tax_revenue[: p.T] = total_tax_rev
@@ -1753,6 +1801,7 @@ def run_TPI(p, client=None):
             p,
             None,
             "TPI",
+            ndc_rates,
             **hh_tax_liab,
         )
         total_tax_revenue[: p.T] = total_tax_rev
@@ -1862,8 +1911,11 @@ def run_TPI(p, client=None):
             initial_values = (B0, b_sinit, b_splus1init, factor, initial_n)
             if p.household_solver == "egm":
                 # households alive in period 0 start from the rescaled
-                # initial savings
-                init_dist = initial_distribution_egm(p, b_splus1init, b_grid)
+                # initial savings; grids stretched in an earlier iteration
+                # stay so, and the next inner loop solves on these
+                init_dist, b_grid = initial_distribution_egm(
+                    p, b_splus1init, b_grid
+                )
         guesses_b = utils.convex_combo(b_mat, guesses_b, p.nu)
         if p.household_solver == "egm":
             # the effective labor path, for pension benefits
@@ -1924,7 +1976,13 @@ def run_TPI(p, client=None):
             n_eff_path[: p.T] = n_eff
             pension_used = hh_paths["pension"]
             pension_implied = household_stoch.pension_tpi(
-                p, hh_paths["r"], hh_paths["w"], factor, theta, n_eff_path
+                p,
+                hh_paths["r"],
+                hh_paths["w"],
+                factor,
+                theta,
+                n_eff_path,
+                ndc_rates=ndc_rates,
             )
             pension_dist = np.abs(pension_implied - pension_used).max() / max(
                 np.abs(pension_used).max(), 1e-12

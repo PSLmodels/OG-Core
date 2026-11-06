@@ -10,6 +10,7 @@ The tests use OG-Core's test calibration (S = 40, J = 2, T = 120) with
 HSV income taxes; converged transition paths are marked local.
 """
 
+import copy
 import os
 import pickle
 
@@ -247,6 +248,124 @@ def test_pension_tpi_matches_ogcore(pension_system):
     np.testing.assert_allclose(pension[: p.T], expected, rtol=1e-12)
 
 
+@pytest.mark.parametrize(
+    "ndc_growth_rate,dir_growth_rate",
+    [("LR GDP", "LR GDP"), ("r", "LR GDP"), ("LR GDP", "r"), ("r", "r")],
+)
+def test_ndc_pension_tpi_matches_aggregates(ndc_growth_rate, dir_growth_rate):
+    """
+    With an interest rate that varies over the path, the NDC benefits
+    households take as given are those aggregate pension outlays count,
+    for the growth rates that depend on the interest rate as well.
+    """
+    p = hsv_calibration()
+    p.pension_system = "Notional Defined Contribution"
+    p.tau_p = 0.1
+    p.ndc_growth_rate = ndc_growth_rate
+    p.dir_growth_rate = dir_growth_rate
+    TS = p.T + p.S
+    rng = np.random.default_rng(1)
+    r = 0.05 + 0.03 * np.exp(-np.arange(TS) / 20)
+    w = rng.uniform(0.9, 1.1, TS)
+    n = rng.uniform(0.2, 0.5, (TS, p.S, p.J))
+    p.replacement_rate_adjust = np.ones((TS, p.J))
+    p.n_preTP = 0.9 * n[0]
+
+    def outlays(r):
+        return pensions.pension_amount(
+            r[: p.T],
+            w[: p.T],
+            n[: p.T],
+            1,
+            None,
+            0,
+            None,
+            False,
+            "TPI",
+            p.e,
+            FACTOR,
+            p,
+        )
+
+    expected = outlays(r)
+    assert expected.max() > 0
+    if "r" in (ndc_growth_rate, dir_growth_rate):
+        # the comparison has to depend on the interest rate
+        assert (outlays(r + 0.01) != expected).any()
+    pension = household_stoch.pension_tpi(p, r, w, FACTOR, None, n)
+    np.testing.assert_allclose(pension[: p.T], expected, rtol=1e-10)
+
+
+@pytest.mark.parametrize(
+    "credit,discount",
+    [
+        ("r", "r"),
+        ("Curr GDP", "Curr GDP"),
+        ("wage bill", "avg wage"),
+        ("avg wage", "wage bill"),
+        ("LR GDP", "r"),
+    ],
+)
+@pytest.mark.parametrize("mortality", ["steady state", "cohort"])
+@pytest.mark.parametrize("average_years", [1, 10])
+def test_ndc_calendar_rates_match_aggregates(
+    credit, discount, mortality, average_years
+):
+    """Cohorts and outlays use identical calendar rates and annuity rules."""
+    p = hsv_calibration()
+    p.update_specifications(
+        {
+            "pension_system": "Notional Defined Contribution",
+            "tau_p": 0.1,
+            "ndc_growth_rate": credit,
+            "dir_growth_rate": discount,
+            "ndc_growth_avg_years": average_years,
+            "ndc_mortality": mortality,
+        }
+    )
+    TS = p.T + p.S
+    t = np.arange(TS)
+    r = 0.05 + 0.03 * np.exp(-t / 20)
+    w = 1.0 + 0.1 * np.exp(-t / 30)
+    Y = 1.0 + 0.2 * np.exp(-t / 40)
+    L = 0.4 + 0.04 * np.exp(-t / 25)
+    rng = np.random.default_rng(10)
+    n_eff = rng.uniform(0.2, 0.5, (TS, p.S, p.J))
+    p.n_preTP = 0.9 * n_eff[0]
+    p.replacement_rate_adjust[10:30] = 1.2
+    rates = pensions.ndc_rates_path(r, Y, w, L, p, "TPI")
+    paths = household_stoch.household_inputs_tpi(
+        p,
+        r,
+        w,
+        np.ones((TS, p.M)),
+        np.tile(BQ, (TS, 1)),
+        np.zeros(TS),
+        np.full(TS, TR),
+        FACTOR,
+        p.ubi_nom_array / FACTOR,
+        n_eff=n_eff,
+        ndc_rates=rates,
+    )
+    expected = pensions.pension_amount(
+        r[: p.T],
+        w[: p.T],
+        n_eff[: p.T],
+        rates,
+        None,
+        0,
+        None,
+        False,
+        "TPI",
+        p.e,
+        FACTOR,
+        p,
+    )
+    np.testing.assert_allclose(paths["pension"][: p.T], expected, rtol=1e-10)
+    fallback = household_stoch.pension_tpi(p, r, w, FACTOR, n_eff=n_eff)
+    assert np.max(np.abs(paths["pension"][: p.T] - fallback[: p.T])) > 1e-5
+
+
 def test_initial_distribution(stationary):
     """
     Households alive in period 0 have the steady state's distribution
@@ -278,6 +397,113 @@ def test_initial_distribution(stationary):
         household_stoch.initial_distribution_tpi(
             p, {"b_grid": sol.b_grid}, b_sp1, grid
         )
+
+
+def test_initial_distribution_cell_without_wealth(stationary):
+    """
+    Households in a cell with no wealth in the steady state hold the
+    initial savings set for it, so its mean is that amount, and the
+    distribution of its shocks does not change. With no initial savings
+    they stay at zero.
+    """
+    p, sol = stationary
+    cond = conditional(sol.dist)
+    dist = cond.copy()
+    dist[1, 0] = 0.0
+    dist[1, 0, 0] = cond[1, 0].sum(axis=0)
+    ss_vars = {"dist": dist, "b_grid": sol.b_grid, "z_grid": sol.z_grid}
+    means = (dist * sol.b_grid[None, :, :, None]).sum(axis=(2, 3))
+    b_sp1 = np.roll(means, -1, axis=0)
+    b_sp1[0, 0] = 1.0
+    init = household_stoch.initial_distribution_tpi(
+        p, ss_vars, b_sp1, sol.b_grid
+    )
+    means = (init * sol.b_grid[None, :, :, None]).sum(axis=(2, 3))
+    np.testing.assert_allclose(means[1:], b_sp1[:-1], rtol=1e-10)
+    np.testing.assert_allclose(init[1, 0].sum(axis=0), dist[1, 0].sum(axis=0))
+    b_sp1[0, 0] = 0.0
+    init = household_stoch.initial_distribution_tpi(
+        p, ss_vars, b_sp1, sol.b_grid
+    )
+    np.testing.assert_allclose(init[1, 0], dist[1, 0], atol=1e-12)
+
+
+def test_initial_asset_grids(stationary):
+    """
+    Grids that hold initial wealth are left alone. Wealth above their
+    top is rejected on those grids; initial_asset_grids stretches them
+    by the steady state's sizing rule, keeping the number and proportions
+    of their nodes, so that means are as requested. Grids stretched
+    earlier in a solve stay so if they hold later wealth.
+    """
+    p, sol = stationary
+    ss_vars = {"dist": sol.dist, "b_grid": sol.b_grid, "z_grid": sol.z_grid}
+    cond = conditional(sol.dist)
+    b_sp1 = sol.cell_means(sol.b_policy)
+    np.testing.assert_array_equal(
+        household_stoch.initial_asset_grids(p, ss_vars, b_sp1, sol.b_grid),
+        sol.b_grid,
+    )
+    # the oldest households hold much more than in the steady state
+    tilt = 1.0 + 7.0 * (np.arange(p.S) / (p.S - 1))[:, None] ** 3
+    high = 1.5 * tilt * b_sp1
+    with pytest.raises(ValueError, match="cannot hold initial wealth"):
+        household_stoch.initial_distribution_tpi(p, ss_vars, high, sol.b_grid)
+    grid = household_stoch.initial_asset_grids(p, ss_vars, high, sol.b_grid)
+    assert grid.shape == sol.b_grid.shape
+    assert (grid[:, -1] > sol.b_grid[:, -1]).all()
+    np.testing.assert_allclose(
+        grid / grid[:, -1:], sol.b_grid / sol.b_grid[:, -1:]
+    )
+    scale = (high[:-1] / sol.cell_means(sol.b_s())[1:])[:, :, None]
+    massive = cond.sum(axis=3)[1:] > household_stoch.SolverOptions().mass_tol
+    held = np.where(massive, scale * sol.b_grid[None], 0.0)
+    np.testing.assert_allclose(
+        grid[:, -1], p.b_grid_margin * held.max(axis=(0, 2))
+    )
+    init = household_stoch.initial_distribution_tpi(p, ss_vars, high, grid)
+    means = (init * grid[None, :, :, None]).sum(axis=(2, 3))
+    np.testing.assert_allclose(means[1:], high[:-1], rtol=1e-9)
+    np.testing.assert_allclose(init.sum(axis=2), cond.sum(axis=2), atol=1e-12)
+    # wealth that fits on grids stretched earlier does not change them
+    np.testing.assert_array_equal(
+        household_stoch.initial_asset_grids(p, ss_vars, high / 1.1, grid),
+        grid,
+    )
+
+
+def test_initial_distribution_negative_wealth(stationary):
+    """
+    Households cannot start below the borrowing limit: initial savings
+    below the bottom of the grids are rejected, not moved to it.
+    """
+    p, sol = stationary
+    ss_vars = {"dist": sol.dist, "b_grid": sol.b_grid, "z_grid": sol.z_grid}
+    b_sp1 = sol.cell_means(sol.b_policy)
+    b_sp1[5, 0] = -0.5
+    grid = household_stoch.initial_asset_grids(p, ss_vars, b_sp1, sol.b_grid)
+    with pytest.raises(ValueError, match="borrowing limit"):
+        household_stoch.initial_distribution_tpi(p, ss_vars, b_sp1, grid)
+
+
+def test_initial_distribution_egm(stationary, tmp_path):
+    """
+    The transition path takes the initial distribution together with
+    the grids it was built on.
+    """
+    p, sol = stationary
+    p = copy.deepcopy(p)
+    p.baseline_dir = str(tmp_path)
+    os.makedirs(tmp_path / "SS")
+    with open(tmp_path / "SS" / "SS_vars.pkl", "wb") as f:
+        pickle.dump(
+            {"dist": sol.dist, "b_grid": sol.b_grid, "z_grid": sol.z_grid}, f
+        )
+    high = 5.0 * sol.cell_means(sol.b_policy)
+    init, grid = TPI.initial_distribution_egm(p, high, sol.b_grid)
+    assert (grid[:, -1] > sol.b_grid[:, -1]).all()
+    means = (init * grid[None, :, :, None]).sum(axis=(2, 3))
+    np.testing.assert_allclose(means[1:], high[:-1], rtol=1e-9)
 
 
 def test_dask_matches_serial(stationary, monkeypatch):
@@ -342,14 +568,26 @@ def model_specs(tmp_path, baseline=True, solver="egm", nz=1, **updates):
     return p
 
 
-def test_run_TPI_egm_outputs(tmp_path, monkeypatch):
+@pytest.mark.parametrize(
+    "pension_system",
+    ["US-Style Social Security", "Notional Defined Contribution"],
+)
+def test_run_TPI_egm_outputs(tmp_path, monkeypatch, pension_system):
     """
     A few iterations of run_TPI with shocks give the outputs by period,
     age and type as means over the distribution, the asset grids, and
     inequality by period.
     """
     monkeypatch.setattr(TPI, "ENFORCE_SOLUTION_CHECKS", False)
-    p = model_specs(tmp_path, nz=2, maxiter=2)
+    p = model_specs(
+        tmp_path,
+        nz=2,
+        maxiter=2,
+        pension_system=pension_system,
+        tau_p=0.1,
+        ndc_growth_rate="r",
+        dir_growth_rate="r",
+    )
     ss, tpi = run_model(p)
     shape = (p.T, p.S, p.J)
     for k in ("b_sp1", "b_s", "n", "c", "etr", "mtrx", "euler_savings"):
@@ -446,12 +684,22 @@ def test_shocks_tpi(tmp_path, one_state_runs):
 
 
 @pytest.mark.local
-def test_defined_benefits_tpi(tmp_path):
+@pytest.mark.parametrize(
+    "pension_system", ["Defined Benefits", "Notional Defined Contribution"]
+)
+def test_defined_benefits_tpi(tmp_path, pension_system):
     """
-    With defined benefit pensions, which depend on each cohort's
-    earnings history, the one-state transition path matches OG-Core's.
+    With pensions that depend on each cohort's earnings history, the
+    one-state transition path matches OG-Core's, including NDC rates
+    that vary with the interest rate along the path.
     """
-    updates = {"pension_system": "Defined Benefits", "alpha_db": [[0.01]]}
+    updates = {
+        "pension_system": pension_system,
+        "alpha_db": [[0.01]],
+        "tau_p": 0.1,
+        "ndc_growth_rate": "r",
+        "dir_growth_rate": "r",
+    }
     _, root = run_model(
         model_specs(tmp_path / "root", solver="root", **updates)
     )
@@ -460,3 +708,23 @@ def test_defined_benefits_tpi(tmp_path):
     for k in MACRO_VARS + ["agg_pension_outlays"]:
         gap = np.abs(egm[k] / root[k] - 1).max()
         assert gap < 1e-3, (k, gap)
+
+
+@pytest.mark.local
+def test_initial_wealth_ratio_stretches_grids(tmp_path):
+    """
+    With an initial wealth ratio that is solved for along the path and
+    grids sized closely to the steady state, the grids are stretched
+    during the solve, and the path reaches the ratio and the steady
+    state with the wealth households hold matching aggregates.
+    """
+    ratio = 4.0
+    p = model_specs(
+        tmp_path, nz=3, b_grid_margin=1.1, initial_wealth_ratio=ratio
+    )
+    ss, tpi = run_model(p)
+    assert (tpi["b_grid"][:, -1] > ss["b_grid"][:, -1]).all()
+    np.testing.assert_allclose(tpi["B"][0] / tpi["Y"][0], ratio, rtol=1e-3)
+    held = tpi["b_s"][0, 1:]
+    np.testing.assert_allclose(held, tpi["b_sp1_preTP"][:-1], rtol=1e-3)
+    assert abs(tpi["r"][p.T - 1] / ss["r"] - 1) < 1e-3

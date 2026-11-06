@@ -1355,12 +1355,11 @@ def pension_ss(p, w, factor, theta=None, n_eff=None, r=None):
         )
     if n_eff is None:
         raise ValueError(f"{p.pension_system} benefits need n_eff")
-    # ogcore.tax.net_taxes passes Y = 1 to pension_amount
     return pensions.pension_amount(
         r,
         w,
         np.asarray(n_eff, dtype=float),
-        1,
+        None,
         theta,
         None,
         None,
@@ -1452,6 +1451,9 @@ class SolverOptions:
             ``b_grid_margin``)
         mass_tol (float): share of a type's population below which an
             asset node counts as empty
+        wealth_tol (float): largest share of initial wealth allowed to
+            differ from the requested amount after moving the households
+            alive in period 0 of the time path onto the asset grids
     """
 
     backend: str = "auto"
@@ -1462,6 +1464,7 @@ class SolverOptions:
     max_fail_frac: float = 1e-4
     grid_resize_iter: int = 4
     mass_tol: float = 1e-10
+    wealth_tol: float = 1e-6
 
 
 @dataclass
@@ -3908,7 +3911,7 @@ def ss_mean_effective_labor(ss_vars):
     )
 
 
-def pension_tpi(p, r, w, factor, theta=None, n_eff=None):
+def pension_tpi(p, r, w, factor, theta=None, n_eff=None, ndc_rates=None):
     """
     Pension benefits by period, age and type along the time path,
     (T+S, S, J), which households take as given (OG-Core's first-order
@@ -3928,7 +3931,9 @@ def pension_tpi(p, r, w, factor, theta=None, n_eff=None):
     they are paid in, as OG-Core's household problem and aggregate
     pension outlays are, so that what households receive is what the
     government pays. Each household retires at the retirement age of its
-    own birth cohort (``p.retire`` by period and age).
+    own birth cohort (``p.retire`` by period and age). NDC contributions
+    earn the calendar-period credited rates, and annuities use the
+    discount rate at retirement, from the same paths as aggregate outlays.
 
     Args:
         p (OG-Core Specifications object): model parameters
@@ -3939,6 +3944,8 @@ def pension_tpi(p, r, w, factor, theta=None, n_eff=None):
             Security)
         n_eff (array_like): mean effective labor by period, age and
             type, (T+S, S, J) (the other systems)
+        ndc_rates (NDCRates): calendar paths from pensions.ndc_rates_path;
+            None uses steady-state rates, as aggregate pension outlays do
 
     Returns:
         pension (Numpy array): benefits, (T+S, S, J); zero for cohorts
@@ -3977,9 +3984,8 @@ def pension_tpi(p, r, w, factor, theta=None, n_eff=None):
             if p.pension_system == "Defined Benefits":
                 amount = pensions.DB_amount(w_c, e_c, n_c, t, j, "TPI", p)
             elif p.pension_system == "Notional Defined Contribution":
-                # Y = 1, as tax.net_taxes passes to pension_amount
                 amount = pensions.NDC_amount(
-                    w_c, e_c, n_c, r[times], 1, t, j, "TPI", p
+                    w_c, e_c, n_c, r[: p.T], ndc_rates, t, j, "TPI", p
                 )
             elif p.pension_system == "Points System":
                 amount = pensions.PS_amount(w_c, e_c, n_c, j, factor, p)
@@ -3992,7 +3998,18 @@ def pension_tpi(p, r, w, factor, theta=None, n_eff=None):
 
 
 def household_inputs_tpi(
-    p, r_p, w, p_m, BQ, RM, TR, factor, ubi, theta=None, n_eff=None
+    p,
+    r_p,
+    w,
+    p_m,
+    BQ,
+    RM,
+    TR,
+    factor,
+    ubi,
+    theta=None,
+    n_eff=None,
+    ndc_rates=None,
 ):
     """
     Per-household prices, receipts and pension benefits by period along
@@ -4015,6 +4032,8 @@ def household_inputs_tpi(
         n_eff (array_like): mean effective labor by period, age and type,
             (T+S, S, J), for pensions that depend on earnings histories
             (see ``pension_tpi``)
+        ndc_rates (NDCRates): calendar paths of NDC credited and discount
+            rates, shared with aggregate pension outlays
 
     Returns:
         dict: 'r', 'w', 'p_tilde' and 'c_min_exp' (minimum consumption
@@ -4043,7 +4062,7 @@ def household_inputs_tpi(
         "rm": by_cell(get_rm(np.asarray(RM, dtype=float), None, p, "TPI")),
         "tr": by_cell(get_tr(np.asarray(TR, dtype=float), None, p, "TPI")),
         "ubi": by_cell(ubi),
-        "pension": pension_tpi(p, r_p, w, factor, theta, n_eff),
+        "pension": pension_tpi(p, r_p, w, factor, theta, n_eff, ndc_rates),
         "factor": float(factor),
     }
 
@@ -4163,7 +4182,6 @@ def _rebin(mass, x, grid):
 
     Returns:
         new (Numpy array): mass at the nodes, (nb, nz)
-        above (float): mass above the top of the grid
     """
     nb = grid.size
     xc = np.clip(x, grid[0], grid[-1])
@@ -4172,20 +4190,17 @@ def _rebin(mass, x, grid):
     new = np.zeros((nb, mass.shape[1]))
     np.add.at(new, k, mass * (1 - wt)[:, None])
     np.add.at(new, k + 1, mass * wt[:, None])
-    return new, float(mass[x > grid[-1]].sum())
+    return new
 
 
-def initial_distribution_tpi(p, ss_vars, b_sp1_init, b_grid):
+def _initial_assets(p, ss_vars, b_sp1_init):
     """
-    Distribution over (asset node, shock) of the households of each age
-    and type alive in period 0 of the time path, summing to one within
-    each age and type. Newborns hold zero assets and draw shocks from
-    ``p.z_dist0``. Households of age s >= 1 have the distribution of
-    their age and type in the baseline steady state, with assets scaled
-    so that their mean is the initial savings OG-Core sets,
-    ``b_sp1_init[s - 1, j]`` (see ``TPI.get_initial_SS_values``), moved
-    onto the asset grids of the time path by the two-node split of
-    Young's method, which preserves the mean.
+    The baseline steady state's distribution within each age and type,
+    and the assets its households hold in period 0 of the time path:
+    those of the steady state, scaled so that the mean at age s is the
+    initial savings ``b_sp1_init[s - 1, j]``. In a cell that holds no
+    wealth in the steady state there is nothing to scale, so all of its
+    households hold the initial savings.
 
     Args:
         p (OG-Core Specifications object): model parameters
@@ -4193,10 +4208,12 @@ def initial_distribution_tpi(p, ss_vars, b_sp1_init, b_grid):
             ``household_solver = 'egm'`` (keys 'dist', 'b_grid' and
             'z_grid')
         b_sp1_init (array_like): initial savings by age and type, (S, J)
-        b_grid (array_like): asset grids of the time path, (J, nb)
 
     Returns:
-        init_dist (Numpy array): (S, J, nb, nz)
+        cond (Numpy array): distribution within each age and type,
+            (S, J, nb_ss, nz)
+        assets (Numpy array): period-0 assets of the households at each
+            steady-state asset node, (S, J, nb_ss)
     """
     missing = {"dist", "b_grid", "z_grid"} - set(ss_vars)
     if missing:
@@ -4206,7 +4223,7 @@ def initial_distribution_tpi(p, ss_vars, b_sp1_init, b_grid):
             f"(missing {sorted(missing)})"
         )
     S, J = p.S, p.J
-    z_grid, _, z_dist0 = _shock_process(p)
+    z_grid, _, _ = _shock_process(p)
     ss_dist = np.asarray(ss_vars["dist"], dtype=float)
     ss_grid = np.asarray(ss_vars["b_grid"], dtype=float)
     if ss_dist.shape[:2] != (S, J) or not (
@@ -4217,33 +4234,117 @@ def initial_distribution_tpi(p, ss_vars, b_sp1_init, b_grid):
             "The baseline steady state's distribution does not match the "
             "ages, types and shock process of this run"
         )
-    grid = np.asarray(b_grid, dtype=float)
     b_sp1_init = np.asarray(b_sp1_init, dtype=float).reshape(S, J)
     cond = ss_dist / ss_dist.sum(axis=(2, 3), keepdims=True)
     mean_b = (cond * ss_grid[None, :, :, None]).sum(axis=(2, 3))
-    init = np.zeros((S, J, grid.shape[1], z_grid.size))
-    init[0, :, 0, :] = z_dist0
-    above = np.zeros((S, J))
+    assets = np.zeros((S, J, ss_grid.shape[1]))
     for s in range(1, S):
         for j in range(J):
-            scale = (
-                b_sp1_init[s - 1, j] / mean_b[s, j]
+            assets[s, j] = (
+                b_sp1_init[s - 1, j] / mean_b[s, j] * ss_grid[j]
                 if mean_b[s, j] > 0
-                else 1.0
+                else b_sp1_init[s - 1, j]
             )
-            init[s, j], above[s, j] = _rebin(
-                cond[s, j], scale * ss_grid[j], grid[j]
-            )
-    clipped = (above * p.omega[0]).sum() / p.omega[0].sum()
-    options = SolverOptions()
-    if clipped > options.mass_tol:
-        log = (
-            logger.warning if clipped > options.max_fail_frac else logger.info
+    return cond, assets
+
+
+def initial_asset_grids(p, ss_vars, b_sp1_init, b_grid, options=None):
+    """
+    Asset grids for the time path that hold the households alive in
+    period 0. The grid of a type whose top is below the assets of those
+    households, at nodes with mass, is stretched to ``p.b_grid_margin``
+    times those assets, as in the steady state's sizing rule; the
+    proportions of its nodes and their number do not change, and other
+    grids are returned as they are. Initial wealth above the steady
+    state's, set by ``initial_wealth_ratio`` or
+    ``initial_hhwealth_dist``, can call for this.
+
+    Args:
+        p (OG-Core Specifications object): model parameters
+        ss_vars (dict): baseline steady state (see
+            ``initial_distribution_tpi``)
+        b_sp1_init (array_like): initial savings by age and type, (S, J)
+        b_grid (array_like): asset grids of the time path, (J, nb)
+        options (SolverOptions): solver settings (``mass_tol``)
+
+    Returns:
+        b_grid (Numpy array): asset grids, (J, nb)
+    """
+    options = options or SolverOptions()
+    cond, assets = _initial_assets(p, ss_vars, b_sp1_init)
+    top = np.where(cond.sum(axis=3) > options.mass_tol, assets, -np.inf).max(
+        axis=(0, 2)
+    )
+    grid = np.array(b_grid, dtype=float)
+    short = top > grid[:, -1]
+    if short.any():
+        stretch = p.b_grid_margin * top[short] / grid[short, -1]
+        grid[short] *= stretch[:, None]
+        logger.warning(
+            "Stretching the asset grids of types %s by factors %s to hold "
+            "initial wealth",
+            np.flatnonzero(short),
+            np.array2string(stretch, precision=3),
         )
-        log(
-            "%.1e of the initial population holds assets above the top of "
-            "the asset grids; they are moved to the top node",
-            clipped,
+    return grid
+
+
+def initial_distribution_tpi(p, ss_vars, b_sp1_init, b_grid, options=None):
+    """
+    Distribution over (asset node, shock) of the households of each age
+    and type alive in period 0 of the time path, summing to one within
+    each age and type. Newborns hold zero assets and draw shocks from
+    ``p.z_dist0``. Households of age s >= 1 have the distribution of
+    their age and type in the baseline steady state, with assets scaled
+    so that their mean is the initial savings OG-Core sets,
+    ``b_sp1_init[s - 1, j]`` (see ``TPI.get_initial_SS_values``), moved
+    onto the asset grids of the time path by the two-node split of
+    Young's method, which preserves the mean. In a cell with no wealth
+    in the steady state, all households hold the initial savings.
+
+    Args:
+        p (OG-Core Specifications object): model parameters
+        ss_vars (dict): baseline steady state solved with
+            ``household_solver = 'egm'`` (keys 'dist', 'b_grid' and
+            'z_grid')
+        b_sp1_init (array_like): initial savings by age and type, (S, J)
+        b_grid (array_like): asset grids of the time path, (J, nb)
+            (``initial_asset_grids``)
+        options (SolverOptions): solver settings (``wealth_tol``)
+
+    Returns:
+        init_dist (Numpy array): (S, J, nb, nz)
+
+    Raises:
+        ValueError: if the grids cannot hold the initial savings, which
+            is the case for savings below the bottom of the grids or,
+            if ``initial_asset_grids`` was not applied, above their top
+    """
+    options = options or SolverOptions()
+    S, J = p.S, p.J
+    _, _, z_dist0 = _shock_process(p)
+    cond, assets = _initial_assets(p, ss_vars, b_sp1_init)
+    b_sp1_init = np.asarray(b_sp1_init, dtype=float).reshape(S, J)
+    grid = np.asarray(b_grid, dtype=float)
+    init = np.zeros((S, J, grid.shape[1], z_dist0.size))
+    init[0, :, 0, :] = z_dist0
+    for s in range(1, S):
+        for j in range(J):
+            init[s, j] = _rebin(cond[s, j], assets[s, j], grid[j])
+    # the population at each age and type holds what aggregates count
+    omega = np.asarray(p.omega[0], dtype=float)[1:]
+    held = (init[1:] * grid[None, :, :, None]).sum(axis=(2, 3))
+    gap = (omega * np.abs(held - b_sp1_init[:-1])).sum()
+    wealth = (omega * np.abs(b_sp1_init[:-1])).sum()
+    if not gap <= options.wealth_tol * wealth:
+        raise ValueError(
+            "The asset grids cannot hold initial wealth: households alive "
+            f"in period 0 would hold {(omega * held).sum():.6g} rather than "
+            f"{(omega * b_sp1_init[:-1]).sum():.6g}, with savings from "
+            f"{b_sp1_init[:-1].min():.6g} to {b_sp1_init[:-1].max():.6g} by "
+            f"age and type on grids from {grid[:, 0].min():.6g} to "
+            f"{grid[:, -1].max():.6g}. With household_solver = 'egm', "
+            "households cannot start below the borrowing limit."
         )
     return init
 

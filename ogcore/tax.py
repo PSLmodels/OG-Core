@@ -269,6 +269,7 @@ def net_taxes(
     e,
     etr_params,
     p,
+    ndc_rates=None,
     inc_pay_tax_liab=None,
     w_tax_liab=None,
 ):
@@ -296,6 +297,9 @@ def net_taxes(
         e (Numpy array): effective labor units
         etr_params (list): list of effective tax rate function parameters
         p (OG-Core Specifications object): model parameters
+        ndc_rates (NDCRates): calendar paths of the NDC credited and
+            discount rates (``pensions.ndc_rates_path``); None for the
+            steady-state rates
         inc_pay_tax_liab (Numpy array): income and payroll tax liability
             of each household, if already computed (with idiosyncratic
             shocks, the mean over each age and type's distribution);
@@ -313,9 +317,8 @@ def net_taxes(
         )
     else:
         T_I = inc_pay_tax_liab
-    # TODO: replace "1" with Y in the args below when want NDC functions
     pension = pensions.pension_amount(
-        r, w, n, 1, theta, t, j, shift, method, e, factor, p
+        r, w, n, ndc_rates, theta, t, j, shift, method, e, factor, p
     )
     T_BQ = bequest_tax_liab(r, b, bq, t, j, method, p)
     if w_tax_liab is None:

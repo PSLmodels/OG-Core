@@ -386,16 +386,23 @@ _Out-of-Range Action:_ error
 
 ####  `ndc_growth_rate`  
 _Description:_ Growth rate applied to contributions under a notional defined contribution system.  
-_Notes:_ 'r' uses the model interest rate, 'Curr GDP' the current GDP growth rate, and 'LR GDP' the long-run GDP growth rate.  
+_Notes:_ The rate credited in each period is the growth realized from the previous period: 'r' the interest rate on household savings, 'Curr GDP' the growth of real GDP, 'wage bill' the growth of total real labor earnings, 'avg wage' the growth of real labor earnings per person, and 'LR GDP' the constant long-run real GDP growth rate exp(g_y)(1 + g_n_ss) - 1. Each contribution compounds at the rates credited in the periods between the contribution and retirement. See also ndc_growth_avg_years.  
 _Value Type:_ str  
-_Valid Choices:_['r', 'Curr GDP', 'LR GDP']  
+_Valid Choices:_['r', 'Curr GDP', 'LR GDP', 'wage bill', 'avg wage']  
+
+
+####  `ndc_growth_avg_years`  
+_Description:_ Number of years over which the growth rate set by ndc_growth_rate is averaged to give the rate credited to notional defined contribution balances in each year.  
+_Notes:_ The rate credited in a year is the arithmetic mean of the growth rates of that year and the preceding ndc_growth_avg_years - 1 years, converted to model periods. Years before the transition path use the first period's rate. 1 means no averaging; e.g., Italy credits the 5-year average of GDP growth.  
+_Value Type:_ int  
+_Valid Range:_ min = 1 and max = 20  
 
 
 ####  `dir_growth_rate`  
 _Description:_ Growth rate used in the conversion coefficient of a notional defined contribution system.  
-_Notes:_ 'r' uses the model interest rate, 'Curr GDP' the current GDP growth rate, and 'LR GDP' the long-run GDP growth rate.  
+_Notes:_ Payments in the conversion coefficient are discounted at the chosen rate in the period the household retires, held fixed over its retirement: 'r' the interest rate on household savings, 'Curr GDP' the growth of real GDP, 'wage bill' the growth of total real labor earnings, 'avg wage' the growth of real labor earnings per person, and 'LR GDP' the constant long-run real GDP growth rate exp(g_y)(1 + g_n_ss) - 1.  
 _Value Type:_ str  
-_Valid Choices:_['r', 'Curr GDP', 'LR GDP']  
+_Valid Choices:_['r', 'Curr GDP', 'LR GDP', 'wage bill', 'avg wage']  
 
 
 ####  `ndc_mortality`  

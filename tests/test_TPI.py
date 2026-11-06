@@ -907,18 +907,23 @@ filename4 = os.path.join(
 def _initial_hhwealth_dist():
     """
     An S x J initial distribution of wealth for tests of the initial
-    wealth parameters: the steady-state savings of the tests' baseline
-    fixture tilted toward older ages, normalized to sum to one. A shape
-    close to the steady state keeps the household problems of the
-    cohorts alive at t=0 well posed.
+    wealth parameters: each cell's share of aggregate wealth, built from
+    the steady-state savings of the tests' baseline fixture tilted
+    toward older ages, weighted by the period-0 population, and
+    normalized to sum to one. Weighting by population makes these shares
+    of aggregate wealth (what initial_hhwealth_dist means), so per-capita
+    wealth stays close to the steady state and the household problems of
+    the cohorts alive at t=0 stay well posed.
     """
     ss_vars = utils.safe_read_pickle(
         os.path.join(CUR_PATH, "test_io_data", "OUTPUT2", "SS", "SS_vars.pkl")
     )
     b_sp1 = np.asarray(ss_vars[SS_VAR_NAME_MAPPING.get("b_sp1", "b_sp1")])
+    p = Specifications()
+    p.update_specifications(TEST_PARAM_DICT)
     S = b_sp1.shape[0]
     tilt = 1.0 + 0.3 * (np.arange(S) / (S - 1) - 0.5)
-    dist = b_sp1 * tilt.reshape(S, 1)
+    dist = b_sp1 * tilt.reshape(S, 1) * p.omega[0, :, :]
     return (dist / dist.sum()).tolist()
 
 
@@ -931,7 +936,6 @@ filename_iw = os.path.join(
 )
 
 
-@pytest.mark.local
 @pytest.mark.parametrize(
     "baseline,param_updates,filename",
     [
@@ -1378,8 +1382,23 @@ def test_run_TPI_serial_no_client(tmpdir, monkeypatch):
             },
             {"tau_p": 0.12, "k_ret": 0.3},
         ),
+        (
+            {
+                "pension_system": "Notional Defined Contribution",
+                "tau_p": 0.1,
+                "ndc_growth_rate": "Curr GDP",
+                "ndc_growth_avg_years": 6,
+                "dir_growth_rate": "wage bill",
+            },
+            {"tau_p": 0.12, "k_ret": 0.3},
+        ),
     ],
-    ids=["US-Style Social Security", "Defined Benefits", "NDC"],
+    ids=[
+        "US-Style Social Security",
+        "Defined Benefits",
+        "NDC",
+        "NDC growth paths",
+    ],
 )
 def test_run_TPI_pension_regime(
     system_params, regime_params, tmpdir, dask_client
