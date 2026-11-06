@@ -267,6 +267,8 @@ class Specifications(paramtools.Parameters):
             "r_gov_scale",
             "r_gov_shift",
             "g_RM",
+            "factor1_db_ndc_hybrid",
+            "factor2_db_ndc_hybrid",
         ]
         for item in tp_param_list:
             param_in = getattr(self, item)
@@ -274,6 +276,25 @@ class Specifications(paramtools.Parameters):
                 param_in, dims=(self.T + self.S,), item=item
             )
             setattr(self, item, param_out)
+        # The hybrid DB-NDC cutoffs are checked against each other here,
+        # once both are paths of the same length, rather than with a
+        # paramtools validator, which cannot compare lists of different
+        # lengths
+        if self.pension_system == "Hybrid DB-NDC" and np.any(
+            self.factor2_db_ndc_hybrid < self.factor1_db_ndc_hybrid
+        ):
+            bad = int(
+                np.argmax(
+                    self.factor2_db_ndc_hybrid < self.factor1_db_ndc_hybrid
+                )
+            )
+            raise ValueError(
+                "factor2_db_ndc_hybrid must be at least "
+                "factor1_db_ndc_hybrid in every period: in model period "
+                f"{bad}, factor1_db_ndc_hybrid="
+                f"{self.factor1_db_ndc_hybrid[bad]} and "
+                f"factor2_db_ndc_hybrid={self.factor2_db_ndc_hybrid[bad]}"
+            )
         # Deal with parameters that vary across industry and over time
         tp_param_list2 = [
             "Z",

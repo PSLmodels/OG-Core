@@ -1207,8 +1207,8 @@ def test_get_PS(args, PS_expected):
                 "tau_p": 0.1,
                 "ndc_growth_rate": "LR GDP",
                 "dir_growth_rate": "r",
-                "factor1_db_ndc_hybrid": 0.5,
-                "factor2_db_ndc_hybrid": 1.5,
+                "factor1_db_ndc_hybrid": [0.5],
+                "factor2_db_ndc_hybrid": [1.5],
             },
         ),
     ],
@@ -1262,8 +1262,8 @@ def test_pension_amount_with_real_specifications(system, updates):
                 "tau_p": 0.1,
                 "ndc_growth_rate": "LR GDP",
                 "dir_growth_rate": "r",
-                "factor1_db_ndc_hybrid": 0.5,
-                "factor2_db_ndc_hybrid": 1.5,
+                "factor1_db_ndc_hybrid": [0.5],
+                "factor2_db_ndc_hybrid": [1.5],
             },
         ),
     ],
@@ -1316,13 +1316,17 @@ HYBRID_UPDATES = {
 
 
 def _hybrid_params(factor1, factor2):
+    """
+    Specifications for the hybrid system; factor1 and factor2 may be
+    single values or lists of values by year.
+    """
     p = Specifications()
     p.update_specifications(
         dict(
             HYBRID_UPDATES,
             pension_system="Hybrid DB-NDC",
-            factor1_db_ndc_hybrid=factor1,
-            factor2_db_ndc_hybrid=factor2,
+            factor1_db_ndc_hybrid=np.atleast_1d(factor1).tolist(),
+            factor2_db_ndc_hybrid=np.atleast_1d(factor2).tolist(),
         )
     )
     # labor supply before the time path, normally set by the TPI solver
@@ -1485,6 +1489,99 @@ def test_SS_solve_defined_benefits(tmp_path):
     assert 0.0 < ss["agg_pension_outlays"] / Y < 1.0
 
 
+def test_hybrid_factors_time_varying_parameters():
+    """
+    The hybrid cutoffs are paths of length T + S: values given by year
+    are held at the last value entered, the two lists may have
+    different lengths, and factor2 below factor1 in any period raises.
+    """
+    p = _hybrid_params([0.5, 0.6, 0.7], [1.5, 1.6])
+    assert p.factor1_db_ndc_hybrid.shape == (p.T + p.S,)
+    assert p.factor2_db_ndc_hybrid.shape == (p.T + p.S,)
+    assert np.allclose(p.factor1_db_ndc_hybrid[:4], [0.5, 0.6, 0.7, 0.7])
+    assert np.allclose(p.factor2_db_ndc_hybrid[:4], [1.5, 1.6, 1.6, 1.6])
+    assert np.allclose(p.factor1_db_ndc_hybrid[-1], 0.7)
+    with pytest.raises(ValueError, match="in every period"):
+        _hybrid_params([0.5, 0.6, 2.0], [1.5, 1.6])
+
+
+def _time_varying_hybrid_params():
+    """Cutoffs that change in each of the first S + 10 years."""
+    p0 = Specifications()
+    n_years = p0.S + 10
+    factor1 = np.linspace(0.3, 0.9, n_years)
+    factor2 = np.linspace(1.0, 2.0, n_years)
+    return _hybrid_params(factor1, factor2)
+
+
+def test_DB_NDC_hybrid_amount_time_varying_cohort():
+    """
+    Along the time path a cohort's benefit uses the cutoffs in effect in
+    the period of each earning: it equals the DB and NDC benefits on the
+    labor supply that delivers each band's effective earnings, with the
+    cutoffs read down the cohort's own path.
+    """
+    p = _time_varying_hybrid_params()
+    r, ndc_rates, t = 0.05, None, 3
+    j = p.J - 1
+    w = np.linspace(1.0, 1.3, p.S)
+    e = p.e[-1, :, j]
+    n = 0.4 * np.ones(p.S)
+    hybrid = pensions.DB_NDC_hybrid_amount(
+        w, e, n, r, ndc_rates, t, j, "TPI", p
+    )
+    # the household is age 0 in period t, so age s is lived in t + s
+    f1 = p.factor1_db_ndc_hybrid[t : t + p.S]
+    f2 = p.factor2_db_ndc_hybrid[t : t + p.S]
+    en = e * n
+    n_db = np.minimum(en, f1) / e
+    n_ndc = np.clip(en - f1, 0.0, f2 - f1) / e
+    db = pensions.DB_amount(w, e, n_db, t, j, "TPI", p)
+    ndc = pensions.NDC_amount(w, e, n_ndc, r, ndc_rates, t, j, "TPI", p)
+    assert np.any(db > 0.0) and np.any(ndc > 0.0)
+    assert np.allclose(hybrid, db + ndc)
+    # the time variation matters: holding the cutoffs at their period-t
+    # values gives a different benefit
+    p_const = _hybrid_params(f1[0], f2[0])
+    const = pensions.DB_NDC_hybrid_amount(
+        w, e, n, r, ndc_rates, t, j, "TPI", p_const
+    )
+    assert not np.allclose(hybrid, const)
+
+
+def test_DB_NDC_hybrid_amount_time_varying_3d_matches_cross_sections():
+    """
+    With constant wages and labor supply, the full time-path array the
+    aggregates use agrees with the cross section of each period, so the
+    two read the time-varying cutoffs at the same periods.
+    """
+    p = _time_varying_hybrid_params()
+    r, ndc_rates = 0.05, None
+    T = p.S + 5
+    w_val = 1.1
+    e = p.e[-1, :, :]
+    n3 = 0.4 * np.ones((T, p.S, p.J))
+    hybrid3 = pensions.DB_NDC_hybrid_amount(
+        np.full(T, w_val), e, n3, r, ndc_rates, 0, None, "TPI", p
+    )
+    assert hybrid3.shape == (T, p.S, p.J)
+    for tt in (0, 7, 40, T - 1):
+        hybrid2 = pensions.DB_NDC_hybrid_amount(
+            np.full(p.S, w_val),
+            e,
+            0.4 * np.ones((p.S, p.J)),
+            r,
+            ndc_rates,
+            tt,
+            None,
+            "TPI",
+            p,
+        )
+        assert np.allclose(hybrid3[tt], hybrid2)
+    # and the benefits change over time as the cutoffs do
+    assert not np.allclose(hybrid3[0], hybrid3[40])
+
+
 @pytest.mark.local
 def test_SS_solve_hybrid_db_ndc(tmp_path):
     """
@@ -1499,8 +1596,8 @@ def test_SS_solve_hybrid_db_ndc(tmp_path):
         dict(
             HYBRID_UPDATES,
             pension_system="Hybrid DB-NDC",
-            factor1_db_ndc_hybrid=0.5,
-            factor2_db_ndc_hybrid=1.5,
+            factor1_db_ndc_hybrid=[0.5],
+            factor2_db_ndc_hybrid=[1.5],
         )
     )
     p.baseline_dir = p.output_base = str(tmp_path)

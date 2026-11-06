@@ -33,6 +33,73 @@ def earnings_band(x, lo, hi):
     return np.minimum(x, hi)
 
 
+@numba.jit(nopython=True)
+def earnings_band_at(x, lo, hi, period):
+    """
+    ``earnings_band`` with cutoffs that vary over time, read in the
+    model period in which the earnings ``x`` were made.
+
+    Args:
+        x (scalar or Numpy array): effective labor earnings, e * n
+        lo (Numpy array): calendar path of the lower cutoff, as a
+            multiple of the wage
+        hi (Numpy array): calendar path of the upper cutoff, as a
+            multiple of the wage
+        period (int): model period in which ``x`` was earned; periods
+            before or after a path read its first or last element
+
+    Returns:
+        band (scalar or Numpy array): part of ``x`` between the cutoffs
+            in effect in ``period``
+    """
+    i_lo = min(max(period, 0), lo.size - 1)
+    i_hi = min(max(period, 0), hi.size - 1)
+    return earnings_band(x, lo[i_lo], hi[i_hi])
+
+
+def _band_paths(earn_lo, earn_hi, method):
+    """
+    Calendar paths of the earnings band cutoffs used by ``DB_amount``
+    and ``NDC_amount``.
+
+    Args:
+        earn_lo (scalar, array_like, or None): lower cutoff, as a
+            multiple of the wage, a single value or a path by period
+        earn_hi (scalar, array_like, or None): upper cutoff
+        method (str): 'SS', 'TPI', or 'TPI_scalar'
+
+    Returns:
+        lo, hi (Numpy arrays or None): None, None when no band is
+            set. Otherwise 1-D float arrays: the full paths for 'TPI',
+            and the final (steady-state) or first value for 'SS' or
+            'TPI_scalar', matching the rows the other pension
+            parameters are read from.
+    """
+    if earn_lo is None and earn_hi is None:
+        return None, None
+    lo = np.atleast_1d(
+        np.asarray(0.0 if earn_lo is None else earn_lo, dtype=float)
+    ).ravel()
+    hi = np.atleast_1d(
+        np.asarray(np.inf if earn_hi is None else earn_hi, dtype=float)
+    ).ravel()
+    if method == "SS":
+        lo, hi = lo[-1:], hi[-1:]
+    elif method == "TPI_scalar":
+        lo, hi = lo[:1], hi[:1]
+    return np.ascontiguousarray(lo), np.ascontiguousarray(hi)
+
+
+def _path_from(path, t):
+    """
+    A calendar path starting in period t (its last element if t is
+    past its end), or None if ``path`` is None.
+    """
+    if path is None:
+        return None
+    return np.ascontiguousarray(path[min(t, path.size - 1) :])
+
+
 def cohort_array(name, p, by_j=False):
     """
     Return the pension parameter ``name`` as an array by period and age.
@@ -486,7 +553,7 @@ def SS_amount(w, n, theta, t, j, shift, method, e, p):
     return pension
 
 
-def DB_amount(w, e, n, t, j, method, p, earn_lo=0.0, earn_hi=np.inf):
+def DB_amount(w, e, n, t, j, method, p, earn_lo=None, earn_hi=None):
     r"""
     Calculate public pension from a defined benefits system.
 
@@ -518,10 +585,15 @@ def DB_amount(w, e, n, t, j, method, p, earn_lo=0.0, earn_hi=np.inf):
         method (str): adjusts calculation dimensions based on 'SS',
             'TPI', or 'TPI_scalar'
         p (OG-Core Specifications object): model parameters
-        earn_lo (scalar): only labor income above earn_lo * w enters
-            the benefit (used by the hybrid DB-NDC system)
-        earn_hi (scalar): only labor income below earn_hi * w enters
-            the benefit (used by the hybrid DB-NDC system)
+        earn_lo (scalar, array_like, or None): only labor income above
+            earn_lo * w enters the benefit (used by the hybrid DB-NDC
+            system). A single value or a path by model period of
+            length T + S; the cutoff in effect in the period each
+            income was earned applies. None (the default) for no
+            lower cutoff.
+        earn_hi (scalar, array_like, or None): only labor income below
+            earn_hi * w enters the benefit, as for earn_lo. None (the
+            default) for no upper cutoff.
 
     Returns:
         DB (Numpy array): pension amount for each household
@@ -536,6 +608,7 @@ def DB_amount(w, e, n, t, j, method, p, earn_lo=0.0, earn_hi=np.inf):
     # to the length of the labor-supply vector.
     if np.ndim(w) == 0:
         w = np.full(n.shape[0], float(w))
+    earn_lo, earn_hi = _band_paths(earn_lo, earn_hi, method)
 
     if n.shape[0] < p.S:
         per_rmn = n.shape[0]
@@ -580,6 +653,7 @@ def DB_amount(w, e, n, t, j, method, p, earn_lo=0.0, earn_hi=np.inf):
             cy_u,
             earn_lo,
             earn_hi,
+            t - (p.S - per_rmn),
         )
         DB = DB[-per_rmn:]
 
@@ -613,6 +687,9 @@ def DB_amount(w, e, n, t, j, method, p, earn_lo=0.0, earn_hi=np.inf):
                 cy_u,
                 earn_lo,
                 earn_hi,
+                # period of age 0 (the band paths of 'SS' and
+                # 'TPI_scalar' have a single value)
+                t if row is None else 0,
             )
 
         elif np.ndim(n) == 2:
@@ -636,6 +713,7 @@ def DB_amount(w, e, n, t, j, method, p, earn_lo=0.0, earn_hi=np.inf):
                 cy[row],
                 earn_lo,
                 earn_hi,
+                max(row, 0),
             )
 
         elif np.ndim(n) == 3:
@@ -658,15 +736,16 @@ def DB_amount(w, e, n, t, j, method, p, earn_lo=0.0, earn_hi=np.inf):
                 ny[rows],
                 np.ascontiguousarray(alpha_db[rows]),
                 cy[rows],
-                earn_lo,
-                earn_hi,
+                # the loop counts periods from the first row of n
+                _path_from(earn_lo, t),
+                _path_from(earn_hi, t),
             )
 
     return DB
 
 
 def NDC_amount(
-    w, e, n, r, ndc_rates, t, j, method, p, earn_lo=0.0, earn_hi=np.inf
+    w, e, n, r, ndc_rates, t, j, method, p, earn_lo=None, earn_hi=None
 ):
     r"""
     Calculate public pension from a notional defined contribution
@@ -708,10 +787,15 @@ def NDC_amount(
         method (str): adjusts calculation dimensions based on 'SS',
             'TPI', or 'TPI_scalar'
         p (OG-Core Specifications object): model parameters
-        earn_lo (scalar): only labor income above earn_lo * w enters
-            the benefit (used by the hybrid DB-NDC system)
-        earn_hi (scalar): only labor income below earn_hi * w enters
-            the benefit (used by the hybrid DB-NDC system)
+        earn_lo (scalar, array_like, or None): only labor income above
+            earn_lo * w enters the benefit (used by the hybrid DB-NDC
+            system). A single value or a path by model period of
+            length T + S; the cutoff in effect in the period each
+            income was earned applies. None (the default) for no
+            lower cutoff.
+        earn_hi (scalar, array_like, or None): only labor income below
+            earn_hi * w enters the benefit, as for earn_lo. None (the
+            default) for no upper cutoff.
 
     Returns:
         NDC (Numpy array): pension amount for each household
@@ -731,6 +815,7 @@ def NDC_amount(
     g_y_arr = np.atleast_1d(np.asarray(p.g_y, dtype=float)).ravel()
     if np.ndim(w) == 0:
         w = np.full(n.shape[0], float(w))
+    earn_lo, earn_hi = _band_paths(earn_lo, earn_hi, method)
 
     if n.shape[0] < p.S:
         per_rmn = n.shape[0]
@@ -895,8 +980,8 @@ def NDC_amount(
                     t_ret_path,
                     g_dir_path=discount,
                 ),
-                earn_lo,
-                earn_hi,
+                _path_from(earn_lo, t),
+                _path_from(earn_hi, t),
             )
 
     return NDC
@@ -908,15 +993,18 @@ def DB_NDC_hybrid_amount(w, e, n, r, ndc_rates, t, j, method, p):
     defined contribution system.
 
     Labor income $w_t e_{j,s,t} n_{j,s,t}$ is split into two bands at
-    the cutoffs $f_1 w_t$ and $f_2 w_t$, where $f_1$ is
-    ``factor1_db_ndc_hybrid`` and $f_2$ is ``factor2_db_ndc_hybrid``.
-    Income up to $f_1 w_t$ is subject to the payroll tax
-    ``tau_payroll`` and earns a defined benefit computed with the
-    ``DB_amount`` formula and parameters on that capped income. Income
-    between $f_1 w_t$ and $f_2 w_t$ is subject to the NDC contribution
-    rate ``tau_p`` and earns a notional defined contribution benefit
-    computed with the ``NDC_amount`` formula and parameters. Income
-    above $f_2 w_t$ earns no benefit. The pension is the sum:
+    the cutoffs $f_{1,t} w_t$ and $f_{2,t} w_t$, where $f_{1,t}$ and
+    $f_{2,t}$ are ``factor1_db_ndc_hybrid`` and
+    ``factor2_db_ndc_hybrid`` in period t. Both may vary over time;
+    the cutoffs that apply to any income are those of the period in
+    which it was earned. Income up to $f_{1,t} w_t$ is subject to the
+    payroll tax ``tau_payroll`` and earns a defined benefit computed
+    with the ``DB_amount`` formula and parameters on that capped
+    income. Income between $f_{1,t} w_t$ and $f_{2,t} w_t$ is subject
+    to the NDC contribution rate ``tau_p`` and earns a notional defined
+    contribution benefit computed with the ``NDC_amount`` formula and
+    parameters. Income above $f_{2,t} w_t$ earns no benefit. The
+    pension is the sum:
 
     .. math::
         pension_{j,s,t} = pension^{DB}_{j,s,t}\bigl(\min\{e n, f_1\}\bigr)
@@ -924,7 +1012,8 @@ def DB_NDC_hybrid_amount(w, e, n, r, ndc_rates, t, j, method, p):
             - f_1, 0\}\bigr) \quad \forall s \geq R
 
     where the argument of each term is the effective labor earnings
-    (labor income divided by the wage) that enters that system.
+    (labor income divided by the wage) that enters that system, with
+    the cutoffs of the period of each earning.
 
     Args:
         w (array_like): real wage rate
@@ -947,15 +1036,25 @@ def DB_NDC_hybrid_amount(w, e, n, r, ndc_rates, t, j, method, p):
 
     Raises:
         ValueError: if ``factor2_db_ndc_hybrid`` is less than
-            ``factor1_db_ndc_hybrid``
+            ``factor1_db_ndc_hybrid`` in any period
     """
-    factor1 = float(p.factor1_db_ndc_hybrid)
-    factor2 = float(p.factor2_db_ndc_hybrid)
-    if factor2 < factor1:
+    # paths by model period (length T + S once Specifications extends
+    # them); a single value is also accepted
+    factor1 = np.atleast_1d(
+        np.asarray(p.factor1_db_ndc_hybrid, dtype=float)
+    ).ravel()
+    factor2 = np.atleast_1d(
+        np.asarray(p.factor2_db_ndc_hybrid, dtype=float)
+    ).ravel()
+    n_per = max(factor1.size, factor2.size)
+    f1_full = factor1[np.minimum(np.arange(n_per), factor1.size - 1)]
+    f2_full = factor2[np.minimum(np.arange(n_per), factor2.size - 1)]
+    if np.any(f2_full < f1_full):
+        bad = int(np.argmax(f2_full < f1_full))
         raise ValueError(
-            "factor2_db_ndc_hybrid must be at least factor1_db_ndc_hybrid: "
-            f"got factor1_db_ndc_hybrid={factor1} and "
-            f"factor2_db_ndc_hybrid={factor2}"
+            "factor2_db_ndc_hybrid must be at least factor1_db_ndc_hybrid "
+            f"in every period: in period {bad}, factor1_db_ndc_hybrid="
+            f"{f1_full[bad]} and factor2_db_ndc_hybrid={f2_full[bad]}"
         )
     DB = DB_amount(w, e, n, t, j, method, p, earn_lo=0.0, earn_hi=factor1)
     NDC = NDC_amount(
@@ -1844,8 +1943,9 @@ def DB_1dim_loop(
     avg_earn_num_years,
     alpha_db,
     yr_contr,
-    earn_lo=0.0,
-    earn_hi=np.inf,
+    earn_lo=None,
+    earn_hi=None,
+    t_birth=0,
 ):
     """
     Calculate public pension from a defined benefits system for one
@@ -1867,8 +1967,13 @@ def DB_1dim_loop(
             u, length S
         yr_contr (Numpy array): periods of contribution credited, by
             age u, length S
-        earn_lo (scalar): only earnings above earn_lo * w count
-        earn_hi (scalar): only earnings below earn_hi * w count
+        earn_lo (Numpy array): calendar path of the lower cutoff of
+            the earnings band, as a multiple of the wage; only earnings
+            above it count. None (the default) applies no band.
+        earn_hi (Numpy array): calendar path of the upper cutoff of
+            the earnings band; only earnings below it count
+        t_birth (int): model period in which the household is age 0,
+            so earnings at age s were made in period t_birth + s
 
     Returns:
         DB (Numpy array): pension amount for each household
@@ -1880,11 +1985,13 @@ def DB_1dim_loop(
         ny = avg_earn_num_years[u]
         L_inc_avg = 0.0
         for s in range(R - ny, R):
-            L_inc_avg += (
-                w[s]
-                / np.exp(g_y[-1] * (u - s))
-                * earnings_band(e[s] * n[s], earn_lo, earn_hi)
-            )
+            if earn_lo is None:
+                x = e[s] * n[s]
+            else:
+                x = earnings_band_at(
+                    e[s] * n[s], earn_lo, earn_hi, t_birth + s
+                )
+            L_inc_avg += w[s] / np.exp(g_y[-1] * (u - s)) * x
         DB[u] = yr_contr[u] * alpha_db[u] * L_inc_avg / ny
 
     return DB
@@ -1902,8 +2009,9 @@ def DB_2dim_loop(
     avg_earn_num_years,
     alpha_db,
     yr_contr,
-    earn_lo=0.0,
-    earn_hi=np.inf,
+    earn_lo=None,
+    earn_hi=None,
+    t_cross=0,
 ):
     """
     Calculate public pension from a defined benefits system for a
@@ -1925,8 +2033,13 @@ def DB_2dim_loop(
             u for each group j, size S x J
         yr_contr (Numpy array): periods of contribution credited, by
             age u, length S
-        earn_lo (scalar): only earnings above earn_lo * w count
-        earn_hi (scalar): only earnings below earn_hi * w count
+        earn_lo (Numpy array): calendar path of the lower cutoff of
+            the earnings band, as a multiple of the wage; only earnings
+            above it count. None (the default) applies no band.
+        earn_hi (Numpy array): calendar path of the upper cutoff of
+            the earnings band; only earnings below it count
+        t_cross (int): model period of the cross section; the
+            household of age u earned at age s in period t_cross - u + s
 
     Returns:
         DB (Numpy array): pension amount for each household
@@ -1939,11 +2052,13 @@ def DB_2dim_loop(
         ny = avg_earn_num_years[u]
         L_inc_avg = np.zeros(DB.shape[1])
         for s in range(R - ny, R):
-            L_inc_avg += (
-                w[s]
-                / np.exp(g_y[-1] * (u - s))
-                * earnings_band(e[s, :] * n[s, :], earn_lo, earn_hi)
-            )
+            if earn_lo is None:
+                x = e[s, :] * n[s, :]
+            else:
+                x = earnings_band_at(
+                    e[s, :] * n[s, :], earn_lo, earn_hi, t_cross - u + s
+                )
+            L_inc_avg += w[s] / np.exp(g_y[-1] * (u - s)) * x
         DB[u, :] = yr_contr[u] * alpha_db[u, :] * L_inc_avg / ny
 
     return DB
@@ -1962,8 +2077,8 @@ def DB_3dim_loop(
     avg_earn_num_years,
     alpha_db,
     yr_contr,
-    earn_lo=0.0,
-    earn_hi=np.inf,
+    earn_lo=None,
+    earn_hi=None,
 ):
     r"""
     Calculate public pension from a defined benefits system over the
@@ -1998,8 +2113,12 @@ def DB_3dim_loop(
             contribution by period, age, and group, size T x S x J
         yr_contr (Numpy array): periods of contribution credited, by
             period and age, size T x S
-        earn_lo (scalar): only earnings above earn_lo * w count
-        earn_hi (scalar): only earnings below earn_hi * w count
+        earn_lo (Numpy array): calendar path of the lower cutoff of
+            the earnings band, as a multiple of the wage; only earnings
+            above it count. None (the default) applies no band.
+        earn_hi (Numpy array): calendar path of the upper cutoff of
+            the earnings band; only earnings below it count
+            Both paths start in the period of the first row of n.
 
     Returns:
         DB (Numpy array): pension amount for each household, size TxSxJ
@@ -2020,9 +2139,14 @@ def DB_3dim_loop(
                 n[np.clip(tau, 0, T - 1), s_idx, :],
                 n_preTP[s_idx, :],
             )
-            L = (
-                w_hist[:, None] / np.exp(g_y * (u - s_idx))[:, None]
-            ) * earnings_band(e_ss[s_idx, :] * n_hist, earn_lo, earn_hi)
+            x = e_ss[s_idx, :] * n_hist
+            if earn_lo is not None:
+                # cutoffs in effect in the period of each earning
+                for i in range(ny):
+                    x[i, :] = earnings_band_at(
+                        x[i, :], earn_lo, earn_hi, tau[i]
+                    )
+            L = (w_hist[:, None] / np.exp(g_y * (u - s_idx))[:, None]) * x
             DB[t, u, :] = (
                 (L.sum(axis=0) / ny) * yr_contr[t, u] * alpha_db[t, u, :]
             )
@@ -2043,8 +2167,8 @@ def NDC_1dim_loop(
     t_birth,
     delta_ret,
     NDC,
-    earn_lo=0.0,
-    earn_hi=np.inf,
+    earn_lo=None,
+    earn_hi=None,
 ):
     r"""
     Calculate public pension from a notional defined contribution
@@ -2076,8 +2200,12 @@ def NDC_1dim_loop(
             pension amount that applies at each age u, length S
         NDC (Numpy array): pension amount for each household (filled
             in and returned), length S
-        earn_lo (scalar): only earnings above earn_lo * w count
-        earn_hi (scalar): only earnings below earn_hi * w count
+        earn_lo (Numpy array): calendar path of the lower cutoff of
+            the earnings band, as a multiple of the wage; only earnings
+            above it count. None (the default) applies no band.
+        earn_hi (Numpy array): calendar path of the upper cutoff of
+            the earnings band; only earnings below it count
+            The cutoffs are read in period t_birth + s for age s.
 
     Returns:
         NDC (Numpy array): pension amount for each household
@@ -2093,12 +2221,13 @@ def NDC_1dim_loop(
         growth = 1.0
         for s in range(R - 1, -1, -1):
             # TODO: update so can take g_y from period t
-            NDC_s += (
-                tau_p[s]
-                * (w[s] / np.exp(g_y[-1] * (u - s)))
-                * earnings_band(e[s] * n[s], earn_lo, earn_hi)
-                * growth
-            )
+            if earn_lo is None:
+                x = e[s] * n[s]
+            else:
+                x = earnings_band_at(
+                    e[s] * n[s], earn_lo, earn_hi, t_birth + s
+                )
+            NDC_s += tau_p[s] * (w[s] / np.exp(g_y[-1] * (u - s))) * x * growth
             growth *= 1.0 + g_age[s]
         NDC[u] = delta_ret[u] * NDC_s
     return NDC
@@ -2117,8 +2246,8 @@ def NDC_2dim_loop(
     t_cross,
     delta_ret,
     NDC,
-    earn_lo=0.0,
-    earn_hi=np.inf,
+    earn_lo=None,
+    earn_hi=None,
 ):
     """
     Calculate public pension from a notional defined contribution
@@ -2145,8 +2274,12 @@ def NDC_2dim_loop(
             pension amount of the household of each age u, length S
         NDC (Numpy array): pension amount for each household (filled
             in and returned), size S x J
-        earn_lo (scalar): only earnings above earn_lo * w count
-        earn_hi (scalar): only earnings below earn_hi * w count
+        earn_lo (Numpy array): calendar path of the lower cutoff of
+            the earnings band, as a multiple of the wage; only earnings
+            above it count. None (the default) applies no band.
+        earn_hi (Numpy array): calendar path of the upper cutoff of
+            the earnings band; only earnings below it count
+            The cutoffs are read in period t_cross - u + s.
 
     Returns:
         NDC (Numpy array): pension amount for each household
@@ -2160,12 +2293,13 @@ def NDC_2dim_loop(
         NDC_s = np.zeros(NDC.shape[1])
         growth = 1.0
         for s in range(R - 1, -1, -1):
-            NDC_s += (
-                tau_p[s]
-                * (w[s] / np.exp(g_y[-1] * (u - s)))
-                * earnings_band(e[s, :] * n[s, :], earn_lo, earn_hi)
-                * growth
-            )
+            if earn_lo is None:
+                x = e[s, :] * n[s, :]
+            else:
+                x = earnings_band_at(
+                    e[s, :] * n[s, :], earn_lo, earn_hi, t_cross - u + s
+                )
+            NDC_s += tau_p[s] * (w[s] / np.exp(g_y[-1] * (u - s))) * x * growth
             idx = min(max(t_cross - u + s, 0), n_g - 1)
             growth *= 1.0 + g_ndc[idx]
         NDC[u, :] = delta_ret[u] * NDC_s
@@ -2185,8 +2319,8 @@ def NDC_3dim_loop(
     tau_p,
     g_ndc,
     delta_ret,
-    earn_lo=0.0,
-    earn_hi=np.inf,
+    earn_lo=None,
+    earn_hi=None,
 ):
     r"""
     Calculate public pension from a notional defined contribution
@@ -2218,8 +2352,12 @@ def NDC_3dim_loop(
         g_ndc (Numpy array): calendar path of the credited rate
         delta_ret (Numpy array): conversion coefficient for the NDC
             pension amount by period and age, size T x S
-        earn_lo (scalar): only earnings above earn_lo * w count
-        earn_hi (scalar): only earnings below earn_hi * w count
+        earn_lo (Numpy array): calendar path of the lower cutoff of
+            the earnings band, as a multiple of the wage; only earnings
+            above it count. None (the default) applies no band.
+        earn_hi (Numpy array): calendar path of the upper cutoff of
+            the earnings band; only earnings below it count
+            Both paths start in the period of the first row of n.
 
     Returns:
         NDC (Numpy array): pension amount for each household, size
@@ -2254,9 +2392,14 @@ def NDC_3dim_loop(
                 )
                 idx = min(max(tau[i], 0), n_g - 1)
                 growth *= 1.0 + g_ndc[idx]
-            L = contrib[:, None] * earnings_band(
-                e_ss[s_idx, :] * n_hist, earn_lo, earn_hi
-            )
+            x = e_ss[s_idx, :] * n_hist
+            if earn_lo is not None:
+                # cutoffs in effect in the period of each contribution
+                for i in range(R):
+                    x[i, :] = earnings_band_at(
+                        x[i, :], earn_lo, earn_hi, tau[i]
+                    )
+            L = contrib[:, None] * x
             NDC[t, u, :] = delta_ret[t, u] * L.sum(axis=0)
 
     return NDC

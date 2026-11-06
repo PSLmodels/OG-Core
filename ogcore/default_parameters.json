@@ -4132,38 +4132,44 @@
     },
     "factor1_db_ndc_hybrid": {
         "title": "Upper cutoff of the defined benefit band under a hybrid DB-NDC system, as a multiple of the wage.",
-        "description": "Under the hybrid defined benefit and notional defined contribution system, labor income up to factor1_db_ndc_hybrid times the wage rate w_t is subject to the payroll tax tau_payroll and earns a defined benefit (computed with the Defined Benefits parameters) on that income.",
+        "description": "Under the hybrid defined benefit and notional defined contribution system, labor income up to factor1_db_ndc_hybrid times the wage rate w_t in period t is subject to the payroll tax tau_payroll and earns a defined benefit (computed with the Defined Benefits parameters) on that income.",
         "section_1": "Fiscal Policy Parameters",
         "section_2": "Government Pension Parameters",
-        "notes": "Only used when pension_system is 'Hybrid DB-NDC'. Must be no greater than factor2_db_ndc_hybrid.",
+        "notes": "Only used when pension_system is 'Hybrid DB-NDC'. May vary over time: set value for base year, click '+' to add value for next year. All future years not specified are set to last value entered. The cutoffs that apply to any labor income are those of the period in which it was earned. Must be no greater than factor2_db_ndc_hybrid in every period.",
         "type": "float",
+        "number_dims": 1,
         "value": [
             {
-                "value": 1.0
+                "value": [
+                    1.0
+                ]
             }
         ],
         "validators": {
             "range": {
                 "min": 0.0,
-                "max": "factor2_db_ndc_hybrid"
+                "max": 100.0
             }
         }
     },
     "factor2_db_ndc_hybrid": {
         "title": "Upper cutoff of the notional defined contribution band under a hybrid DB-NDC system, as a multiple of the wage.",
-        "description": "Under the hybrid defined benefit and notional defined contribution system, labor income between factor1_db_ndc_hybrid and factor2_db_ndc_hybrid times the wage rate w_t is subject to the contribution rate tau_p and earns a notional defined contribution benefit (computed with the Notional Defined Contribution parameters) in addition to the defined benefit. Labor income above factor2_db_ndc_hybrid times the wage earns no benefit.",
+        "description": "Under the hybrid defined benefit and notional defined contribution system, labor income between factor1_db_ndc_hybrid and factor2_db_ndc_hybrid times the wage rate w_t in period t is subject to the contribution rate tau_p and earns a notional defined contribution benefit (computed with the Notional Defined Contribution parameters) in addition to the defined benefit. Labor income above factor2_db_ndc_hybrid times the wage earns no benefit.",
         "section_1": "Fiscal Policy Parameters",
         "section_2": "Government Pension Parameters",
-        "notes": "Only used when pension_system is 'Hybrid DB-NDC'. Must be at least factor1_db_ndc_hybrid.",
+        "notes": "Only used when pension_system is 'Hybrid DB-NDC'. May vary over time: set value for base year, click '+' to add value for next year. All future years not specified are set to last value entered. The cutoffs that apply to any labor income are those of the period in which it was earned. Must be at least factor1_db_ndc_hybrid in every period.",
         "type": "float",
+        "number_dims": 1,
         "value": [
             {
-                "value": 2.0
+                "value": [
+                    2.0
+                ]
             }
         ],
         "validators": {
             "range": {
-                "min": "factor1_db_ndc_hybrid",
+                "min": 0.0,
                 "max": 100.0
             }
         }
