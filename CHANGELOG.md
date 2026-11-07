@@ -20,6 +20,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `pensions.DB_1dim_loop`, `DB_2dim_loop`, `DB_3dim_loop`, `NDC_1dim_loop`, `NDC_2dim_loop`, and `NDC_3dim_loop` take optional `earn_lo` and `earn_hi` calendar paths, and `DB_1dim_loop` and `DB_2dim_loop` take the household's birth period (`t_birth`) or the cross section's period (`t_cross`), used to read the cutoffs in the period of each earning. All new arguments have defaults, so existing calls are unchanged.
 - `TPI.run_TPI` builds the NDC credited and discount rate paths for the hybrid system as well as for the `Notional Defined Contribution` system.
 
+## [0.24.3] - 2026-11-06
+
+### Changed
+- `pensions.pension_periods` now caches its result on the parameters object and recomputes it only when `S`, `T`, `avg_earn_num_years`, `yr_contrib`, or `retire` is reassigned. Changing elements of those arrays in place is not detected. The arrays it returns are read-only.
+- While solving the steady state, the replacement rate `theta` is now computed only under `'US-Style Social Security'`, the one system that uses it. The other systems use zeros through the new helper `SS.theta_in_solve`. `SS_solver` still computes `theta` at the solution for every system, so the saved steady-state output is unchanged.
+
 ## [0.24.2] - 2026-11-05
 
 ### Added
