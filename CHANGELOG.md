@@ -5,7 +5,7 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [0.24.3] - 2026-11-05
+## [0.24.4] - 2026-11-07
 
 ### Adds
 - Adds a hybrid defined benefit and notional defined contribution pension system, selected with `pension_system = "Hybrid DB-NDC"`. Labor income up to `factor1_db_ndc_hybrid` times the wage is subject to `tau_payroll` and earns a defined benefit, computed with the `Defined Benefits` formula and parameters on that capped income. Labor income between `factor1_db_ndc_hybrid` and `factor2_db_ndc_hybrid` times the wage is subject to `tau_p` and earns a notional defined contribution benefit, computed with the `Notional Defined Contribution` formula and parameters (including the time-varying credited and discount rates), in addition to the defined benefit. Labor income above `factor2_db_ndc_hybrid` times the wage earns no benefit. As in the other systems, the benefit is scaled by `replacement_rate_adjust`.
@@ -865,6 +865,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Any earlier versions of OG-USA can be found in the [`OG-Core`](https://github.com/PSLmodels/OG-Core) repository [release history](https://github.com/PSLmodels/OG-Core/releases) from [v.0.6.4](https://github.com/PSLmodels/OG-Core/releases/tag/v0.6.4) (Jul. 20, 2021) or earlier.
 
 
+[0.24.4]: https://github.com/PSLmodels/OG-Core/compare/v0.24.3...v0.24.4
 [0.24.3]: https://github.com/PSLmodels/OG-Core/compare/v0.24.2...v0.24.3
 [0.24.2]: https://github.com/PSLmodels/OG-Core/compare/v0.24.1...v0.24.2
 [0.24.1]: https://github.com/PSLmodels/OG-Core/compare/v0.24.0...v0.24.1
