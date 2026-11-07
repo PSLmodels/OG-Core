@@ -98,7 +98,23 @@ def pension_periods(p):
             period or longer than the working life for any household,
             in which case the window would index before the start of
             the lifetime
+
+    The result depends only on ``S``, ``T`` and the three parameters
+    above, which do not change while the model solves, yet the
+    household problem asks for it several times per evaluation. It is
+    therefore cached on ``p`` and recomputed only when one of them is
+    reassigned (each parameter is compared by identity, so changing an
+    array's elements in place is not detected). The returned arrays are
+    read-only, as they are shared between calls.
     """
+    key = (p.S, p.T, p.avg_earn_num_years, p.yr_contrib, p.retire)
+    cached = getattr(p, "_pension_periods_cache", None)
+    if (
+        cached is not None
+        and cached[0][:2] == key[:2]
+        and all(a is b for a, b in zip(cached[0][2:], key[2:]))
+    ):
+        return cached[1]
     per_year = p.S / 80.0
     avg_years = cohort_array("avg_earn_num_years", p)
     equiv_periods = np.rint(per_year * avg_years).astype(int)
@@ -121,7 +137,11 @@ def pension_periods(p):
             f"household of age {bad[1]} in period {bad[0]} retires after "
             f"{S_ret[tuple(bad)]} periods."
         )
-    return equiv_periods, equiv_yr_contrib, S_ret
+    result = (equiv_periods, equiv_yr_contrib, S_ret)
+    for arr in result:
+        arr.setflags(write=False)
+    p._pension_periods_cache = (key, result)
+    return result
 
 
 def replacement_rate_vals(nssmat, wss, factor_ss, j, p):

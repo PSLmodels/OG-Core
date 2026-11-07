@@ -31,6 +31,35 @@ ENFORCE_SOLUTION_CHECKS = True
 """
 
 
+def theta_in_solve(nssmat, w, factor, j, p):
+    """
+    Replacement rates needed while the steady state is being solved.
+
+    Only the US-Style Social Security benefit uses ``theta``, so for the
+    other pension systems this skips ``pensions.replacement_rate_vals``
+    (which the household problem would otherwise call on every
+    evaluation) and returns zeros. ``SS_solver`` still computes
+    ``theta`` at the solution for every system, so the saved steady
+    state is unchanged.
+
+    Args:
+        nssmat (Numpy array): labor supply, length S or size S x J
+        w (scalar): real wage rate
+        factor (scalar): scaling factor converting model units to
+            dollars
+        j (int): index of lifetime income group, None if all groups
+        p (OG-Core Specifications object): model parameters
+
+    Returns:
+        theta (Numpy array): replacement rates, length 1 if j is given,
+            else length J
+
+    """
+    if p.pension_system == "US-Style Social Security":
+        return pensions.replacement_rate_vals(nssmat, w, factor, j, p)
+    return np.zeros(1 if j is not None else p.J)
+
+
 def euler_equation_solver(guesses, *args):
     """
     Finds the euler errors for certain b and n, one ability type at a
@@ -61,7 +90,7 @@ def euler_equation_solver(guesses, *args):
     b_s = np.array([0] + list(b_guess[:-1]))
     b_splus1 = b_guess
 
-    theta = pensions.replacement_rate_vals(n_guess, w, factor, j, p)
+    theta = theta_in_solve(n_guess, w, factor, j, p)
 
     error1 = household.FOC_savings(
         r,
@@ -440,7 +469,7 @@ def inner_loop(outer_loop_vars, p, client, scattered_p=None):
     b_splus1 = bssmat
     b_s = np.array(list(np.zeros(p.J).reshape(1, p.J)) + list(bssmat[:-1, :]))
 
-    theta = pensions.replacement_rate_vals(nssmat, w, factor, None, p)
+    theta = theta_in_solve(nssmat, w, factor, None, p)
 
     num_params = len(p.etr_params[-1][0])
     etr_params_3D = [
@@ -576,7 +605,7 @@ def inner_loop(outer_loop_vars, p, client, scattered_p=None):
     new_RM = aggr.get_RM(Y, p, "SS")
     new_rm = household.get_rm(new_RM, None, p, "SS")
     tr = household.get_tr(TR, None, p, "SS")
-    theta = pensions.replacement_rate_vals(nssmat, new_w, new_factor, None, p)
+    theta = theta_in_solve(nssmat, new_w, new_factor, None, p)
 
     # Find updated goods prices
     new_p_m = firm.get_pm(new_w, Y_vec, L_vec, p, "SS")
