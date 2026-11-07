@@ -1224,7 +1224,11 @@ def run_TPI(p, client=None):
     while (TPIiter < p.maxiter) and (TPIdist >= p.mindist_TPI):
         # NDC credited and discount rates by period, from this
         # iteration's interest rate, GDP, wage, and labor paths
-        if p.pension_system == "Notional Defined Contribution":
+        # the hybrid DB-NDC system credits its NDC accounts the same way
+        if p.pension_system in (
+            "Notional Defined Contribution",
+            "Hybrid DB-NDC",
+        ):
             ndc_rates = pensions.ndc_rates_path(r_p, Y, w, L, p, "TPI")
         else:
             ndc_rates = None
