@@ -388,6 +388,35 @@
 <span class="sd">"""</span>
 
 
+<span class="k">def</span><span class="w"> </span><span class="nf">theta_in_solve</span><span class="p">(</span><span class="n">nssmat</span><span class="p">,</span> <span class="n">w</span><span class="p">,</span> <span class="n">factor</span><span class="p">,</span> <span class="n">j</span><span class="p">,</span> <span class="n">p</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""</span>
+<span class="sd">    Replacement rates needed while the steady state is being solved.</span>
+
+<span class="sd">    Only the US-Style Social Security benefit uses ``theta``, so for the</span>
+<span class="sd">    other pension systems this skips ``pensions.replacement_rate_vals``</span>
+<span class="sd">    (which the household problem would otherwise call on every</span>
+<span class="sd">    evaluation) and returns zeros. ``SS_solver`` still computes</span>
+<span class="sd">    ``theta`` at the solution for every system, so the saved steady</span>
+<span class="sd">    state is unchanged.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        nssmat (Numpy array): labor supply, length S or size S x J</span>
+<span class="sd">        w (scalar): real wage rate</span>
+<span class="sd">        factor (scalar): scaling factor converting model units to</span>
+<span class="sd">            dollars</span>
+<span class="sd">        j (int): index of lifetime income group, None if all groups</span>
+<span class="sd">        p (OG-Core Specifications object): model parameters</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        theta (Numpy array): replacement rates, length 1 if j is given,</span>
+<span class="sd">            else length J</span>
+
+<span class="sd">    """</span>
+    <span class="k">if</span> <span class="n">p</span><span class="o">.</span><span class="n">pension_system</span> <span class="o">==</span> <span class="s2">"US-Style Social Security"</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">pensions</span><span class="o">.</span><span class="n">replacement_rate_vals</span><span class="p">(</span><span class="n">nssmat</span><span class="p">,</span> <span class="n">w</span><span class="p">,</span> <span class="n">factor</span><span class="p">,</span> <span class="n">j</span><span class="p">,</span> <span class="n">p</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="mi">1</span> <span class="k">if</span> <span class="n">j</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">p</span><span class="o">.</span><span class="n">J</span><span class="p">)</span>
+
+
 <div class="viewcode-block" id="euler_equation_solver">
 <a class="viewcode-back" href="../../SS.html#ogcore.SS.euler_equation_solver">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">euler_equation_solver</span><span class="p">(</span><span class="n">guesses</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">):</span>
@@ -420,7 +449,7 @@
     <span class="n">b_s</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="nb">list</span><span class="p">(</span><span class="n">b_guess</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]))</span>
     <span class="n">b_splus1</span> <span class="o">=</span> <span class="n">b_guess</span>
 
-    <span class="n">theta</span> <span class="o">=</span> <span class="n">pensions</span><span class="o">.</span><span class="n">replacement_rate_vals</span><span class="p">(</span><span class="n">n_guess</span><span class="p">,</span> <span class="n">w</span><span class="p">,</span> <span class="n">factor</span><span class="p">,</span> <span class="n">j</span><span class="p">,</span> <span class="n">p</span><span class="p">)</span>
+    <span class="n">theta</span> <span class="o">=</span> <span class="n">theta_in_solve</span><span class="p">(</span><span class="n">n_guess</span><span class="p">,</span> <span class="n">w</span><span class="p">,</span> <span class="n">factor</span><span class="p">,</span> <span class="n">j</span><span class="p">,</span> <span class="n">p</span><span class="p">)</span>
 
     <span class="n">error1</span> <span class="o">=</span> <span class="n">household</span><span class="o">.</span><span class="n">FOC_savings</span><span class="p">(</span>
         <span class="n">r</span><span class="p">,</span>
@@ -805,7 +834,7 @@
     <span class="n">b_splus1</span> <span class="o">=</span> <span class="n">bssmat</span>
     <span class="n">b_s</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">J</span><span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">p</span><span class="o">.</span><span class="n">J</span><span class="p">))</span> <span class="o">+</span> <span class="nb">list</span><span class="p">(</span><span class="n">bssmat</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="p">:]))</span>
 
-    <span class="n">theta</span> <span class="o">=</span> <span class="n">pensions</span><span class="o">.</span><span class="n">replacement_rate_vals</span><span class="p">(</span><span class="n">nssmat</span><span class="p">,</span> <span class="n">w</span><span class="p">,</span> <span class="n">factor</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="n">p</span><span class="p">)</span>
+    <span class="n">theta</span> <span class="o">=</span> <span class="n">theta_in_solve</span><span class="p">(</span><span class="n">nssmat</span><span class="p">,</span> <span class="n">w</span><span class="p">,</span> <span class="n">factor</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="n">p</span><span class="p">)</span>
 
     <span class="n">num_params</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">etr_params</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">][</span><span class="mi">0</span><span class="p">])</span>
     <span class="n">etr_params_3D</span> <span class="o">=</span> <span class="p">[</span>
@@ -941,7 +970,7 @@
     <span class="n">new_RM</span> <span class="o">=</span> <span class="n">aggr</span><span class="o">.</span><span class="n">get_RM</span><span class="p">(</span><span class="n">Y</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="s2">"SS"</span><span class="p">)</span>
     <span class="n">new_rm</span> <span class="o">=</span> <span class="n">household</span><span class="o">.</span><span class="n">get_rm</span><span class="p">(</span><span class="n">new_RM</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="s2">"SS"</span><span class="p">)</span>
     <span class="n">tr</span> <span class="o">=</span> <span class="n">household</span><span class="o">.</span><span class="n">get_tr</span><span class="p">(</span><span class="n">TR</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="s2">"SS"</span><span class="p">)</span>
-    <span class="n">theta</span> <span class="o">=</span> <span class="n">pensions</span><span class="o">.</span><span class="n">replacement_rate_vals</span><span class="p">(</span><span class="n">nssmat</span><span class="p">,</span> <span class="n">new_w</span><span class="p">,</span> <span class="n">new_factor</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="n">p</span><span class="p">)</span>
+    <span class="n">theta</span> <span class="o">=</span> <span class="n">theta_in_solve</span><span class="p">(</span><span class="n">nssmat</span><span class="p">,</span> <span class="n">new_w</span><span class="p">,</span> <span class="n">new_factor</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="n">p</span><span class="p">)</span>
 
     <span class="c1"># Find updated goods prices</span>
     <span class="n">new_p_m</span> <span class="o">=</span> <span class="n">firm</span><span class="o">.</span><span class="n">get_pm</span><span class="p">(</span><span class="n">new_w</span><span class="p">,</span> <span class="n">Y_vec</span><span class="p">,</span> <span class="n">L_vec</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="s2">"SS"</span><span class="p">)</span>
