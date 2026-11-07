@@ -19,6 +19,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `pensions.DB_amount` and `pensions.NDC_amount` take optional `earn_lo` and `earn_hi` arguments (a value or a path by period) that restrict the labor income entering the benefit to that band. They default to None, which leaves the Defined Benefits and Notional Defined Contribution systems unchanged.
 - `pensions.DB_1dim_loop`, `DB_2dim_loop`, `DB_3dim_loop`, `NDC_1dim_loop`, `NDC_2dim_loop`, and `NDC_3dim_loop` take optional `earn_lo` and `earn_hi` calendar paths, and `DB_1dim_loop` and `DB_2dim_loop` take the household's birth period (`t_birth`) or the cross section's period (`t_cross`), used to read the cutoffs in the period of each earning. All new arguments have defaults, so existing calls are unchanged.
 - `TPI.run_TPI` builds the NDC credited and discount rate paths for the hybrid system as well as for the `Notional Defined Contribution` system.
+- Bumps actions/setup-node from 4 to 7 in GH Actions (see PR #1275)
 
 ## [0.24.3] - 2026-11-06
 
