@@ -5,18 +5,27 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.24.4] - 2026-11-07
+
+### Adds
+- Adds a hybrid defined benefit and notional defined contribution pension system, selected with `pension_system = "Hybrid DB-NDC"`. Labor income up to `factor1_db_ndc_hybrid` times the wage is subject to `tau_payroll` and earns a defined benefit, computed with the `Defined Benefits` formula and parameters on that capped income. Labor income between `factor1_db_ndc_hybrid` and `factor2_db_ndc_hybrid` times the wage is subject to `tau_p` and earns a notional defined contribution benefit, computed with the `Notional Defined Contribution` formula and parameters (including the time-varying credited and discount rates), in addition to the defined benefit. Labor income above `factor2_db_ndc_hybrid` times the wage earns no benefit. As in the other systems, the benefit is scaled by `replacement_rate_adjust`.
+- Adds the parameters `factor1_db_ndc_hybrid` (default `[1.0]`) and `factor2_db_ndc_hybrid` (default `[2.0]`) and allows them to be time dependent, the cutoffs of the two earnings bands as multiples of the wage. Both are time varying, like `alpha_T`: each is a list of values by year, extended to a length T + S path, and the two lists may have different lengths. The cutoffs that apply to any labor income are those of the period in which it was earned. `Specifications` raises an error if `factor2_db_ndc_hybrid` is below `factor1_db_ndc_hybrid` in any period when the hybrid system is selected.
+- Adds `pensions.DB_NDC_hybrid_amount`, which computes the hybrid benefit for every shape the other systems accept (the steady state, a full or partial household lifetime, a cross section, and the full time path).
+- Adds `pensions.earnings_band` and `pensions.earnings_band_at`, which return the part of effective labor earnings between two cutoffs (fixed, or read from calendar paths in the period of earning).
+- Adds a section on the hybrid system to the pensions chapter of the documentation, and adds the new functions to the API documentation.
+- Adds tests of the hybrid benefit (against the DB and NDC benefits computed by hand, the pure DB and pure NDC limits, and time-varying cutoffs along a cohort's lifetime and across the time path) and a steady-state solution with the hybrid system.
+
+### Updates
+- `pensions.DB_amount` and `pensions.NDC_amount` take optional `earn_lo` and `earn_hi` arguments (a value or a path by period) that restrict the labor income entering the benefit to that band. They default to None, which leaves the Defined Benefits and Notional Defined Contribution systems unchanged.
+- `pensions.DB_1dim_loop`, `DB_2dim_loop`, `DB_3dim_loop`, `NDC_1dim_loop`, `NDC_2dim_loop`, and `NDC_3dim_loop` take optional `earn_lo` and `earn_hi` calendar paths, and `DB_1dim_loop` and `DB_2dim_loop` take the household's birth period (`t_birth`) or the cross section's period (`t_cross`), used to read the cutoffs in the period of each earning. All new arguments have defaults, so existing calls are unchanged.
+- `TPI.run_TPI` builds the NDC credited and discount rate paths for the hybrid system as well as for the `Notional Defined Contribution` system.
+- Bumps actions/setup-node from 4 to 7 in GH Actions (see PR #1275)
+
 ## [0.24.3] - 2026-11-06
 
-  ### Changed
-  - `pensions.pension_periods` now caches its result on the parameters object
-  and recomputes it only when `S`, `T`, `avg_earn_num_years`, `yr_contrib`, or
-  `retire` is reassigned. Changing elements of those arrays in place is not
-  detected. The arrays it returns are read-only.
-  - While solving the steady state, the replacement rate `theta` is now computed
-  only under `'US-Style Social Security'`, the one system that uses it. The
-  other systems use zeros through the new helper `SS.theta_in_solve`.
-  `SS_solver` still computes `theta` at the solution for every system, so the
-  saved steady-state output is unchanged.
+### Changed
+- `pensions.pension_periods` now caches its result on the parameters object and recomputes it only when `S`, `T`, `avg_earn_num_years`, `yr_contrib`, or `retire` is reassigned. Changing elements of those arrays in place is not detected. The arrays it returns are read-only.
+- While solving the steady state, the replacement rate `theta` is now computed only under `'US-Style Social Security'`, the one system that uses it. The other systems use zeros through the new helper `SS.theta_in_solve`. `SS_solver` still computes `theta` at the solution for every system, so the saved steady-state output is unchanged.
 
 ## [0.24.2] - 2026-11-05
 
@@ -862,6 +871,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Version [0.7.0] on August 30, 2021 was the first time that the OG-USA repository was detached from all of the core model logic, which was named OG-Core. Before this version, OG-USA was part of what is now the [`OG-Core`](https://github.com/PSLmodels/OG-Core) repository. In the next version of OG-USA, we adjusted the version numbering to begin with 0.1.0. This initial version of 0.7.0, was sequential from what OG-USA used to be when the OG-Core project was called OG-USA.
 - Any earlier versions of OG-USA can be found in the [`OG-Core`](https://github.com/PSLmodels/OG-Core) repository [release history](https://github.com/PSLmodels/OG-Core/releases) from [v.0.6.4](https://github.com/PSLmodels/OG-Core/releases/tag/v0.6.4) (Jul. 20, 2021) or earlier.
 
+
+[0.24.4]: https://github.com/PSLmodels/OG-Core/compare/v0.24.3...v0.24.4
 [0.24.3]: https://github.com/PSLmodels/OG-Core/compare/v0.24.2...v0.24.3
 [0.24.2]: https://github.com/PSLmodels/OG-Core/compare/v0.24.1...v0.24.2
 [0.24.1]: https://github.com/PSLmodels/OG-Core/compare/v0.24.0...v0.24.1
