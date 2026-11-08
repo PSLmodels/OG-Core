@@ -366,6 +366,78 @@
 <span class="n">THOUSAND</span> <span class="o">=</span> <span class="mi">1000</span>
 
 
+<div class="viewcode-block" id="earnings_band_at">
+<a class="viewcode-back" href="../../pensions.html#ogcore.pensions.earnings_band_at">[docs]</a>
+<span class="nd">@numba</span><span class="o">.</span><span class="n">jit</span><span class="p">(</span><span class="n">nopython</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">earnings_band_at</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">lo</span><span class="p">,</span> <span class="n">hi</span><span class="p">,</span> <span class="n">period</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""</span>
+<span class="sd">    Part of labor income ``x`` (w * e * n, in model units) that lies</span>
+<span class="sd">    between the cutoffs in effect in the model period in which it was</span>
+<span class="sd">    earned, min(max(x, lo), hi) - lo. With ``lo = 0`` and ``hi = inf``</span>
+<span class="sd">    this returns ``x`` unchanged.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        x (scalar or Numpy array): labor income, w * e * n</span>
+<span class="sd">        lo (Numpy array): calendar path of the lower cutoff, in model</span>
+<span class="sd">            units of labor income</span>
+<span class="sd">        hi (Numpy array): calendar path of the upper cutoff, in model</span>
+<span class="sd">            units of labor income</span>
+<span class="sd">        period (int): model period in which ``x`` was earned; periods</span>
+<span class="sd">            before or after a path read its first or last element</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        band (scalar or Numpy array): part of ``x`` between the cutoffs</span>
+<span class="sd">            in effect in ``period``</span>
+<span class="sd">    """</span>
+    <span class="n">lo_t</span> <span class="o">=</span> <span class="n">lo</span><span class="p">[</span><span class="nb">min</span><span class="p">(</span><span class="nb">max</span><span class="p">(</span><span class="n">period</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="n">lo</span><span class="o">.</span><span class="n">size</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)]</span>
+    <span class="n">hi_t</span> <span class="o">=</span> <span class="n">hi</span><span class="p">[</span><span class="nb">min</span><span class="p">(</span><span class="nb">max</span><span class="p">(</span><span class="n">period</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="n">hi</span><span class="o">.</span><span class="n">size</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)]</span>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">minimum</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">maximum</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">lo_t</span><span class="p">),</span> <span class="n">hi_t</span><span class="p">)</span> <span class="o">-</span> <span class="n">lo_t</span></div>
+
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_band_paths</span><span class="p">(</span><span class="n">earn_lo</span><span class="p">,</span> <span class="n">earn_hi</span><span class="p">,</span> <span class="n">method</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""</span>
+<span class="sd">    Calendar paths of the earnings band cutoffs used by ``DB_amount``</span>
+<span class="sd">    and ``NDC_amount``.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        earn_lo (scalar, array_like, or None): lower cutoff, in model</span>
+<span class="sd">            units of labor income, a single value or a path by period</span>
+<span class="sd">        earn_hi (scalar, array_like, or None): upper cutoff</span>
+<span class="sd">        method (str): 'SS', 'TPI', or 'TPI_scalar'</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        lo, hi (Numpy arrays or None): None, None when no band is</span>
+<span class="sd">            set. Otherwise 1-D float arrays: the full paths for 'TPI',</span>
+<span class="sd">            and the final (steady-state) or first value for 'SS' or</span>
+<span class="sd">            'TPI_scalar', matching the rows the other pension</span>
+<span class="sd">            parameters are read from.</span>
+<span class="sd">    """</span>
+    <span class="k">if</span> <span class="n">earn_lo</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">earn_hi</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span>
+    <span class="n">lo</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">atleast_1d</span><span class="p">(</span>
+        <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="mf">0.0</span> <span class="k">if</span> <span class="n">earn_lo</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">earn_lo</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
+    <span class="p">)</span><span class="o">.</span><span class="n">ravel</span><span class="p">()</span>
+    <span class="n">hi</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">atleast_1d</span><span class="p">(</span>
+        <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">inf</span> <span class="k">if</span> <span class="n">earn_hi</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">earn_hi</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
+    <span class="p">)</span><span class="o">.</span><span class="n">ravel</span><span class="p">()</span>
+    <span class="k">if</span> <span class="n">method</span> <span class="o">==</span> <span class="s2">"SS"</span><span class="p">:</span>
+        <span class="n">lo</span><span class="p">,</span> <span class="n">hi</span> <span class="o">=</span> <span class="n">lo</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">:],</span> <span class="n">hi</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">:]</span>
+    <span class="k">elif</span> <span class="n">method</span> <span class="o">==</span> <span class="s2">"TPI_scalar"</span><span class="p">:</span>
+        <span class="n">lo</span><span class="p">,</span> <span class="n">hi</span> <span class="o">=</span> <span class="n">lo</span><span class="p">[:</span><span class="mi">1</span><span class="p">],</span> <span class="n">hi</span><span class="p">[:</span><span class="mi">1</span><span class="p">]</span>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">ascontiguousarray</span><span class="p">(</span><span class="n">lo</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">ascontiguousarray</span><span class="p">(</span><span class="n">hi</span><span class="p">)</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_path_from</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">t</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""</span>
+<span class="sd">    A calendar path starting in period t (its last element if t is</span>
+<span class="sd">    past its end), or None if ``path`` is None.</span>
+<span class="sd">    """</span>
+    <span class="k">if</span> <span class="n">path</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">None</span>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">ascontiguousarray</span><span class="p">(</span><span class="n">path</span><span class="p">[</span><span class="nb">min</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="n">path</span><span class="o">.</span><span class="n">size</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="p">:])</span>
+
+
 <span class="k">def</span><span class="w"> </span><span class="nf">cohort_array</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">by_j</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Return the pension parameter ``name`` as an array by period and age.</span>
@@ -672,11 +744,17 @@
         <span class="n">pension</span> <span class="o">=</span> <span class="n">pension</span> <span class="o">*</span> <span class="n">replacement_rate_adjustment</span><span class="p">(</span>
             <span class="n">pension</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="n">j</span><span class="p">,</span> <span class="n">method</span><span class="p">,</span> <span class="n">p</span>
         <span class="p">)</span>
+    <span class="k">elif</span> <span class="n">p</span><span class="o">.</span><span class="n">pension_system</span> <span class="o">==</span> <span class="s2">"Hybrid DB-NDC"</span><span class="p">:</span>
+        <span class="n">pension</span> <span class="o">=</span> <span class="n">DB_NDC_hybrid_amount</span><span class="p">(</span><span class="n">w</span><span class="p">,</span> <span class="n">e</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">r</span><span class="p">,</span> <span class="n">ndc_rates</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="n">j</span><span class="p">,</span> <span class="n">method</span><span class="p">,</span> <span class="n">p</span><span class="p">)</span>
+        <span class="n">pension</span> <span class="o">=</span> <span class="n">pension</span> <span class="o">*</span> <span class="n">replacement_rate_adjustment</span><span class="p">(</span>
+            <span class="n">pension</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="n">j</span><span class="p">,</span> <span class="n">method</span><span class="p">,</span> <span class="n">p</span>
+        <span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
             <span class="s2">"pension_system must be one of the following: "</span>
             <span class="s2">"'US-Style Social Security', 'Defined Benefits', "</span>
-            <span class="s2">"'Notional Defined Contribution', 'Points System'"</span>
+            <span class="s2">"'Notional Defined Contribution', 'Points System', "</span>
+            <span class="s2">"'Hybrid DB-NDC'"</span>
         <span class="p">)</span>
     <span class="k">return</span> <span class="n">pension</span></div>
 
@@ -844,7 +922,7 @@
 
 <div class="viewcode-block" id="DB_amount">
 <a class="viewcode-back" href="../../pensions.html#ogcore.pensions.DB_amount">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">DB_amount</span><span class="p">(</span><span class="n">w</span><span class="p">,</span> <span class="n">e</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="n">j</span><span class="p">,</span> <span class="n">method</span><span class="p">,</span> <span class="n">p</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">DB_amount</span><span class="p">(</span><span class="n">w</span><span class="p">,</span> <span class="n">e</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="n">j</span><span class="p">,</span> <span class="n">method</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">earn_lo</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">earn_hi</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">"""</span>
 <span class="sd">    Calculate public pension from a defined benefits system.</span>
 
@@ -876,6 +954,15 @@
 <span class="sd">        method (str): adjusts calculation dimensions based on 'SS',</span>
 <span class="sd">            'TPI', or 'TPI_scalar'</span>
 <span class="sd">        p (OG-Core Specifications object): model parameters</span>
+<span class="sd">        earn_lo (scalar, array_like, or None): only labor income</span>
+<span class="sd">            w * e * n above earn_lo enters the benefit (used by the</span>
+<span class="sd">            hybrid DB-NDC system). In model units of labor income, a</span>
+<span class="sd">            single value or a path by model period of length T + S;</span>
+<span class="sd">            the cutoff in effect in the period each income was earned</span>
+<span class="sd">            applies. None (the default) for no lower cutoff.</span>
+<span class="sd">        earn_hi (scalar, array_like, or None): only labor income below</span>
+<span class="sd">            earn_hi enters the benefit, as for earn_lo. None (the</span>
+<span class="sd">            default) for no upper cutoff.</span>
 
 <span class="sd">    Returns:</span>
 <span class="sd">        DB (Numpy array): pension amount for each household</span>
@@ -890,6 +977,7 @@
     <span class="c1"># to the length of the labor-supply vector.</span>
     <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">ndim</span><span class="p">(</span><span class="n">w</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
         <span class="n">w</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">full</span><span class="p">(</span><span class="n">n</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="nb">float</span><span class="p">(</span><span class="n">w</span><span class="p">))</span>
+    <span class="n">earn_lo</span><span class="p">,</span> <span class="n">earn_hi</span> <span class="o">=</span> <span class="n">_band_paths</span><span class="p">(</span><span class="n">earn_lo</span><span class="p">,</span> <span class="n">earn_hi</span><span class="p">,</span> <span class="n">method</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="n">n</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&lt;</span> <span class="n">p</span><span class="o">.</span><span class="n">S</span><span class="p">:</span>
         <span class="n">per_rmn</span> <span class="o">=</span> <span class="n">n</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
@@ -932,6 +1020,9 @@
             <span class="n">ny_u</span><span class="p">,</span>
             <span class="n">alpha_db_u</span><span class="p">,</span>
             <span class="n">cy_u</span><span class="p">,</span>
+            <span class="n">earn_lo</span><span class="p">,</span>
+            <span class="n">earn_hi</span><span class="p">,</span>
+            <span class="n">t</span> <span class="o">-</span> <span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">S</span> <span class="o">-</span> <span class="n">per_rmn</span><span class="p">),</span>
         <span class="p">)</span>
         <span class="n">DB</span> <span class="o">=</span> <span class="n">DB</span><span class="p">[</span><span class="o">-</span><span class="n">per_rmn</span><span class="p">:]</span>
 
@@ -963,6 +1054,11 @@
                 <span class="n">ny_u</span><span class="p">,</span>
                 <span class="n">alpha_db_u</span><span class="p">,</span>
                 <span class="n">cy_u</span><span class="p">,</span>
+                <span class="n">earn_lo</span><span class="p">,</span>
+                <span class="n">earn_hi</span><span class="p">,</span>
+                <span class="c1"># period of age 0 (the band paths of 'SS' and</span>
+                <span class="c1"># 'TPI_scalar' have a single value)</span>
+                <span class="n">t</span> <span class="k">if</span> <span class="n">row</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="mi">0</span><span class="p">,</span>
             <span class="p">)</span>
 
         <span class="k">elif</span> <span class="n">np</span><span class="o">.</span><span class="n">ndim</span><span class="p">(</span><span class="n">n</span><span class="p">)</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
@@ -984,6 +1080,9 @@
                 <span class="n">ny</span><span class="p">[</span><span class="n">row</span><span class="p">],</span>
                 <span class="n">alpha_db</span><span class="p">[</span><span class="n">row</span><span class="p">],</span>
                 <span class="n">cy</span><span class="p">[</span><span class="n">row</span><span class="p">],</span>
+                <span class="n">earn_lo</span><span class="p">,</span>
+                <span class="n">earn_hi</span><span class="p">,</span>
+                <span class="nb">max</span><span class="p">(</span><span class="n">row</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span>
             <span class="p">)</span>
 
         <span class="k">elif</span> <span class="n">np</span><span class="o">.</span><span class="n">ndim</span><span class="p">(</span><span class="n">n</span><span class="p">)</span> <span class="o">==</span> <span class="mi">3</span><span class="p">:</span>
@@ -1006,6 +1105,9 @@
                 <span class="n">ny</span><span class="p">[</span><span class="n">rows</span><span class="p">],</span>
                 <span class="n">np</span><span class="o">.</span><span class="n">ascontiguousarray</span><span class="p">(</span><span class="n">alpha_db</span><span class="p">[</span><span class="n">rows</span><span class="p">]),</span>
                 <span class="n">cy</span><span class="p">[</span><span class="n">rows</span><span class="p">],</span>
+                <span class="c1"># the loop counts periods from the first row of n</span>
+                <span class="n">_path_from</span><span class="p">(</span><span class="n">earn_lo</span><span class="p">,</span> <span class="n">t</span><span class="p">),</span>
+                <span class="n">_path_from</span><span class="p">(</span><span class="n">earn_hi</span><span class="p">,</span> <span class="n">t</span><span class="p">),</span>
             <span class="p">)</span>
 
     <span class="k">return</span> <span class="n">DB</span></div>
@@ -1014,7 +1116,9 @@
 
 <div class="viewcode-block" id="NDC_amount">
 <a class="viewcode-back" href="../../pensions.html#ogcore.pensions.NDC_amount">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">NDC_amount</span><span class="p">(</span><span class="n">w</span><span class="p">,</span> <span class="n">e</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">r</span><span class="p">,</span> <span class="n">ndc_rates</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="n">j</span><span class="p">,</span> <span class="n">method</span><span class="p">,</span> <span class="n">p</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">NDC_amount</span><span class="p">(</span>
+    <span class="n">w</span><span class="p">,</span> <span class="n">e</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">r</span><span class="p">,</span> <span class="n">ndc_rates</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="n">j</span><span class="p">,</span> <span class="n">method</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">earn_lo</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">earn_hi</span><span class="o">=</span><span class="kc">None</span>
+<span class="p">):</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">"""</span>
 <span class="sd">    Calculate public pension from a notional defined contribution</span>
 <span class="sd">    system.</span>
@@ -1055,6 +1159,15 @@
 <span class="sd">        method (str): adjusts calculation dimensions based on 'SS',</span>
 <span class="sd">            'TPI', or 'TPI_scalar'</span>
 <span class="sd">        p (OG-Core Specifications object): model parameters</span>
+<span class="sd">        earn_lo (scalar, array_like, or None): only labor income</span>
+<span class="sd">            w * e * n above earn_lo enters the benefit (used by the</span>
+<span class="sd">            hybrid DB-NDC system). In model units of labor income, a</span>
+<span class="sd">            single value or a path by model period of length T + S;</span>
+<span class="sd">            the cutoff in effect in the period each income was earned</span>
+<span class="sd">            applies. None (the default) for no lower cutoff.</span>
+<span class="sd">        earn_hi (scalar, array_like, or None): only labor income below</span>
+<span class="sd">            earn_hi enters the benefit, as for earn_lo. None (the</span>
+<span class="sd">            default) for no upper cutoff.</span>
 
 <span class="sd">    Returns:</span>
 <span class="sd">        NDC (Numpy array): pension amount for each household</span>
@@ -1074,6 +1187,7 @@
     <span class="n">g_y_arr</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">atleast_1d</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">g_y</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">))</span><span class="o">.</span><span class="n">ravel</span><span class="p">()</span>
     <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">ndim</span><span class="p">(</span><span class="n">w</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
         <span class="n">w</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">full</span><span class="p">(</span><span class="n">n</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="nb">float</span><span class="p">(</span><span class="n">w</span><span class="p">))</span>
+    <span class="n">earn_lo</span><span class="p">,</span> <span class="n">earn_hi</span> <span class="o">=</span> <span class="n">_band_paths</span><span class="p">(</span><span class="n">earn_lo</span><span class="p">,</span> <span class="n">earn_hi</span><span class="p">,</span> <span class="n">method</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="n">n</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&lt;</span> <span class="n">p</span><span class="o">.</span><span class="n">S</span><span class="p">:</span>
         <span class="n">per_rmn</span> <span class="o">=</span> <span class="n">n</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
@@ -1117,6 +1231,8 @@
             <span class="n">t_birth</span><span class="p">,</span>
             <span class="n">delta_ret_u</span><span class="p">,</span>
             <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">S</span><span class="p">),</span>
+            <span class="n">earn_lo</span><span class="p">,</span>
+            <span class="n">earn_hi</span><span class="p">,</span>
         <span class="p">)</span>
         <span class="n">NDC</span> <span class="o">=</span> <span class="n">NDC</span><span class="p">[</span><span class="o">-</span><span class="n">per_rmn</span><span class="p">:]</span>
 
@@ -1163,6 +1279,8 @@
                     <span class="n">g_dir_path</span><span class="o">=</span><span class="n">discount</span><span class="p">,</span>
                 <span class="p">),</span>
                 <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">S</span><span class="p">),</span>
+                <span class="n">earn_lo</span><span class="p">,</span>
+                <span class="n">earn_hi</span><span class="p">,</span>
             <span class="p">)</span>
         <span class="k">elif</span> <span class="n">np</span><span class="o">.</span><span class="n">ndim</span><span class="p">(</span><span class="n">n</span><span class="p">)</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
             <span class="c1"># cross-section of all S x J households in a single period</span>
@@ -1196,6 +1314,8 @@
                     <span class="n">g_dir_path</span><span class="o">=</span><span class="n">discount</span><span class="p">,</span>
                 <span class="p">),</span>
                 <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">p</span><span class="o">.</span><span class="n">S</span><span class="p">,</span> <span class="n">p</span><span class="o">.</span><span class="n">J</span><span class="p">)),</span>
+                <span class="n">earn_lo</span><span class="p">,</span>
+                <span class="n">earn_hi</span><span class="p">,</span>
             <span class="p">)</span>
         <span class="k">elif</span> <span class="n">np</span><span class="o">.</span><span class="n">ndim</span><span class="p">(</span><span class="n">n</span><span class="p">)</span> <span class="o">==</span> <span class="mi">3</span><span class="p">:</span>
             <span class="n">T</span> <span class="o">=</span> <span class="n">n</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
@@ -1232,9 +1352,107 @@
                     <span class="n">t_ret_path</span><span class="p">,</span>
                     <span class="n">g_dir_path</span><span class="o">=</span><span class="n">discount</span><span class="p">,</span>
                 <span class="p">),</span>
+                <span class="n">_path_from</span><span class="p">(</span><span class="n">earn_lo</span><span class="p">,</span> <span class="n">t</span><span class="p">),</span>
+                <span class="n">_path_from</span><span class="p">(</span><span class="n">earn_hi</span><span class="p">,</span> <span class="n">t</span><span class="p">),</span>
             <span class="p">)</span>
 
     <span class="k">return</span> <span class="n">NDC</span></div>
+
+
+
+<div class="viewcode-block" id="DB_NDC_hybrid_amount">
+<a class="viewcode-back" href="../../pensions.html#ogcore.pensions.DB_NDC_hybrid_amount">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">DB_NDC_hybrid_amount</span><span class="p">(</span><span class="n">w</span><span class="p">,</span> <span class="n">e</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">r</span><span class="p">,</span> <span class="n">ndc_rates</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="n">j</span><span class="p">,</span> <span class="n">method</span><span class="p">,</span> <span class="n">p</span><span class="p">):</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">"""</span>
+<span class="sd">    Calculate public pension from a hybrid defined benefit and notional</span>
+<span class="sd">    defined contribution system.</span>
+
+<span class="sd">    Labor income $w_t e_{j,s,t} n_{j,s,t}$ is split into two bands at</span>
+<span class="sd">    the cutoffs $f_{1,t} \bar{y}$ and $f_{2,t} \bar{y}$, where</span>
+<span class="sd">    $f_{1,t}$ and $f_{2,t}$ are ``factor1_db_ndc_hybrid`` and</span>
+<span class="sd">    ``factor2_db_ndc_hybrid`` in period t and $\bar{y}$ is</span>
+<span class="sd">    ``avg_labor_inc_t1_model_units``, the average labor income in the</span>
+<span class="sd">    first model period in model units, taken from outside the model.</span>
+<span class="sd">    The cutoffs therefore do not depend on any endogenous variable.</span>
+<span class="sd">    Both factors may vary over time; the cutoffs that apply to any</span>
+<span class="sd">    income are those of the period in which it was earned. Income up</span>
+<span class="sd">    to $f_{1,t} \bar{y}$ is subject to the payroll tax ``tau_payroll``</span>
+<span class="sd">    and earns a defined benefit computed with the ``DB_amount``</span>
+<span class="sd">    formula and parameters on that capped income. Income between</span>
+<span class="sd">    $f_{1,t} \bar{y}$ and $f_{2,t} \bar{y}$ is subject to the NDC</span>
+<span class="sd">    contribution rate ``tau_p`` and earns a notional defined</span>
+<span class="sd">    contribution benefit computed with the ``NDC_amount`` formula and</span>
+<span class="sd">    parameters. Income above $f_{2,t} \bar{y}$ earns no benefit. The</span>
+<span class="sd">    pension is the sum:</span>
+
+<span class="sd">    .. math::</span>
+<span class="sd">        pension_{j,s,t} = pension^{DB}_{j,s,t}\bigl(\min\{w e n,</span>
+<span class="sd">            f_1 \bar{y}\}\bigr) + pension^{NDC}_{j,s,t}\bigl(\max\{</span>
+<span class="sd">            \min\{w e n, f_2 \bar{y}\} - f_1 \bar{y}, 0\}\bigr)</span>
+<span class="sd">            \quad \forall s \geq R</span>
+
+<span class="sd">    where the argument of each term is the labor income that enters</span>
+<span class="sd">    that system, with the cutoffs of the period of each earning.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        w (array_like): real wage rate</span>
+<span class="sd">        e (Numpy array): effective labor units</span>
+<span class="sd">        n (Numpy array): labor supply; same shapes as accepted by</span>
+<span class="sd">            ``DB_amount`` and ``NDC_amount``</span>
+<span class="sd">        r (array_like): interest rate, used for the steady-state NDC</span>
+<span class="sd">            rates when ``ndc_rates`` is not given</span>
+<span class="sd">        ndc_rates (NDCRates): calendar paths of the NDC credited and</span>
+<span class="sd">            discount rates (``ndc_rates_path``), or None for the</span>
+<span class="sd">            steady-state rates; see ``NDC_amount``</span>
+<span class="sd">        t (int): model period of the first element of ``n``</span>
+<span class="sd">        j (int): index of lifetime income group, None if all groups</span>
+<span class="sd">        method (str): adjusts calculation dimensions based on 'SS',</span>
+<span class="sd">            'TPI', or 'TPI_scalar'</span>
+<span class="sd">        p (OG-Core Specifications object): model parameters</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        pension (Numpy array): pension amount for each household</span>
+
+<span class="sd">    Raises:</span>
+<span class="sd">        ValueError: if ``factor2_db_ndc_hybrid`` is less than</span>
+<span class="sd">            ``factor1_db_ndc_hybrid`` in any period</span>
+<span class="sd">    """</span>
+    <span class="c1"># paths by model period (length T + S once Specifications extends</span>
+    <span class="c1"># them); a single value is also accepted</span>
+    <span class="n">factor1</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">atleast_1d</span><span class="p">(</span>
+        <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">factor1_db_ndc_hybrid</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
+    <span class="p">)</span><span class="o">.</span><span class="n">ravel</span><span class="p">()</span>
+    <span class="n">factor2</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">atleast_1d</span><span class="p">(</span>
+        <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">factor2_db_ndc_hybrid</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
+    <span class="p">)</span><span class="o">.</span><span class="n">ravel</span><span class="p">()</span>
+    <span class="n">n_per</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">factor1</span><span class="o">.</span><span class="n">size</span><span class="p">,</span> <span class="n">factor2</span><span class="o">.</span><span class="n">size</span><span class="p">)</span>
+    <span class="n">f1_full</span> <span class="o">=</span> <span class="n">factor1</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">minimum</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">n_per</span><span class="p">),</span> <span class="n">factor1</span><span class="o">.</span><span class="n">size</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)]</span>
+    <span class="n">f2_full</span> <span class="o">=</span> <span class="n">factor2</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">minimum</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">n_per</span><span class="p">),</span> <span class="n">factor2</span><span class="o">.</span><span class="n">size</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)]</span>
+    <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">f2_full</span> <span class="o">&lt;</span> <span class="n">f1_full</span><span class="p">):</span>
+        <span class="n">bad</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">argmax</span><span class="p">(</span><span class="n">f2_full</span> <span class="o">&lt;</span> <span class="n">f1_full</span><span class="p">))</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+            <span class="s2">"factor2_db_ndc_hybrid must be at least factor1_db_ndc_hybrid "</span>
+            <span class="sa">f</span><span class="s2">"in every period: in period </span><span class="si">{</span><span class="n">bad</span><span class="si">}</span><span class="s2">, factor1_db_ndc_hybrid="</span>
+            <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">f1_full</span><span class="p">[</span><span class="n">bad</span><span class="p">]</span><span class="si">}</span><span class="s2"> and factor2_db_ndc_hybrid=</span><span class="si">{</span><span class="n">f2_full</span><span class="p">[</span><span class="n">bad</span><span class="p">]</span><span class="si">}</span><span class="s2">"</span>
+        <span class="p">)</span>
+    <span class="c1"># cutoffs in model units of labor income</span>
+    <span class="n">cut1</span> <span class="o">=</span> <span class="n">factor1</span> <span class="o">*</span> <span class="n">p</span><span class="o">.</span><span class="n">avg_labor_inc_t1_model_units</span>
+    <span class="n">cut2</span> <span class="o">=</span> <span class="n">factor2</span> <span class="o">*</span> <span class="n">p</span><span class="o">.</span><span class="n">avg_labor_inc_t1_model_units</span>
+    <span class="n">DB</span> <span class="o">=</span> <span class="n">DB_amount</span><span class="p">(</span><span class="n">w</span><span class="p">,</span> <span class="n">e</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="n">j</span><span class="p">,</span> <span class="n">method</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">earn_lo</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">earn_hi</span><span class="o">=</span><span class="n">cut1</span><span class="p">)</span>
+    <span class="n">NDC</span> <span class="o">=</span> <span class="n">NDC_amount</span><span class="p">(</span>
+        <span class="n">w</span><span class="p">,</span>
+        <span class="n">e</span><span class="p">,</span>
+        <span class="n">n</span><span class="p">,</span>
+        <span class="n">r</span><span class="p">,</span>
+        <span class="n">ndc_rates</span><span class="p">,</span>
+        <span class="n">t</span><span class="p">,</span>
+        <span class="n">j</span><span class="p">,</span>
+        <span class="n">method</span><span class="p">,</span>
+        <span class="n">p</span><span class="p">,</span>
+        <span class="n">earn_lo</span><span class="o">=</span><span class="n">cut1</span><span class="p">,</span>
+        <span class="n">earn_hi</span><span class="o">=</span><span class="n">cut2</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="k">return</span> <span class="n">DB</span> <span class="o">+</span> <span class="n">NDC</span></div>
 
 
 
@@ -2157,7 +2375,19 @@
 <a class="viewcode-back" href="../../pensions.html#ogcore.pensions.DB_1dim_loop">[docs]</a>
 <span class="nd">@numba</span><span class="o">.</span><span class="n">jit</span><span class="p">(</span><span class="n">nopython</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">DB_1dim_loop</span><span class="p">(</span>
-    <span class="n">w</span><span class="p">,</span> <span class="n">e</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">S_ret</span><span class="p">,</span> <span class="n">S</span><span class="p">,</span> <span class="n">g_y</span><span class="p">,</span> <span class="n">DB</span><span class="p">,</span> <span class="n">avg_earn_num_years</span><span class="p">,</span> <span class="n">alpha_db</span><span class="p">,</span> <span class="n">yr_contr</span>
+    <span class="n">w</span><span class="p">,</span>
+    <span class="n">e</span><span class="p">,</span>
+    <span class="n">n</span><span class="p">,</span>
+    <span class="n">S_ret</span><span class="p">,</span>
+    <span class="n">S</span><span class="p">,</span>
+    <span class="n">g_y</span><span class="p">,</span>
+    <span class="n">DB</span><span class="p">,</span>
+    <span class="n">avg_earn_num_years</span><span class="p">,</span>
+    <span class="n">alpha_db</span><span class="p">,</span>
+    <span class="n">yr_contr</span><span class="p">,</span>
+    <span class="n">earn_lo</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">earn_hi</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">t_birth</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
 <span class="p">):</span>
 <span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Calculate public pension from a defined benefits system for one</span>
@@ -2179,6 +2409,14 @@
 <span class="sd">            u, length S</span>
 <span class="sd">        yr_contr (Numpy array): periods of contribution credited, by</span>
 <span class="sd">            age u, length S</span>
+<span class="sd">        earn_lo (Numpy array): calendar path of the lower cutoff of</span>
+<span class="sd">            the earnings band, in model units of labor income; only</span>
+<span class="sd">            labor income w * e * n above it counts. None (the default)</span>
+<span class="sd">            applies no band.</span>
+<span class="sd">        earn_hi (Numpy array): calendar path of the upper cutoff of</span>
+<span class="sd">            the earnings band; only labor income below it counts</span>
+<span class="sd">        t_birth (int): model period in which the household is age 0,</span>
+<span class="sd">            so earnings at age s were made in period t_birth + s</span>
 
 <span class="sd">    Returns:</span>
 <span class="sd">        DB (Numpy array): pension amount for each household</span>
@@ -2190,7 +2428,13 @@
         <span class="n">ny</span> <span class="o">=</span> <span class="n">avg_earn_num_years</span><span class="p">[</span><span class="n">u</span><span class="p">]</span>
         <span class="n">L_inc_avg</span> <span class="o">=</span> <span class="mf">0.0</span>
         <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">R</span> <span class="o">-</span> <span class="n">ny</span><span class="p">,</span> <span class="n">R</span><span class="p">):</span>
-            <span class="n">L_inc_avg</span> <span class="o">+=</span> <span class="n">w</span><span class="p">[</span><span class="n">s</span><span class="p">]</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">g_y</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="p">(</span><span class="n">u</span> <span class="o">-</span> <span class="n">s</span><span class="p">))</span> <span class="o">*</span> <span class="n">e</span><span class="p">[</span><span class="n">s</span><span class="p">]</span> <span class="o">*</span> <span class="n">n</span><span class="p">[</span><span class="n">s</span><span class="p">]</span>
+            <span class="k">if</span> <span class="n">earn_lo</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">L_inc_avg</span> <span class="o">+=</span> <span class="n">w</span><span class="p">[</span><span class="n">s</span><span class="p">]</span> <span class="o">*</span> <span class="n">e</span><span class="p">[</span><span class="n">s</span><span class="p">]</span> <span class="o">*</span> <span class="n">n</span><span class="p">[</span><span class="n">s</span><span class="p">]</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">g_y</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="p">(</span><span class="n">u</span> <span class="o">-</span> <span class="n">s</span><span class="p">))</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">x</span> <span class="o">=</span> <span class="n">earnings_band_at</span><span class="p">(</span>
+                    <span class="n">w</span><span class="p">[</span><span class="n">s</span><span class="p">]</span> <span class="o">*</span> <span class="n">e</span><span class="p">[</span><span class="n">s</span><span class="p">]</span> <span class="o">*</span> <span class="n">n</span><span class="p">[</span><span class="n">s</span><span class="p">],</span> <span class="n">earn_lo</span><span class="p">,</span> <span class="n">earn_hi</span><span class="p">,</span> <span class="n">t_birth</span> <span class="o">+</span> <span class="n">s</span>
+                <span class="p">)</span>
+                <span class="n">L_inc_avg</span> <span class="o">+=</span> <span class="n">x</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">g_y</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="p">(</span><span class="n">u</span> <span class="o">-</span> <span class="n">s</span><span class="p">))</span>
         <span class="n">DB</span><span class="p">[</span><span class="n">u</span><span class="p">]</span> <span class="o">=</span> <span class="n">yr_contr</span><span class="p">[</span><span class="n">u</span><span class="p">]</span> <span class="o">*</span> <span class="n">alpha_db</span><span class="p">[</span><span class="n">u</span><span class="p">]</span> <span class="o">*</span> <span class="n">L_inc_avg</span> <span class="o">/</span> <span class="n">ny</span>
 
     <span class="k">return</span> <span class="n">DB</span></div>
@@ -2201,7 +2445,19 @@
 <a class="viewcode-back" href="../../pensions.html#ogcore.pensions.DB_2dim_loop">[docs]</a>
 <span class="nd">@numba</span><span class="o">.</span><span class="n">jit</span><span class="p">(</span><span class="n">nopython</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">DB_2dim_loop</span><span class="p">(</span>
-    <span class="n">w</span><span class="p">,</span> <span class="n">e</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">S_ret</span><span class="p">,</span> <span class="n">S</span><span class="p">,</span> <span class="n">g_y</span><span class="p">,</span> <span class="n">DB</span><span class="p">,</span> <span class="n">avg_earn_num_years</span><span class="p">,</span> <span class="n">alpha_db</span><span class="p">,</span> <span class="n">yr_contr</span>
+    <span class="n">w</span><span class="p">,</span>
+    <span class="n">e</span><span class="p">,</span>
+    <span class="n">n</span><span class="p">,</span>
+    <span class="n">S_ret</span><span class="p">,</span>
+    <span class="n">S</span><span class="p">,</span>
+    <span class="n">g_y</span><span class="p">,</span>
+    <span class="n">DB</span><span class="p">,</span>
+    <span class="n">avg_earn_num_years</span><span class="p">,</span>
+    <span class="n">alpha_db</span><span class="p">,</span>
+    <span class="n">yr_contr</span><span class="p">,</span>
+    <span class="n">earn_lo</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">earn_hi</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">t_cross</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
 <span class="p">):</span>
 <span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Calculate public pension from a defined benefits system for a</span>
@@ -2223,6 +2479,14 @@
 <span class="sd">            u for each group j, size S x J</span>
 <span class="sd">        yr_contr (Numpy array): periods of contribution credited, by</span>
 <span class="sd">            age u, length S</span>
+<span class="sd">        earn_lo (Numpy array): calendar path of the lower cutoff of</span>
+<span class="sd">            the earnings band, in model units of labor income; only</span>
+<span class="sd">            labor income w * e * n above it counts. None (the default)</span>
+<span class="sd">            applies no band.</span>
+<span class="sd">        earn_hi (Numpy array): calendar path of the upper cutoff of</span>
+<span class="sd">            the earnings band; only labor income below it counts</span>
+<span class="sd">        t_cross (int): model period of the cross section; the</span>
+<span class="sd">            household of age u earned at age s in period t_cross - u + s</span>
 
 <span class="sd">    Returns:</span>
 <span class="sd">        DB (Numpy array): pension amount for each household</span>
@@ -2235,7 +2499,18 @@
         <span class="n">ny</span> <span class="o">=</span> <span class="n">avg_earn_num_years</span><span class="p">[</span><span class="n">u</span><span class="p">]</span>
         <span class="n">L_inc_avg</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">DB</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
         <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">R</span> <span class="o">-</span> <span class="n">ny</span><span class="p">,</span> <span class="n">R</span><span class="p">):</span>
-            <span class="n">L_inc_avg</span> <span class="o">+=</span> <span class="n">w</span><span class="p">[</span><span class="n">s</span><span class="p">]</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">g_y</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="p">(</span><span class="n">u</span> <span class="o">-</span> <span class="n">s</span><span class="p">))</span> <span class="o">*</span> <span class="n">e</span><span class="p">[</span><span class="n">s</span><span class="p">,</span> <span class="p">:]</span> <span class="o">*</span> <span class="n">n</span><span class="p">[</span><span class="n">s</span><span class="p">,</span> <span class="p">:]</span>
+            <span class="k">if</span> <span class="n">earn_lo</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">L_inc_avg</span> <span class="o">+=</span> <span class="p">(</span>
+                    <span class="n">w</span><span class="p">[</span><span class="n">s</span><span class="p">]</span> <span class="o">*</span> <span class="n">e</span><span class="p">[</span><span class="n">s</span><span class="p">,</span> <span class="p">:]</span> <span class="o">*</span> <span class="n">n</span><span class="p">[</span><span class="n">s</span><span class="p">,</span> <span class="p">:]</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">g_y</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="p">(</span><span class="n">u</span> <span class="o">-</span> <span class="n">s</span><span class="p">))</span>
+                <span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">x</span> <span class="o">=</span> <span class="n">earnings_band_at</span><span class="p">(</span>
+                    <span class="n">w</span><span class="p">[</span><span class="n">s</span><span class="p">]</span> <span class="o">*</span> <span class="n">e</span><span class="p">[</span><span class="n">s</span><span class="p">,</span> <span class="p">:]</span> <span class="o">*</span> <span class="n">n</span><span class="p">[</span><span class="n">s</span><span class="p">,</span> <span class="p">:],</span>
+                    <span class="n">earn_lo</span><span class="p">,</span>
+                    <span class="n">earn_hi</span><span class="p">,</span>
+                    <span class="n">t_cross</span> <span class="o">-</span> <span class="n">u</span> <span class="o">+</span> <span class="n">s</span><span class="p">,</span>
+                <span class="p">)</span>
+                <span class="n">L_inc_avg</span> <span class="o">+=</span> <span class="n">x</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">g_y</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="p">(</span><span class="n">u</span> <span class="o">-</span> <span class="n">s</span><span class="p">))</span>
         <span class="n">DB</span><span class="p">[</span><span class="n">u</span><span class="p">,</span> <span class="p">:]</span> <span class="o">=</span> <span class="n">yr_contr</span><span class="p">[</span><span class="n">u</span><span class="p">]</span> <span class="o">*</span> <span class="n">alpha_db</span><span class="p">[</span><span class="n">u</span><span class="p">,</span> <span class="p">:]</span> <span class="o">*</span> <span class="n">L_inc_avg</span> <span class="o">/</span> <span class="n">ny</span>
 
     <span class="k">return</span> <span class="n">DB</span></div>
@@ -2257,6 +2532,8 @@
     <span class="n">avg_earn_num_years</span><span class="p">,</span>
     <span class="n">alpha_db</span><span class="p">,</span>
     <span class="n">yr_contr</span><span class="p">,</span>
+    <span class="n">earn_lo</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">earn_hi</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
 <span class="p">):</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">"""</span>
 <span class="sd">    Calculate public pension from a defined benefits system over the</span>
@@ -2291,6 +2568,13 @@
 <span class="sd">            contribution by period, age, and group, size T x S x J</span>
 <span class="sd">        yr_contr (Numpy array): periods of contribution credited, by</span>
 <span class="sd">            period and age, size T x S</span>
+<span class="sd">        earn_lo (Numpy array): calendar path of the lower cutoff of</span>
+<span class="sd">            the earnings band, in model units of labor income; only</span>
+<span class="sd">            labor income w * e * n above it counts. None (the default)</span>
+<span class="sd">            applies no band.</span>
+<span class="sd">        earn_hi (Numpy array): calendar path of the upper cutoff of</span>
+<span class="sd">            the earnings band; only labor income below it counts</span>
+<span class="sd">            Both paths start in the period of the first row of n.</span>
 
 <span class="sd">    Returns:</span>
 <span class="sd">        DB (Numpy array): pension amount for each household, size TxSxJ</span>
@@ -2311,9 +2595,18 @@
                 <span class="n">n</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">clip</span><span class="p">(</span><span class="n">tau</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">T</span> <span class="o">-</span> <span class="mi">1</span><span class="p">),</span> <span class="n">s_idx</span><span class="p">,</span> <span class="p">:],</span>
                 <span class="n">n_preTP</span><span class="p">[</span><span class="n">s_idx</span><span class="p">,</span> <span class="p">:],</span>
             <span class="p">)</span>
-            <span class="n">L</span> <span class="o">=</span> <span class="p">(</span><span class="n">w_hist</span><span class="p">[:,</span> <span class="kc">None</span><span class="p">]</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">g_y</span> <span class="o">*</span> <span class="p">(</span><span class="n">u</span> <span class="o">-</span> <span class="n">s_idx</span><span class="p">))[:,</span> <span class="kc">None</span><span class="p">])</span> <span class="o">*</span> <span class="p">(</span>
-                <span class="n">e_ss</span><span class="p">[</span><span class="n">s_idx</span><span class="p">,</span> <span class="p">:]</span> <span class="o">*</span> <span class="n">n_hist</span>
-            <span class="p">)</span>
+            <span class="n">x</span> <span class="o">=</span> <span class="n">e_ss</span><span class="p">[</span><span class="n">s_idx</span><span class="p">,</span> <span class="p">:]</span> <span class="o">*</span> <span class="n">n_hist</span>
+            <span class="k">if</span> <span class="n">earn_lo</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">L</span> <span class="o">=</span> <span class="p">(</span><span class="n">w_hist</span><span class="p">[:,</span> <span class="kc">None</span><span class="p">]</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">g_y</span> <span class="o">*</span> <span class="p">(</span><span class="n">u</span> <span class="o">-</span> <span class="n">s_idx</span><span class="p">))[:,</span> <span class="kc">None</span><span class="p">])</span> <span class="o">*</span> <span class="n">x</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="c1"># band of labor income, with the cutoffs in effect in</span>
+                <span class="c1"># the period of each earning</span>
+                <span class="n">x</span> <span class="o">=</span> <span class="n">w_hist</span><span class="p">[:,</span> <span class="kc">None</span><span class="p">]</span> <span class="o">*</span> <span class="n">x</span>
+                <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">ny</span><span class="p">):</span>
+                    <span class="n">x</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="p">:]</span> <span class="o">=</span> <span class="n">earnings_band_at</span><span class="p">(</span>
+                        <span class="n">x</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="p">:],</span> <span class="n">earn_lo</span><span class="p">,</span> <span class="n">earn_hi</span><span class="p">,</span> <span class="n">tau</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+                    <span class="p">)</span>
+                <span class="n">L</span> <span class="o">=</span> <span class="n">x</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">g_y</span> <span class="o">*</span> <span class="p">(</span><span class="n">u</span> <span class="o">-</span> <span class="n">s_idx</span><span class="p">))[:,</span> <span class="kc">None</span><span class="p">]</span>
             <span class="n">DB</span><span class="p">[</span><span class="n">t</span><span class="p">,</span> <span class="n">u</span><span class="p">,</span> <span class="p">:]</span> <span class="o">=</span> <span class="p">(</span>
                 <span class="p">(</span><span class="n">L</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span> <span class="o">/</span> <span class="n">ny</span><span class="p">)</span> <span class="o">*</span> <span class="n">yr_contr</span><span class="p">[</span><span class="n">t</span><span class="p">,</span> <span class="n">u</span><span class="p">]</span> <span class="o">*</span> <span class="n">alpha_db</span><span class="p">[</span><span class="n">t</span><span class="p">,</span> <span class="n">u</span><span class="p">,</span> <span class="p">:]</span>
             <span class="p">)</span>
@@ -2326,7 +2619,19 @@
 <a class="viewcode-back" href="../../pensions.html#ogcore.pensions.NDC_1dim_loop">[docs]</a>
 <span class="nd">@numba</span><span class="o">.</span><span class="n">jit</span><span class="p">(</span><span class="n">nopython</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">NDC_1dim_loop</span><span class="p">(</span>
-    <span class="n">w</span><span class="p">,</span> <span class="n">e</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">S_ret</span><span class="p">,</span> <span class="n">S</span><span class="p">,</span> <span class="n">g_y</span><span class="p">,</span> <span class="n">tau_p</span><span class="p">,</span> <span class="n">g_ndc</span><span class="p">,</span> <span class="n">t_birth</span><span class="p">,</span> <span class="n">delta_ret</span><span class="p">,</span> <span class="n">NDC</span>
+    <span class="n">w</span><span class="p">,</span>
+    <span class="n">e</span><span class="p">,</span>
+    <span class="n">n</span><span class="p">,</span>
+    <span class="n">S_ret</span><span class="p">,</span>
+    <span class="n">S</span><span class="p">,</span>
+    <span class="n">g_y</span><span class="p">,</span>
+    <span class="n">tau_p</span><span class="p">,</span>
+    <span class="n">g_ndc</span><span class="p">,</span>
+    <span class="n">t_birth</span><span class="p">,</span>
+    <span class="n">delta_ret</span><span class="p">,</span>
+    <span class="n">NDC</span><span class="p">,</span>
+    <span class="n">earn_lo</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">earn_hi</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
 <span class="p">):</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">"""</span>
 <span class="sd">    Calculate public pension from a notional defined contribution</span>
@@ -2358,6 +2663,13 @@
 <span class="sd">            pension amount that applies at each age u, length S</span>
 <span class="sd">        NDC (Numpy array): pension amount for each household (filled</span>
 <span class="sd">            in and returned), length S</span>
+<span class="sd">        earn_lo (Numpy array): calendar path of the lower cutoff of</span>
+<span class="sd">            the earnings band, in model units of labor income; only</span>
+<span class="sd">            labor income w * e * n above it counts. None (the default)</span>
+<span class="sd">            applies no band.</span>
+<span class="sd">        earn_hi (Numpy array): calendar path of the upper cutoff of</span>
+<span class="sd">            the earnings band; only labor income below it counts</span>
+<span class="sd">            The cutoffs are read in period t_birth + s for age s.</span>
 
 <span class="sd">    Returns:</span>
 <span class="sd">        NDC (Numpy array): pension amount for each household</span>
@@ -2373,13 +2685,16 @@
         <span class="n">growth</span> <span class="o">=</span> <span class="mf">1.0</span>
         <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">R</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">):</span>
             <span class="c1"># TODO: update so can take g_y from period t</span>
-            <span class="n">NDC_s</span> <span class="o">+=</span> <span class="p">(</span>
-                <span class="n">tau_p</span><span class="p">[</span><span class="n">s</span><span class="p">]</span>
-                <span class="o">*</span> <span class="p">(</span><span class="n">w</span><span class="p">[</span><span class="n">s</span><span class="p">]</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">g_y</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="p">(</span><span class="n">u</span> <span class="o">-</span> <span class="n">s</span><span class="p">)))</span>
-                <span class="o">*</span> <span class="n">e</span><span class="p">[</span><span class="n">s</span><span class="p">]</span>
-                <span class="o">*</span> <span class="n">n</span><span class="p">[</span><span class="n">s</span><span class="p">]</span>
-                <span class="o">*</span> <span class="n">growth</span>
-            <span class="p">)</span>
+            <span class="k">if</span> <span class="n">earn_lo</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">x</span> <span class="o">=</span> <span class="n">e</span><span class="p">[</span><span class="n">s</span><span class="p">]</span> <span class="o">*</span> <span class="n">n</span><span class="p">[</span><span class="n">s</span><span class="p">]</span>
+                <span class="n">NDC_s</span> <span class="o">+=</span> <span class="p">(</span>
+                    <span class="n">tau_p</span><span class="p">[</span><span class="n">s</span><span class="p">]</span> <span class="o">*</span> <span class="p">(</span><span class="n">w</span><span class="p">[</span><span class="n">s</span><span class="p">]</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">g_y</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="p">(</span><span class="n">u</span> <span class="o">-</span> <span class="n">s</span><span class="p">)))</span> <span class="o">*</span> <span class="n">x</span> <span class="o">*</span> <span class="n">growth</span>
+                <span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">x</span> <span class="o">=</span> <span class="n">earnings_band_at</span><span class="p">(</span>
+                    <span class="n">w</span><span class="p">[</span><span class="n">s</span><span class="p">]</span> <span class="o">*</span> <span class="n">e</span><span class="p">[</span><span class="n">s</span><span class="p">]</span> <span class="o">*</span> <span class="n">n</span><span class="p">[</span><span class="n">s</span><span class="p">],</span> <span class="n">earn_lo</span><span class="p">,</span> <span class="n">earn_hi</span><span class="p">,</span> <span class="n">t_birth</span> <span class="o">+</span> <span class="n">s</span>
+                <span class="p">)</span>
+                <span class="n">NDC_s</span> <span class="o">+=</span> <span class="n">tau_p</span><span class="p">[</span><span class="n">s</span><span class="p">]</span> <span class="o">*</span> <span class="p">(</span><span class="n">x</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">g_y</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="p">(</span><span class="n">u</span> <span class="o">-</span> <span class="n">s</span><span class="p">)))</span> <span class="o">*</span> <span class="n">growth</span>
             <span class="n">growth</span> <span class="o">*=</span> <span class="mf">1.0</span> <span class="o">+</span> <span class="n">g_age</span><span class="p">[</span><span class="n">s</span><span class="p">]</span>
         <span class="n">NDC</span><span class="p">[</span><span class="n">u</span><span class="p">]</span> <span class="o">=</span> <span class="n">delta_ret</span><span class="p">[</span><span class="n">u</span><span class="p">]</span> <span class="o">*</span> <span class="n">NDC_s</span>
     <span class="k">return</span> <span class="n">NDC</span></div>
@@ -2390,7 +2705,19 @@
 <a class="viewcode-back" href="../../pensions.html#ogcore.pensions.NDC_2dim_loop">[docs]</a>
 <span class="nd">@numba</span><span class="o">.</span><span class="n">jit</span><span class="p">(</span><span class="n">nopython</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">NDC_2dim_loop</span><span class="p">(</span>
-    <span class="n">w</span><span class="p">,</span> <span class="n">e</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">S_ret</span><span class="p">,</span> <span class="n">S</span><span class="p">,</span> <span class="n">g_y</span><span class="p">,</span> <span class="n">tau_p</span><span class="p">,</span> <span class="n">g_ndc</span><span class="p">,</span> <span class="n">t_cross</span><span class="p">,</span> <span class="n">delta_ret</span><span class="p">,</span> <span class="n">NDC</span>
+    <span class="n">w</span><span class="p">,</span>
+    <span class="n">e</span><span class="p">,</span>
+    <span class="n">n</span><span class="p">,</span>
+    <span class="n">S_ret</span><span class="p">,</span>
+    <span class="n">S</span><span class="p">,</span>
+    <span class="n">g_y</span><span class="p">,</span>
+    <span class="n">tau_p</span><span class="p">,</span>
+    <span class="n">g_ndc</span><span class="p">,</span>
+    <span class="n">t_cross</span><span class="p">,</span>
+    <span class="n">delta_ret</span><span class="p">,</span>
+    <span class="n">NDC</span><span class="p">,</span>
+    <span class="n">earn_lo</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">earn_hi</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
 <span class="p">):</span>
 <span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Calculate public pension from a notional defined contribution</span>
@@ -2417,6 +2744,13 @@
 <span class="sd">            pension amount of the household of each age u, length S</span>
 <span class="sd">        NDC (Numpy array): pension amount for each household (filled</span>
 <span class="sd">            in and returned), size S x J</span>
+<span class="sd">        earn_lo (Numpy array): calendar path of the lower cutoff of</span>
+<span class="sd">            the earnings band, in model units of labor income; only</span>
+<span class="sd">            labor income w * e * n above it counts. None (the default)</span>
+<span class="sd">            applies no band.</span>
+<span class="sd">        earn_hi (Numpy array): calendar path of the upper cutoff of</span>
+<span class="sd">            the earnings band; only labor income below it counts</span>
+<span class="sd">            The cutoffs are read in period t_cross - u + s.</span>
 
 <span class="sd">    Returns:</span>
 <span class="sd">        NDC (Numpy array): pension amount for each household</span>
@@ -2430,13 +2764,19 @@
         <span class="n">NDC_s</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">NDC</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
         <span class="n">growth</span> <span class="o">=</span> <span class="mf">1.0</span>
         <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">R</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">):</span>
-            <span class="n">NDC_s</span> <span class="o">+=</span> <span class="p">(</span>
-                <span class="n">tau_p</span><span class="p">[</span><span class="n">s</span><span class="p">]</span>
-                <span class="o">*</span> <span class="p">(</span><span class="n">w</span><span class="p">[</span><span class="n">s</span><span class="p">]</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">g_y</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="p">(</span><span class="n">u</span> <span class="o">-</span> <span class="n">s</span><span class="p">)))</span>
-                <span class="o">*</span> <span class="n">e</span><span class="p">[</span><span class="n">s</span><span class="p">,</span> <span class="p">:]</span>
-                <span class="o">*</span> <span class="n">n</span><span class="p">[</span><span class="n">s</span><span class="p">,</span> <span class="p">:]</span>
-                <span class="o">*</span> <span class="n">growth</span>
-            <span class="p">)</span>
+            <span class="k">if</span> <span class="n">earn_lo</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">x</span> <span class="o">=</span> <span class="n">e</span><span class="p">[</span><span class="n">s</span><span class="p">,</span> <span class="p">:]</span> <span class="o">*</span> <span class="n">n</span><span class="p">[</span><span class="n">s</span><span class="p">,</span> <span class="p">:]</span>
+                <span class="n">NDC_s</span> <span class="o">+=</span> <span class="p">(</span>
+                    <span class="n">tau_p</span><span class="p">[</span><span class="n">s</span><span class="p">]</span> <span class="o">*</span> <span class="p">(</span><span class="n">w</span><span class="p">[</span><span class="n">s</span><span class="p">]</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">g_y</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="p">(</span><span class="n">u</span> <span class="o">-</span> <span class="n">s</span><span class="p">)))</span> <span class="o">*</span> <span class="n">x</span> <span class="o">*</span> <span class="n">growth</span>
+                <span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">x</span> <span class="o">=</span> <span class="n">earnings_band_at</span><span class="p">(</span>
+                    <span class="n">w</span><span class="p">[</span><span class="n">s</span><span class="p">]</span> <span class="o">*</span> <span class="n">e</span><span class="p">[</span><span class="n">s</span><span class="p">,</span> <span class="p">:]</span> <span class="o">*</span> <span class="n">n</span><span class="p">[</span><span class="n">s</span><span class="p">,</span> <span class="p">:],</span>
+                    <span class="n">earn_lo</span><span class="p">,</span>
+                    <span class="n">earn_hi</span><span class="p">,</span>
+                    <span class="n">t_cross</span> <span class="o">-</span> <span class="n">u</span> <span class="o">+</span> <span class="n">s</span><span class="p">,</span>
+                <span class="p">)</span>
+                <span class="n">NDC_s</span> <span class="o">+=</span> <span class="n">tau_p</span><span class="p">[</span><span class="n">s</span><span class="p">]</span> <span class="o">*</span> <span class="p">(</span><span class="n">x</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">g_y</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="p">(</span><span class="n">u</span> <span class="o">-</span> <span class="n">s</span><span class="p">)))</span> <span class="o">*</span> <span class="n">growth</span>
             <span class="n">idx</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="nb">max</span><span class="p">(</span><span class="n">t_cross</span> <span class="o">-</span> <span class="n">u</span> <span class="o">+</span> <span class="n">s</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="n">n_g</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
             <span class="n">growth</span> <span class="o">*=</span> <span class="mf">1.0</span> <span class="o">+</span> <span class="n">g_ndc</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span>
         <span class="n">NDC</span><span class="p">[</span><span class="n">u</span><span class="p">,</span> <span class="p">:]</span> <span class="o">=</span> <span class="n">delta_ret</span><span class="p">[</span><span class="n">u</span><span class="p">]</span> <span class="o">*</span> <span class="n">NDC_s</span>
@@ -2446,7 +2786,19 @@
 
 <span class="nd">@numba</span><span class="o">.</span><span class="n">jit</span><span class="p">(</span><span class="n">nopython</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">NDC_3dim_loop</span><span class="p">(</span>
-    <span class="n">w_path</span><span class="p">,</span> <span class="n">e_ss</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">n_preTP</span><span class="p">,</span> <span class="n">S_ret</span><span class="p">,</span> <span class="n">S</span><span class="p">,</span> <span class="n">J</span><span class="p">,</span> <span class="n">g_y</span><span class="p">,</span> <span class="n">tau_p</span><span class="p">,</span> <span class="n">g_ndc</span><span class="p">,</span> <span class="n">delta_ret</span>
+    <span class="n">w_path</span><span class="p">,</span>
+    <span class="n">e_ss</span><span class="p">,</span>
+    <span class="n">n</span><span class="p">,</span>
+    <span class="n">n_preTP</span><span class="p">,</span>
+    <span class="n">S_ret</span><span class="p">,</span>
+    <span class="n">S</span><span class="p">,</span>
+    <span class="n">J</span><span class="p">,</span>
+    <span class="n">g_y</span><span class="p">,</span>
+    <span class="n">tau_p</span><span class="p">,</span>
+    <span class="n">g_ndc</span><span class="p">,</span>
+    <span class="n">delta_ret</span><span class="p">,</span>
+    <span class="n">earn_lo</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">earn_hi</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
 <span class="p">):</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">"""</span>
 <span class="sd">    Calculate public pension from a notional defined contribution</span>
@@ -2478,6 +2830,13 @@
 <span class="sd">        g_ndc (Numpy array): calendar path of the credited rate</span>
 <span class="sd">        delta_ret (Numpy array): conversion coefficient for the NDC</span>
 <span class="sd">            pension amount by period and age, size T x S</span>
+<span class="sd">        earn_lo (Numpy array): calendar path of the lower cutoff of</span>
+<span class="sd">            the earnings band, in model units of labor income; only</span>
+<span class="sd">            labor income w * e * n above it counts. None (the default)</span>
+<span class="sd">            applies no band.</span>
+<span class="sd">        earn_hi (Numpy array): calendar path of the upper cutoff of</span>
+<span class="sd">            the earnings band; only labor income below it counts</span>
+<span class="sd">            Both paths start in the period of the first row of n.</span>
 
 <span class="sd">    Returns:</span>
 <span class="sd">        NDC (Numpy array): pension amount for each household, size</span>
@@ -2504,15 +2863,30 @@
             <span class="n">growth</span> <span class="o">=</span> <span class="mf">1.0</span>
             <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">R</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">):</span>
                 <span class="n">s</span> <span class="o">=</span> <span class="n">s_idx</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
-                <span class="n">contrib</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
-                    <span class="n">tau_p</span><span class="p">[</span><span class="n">rows</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">s</span><span class="p">]</span>
-                    <span class="o">*</span> <span class="n">w_hist</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
-                    <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">g_y</span> <span class="o">*</span> <span class="p">(</span><span class="n">u</span> <span class="o">-</span> <span class="n">s</span><span class="p">))</span>
-                    <span class="o">*</span> <span class="n">growth</span>
-                <span class="p">)</span>
+                <span class="k">if</span> <span class="n">earn_lo</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="n">contrib</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
+                        <span class="n">tau_p</span><span class="p">[</span><span class="n">rows</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">s</span><span class="p">]</span>
+                        <span class="o">*</span> <span class="n">w_hist</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+                        <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">g_y</span> <span class="o">*</span> <span class="p">(</span><span class="n">u</span> <span class="o">-</span> <span class="n">s</span><span class="p">))</span>
+                        <span class="o">*</span> <span class="n">growth</span>
+                    <span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="c1"># the wage enters through the band of labor income</span>
+                    <span class="n">contrib</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
+                        <span class="n">tau_p</span><span class="p">[</span><span class="n">rows</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">s</span><span class="p">]</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">g_y</span> <span class="o">*</span> <span class="p">(</span><span class="n">u</span> <span class="o">-</span> <span class="n">s</span><span class="p">))</span> <span class="o">*</span> <span class="n">growth</span>
+                    <span class="p">)</span>
                 <span class="n">idx</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="nb">max</span><span class="p">(</span><span class="n">tau</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="mi">0</span><span class="p">),</span> <span class="n">n_g</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
                 <span class="n">growth</span> <span class="o">*=</span> <span class="mf">1.0</span> <span class="o">+</span> <span class="n">g_ndc</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span>
-            <span class="n">L</span> <span class="o">=</span> <span class="n">contrib</span><span class="p">[:,</span> <span class="kc">None</span><span class="p">]</span> <span class="o">*</span> <span class="n">e_ss</span><span class="p">[</span><span class="n">s_idx</span><span class="p">,</span> <span class="p">:]</span> <span class="o">*</span> <span class="n">n_hist</span>
+            <span class="n">x</span> <span class="o">=</span> <span class="n">e_ss</span><span class="p">[</span><span class="n">s_idx</span><span class="p">,</span> <span class="p">:]</span> <span class="o">*</span> <span class="n">n_hist</span>
+            <span class="k">if</span> <span class="n">earn_lo</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="c1"># band of labor income, with the cutoffs in effect in</span>
+                <span class="c1"># the period of each contribution</span>
+                <span class="n">x</span> <span class="o">=</span> <span class="n">w_hist</span><span class="p">[:,</span> <span class="kc">None</span><span class="p">]</span> <span class="o">*</span> <span class="n">x</span>
+                <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">R</span><span class="p">):</span>
+                    <span class="n">x</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="p">:]</span> <span class="o">=</span> <span class="n">earnings_band_at</span><span class="p">(</span>
+                        <span class="n">x</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="p">:],</span> <span class="n">earn_lo</span><span class="p">,</span> <span class="n">earn_hi</span><span class="p">,</span> <span class="n">tau</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+                    <span class="p">)</span>
+            <span class="n">L</span> <span class="o">=</span> <span class="n">contrib</span><span class="p">[:,</span> <span class="kc">None</span><span class="p">]</span> <span class="o">*</span> <span class="n">x</span>
             <span class="n">NDC</span><span class="p">[</span><span class="n">t</span><span class="p">,</span> <span class="n">u</span><span class="p">,</span> <span class="p">:]</span> <span class="o">=</span> <span class="n">delta_ret</span><span class="p">[</span><span class="n">t</span><span class="p">,</span> <span class="n">u</span><span class="p">]</span> <span class="o">*</span> <span class="n">L</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="n">NDC</span>

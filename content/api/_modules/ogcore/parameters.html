@@ -638,6 +638,46 @@
                 <span class="n">param_in</span><span class="p">,</span> <span class="n">dims</span><span class="o">=</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">T</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">S</span><span class="p">,),</span> <span class="n">item</span><span class="o">=</span><span class="n">item</span>
             <span class="p">)</span>
             <span class="nb">setattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">,</span> <span class="n">param_out</span><span class="p">)</span>
+        <span class="c1"># The hybrid DB-NDC cutoff factors are paths of length T + S. A</span>
+        <span class="c1"># single value is the initial factor of a path indexed to remove</span>
+        <span class="c1"># trend growth, init_val / e^{g_y t}, so the cutoffs stay fixed</span>
+        <span class="c1"># in real terms; a list of two or more values is used as given,</span>
+        <span class="c1"># with every period after the last value entered keeping it.</span>
+        <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">"factor1_db_ndc_hybrid"</span><span class="p">,</span> <span class="s2">"factor2_db_ndc_hybrid"</span><span class="p">):</span>
+            <span class="n">value</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">atleast_1d</span><span class="p">(</span>
+                <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
+            <span class="p">)</span><span class="o">.</span><span class="n">ravel</span><span class="p">()</span>
+            <span class="k">if</span> <span class="n">value</span><span class="o">.</span><span class="n">size</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="n">value</span> <span class="o">=</span> <span class="n">value</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span>
+                    <span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">g_y</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">T</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">S</span><span class="p">)</span>
+                <span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">value</span> <span class="o">=</span> <span class="n">extrapolate_array</span><span class="p">(</span>
+                    <span class="n">value</span><span class="p">,</span> <span class="n">dims</span><span class="o">=</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">T</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">S</span><span class="p">,),</span> <span class="n">item</span><span class="o">=</span><span class="n">name</span>
+                <span class="p">)</span>
+            <span class="nb">setattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">avg_labor_inc_t1_model_units</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span>
+            <span class="n">np</span><span class="o">.</span><span class="n">squeeze</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">avg_labor_inc_t1_model_units</span><span class="p">)</span>
+        <span class="p">)</span>
+        <span class="c1"># The hybrid DB-NDC cutoffs are checked against each other here,</span>
+        <span class="c1"># once both are paths of the same length, rather than with a</span>
+        <span class="c1"># paramtools validator, which cannot compare lists of different</span>
+        <span class="c1"># lengths</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">pension_system</span> <span class="o">==</span> <span class="s2">"Hybrid DB-NDC"</span> <span class="ow">and</span> <span class="n">np</span><span class="o">.</span><span class="n">any</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">factor2_db_ndc_hybrid</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">factor1_db_ndc_hybrid</span>
+        <span class="p">):</span>
+            <span class="n">bad</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span>
+                <span class="n">np</span><span class="o">.</span><span class="n">argmax</span><span class="p">(</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">factor2_db_ndc_hybrid</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">factor1_db_ndc_hybrid</span>
+                <span class="p">)</span>
+            <span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="s2">"factor2_db_ndc_hybrid must be at least "</span>
+                <span class="s2">"factor1_db_ndc_hybrid in every period: in model period "</span>
+                <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">bad</span><span class="si">}</span><span class="s2">, factor1_db_ndc_hybrid="</span>
+                <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">factor1_db_ndc_hybrid</span><span class="p">[</span><span class="n">bad</span><span class="p">]</span><span class="si">}</span><span class="s2"> and "</span>
+                <span class="sa">f</span><span class="s2">"factor2_db_ndc_hybrid=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">factor2_db_ndc_hybrid</span><span class="p">[</span><span class="n">bad</span><span class="p">]</span><span class="si">}</span><span class="s2">"</span>
+            <span class="p">)</span>
         <span class="c1"># Deal with parameters that vary across industry and over time</span>
         <span class="n">tp_param_list2</span> <span class="o">=</span> <span class="p">[</span>
             <span class="s2">"Z"</span><span class="p">,</span>

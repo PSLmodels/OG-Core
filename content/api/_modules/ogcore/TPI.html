@@ -1595,7 +1595,11 @@
     <span class="k">while</span> <span class="p">(</span><span class="n">TPIiter</span> <span class="o">&lt;</span> <span class="n">p</span><span class="o">.</span><span class="n">maxiter</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="n">TPIdist</span> <span class="o">&gt;=</span> <span class="n">p</span><span class="o">.</span><span class="n">mindist_TPI</span><span class="p">):</span>
         <span class="c1"># NDC credited and discount rates by period, from this</span>
         <span class="c1"># iteration's interest rate, GDP, wage, and labor paths</span>
-        <span class="k">if</span> <span class="n">p</span><span class="o">.</span><span class="n">pension_system</span> <span class="o">==</span> <span class="s2">"Notional Defined Contribution"</span><span class="p">:</span>
+        <span class="c1"># the hybrid DB-NDC system credits its NDC accounts the same way</span>
+        <span class="k">if</span> <span class="n">p</span><span class="o">.</span><span class="n">pension_system</span> <span class="ow">in</span> <span class="p">(</span>
+            <span class="s2">"Notional Defined Contribution"</span><span class="p">,</span>
+            <span class="s2">"Hybrid DB-NDC"</span><span class="p">,</span>
+        <span class="p">):</span>
             <span class="n">ndc_rates</span> <span class="o">=</span> <span class="n">pensions</span><span class="o">.</span><span class="n">ndc_rates_path</span><span class="p">(</span><span class="n">r_p</span><span class="p">,</span> <span class="n">Y</span><span class="p">,</span> <span class="n">w</span><span class="p">,</span> <span class="n">L</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="s2">"TPI"</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">ndc_rates</span> <span class="o">=</span> <span class="kc">None</span>

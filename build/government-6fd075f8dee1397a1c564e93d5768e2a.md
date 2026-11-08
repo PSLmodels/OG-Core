@@ -353,14 +353,15 @@ Businesses face a linear tax rate $\tau^{corp}_{m,t}$, which can vary by industr
 (SecGovPensions)=
 #### Pensions
 
-The `OG-Core` model allows for four different systems for public pensions:
+The `OG-Core` model allows for five different systems for public pensions:
 
 1. U.S.-style social security system
 2. Defined benefit system
 3. Notional defined contribution system
 4. Points system
+5. Hybrid defined benefit and notional defined contribution system
 
-These can be selected with the `pension_system` parameter.  Accepted values are `US-Style Social Security`, `Defined Benefits`, `Notional Defined Contribution`, `Points System`.  We discuss each of these in turn below.
+These can be selected with the `pension_system` parameter.  Accepted values are `US-Style Social Security`, `Defined Benefits`, `Notional Defined Contribution`, `Points System`, `Hybrid DB-NDC`.  We discuss each of these in turn below.
 
 For all systems, $R$ represents the age at which the individual becomes eligible to receive the government provided retirement benefit. The retirement age is a property of a birth cohort rather than of a calendar year: a household born in period $t-s$ (of age $s$ in period $t$) faces the retirement age $R_{t-s}$, and it faces the same $R_{t-s}$ in every period of its life unless a reform moves its cohort to a new value. The base value is the parameter `retirement_age`. Changes are entered through `pension_regimes`, a list of reforms applied in order, each with a calendar `year` from which it applies, an optional `max_age_at_start` (the oldest age, in that calendar year, to which the reform applies; cohorts not yet born always qualify, and leaving it out applies the reform to everyone including current retirees), and the new parameter values. This is how a phased-in increase in the retirement age that exempts those near retirement is expressed. The model expands these inputs into an array over periods and ages, so the household problem, the aggregates, and the steady state (which uses the final period's value) all read the same cohort-specific retirement age. The parameters of the defined benefit system (`alpha_db`, `avg_earn_num_years`, `yr_contrib`) and of the notional defined contribution system (`tau_p`, `k_ret`, `indR`) can be changed by cohort in the same way, so a reform of the benefit formula can also be phased in by birth cohort. With no regimes, the base `alpha_db` is a path by lifetime income group and the calendar year in which a benefit is paid, and the other parameters are single values. The replacement-rate adjustment `replacement_rate_adjust` is, by contrast, always indexed by the calendar year in which a benefit is paid.
 
@@ -442,7 +443,7 @@ The pension amount under a notional defined contribution system is given as:
 
 where the sum runs over the household's own contribution history, quantities are in real, non-stationarized units, and:
 
-  * $\tau^{p}_{u,t-s+u}$ is the pension contribution tax rate (`tau_p`) that the household's cohort faced at working age $u$, in period $t-s+u$
+  * $\tau^{p}_{u,t-s+u}$ is the notional contribution rate (`tau_p`) that the household's cohort faced at working age $u$, in period $t-s+u$. It sets the share of labor income credited to the household's notional account. It is not a tax: it is not deducted from household income or counted as government revenue. The only payroll tax households pay is `tau_payroll`, which applies to all labor income under every pension system
   * $g_{NDC,t}$ is the rate credited to notional balances in period $t$. A contribution made at age $u$ earns the rates credited in each period from the next one through the period before retirement. The credited rate is the growth realized from period $t-1$ to period $t$ of the measure chosen with `ndc_growth_rate`. Because model aggregates are stationarized by $e^{g_y t}$ and by population, the growth of an aggregate $X$ is recovered from its stationarized value $\hat{X}$ as
 
     ```{math}
@@ -509,6 +510,50 @@ Given this pension system, the partial derivatives from the household section ar
     w_{t}e_{j,s}v_{t}, & \text{if}\ s \geq R \\
   \end{cases}
  ```
+
+##### Hybrid defined benefit and notional defined contribution system
+
+The hybrid system pays a defined benefit on labor income up to a cutoff and a notional defined contribution benefit on labor income in a band above that cutoff. The two cutoffs are set relative to average labor income in the first model period, $f_{1,t} \bar{y}$ and $f_{2,t} \bar{y}$ with $0 \leq f_{1,t} \leq f_{2,t}$ in every period, where $f_{1,t}$ is the parameter `factor1_db_ndc_hybrid`, $f_{2,t}$ is the parameter `factor2_db_ndc_hybrid`, and $\bar{y}$ is the parameter `avg_labor_inc_t1_model_units`. The value $\bar{y}$ is the average labor income in the current (first) period in model units, taken from an outside model, so the cutoffs do not depend on endogenous variables such as the wage. The user must either supply their own series for each of `factor1_db_ndc_hybrid` and `factor2_db_ndc_hybrid`, or supply a single scalar in the list. A series is entered as a list of two or more values by year, starting in the base year, and every year after the last value entered keeps that value; the two lists need not have the same length. A single scalar is the initial factor $f_{1,0}$ (or $f_{2,0}$) of a path that has the growth trend removed from it, $f_{1,t} = f_{1,0}/e^{g_y t}$, which reflects a type of inflation indexation (equation {eq}`eqn:hybrid_indexed` below). The defaults are the scalars $f_{1,0} = 1.0$ and $f_{2,0} = 2.0$, with $\bar{y} = 1.0$, so by default the cutoffs are indexed in this way. To hold a factor constant instead, enter the same value twice, for example `[1.0, 1.0]`. The cutoffs that apply to any labor income are those of the period in which it was earned, so a change in the cutoffs affects the benefits of current workers only through the income they earn after the change, and leaves the benefits earned in earlier years unchanged.
+
+How the cutoffs are indexed over time is set by the path of the factors. Because $\bar{y}$ is in stationarized model units (labor income divided by $e^{g_y t}$), the cutoffs in levels are $f_{1,t}\bar{y}e^{g_y t}$ and $f_{2,t}\bar{y}e^{g_y t}$:
+
+  * Constant factors, $f_{1,t} = f_{1,0}$, give cutoffs that grow with labor augmenting technological change, at rate $g_y$.
+  * An indexed system, in which the cutoffs stay fixed in real terms at their initial level, sets the factors as below. This is the path the model builds when a factor is entered as a single scalar.
+    ```{math}
+    :label: eqn:hybrid_indexed
+      f_{1,t} = \frac{f_{1,0}}{e^{g_y t}} \quad\text{and}\quad f_{2,t} = \frac{f_{2,0}}{e^{g_y t}}
+    ```
+    so that the cutoffs are $f_{1,t}\bar{y} = f_{1,0}\bar{y}e^{-g_y t}$ and $f_{2,t}\bar{y} = f_{2,0}\bar{y}e^{-g_y t}$ in model units, where $f_{1,0}$ and $f_{2,0}$ are the initial factor values and $g_y$ is the growth rate of labor augmenting technological change per model period. With $g_y > 0$ these factors fall toward zero, and the steady state uses the last value of each path, so in the long run nearly all labor income lies above both cutoffs and earns no benefit.
+  * Any other kind of indexation is some other transformation of the path of $f_{1,t}$ and $f_{2,t}$. For example, cutoffs that grow at rate $g_c$ per model period in real terms have $f_{1,t} = f_{1,0}e^{(g_c - g_y)t}$.
+
+Labor income $y_{j,s,t} = w_t e_{j,s,t} n_{j,s,t}$ is split into the following parts:
+
+  * Labor income up to $f_{1,t} \bar{y}$ earns a defined benefit, computed with the formula and parameters ($R$, $ny$, $Cy$, $\alpha^{DB}$) of the [defined benefit system](#defined-benefit-system) applied to this capped income, $\min\{y_{j,s,t}, f_{1,t} \bar{y}\}$.
+  * Labor income between $f_{1,t} \bar{y}$ and $f_{2,t} \bar{y}$ earns a notional defined contribution benefit, paid in addition to the defined benefit. The household's notional account is credited with $\tau^{p} \max\{\min\{y_{j,s,t}, f_{2,t} \bar{y}\} - f_{1,t} \bar{y}, 0\}$, and the benefit is computed with the formula and parameters ($\tau^p$, the credited rate $g_{NDC}$ set by `ndc_growth_rate` and `ndc_growth_avg_years`, and the conversion coefficient $\delta_R$ with its discount rate `dir_growth_rate`) of the [notional defined contribution system](#notional-defined-contribution-system).
+  * Labor income above $f_{2,t} \bar{y}$ earns no pension benefit.
+
+The cutoffs determine only which income earns which benefit. They do not change what the household pays: as under the other pension systems, the payroll tax `tau_payroll` applies to all labor income $y_{j,s,t}$, with no cap, and the notional rate `tau_p` is used only to credit the notional account, not deducted from household income.
+
+Define the labor income in each band as
+
+  ```{math}
+  :label: eqn:hybrid_bands
+    y^{DB}_{j,s,t} = \min\{w_t e_{j,s,t}n_{j,s,t}, f_{1,t}\bar{y}\} \quad\text{and}\quad y^{NDC}_{j,s,t} = \max\bigl\{\min\{w_t e_{j,s,t}n_{j,s,t}, f_{2,t}\bar{y}\} - f_{1,t}\bar{y}, 0\bigr\}
+  ```
+
+The pension amount under the hybrid system is then the sum of the two benefits:
+
+  ```{math}
+  :label: eqn:hybrid_pension
+  \begin{split}
+   pension_{j,s,t} = &\biggl[\frac{\sum_{u=R-ny}^{R-1}y^{DB}_{j,u,t-s+u}}{ny}\biggr]\times Cy \times \alpha^{DB}_{j,s,t} \\
+   &+ \biggl[\sum_{u=E}^{R-1}\tau^{p}_{u,t-s+u}y^{NDC}_{j,u,t-s+u}\prod_{a=u+1}^{R-1}(1 + g_{NDC,t-s+a})\biggr]\delta_{R,s,t} \quad \forall s \geq R
+  \end{split}
+  ```
+
+where, as in the separate systems, each sum runs over the household's own earnings history (so $y^{DB}_{j,u,t-s+u}$ and $y^{NDC}_{j,u,t-s+u}$ use the cutoffs $f_{1,t-s+u}\bar{y}$ and $f_{2,t-s+u}\bar{y}$ of the period in which the household was age $u$) and the parameters are those that apply to the household's birth cohort. Along the transition path the notional balances are credited with the same time-varying rates as under the notional defined contribution system. Setting $f_{1,t}$ above all labor income gives the defined benefit system, and setting $f_{1,t} = 0$ with $f_{2,t}$ above all labor income gives the notional defined contribution system. As in the other systems, the benefit is scaled by `replacement_rate_adjust`.
+
+Given this pension system, the partial derivative of the benefit with respect to labor supply at a working age $s < R$ is the defined benefit derivative in equation {eq}`eqn:db_deriv` when the household's labor income is below $f_{1,t} \bar{y}$, the notional defined contribution derivative in equation {eq}`eqn:ndc_deriv` when it is between $f_{1,t} \bar{y}$ and $f_{2,t} \bar{y}$, and zero when it is above $f_{2,t} \bar{y}$.
 
 ##### Aggregate Pension Spending
 

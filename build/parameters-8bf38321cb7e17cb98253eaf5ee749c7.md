@@ -317,7 +317,7 @@ _Out-of-Range Action:_ error
 ####  `pension_system`  
 _Description:_ Pension system.  
 _Value Type:_ str  
-_Valid Choices:_['US-Style Social Security', 'Defined Benefits', 'Notional Defined Contribution', 'Points System']  
+_Valid Choices:_['US-Style Social Security', 'Defined Benefits', 'Notional Defined Contribution', 'Points System', 'Hybrid DB-NDC']  
 
 
 ####  `tau_p`  
@@ -325,6 +325,30 @@ _Description:_ Pension system contribution tax rate under a notional defined con
 _Notes:_ A single base value; changes by birth cohort or calendar year are entered through pension_regimes. Contributions are credited at the rate the household's cohort faced at the age they were made.  
 _Value Type:_ float  
 _Valid Range:_ min = 0.0 and max = 1.0  
+_Out-of-Range Action:_ error  
+
+
+####  `factor1_db_ndc_hybrid`  
+_Description:_ Under the hybrid defined benefit and notional defined contribution system, labor income up to factor1_db_ndc_hybrid in period t times avg_labor_inc_t1_model_units (average labor income in the first model period) is subject to the payroll tax tau_payroll and earns a defined benefit (computed with the Defined Benefits parameters) on that income.  
+_Notes:_ Only used when pension_system is 'Hybrid DB-NDC'. May vary over time: set value for base year, click '+' to add value for next year. All future years not specified are set to last value entered. The cutoffs that apply to any labor income are those of the period in which it was earned. Must be no greater than factor2_db_ndc_hybrid in every period. A single value is the initial factor of a path indexed to remove trend growth, value / e^(g_y t) in model period t, so the cutoff is fixed in real terms; enter two or more values to supply your own path.  
+_Value Type:_ float  
+_Valid Range:_ min = 0.0 and max = 100.0  
+_Out-of-Range Action:_ error  
+
+
+####  `factor2_db_ndc_hybrid`  
+_Description:_ Under the hybrid defined benefit and notional defined contribution system, labor income between factor1_db_ndc_hybrid and factor2_db_ndc_hybrid in period t times avg_labor_inc_t1_model_units (average labor income in the first model period) is subject to the contribution rate tau_p and earns a notional defined contribution benefit (computed with the Notional Defined Contribution parameters) in addition to the defined benefit. Labor income above factor2_db_ndc_hybrid times avg_labor_inc_t1_model_units earns no benefit.  
+_Notes:_ Only used when pension_system is 'Hybrid DB-NDC'. May vary over time: set value for base year, click '+' to add value for next year. All future years not specified are set to last value entered. The cutoffs that apply to any labor income are those of the period in which it was earned. Must be at least factor1_db_ndc_hybrid in every period. A single value is the initial factor of a path indexed to remove trend growth, value / e^(g_y t) in model period t, so the cutoff is fixed in real terms; enter two or more values to supply your own path.  
+_Value Type:_ float  
+_Valid Range:_ min = 0.0 and max = 100.0  
+_Out-of-Range Action:_ error  
+
+
+####  `avg_labor_inc_t1_model_units`  
+_Description:_ Average labor income in the first model period, in model units, taken from an outside model. The earnings cutoffs of the hybrid DB-NDC pension system are factor1_db_ndc_hybrid and factor2_db_ndc_hybrid times this value, so the cutoffs do not depend on endogenous model variables such as the wage.  
+_Notes:_ Only used when pension_system is 'Hybrid DB-NDC'. Must be expressed in the same (stationarized) model units as labor income w * e * n.  
+_Value Type:_ float  
+_Valid Range:_ min = 0.0 and max = 1000.0  
 _Out-of-Range Action:_ error  
 
 
