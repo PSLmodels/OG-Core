@@ -10,7 +10,7 @@ ogcore.pensions
 
 .. automodule:: ogcore.pensions
   :members: replacement_rate_vals, pension_amount, SS_amount, DB_amount,
-    NDC_amount, DB_NDC_hybrid_amount, earnings_band, PS_amount,
+    NDC_amount, DB_NDC_hybrid_amount, earnings_band_at, PS_amount,
     deriv_theta, deriv_NDC, deriv_DB, deriv_PS,
     delta_point, NDCRates, growth_rate_path, ndc_rates_path, g_ndc, g_dir,
     annuity_mort_rates, delta_ret,

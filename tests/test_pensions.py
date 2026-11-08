@@ -1346,20 +1346,39 @@ def _hybrid_params(factor1, factor2, avg_inc=0.8):
     return p
 
 
-def test_earnings_band():
+def test_earnings_band_at():
     """
-    earnings_band returns the part of labor income between the two
-    cutoffs, and leaves it unchanged with the default bounds.
+    earnings_band_at returns the part of labor income between the
+    cutoffs in effect in the period it was earned, and leaves it
+    unchanged with lo = 0 and hi = inf. Periods outside the paths read
+    their first or last element.
     """
     x = np.array([0.2, 0.7, 1.2, 3.0])
-    assert np.allclose(pensions.earnings_band(x, 0.0, np.inf), x)
+
+    def band(x, lo, hi, period=0):
+        return pensions.earnings_band_at(
+            x, np.atleast_1d(float(lo)), np.atleast_1d(float(hi)), period
+        )
+
+    assert np.allclose(band(x, 0.0, np.inf), x)
+    assert np.allclose(band(x, 0.0, 1.0), [0.2, 0.7, 1.0, 1.0])
+    assert np.allclose(band(x, 1.0, 2.0), [0.0, 0.0, 0.2, 1.0])
+    assert np.isclose(band(1.2, 1.0, 2.0), 0.2)
+    lo, hi = np.array([0.0, 1.0]), np.array([1.0, 2.0])
     assert np.allclose(
-        pensions.earnings_band(x, 0.0, 1.0), [0.2, 0.7, 1.0, 1.0]
+        pensions.earnings_band_at(x, lo, hi, 0), [0.2, 0.7, 1.0, 1.0]
     )
     assert np.allclose(
-        pensions.earnings_band(x, 1.0, 2.0), [0.0, 0.0, 0.2, 1.0]
+        pensions.earnings_band_at(x, lo, hi, 1), [0.0, 0.0, 0.2, 1.0]
     )
-    assert np.isclose(pensions.earnings_band(1.2, 1.0, 2.0), 0.2)
+    assert np.allclose(
+        pensions.earnings_band_at(x, lo, hi, -3),
+        pensions.earnings_band_at(x, lo, hi, 0),
+    )
+    assert np.allclose(
+        pensions.earnings_band_at(x, lo, hi, 50),
+        pensions.earnings_band_at(x, lo, hi, 1),
+    )
 
 
 @pytest.mark.parametrize("ndim", [1, 2], ids=["S", "SxJ"])

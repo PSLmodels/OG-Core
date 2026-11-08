@@ -10,29 +10,12 @@ THOUSAND = 1000
 
 
 @numba.jit(nopython=True)
-def earnings_band(x, lo, hi):
-    """
-    Part of labor income ``x`` (w * e * n, in model units) that lies
-    between the cutoffs ``lo`` and ``hi``. With the defaults ``lo = 0``
-    and ``hi = inf`` this returns ``x`` unchanged, so the DB and NDC
-    systems are unaffected unless cutoffs are passed.
-
-    Args:
-        x (scalar or Numpy array): labor income, w * e * n
-        lo (scalar): lower cutoff, in model units of labor income
-        hi (scalar): upper cutoff, in model units of labor income
-
-    Returns:
-        band (scalar or Numpy array): min(max(x, lo), hi) - lo
-    """
-    return np.minimum(np.maximum(x, lo), hi) - lo
-
-
-@numba.jit(nopython=True)
 def earnings_band_at(x, lo, hi, period):
     """
-    ``earnings_band`` with cutoffs that vary over time, read in the
-    model period in which the labor income ``x`` was earned.
+    Part of labor income ``x`` (w * e * n, in model units) that lies
+    between the cutoffs in effect in the model period in which it was
+    earned, min(max(x, lo), hi) - lo. With ``lo = 0`` and ``hi = inf``
+    this returns ``x`` unchanged.
 
     Args:
         x (scalar or Numpy array): labor income, w * e * n
@@ -47,9 +30,9 @@ def earnings_band_at(x, lo, hi, period):
         band (scalar or Numpy array): part of ``x`` between the cutoffs
             in effect in ``period``
     """
-    i_lo = min(max(period, 0), lo.size - 1)
-    i_hi = min(max(period, 0), hi.size - 1)
-    return earnings_band(x, lo[i_lo], hi[i_hi])
+    lo_t = lo[min(max(period, 0), lo.size - 1)]
+    hi_t = hi[min(max(period, 0), hi.size - 1)]
+    return np.minimum(np.maximum(x, lo_t), hi_t) - lo_t
 
 
 def _band_paths(earn_lo, earn_hi, method):
