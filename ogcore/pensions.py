@@ -1992,8 +1992,7 @@ def DB_1dim_loop(
         L_inc_avg = 0.0
         for s in range(R - ny, R):
             if earn_lo is None:
-                x = e[s] * n[s]
-                L_inc_avg += w[s] / np.exp(g_y[-1] * (u - s)) * x
+                L_inc_avg += w[s] * e[s] * n[s] / np.exp(g_y[-1] * (u - s))
             else:
                 x = earnings_band_at(
                     w[s] * e[s] * n[s], earn_lo, earn_hi, t_birth + s
@@ -2061,8 +2060,9 @@ def DB_2dim_loop(
         L_inc_avg = np.zeros(DB.shape[1])
         for s in range(R - ny, R):
             if earn_lo is None:
-                x = e[s, :] * n[s, :]
-                L_inc_avg += w[s] / np.exp(g_y[-1] * (u - s)) * x
+                L_inc_avg += (
+                    w[s] * e[s, :] * n[s, :] / np.exp(g_y[-1] * (u - s))
+                )
             else:
                 x = earnings_band_at(
                     w[s] * e[s, :] * n[s, :],
