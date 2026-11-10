@@ -5,6 +5,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Bug Fixes
+
+- The sparsity pattern of the household Jacobian (`use_sparse_FOC_jac`) could miss real links between equations, which made the household solve much slower without changing the answers. Each entry is now compared with the largest entry in its own row rather than in the whole Jacobian, and patterns are kept separately for each lifetime income group.
+
 ## [0.24.4] - 2026-11-07
 
 ### Adds
