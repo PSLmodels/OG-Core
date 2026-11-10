@@ -447,6 +447,7 @@ def FOC_savings(
     p,
     method,
     ndc_rates=None,
+    net_tax=None,
 ):
     r"""
     Computes Euler errors for the FOC for savings in the steady state.
@@ -489,6 +490,9 @@ def FOC_savings(
         ndc_rates (NDCRates): calendar paths of the NDC credited and
             discount rates (``pensions.ndc_rates_path``); None for the
             steady-state rates
+        net_tax (Numpy array or None): household net taxes, if the
+            caller has already computed them for these arguments (as
+            ``tax.net_taxes`` would); None to compute them here
 
     Returns:
         euler (Numpy array): Euler error from FOC for savings
@@ -555,25 +559,28 @@ def FOC_savings(
         m_wealth = p.m_wealth[t : t + length]
         p_wealth = p.p_wealth[t : t + length]
         tau_c = p.tau_c[t : t + length, :]
-    taxes = tax.net_taxes(
-        r,
-        w,
-        b,
-        n,
-        bq,
-        factor,
-        tr,
-        ubi,
-        theta,
-        t,
-        j,
-        False,
-        method,
-        e,
-        etr_params,
-        p,
-        ndc_rates,
-    )
+    if net_tax is None:
+        taxes = tax.net_taxes(
+            r,
+            w,
+            b,
+            n,
+            bq,
+            factor,
+            tr,
+            ubi,
+            theta,
+            t,
+            j,
+            False,
+            method,
+            e,
+            etr_params,
+            p,
+            ndc_rates,
+        )
+    else:
+        taxes = net_tax
     cons = get_cons(
         r, w, p_tilde, p_i, b, b_splus1, n, bq, rm, taxes, e, tau_c, p, method
     )
@@ -648,6 +655,7 @@ def FOC_labor(
     p,
     method,
     ndc_rates=None,
+    net_tax=None,
 ):
     r"""
     Computes errors for the FOC for labor supply in the steady
@@ -692,6 +700,9 @@ def FOC_labor(
         ndc_rates (NDCRates): calendar paths of the NDC credited and
             discount rates (``pensions.ndc_rates_path``); None for the
             steady-state rates
+        net_tax (Numpy array or None): household net taxes, if the
+            caller has already computed them for these arguments (as
+            ``tax.net_taxes`` would); None to compute them here
 
     Returns:
         FOC_error (Numpy array): error from FOC for labor supply
@@ -748,25 +759,28 @@ def FOC_labor(
             w = w.reshape(w.shape[0], 1)
             tau_payroll = tau_payroll.reshape(tau_payroll.shape[0], 1)
 
-    taxes = tax.net_taxes(
-        r,
-        w,
-        b,
-        n,
-        bq,
-        factor,
-        tr,
-        ubi,
-        theta,
-        t,
-        j,
-        False,
-        method,
-        e,
-        etr_params,
-        p,
-        ndc_rates,
-    )
+    if net_tax is None:
+        taxes = tax.net_taxes(
+            r,
+            w,
+            b,
+            n,
+            bq,
+            factor,
+            tr,
+            ubi,
+            theta,
+            t,
+            j,
+            False,
+            method,
+            e,
+            etr_params,
+            p,
+            ndc_rates,
+        )
+    else:
+        taxes = net_tax
     cons = get_cons(
         r, w, p_tilde, p_i, b, b_splus1, n, bq, rm, taxes, e, tau_c, p, method
     )
