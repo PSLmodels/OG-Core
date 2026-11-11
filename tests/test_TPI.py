@@ -20,6 +20,7 @@ import numpy as np
 import os
 import sys
 import json
+from types import SimpleNamespace
 from ogcore import SS, TPI, utils, solvers
 from ogcore.parameters import Specifications
 
@@ -578,6 +579,48 @@ def test_detect_jac_sparsity_by_group():
     )
     assert not without[0].toarray()[n - 1, 0]
     assert with_coupling[0].toarray()[n - 1, 0]
+
+
+def test_refresh_jac_sparsity_adds_missing_links():
+    # A pattern detected at one household's problem can miss links that
+    # another household of the same size and group has (for example a
+    # cohort with different pension rules). When a solve with the cached
+    # pattern fails, the pattern is checked again at that problem and the
+    # missing links are added to the cache.
+    n = 20
+    row_scale = np.ones(n)
+    x0 = np.linspace(0.1, 0.5, n)
+    p = SimpleNamespace(_jac_cache_scope="test_refresh")
+    TPI._detect_jac_sparsity(
+        _banded_residuals, x0, (row_scale, 0.0), scope="test_refresh", group=0
+    )
+    changed, jac = TPI._refresh_jac_sparsity(
+        _banded_residuals, x0, (row_scale, 1.0), p, group=0
+    )
+    assert changed
+    key = ("_banded_residuals", n, 0)
+    assert TPI._BANDED_JAC_CACHE[key][0].toarray()[n - 1, 0]
+    J = jac(x0, row_scale, 1.0)
+    assert np.isclose(J[n - 1, 0], 1.0)
+    # nothing new to add the second time
+    changed, _ = TPI._refresh_jac_sparsity(
+        _banded_residuals, x0, (row_scale, 1.0), p, group=0
+    )
+    assert not changed
+
+
+def test_banded_jac_for_uses_run_scope():
+    # The pattern cache is scoped to the run through the parameters
+    # object, which is not the last of the household problem's arguments
+    # (ndc_rates follows it), so it is passed explicitly.
+    p = Specifications()
+    p._jac_cache_scope = "test_run_scope"
+    n = 20
+    x0 = np.linspace(0.1, 0.5, n)
+    args = (np.ones(n), 0.0, p)
+    jac = TPI._banded_jac_for(_banded_residuals, x0, args, p, group=0)
+    assert jac is not None
+    assert TPI._BANDED_JAC_SCOPE == "test_run_scope"
 
 
 def test_inner_loop_sparse_FOC_jac():
