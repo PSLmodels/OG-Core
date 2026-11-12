@@ -699,6 +699,7 @@ def test_defined_benefits_tpi(tmp_path, pension_system):
         "tau_p": 0.1,
         "ndc_growth_rate": "r",
         "dir_growth_rate": "r",
+        "mindist_SS": 1e-9,  # the production tolerance
     }
     _, root = run_model(
         model_specs(tmp_path / "root", solver="root", **updates)
