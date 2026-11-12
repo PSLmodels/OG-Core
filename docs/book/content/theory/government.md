@@ -648,6 +648,8 @@ Foreign aid to the domestic government, $FA_t$, is treated the same way. In the 
 
 This means that changes to `alpha_FA` in the reform have no effect when `baseline_spending=True`; use `alpha_bs_FA` to change the level of foreign aid relative to the baseline instead.
 
+Concessional debt $D^{ODA}_t$ is not affected by `baseline_spending`: in the reform simulation it is always the fraction $\alpha_{ODA,t}$ of GDP in the reform.
+
 Note that the budget closure rule (described in Section ref{`SecUnbalGBCcloseRule`}) still takes effect in the case of `baseline_spending=True`.  What this means is that the relation described above holds until the period in which the closure rules takes effect.  Once the closure rule begins, the path of $G$ (and/or $TR$, depending on the closure rule used) will adjust as determined by the rule to close the government budget in the long run.
 
 (SecUnbalGBCrev)=
