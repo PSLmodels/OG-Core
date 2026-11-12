@@ -1002,6 +1002,54 @@
             }
         }
     },
+    "alpha_ODA": {
+        "title": "Concessional government debt held by official foreign lenders as a share of GDP",
+        "description": "Stock of government debt owed to official foreign lenders on concessional terms (e.g., official development assistance loans from multilateral and bilateral lenders), as a share of GDP. This debt is held entirely by foreigners, pays the interest rate r_ODA_annual, and is separate from the market debt D whose path the budget closure rule targets. Set value for base year, click '+' to add value for next year.  All future years not specified are set to last value entered.",
+        "short_description": "Concessional (ODA) debt as a share of GDP",
+        "param_notation": "$\\alpha_{ODA,t}$",
+        "section_1": "Fiscal Policy Parameters",
+        "section_2": "Fiscal Policy Parameters",
+        "notes": "",
+        "number_dims": 1,
+        "type": "float",
+        "value": [
+            {
+                "value": [
+                    0.0
+                ]
+            }
+        ],
+        "validators": {
+            "range": {
+                "min": 0.0,
+                "max": 3.0
+            }
+        }
+    },
+    "r_ODA_annual": {
+        "title": "Annual real interest rate on concessional government debt",
+        "description": "Annual real interest rate paid on government debt owed to official foreign lenders on concessional terms (alpha_ODA). Set value for base year, click '+' to add value for next year.  All future years not specified are set to last value entered.",
+        "short_description": "Real interest rate on concessional (ODA) debt",
+        "param_notation": "$r_{ODA,t}$",
+        "section_1": "Fiscal Policy Parameters",
+        "section_2": "Fiscal Policy Parameters",
+        "notes": "",
+        "number_dims": 1,
+        "type": "float",
+        "value": [
+            {
+                "value": [
+                    0.0
+                ]
+            }
+        ],
+        "validators": {
+            "range": {
+                "min": -0.2,
+                "max": 0.2
+            }
+        }
+    },
     "alpha_RM_1": {
         "title": "Exogenous ratio of aggregate remittances to GDP in current period (t=1)",
         "description": "Exogenous ratio of aggregate remittances to GDP in current period (t=1).",

@@ -1932,11 +1932,15 @@ def run_TPI(p, client=None):
     # solve resource constraint
     # foreign debt service costs
     debt_service_f = fiscal.get_debt_service_f(r_p, D_f)
+    # concessional (ODA) debt is also owed to foreigners
+    D_ODA, new_borrowing_ODA, debt_service_ODA = fiscal.get_ODA(
+        Y[: p.T], p, "TPI"
+    )
     net_capital_outflows = aggr.get_capital_outflows(
         r_p[: p.T],
         K_f[: p.T],
-        new_borrowing_f[: p.T],
-        debt_service_f[: p.T],
+        new_borrowing_f[: p.T] + new_borrowing_ODA,
+        debt_service_f[: p.T] + debt_service_ODA,
         p,
     )
     # Fill in arrays, noting that M-1 industries only produce consumption goods
@@ -2028,6 +2032,7 @@ def run_TPI(p, client=None):
             + G[: p.T, ...]
             + I_g[: p.T, ...]
             + debt_service[: p.T, ...]
+            + debt_service_ODA
             + agg_pension_outlays[: p.T, ...]
         ),
         "total_primary_government_outlays": (
@@ -2052,6 +2057,9 @@ def run_TPI(p, client=None):
         "debt_service": debt_service[: p.T, ...],
         "new_borrowing_f": new_borrowing_f[: p.T, ...],
         "debt_service_f": debt_service_f[: p.T, ...],
+        "D_ODA": D_ODA,
+        "new_borrowing_ODA": new_borrowing_ODA,
+        "debt_service_ODA": debt_service_ODA,
         "r": r[: p.T, ...],
         "r_gov": r_gov[: p.T, ...],
         "r_p": r_p[: p.T, ...],

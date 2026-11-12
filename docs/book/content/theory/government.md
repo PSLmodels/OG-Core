@@ -695,11 +695,11 @@ Note that the budget closure rule (described in Section ref{`SecUnbalGBCcloseRul
 (SecUnbalGBCbudgConstr)=
 ## Government Budget Constraint
 
-  Let the level of government debt in period $t$ be given by $D_t$. The government budget constraint requires that government revenue $Rev_t$, external foreign assistance, $FA_t$, plus the budget deficit ($D_{t+1} - D_t$) equal expenditures on interest on the debt, government spending on public goods $G_t$, total infrastructure investments $I_{g,t}$, total pension outlays, total transfer payments to households $TR_t$, and $UBI_t$ every period $t$,
+  Let the level of government debt in period $t$ be given by $D_t$. The government may also owe concessional debt $D^{ODA}_t$ to official foreign lenders, described below. The government budget constraint requires that government revenue $Rev_t$, external foreign assistance, $FA_t$, plus the budget deficit financed by new borrowing ($D_{t+1} - D_t$ and $D^{ODA}_{t+1} - D^{ODA}_t$) equal expenditures on interest on the debt, government spending on public goods $G_t$, total infrastructure investments $I_{g,t}$, total pension outlays, total transfer payments to households $TR_t$, and $UBI_t$ every period $t$,
 
   ```{math}
   :label: EqUnbalGBCbudgConstr
-    D_{t+1} + Rev_t + FA_t = (1 + r_{gov,t})D_t + G_t + I_{g,t} + Pensions_t + TR_t + UBI_t  \quad\forall t
+    D_{t+1} + D^{ODA}_{t+1} + Rev_t + FA_t = (1 + r_{gov,t})D_t + (1 + r_{ODA,t})D^{ODA}_t + G_t + I_{g,t} + Pensions_t + TR_t + UBI_t  \quad\forall t
   ```
 
   where $r_{gov,t}$ is the interest rate paid by the government defined in equation {eq}`EqUnbalGBC_rate_wedge` below, $G_{t}$ is government spending on public goods, $I_{g,t}$ is total government spending on infrastructure investment, $TR_{t}$ are non-pension government transfers, and $UBI_t$ is the total UBI transfer outlays across households in time $t$. All variables in {eq}`EqUnbalGBCbudgConstr` are real variables denominated in units of current-period output in industry $M$ the numeraire ($p_{M,t}=1$ for all $t$).
@@ -735,6 +735,15 @@ Note that the budget closure rule (described in Section ref{`SecUnbalGBCcloseRul
   ```
 
   where $\delta_g$ is the depreciation rate on infrastructure and $\phi_g$ (`infra_investment_leakage_rate`) is the fraction of infrastructure investment lost to leakage (e.g., corruption or other frictions). The stock of public capital in each industry $m$ complements labor and private capital in the production function of the representative firm, in Equation {eq}`EqFirmsCESprodfun`.
+
+  Many low-income countries borrow from official lenders, such as multilateral development banks and bilateral donors, on concessional terms: at interest rates well below market rates, in amounts the lenders decide. `OG-Core` models this concessional debt (official development assistance loans) as a stock $D^{ODA}_t$ held entirely by foreigners, set as a time-dependent fraction $\alpha_{ODA,t}$ (`alpha_ODA`) of GDP and paying the exogenous real interest rate $r_{ODA,t}$ (`r_ODA_annual`, converted to a model-period rate).
+
+  ```{math}
+  :label: EqUnbalGBC_ODA
+    D^{ODA}_t = \alpha_{ODA,t}\: Y_t \quad\forall t
+  ```
+
+  The government receives the new concessional borrowing $D^{ODA}_{t+1} - D^{ODA}_t$ and pays the interest $r_{ODA,t}D^{ODA}_t$ each period. Concessional debt is separate from the market debt $D_t$: it is not part of household savings, so it does not enter the household portfolio return $r_{p,t}$ in {eq}`eq_portfolio_return`, and the interest rate $r_{gov,t}$, the debt-to-GDP target $\alpha_D$ of the budget closure rule, and the share of new debt bought by foreigners $\zeta_D$ all refer to market debt. Its interest is paid abroad at $r_{ODA,t}$ in the goods market clearing condition (Chapter {ref}`Chap_MarkClr`). By default $\alpha_{ODA,t} = 0$.
 
   Aggregate spending on UBI at time $t$ is the sum of UBI payments across all households at time $t$:
 
@@ -793,8 +802,8 @@ Note that the budget closure rule (described in Section ref{`SecUnbalGBCcloseRul
     &\text{where}\quad g_{g,t} =
       \begin{cases}
         1 \qquad\qquad\qquad\qquad\qquad\qquad\qquad\qquad\qquad\quad\:\text{if}\quad t < T_{G1} \\
-        \frac{\left[\rho_{d}\alpha_{D}Y_{t} + (1-\rho_{d})D_{t}\right] - (1+r_{gov,t})D_{t} - I_{g,t} - TR_{t} - UBI_{t} + Rev_{t} + FA_{t}}{\alpha_g Y_t} \quad\text{if}\quad T_{G1}\leq t<T_{G2} \\
-        \frac{\alpha_{D}Y_{t} - (1+r_{gov,t})D_{t} - I_{g,t} - TR_{t} - UBI_{t} + Rev_{t} + FA_{t}}{\alpha_g Y_t} \qquad\qquad\quad\:\:\,\text{if}\quad t \geq T_{G2}
+        \frac{\left[\rho_{d}\alpha_{D}Y_{t} + (1-\rho_{d})D_{t}\right] - (1+r_{gov,t})D_{t} - I_{g,t} - TR_{t} - UBI_{t} + Rev_{t} + FA_{t} + D^{ODA}_{t+1} - (1+r_{ODA,t})D^{ODA}_{t}}{\alpha_g Y_t} \quad\text{if}\quad T_{G1}\leq t<T_{G2} \\
+        \frac{\alpha_{D}Y_{t} - (1+r_{gov,t})D_{t} - I_{g,t} - TR_{t} - UBI_{t} + Rev_{t} + FA_{t} + D^{ODA}_{t+1} - (1+r_{ODA,t})D^{ODA}_{t}}{\alpha_g Y_t} \qquad\qquad\quad\:\:\,\text{if}\quad t \geq T_{G2}
       \end{cases} \\
     &\text{and}\quad g_{tr,t} = 1 \quad\forall t
   \end{split}
@@ -815,8 +824,8 @@ Note that the budget closure rule (described in Section ref{`SecUnbalGBCcloseRul
     &\text{where}\quad g_{tr,t} =
       \begin{cases}
         1 \qquad\qquad\qquad\qquad\qquad\qquad\qquad\qquad\qquad\:\:\:\,\text{if}\quad t < T_{G1} \\
-        \frac{\left[\rho_{d}\alpha_{D}Y_{t} + (1-\rho_{d})D_{t}\right] - (1+r_{gov,t})D_{t} - G_{t} - I_{g,t} -  UBI_{t} + Rev_{t} + FA_{t}}{\alpha_{tr} Y_t} \quad\text{if}\quad T_{G1}\leq t<T_{G2} \\
-        \frac{\alpha_{D}Y_{t} - (1+r_{gov,t})D_{t} - G_{t} - I_{g,t} - UBI_{t} + Rev_{t} + FA_{t}}{\alpha_{tr}Y_t} \qquad\qquad\quad\:\:\:\text{if}\quad t \geq T_{G2}
+        \frac{\left[\rho_{d}\alpha_{D}Y_{t} + (1-\rho_{d})D_{t}\right] - (1+r_{gov,t})D_{t} - G_{t} - I_{g,t} -  UBI_{t} + Rev_{t} + FA_{t} + D^{ODA}_{t+1} - (1+r_{ODA,t})D^{ODA}_{t}}{\alpha_{tr} Y_t} \quad\text{if}\quad T_{G1}\leq t<T_{G2} \\
+        \frac{\alpha_{D}Y_{t} - (1+r_{gov,t})D_{t} - G_{t} - I_{g,t} - UBI_{t} + Rev_{t} + FA_{t} + D^{ODA}_{t+1} - (1+r_{ODA,t})D^{ODA}_{t}}{\alpha_{tr}Y_t} \qquad\qquad\quad\:\:\:\text{if}\quad t \geq T_{G2}
       \end{cases} \\
     &\text{and}\quad g_{g,t} = 1 \quad\forall t
   \end{split}
@@ -846,8 +855,8 @@ Note that the budget closure rule (described in Section ref{`SecUnbalGBCcloseRul
     &\text{where}\quad g_{trg,t} =
     \begin{cases}
       1 \qquad\qquad\qquad\qquad\qquad\qquad\qquad\qquad\quad\:\,\text{if}\quad t < T_{G1} \\
-      \frac{\left[\rho_{d}\alpha_{D}Y_{t} + (1-\rho_{d})D_{t}\right] - (1+r_{gov,t})D_{t} - I_{g,t} - UBI_{t} + Rev_{t} + FA_{t}}{\left(\alpha_g + \alpha_{tr}\right)Y_t} \quad\text{if}\quad T_{G1}\leq t<T_{G2} \\
-      \frac{\alpha_{D}Y_{t} - (1+r_{gov,t})D_{t} - I_{g,t} - UBI_{t} + Rev_{t} + FA_{t}}{\left(\alpha_g + \alpha_{tr}\right)Y_t} \qquad\qquad\quad\:\:\:\text{if}\quad t \geq T_{G2}
+      \frac{\left[\rho_{d}\alpha_{D}Y_{t} + (1-\rho_{d})D_{t}\right] - (1+r_{gov,t})D_{t} - I_{g,t} - UBI_{t} + Rev_{t} + FA_{t} + D^{ODA}_{t+1} - (1+r_{ODA,t})D^{ODA}_{t}}{\left(\alpha_g + \alpha_{tr}\right)Y_t} \quad\text{if}\quad T_{G1}\leq t<T_{G2} \\
+      \frac{\alpha_{D}Y_{t} - (1+r_{gov,t})D_{t} - I_{g,t} - UBI_{t} + Rev_{t} + FA_{t} + D^{ODA}_{t+1} - (1+r_{ODA,t})D^{ODA}_{t}}{\left(\alpha_g + \alpha_{tr}\right)Y_t} \qquad\qquad\quad\:\:\:\text{if}\quad t \geq T_{G2}
     \end{cases}
   \end{split}
   ```

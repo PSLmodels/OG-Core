@@ -720,8 +720,14 @@ def inner_loop(outer_loop_vars, p, client, scattered_p=None):
     I_g_vec = np.zeros(p.M)
     I_g_vec[-1] = I_g
     debt_service_f = fiscal.get_debt_service_f(r_p, D_f)
+    # concessional (ODA) debt is also owed to foreigners
+    _, new_borrowing_ODA, debt_service_ODA = fiscal.get_ODA(Y, p, "SS")
     net_capital_outflows = aggr.get_capital_outflows(
-        r_p, K_f, new_borrowing_f, debt_service_f, p
+        r_p,
+        K_f,
+        new_borrowing_f + new_borrowing_ODA,
+        debt_service_f + debt_service_ODA,
+        p,
     )
     net_capital_outflows_vec = np.zeros(p.M)
     net_capital_outflows_vec[-1] = net_capital_outflows
@@ -1210,8 +1216,16 @@ def SS_solver(
     # solve resource constraint
     # net foreign borrowing
     debt_service_f = fiscal.get_debt_service_f(r_p_ss, D_f_ss)
+    # concessional (ODA) debt is also owed to foreigners
+    D_ODA_ss, new_borrowing_ODA, debt_service_ODA = fiscal.get_ODA(
+        Yss, p, "SS"
+    )
     net_capital_outflows = aggr.get_capital_outflows(
-        r_p_ss, K_f_ss, new_borrowing_f, debt_service_f, p
+        r_p_ss,
+        K_f_ss,
+        new_borrowing_f + new_borrowing_ODA,
+        debt_service_f + debt_service_ODA,
+        p,
     )
     # Fill in arrays, noting that M-1 industries only produce consumption goods
     G_vec_ss = np.zeros(p.M)
@@ -1297,6 +1311,7 @@ def SS_solver(
             + Gss
             + I_g_ss
             + debt_service
+            + debt_service_ODA
             + agg_pension_outlays
         ),
         "total_primary_government_outlays": (
@@ -1319,6 +1334,9 @@ def SS_solver(
         "debt_service": debt_service,
         "new_borrowing_f": new_borrowing_f,
         "debt_service_f": debt_service_f,
+        "D_ODA": D_ODA_ss,
+        "new_borrowing_ODA": new_borrowing_ODA,
+        "debt_service_ODA": debt_service_ODA,
         "r": rss,
         "r_gov": r_gov_ss,
         "r_p": r_p_ss,

@@ -304,6 +304,20 @@ _Valid Range:_ min = 0.0 and max = 1.0
 _Out-of-Range Action:_ error  
 
 
+####  `alpha_ODA`  
+_Description:_ Stock of government debt owed to official foreign lenders on concessional terms (e.g., official development assistance loans from multilateral and bilateral lenders), as a share of GDP. This debt is held entirely by foreigners, pays the interest rate r_ODA_annual, and is separate from the market debt D whose path the budget closure rule targets. Set value for base year, click '+' to add value for next year.  All future years not specified are set to last value entered.  
+_Value Type:_ float  
+_Valid Range:_ min = 0.0 and max = 3.0  
+_Out-of-Range Action:_ error  
+
+
+####  `r_ODA_annual`  
+_Description:_ Annual real interest rate paid on government debt owed to official foreign lenders on concessional terms (alpha_ODA). Set value for base year, click '+' to add value for next year.  All future years not specified are set to last value entered.  
+_Value Type:_ float  
+_Valid Range:_ min = -0.2 and max = 0.2  
+_Out-of-Range Action:_ error  
+
+
 ### Government Pension Parameters
 
 ####  `retirement_age`  

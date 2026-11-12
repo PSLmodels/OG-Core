@@ -447,6 +447,60 @@ def test_SS_solver(baseline, param_updates, filename, dask_client):
         )
 
 
+def test_SS_solver_ODA(dask_client):
+    # With concessional (ODA) debt, the steady state holds the stock at
+    # its share of GDP, balances the government budget with the ODA flows,
+    # and clears the goods market with ODA interest paid abroad.
+    p = Specifications(baseline=True, num_workers=NUM_WORKERS)
+    p.update_specifications({"alpha_ODA": [0.3], "r_ODA_annual": [0.01]})
+    p.frac_tax_payroll = np.zeros(p.frac_tax_payroll.shape)
+    p.output_base = CUR_PATH
+    b_guess = np.ones((p.S, p.J)) * 0.07
+    n_guess = np.ones((p.S, p.J)) * 0.35 * p.ltilde
+    rguess = 0.06483431412921253
+    wguess = firm.get_w_from_r(rguess, p, "SS")
+    BQguess = aggregates.get_BQ(rguess, b_guess, None, p, "SS", False)
+    ss = SS.SS_solver(
+        b_guess,
+        n_guess,
+        rguess,
+        rguess,
+        wguess,
+        np.ones(p.M),
+        0.6376591201150815,
+        BQguess,
+        0.05738932081035772,
+        None,
+        None,
+        139355.1547340256,
+        p,
+        dask_client,
+        False,
+    )
+
+    Y = ss["Y"]
+    assert np.isclose(ss["D_ODA"], 0.3 * Y)
+    assert np.isclose(
+        ss["new_borrowing_ODA"],
+        0.3 * Y * ((1 + p.g_n_ss) * np.exp(p.g_y) - 1),
+    )
+    assert np.isclose(ss["debt_service_ODA"], p.r_ODA[-1] * 0.3 * Y)
+    assert np.isclose(
+        ss["G"],
+        ss["total_tax_revenue"]
+        + ss["new_borrowing"]
+        + ss["foreign_aid"]
+        + ss["new_borrowing_ODA"]
+        - ss["debt_service_ODA"]
+        - ss["agg_pension_outlays"]
+        - ss["TR"]
+        - ss["debt_service"]
+        - ss["UBI"]
+        - ss["I_g"],
+    )
+    assert np.abs(ss["resource_constraint_error"]).max() < 1e-6
+
+
 param_updates5 = {"zeta_K": [1.0], "budget_balance": True, "alpha_G": [0.0]}
 filename5 = "SS_solver_outputs_baseline_small_open_budget_balance.pkl"
 param_updates6 = {

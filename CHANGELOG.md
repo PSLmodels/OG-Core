@@ -5,6 +5,15 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.25.0] - 2026-11-12
+
+### Adds
+- Adds concessional government debt owed to official foreign lenders (official development assistance loans), addressing Issue #1125. The new time-varying parameter `alpha_ODA` (default 0.0) sets the stock of this debt as a share of GDP, and `r_ODA_annual` (default 0.0, time varying, converted to a model-period rate `r_ODA`) its real interest rate. Each period the government receives the new concessional borrowing and pays its interest, in the budget constraint of the steady state and the time path (`fiscal.D_G_path`, `fiscal.get_G_ss`, and the balanced-budget case of `fiscal.get_TR`), and the interest is paid abroad at `r_ODA` in the resource constraint, alongside the foreign-held market debt. Concessional debt is separate from the market debt `D`: it is not held by households, so it does not enter the portfolio return `r_p`, and `r_gov`, `debt_ratio_ss` and the closure rule, and `zeta_D` refer to market debt.
+- Adds `fiscal.get_ODA`, which returns the stock of concessional debt, new concessional borrowing, and its interest in the steady state or along the time path.
+- Adds `D_ODA`, `new_borrowing_ODA`, and `debt_service_ODA` to the steady-state and time-path output, and includes concessional interest in `total_government_outlays`.
+- Adds concessional debt to the government budget constraint, the budget closure rules, and their stationarized forms in the documentation, and adds concessional debt and foreign aid to the goods market clearing condition.
+- Adds tests of `fiscal.get_ODA`, of the steady-state spending and the time path of debt and spending with concessional debt (the budget constraint holds each period), of the new parameters, and a steady-state solution with concessional debt that balances the budget and clears the goods market.
+
 ## [0.24.4] - 2026-11-07
 
 ### Adds
@@ -872,6 +881,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Any earlier versions of OG-USA can be found in the [`OG-Core`](https://github.com/PSLmodels/OG-Core) repository [release history](https://github.com/PSLmodels/OG-Core/releases) from [v.0.6.4](https://github.com/PSLmodels/OG-Core/releases/tag/v0.6.4) (Jul. 20, 2021) or earlier.
 
 
+[0.25.0]: https://github.com/PSLmodels/OG-Core/compare/v0.24.4...v0.25.0
 [0.24.4]: https://github.com/PSLmodels/OG-Core/compare/v0.24.3...v0.24.4
 [0.24.3]: https://github.com/PSLmodels/OG-Core/compare/v0.24.2...v0.24.3
 [0.24.2]: https://github.com/PSLmodels/OG-Core/compare/v0.24.1...v0.24.2

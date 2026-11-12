@@ -83,6 +83,27 @@ def test_alpha_FA_extended_over_time_path():
     assert specs.alpha_FA[-1] == 0.03
 
 
+def test_ODA_parameters_extended_and_converted():
+    # Concessional (ODA) debt and its interest rate may vary over the time
+    # path; the annual rate is converted to a model-period rate.
+    specs = Specifications()
+    assert np.all(specs.alpha_ODA == 0.0)
+    assert np.all(specs.r_ODA == 0.0)
+    specs.update_specifications(
+        {
+            "alpha_ODA": [0.1, 0.2],
+            "r_ODA_annual": [0.01, -0.02],
+        }
+    )
+    assert specs.alpha_ODA.shape[0] == specs.T + specs.S
+    assert specs.alpha_ODA[0] == 0.1
+    assert specs.alpha_ODA[-1] == 0.2
+    assert specs.r_ODA.shape[0] == specs.T + specs.S
+    years_per_period = (specs.ending_age - specs.starting_age) / specs.S
+    assert np.isclose(specs.r_ODA[0], 1.01**years_per_period - 1)
+    assert np.isclose(specs.r_ODA[-1], 0.98**years_per_period - 1)
+
+
 def test_tau_payroll_extended_over_T_and_J():
     # tau_payroll may vary over the time path and across lifetime income
     # groups, so it should be extrapolated to T+S x J from a scalar, a

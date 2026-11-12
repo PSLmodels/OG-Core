@@ -47,6 +47,11 @@ def D_G_path(r, dg_fixed_values, p):
             - \hat{D}_{t}\Bigr) \quad\forall t
         \end{split}
 
+    Infrastructure investment, pensions, foreign aid, and the net
+    resources from concessional debt (new concessional borrowing less its
+    interest; see ``get_ODA``) also enter the budget constraint and the
+    closure rule, as in the documentation's government chapter.
+
     Args:
         r (Numpy array): interest rate on private capital over the
             time path
@@ -86,6 +91,11 @@ def D_G_path(r, dg_fixed_values, p):
 
     growth = (1 + np.append(p.g_n_preTP, p.g_n[: p.T])) * np.exp(p.g_y)
 
+    # net resources from concessional (ODA) debt: new borrowing less
+    # interest
+    _, new_borrowing_ODA, debt_service_ODA = get_ODA(Y, p, "TPI")
+    ODA_net = new_borrowing_ODA - debt_service_ODA
+
     D = np.zeros(p.T + 1)
     if p.baseline:
         D[0] = p.initial_debt_ratio * Y[0]
@@ -120,6 +130,7 @@ def D_G_path(r, dg_fixed_values, p):
                 + agg_pension_outlays[t - 1]
                 - total_tax_revenue[t - 1]
                 - foreign_aid[t - 1]
+                - ODA_net[t - 1]
             )
             r_gov[t] = get_r_gov(r[t], D[t] / Y[t], p, method="scalar", t=t)
             if (t >= p.tG1) and (t < p.tG2):
@@ -129,6 +140,7 @@ def D_G_path(r, dg_fixed_values, p):
                     - (1 + r_gov[t]) * D[t]
                     + total_tax_revenue[t]
                     + foreign_aid[t]
+                    + ODA_net[t]
                     - agg_pension_outlays[t]
                     - I_g[t - 1]
                     - TR[t]
@@ -140,6 +152,7 @@ def D_G_path(r, dg_fixed_values, p):
                     - (1 + r_gov[t]) * D[t]
                     + total_tax_revenue[t]
                     + foreign_aid[t]
+                    + ODA_net[t]
                     - agg_pension_outlays[t]
                     - I_g[t - 1]
                     - TR[t]
@@ -159,6 +172,7 @@ def D_G_path(r, dg_fixed_values, p):
             + agg_pension_outlays[t - 1]
             - total_tax_revenue[t - 1]
             - foreign_aid[t - 1]
+            - ODA_net[t - 1]
         )
         r_gov[t] = get_r_gov(r[t], D[t] / Y[t], p, method="scalar", t=t)
         G[t] = (
@@ -166,6 +180,7 @@ def D_G_path(r, dg_fixed_values, p):
             - (1 + r_gov[t]) * D[t]
             + total_tax_revenue[t]
             + foreign_aid[t]
+            + ODA_net[t]
             - agg_pension_outlays[t]
             - I_g[t - 1]
             - TR[t]
@@ -180,6 +195,7 @@ def D_G_path(r, dg_fixed_values, p):
             + agg_pension_outlays[t]
             - total_tax_revenue[t]
             - foreign_aid[t]
+            - ODA_net[t]
         )
         D_ratio_max = np.amax(D[: p.T] / Y[: p.T])
         print("Maximum debt ratio: ", D_ratio_max)
@@ -276,6 +292,8 @@ def get_G_ss(
     .. math::
             \bar{G} = \bar{Rev} + \overline{FA}
             + \bar{D}\bigl[(1 + \bar{g}_n)e^{g_y} - (1 + \bar{r}_{gov})\bigr]
+            + \bar{D}^{ODA}\bigl[(1 + \bar{g}_n)e^{g_y}
+            - (1 + \bar{r}_{ODA})\bigr]
             - \bar{I}_g - \bar{TR} - \overline{UBI}
 
     Args:
@@ -298,10 +316,13 @@ def get_G_ss(
     if p.budget_balance:
         G = p.alpha_G[-1] * Y
     else:
+        _, new_borrowing_ODA, debt_service_ODA = get_ODA(Y, p, "SS")
         G = (
             total_tax_revenue
             + new_borrowing
             + foreign_aid
+            + new_borrowing_ODA
+            - debt_service_ODA
             - (agg_pension_outlays + TR + debt_service + UBI_outlays + I_g)
         )
 
@@ -370,9 +391,12 @@ def get_TR(
 
     """
     if p.budget_balance:
+        _, new_borrowing_ODA, debt_service_ODA = get_ODA(Y, p, method)
         new_TR = (
             total_tax_revenue
             + foreign_aid
+            + new_borrowing_ODA
+            - debt_service_ODA
             - agg_pension_outlays
             - G
             - UBI_outlays
@@ -501,6 +525,52 @@ def get_foreign_aid(Y, FA_baseline, p, method="SS"):
             foreign_aid = p.alpha_FA[: p.T] * Y[: p.T]
 
     return foreign_aid
+
+
+def get_ODA(Y, p, method="SS"):
+    r"""
+    Find the stock of concessional government debt held by official
+    foreign lenders, the new concessional borrowing, and its interest.
+
+    .. math::
+        \begin{split}
+            \hat{D}^{ODA}_{t} &= \alpha_{ODA,t}\hat{Y}_{t} \\
+            \text{new ODA borrowing}_t &= e^{g_y}\left(1 +
+            \tilde{g}_{n,t+1}\right)\hat{D}^{ODA}_{t+1} -
+            \hat{D}^{ODA}_{t} \\
+            \text{ODA debt service}_t &= r_{ODA,t}\hat{D}^{ODA}_{t}
+        \end{split}
+
+    Args:
+        Y (array_like): aggregate output
+        p (OG-Core Specifications object): model parameters
+        method (str): either 'SS' for steady-state or 'TPI' for transition
+            path
+
+    Returns:
+        (tuple): concessional debt variables:
+
+            * D_ODA (array_like): stock of concessional debt
+            * new_borrowing_ODA (array_like): new concessional borrowing
+            * debt_service_ODA (array_like): interest on concessional debt
+    """
+    if method == "SS":
+        D_ODA = p.alpha_ODA[-1] * Y
+        new_borrowing_ODA = D_ODA * ((1 + p.g_n_ss) * np.exp(p.g_y) - 1)
+        debt_service_ODA = p.r_ODA[-1] * D_ODA
+    else:
+        # The stock in period T needs output in period T, beyond the
+        # path; output is at its steady state by then, so carry the
+        # last value forward.
+        Y_path = np.append(Y[: p.T], Y[p.T - 1])
+        D_ODA = p.alpha_ODA[: p.T + 1] * Y_path
+        new_borrowing_ODA = (
+            D_ODA[1:] * np.exp(p.g_y) * (1 + p.g_n[: p.T]) - D_ODA[:-1]
+        )
+        D_ODA = D_ODA[:-1]
+        debt_service_ODA = p.r_ODA[: p.T] * D_ODA
+
+    return D_ODA, new_borrowing_ODA, debt_service_ODA
 
 
 def get_K_g(K_g0, I_g, p, method):

@@ -252,11 +252,13 @@ class Specifications(paramtools.Parameters):
             "alpha_T",
             "alpha_I",
             "alpha_FA",
+            "alpha_ODA",
             "alpha_bs_G",
             "alpha_bs_T",
             "alpha_bs_I",
             "alpha_bs_FA",
             "world_int_rate_annual",
+            "r_ODA_annual",
             "adjustment_factor_for_cit_receipts",
             "tau_bq",
             "h_wealth",
@@ -438,6 +440,14 @@ class Specifications(paramtools.Parameters):
         # open economy parameters
         self.world_int_rate = rate_conversion(
             self.world_int_rate_annual,
+            self.starting_age,
+            self.ending_age,
+            self.S,
+        )
+
+        # interest rate on concessional (ODA) government debt
+        self.r_ODA = rate_conversion(
+            self.r_ODA_annual,
             self.starting_age,
             self.ending_age,
             self.S,
