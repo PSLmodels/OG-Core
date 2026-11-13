@@ -1198,6 +1198,8 @@ def run_TPI(p, client=None):
     trust_radius_min = getattr(p, "TPI_trust_radius_min", 0.1)
     trust_radius_max = getattr(p, "TPI_trust_radius_max", 10.0)
     prev_accel_dist = np.inf
+    # whether the initial-wealth anchor (initial_wealth_ratio) is active
+    anchor_wealth = p.baseline and p.initial_wealth_ratio is not None
 
     if client:
         # Before scattering, temporarily remove unpicklable schema objects
@@ -1671,8 +1673,8 @@ def run_TPI(p, client=None):
                 TR[: p.T] = utils.convex_combo(TR_new[: p.T], TR[: p.T], p.nu)
         else:
             # Accelerated outer step on the packed macro/price vector
-            # {r_p, r, w, p_m, BQ[, TR]}; the update rule (Anderson) uses the
-            # recent residual history. Auxiliaries stay damped below.
+            # {r_p, r, w, p_m, BQ[, TR][, B0]}; the update rule (Anderson)
+            # uses the recent residual history. Auxiliaries stay damped below.
             blocks = [
                 (r_p, r_p_new),
                 (r, rnew),
@@ -1682,6 +1684,16 @@ def run_TPI(p, client=None):
             ]
             if not p.baseline_spending:
                 blocks.append((TR, TR_new))
+            if anchor_wealth:
+                # Initial household wealth targets a ratio to initial GDP,
+                # which the prices determine, so it belongs to the same fixed
+                # point. Damped on its own it closes only nu of its gap per
+                # iteration and keeps shifting the map the accelerator
+                # extrapolates, so it is accelerated with the prices.
+                B0_iter = np.array([B[0]])
+                blocks.append(
+                    (B0_iter, np.array([p.initial_wealth_ratio * Y[0]]))
+                )
             x, gx = solvers.pack_outer_vars(blocks, p.T)
             # True fixed-point residual (implied vs the PRE-update guess). The
             # post-update TPIdist below is spuriously ~0 for steps that set
@@ -1730,13 +1742,19 @@ def run_TPI(p, client=None):
         # policy warm-starts stay on the damped update.
         r_gov[: p.T] = utils.convex_combo(r_gov_new[: p.T], r_gov[: p.T], p.nu)
         D[: p.T] = Dnew[: p.T]
-        if p.baseline and p.initial_wealth_ratio is not None:
+        if anchor_wealth:
             # Initial aggregate household wealth is a target ratio to
             # initial GDP, which is endogenous: move B[0] toward the
-            # target with the outer-loop damping and scale the initial
-            # distribution of savings (whose shape is fixed) to match, so
-            # that the next inner loop starts households from it
-            B0 = utils.convex_combo(p.initial_wealth_ratio * Y[0], B[0], p.nu)
+            # target (with the outer-loop damping, or with the accelerated
+            # step above) and scale the initial distribution of savings
+            # (whose shape is fixed) to match, so that the next inner loop
+            # starts households from it
+            if outer_updater is None:
+                B0 = utils.convex_combo(
+                    p.initial_wealth_ratio * Y[0], B[0], p.nu
+                )
+            else:
+                B0 = float(B0_iter[0])
             B[0] = B0
             b_splus1init = b_splus1init * (
                 B0 / aggr.get_B(b_splus1init, p, "SS", True)
