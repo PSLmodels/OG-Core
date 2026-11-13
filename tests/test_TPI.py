@@ -1337,8 +1337,10 @@ def test_run_TPI_anderson_initial_wealth(tmpdir, dask_client):
         pickle.dump(ss_outputs, f)
     tpi = TPI.run_TPI(p, client=dask_client)
 
+    # initial wealth is part of the converged fixed point, so its gap to
+    # the target is within the outer loop's tolerance
     assert tpi["B"][0] / tpi["Y"][0] == pytest.approx(
-        p.initial_wealth_ratio, rel=1e-4
+        p.initial_wealth_ratio, rel=p.mindist_TPI
     )
     rc = np.abs(np.asarray(tpi["resource_constraint_error"])[: p.T - 1])
     assert rc.max() < p.RC_TPI
