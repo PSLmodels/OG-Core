@@ -1326,13 +1326,10 @@ def test_run_TPI_anderson_initial_wealth(tmpdir, dask_client):
         output_base=baseline_dir,
         num_workers=NUM_WORKERS,
     )
-    p.update_specifications(
-        {
-            **param_updates_iw,
-            "TPI_outer_method": "anderson",
-            "nu": 0.2,
-        }
-    )
+    test_params = TEST_PARAM_DICT.copy()
+    test_params.update(param_updates_iw)
+    test_params.update({"TPI_outer_method": "anderson", "nu": 0.2})
+    p.update_specifications(test_params)
     SS.ENFORCE_SOLUTION_CHECKS = True
     ss_outputs = SS.run_SS(p, client=dask_client)
     utils.mkdirs(os.path.join(p.baseline_dir, "SS"))
