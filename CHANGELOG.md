@@ -8,7 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [0.24.5] - 2026-11-13
 
 ### Fixed
-- With `TPI_outer_method = "anderson"` and an initial-wealth target (`initial_wealth_ratio`), initial household wealth is now accelerated together with the prices instead of being moved toward its target by the damped step afterwards. On its own it closed only `nu` of its gap each iteration and kept changing the problem the accelerator extrapolates, so accelerated steps were often rejected and the transition took several times as many iterations. The damped (`picard`) update is unchanged.
+- With `TPI_outer_method = "anderson"` and an initial-wealth target (`initial_wealth_ratio`), initial household wealth is now accelerated together with the prices instead of being moved toward its target by the damped step afterwards. On its own it closed only `nu` of its gap each iteration and kept changing the problem the accelerator extrapolates, so accelerated steps were often rejected and the transition took several times as many iterations. With the prices accelerated, the reported government interest rate path `r_gov` is now the rate the solve uses rather than a damped copy of it that could lag the solution. The damped (`picard`) update is unchanged.
 
 ## [0.24.4] - 2026-11-07
 

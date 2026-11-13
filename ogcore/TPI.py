@@ -1740,7 +1740,15 @@ def run_TPI(p, client=None):
             solvers.unpack_outer_vars(x_next, blocks, p.T)
         # Auxiliaries (unchanged): government rate, debt, and the household
         # policy warm-starts stay on the damped update.
-        r_gov[: p.T] = utils.convex_combo(r_gov_new[: p.T], r_gov[: p.T], p.nu)
+        if outer_updater is None:
+            r_gov[: p.T] = utils.convex_combo(
+                r_gov_new[: p.T], r_gov[: p.T], p.nu
+            )
+        else:
+            # Only the reported path: the solve uses the implied rate
+            # (r_p and the budget), so with the prices accelerated the
+            # damped copy would lag the solution it reports.
+            r_gov[: p.T] = r_gov_new[: p.T]
         D[: p.T] = Dnew[: p.T]
         if anchor_wealth:
             # Initial aggregate household wealth is a target ratio to
