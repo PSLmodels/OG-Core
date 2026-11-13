@@ -1357,9 +1357,9 @@ def unstationarize_vars(
         "UBI_path",
         "new_borrowing_f",
         "debt_service_f",
-        "D_ODA",
-        "new_borrowing_ODA",
-        "debt_service_ODA",
+        "D_ext",
+        "new_borrowing_ext",
+        "debt_service_ext",
     ]:
         non_stationary_output = tpi_vars[var][:T] * pop_growth * prod_growth
     elif var in [

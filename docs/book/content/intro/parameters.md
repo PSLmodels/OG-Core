@@ -304,15 +304,15 @@ _Valid Range:_ min = 0.0 and max = 1.0
 _Out-of-Range Action:_ error  
 
 
-####  `alpha_ODA`  
-_Description:_ Stock of government debt owed to official foreign lenders on concessional terms (e.g., official development assistance loans from multilateral and bilateral lenders), as a share of GDP. This debt is held entirely by foreigners, pays the interest rate r_ODA_annual, and is separate from the market debt D whose path the budget closure rule targets. Set value for base year, click '+' to add value for next year.  All future years not specified are set to last value entered.  
+####  `alpha_D_ext`  
+_Description:_ Stock of government debt contracted abroad at its own interest rate, as a share of GDP: for example concessional loans from multilateral and bilateral lenders (official development assistance), or bonds and loans on commercial terms. This debt is held only by foreigners and is not part of the market debt D: it does not enter households' portfolio return, pays r_D_ext_annual, and is paid abroad at that rate. The debt-elastic premium on r_gov is evaluated at all government debt, D plus this debt, while the budget closure rule (debt_ratio_ss) and zeta_D refer to market debt. Set value for base year, click '+' to add value for next year.  All future years not specified are set to last value entered.  
 _Value Type:_ float  
 _Valid Range:_ min = 0.0 and max = 3.0  
 _Out-of-Range Action:_ error  
 
 
-####  `r_ODA_annual`  
-_Description:_ Annual real interest rate paid on government debt owed to official foreign lenders on concessional terms (alpha_ODA). Set value for base year, click '+' to add value for next year.  All future years not specified are set to last value entered.  
+####  `r_D_ext_annual`  
+_Description:_ Annual real interest rate paid on government debt contracted abroad (alpha_D_ext), in units of the model's output: for debt in foreign currency, the foreign-currency rate less foreign inflation, plus any expected real depreciation. Set value for base year, click '+' to add value for next year.  All future years not specified are set to last value entered.  
 _Value Type:_ float  
 _Valid Range:_ min = -0.2 and max = 0.2  
 _Out-of-Range Action:_ error  

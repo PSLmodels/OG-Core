@@ -1312,13 +1312,13 @@ def test_run_TPI_extra(baseline, param_updates, filename, tmpdir, dask_client):
 
 
 @pytest.mark.local
-def test_run_TPI_ODA(tmpdir, dask_client):
+def test_run_TPI_D_ext(tmpdir, dask_client):
     """
-    A baseline transition with concessional (ODA) debt that falls over
-    time and gets dearer: the stock, its new borrowing and its interest
-    follow alpha_ODA and r_ODA period by period, the government budget
-    holds in every period with the ODA flows in it, and the goods market
-    clears along the path with ODA interest paid abroad.
+    A baseline transition with government debt contracted abroad (D_ext)
+    that falls over time and gets dearer: the stock, its new borrowing and
+    its interest follow alpha_D_ext and r_D_ext period by period, the
+    government budget holds in every period with these flows in it, and
+    the goods market clears along the path with the interest paid abroad.
     """
     baseline_dir = os.path.join(tmpdir, "baseline")
     p = Specifications(
@@ -1329,8 +1329,8 @@ def test_run_TPI_ODA(tmpdir, dask_client):
     )
     p.update_specifications(
         {
-            "alpha_ODA": [0.3, 0.25, 0.2, 0.15, 0.1, 0.05, 0.0],
-            "r_ODA_annual": [-0.01, 0.0, 0.01, 0.02],
+            "alpha_D_ext": [0.3, 0.25, 0.2, 0.15, 0.1, 0.05, 0.0],
+            "r_D_ext_annual": [-0.01, 0.0, 0.01, 0.02],
         }
     )
     SS.ENFORCE_SOLUTION_CHECKS = True
@@ -1344,16 +1344,16 @@ def test_run_TPI_ODA(tmpdir, dask_client):
     Y = tpi["Y"][:T]
     growth = np.exp(p.g_y) * (1 + p.g_n[:T])
     # the stock and its flows
-    assert np.allclose(tpi["D_ODA"], p.alpha_ODA[:T] * Y)
-    D_ODA_next = p.alpha_ODA[1 : T + 1] * np.append(Y[1:], Y[-1])
+    assert np.allclose(tpi["D_ext"], p.alpha_D_ext[:T] * Y)
+    D_ext_next = p.alpha_D_ext[1 : T + 1] * np.append(Y[1:], Y[-1])
     assert np.allclose(
-        tpi["new_borrowing_ODA"], D_ODA_next * growth - tpi["D_ODA"]
+        tpi["new_borrowing_ext"], D_ext_next * growth - tpi["D_ext"]
     )
-    assert np.allclose(tpi["debt_service_ODA"], p.r_ODA[:T] * tpi["D_ODA"])
-    assert tpi["D_ODA"][10] == 0.0
+    assert np.allclose(tpi["debt_service_ext"], p.r_D_ext[:T] * tpi["D_ext"])
+    assert tpi["D_ext"][10] == 0.0
     # the government budget, period by period
     D = tpi["D"]
-    ODA_net = tpi["new_borrowing_ODA"] - tpi["debt_service_ODA"]
+    ext_net = tpi["new_borrowing_ext"] - tpi["debt_service_ext"]
     outlays = (
         (1 + tpi["r_gov"][: T - 1]) * D[: T - 1]
         + tpi["G"][: T - 1]
@@ -1363,7 +1363,7 @@ def test_run_TPI_ODA(tmpdir, dask_client):
         + tpi["agg_pension_outlays"][: T - 1]
         - tpi["total_tax_revenue"][: T - 1]
         - tpi["foreign_aid"][: T - 1]
-        - ODA_net[: T - 1]
+        - ext_net[: T - 1]
     )
     assert np.allclose(D[1:T] * growth[: T - 1], outlays, atol=1e-8)
     # the goods market along the path

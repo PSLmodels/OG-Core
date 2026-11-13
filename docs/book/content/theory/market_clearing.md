@@ -117,7 +117,7 @@
 
   ```{math}
   :label: EqMarkClrGoods_M
-    Y_{M,t} = C_{M,t} + I_{M,t} + I_{g,t} + G_t + r_{p,t} K^f_t + r_{p,t}D^f_t - (K^f_{t+1} - K^f_t) - \bigl(D^f_{t+1} - D^f_t\bigr) + r_{ODA,t}D^{ODA}_t - \bigl(D^{ODA}_{t+1} - D^{ODA}_t\bigr) - RM_t - FA_t \quad\forall t
+    Y_{M,t} = C_{M,t} + I_{M,t} + I_{g,t} + G_t + r_{p,t} K^f_t + r_{p,t}D^f_t - (K^f_{t+1} - K^f_t) - \bigl(D^f_{t+1} - D^f_t\bigr) + r_{ext,t}D^{ext}_t - \bigl(D^{ext}_{t+1} - D^{ext}_t\bigr) - RM_t - FA_t \quad\forall t
   ```
   where
   ```{math}
@@ -133,9 +133,9 @@
 
   Similarly, we must subtract off the foreign purchases of new government debt $D^f_{t+1} - D^f_t$ and aggregate remittances $RM_t$ as shown in the second term in parentheses and the last term, respectively, on the right-hand-side of {eq}`EqMarkClrGoods_M`. The new foreign purchases of government debt are part of $I_{g,t}$ and $G_t$, as they are functions of GDP $Y_t$, as shown in {eq}`EqUnbalGBC_Gt`, {eq}`EqUnbalGBC_Igt`, and the government budget constraint {eq}`EqUnbalGBCbudgConstr`. Foreign lending relaxes the resource constraint. And aggregate remittances are part of aggregate consumption $C_t$ and also relax the resource constraint.
 
-  Concessional government debt owed to official foreign lenders $D^{ODA}_t$ (see the government budget constraint {eq}`EqUnbalGBCbudgConstr`) enters in the same way as foreign holdings of market debt, except that its interest is paid at the concessional rate $r_{ODA,t}$ rather than $r_{p,t}$: new concessional borrowing $D^{ODA}_{t+1} - D^{ODA}_t$ relaxes the resource constraint and its interest $r_{ODA,t}D^{ODA}_t$ is output paid abroad. Foreign aid to the government $FA_t$ is a transfer from abroad and also relaxes the resource constraint.
+  Government debt contracted abroad $D^{ext}_t$ (see the government budget constraint {eq}`EqUnbalGBCbudgConstr`) enters in the same way as foreign holdings of market debt, except that its interest is paid at its own rate $r_{ext,t}$ rather than $r_{p,t}$, because it is not part of the portfolio whose return $r_{p,t}$ pays foreign and domestic holders alike: new external borrowing $D^{ext}_{t+1} - D^{ext}_t$ relaxes the resource constraint and its interest $r_{ext,t}D^{ext}_t$ is output paid abroad. Foreign aid to the government $FA_t$ is a transfer from abroad and also relaxes the resource constraint.
 
-  Net exports (imports) of capital in the form of foreign private capital inflows $K^f_t$, foreign holdings of government debt $D^f_t$ and $D^{ODA}_t$, remittances $RM_t$, and foreign aid $FA_t$ are clearly accounted for in {eq}`EqMarkClrGoods_M`. Foreign remittances received by domestic households are described in Section {ref}`SecHHremit` of Chapter {ref}`Chap_House`.
+  Net exports (imports) of capital in the form of foreign private capital inflows $K^f_t$, foreign holdings of government debt $D^f_t$ and $D^{ext}_t$, remittances $RM_t$, and foreign aid $FA_t$ are clearly accounted for in {eq}`EqMarkClrGoods_M`. Foreign remittances received by domestic households are described in Section {ref}`SecHHremit` of Chapter {ref}`Chap_House`.
 
 
 (SecMarkClrBQ)=

@@ -1124,7 +1124,11 @@ def run_TPI(p, client=None):
 
     # Compute other interest rates
     r_gov = np.ones_like(r) * ss_vars["r_gov"]
-    r_gov[: p.T] = fiscal.get_r_gov(r[: p.T], D[: p.T] / Y[: p.T], p, "TPI")
+    # the debt-elastic premium prices all government debt: market debt D
+    # plus debt contracted abroad, D_ext = alpha_D_ext * Y
+    r_gov[: p.T] = fiscal.get_r_gov(
+        r[: p.T], D[: p.T] / Y[: p.T] + p.alpha_D_ext[: p.T], p, "TPI"
+    )
     r_p = np.ones_like(r) * ss_vars["r_p"]
     MPKg = np.zeros((p.T, p.M))
     for m in range(p.M):
@@ -1573,7 +1577,10 @@ def run_TPI(p, client=None):
             B[: p.T], K_demand_open_vec.sum(-1), D_d[: p.T], p.zeta_K[: p.T]
         )
         r_gov_new = fiscal.get_r_gov(
-            rnew[: p.T], Dnew[: p.T] / Y[: p.T], p, "TPI"
+            rnew[: p.T],
+            Dnew[: p.T] / Y[: p.T] + p.alpha_D_ext[: p.T],
+            p,
+            "TPI",
         )
         r_p_new = aggr.get_r_p(
             rnew[: p.T],
@@ -1932,15 +1939,15 @@ def run_TPI(p, client=None):
     # solve resource constraint
     # foreign debt service costs
     debt_service_f = fiscal.get_debt_service_f(r_p, D_f)
-    # concessional (ODA) debt is also owed to foreigners
-    D_ODA, new_borrowing_ODA, debt_service_ODA = fiscal.get_ODA(
+    # government debt contracted abroad (D_ext) is also owed to foreigners
+    D_ext, new_borrowing_ext, debt_service_ext = fiscal.get_D_ext(
         Y[: p.T], p, "TPI"
     )
     net_capital_outflows = aggr.get_capital_outflows(
         r_p[: p.T],
         K_f[: p.T],
-        new_borrowing_f[: p.T] + new_borrowing_ODA,
-        debt_service_f[: p.T] + debt_service_ODA,
+        new_borrowing_f[: p.T] + new_borrowing_ext,
+        debt_service_f[: p.T] + debt_service_ext,
         p,
     )
     # Fill in arrays, noting that M-1 industries only produce consumption goods
@@ -2032,7 +2039,7 @@ def run_TPI(p, client=None):
             + G[: p.T, ...]
             + I_g[: p.T, ...]
             + debt_service[: p.T, ...]
-            + debt_service_ODA
+            + debt_service_ext
             + agg_pension_outlays[: p.T, ...]
         ),
         "total_primary_government_outlays": (
@@ -2057,9 +2064,9 @@ def run_TPI(p, client=None):
         "debt_service": debt_service[: p.T, ...],
         "new_borrowing_f": new_borrowing_f[: p.T, ...],
         "debt_service_f": debt_service_f[: p.T, ...],
-        "D_ODA": D_ODA,
-        "new_borrowing_ODA": new_borrowing_ODA,
-        "debt_service_ODA": debt_service_ODA,
+        "D_ext": D_ext,
+        "new_borrowing_ext": new_borrowing_ext,
+        "debt_service_ext": debt_service_ext,
         "r": r[: p.T, ...],
         "r_gov": r_gov[: p.T, ...],
         "r_p": r_p[: p.T, ...],

@@ -1002,11 +1002,11 @@
             }
         }
     },
-    "alpha_ODA": {
-        "title": "Concessional government debt held by official foreign lenders as a share of GDP",
-        "description": "Stock of government debt owed to official foreign lenders on concessional terms (e.g., official development assistance loans from multilateral and bilateral lenders), as a share of GDP. This debt is held entirely by foreigners, pays the interest rate r_ODA_annual, and is separate from the market debt D whose path the budget closure rule targets. Set value for base year, click '+' to add value for next year.  All future years not specified are set to last value entered.",
-        "short_description": "Concessional (ODA) debt as a share of GDP",
-        "param_notation": "$\\alpha_{ODA,t}$",
+    "alpha_D_ext": {
+        "title": "Government debt contracted abroad as a share of GDP",
+        "description": "Stock of government debt contracted abroad at its own interest rate, as a share of GDP: for example concessional loans from multilateral and bilateral lenders (official development assistance), or bonds and loans on commercial terms. This debt is held only by foreigners and is not part of the market debt D: it does not enter households' portfolio return, pays r_D_ext_annual, and is paid abroad at that rate. The debt-elastic premium on r_gov is evaluated at all government debt, D plus this debt, while the budget closure rule (debt_ratio_ss) and zeta_D refer to market debt. Set value for base year, click '+' to add value for next year.  All future years not specified are set to last value entered.",
+        "short_description": "Government debt contracted abroad as a share of GDP",
+        "param_notation": "$\\alpha_{D,ext,t}$",
         "section_1": "Fiscal Policy Parameters",
         "section_2": "Fiscal Policy Parameters",
         "notes": "",
@@ -1026,11 +1026,11 @@
             }
         }
     },
-    "r_ODA_annual": {
-        "title": "Annual real interest rate on concessional government debt",
-        "description": "Annual real interest rate paid on government debt owed to official foreign lenders on concessional terms (alpha_ODA). Set value for base year, click '+' to add value for next year.  All future years not specified are set to last value entered.",
-        "short_description": "Real interest rate on concessional (ODA) debt",
-        "param_notation": "$r_{ODA,t}$",
+    "r_D_ext_annual": {
+        "title": "Annual real interest rate on government debt contracted abroad",
+        "description": "Annual real interest rate paid on government debt contracted abroad (alpha_D_ext), in units of the model's output: for debt in foreign currency, the foreign-currency rate less foreign inflation, plus any expected real depreciation. Set value for base year, click '+' to add value for next year.  All future years not specified are set to last value entered.",
+        "short_description": "Real interest rate on external (D_ext) debt",
+        "param_notation": "$r_{ext,t}$",
         "section_1": "Fiscal Policy Parameters",
         "section_2": "Fiscal Policy Parameters",
         "notes": "",

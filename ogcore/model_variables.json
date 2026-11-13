@@ -270,7 +270,7 @@
       "toGDP_label": "Consumption Tax Revenue-to-GDP"
     },
     "D": {
-      "desc": "Total government debt",
+      "desc": "Government debt issued in the domestic market (market debt), excluding debt contracted abroad (D_ext)",
       "section": "Government Revenues, Outlays, and Debt",
       "type": "array-like",
       "TPI dimensions": "T",
@@ -295,6 +295,33 @@
       "SS dimensions": "scalar",
       "label": "Domestically-owned Gov Debt ($D^d_t$)",
       "toGDP_label": "Domestically-owned Debt-to-GDP ($D^d_{t}/Y_t$)"
+    },
+    "D_ext": {
+      "desc": "Government debt contracted abroad at its own interest rate (alpha_D_ext times GDP), held entirely by foreigners and outside the household portfolio",
+      "section": "Government Revenues, Outlays, and Debt",
+      "type": "array-like",
+      "TPI dimensions": "T",
+      "SS dimensions": "scalar",
+      "label": "Gov Debt Contracted Abroad ($D^{ext}_t$)",
+      "toGDP_label": "External Debt-to-GDP ($D^{ext}_{t}/Y_t$)"
+    },
+    "new_borrowing_ext": {
+      "desc": "New borrowing of government debt contracted abroad",
+      "section": "Government Revenues, Outlays, and Debt",
+      "type": "array-like",
+      "TPI dimensions": "T",
+      "SS dimensions": "scalar",
+      "label": "New External Borrowing",
+      "toGDP_label": "New External Borrowing-to-GDP"
+    },
+    "debt_service_ext": {
+      "desc": "Interest on government debt contracted abroad, at r_D_ext",
+      "section": "Government Revenues, Outlays, and Debt",
+      "type": "array-like",
+      "TPI dimensions": "T",
+      "SS dimensions": "scalar",
+      "label": "External Debt Service",
+      "toGDP_label": "External Debt Service-to-GDP"
     },
     "new_borrowing": {
       "desc": "New government borrowing, equal to budget deficit",

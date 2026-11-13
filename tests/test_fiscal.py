@@ -484,9 +484,9 @@ def test_get_K_g(K_g0, I_g, method, leakage, expected):
     ["SS", "TPI"],
     ids=["SS", "TPI"],
 )
-def test_get_ODA(method):
+def test_get_D_ext(method):
     """
-    Test of the stock, new borrowing, and interest on concessional (ODA)
+    Test of the stock, new borrowing, and interest on external (D_ext)
     government debt.
     """
     p = Specifications()
@@ -494,11 +494,11 @@ def test_get_ODA(method):
     p.g_y = 0.03
     p.g_n_ss = 0.02
     p.g_n = np.array([0.02, 0.01])
-    p.alpha_ODA = np.array([0.1, 0.5, 0.5])
-    p.r_ODA = np.array([0.01, -0.01, -0.01])
+    p.alpha_D_ext = np.array([0.1, 0.5, 0.5])
+    p.r_D_ext = np.array([0.01, -0.01, -0.01])
     Y = np.array([0.2, 4.0])
     if method == "SS":
-        D_ODA, new_borrowing_ODA, debt_service_ODA = fiscal.get_ODA(
+        D_ext, new_borrowing_ext, debt_service_ext = fiscal.get_D_ext(
             Y[-1], p, method
         )
         expected = (
@@ -507,7 +507,7 @@ def test_get_ODA(method):
             -0.01 * 2.0,
         )
     else:
-        D_ODA, new_borrowing_ODA, debt_service_ODA = fiscal.get_ODA(
+        D_ext, new_borrowing_ext, debt_service_ext = fiscal.get_D_ext(
             Y, p, method
         )
         # the stock in period T uses output in period T - 1
@@ -522,51 +522,51 @@ def test_get_ODA(method):
             np.array([0.01 * 0.02, -0.01 * 2.0]),
         )
     for test_val, expected_val in zip(
-        (D_ODA, new_borrowing_ODA, debt_service_ODA), expected
+        (D_ext, new_borrowing_ext, debt_service_ext), expected
     ):
         assert np.allclose(test_val, expected_val)
 
 
-def test_get_ODA_zero_by_default():
+def test_get_D_ext_zero_by_default():
     """
-    With the default parameters there is no concessional debt.
+    With the default parameters there is no debt contracted abroad.
     """
     p = Specifications()
     Y = np.ones(p.T) * 2.0
     for method, y in (("SS", 2.0), ("TPI", Y)):
-        for v in fiscal.get_ODA(y, p, method):
+        for v in fiscal.get_D_ext(y, p, method):
             assert np.allclose(v, 0.0)
 
 
-def test_get_G_ss_ODA():
+def test_get_G_ss_D_ext():
     """
-    Concessional debt adds its new borrowing, less its interest, to the
-    resources that finance steady-state government spending.
+    Debt contracted abroad adds its new borrowing, less its interest, to
+    the resources that finance steady-state government spending.
     """
     Y = 2.2
     new_borrowing = 0.072076633
     debt_service = 0.042345192
     p = Specifications()
-    p.update_specifications({"alpha_ODA": [0.3], "r_ODA_annual": [0.01]})
+    p.update_specifications({"alpha_D_ext": [0.3], "r_D_ext_annual": [0.01]})
     test_G = fiscal.get_G_ss(
         Y, 2.3, 0.0, 1.6, 0.0, 0.0, 0.0, new_borrowing, debt_service, p
     )
-    D_ODA = 0.3 * Y
+    D_ext = 0.3 * Y
     expected_G = (
         expected_G1
-        + D_ODA * ((1 + p.g_n_ss) * np.exp(p.g_y) - 1)
-        - p.r_ODA[-1] * D_ODA
+        + D_ext * ((1 + p.g_n_ss) * np.exp(p.g_y) - 1)
+        - p.r_D_ext[-1] * D_ext
     )
 
     assert np.allclose(test_G, expected_G)
 
 
-def test_D_G_path_ODA_budget_constraint():
+def test_D_G_path_D_ext_budget_constraint():
     """
-    With concessional debt, the time path of market debt and spending
+    With debt contracted abroad, the time path of market debt and spending
     satisfies the government budget constraint each period:
-    growth * D_{t+1} + new ODA borrowing_t + Rev_t + FA_t =
-    (1 + r_gov_t) D_t + ODA interest_t + G_t + I_g_t + TR_t + UBI_t
+    growth * D_{t+1} + new external borrowing_t + Rev_t + FA_t =
+    (1 + r_gov_t) D_t + external interest_t + G_t + I_g_t + TR_t + UBI_t
     + pensions_t.
     """
     p = Specifications()
@@ -582,8 +582,8 @@ def test_D_G_path_ODA_budget_constraint():
             "rho_G": 0.1,
             "g_y_annual": 0.03,
             "alpha_FA": [0.01],
-            "alpha_ODA": [0.2, 0.25, 0.3],
-            "r_ODA_annual": [-0.01],
+            "alpha_D_ext": [0.2, 0.25, 0.3],
+            "r_D_ext_annual": [-0.01],
         },
         raise_errors=False,
     )
@@ -605,20 +605,72 @@ def test_D_G_path_ODA_budget_constraint():
         0.59,
     )
     D, G, _, _, r_gov, _, _, _ = fiscal.D_G_path(r, dg_fixed_values, p)
-    _, new_borrowing_ODA, debt_service_ODA = fiscal.get_ODA(Y_path, p, "TPI")
+    _, new_borrowing_ext, debt_service_ext = fiscal.get_D_ext(Y_path, p, "TPI")
     growth = np.exp(p.g_y) * (1 + p.g_n[: p.T - 1])
     lhs = (
         growth * D[1 : p.T]
-        + new_borrowing_ODA[: p.T - 1]
+        + new_borrowing_ext[: p.T - 1]
         + Revenue[: p.T - 1]
         + foreign_aid[: p.T - 1]
     )
     rhs = (
         (1 + r_gov[: p.T - 1]) * D[: p.T - 1]
-        + debt_service_ODA[: p.T - 1]
+        + debt_service_ext[: p.T - 1]
         + G[: p.T - 1]
         + TR_path[: p.T - 1]
     )
     assert np.allclose(lhs, rhs)
     # the closure rule still brings market debt to its target
     assert np.isclose(D[p.T - 1] / Y_path[p.T - 2], p.debt_ratio_ss)
+
+
+@pytest.mark.parametrize(
+    "alpha_D_ext", [[0.0], [0.2, 0.25, 0.3]], ids=["none", "some"]
+)
+def test_D_G_path_premium_on_total_debt(alpha_D_ext):
+    """
+    The debt-elastic premium on r_gov is evaluated at all government debt,
+    market debt D plus debt contracted abroad D_ext. With no debt
+    contracted abroad it is the market-debt ratio, as before.
+    """
+    p = Specifications()
+    p.update_specifications(
+        {
+            "T": 320,
+            "S": 80,
+            "debt_ratio_ss": 1.2,
+            "tG1": 20,
+            "tG2": 256,
+            "alpha_T": [0.09],
+            "alpha_G": [0.05],
+            "rho_G": 0.1,
+            "g_y_annual": 0.03,
+            "r_gov_DY": -0.04,
+            "r_gov_DY2": 0.02,
+            "alpha_D_ext": alpha_D_ext,
+            "r_D_ext_annual": [-0.01],
+        },
+        raise_errors=False,
+    )
+    r = np.ones(p.T + p.S) * 0.05
+    p.g_n = np.ones(p.T + p.S) * 0.02
+    zeros = np.zeros_like(TR)
+    dg_fixed_values = (
+        Y.copy(),
+        Revenue,
+        zeros,
+        zeros,
+        TR.copy(),
+        zeros,
+        zeros[: p.T],
+        Gbaseline,
+        0.59,
+    )
+    D, _, _, _, r_gov, _, _, _ = fiscal.D_G_path(r, dg_fixed_values, p)
+    D_ext, _, _ = fiscal.get_D_ext(Y, p, "TPI")
+    total = (D[: p.T] + D_ext) / Y[: p.T]
+    expected = fiscal.get_r_gov(r[: p.T], total, p, "TPI")
+    assert np.allclose(r_gov[: p.T], expected)
+    if alpha_D_ext == [0.0]:
+        market = fiscal.get_r_gov(r[: p.T], D[: p.T] / Y[: p.T], p, "TPI")
+        assert np.allclose(r_gov[: p.T], market)

@@ -520,7 +520,9 @@ def inner_loop(outer_loop_vars, p, client, scattered_p=None):
     B = aggr.get_B(bssmat, p, "SS", False)
 
     # Find gov't debt
-    r_gov = fiscal.get_r_gov(r, p.debt_ratio_ss, p, "scalar", t=-1)
+    r_gov = fiscal.get_r_gov(
+        r, p.debt_ratio_ss + p.alpha_D_ext[-1], p, "scalar", t=-1
+    )
     D, D_d, D_f, new_borrowing, _, new_borrowing_f = fiscal.get_D_ss(
         r_gov, Y, p
     )
@@ -572,7 +574,9 @@ def inner_loop(outer_loop_vars, p, client, scattered_p=None):
         new_r = firm.get_r(Y_vec[-1], K_vec[-1], p_m, p, "SS", -1)
     new_w = firm.get_w(Y_vec[-1], L_vec[-1], p_m, p, "SS")
 
-    new_r_gov = fiscal.get_r_gov(new_r, p.debt_ratio_ss, p, "scalar", t=-1)
+    new_r_gov = fiscal.get_r_gov(
+        new_r, p.debt_ratio_ss + p.alpha_D_ext[-1], p, "scalar", t=-1
+    )
     # now get accurate measure of debt service cost
     (
         D,
@@ -720,13 +724,13 @@ def inner_loop(outer_loop_vars, p, client, scattered_p=None):
     I_g_vec = np.zeros(p.M)
     I_g_vec[-1] = I_g
     debt_service_f = fiscal.get_debt_service_f(r_p, D_f)
-    # concessional (ODA) debt is also owed to foreigners
-    _, new_borrowing_ODA, debt_service_ODA = fiscal.get_ODA(Y, p, "SS")
+    # government debt contracted abroad (D_ext) is also owed to foreigners
+    _, new_borrowing_ext, debt_service_ext = fiscal.get_D_ext(Y, p, "SS")
     net_capital_outflows = aggr.get_capital_outflows(
         r_p,
         K_f,
-        new_borrowing_f + new_borrowing_ODA,
-        debt_service_f + debt_service_ODA,
+        new_borrowing_f + new_borrowing_ext,
+        debt_service_f + debt_service_ext,
         p,
     )
     net_capital_outflows_vec = np.zeros(p.M)
@@ -938,7 +942,9 @@ def SS_solver(
     K_vec_ss = new_K_vec
     L_vec_ss = new_L_vec
     Y_vec_ss = new_Y_vec
-    r_gov_ss = fiscal.get_r_gov(rss, p.debt_ratio_ss, p, "scalar", t=-1)
+    r_gov_ss = fiscal.get_r_gov(
+        rss, p.debt_ratio_ss + p.alpha_D_ext[-1], p, "scalar", t=-1
+    )
     p_m_ss = new_p_m
     p_i_ss = np.dot(p.io_matrix, p_m_ss)
     p_tilde_ss = aggr.get_ptilde(p_i_ss, p.tau_c[-1, :], p.alpha_c)
@@ -1216,15 +1222,15 @@ def SS_solver(
     # solve resource constraint
     # net foreign borrowing
     debt_service_f = fiscal.get_debt_service_f(r_p_ss, D_f_ss)
-    # concessional (ODA) debt is also owed to foreigners
-    D_ODA_ss, new_borrowing_ODA, debt_service_ODA = fiscal.get_ODA(
+    # government debt contracted abroad (D_ext) is also owed to foreigners
+    D_ext_ss, new_borrowing_ext, debt_service_ext = fiscal.get_D_ext(
         Yss, p, "SS"
     )
     net_capital_outflows = aggr.get_capital_outflows(
         r_p_ss,
         K_f_ss,
-        new_borrowing_f + new_borrowing_ODA,
-        debt_service_f + debt_service_ODA,
+        new_borrowing_f + new_borrowing_ext,
+        debt_service_f + debt_service_ext,
         p,
     )
     # Fill in arrays, noting that M-1 industries only produce consumption goods
@@ -1311,7 +1317,7 @@ def SS_solver(
             + Gss
             + I_g_ss
             + debt_service
-            + debt_service_ODA
+            + debt_service_ext
             + agg_pension_outlays
         ),
         "total_primary_government_outlays": (
@@ -1334,9 +1340,9 @@ def SS_solver(
         "debt_service": debt_service,
         "new_borrowing_f": new_borrowing_f,
         "debt_service_f": debt_service_f,
-        "D_ODA": D_ODA_ss,
-        "new_borrowing_ODA": new_borrowing_ODA,
-        "debt_service_ODA": debt_service_ODA,
+        "D_ext": D_ext_ss,
+        "new_borrowing_ext": new_borrowing_ext,
+        "debt_service_ext": debt_service_ext,
         "r": rss,
         "r_gov": r_gov_ss,
         "r_p": r_p_ss,

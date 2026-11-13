@@ -5,14 +5,18 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [0.25.0] - 2026-11-12
+## [0.25.0] - 2026-11-13
 
 ### Adds
-- Adds concessional government debt owed to official foreign lenders (official development assistance loans), addressing Issue #1125. The new time-varying parameter `alpha_ODA` (default 0.0) sets the stock of this debt as a share of GDP, and `r_ODA_annual` (default 0.0, time varying, converted to a model-period rate `r_ODA`) its real interest rate. Each period the government receives the new concessional borrowing and pays its interest, in the budget constraint of the steady state and the time path (`fiscal.D_G_path`, `fiscal.get_G_ss`, and the balanced-budget case of `fiscal.get_TR`), and the interest is paid abroad at `r_ODA` in the resource constraint, alongside the foreign-held market debt. Concessional debt is separate from the market debt `D`: it is not held by households, so it does not enter the portfolio return `r_p`, and `r_gov`, `debt_ratio_ss` and the closure rule, and `zeta_D` refer to market debt.
-- Adds `fiscal.get_ODA`, which returns the stock of concessional debt, new concessional borrowing, and its interest in the steady state or along the time path.
-- Adds `D_ODA`, `new_borrowing_ODA`, and `debt_service_ODA` to the steady-state and time-path output (and to `utils.unstationarize_vars`), and includes concessional interest in `total_government_outlays`. Concessional debt is a share of GDP in the reform as well, including when `baseline_spending=True`.
-- Adds concessional debt to the government budget constraint, the budget closure rules, and their stationarized forms in the documentation, and adds concessional debt and foreign aid to the goods market clearing condition.
-- Adds tests of `fiscal.get_ODA`, of the steady-state spending and the time path of debt and spending with concessional debt (the budget constraint holds each period), of the new parameters, and a steady-state solution with concessional debt that balances the budget and clears the goods market.
+- Adds government debt contracted abroad at its own interest rate, addressing Issue #1125 (concessional debt from official lenders), and usable for any government debt contracted abroad, concessional or commercial. The new time-varying parameter `alpha_D_ext` (default 0.0) sets this debt as a share of GDP, and `r_D_ext_annual` (default 0.0, time varying, converted to a model-period rate `r_D_ext`) its real interest rate. Each period the government receives the new external borrowing and pays its interest, in the budget constraint of the steady state and the time path (`fiscal.D_G_path`, `fiscal.get_G_ss`, and the balanced-budget case of `fiscal.get_TR`), and the interest is paid abroad at `r_D_ext` in the resource constraint. The debt is held only by foreigners and is separate from the market debt `D`: it does not enter households' portfolio return `r_p`, and `debt_ratio_ss`, the closure rule and `zeta_D` refer to market debt.
+- Adds `fiscal.get_D_ext`, which returns the stock of debt contracted abroad, new external borrowing, and its interest in the steady state or along the time path.
+- Adds `D_ext`, `new_borrowing_ext`, and `debt_service_ext` to the steady-state and time-path output (with their descriptions in `model_variables.json`, and in `utils.unstationarize_vars`), and includes external interest in `total_government_outlays`. The debt is a share of GDP in the reform as well, including when `baseline_spending=True`.
+- Adds the debt contracted abroad to the government budget constraint, the budget closure rules, and their stationarized forms in the documentation, and adds it and foreign aid to the goods market clearing condition.
+- Adds tests of `fiscal.get_D_ext`, of the steady-state spending and the time path of debt and spending with debt contracted abroad (the budget constraint holds each period), of the premium on total debt, of the new parameters, a steady-state solution that balances the budget and clears the goods market, and a time path (marked `local`) with a falling external debt that keeps the budget and the goods market in balance in every period.
+
+### Updates
+- The debt-elastic premium on `r_gov` (`r_gov_DY`, `r_gov_DY2`) is evaluated at all government debt, market debt plus debt contracted abroad. With `alpha_D_ext` at its default of zero this is the market-debt ratio, so results are unchanged.
+- The debt-to-GDP ratio in `output_tables.macro_table_SS` and in the calibration moments counts debt contracted abroad, and `output_plots.plot_all` adds it to the debt-to-GDP plot when it is not zero. Both are unchanged when `alpha_D_ext` is zero.
 
 ## [0.24.4] - 2026-11-07
 

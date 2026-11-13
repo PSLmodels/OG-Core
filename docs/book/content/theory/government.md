@@ -648,7 +648,7 @@ Foreign aid to the domestic government, $FA_t$, is treated the same way. In the 
 
 This means that changes to `alpha_FA` in the reform have no effect when `baseline_spending=True`; use `alpha_bs_FA` to change the level of foreign aid relative to the baseline instead.
 
-Concessional debt $D^{ODA}_t$ is not affected by `baseline_spending`: in the reform simulation it is always the fraction $\alpha_{ODA,t}$ of GDP in the reform.
+Debt contracted abroad $D^{ext}_t$ is not affected by `baseline_spending`: in the reform simulation it is always the fraction $\alpha_{D,ext,t}$ of GDP in the reform.
 
 Note that the budget closure rule (described in Section ref{`SecUnbalGBCcloseRule`}) still takes effect in the case of `baseline_spending=True`.  What this means is that the relation described above holds until the period in which the closure rules takes effect.  Once the closure rule begins, the path of $G$ (and/or $TR$, depending on the closure rule used) will adjust as determined by the rule to close the government budget in the long run.
 
@@ -697,11 +697,11 @@ Note that the budget closure rule (described in Section ref{`SecUnbalGBCcloseRul
 (SecUnbalGBCbudgConstr)=
 ## Government Budget Constraint
 
-  Let the level of government debt in period $t$ be given by $D_t$. The government may also owe concessional debt $D^{ODA}_t$ to official foreign lenders, described below. The government budget constraint requires that government revenue $Rev_t$, external foreign assistance, $FA_t$, plus the budget deficit financed by new borrowing ($D_{t+1} - D_t$ and $D^{ODA}_{t+1} - D^{ODA}_t$) equal expenditures on interest on the debt, government spending on public goods $G_t$, total infrastructure investments $I_{g,t}$, total pension outlays, total transfer payments to households $TR_t$, and $UBI_t$ every period $t$,
+  Let the level of government debt in period $t$ be given by $D_t$. The government may also owe debt contracted abroad at its own interest rate, $D^{ext}_t$, described below. The government budget constraint requires that government revenue $Rev_t$, external foreign assistance, $FA_t$, plus the budget deficit financed by new borrowing ($D_{t+1} - D_t$ and $D^{ext}_{t+1} - D^{ext}_t$) equal expenditures on interest on the debt, government spending on public goods $G_t$, total infrastructure investments $I_{g,t}$, total pension outlays, total transfer payments to households $TR_t$, and $UBI_t$ every period $t$,
 
   ```{math}
   :label: EqUnbalGBCbudgConstr
-    D_{t+1} + D^{ODA}_{t+1} + Rev_t + FA_t = (1 + r_{gov,t})D_t + (1 + r_{ODA,t})D^{ODA}_t + G_t + I_{g,t} + Pensions_t + TR_t + UBI_t  \quad\forall t
+    D_{t+1} + D^{ext}_{t+1} + Rev_t + FA_t = (1 + r_{gov,t})D_t + (1 + r_{ext,t})D^{ext}_t + G_t + I_{g,t} + Pensions_t + TR_t + UBI_t  \quad\forall t
   ```
 
   where $r_{gov,t}$ is the interest rate paid by the government defined in equation {eq}`EqUnbalGBC_rate_wedge` below, $G_{t}$ is government spending on public goods, $I_{g,t}$ is total government spending on infrastructure investment, $TR_{t}$ are non-pension government transfers, and $UBI_t$ is the total UBI transfer outlays across households in time $t$. All variables in {eq}`EqUnbalGBCbudgConstr` are real variables denominated in units of current-period output in industry $M$ the numeraire ($p_{M,t}=1$ for all $t$).
@@ -738,14 +738,14 @@ Note that the budget closure rule (described in Section ref{`SecUnbalGBCcloseRul
 
   where $\delta_g$ is the depreciation rate on infrastructure and $\phi_g$ (`infra_investment_leakage_rate`) is the fraction of infrastructure investment lost to leakage (e.g., corruption or other frictions). The stock of public capital in each industry $m$ complements labor and private capital in the production function of the representative firm, in Equation {eq}`EqFirmsCESprodfun`.
 
-  Many low-income countries borrow from official lenders, such as multilateral development banks and bilateral donors, on concessional terms: at interest rates well below market rates, in amounts the lenders decide. `OG-Core` models this concessional debt (official development assistance loans) as a stock $D^{ODA}_t$ held entirely by foreigners, set as a time-dependent fraction $\alpha_{ODA,t}$ (`alpha_ODA`) of GDP and paying the exogenous real interest rate $r_{ODA,t}$ (`r_ODA_annual`, converted to a model-period rate).
+  Governments also borrow abroad directly, outside the domestic bond market: from official lenders such as multilateral development banks and bilateral donors, often on concessional terms (at interest rates well below market rates, in amounts the lenders decide), and on commercial terms through bonds and loans issued abroad. `OG-Core` models this debt contracted abroad as a stock $D^{ext}_t$ held entirely by foreigners, set as a time-dependent fraction $\alpha_{D,ext,t}$ (`alpha_D_ext`) of GDP and paying the exogenous real interest rate $r_{ext,t}$ (`r_D_ext_annual`, converted to a model-period rate). The model has no exchange rate, so for debt in foreign currency $r_{ext,t}$ is the foreign-currency rate less foreign inflation, plus any expected real depreciation.
 
   ```{math}
-  :label: EqUnbalGBC_ODA
-    D^{ODA}_t = \alpha_{ODA,t}\: Y_t \quad\forall t
+  :label: EqUnbalGBC_D_ext
+    D^{ext}_t = \alpha_{D,ext,t}\: Y_t \quad\forall t
   ```
 
-  The government receives the new concessional borrowing $D^{ODA}_{t+1} - D^{ODA}_t$ and pays the interest $r_{ODA,t}D^{ODA}_t$ each period. Concessional debt is separate from the market debt $D_t$: it is not part of household savings, so it does not enter the household portfolio return $r_{p,t}$ in {eq}`eq_portfolio_return`, and the interest rate $r_{gov,t}$, the debt-to-GDP target $\alpha_D$ of the budget closure rule, and the share of new debt bought by foreigners $\zeta_D$ all refer to market debt. Its interest is paid abroad at $r_{ODA,t}$ in the goods market clearing condition (Chapter {ref}`Chap_MarkClr`). By default $\alpha_{ODA,t} = 0$.
+  The government receives the new external borrowing $D^{ext}_{t+1} - D^{ext}_t$ and pays the interest $r_{ext,t}D^{ext}_t$ each period. Debt contracted abroad is separate from the market debt $D_t$: it is not part of household savings, so it does not enter the household portfolio return $r_{p,t}$ in {eq}`eq_portfolio_return`, and the debt-to-GDP target $\alpha_D$ of the budget closure rule and the share of new market debt bought by foreigners $\zeta_D$ refer to market debt; $D^f_t$ is then the part of market debt held by foreigners. The debt-elastic premium on $r_{gov,t}$ in {eq}`EqUnbalGBC_rate_wedge` is evaluated at all government debt, $D_t + D^{ext}_t$. Its interest is paid abroad at $r_{ext,t}$ in the goods market clearing condition (Chapter {ref}`Chap_MarkClr`). Because the stock is set by $\alpha_{D,ext,t}$, a reform that changes borrowing changes market debt only, unless it also changes $\alpha_{D,ext,t}$; and in the steady state all government debt is $\alpha_D + \alpha_{D,ext}$ of GDP. By default $\alpha_{D,ext,t} = 0$.
 
   Aggregate spending on UBI at time $t$ is the sum of UBI payments across all households at time $t$:
 
@@ -762,10 +762,10 @@ Note that the budget closure rule (described in Section ref{`SecUnbalGBCcloseRul
 
   ```{math}
   :label: EqUnbalGBC_rate_wedge
-    r_{gov, t} = (1 - \tau_{d, t})r_{t} - \mu_{d} + \beta_{1}\frac{D_t}{Y_t} + \beta_{2}\left(\frac{D_t}{Y_t}\right)^2
+    r_{gov, t} = (1 - \tau_{d, t})r_{t} - \mu_{d} + \beta_{1}\frac{D_t + D^{ext}_t}{Y_t} + \beta_{2}\left(\frac{D_t + D^{ext}_t}{Y_t}\right)^2
   ```
 
-  where $r_t$ is the marginal product of capital faced by firms. The two parameters, $\tau_{d,t}$ and $\mu_{d,t}$ can be used to allow for a government interest rate that is a percentage hair cut from the market rate or a government interest rate with a constant risk premium.  The parameters $\beta_1$ and $\beta_2$ can be used to allow for a quadratic risk premium on government debt that is a function of the debt-to-GDP ratio.
+  where $r_t$ is the marginal product of capital faced by firms. The two parameters, $\tau_{d,t}$ and $\mu_{d,t}$ can be used to allow for a government interest rate that is a percentage hair cut from the market rate or a government interest rate with a constant risk premium.  The parameters $\beta_1$ and $\beta_2$ can be used to allow for a quadratic risk premium on government debt that is a function of the debt-to-GDP ratio. The ratio counts all government debt, the market debt $D_t$ and the debt contracted abroad $D^{ext}_t$, since the risk of the government's debt depends on everything it owes; with no debt contracted abroad it is $D_t/Y_t$.
 
 
 (SecUnbalGBCcloseRule)=
@@ -804,8 +804,8 @@ Note that the budget closure rule (described in Section ref{`SecUnbalGBCcloseRul
     &\text{where}\quad g_{g,t} =
       \begin{cases}
         1 \qquad\qquad\qquad\qquad\qquad\qquad\qquad\qquad\qquad\quad\:\text{if}\quad t < T_{G1} \\
-        \frac{\left[\rho_{d}\alpha_{D}Y_{t} + (1-\rho_{d})D_{t}\right] - (1+r_{gov,t})D_{t} - I_{g,t} - TR_{t} - UBI_{t} + Rev_{t} + FA_{t} + D^{ODA}_{t+1} - (1+r_{ODA,t})D^{ODA}_{t}}{\alpha_g Y_t} \quad\text{if}\quad T_{G1}\leq t<T_{G2} \\
-        \frac{\alpha_{D}Y_{t} - (1+r_{gov,t})D_{t} - I_{g,t} - TR_{t} - UBI_{t} + Rev_{t} + FA_{t} + D^{ODA}_{t+1} - (1+r_{ODA,t})D^{ODA}_{t}}{\alpha_g Y_t} \qquad\qquad\quad\:\:\,\text{if}\quad t \geq T_{G2}
+        \frac{\left[\rho_{d}\alpha_{D}Y_{t} + (1-\rho_{d})D_{t}\right] - (1+r_{gov,t})D_{t} - I_{g,t} - TR_{t} - UBI_{t} + Rev_{t} + FA_{t} + D^{ext}_{t+1} - (1+r_{ext,t})D^{ext}_{t}}{\alpha_g Y_t} \quad\text{if}\quad T_{G1}\leq t<T_{G2} \\
+        \frac{\alpha_{D}Y_{t} - (1+r_{gov,t})D_{t} - I_{g,t} - TR_{t} - UBI_{t} + Rev_{t} + FA_{t} + D^{ext}_{t+1} - (1+r_{ext,t})D^{ext}_{t}}{\alpha_g Y_t} \qquad\qquad\quad\:\:\,\text{if}\quad t \geq T_{G2}
       \end{cases} \\
     &\text{and}\quad g_{tr,t} = 1 \quad\forall t
   \end{split}
@@ -826,8 +826,8 @@ Note that the budget closure rule (described in Section ref{`SecUnbalGBCcloseRul
     &\text{where}\quad g_{tr,t} =
       \begin{cases}
         1 \qquad\qquad\qquad\qquad\qquad\qquad\qquad\qquad\qquad\:\:\:\,\text{if}\quad t < T_{G1} \\
-        \frac{\left[\rho_{d}\alpha_{D}Y_{t} + (1-\rho_{d})D_{t}\right] - (1+r_{gov,t})D_{t} - G_{t} - I_{g,t} -  UBI_{t} + Rev_{t} + FA_{t} + D^{ODA}_{t+1} - (1+r_{ODA,t})D^{ODA}_{t}}{\alpha_{tr} Y_t} \quad\text{if}\quad T_{G1}\leq t<T_{G2} \\
-        \frac{\alpha_{D}Y_{t} - (1+r_{gov,t})D_{t} - G_{t} - I_{g,t} - UBI_{t} + Rev_{t} + FA_{t} + D^{ODA}_{t+1} - (1+r_{ODA,t})D^{ODA}_{t}}{\alpha_{tr}Y_t} \qquad\qquad\quad\:\:\:\text{if}\quad t \geq T_{G2}
+        \frac{\left[\rho_{d}\alpha_{D}Y_{t} + (1-\rho_{d})D_{t}\right] - (1+r_{gov,t})D_{t} - G_{t} - I_{g,t} -  UBI_{t} + Rev_{t} + FA_{t} + D^{ext}_{t+1} - (1+r_{ext,t})D^{ext}_{t}}{\alpha_{tr} Y_t} \quad\text{if}\quad T_{G1}\leq t<T_{G2} \\
+        \frac{\alpha_{D}Y_{t} - (1+r_{gov,t})D_{t} - G_{t} - I_{g,t} - UBI_{t} + Rev_{t} + FA_{t} + D^{ext}_{t+1} - (1+r_{ext,t})D^{ext}_{t}}{\alpha_{tr}Y_t} \qquad\qquad\quad\:\:\:\text{if}\quad t \geq T_{G2}
       \end{cases} \\
     &\text{and}\quad g_{g,t} = 1 \quad\forall t
   \end{split}
@@ -857,8 +857,8 @@ Note that the budget closure rule (described in Section ref{`SecUnbalGBCcloseRul
     &\text{where}\quad g_{trg,t} =
     \begin{cases}
       1 \qquad\qquad\qquad\qquad\qquad\qquad\qquad\qquad\quad\:\,\text{if}\quad t < T_{G1} \\
-      \frac{\left[\rho_{d}\alpha_{D}Y_{t} + (1-\rho_{d})D_{t}\right] - (1+r_{gov,t})D_{t} - I_{g,t} - UBI_{t} + Rev_{t} + FA_{t} + D^{ODA}_{t+1} - (1+r_{ODA,t})D^{ODA}_{t}}{\left(\alpha_g + \alpha_{tr}\right)Y_t} \quad\text{if}\quad T_{G1}\leq t<T_{G2} \\
-      \frac{\alpha_{D}Y_{t} - (1+r_{gov,t})D_{t} - I_{g,t} - UBI_{t} + Rev_{t} + FA_{t} + D^{ODA}_{t+1} - (1+r_{ODA,t})D^{ODA}_{t}}{\left(\alpha_g + \alpha_{tr}\right)Y_t} \qquad\qquad\quad\:\:\:\text{if}\quad t \geq T_{G2}
+      \frac{\left[\rho_{d}\alpha_{D}Y_{t} + (1-\rho_{d})D_{t}\right] - (1+r_{gov,t})D_{t} - I_{g,t} - UBI_{t} + Rev_{t} + FA_{t} + D^{ext}_{t+1} - (1+r_{ext,t})D^{ext}_{t}}{\left(\alpha_g + \alpha_{tr}\right)Y_t} \quad\text{if}\quad T_{G1}\leq t<T_{G2} \\
+      \frac{\alpha_{D}Y_{t} - (1+r_{gov,t})D_{t} - I_{g,t} - UBI_{t} + Rev_{t} + FA_{t} + D^{ext}_{t+1} - (1+r_{ext,t})D^{ext}_{t}}{\left(\alpha_g + \alpha_{tr}\right)Y_t} \qquad\qquad\quad\:\:\:\text{if}\quad t \geq T_{G2}
     \end{cases}
   \end{split}
   ```

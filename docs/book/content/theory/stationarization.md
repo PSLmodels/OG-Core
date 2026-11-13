@@ -250,11 +250,11 @@ The usual definition of equilibrium would be allocations and prices such that ho
   \end{aligned}
   ```
 
-  Every term in the government budget constraint {eq}`EqUnbalGBCbudgConstr` is growing at both the productivity growth rate and the population growth rate, so we stationarize it by dividing both sides by $e^{g_y t}\tilde{N}_t$. We also have to multiply and divide the next period debt terms $D_{t+1}$ and $D^{ODA}_{t+1}$ by $e^{g_y(t+1)}\tilde{N}_{t+1}$, leaving the term $e^{g_y}(1 + \tilde{g}_{n,t+1})$.
+  Every term in the government budget constraint {eq}`EqUnbalGBCbudgConstr` is growing at both the productivity growth rate and the population growth rate, so we stationarize it by dividing both sides by $e^{g_y t}\tilde{N}_t$. We also have to multiply and divide the next period debt terms $D_{t+1}$ and $D^{ext}_{t+1}$ by $e^{g_y(t+1)}\tilde{N}_{t+1}$, leaving the term $e^{g_y}(1 + \tilde{g}_{n,t+1})$.
 
   ```{math}
   :label: EqStnrzGovBC
-    e^{g_y}\left(1 + \tilde{g}_{n,t+1}\right)\left(\hat{D}_{t+1} + \hat{D}^{ODA}_{t+1}\right) + \hat{Rev}_t + \hat{FA}_t = (1 + r_{gov,t})\hat{D}_t + (1 + r_{ODA,t})\hat{D}^{ODA}_t + \hat{G}_t + \hat{I}_{g,t} + \hat{Pensions}_t + \hat{TR}_t + \hat{UBI}_t \quad\forall t
+    e^{g_y}\left(1 + \tilde{g}_{n,t+1}\right)\left(\hat{D}_{t+1} + \hat{D}^{ext}_{t+1}\right) + \hat{Rev}_t + \hat{FA}_t = (1 + r_{gov,t})\hat{D}_t + (1 + r_{ext,t})\hat{D}^{ext}_t + \hat{G}_t + \hat{I}_{g,t} + \hat{Pensions}_t + \hat{TR}_t + \hat{UBI}_t \quad\forall t
   ```
 
   The stationarized versions of the rule for total government infrastructure investment spending $I_{g,t}$ in {eq}`EqUnbalGBC_Igt` and the rule for government investment spending in each industry in {eq}`EqUnbalGBC_Igt` are found by dividing both sides of the respective equations by $e^{g_y t}\tilde{N}_t$.
@@ -308,8 +308,8 @@ The usual definition of equilibrium would be allocations and prices such that ho
     &\text{where}\quad g_{g,t} =
     \begin{cases}
       1 \qquad\qquad\qquad\qquad\qquad\qquad\qquad\qquad\qquad\qquad\qquad\quad\text{if}\quad t < T_{G1} \\
-      \frac{e^{g_y}\left(1 + \tilde{g}_{n,t+1}\right)\left[\rho_{d}\alpha_{D}\hat{Y}_{t} + (1-\rho_{d})\hat{D}_{t}\right] - (1+r_{gov,t})\hat{D}_{t} - \hat{TR}_{t} - \hat{I}_{g,t} - \hat{UBI}_t + \hat{Rev}_{t} + \hat{FA}_t + e^{g_y}\left(1 + \tilde{g}_{n,t+1}\right)\hat{D}^{ODA}_{t+1} - (1+r_{ODA,t})\hat{D}^{ODA}_{t}}{\alpha_g \hat{Y}_t} \:\text{if}\: T_{G1}\leq t<T_{G2} \\
-      \frac{e^{g_y}\left(1 + \tilde{g}_{n,t+1}\right)\alpha_{D}\hat{Y}_{t} - (1+r_{gov,t})\hat{D}_{t} - \hat{TR}_{t} - \hat{I}_{g,t} - \hat{UBI}_t + \hat{Rev}_{t} + \hat{FA}_t + e^{g_y}\left(1 + \tilde{g}_{n,t+1}\right)\hat{D}^{ODA}_{t+1} - (1+r_{ODA,t})\hat{D}^{ODA}_{t}}{\alpha_g \hat{Y}_t} \qquad\qquad\quad\,\text{if}\quad t \geq T_{G2}
+      \frac{e^{g_y}\left(1 + \tilde{g}_{n,t+1}\right)\left[\rho_{d}\alpha_{D}\hat{Y}_{t} + (1-\rho_{d})\hat{D}_{t}\right] - (1+r_{gov,t})\hat{D}_{t} - \hat{TR}_{t} - \hat{I}_{g,t} - \hat{UBI}_t + \hat{Rev}_{t} + \hat{FA}_t + e^{g_y}\left(1 + \tilde{g}_{n,t+1}\right)\hat{D}^{ext}_{t+1} - (1+r_{ext,t})\hat{D}^{ext}_{t}}{\alpha_g \hat{Y}_t} \:\text{if}\: T_{G1}\leq t<T_{G2} \\
+      \frac{e^{g_y}\left(1 + \tilde{g}_{n,t+1}\right)\alpha_{D}\hat{Y}_{t} - (1+r_{gov,t})\hat{D}_{t} - \hat{TR}_{t} - \hat{I}_{g,t} - \hat{UBI}_t + \hat{Rev}_{t} + \hat{FA}_t + e^{g_y}\left(1 + \tilde{g}_{n,t+1}\right)\hat{D}^{ext}_{t+1} - (1+r_{ext,t})\hat{D}^{ext}_{t}}{\alpha_g \hat{Y}_t} \qquad\qquad\quad\,\text{if}\quad t \geq T_{G2}
     \end{cases} \\
     &\text{and}\quad g_{tr,t} = 1 \quad\forall t
   \end{split}
@@ -323,8 +323,8 @@ The usual definition of equilibrium would be allocations and prices such that ho
     &\text{where}\quad g_{tr,t} =
     \begin{cases}
       1 \qquad\qquad\qquad\qquad\qquad\qquad\qquad\qquad\qquad\qquad\qquad\:\:\:\text{if}\quad t < T_{G1} \\
-      \frac{e^{g_y}\left(1 + \tilde{g}_{n,t+1}\right)\left[\rho_{d}\alpha_{D}\hat{Y}_{t} + (1-\rho_{d})\hat{D}_{t}\right] - (1+r_{gov,t})\hat{D}_{t} - \hat{G}_{t} - \hat{I}_{g,t} - \hat{UBI}_t + \hat{Rev}_{t} + \hat{FA}_t + e^{g_y}\left(1 + \tilde{g}_{n,t+1}\right)\hat{D}^{ODA}_{t+1} - (1+r_{ODA,t})\hat{D}^{ODA}_{t}}{\alpha_{tr} \hat{Y}_t} \:\text{if}\: T_{G1}\leq t<T_{G2} \\
-      \frac{e^{g_y}\left(1 + \tilde{g}_{n,t+1}\right)\alpha_{D}\hat{Y}_{t} - (1+r_{gov,t})\hat{D}_{t} - \hat{G}_{t} - \hat{I}_{g,t} - \hat{UBI}_t + \hat{Rev}_{t} + \hat{FA}_t + e^{g_y}\left(1 + \tilde{g}_{n,t+1}\right)\hat{D}^{ODA}_{t+1} - (1+r_{ODA,t})\hat{D}^{ODA}_{t}}{\alpha_{tr} \hat{Y}_t} \qquad\qquad\quad\,\text{if}\quad t \geq T_{G2}
+      \frac{e^{g_y}\left(1 + \tilde{g}_{n,t+1}\right)\left[\rho_{d}\alpha_{D}\hat{Y}_{t} + (1-\rho_{d})\hat{D}_{t}\right] - (1+r_{gov,t})\hat{D}_{t} - \hat{G}_{t} - \hat{I}_{g,t} - \hat{UBI}_t + \hat{Rev}_{t} + \hat{FA}_t + e^{g_y}\left(1 + \tilde{g}_{n,t+1}\right)\hat{D}^{ext}_{t+1} - (1+r_{ext,t})\hat{D}^{ext}_{t}}{\alpha_{tr} \hat{Y}_t} \:\text{if}\: T_{G1}\leq t<T_{G2} \\
+      \frac{e^{g_y}\left(1 + \tilde{g}_{n,t+1}\right)\alpha_{D}\hat{Y}_{t} - (1+r_{gov,t})\hat{D}_{t} - \hat{G}_{t} - \hat{I}_{g,t} - \hat{UBI}_t + \hat{Rev}_{t} + \hat{FA}_t + e^{g_y}\left(1 + \tilde{g}_{n,t+1}\right)\hat{D}^{ext}_{t+1} - (1+r_{ext,t})\hat{D}^{ext}_{t}}{\alpha_{tr} \hat{Y}_t} \qquad\qquad\quad\,\text{if}\quad t \geq T_{G2}
     \end{cases} \\
     &\text{and}\quad g_{g,t} = 1 \quad\forall t
   \end{split}
@@ -338,8 +338,8 @@ The usual definition of equilibrium would be allocations and prices such that ho
     &\text{where}\quad g_{trg,t} =
     \begin{cases}
       1 \qquad\qquad\qquad\qquad\qquad\qquad\qquad\qquad\qquad\qquad\:\quad \text{if}\quad t < T_{G1} \\
-      \frac{e^{g_y}\left(1 + \tilde{g}_{n,t+1}\right)\left[\rho_{d}\alpha_{D}\hat{Y}_{t} + (1-\rho_{d})\hat{D}_{t}\right] - (1+r_{gov,t})\hat{D}_{t} - \hat{I}_{g,t} - \hat{UBI}_t + \hat{Rev}_{t} + \hat{FA}_t + e^{g_y}\left(1 + \tilde{g}_{n,t+1}\right)\hat{D}^{ODA}_{t+1} - (1+r_{ODA,t})\hat{D}^{ODA}_{t}}{\left(\alpha_g + \alpha_{tr}\right)\hat{Y}_t} \:\text{if}\: T_{G1}\leq t<T_{G2} \\
-      \frac{e^{g_y}\left(1 + \tilde{g}_{n,t+1}\right)\alpha_{D}\hat{Y}_{t} - (1+r_{gov,t})\hat{D}_{t} - \hat{I}_{g,t} - \hat{UBI}_t + \hat{Rev}_{t} + \hat{FA}_t + e^{g_y}\left(1 + \tilde{g}_{n,t+1}\right)\hat{D}^{ODA}_{t+1} - (1+r_{ODA,t})\hat{D}^{ODA}_{t}}{\left(\alpha_g + \alpha_{tr}\right)\hat{Y}_t} \qquad\qquad\quad\,\text{if}\quad t \geq T_{G2}
+      \frac{e^{g_y}\left(1 + \tilde{g}_{n,t+1}\right)\left[\rho_{d}\alpha_{D}\hat{Y}_{t} + (1-\rho_{d})\hat{D}_{t}\right] - (1+r_{gov,t})\hat{D}_{t} - \hat{I}_{g,t} - \hat{UBI}_t + \hat{Rev}_{t} + \hat{FA}_t + e^{g_y}\left(1 + \tilde{g}_{n,t+1}\right)\hat{D}^{ext}_{t+1} - (1+r_{ext,t})\hat{D}^{ext}_{t}}{\left(\alpha_g + \alpha_{tr}\right)\hat{Y}_t} \:\text{if}\: T_{G1}\leq t<T_{G2} \\
+      \frac{e^{g_y}\left(1 + \tilde{g}_{n,t+1}\right)\alpha_{D}\hat{Y}_{t} - (1+r_{gov,t})\hat{D}_{t} - \hat{I}_{g,t} - \hat{UBI}_t + \hat{Rev}_{t} + \hat{FA}_t + e^{g_y}\left(1 + \tilde{g}_{n,t+1}\right)\hat{D}^{ext}_{t+1} - (1+r_{ext,t})\hat{D}^{ext}_{t}}{\left(\alpha_g + \alpha_{tr}\right)\hat{Y}_t} \qquad\qquad\quad\,\text{if}\quad t \geq T_{G2}
     \end{cases}
   \end{split}
   ```
