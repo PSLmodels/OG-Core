@@ -1,58 +1,58 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<?xml-stylesheet type="text/xsl" href="http://localhost:3000/sitemap_style.xsl" ?>
+<?xml-stylesheet type="text/xsl" href="http://pre.render/sitemap_style.xsl" ?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
-    <loc>http://localhost:3000</loc>
+    <loc>http://pre.render</loc>
   </url>
   <url>
-    <loc>http://localhost:3000/content/contributing/contributor-guide</loc>
+    <loc>http://pre.render/content/contributing/contributor-guide</loc>
   </url>
   <url>
-    <loc>http://localhost:3000/content/theory/intro</loc>
+    <loc>http://pre.render/content/theory/intro</loc>
   </url>
   <url>
-    <loc>http://localhost:3000/content/theory/demographics</loc>
+    <loc>http://pre.render/content/theory/demographics</loc>
   </url>
   <url>
-    <loc>http://localhost:3000/content/theory/households</loc>
+    <loc>http://pre.render/content/theory/households</loc>
   </url>
   <url>
-    <loc>http://localhost:3000/content/theory/firms</loc>
+    <loc>http://pre.render/content/theory/firms</loc>
   </url>
   <url>
-    <loc>http://localhost:3000/content/theory/government</loc>
+    <loc>http://pre.render/content/theory/government</loc>
   </url>
   <url>
-    <loc>http://localhost:3000/content/theory/open-economy</loc>
+    <loc>http://pre.render/content/theory/open-economy</loc>
   </url>
   <url>
-    <loc>http://localhost:3000/content/theory/financial</loc>
+    <loc>http://pre.render/content/theory/financial</loc>
   </url>
   <url>
-    <loc>http://localhost:3000/content/theory/market-clearing</loc>
+    <loc>http://pre.render/content/theory/market-clearing</loc>
   </url>
   <url>
-    <loc>http://localhost:3000/content/theory/stationarization</loc>
+    <loc>http://pre.render/content/theory/stationarization</loc>
   </url>
   <url>
-    <loc>http://localhost:3000/content/theory/equilibrium</loc>
+    <loc>http://pre.render/content/theory/equilibrium</loc>
   </url>
   <url>
-    <loc>http://localhost:3000/content/theory/calibration</loc>
+    <loc>http://pre.render/content/theory/calibration</loc>
   </url>
   <url>
-    <loc>http://localhost:3000/content/theory/derivations</loc>
+    <loc>http://pre.render/content/theory/derivations</loc>
   </url>
   <url>
-    <loc>http://localhost:3000/content/intro/parameters</loc>
+    <loc>http://pre.render/content/intro/parameters</loc>
   </url>
   <url>
-    <loc>http://localhost:3000/content/intro/variables</loc>
+    <loc>http://pre.render/content/intro/variables</loc>
   </url>
   <url>
-    <loc>http://localhost:3000/content/ogcore-references</loc>
+    <loc>http://pre.render/content/ogcore-references</loc>
   </url>
   <url>
-    <loc>http://localhost:3000/content/citations</loc>
+    <loc>http://pre.render/content/citations</loc>
   </url>
 </urlset>
