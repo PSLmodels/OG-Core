@@ -78,6 +78,41 @@ def _path_from(path, t):
     return np.ascontiguousarray(path[min(t, path.size - 1) :])
 
 
+def pension_earn_caps(p):
+    """
+    Calendar paths of the two earnings cutoffs set by
+    ``factor1_db_ndc_hybrid``, ``factor2_db_ndc_hybrid``, and
+    ``avg_labor_inc_t1_model_units``, in model units of labor income.
+
+    The hybrid DB-NDC system pays a defined benefit on labor income up
+    to the first cutoff and a notional defined contribution benefit on
+    labor income between the two. With ``pension_earn_cap`` True, the
+    Defined Benefits system counts only labor income up to the first
+    cutoff toward the benefit, and the Notional Defined Contribution
+    system credits only labor income up to the second cutoff to the
+    notional account. The cutoffs do not depend on any endogenous
+    variable.
+
+    Args:
+        p (OG-Core Specifications object): model parameters
+
+    Returns:
+        cut1, cut2 (Numpy arrays): paths by model period of the
+            cutoffs, ``factor1_db_ndc_hybrid`` and
+            ``factor2_db_ndc_hybrid`` in each period times
+            ``avg_labor_inc_t1_model_units``; a factor given as a
+            single value gives a path of length one
+    """
+    factor1 = np.atleast_1d(
+        np.asarray(p.factor1_db_ndc_hybrid, dtype=float)
+    ).ravel()
+    factor2 = np.atleast_1d(
+        np.asarray(p.factor2_db_ndc_hybrid, dtype=float)
+    ).ravel()
+    avg_inc = float(p.avg_labor_inc_t1_model_units)
+    return factor1 * avg_inc, factor2 * avg_inc
+
+
 def cohort_array(name, p, by_j=False):
     """
     Return the pension parameter ``name`` as an array by period and age.
@@ -359,18 +394,32 @@ def pension_amount(
     Returns:
         pension (Numpy array): pension amount for each household
 
+    Under the Defined Benefits and Notional Defined Contribution
+    systems, ``p.pension_earn_cap`` True caps the labor income that
+    earns a benefit at the first and second cutoffs of
+    ``pension_earn_caps`` (the same cutoffs that bound the two bands
+    of the hybrid DB-NDC system). False, the default, counts all
+    labor income.
+
     """
     # TODO: think about how can allow for transition from one
     # pension system to another along the time path
+    # Specifications objects pickled before pension_earn_cap existed
+    # have no such attribute; treat them as uncapped.
+    earn_cap = getattr(p, "pension_earn_cap", False)
     if p.pension_system == "US-Style Social Security":
         pension = SS_amount(w, n, theta, t, j, shift, method, e, p)
     elif p.pension_system == "Defined Benefits":
-        pension = DB_amount(w, e, n, t, j, method, p)
+        earn_hi = pension_earn_caps(p)[0] if earn_cap else None
+        pension = DB_amount(w, e, n, t, j, method, p, earn_hi=earn_hi)
         pension = pension * replacement_rate_adjustment(
             pension, t, j, method, p
         )
     elif p.pension_system == "Notional Defined Contribution":
-        pension = NDC_amount(w, e, n, r, ndc_rates, t, j, method, p)
+        earn_hi = pension_earn_caps(p)[1] if earn_cap else None
+        pension = NDC_amount(
+            w, e, n, r, ndc_rates, t, j, method, p, earn_hi=earn_hi
+        )
         pension = pension * replacement_rate_adjustment(
             pension, t, j, method, p
         )
@@ -585,7 +634,8 @@ def DB_amount(w, e, n, t, j, method, p, earn_lo=None, earn_hi=None):
         p (OG-Core Specifications object): model parameters
         earn_lo (scalar, array_like, or None): only labor income
             w * e * n above earn_lo enters the benefit (used by the
-            hybrid DB-NDC system). In model units of labor income, a
+            hybrid DB-NDC system, and by ``pension_amount`` when
+            ``pension_earn_cap`` is True). In model units of labor income, a
             single value or a path by model period of length T + S;
             the cutoff in effect in the period each income was earned
             applies. None (the default) for no lower cutoff.
@@ -787,7 +837,8 @@ def NDC_amount(
         p (OG-Core Specifications object): model parameters
         earn_lo (scalar, array_like, or None): only labor income
             w * e * n above earn_lo enters the benefit (used by the
-            hybrid DB-NDC system). In model units of labor income, a
+            hybrid DB-NDC system, and by ``pension_amount`` when
+            ``pension_earn_cap`` is True). In model units of labor income, a
             single value or a path by model period of length T + S;
             the cutoff in effect in the period each income was earned
             applies. None (the default) for no lower cutoff.
@@ -1059,8 +1110,7 @@ def DB_NDC_hybrid_amount(w, e, n, r, ndc_rates, t, j, method, p):
             f"{f1_full[bad]} and factor2_db_ndc_hybrid={f2_full[bad]}"
         )
     # cutoffs in model units of labor income
-    cut1 = factor1 * p.avg_labor_inc_t1_model_units
-    cut2 = factor2 * p.avg_labor_inc_t1_model_units
+    cut1, cut2 = pension_earn_caps(p)
     DB = DB_amount(w, e, n, t, j, method, p, earn_lo=0.0, earn_hi=cut1)
     NDC = NDC_amount(
         w,

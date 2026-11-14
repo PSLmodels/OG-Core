@@ -1317,12 +1317,16 @@ HYBRID_UPDATES = {
 }
 
 
-def _hybrid_params(factor1, factor2, avg_inc=0.8):
+def _hybrid_params(
+    factor1, factor2, avg_inc=0.8, system="Hybrid DB-NDC", **updates
+):
     """
-    Specifications for the hybrid system; factor1 and factor2 may be
+    Specifications for the hybrid system (or another pension system
+    with the hybrid cutoff parameters set); factor1 and factor2 may be
     single values (held constant over time) or lists of values by year,
     and avg_inc is the average labor income in the first model period,
-    in model units.
+    in model units. Further keyword arguments are passed to
+    update_specifications.
     """
 
     def _path(f):
@@ -1335,10 +1339,11 @@ def _hybrid_params(factor1, factor2, avg_inc=0.8):
     p.update_specifications(
         dict(
             HYBRID_UPDATES,
-            pension_system="Hybrid DB-NDC",
+            pension_system=system,
             factor1_db_ndc_hybrid=_path(factor1),
             factor2_db_ndc_hybrid=_path(factor2),
             avg_labor_inc_t1_model_units=avg_inc,
+            **updates,
         )
     )
     # labor supply before the time path, normally set by the TPI solver
@@ -1551,6 +1556,147 @@ def test_DB_NDC_hybrid_amount_bad_factors():
             "SS",
             p,
         )
+
+
+def _cap_inputs(p, method):
+    """
+    Inputs for pension_amount in the steady state (cross section over
+    ages and lifetime income groups) or on the full time path, with
+    labor supply rising in age so the cap binds for some but not all
+    ages. Returns w, n, ndc_rates, t, j, e.
+    """
+    r = 0.05
+    e = p.e[-1, :, :]
+    n_s = np.linspace(0.2, 0.9, p.S).reshape(p.S, 1) * np.ones((1, p.J))
+    if method == "SS":
+        return 1.2, n_s, None, None, None, e
+    T = p.S + 5
+    n_per = p.T + p.S
+    ndc_rates = pensions.NDCRates(
+        np.linspace(0.01, 0.03, n_per), np.linspace(0.03, 0.02, n_per)
+    )
+    w = np.linspace(1.0, 1.2, T)
+    n = np.tile(n_s.reshape(1, p.S, p.J), (T, 1, 1))
+    return w, n, ndc_rates, 0, None, e
+
+
+def _pension(p, method, w, n, ndc_rates, t, j, e):
+    r, theta, factor = 0.05, np.zeros(p.J), 100000.0
+    return pensions.pension_amount(
+        r, w, n, ndc_rates, theta, t, j, False, method, e, factor, p
+    )
+
+
+def test_pension_earn_cap_default_off():
+    """
+    pension_earn_cap defaults to False, and with it off the Defined
+    Benefits and Notional Defined Contribution benefits from
+    pension_amount ignore the hybrid cutoff parameters.
+    """
+    assert not Specifications().pension_earn_cap
+    cap = 0.3  # below most labor income, so it would bind if applied
+    p_db = _hybrid_params(cap, cap, system="Defined Benefits")
+    p_ndc = _hybrid_params(0.0, cap, system="Notional Defined Contribution")
+    assert not p_db.pension_earn_cap
+    w, n, ndc_rates, t, j, e = _cap_inputs(p_db, "SS")
+    adj = pensions.replacement_rate_adjustment(None, t, j, "SS", p_db)
+    assert np.allclose(
+        _pension(p_db, "SS", w, n, ndc_rates, t, j, e),
+        pensions.DB_amount(w, e, n, t, j, "SS", p_db) * adj,
+    )
+    assert np.allclose(
+        _pension(p_ndc, "SS", w, n, ndc_rates, t, j, e),
+        pensions.NDC_amount(w, e, n, 0.05, ndc_rates, t, j, "SS", p_ndc) * adj,
+    )
+
+
+@pytest.mark.parametrize("method", ["SS", "TPI"])
+@pytest.mark.parametrize(
+    "system", ["Defined Benefits", "Notional Defined Contribution"]
+)
+def test_pension_earn_cap_equals_degenerate_hybrid(system, method):
+    """
+    With pension_earn_cap True, the Defined Benefits benefit equals the
+    hybrid benefit with an empty NDC band (factor1 = factor2), and the
+    Notional Defined Contribution benefit equals the hybrid benefit
+    with an empty DB band (factor1 = 0). The cap binds: the capped
+    benefit is below the uncapped one for some household and never
+    above it.
+    """
+    cap = 0.5
+    if system == "Defined Benefits":
+        factor1, factor2 = cap, cap
+    else:
+        factor1, factor2 = 0.0, cap
+    p_cap = _hybrid_params(
+        factor1, factor2, system=system, pension_earn_cap=True
+    )
+    p_hyb = _hybrid_params(factor1, factor2)
+    p_off = _hybrid_params(factor1, factor2, system=system)
+    w, n, ndc_rates, t, j, e = _cap_inputs(p_cap, method)
+    capped = _pension(p_cap, method, w, n, ndc_rates, t, j, e)
+    hybrid = _pension(p_hyb, method, w, n, ndc_rates, t, j, e)
+    uncapped = _pension(p_off, method, w, n, ndc_rates, t, j, e)
+    assert np.allclose(capped, hybrid)
+    assert np.any(uncapped > 0.0)
+    assert np.all(capped <= uncapped + 1e-12)
+    assert np.any(capped < uncapped)
+
+
+def test_pension_earn_cap_uses_own_cutoff():
+    """
+    The Defined Benefits cap is factor1 times average income and the
+    Notional Defined Contribution cap is factor2 times average income,
+    read in the period of each earning, so a capped benefit equals the
+    band-aware function called with that cutoff path.
+    """
+    avg_inc = 0.8
+    p_db = _hybrid_params(
+        [0.4, 0.6],
+        [2.0, 2.0],
+        avg_inc=avg_inc,
+        system="Defined Benefits",
+        pension_earn_cap=True,
+    )
+    p_ndc = _hybrid_params(
+        [0.1, 0.1],
+        [0.5, 0.7],
+        avg_inc=avg_inc,
+        system="Notional Defined Contribution",
+        pension_earn_cap=True,
+    )
+    w, n, ndc_rates, t, j, e = _cap_inputs(p_db, "TPI")
+    adj_db = pensions.replacement_rate_adjustment(
+        np.zeros(n.shape), t, j, "TPI", p_db
+    )
+    cut1, _ = pensions.pension_earn_caps(p_db)
+    assert np.allclose(cut1[:3], np.array([0.4, 0.6, 0.6]) * avg_inc)
+    assert np.allclose(
+        _pension(p_db, "TPI", w, n, ndc_rates, t, j, e),
+        pensions.DB_amount(w, e, n, t, j, "TPI", p_db, earn_hi=cut1) * adj_db,
+    )
+    _, cut2 = pensions.pension_earn_caps(p_ndc)
+    assert np.allclose(cut2[:3], np.array([0.5, 0.7, 0.7]) * avg_inc)
+    assert np.allclose(
+        _pension(p_ndc, "TPI", w, n, ndc_rates, t, j, e),
+        pensions.NDC_amount(
+            w, e, n, 0.05, ndc_rates, t, j, "TPI", p_ndc, earn_hi=cut2
+        )
+        * adj_db,
+    )
+
+
+def test_pension_earn_cap_missing_attribute_is_off():
+    """
+    Specifications objects pickled before pension_earn_cap existed have
+    no such attribute and are treated as uncapped.
+    """
+    p = _hybrid_params(0.3, 0.3, system="Defined Benefits")
+    w, n, ndc_rates, t, j, e = _cap_inputs(p, "SS")
+    expected = _pension(p, "SS", w, n, ndc_rates, t, j, e)
+    del p.pension_earn_cap
+    assert not hasattr(p, "pension_earn_cap")
+    assert np.allclose(_pension(p, "SS", w, n, ndc_rates, t, j, e), expected)
 
 
 @pytest.mark.local

@@ -432,6 +432,8 @@ where the sum runs over the household's own earnings history (the wage, effectiv
       \end{cases}
   ```
 
+By default all labor income enters the defined benefit. Setting the boolean parameter `pension_earn_cap` to `True` caps the labor income that earns a benefit at $f_{1,t}\bar{y}$, where $f_{1,t}$ is the parameter `factor1_db_ndc_hybrid` and $\bar{y}$ is the parameter `avg_labor_inc_t1_model_units`, so that $\min\{w_{t-s+u}e_{j,u,t-s+u}n_{j,u,t-s+u}, f_{1,t-s+u}\bar{y}\}$ replaces $w_{t-s+u}e_{j,u,t-s+u}n_{j,u,t-s+u}$ in equation {eq}`eqn:db_pension`. This is the cutoff that bounds the defined benefit band of the [hybrid system](#hybrid-defined-benefit-and-notional-defined-contribution-system), and the path of $f_{1,t}$ is entered and indexed over time in the way described there. The cutoff that applies to any labor income is the one in effect in the period in which it was earned, and the derivative in equation {eq}`eqn:db_deriv` is zero at a working age at which labor income is above the cutoff. The cap applies only to the income that earns a benefit; the payroll tax `tau_payroll` applies to all labor income.
+
 ##### Notional defined contribution system
 
 The pension amount under a notional defined contribution system is given as:
@@ -488,6 +490,8 @@ Given this pension system, the partial derivatives from the household section ar
       0, & \text{if}\ s \geq R \\
     \end{cases}
   ```
+
+By default all labor income is credited to the notional account. Setting the boolean parameter `pension_earn_cap` to `True` caps the labor income credited to the account at $f_{2,t}\bar{y}$, where $f_{2,t}$ is the parameter `factor2_db_ndc_hybrid` and $\bar{y}$ is the parameter `avg_labor_inc_t1_model_units`, so that $\min\{w_{t-s+u}e_{j,u,t-s+u}n_{j,u,t-s+u}, f_{2,t-s+u}\bar{y}\}$ replaces $w_{t-s+u}e_{j,u,t-s+u}n_{j,u,t-s+u}$ in equation {eq}`eqn:ndc_pension`. This is the upper cutoff of the notional defined contribution band of the [hybrid system](#hybrid-defined-benefit-and-notional-defined-contribution-system), and the path of $f_{2,t}$ is entered and indexed over time in the way described there. The cutoff that applies to any labor income is the one in effect in the period in which it was earned, and the derivative in equation {eq}`eqn:ndc_deriv` is zero at a working age at which labor income is above the cutoff. The cap applies only to the income credited to the account; the payroll tax `tau_payroll` applies to all labor income.
 
 ##### Points system
 
@@ -551,7 +555,7 @@ The pension amount under the hybrid system is then the sum of the two benefits:
   \end{split}
   ```
 
-where, as in the separate systems, each sum runs over the household's own earnings history (so $y^{DB}_{j,u,t-s+u}$ and $y^{NDC}_{j,u,t-s+u}$ use the cutoffs $f_{1,t-s+u}\bar{y}$ and $f_{2,t-s+u}\bar{y}$ of the period in which the household was age $u$) and the parameters are those that apply to the household's birth cohort. Along the transition path the notional balances are credited with the same time-varying rates as under the notional defined contribution system. Setting $f_{1,t}$ above all labor income gives the defined benefit system, and setting $f_{1,t} = 0$ with $f_{2,t}$ above all labor income gives the notional defined contribution system. As in the other systems, the benefit is scaled by `replacement_rate_adjust`.
+where, as in the separate systems, each sum runs over the household's own earnings history (so $y^{DB}_{j,u,t-s+u}$ and $y^{NDC}_{j,u,t-s+u}$ use the cutoffs $f_{1,t-s+u}\bar{y}$ and $f_{2,t-s+u}\bar{y}$ of the period in which the household was age $u$) and the parameters are those that apply to the household's birth cohort. Along the transition path the notional balances are credited with the same time-varying rates as under the notional defined contribution system. Setting $f_{1,t}$ above all labor income gives the defined benefit system, and setting $f_{1,t} = 0$ with $f_{2,t}$ above all labor income gives the notional defined contribution system. Conversely, setting $f_{1,t} = f_{2,t}$ gives the defined benefit system with its covered earnings capped at $f_{1,t}\bar{y}$, and setting $f_{1,t} = 0$ gives the notional defined contribution system capped at $f_{2,t}\bar{y}$; the same two capped systems are selected directly, without the hybrid, by the parameter `pension_earn_cap` described in the two sections above. As in the other systems, the benefit is scaled by `replacement_rate_adjust`.
 
 Given this pension system, the partial derivative of the benefit with respect to labor supply at a working age $s < R$ is the defined benefit derivative in equation {eq}`eqn:db_deriv` when the household's labor income is below $f_{1,t} \bar{y}$, the notional defined contribution derivative in equation {eq}`eqn:ndc_deriv` when it is between $f_{1,t} \bar{y}$ and $f_{2,t} \bar{y}$, and zero when it is above $f_{2,t} \bar{y}$.
 
