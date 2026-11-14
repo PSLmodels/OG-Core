@@ -26,6 +26,7 @@ COHORT_PENSION_PARAMS = (
     "tau_p",
     "k_ret",
     "indR",
+    "fdc_tau",
 )
 COHORT_PENSION_PARAMS_J = ("alpha_db",)
 
@@ -295,6 +296,34 @@ class Specifications(paramtools.Parameters):
         self.avg_labor_inc_t1_model_units = float(
             np.squeeze(self.avg_labor_inc_t1_model_units)
         )
+        # The funded defined contribution earnings band factors are paths
+        # of length T + S. Unlike the hybrid cutoffs, a single value is
+        # held fixed in model units (a cutoff indexed to wages), so the
+        # band does not vanish in the steady state.
+        for name in ("fdc_earn_floor_factor", "fdc_earn_cap_factor"):
+            value = np.atleast_1d(
+                np.asarray(getattr(self, name), dtype=float)
+            ).ravel()
+            setattr(
+                self,
+                name,
+                extrapolate_array(value, dims=(self.T + self.S,), item=name),
+            )
+        if self.fdc_earn_cap and np.any(
+            self.fdc_earn_cap_factor < self.fdc_earn_floor_factor
+        ):
+            bad = int(
+                np.argmax(
+                    self.fdc_earn_cap_factor < self.fdc_earn_floor_factor
+                )
+            )
+            raise ValueError(
+                "fdc_earn_cap_factor must be at least "
+                "fdc_earn_floor_factor in every period: in model period "
+                f"{bad}, fdc_earn_floor_factor="
+                f"{self.fdc_earn_floor_factor[bad]} and "
+                f"fdc_earn_cap_factor={self.fdc_earn_cap_factor[bad]}"
+            )
         # The hybrid DB-NDC cutoffs are checked against each other here,
         # once both are paths of the same length, rather than with a
         # paramtools validator, which cannot compare lists of different
@@ -708,7 +737,7 @@ class Specifications(paramtools.Parameters):
         Each pension parameter in COHORT_PENSION_PARAMS has a base value
         as entered: a single number for ``retirement_age``,
         ``avg_earn_num_years``, ``yr_contrib``, ``tau_p``, ``k_ret``,
-        and ``indR``, and a path by calendar year of payment and
+        ``indR``, and ``fdc_tau``, and a path by calendar year of payment and
         lifetime income group for ``alpha_db``. Changes by birth cohort
         are entered through ``pension_regimes``, a list of dicts
         applied in order. A regime has a calendar ``year`` from which
@@ -735,11 +764,11 @@ class Specifications(paramtools.Parameters):
         array of the model period at which each household becomes
         eligible for the public pension, ``alpha_db`` is a
         (T + S) x S x J array, and ``avg_earn_num_years``,
-        ``yr_contrib`` (both still in years), ``tau_p``, ``k_ret``, and
-        ``indR`` are (T + S) x S arrays. ``retirement_age`` keeps its
-        single base value. The pension functions read a cohort's own
-        values down the diagonal of these arrays; the steady state uses
-        the final row.
+        ``yr_contrib`` (both still in years), ``tau_p``, ``k_ret``,
+        ``indR``, and ``fdc_tau`` are (T + S) x S arrays.
+        ``retirement_age`` keeps its single base value. The pension
+        functions read a cohort's own values down the diagonal of these
+        arrays; the steady state uses the final row.
 
         Args:
             None
