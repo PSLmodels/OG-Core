@@ -410,16 +410,23 @@
 
 
 <span class="c1"># Cache of detected sparsity patterns, keyed by (function name, problem</span>
-<span class="c1"># size) and scoped to a single run_TPI call (see _BANDED_JAC_SCOPE): the</span>
-<span class="c1"># pattern depends on the parameterization, e.g. a Defined Benefits pension</span>
-<span class="c1"># couples retirement-age conditions to working-age labor, so a pattern</span>
-<span class="c1"># detected for an earlier run in this process, or on a long-lived dask</span>
-<span class="c1"># worker, must not be reused for a later one.</span>
+<span class="c1"># size, lifetime income group) and scoped to a single run_TPI call (see</span>
+<span class="c1"># _BANDED_JAC_SCOPE): the pattern depends on the parameterization, e.g. a</span>
+<span class="c1"># Defined Benefits pension couples retirement-age conditions to</span>
+<span class="c1"># working-age labor, so a pattern detected for an earlier run in this</span>
+<span class="c1"># process, or on a long-lived dask worker, must not be reused for a later</span>
+<span class="c1"># one. The income group is part of the key because the pattern can differ</span>
+<span class="c1"># by group within a run: a group whose pension replacement rate is zero</span>
+<span class="c1"># has no such coupling. Problems of the same size and group can still</span>
+<span class="c1"># differ (cohorts with different pension rules, or a link that is zero at</span>
+<span class="c1"># the point where the pattern was detected), so when a household solve</span>
+<span class="c1"># fails with a cached pattern, the pattern is checked again at that</span>
+<span class="c1"># problem and any missing links are added (_refresh_jac_sparsity).</span>
 <span class="n">_BANDED_JAC_CACHE</span> <span class="o">=</span> <span class="p">{}</span>
 <span class="n">_BANDED_JAC_SCOPE</span> <span class="o">=</span> <span class="kc">None</span>
 
 
-<span class="k">def</span><span class="w"> </span><span class="nf">_detect_jac_sparsity</span><span class="p">(</span><span class="n">fun</span><span class="p">,</span> <span class="n">x0</span><span class="p">,</span> <span class="n">args</span><span class="p">,</span> <span class="n">scope</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">thr_rel</span><span class="o">=</span><span class="mf">1e-9</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_detect_jac_sparsity</span><span class="p">(</span><span class="n">fun</span><span class="p">,</span> <span class="n">x0</span><span class="p">,</span> <span class="n">args</span><span class="p">,</span> <span class="n">scope</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">thr_rel</span><span class="o">=</span><span class="mf">1e-9</span><span class="p">,</span> <span class="n">group</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">"""Auto-detect the Jacobian sparsity of `fun` near x0 and return a</span>
 <span class="sd">    (csr_pattern, groups) coloring for sparse finite differences, or None if</span>
 <span class="sd">    the Jacobian is too dense to benefit (caller then uses plain dense FD).</span>
@@ -439,8 +446,10 @@
 <span class="sd">        scope (hashable or None): identifier of the run the pattern</span>
 <span class="sd">            belongs to (``p._jac_cache_scope``, set by ``run_TPI``);</span>
 <span class="sd">            cached patterns from a different scope are discarded</span>
-<span class="sd">        thr_rel (float): relative threshold below which an entry is treated</span>
-<span class="sd">            as a structural zero</span>
+<span class="sd">        thr_rel (float): threshold, relative to the largest entry in its</span>
+<span class="sd">            row, below which an entry is treated as a structural zero</span>
+<span class="sd">        group (hashable or None): lifetime income group of the household</span>
+<span class="sd">            problem; patterns are cached separately for each group</span>
 
 <span class="sd">    Returns:</span>
 <span class="sd">        result (tuple or None): ``(csr_pattern, groups)`` coloring for sparse</span>
@@ -452,32 +461,166 @@
         <span class="n">_BANDED_JAC_CACHE</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
         <span class="n">_BANDED_JAC_SCOPE</span> <span class="o">=</span> <span class="n">scope</span>
     <span class="n">n</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">x0</span><span class="p">)</span>
-    <span class="n">key</span> <span class="o">=</span> <span class="p">(</span><span class="nb">getattr</span><span class="p">(</span><span class="n">fun</span><span class="p">,</span> <span class="s2">"__name__"</span><span class="p">,</span> <span class="nb">repr</span><span class="p">(</span><span class="n">fun</span><span class="p">)),</span> <span class="n">n</span><span class="p">)</span>
+    <span class="n">key</span> <span class="o">=</span> <span class="p">(</span><span class="nb">getattr</span><span class="p">(</span><span class="n">fun</span><span class="p">,</span> <span class="s2">"__name__"</span><span class="p">,</span> <span class="nb">repr</span><span class="p">(</span><span class="n">fun</span><span class="p">)),</span> <span class="n">n</span><span class="p">,</span> <span class="n">group</span><span class="p">)</span>
     <span class="n">cached</span> <span class="o">=</span> <span class="n">_BANDED_JAC_CACHE</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="s2">"miss"</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">cached</span> <span class="o">!=</span> <span class="s2">"miss"</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">cached</span>
-    <span class="n">result</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="k">try</span><span class="p">:</span>
         <span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">x0</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
-        <span class="n">mask</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">n</span><span class="p">,</span> <span class="n">n</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">bool</span><span class="p">)</span>
-        <span class="k">for</span> <span class="n">xp</span> <span class="ow">in</span> <span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">x</span> <span class="o">*</span> <span class="mf">1.05</span> <span class="o">+</span> <span class="mf">0.01</span><span class="p">):</span>
-            <span class="n">Jd</span> <span class="o">=</span> <span class="n">approx_derivative</span><span class="p">(</span><span class="n">fun</span><span class="p">,</span> <span class="n">xp</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="n">args</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s2">"2-point"</span><span class="p">)</span>
-            <span class="n">sc</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">Jd</span><span class="p">))),</span> <span class="mf">1e-300</span><span class="p">)</span>
-            <span class="n">mask</span> <span class="o">|=</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">Jd</span><span class="p">)</span> <span class="o">&gt;</span> <span class="n">thr_rel</span> <span class="o">*</span> <span class="n">sc</span>
-        <span class="n">P</span> <span class="o">=</span> <span class="n">csr_matrix</span><span class="p">(</span><span class="n">mask</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">))</span>
-        <span class="n">groups</span> <span class="o">=</span> <span class="n">group_columns</span><span class="p">(</span><span class="n">P</span><span class="p">)</span>
-        <span class="k">if</span> <span class="nb">int</span><span class="p">(</span><span class="n">groups</span><span class="o">.</span><span class="n">max</span><span class="p">())</span> <span class="o">+</span> <span class="mi">1</span> <span class="o">&lt;</span> <span class="n">n</span> <span class="o">//</span> <span class="mi">2</span><span class="p">:</span>
-            <span class="n">result</span> <span class="o">=</span> <span class="p">(</span><span class="n">P</span><span class="p">,</span> <span class="n">groups</span><span class="p">)</span>
-        <span class="c1"># else: pattern not sparse enough to benefit (expected at small</span>
-        <span class="c1"># firstdoughnutring dims); silently return None so the caller uses</span>
-        <span class="c1"># dense FD without surfacing a noisy notice.</span>
+        <span class="n">mask</span> <span class="o">=</span> <span class="n">_jac_mask</span><span class="p">(</span><span class="n">fun</span><span class="p">,</span> <span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">x</span> <span class="o">*</span> <span class="mf">1.05</span> <span class="o">+</span> <span class="mf">0.01</span><span class="p">),</span> <span class="n">args</span><span class="p">,</span> <span class="n">thr_rel</span><span class="p">)</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="n">_pattern_from_mask</span><span class="p">(</span><span class="n">mask</span><span class="p">)</span>
     <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
         <span class="n">result</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="n">_BANDED_JAC_CACHE</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">result</span>
     <span class="k">return</span> <span class="n">result</span>
 
 
-<span class="k">def</span><span class="w"> </span><span class="nf">_banded_jac_for</span><span class="p">(</span><span class="n">fun</span><span class="p">,</span> <span class="n">x0</span><span class="p">,</span> <span class="n">args</span><span class="p">,</span> <span class="n">enabled</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_jac_mask</span><span class="p">(</span><span class="n">fun</span><span class="p">,</span> <span class="n">points</span><span class="p">,</span> <span class="n">args</span><span class="p">,</span> <span class="n">thr_rel</span><span class="o">=</span><span class="mf">1e-9</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""Nonzero entries of the finite-difference Jacobian of `fun`, unioned</span>
+<span class="sd">    over ``points``.</span>
+
+<span class="sd">    Each entry is compared with the largest entry in its own row. The</span>
+<span class="sd">    conditions of one household differ in scale by orders of magnitude</span>
+<span class="sd">    (more for high-productivity groups), so a threshold relative to the</span>
+<span class="sd">    largest entry of the whole matrix drops real couplings of the</span>
+<span class="sd">    smaller-scale conditions.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        fun (function): the residual function whose Jacobian is probed</span>
+<span class="sd">        points (iterable): points at which to probe the Jacobian</span>
+<span class="sd">        args (tuple): extra arguments passed to ``fun``</span>
+<span class="sd">        thr_rel (float): threshold, relative to the largest entry in its</span>
+<span class="sd">            row, below which an entry is treated as a structural zero</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        mask (Numpy array): boolean n x n array of nonzero entries</span>
+<span class="sd">    """</span>
+    <span class="n">mask</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="k">for</span> <span class="n">xp</span> <span class="ow">in</span> <span class="n">points</span><span class="p">:</span>
+        <span class="n">Jd</span> <span class="o">=</span> <span class="n">approx_derivative</span><span class="p">(</span><span class="n">fun</span><span class="p">,</span> <span class="n">xp</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="n">args</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s2">"2-point"</span><span class="p">)</span>
+        <span class="n">sc</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">maximum</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">Jd</span><span class="p">),</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">keepdims</span><span class="o">=</span><span class="kc">True</span><span class="p">),</span> <span class="mf">1e-300</span><span class="p">)</span>
+        <span class="n">found</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">Jd</span><span class="p">)</span> <span class="o">&gt;</span> <span class="n">thr_rel</span> <span class="o">*</span> <span class="n">sc</span>
+        <span class="n">mask</span> <span class="o">=</span> <span class="n">found</span> <span class="k">if</span> <span class="n">mask</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">mask</span> <span class="o">|</span> <span class="n">found</span>
+    <span class="k">return</span> <span class="n">mask</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_pattern_from_mask</span><span class="p">(</span><span class="n">mask</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""Coloring for sparse finite differences from a boolean pattern, or</span>
+<span class="sd">    None if it is too dense to benefit (expected at small</span>
+<span class="sd">    firstdoughnutring dims; the caller then uses dense finite</span>
+<span class="sd">    differences)."""</span>
+    <span class="n">P</span> <span class="o">=</span> <span class="n">csr_matrix</span><span class="p">(</span><span class="n">mask</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">))</span>
+    <span class="n">groups</span> <span class="o">=</span> <span class="n">group_columns</span><span class="p">(</span><span class="n">P</span><span class="p">)</span>
+    <span class="k">if</span> <span class="nb">int</span><span class="p">(</span><span class="n">groups</span><span class="o">.</span><span class="n">max</span><span class="p">())</span> <span class="o">+</span> <span class="mi">1</span> <span class="o">&lt;</span> <span class="n">mask</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">//</span> <span class="mi">2</span><span class="p">:</span>
+        <span class="k">return</span> <span class="p">(</span><span class="n">P</span><span class="p">,</span> <span class="n">groups</span><span class="p">)</span>
+    <span class="k">return</span> <span class="kc">None</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_refresh_jac_sparsity</span><span class="p">(</span><span class="n">fun</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">args</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">group</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">thr_rel</span><span class="o">=</span><span class="mf">1e-9</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""Check a cached sparsity pattern again at ``x`` and add any links it</span>
+<span class="sd">    is missing.</span>
+
+<span class="sd">    Called when a household solve with the cached pattern has failed. The</span>
+<span class="sd">    pattern was detected at another household's problem, which can be</span>
+<span class="sd">    coupled differently (for example a cohort with different pension</span>
+<span class="sd">    rules), or at a point where a link happened to be zero.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        fun (function): the residual function whose Jacobian is probed</span>
+<span class="sd">        x (array_like): point at which to probe the Jacobian</span>
+<span class="sd">        args (tuple): extra arguments passed to ``fun``</span>
+<span class="sd">        p (OG-Core Specifications object): model parameters</span>
+<span class="sd">        group (hashable or None): lifetime income group of the household</span>
+<span class="sd">            problem</span>
+<span class="sd">        thr_rel (float): threshold, relative to the largest entry in its</span>
+<span class="sd">            row, below which an entry is treated as a structural zero</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        (tuple): (changed, jac): whether links were added, and the</span>
+<span class="sd">            ``jac`` callable for ``opt.root`` with the updated pattern (None</span>
+<span class="sd">            for dense finite differences)</span>
+<span class="sd">    """</span>
+    <span class="k">if</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="s2">"_jac_cache_scope"</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span> <span class="o">!=</span> <span class="n">_BANDED_JAC_SCOPE</span><span class="p">:</span>
+        <span class="c1"># the cache belongs to another run</span>
+        <span class="k">return</span> <span class="kc">False</span><span class="p">,</span> <span class="kc">None</span>
+    <span class="n">key</span> <span class="o">=</span> <span class="p">(</span><span class="nb">getattr</span><span class="p">(</span><span class="n">fun</span><span class="p">,</span> <span class="s2">"__name__"</span><span class="p">,</span> <span class="nb">repr</span><span class="p">(</span><span class="n">fun</span><span class="p">)),</span> <span class="nb">len</span><span class="p">(</span><span class="n">x</span><span class="p">),</span> <span class="n">group</span><span class="p">)</span>
+    <span class="n">cached</span> <span class="o">=</span> <span class="n">_BANDED_JAC_CACHE</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">cached</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="c1"># no pattern cached, or the cached one already means dense</span>
+        <span class="c1"># finite differences</span>
+        <span class="k">return</span> <span class="kc">False</span><span class="p">,</span> <span class="kc">None</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">old</span> <span class="o">=</span> <span class="n">cached</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">toarray</span><span class="p">()</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">bool</span><span class="p">)</span>
+        <span class="n">new</span> <span class="o">=</span> <span class="n">_jac_mask</span><span class="p">(</span><span class="n">fun</span><span class="p">,</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">),),</span> <span class="n">args</span><span class="p">,</span> <span class="n">thr_rel</span><span class="p">)</span>
+    <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">False</span><span class="p">,</span> <span class="kc">None</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">np</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">new</span> <span class="o">&amp;</span> <span class="o">~</span><span class="n">old</span><span class="p">):</span>
+        <span class="k">return</span> <span class="kc">False</span><span class="p">,</span> <span class="kc">None</span>
+    <span class="n">result</span> <span class="o">=</span> <span class="n">_pattern_from_mask</span><span class="p">(</span><span class="n">old</span> <span class="o">|</span> <span class="n">new</span><span class="p">)</span>
+    <span class="n">_BANDED_JAC_CACHE</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">result</span>
+    <span class="k">return</span> <span class="kc">True</span><span class="p">,</span> <span class="n">_jac_from_pattern</span><span class="p">(</span><span class="n">fun</span><span class="p">,</span> <span class="n">result</span><span class="p">)</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_jac_from_pattern</span><span class="p">(</span><span class="n">fun</span><span class="p">,</span> <span class="n">pattern</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""``jac`` callable for ``opt.root`` building the Jacobian by sparse</span>
+<span class="sd">    finite differences with ``pattern``, or None for dense finite</span>
+<span class="sd">    differences."""</span>
+    <span class="k">if</span> <span class="n">pattern</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">None</span>
+    <span class="n">P</span><span class="p">,</span> <span class="n">groups</span> <span class="o">=</span> <span class="n">pattern</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_jac</span><span class="p">(</span><span class="n">_x</span><span class="p">,</span> <span class="o">*</span><span class="n">_a</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">approx_derivative</span><span class="p">(</span>
+            <span class="n">fun</span><span class="p">,</span> <span class="n">_x</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="n">_a</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s2">"2-point"</span><span class="p">,</span> <span class="n">sparsity</span><span class="o">=</span><span class="p">(</span><span class="n">P</span><span class="p">,</span> <span class="n">groups</span><span class="p">)</span>
+        <span class="p">)</span><span class="o">.</span><span class="n">toarray</span><span class="p">()</span>
+
+    <span class="k">return</span> <span class="n">_jac</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_root_converged</span><span class="p">(</span><span class="n">solutions</span><span class="p">,</span> <span class="n">p</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""Whether a household root-find reached a root within tolerance."""</span>
+    <span class="k">return</span> <span class="n">solutions</span><span class="o">.</span><span class="n">success</span> <span class="ow">and</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">solutions</span><span class="o">.</span><span class="n">fun</span><span class="p">)</span><span class="o">.</span><span class="n">max</span><span class="p">()</span> <span class="o">&lt;=</span> <span class="n">p</span><span class="o">.</span><span class="n">mindist_TPI</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_retry_with_refreshed_pattern</span><span class="p">(</span><span class="n">solutions</span><span class="p">,</span> <span class="n">fun</span><span class="p">,</span> <span class="n">x0</span><span class="p">,</span> <span class="n">args</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">group</span><span class="p">,</span> <span class="n">jac</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""Re-solve a household problem whose solve with a cached sparsity</span>
+<span class="sd">    pattern failed, if checking the pattern at that problem finds links it</span>
+<span class="sd">    was missing. Returns the better of the two results.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        solutions (OptimizeResult): result of the first root-finding call</span>
+<span class="sd">        fun (function): the residual function</span>
+<span class="sd">        x0 (array_like): the initial guess used in the first call</span>
+<span class="sd">        args (tuple): extra arguments passed to ``fun``</span>
+<span class="sd">        p (OG-Core Specifications object): model parameters</span>
+<span class="sd">        group (hashable or None): lifetime income group of the household</span>
+<span class="sd">            problem</span>
+<span class="sd">        jac (function or None): the ``jac`` used in the first call; None</span>
+<span class="sd">            if it used dense finite differences, in which case there is</span>
+<span class="sd">            no pattern to check</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        solutions (OptimizeResult): the better of the two results</span>
+<span class="sd">    """</span>
+    <span class="k">if</span> <span class="n">jac</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">_root_converged</span><span class="p">(</span><span class="n">solutions</span><span class="p">,</span> <span class="n">p</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">solutions</span>
+    <span class="n">changed</span><span class="p">,</span> <span class="n">new_jac</span> <span class="o">=</span> <span class="n">_refresh_jac_sparsity</span><span class="p">(</span><span class="n">fun</span><span class="p">,</span> <span class="n">solutions</span><span class="o">.</span><span class="n">x</span><span class="p">,</span> <span class="n">args</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">group</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">changed</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">solutions</span>
+    <span class="n">retry</span> <span class="o">=</span> <span class="n">opt</span><span class="o">.</span><span class="n">root</span><span class="p">(</span>
+        <span class="n">fun</span><span class="p">,</span>
+        <span class="n">x0</span><span class="p">,</span>
+        <span class="n">args</span><span class="o">=</span><span class="n">args</span><span class="p">,</span>
+        <span class="n">method</span><span class="o">=</span><span class="n">p</span><span class="o">.</span><span class="n">FOC_root_method</span><span class="p">,</span>
+        <span class="n">tol</span><span class="o">=</span><span class="n">MINIMIZER_TOL</span><span class="p">,</span>
+        <span class="n">jac</span><span class="o">=</span><span class="n">new_jac</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">retry</span><span class="o">.</span><span class="n">fun</span><span class="p">)</span><span class="o">.</span><span class="n">max</span><span class="p">()</span> <span class="o">&lt;</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">solutions</span><span class="o">.</span><span class="n">fun</span><span class="p">)</span><span class="o">.</span><span class="n">max</span><span class="p">():</span>
+        <span class="k">return</span> <span class="n">retry</span>
+    <span class="k">return</span> <span class="n">solutions</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_banded_jac_for</span><span class="p">(</span><span class="n">fun</span><span class="p">,</span> <span class="n">x0</span><span class="p">,</span> <span class="n">args</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">group</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">"""Return a sparse finite-difference `jac` callable for ``opt.root`` when</span>
 <span class="sd">    ``enabled`` (``p.use_sparse_FOC_jac``) and the Jacobian is sparse enough to</span>
 <span class="sd">    benefit; otherwise None, so the caller uses the default dense solver. Used</span>
@@ -487,30 +630,26 @@
 <span class="sd">        fun (function): the residual function passed to ``opt.root``</span>
 <span class="sd">        x0 (array_like): initial guess for the root-find</span>
 <span class="sd">        args (tuple): extra arguments passed to ``fun``</span>
-<span class="sd">        enabled (bool): value of ``p.use_sparse_FOC_jac``</span>
+<span class="sd">        p (OG-Core Specifications object): model parameters; the sparse</span>
+<span class="sd">            Jacobian is used when ``p.use_sparse_FOC_jac`` is True</span>
+<span class="sd">        group (hashable or None): lifetime income group of the household</span>
+<span class="sd">            problem, so that each group gets its own sparsity pattern</span>
 
 <span class="sd">    Returns:</span>
 <span class="sd">        _jac (function or None): a callable returning the dense Jacobian built</span>
 <span class="sd">            by sparse finite differences, or None to use dense finite</span>
 <span class="sd">            differences</span>
 <span class="sd">    """</span>
-    <span class="k">if</span> <span class="ow">not</span> <span class="n">enabled</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">_HAVE_SPARSE_FD</span><span class="p">:</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">p</span><span class="o">.</span><span class="n">use_sparse_FOC_jac</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">_HAVE_SPARSE_FD</span><span class="p">:</span>
         <span class="k">return</span> <span class="kc">None</span>
-    <span class="c1"># the parameters object is the last element of args at both call sites</span>
-    <span class="n">p</span> <span class="o">=</span> <span class="n">args</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
     <span class="n">bj</span> <span class="o">=</span> <span class="n">_detect_jac_sparsity</span><span class="p">(</span>
-        <span class="n">fun</span><span class="p">,</span> <span class="n">x0</span><span class="p">,</span> <span class="n">args</span><span class="p">,</span> <span class="n">scope</span><span class="o">=</span><span class="nb">getattr</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="s2">"_jac_cache_scope"</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="n">fun</span><span class="p">,</span>
+        <span class="n">x0</span><span class="p">,</span>
+        <span class="n">args</span><span class="p">,</span>
+        <span class="n">scope</span><span class="o">=</span><span class="nb">getattr</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="s2">"_jac_cache_scope"</span><span class="p">,</span> <span class="kc">None</span><span class="p">),</span>
+        <span class="n">group</span><span class="o">=</span><span class="n">group</span><span class="p">,</span>
     <span class="p">)</span>
-    <span class="k">if</span> <span class="n">bj</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="k">return</span> <span class="kc">None</span>
-    <span class="n">P</span><span class="p">,</span> <span class="n">groups</span> <span class="o">=</span> <span class="n">bj</span>
-
-    <span class="k">def</span><span class="w"> </span><span class="nf">_jac</span><span class="p">(</span><span class="n">_x</span><span class="p">,</span> <span class="o">*</span><span class="n">_a</span><span class="p">):</span>
-        <span class="k">return</span> <span class="n">approx_derivative</span><span class="p">(</span>
-            <span class="n">fun</span><span class="p">,</span> <span class="n">_x</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="n">_a</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s2">"2-point"</span><span class="p">,</span> <span class="n">sparsity</span><span class="o">=</span><span class="p">(</span><span class="n">P</span><span class="p">,</span> <span class="n">groups</span><span class="p">)</span>
-        <span class="p">)</span><span class="o">.</span><span class="n">toarray</span><span class="p">()</span>
-
-    <span class="k">return</span> <span class="n">_jac</span>
+    <span class="k">return</span> <span class="n">_jac_from_pattern</span><span class="p">(</span><span class="n">fun</span><span class="p">,</span> <span class="n">bj</span><span class="p">)</span>
 
 
 <div class="viewcode-block" id="get_initial_SS_values">
@@ -951,7 +1090,7 @@
 <span class="sd">        solutions (OptimizeResult): the better of the two results</span>
 <span class="sd">    """</span>
     <span class="n">max_resid</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">solutions</span><span class="o">.</span><span class="n">fun</span><span class="p">)</span><span class="o">.</span><span class="n">max</span><span class="p">()</span>
-    <span class="k">if</span> <span class="n">solutions</span><span class="o">.</span><span class="n">success</span> <span class="ow">and</span> <span class="n">max_resid</span> <span class="o">&lt;=</span> <span class="n">p</span><span class="o">.</span><span class="n">mindist_TPI</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">_root_converged</span><span class="p">(</span><span class="n">solutions</span><span class="p">,</span> <span class="n">p</span><span class="p">):</span>
         <span class="k">return</span> <span class="n">solutions</span>
     <span class="n">retry</span> <span class="o">=</span> <span class="n">opt</span><span class="o">.</span><span class="n">root</span><span class="p">(</span><span class="n">fun</span><span class="p">,</span> <span class="n">x0</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="n">args</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s2">"lm"</span><span class="p">,</span> <span class="n">tol</span><span class="o">=</span><span class="n">MINIMIZER_TOL</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">retry</span><span class="o">.</span><span class="n">fun</span><span class="p">)</span><span class="o">.</span><span class="n">max</span><span class="p">()</span> <span class="o">&lt;</span> <span class="n">max_resid</span><span class="p">:</span>
@@ -1122,9 +1261,7 @@
             <span class="n">p</span><span class="p">,</span>
             <span class="n">ndc_rates</span><span class="p">,</span>
         <span class="p">)</span>
-        <span class="n">_tri_jac</span> <span class="o">=</span> <span class="n">_banded_jac_for</span><span class="p">(</span>
-            <span class="n">twist_doughnut</span><span class="p">,</span> <span class="n">_tri_x0</span><span class="p">,</span> <span class="n">_tri_args</span><span class="p">,</span> <span class="n">p</span><span class="o">.</span><span class="n">use_sparse_FOC_jac</span>
-        <span class="p">)</span>
+        <span class="n">_tri_jac</span> <span class="o">=</span> <span class="n">_banded_jac_for</span><span class="p">(</span><span class="n">twist_doughnut</span><span class="p">,</span> <span class="n">_tri_x0</span><span class="p">,</span> <span class="n">_tri_args</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">j</span><span class="p">)</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="n">solutions</span> <span class="o">=</span> <span class="n">opt</span><span class="o">.</span><span class="n">root</span><span class="p">(</span>
                 <span class="n">twist_doughnut</span><span class="p">,</span>
@@ -1142,6 +1279,10 @@
                 <span class="n">method</span><span class="o">=</span><span class="n">p</span><span class="o">.</span><span class="n">FOC_root_method</span><span class="p">,</span>
                 <span class="n">tol</span><span class="o">=</span><span class="n">MINIMIZER_TOL</span><span class="p">,</span>
             <span class="p">)</span>
+            <span class="n">_tri_jac</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="n">solutions</span> <span class="o">=</span> <span class="n">_retry_with_refreshed_pattern</span><span class="p">(</span>
+            <span class="n">solutions</span><span class="p">,</span> <span class="n">twist_doughnut</span><span class="p">,</span> <span class="n">_tri_x0</span><span class="p">,</span> <span class="n">_tri_args</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">j</span><span class="p">,</span> <span class="n">_tri_jac</span>
+        <span class="p">)</span>
         <span class="n">solutions</span> <span class="o">=</span> <span class="n">_retry_root_if_failed</span><span class="p">(</span>
             <span class="n">solutions</span><span class="p">,</span> <span class="n">twist_doughnut</span><span class="p">,</span> <span class="n">_tri_x0</span><span class="p">,</span> <span class="n">_tri_args</span><span class="p">,</span> <span class="n">p</span>
         <span class="p">)</span>
@@ -1213,9 +1354,7 @@
         <span class="c1"># and opt.root uses its default dense finite differences. The except</span>
         <span class="c1"># clause is a safety net: any solver failure retries with the dense</span>
         <span class="c1"># Jacobian, so the result is unchanged.</span>
-        <span class="n">_bj_jac</span> <span class="o">=</span> <span class="n">_banded_jac_for</span><span class="p">(</span>
-            <span class="n">twist_doughnut</span><span class="p">,</span> <span class="n">_td_x0</span><span class="p">,</span> <span class="n">_td_args</span><span class="p">,</span> <span class="n">p</span><span class="o">.</span><span class="n">use_sparse_FOC_jac</span>
-        <span class="p">)</span>
+        <span class="n">_bj_jac</span> <span class="o">=</span> <span class="n">_banded_jac_for</span><span class="p">(</span><span class="n">twist_doughnut</span><span class="p">,</span> <span class="n">_td_x0</span><span class="p">,</span> <span class="n">_td_args</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">j</span><span class="p">)</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="n">solutions</span> <span class="o">=</span> <span class="n">opt</span><span class="o">.</span><span class="n">root</span><span class="p">(</span>
                 <span class="n">twist_doughnut</span><span class="p">,</span>
@@ -1233,6 +1372,10 @@
                 <span class="n">method</span><span class="o">=</span><span class="n">p</span><span class="o">.</span><span class="n">FOC_root_method</span><span class="p">,</span>
                 <span class="n">tol</span><span class="o">=</span><span class="n">MINIMIZER_TOL</span><span class="p">,</span>
             <span class="p">)</span>
+            <span class="n">_bj_jac</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="n">solutions</span> <span class="o">=</span> <span class="n">_retry_with_refreshed_pattern</span><span class="p">(</span>
+            <span class="n">solutions</span><span class="p">,</span> <span class="n">twist_doughnut</span><span class="p">,</span> <span class="n">_td_x0</span><span class="p">,</span> <span class="n">_td_args</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">j</span><span class="p">,</span> <span class="n">_bj_jac</span>
+        <span class="p">)</span>
         <span class="n">solutions</span> <span class="o">=</span> <span class="n">_retry_root_if_failed</span><span class="p">(</span>
             <span class="n">solutions</span><span class="p">,</span> <span class="n">twist_doughnut</span><span class="p">,</span> <span class="n">_td_x0</span><span class="p">,</span> <span class="n">_td_args</span><span class="p">,</span> <span class="n">p</span>
         <span class="p">)</span>
