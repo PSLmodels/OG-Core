@@ -5,6 +5,17 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.24.5] - 2026-11-09
+
+### Adds
+- Adds the boolean parameter `pension_earn_cap` (default `False`). When `True`, the `Defined Benefits` system counts only labor income up to `factor1_db_ndc_hybrid` times `avg_labor_inc_t1_model_units` toward the benefit, and the `Notional Defined Contribution` system credits only labor income up to `factor2_db_ndc_hybrid` times `avg_labor_inc_t1_model_units` to the notional account. These are the same cutoffs, entered and indexed over time in the same way, that bound the defined benefit and notional defined contribution bands of the `Hybrid DB-NDC` system, so an earnings cap can now be applied to either pure system without selecting the hybrid. The cap applies to the income that earns a benefit, not to the payroll tax base.
+- Adds `pensions.pension_earn_caps`, which returns the calendar paths of the two cutoffs in model units of labor income. `pension_amount` passes them to `DB_amount` and `NDC_amount` as `earn_hi` when `pension_earn_cap` is `True`, and `DB_NDC_hybrid_amount` uses the same function.
+- Adds tests that the capped `Defined Benefits` and `Notional Defined Contribution` benefits from `pension_amount` equal the hybrid benefit with one band of zero width (in the steady state and on the full time path), that the cap binds, and that the default leaves both systems unchanged.
+- Documents the cap in the defined benefit and notional defined contribution sections of the pensions chapter.
+
+### Updates
+- The notes of `factor1_db_ndc_hybrid`, `factor2_db_ndc_hybrid`, and `avg_labor_inc_t1_model_units` describe their use under the pure systems with `pension_earn_cap`.
+
 ## [0.24.4] - 2026-11-07
 
 ### Adds
