@@ -507,6 +507,57 @@
     <span class="k">return</span> <span class="n">arr</span><span class="p">[</span><span class="n">rows</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">S</span><span class="p">)]</span>
 
 
+<span class="k">def</span><span class="w"> </span><span class="nf">_db_cohort_inputs</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="n">per_rmn</span><span class="p">,</span> <span class="n">j</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""</span>
+<span class="sd">    The Defined Benefits parameters along one household's lifetime.</span>
+
+<span class="sd">    Returns the retirement period, averaging window, years of</span>
+<span class="sd">    contribution and replacement rate in effect at each age of the</span>
+<span class="sd">    household that has ``per_rmn`` periods of life remaining in period</span>
+<span class="sd">    ``t`` (see ``cohort_path``), and its effective labor units by age.</span>
+<span class="sd">    None of these depend on the household's choices, but the household</span>
+<span class="sd">    problem evaluates the pension many times while it solves, so they are</span>
+<span class="sd">    cached on ``p`` by household. The cache is emptied when any of the</span>
+<span class="sd">    arrays it is built from is reassigned (compared by identity, as in</span>
+<span class="sd">    ``pension_periods``). The returned arrays are read-only.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        p (OG-Core Specifications object): model parameters</span>
+<span class="sd">        t (int): model period of the first of the remaining periods</span>
+<span class="sd">        per_rmn (int): number of periods of life remaining</span>
+<span class="sd">        j (int): index of lifetime income group</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        (tuple): (S_ret_u, ny_u, cy_u, alpha_db_u, e_S), each length S</span>
+<span class="sd">    """</span>
+    <span class="n">ny</span><span class="p">,</span> <span class="n">cy</span><span class="p">,</span> <span class="n">S_ret</span> <span class="o">=</span> <span class="n">pension_periods</span><span class="p">(</span><span class="n">p</span><span class="p">)</span>
+    <span class="n">sources</span> <span class="o">=</span> <span class="p">(</span><span class="n">ny</span><span class="p">,</span> <span class="n">cy</span><span class="p">,</span> <span class="n">S_ret</span><span class="p">,</span> <span class="n">p</span><span class="o">.</span><span class="n">alpha_db</span><span class="p">,</span> <span class="n">p</span><span class="o">.</span><span class="n">e</span><span class="p">)</span>
+    <span class="n">cache</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="s2">"_db_cohort_cache"</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">cache</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="ow">not</span> <span class="nb">all</span><span class="p">(</span><span class="n">a</span> <span class="ow">is</span> <span class="n">b</span> <span class="k">for</span> <span class="n">a</span><span class="p">,</span> <span class="n">b</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">cache</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">sources</span><span class="p">)):</span>
+        <span class="n">cache</span> <span class="o">=</span> <span class="p">(</span><span class="n">sources</span><span class="p">,</span> <span class="p">{})</span>
+        <span class="n">p</span><span class="o">.</span><span class="n">_db_cohort_cache</span> <span class="o">=</span> <span class="n">cache</span>
+    <span class="n">key</span> <span class="o">=</span> <span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="n">per_rmn</span><span class="p">,</span> <span class="n">j</span><span class="p">)</span>
+    <span class="n">found</span> <span class="o">=</span> <span class="n">cache</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">found</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">found</span>
+    <span class="n">alpha_db</span> <span class="o">=</span> <span class="n">cohort_array</span><span class="p">(</span><span class="s2">"alpha_db"</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">by_j</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">ndim</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">e</span><span class="p">)</span> <span class="o">==</span> <span class="mi">3</span><span class="p">:</span>
+        <span class="n">e_S</span> <span class="o">=</span> <span class="n">cohort_path</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">e</span><span class="p">),</span> <span class="n">t</span><span class="p">,</span> <span class="n">per_rmn</span><span class="p">,</span> <span class="n">p</span><span class="p">)[:,</span> <span class="n">j</span><span class="p">]</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">e_S</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">e</span><span class="p">[:,</span> <span class="n">j</span><span class="p">]</span>
+    <span class="n">found</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="n">cohort_path</span><span class="p">(</span><span class="n">S_ret</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="n">per_rmn</span><span class="p">,</span> <span class="n">p</span><span class="p">),</span>
+        <span class="n">cohort_path</span><span class="p">(</span><span class="n">ny</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="n">per_rmn</span><span class="p">,</span> <span class="n">p</span><span class="p">),</span>
+        <span class="n">cohort_path</span><span class="p">(</span><span class="n">cy</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="n">per_rmn</span><span class="p">,</span> <span class="n">p</span><span class="p">),</span>
+        <span class="n">cohort_path</span><span class="p">(</span><span class="n">alpha_db</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="n">per_rmn</span><span class="p">,</span> <span class="n">p</span><span class="p">)[:,</span> <span class="n">j</span><span class="p">],</span>
+        <span class="n">np</span><span class="o">.</span><span class="n">ascontiguousarray</span><span class="p">(</span><span class="n">e_S</span><span class="p">),</span>
+    <span class="p">)</span>
+    <span class="k">for</span> <span class="n">arr</span> <span class="ow">in</span> <span class="n">found</span><span class="p">:</span>
+        <span class="n">arr</span><span class="o">.</span><span class="n">setflags</span><span class="p">(</span><span class="n">write</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">cache</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">found</span>
+    <span class="k">return</span> <span class="n">found</span>
+
+
 <span class="k">def</span><span class="w"> </span><span class="nf">pension_periods</span><span class="p">(</span><span class="n">p</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Convert the pension parameters measured in calendar years into</span>
@@ -994,20 +1045,14 @@
             <span class="n">t</span> <span class="o">=</span> <span class="mi">0</span>
         <span class="c1"># This household is age S - per_rmn at time t, so its benefit</span>
         <span class="c1"># at age u is paid in period t + u - (S - per_rmn); its own</span>
-        <span class="c1"># cohort's pension parameters run down that diagonal</span>
-        <span class="n">S_ret_u</span> <span class="o">=</span> <span class="n">cohort_path</span><span class="p">(</span><span class="n">S_ret</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="n">per_rmn</span><span class="p">,</span> <span class="n">p</span><span class="p">)</span>
-        <span class="n">ny_u</span> <span class="o">=</span> <span class="n">cohort_path</span><span class="p">(</span><span class="n">ny</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="n">per_rmn</span><span class="p">,</span> <span class="n">p</span><span class="p">)</span>
-        <span class="n">cy_u</span> <span class="o">=</span> <span class="n">cohort_path</span><span class="p">(</span><span class="n">cy</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="n">per_rmn</span><span class="p">,</span> <span class="n">p</span><span class="p">)</span>
-        <span class="n">alpha_db_u</span> <span class="o">=</span> <span class="n">cohort_path</span><span class="p">(</span><span class="n">alpha_db</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="n">per_rmn</span><span class="p">,</span> <span class="n">p</span><span class="p">)[:,</span> <span class="n">j</span><span class="p">]</span>
-        <span class="c1"># Effective labor units over this household's lifetime: the</span>
-        <span class="c1"># profile in effect in the period each age is lived in.  Ages</span>
-        <span class="c1"># before the time path begins use the period-0 profile (as the</span>
-        <span class="c1"># wage above) and ages beyond the end of the path use the</span>
-        <span class="c1"># final (steady-state) profile.</span>
-        <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">ndim</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">e</span><span class="p">)</span> <span class="o">==</span> <span class="mi">3</span><span class="p">:</span>
-            <span class="n">e_S</span> <span class="o">=</span> <span class="n">cohort_path</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">e</span><span class="p">),</span> <span class="n">t</span><span class="p">,</span> <span class="n">per_rmn</span><span class="p">,</span> <span class="n">p</span><span class="p">)[:,</span> <span class="n">j</span><span class="p">]</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="n">e_S</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">e</span><span class="p">[:,</span> <span class="n">j</span><span class="p">]</span>
+        <span class="c1"># cohort's pension parameters run down that diagonal. Its</span>
+        <span class="c1"># effective labor units are the profile in effect in the period</span>
+        <span class="c1"># each age is lived in: ages before the time path begins use the</span>
+        <span class="c1"># period-0 profile (as the wage above) and ages beyond the end of</span>
+        <span class="c1"># the path use the final (steady-state) profile.</span>
+        <span class="n">S_ret_u</span><span class="p">,</span> <span class="n">ny_u</span><span class="p">,</span> <span class="n">cy_u</span><span class="p">,</span> <span class="n">alpha_db_u</span><span class="p">,</span> <span class="n">e_S</span> <span class="o">=</span> <span class="n">_db_cohort_inputs</span><span class="p">(</span>
+            <span class="n">p</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="n">per_rmn</span><span class="p">,</span> <span class="n">j</span>
+        <span class="p">)</span>
 
         <span class="n">DB</span> <span class="o">=</span> <span class="n">DB_1dim_loop</span><span class="p">(</span>
             <span class="n">w_S</span><span class="p">,</span>
@@ -1036,10 +1081,9 @@
                 <span class="n">row</span> <span class="o">=</span> <span class="kc">None</span>
             <span class="k">if</span> <span class="n">row</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
                 <span class="c1"># full lifetime of a cohort that is age 0 at time t</span>
-                <span class="n">S_ret_u</span> <span class="o">=</span> <span class="n">cohort_path</span><span class="p">(</span><span class="n">S_ret</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="n">p</span><span class="o">.</span><span class="n">S</span><span class="p">,</span> <span class="n">p</span><span class="p">)</span>
-                <span class="n">ny_u</span> <span class="o">=</span> <span class="n">cohort_path</span><span class="p">(</span><span class="n">ny</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="n">p</span><span class="o">.</span><span class="n">S</span><span class="p">,</span> <span class="n">p</span><span class="p">)</span>
-                <span class="n">cy_u</span> <span class="o">=</span> <span class="n">cohort_path</span><span class="p">(</span><span class="n">cy</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="n">p</span><span class="o">.</span><span class="n">S</span><span class="p">,</span> <span class="n">p</span><span class="p">)</span>
-                <span class="n">alpha_db_u</span> <span class="o">=</span> <span class="n">cohort_path</span><span class="p">(</span><span class="n">alpha_db</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="n">p</span><span class="o">.</span><span class="n">S</span><span class="p">,</span> <span class="n">p</span><span class="p">)[:,</span> <span class="n">j</span><span class="p">]</span>
+                <span class="n">S_ret_u</span><span class="p">,</span> <span class="n">ny_u</span><span class="p">,</span> <span class="n">cy_u</span><span class="p">,</span> <span class="n">alpha_db_u</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">_db_cohort_inputs</span><span class="p">(</span>
+                    <span class="n">p</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="n">p</span><span class="o">.</span><span class="n">S</span><span class="p">,</span> <span class="n">j</span>
+                <span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="n">S_ret_u</span><span class="p">,</span> <span class="n">ny_u</span><span class="p">,</span> <span class="n">cy_u</span> <span class="o">=</span> <span class="n">S_ret</span><span class="p">[</span><span class="n">row</span><span class="p">],</span> <span class="n">ny</span><span class="p">[</span><span class="n">row</span><span class="p">],</span> <span class="n">cy</span><span class="p">[</span><span class="n">row</span><span class="p">]</span>
                 <span class="n">alpha_db_u</span> <span class="o">=</span> <span class="n">alpha_db</span><span class="p">[</span><span class="n">row</span><span class="p">,</span> <span class="p">:,</span> <span class="n">j</span><span class="p">]</span>

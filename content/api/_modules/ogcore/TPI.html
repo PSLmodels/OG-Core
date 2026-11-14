@@ -991,6 +991,31 @@
     <span class="n">n_s</span> <span class="o">=</span> <span class="n">n_guess</span>
     <span class="n">chi_n_s</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">diag</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">chi_n</span><span class="p">[</span><span class="n">t</span> <span class="p">:</span> <span class="n">t</span> <span class="o">+</span> <span class="n">p</span><span class="o">.</span><span class="n">S</span><span class="p">,</span> <span class="p">:],</span> <span class="nb">max</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">S</span> <span class="o">-</span> <span class="n">length</span><span class="p">,</span> <span class="mi">0</span><span class="p">))</span>
     <span class="n">rho_s</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">diag</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">rho</span><span class="p">[</span><span class="n">t</span> <span class="p">:</span> <span class="n">t</span> <span class="o">+</span> <span class="n">p</span><span class="o">.</span><span class="n">S</span><span class="p">,</span> <span class="p">:,</span> <span class="n">j</span><span class="p">],</span> <span class="nb">max</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">S</span> <span class="o">-</span> <span class="n">length</span><span class="p">,</span> <span class="mi">0</span><span class="p">))</span>
+    <span class="c1"># Both first order conditions need the household's net taxes, which</span>
+    <span class="c1"># include the pension; compute them once per evaluation and pass them</span>
+    <span class="c1"># to both, rather than letting each condition recompute them</span>
+    <span class="n">e_s</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">diag</span><span class="p">(</span>
+        <span class="n">household</span><span class="o">.</span><span class="n">_get_e_long</span><span class="p">(</span><span class="n">p</span><span class="p">)[</span><span class="n">t</span> <span class="p">:</span> <span class="n">t</span> <span class="o">+</span> <span class="n">p</span><span class="o">.</span><span class="n">S</span><span class="p">,</span> <span class="p">:,</span> <span class="n">j</span><span class="p">],</span> <span class="nb">max</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">S</span> <span class="o">-</span> <span class="n">length</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+    <span class="p">)</span>
+    <span class="n">net_tax</span> <span class="o">=</span> <span class="n">tax</span><span class="o">.</span><span class="n">net_taxes</span><span class="p">(</span>
+        <span class="n">r_s</span><span class="p">,</span>
+        <span class="n">w_s</span><span class="p">,</span>
+        <span class="n">b_s</span><span class="p">,</span>
+        <span class="n">n_s</span><span class="p">,</span>
+        <span class="n">bq</span><span class="p">,</span>
+        <span class="n">factor</span><span class="p">,</span>
+        <span class="n">tr</span><span class="p">,</span>
+        <span class="n">ubi</span><span class="p">,</span>
+        <span class="n">theta</span><span class="p">,</span>
+        <span class="n">t</span><span class="p">,</span>
+        <span class="n">j</span><span class="p">,</span>
+        <span class="kc">False</span><span class="p">,</span>
+        <span class="s2">"TPI"</span><span class="p">,</span>
+        <span class="n">e_s</span><span class="p">,</span>
+        <span class="n">etr_params</span><span class="p">,</span>
+        <span class="n">p</span><span class="p">,</span>
+        <span class="n">ndc_rates</span><span class="p">,</span>
+    <span class="p">)</span>
 
     <span class="n">error1</span> <span class="o">=</span> <span class="n">household</span><span class="o">.</span><span class="n">FOC_savings</span><span class="p">(</span>
         <span class="n">r_s</span><span class="p">,</span>
@@ -1014,6 +1039,7 @@
         <span class="n">p</span><span class="p">,</span>
         <span class="s2">"TPI"</span><span class="p">,</span>
         <span class="n">ndc_rates</span><span class="p">,</span>
+        <span class="n">net_tax</span><span class="o">=</span><span class="n">net_tax</span><span class="p">,</span>
     <span class="p">)</span>
 
     <span class="n">error2</span> <span class="o">=</span> <span class="n">household</span><span class="o">.</span><span class="n">FOC_labor</span><span class="p">(</span>
@@ -1038,6 +1064,7 @@
         <span class="n">p</span><span class="p">,</span>
         <span class="s2">"TPI"</span><span class="p">,</span>
         <span class="n">ndc_rates</span><span class="p">,</span>
+        <span class="n">net_tax</span><span class="o">=</span><span class="n">net_tax</span><span class="p">,</span>
     <span class="p">)</span>
 
     <span class="c1"># Check and punish constraint violations</span>
