@@ -862,9 +862,9 @@
         }
     },
     "alpha_bs_T": {
-        "title": "Proportional adjustment to government transfers relative to baseline amount when budget balance is true",
-        "description": "Proportional adjustment to government transfers relative to baseline amount when budget balance is true. Set value for base year, click '+' to add value for next year.  All future years not specified are set to last value entered.",
-        "short_description": "Proportional adjustment to government transfers relative to baseline amount when budget balance is true",
+        "title": "Proportional adjustment to government transfers relative to baseline amount when baseline_spending is True",
+        "description": "Proportional adjustment to government transfers relative to baseline amount when baseline_spending is True. Set value for base year, click '+' to add value for next year.  All future years not specified are set to last value entered.",
+        "short_description": "Proportional adjustment to government transfers relative to baseline amount when baseline_spending is True",
         "param_notation": "$\\alpha^{BS}_{T,t}$",
         "section_1": "Fiscal Policy Parameters",
         "section_2": "Spending",
@@ -886,9 +886,9 @@
         }
     },
     "alpha_bs_G": {
-        "title": "Proportional adjustment to government consumption expenditures relative to baseline amount when budget balance is true",
-        "description": "Proportional adjustment to government consumption expenditures relative to baseline amount when budget balance is true. Set value for base year, click '+' to add value for next year.  All future years not specified are set to last value entered.",
-        "short_description": "Proportional adjustment to government consumption expenditures relative to baseline amount when budget balance is true",
+        "title": "Proportional adjustment to government consumption expenditures relative to baseline amount when baseline_spending is True",
+        "description": "Proportional adjustment to government consumption expenditures relative to baseline amount when baseline_spending is True. Set value for base year, click '+' to add value for next year.  All future years not specified are set to last value entered.",
+        "short_description": "Proportional adjustment to government consumption expenditures relative to baseline amount when baseline_spending is True",
         "param_notation": "$\\alpha^{BS}_{G,t}$",
         "section_1": "Fiscal Policy Parameters",
         "section_2": "Spending",
@@ -910,10 +910,34 @@
         }
     },
     "alpha_bs_I": {
-        "title": "Proportional adjustment to  infrastructure (public capital) spending relative to baseline amount when balanced budget is true",
-        "description": "Proportional adjustment to  infrastructure (public capital) spending relative to baseline amount when balanced budget is true.",
-        "short_description": "Proportional adjustment to infrastructure spending relative to baseline amount when budget balance is true",
+        "title": "Proportional adjustment to infrastructure (public capital) spending relative to baseline amount when baseline_spending is True",
+        "description": "Proportional adjustment to infrastructure (public capital) spending relative to baseline amount when baseline_spending is True.",
+        "short_description": "Proportional adjustment to infrastructure spending relative to baseline amount when baseline_spending is True",
         "param_notation": "$\\alpha^{BS}_{I,t}$",
+        "section_1": "Fiscal Policy Parameters",
+        "section_2": "Spending",
+        "notes": "",
+        "type": "float",
+        "number_dims": 1,
+        "value": [
+            {
+                "value": [
+                    1.0
+                ]
+            }
+        ],
+        "validators": {
+            "range": {
+                "min": 0.0,
+                "max": 99999e99
+            }
+        }
+    },
+    "alpha_bs_FA": {
+        "title": "Proportional adjustment to foreign aid payments to the domestic government relative to baseline amount when baseline_spending is True",
+        "description": "Proportional adjustment to foreign aid payments to the domestic government relative to baseline amount when baseline_spending is True. In that case, foreign aid in the reform is this factor times the level of foreign aid in the baseline equilibrium, and alpha_FA is not used.",
+        "short_description": "Proportional adjustment to foreign aid relative to baseline amount when baseline_spending is True",
+        "param_notation": "$\\alpha^{BS}_{FA,t}$",
         "section_1": "Fiscal Policy Parameters",
         "section_2": "Spending",
         "notes": "",
@@ -956,7 +980,7 @@
     },
     "alpha_FA": {
         "title": "Foreign aid payments to domestic government as a share of GDP",
-        "description": "Foreign aid payments to domestic government as a share of GDP. Set value for base year, click '+' to add value for next year.  All future years not specified are set to last value entered.",
+        "description": "Foreign aid payments to domestic government as a share of GDP. Set value for base year, click '+' to add value for next year.  All future years not specified are set to last value entered. Not used when baseline_spending=True, in which case foreign aid is the baseline level of foreign aid scaled by alpha_bs_FA.",
         "short_description": "Foreign aid as a share of GDP",
         "param_notation": "$\\alpha_{FA,t}$",
         "section_1": "Fiscal Policy Parameters",
@@ -1062,6 +1086,49 @@
             "range": {
                 "min": 0.0,
                 "max": 5.0
+            }
+        }
+    },
+    "initial_hhwealth_dist": {
+        "title": "Distribution of household wealth across ages and lifetime income groups in the initial period",
+        "description": "Shape of the distribution of household wealth across ages and lifetime income groups in the initial period of the transition path.",
+        "short_description": "Initial period household wealth distribution",
+        "param_notation": "$\\Gamma_{1}$",
+        "section_1": "Household Parameters",
+        "section_2": "Endowments",
+        "notes": "An S x J matrix proportional to the wealth held by households in each age and lifetime income group at the start of the transition path, normalized so that its elements sum to one; it sets only the shape of the initial distribution, whose level is set so that aggregate household wealth matches its initial value. When null (the default), the shape is that of the steady-state distribution of savings. Should be calibrated from household wealth data by age and lifetime income group; shapes far from the steady state can leave the oldest cohorts without enough wealth to solve their remaining lifetimes.",
+        "type": "float",
+        "number_dims": 2,
+        "value": [
+            {
+                "value": null
+            }
+        ],
+        "validators": {
+            "range": {
+                "min": 0.0,
+                "max": 1.0
+            }
+        }
+    },
+    "initial_wealth_ratio": {
+        "title": "Aggregate household wealth to GDP ratio in the initial period",
+        "description": "Aggregate household wealth to GDP ratio in the initial period of the transition path.",
+        "short_description": "Initial period wealth-to-GDP ratio",
+        "param_notation": "$\\alpha_{B,1}$",
+        "section_1": "Household Parameters",
+        "section_2": "Endowments",
+        "notes": "When null (the default), aggregate household wealth in the initial period is the level implied by the steady-state distribution of savings. Otherwise the time path solution sets initial aggregate household wealth to this ratio times initial GDP, scaling the initial distribution of wealth up or down. Should be calibrated from total household wealth over GDP in the model start year.",
+        "type": "float",
+        "value": [
+            {
+                "value": null
+            }
+        ],
+        "validators": {
+            "range": {
+                "min": 0.8,
+                "max": 7.0
             }
         }
     },
@@ -3997,13 +4064,13 @@
             }
     },
     "retirement_age": {
-        "title": "Age at which agents can collect Social Security benefits",
-        "description": "Age at which agents can collect Social Security benefits. Set value for base year, click '+' to add value for next year.  All future years not specified are set to last value entered.",
+        "title": "Age at which agents can collect public pension benefits",
+        "description": "Age at which agents can collect public pension benefits. A single value. The retirement age belongs to a birth cohort, so changes along the time path are entered through pension_regimes.",
         "short_description": "Retirement age",
         "param_notation": "$R$",
         "section_1": "Fiscal Policy Parameters",
         "section_2": "Government Pension Parameters",
-        "notes": "",
+        "notes": "Internally expanded to the array retire of retirement periods by model period and age, which the household problem, the aggregates, and the steady state (final period) all read. pension_regimes is a list of dicts, each with a calendar year, an optional max_age_at_start, and the new values of the parameters it sets (retirement_age and the defined benefit and notional defined contribution parameters), applied in order.",
         "type": "int",
         "number_dims": 1,
         "value": [
@@ -4038,7 +4105,8 @@
                     "US-Style Social Security",
                     "Defined Benefits",
                     "Notional Defined Contribution",
-                    "Points System"
+                    "Points System",
+                    "Hybrid DB-NDC"
                 ]
             }
         }
@@ -4048,7 +4116,7 @@
         "description": "Pension system contribution tax rate under a notional defined contribution system.",
         "section_1": "Fiscal Policy Parameters",
         "section_2": "Government Pension Parameters",
-        "notes": "",
+        "notes": "A single base value; changes by birth cohort or calendar year are entered through pension_regimes. Contributions are credited at the rate the household's cohort faced at the age they were made.",
         "type": "float",
         "value": [
             {
@@ -4062,12 +4130,75 @@
             }
         }
     },
+    "factor1_db_ndc_hybrid": {
+        "title": "Upper cutoff of the defined benefit band under a hybrid DB-NDC system, as a multiple of initial-period average labor income.",
+        "description": "Under the hybrid defined benefit and notional defined contribution system, labor income up to factor1_db_ndc_hybrid in period t times avg_labor_inc_t1_model_units (average labor income in the first model period) is subject to the payroll tax tau_payroll and earns a defined benefit (computed with the Defined Benefits parameters) on that income.",
+        "section_1": "Fiscal Policy Parameters",
+        "section_2": "Government Pension Parameters",
+        "notes": "Only used when pension_system is 'Hybrid DB-NDC'. May vary over time: set value for base year, click '+' to add value for next year. All future years not specified are set to last value entered. The cutoffs that apply to any labor income are those of the period in which it was earned. Must be no greater than factor2_db_ndc_hybrid in every period. A single value is the initial factor of a path indexed to remove trend growth, value / e^(g_y t) in model period t, so the cutoff is fixed in real terms; enter two or more values to supply your own path.",
+        "type": "float",
+        "number_dims": 1,
+        "value": [
+            {
+                "value": [
+                    1.0
+                ]
+            }
+        ],
+        "validators": {
+            "range": {
+                "min": 0.0,
+                "max": 100.0
+            }
+        }
+    },
+    "factor2_db_ndc_hybrid": {
+        "title": "Upper cutoff of the notional defined contribution band under a hybrid DB-NDC system, as a multiple of initial-period average labor income.",
+        "description": "Under the hybrid defined benefit and notional defined contribution system, labor income between factor1_db_ndc_hybrid and factor2_db_ndc_hybrid in period t times avg_labor_inc_t1_model_units (average labor income in the first model period) is subject to the contribution rate tau_p and earns a notional defined contribution benefit (computed with the Notional Defined Contribution parameters) in addition to the defined benefit. Labor income above factor2_db_ndc_hybrid times avg_labor_inc_t1_model_units earns no benefit.",
+        "section_1": "Fiscal Policy Parameters",
+        "section_2": "Government Pension Parameters",
+        "notes": "Only used when pension_system is 'Hybrid DB-NDC'. May vary over time: set value for base year, click '+' to add value for next year. All future years not specified are set to last value entered. The cutoffs that apply to any labor income are those of the period in which it was earned. Must be at least factor1_db_ndc_hybrid in every period. A single value is the initial factor of a path indexed to remove trend growth, value / e^(g_y t) in model period t, so the cutoff is fixed in real terms; enter two or more values to supply your own path.",
+        "type": "float",
+        "number_dims": 1,
+        "value": [
+            {
+                "value": [
+                    2.0
+                ]
+            }
+        ],
+        "validators": {
+            "range": {
+                "min": 0.0,
+                "max": 100.0
+            }
+        }
+    },
+    "avg_labor_inc_t1_model_units": {
+        "title": "Average labor income in the first model period, in model units.",
+        "description": "Average labor income in the first model period, in model units, taken from an outside model. The earnings cutoffs of the hybrid DB-NDC pension system are factor1_db_ndc_hybrid and factor2_db_ndc_hybrid times this value, so the cutoffs do not depend on endogenous model variables such as the wage.",
+        "section_1": "Fiscal Policy Parameters",
+        "section_2": "Government Pension Parameters",
+        "notes": "Only used when pension_system is 'Hybrid DB-NDC'. Must be expressed in the same (stationarized) model units as labor income w * e * n.",
+        "type": "float",
+        "value": [
+            {
+                "value": 1.0
+            }
+        ],
+        "validators": {
+            "range": {
+                "min": 0.0,
+                "max": 1000.0
+            }
+        }
+    },
     "indR": {
         "title": "Adjustment for survivor benefits under a notional defined contribution system.",
         "description": "Adjustment for survivor benefits under a notional defined contribution system.",
         "section_1": "Fiscal Policy Parameters",
         "section_2": "Government Pension Parameters",
-        "notes": "indR = 0.0 for no survivor benefits, indR = 0.5 for survivor benefits",
+        "notes": "indR = 0.0 for no survivor benefits, indR = 0.5 for survivor benefits. A single base value; changes by birth cohort or calendar year are entered through pension_regimes.",
         "type": "float",
         "value": [
             {
@@ -4086,7 +4217,7 @@
         "description": "Adjustment for frequency of pension payments under a notional defined contribution system.",
         "section_1": "Fiscal Policy Parameters",
         "section_2": "Government Pension Parameters",
-        "notes": "k = 0.5 - (6/13n), where n is the number of payments per year",
+        "notes": "k = 0.5 - (6/13n), where n is the number of payments per year. A single base value; changes by birth cohort or calendar year are entered through pension_regimes.",
         "type": "float",
         "value": [
             {
@@ -4105,7 +4236,7 @@
         "description": "Growth rate applied to contributions under a notional defined contribution system.",
         "section_1": "Fiscal Policy Parameters",
         "section_2": "Government Pension Parameters",
-        "notes": "'r' uses the model interest rate, 'Curr GDP' the current GDP growth rate, and 'LR GDP' the long-run GDP growth rate.",
+        "notes": "The rate credited in each period is the growth realized from the previous period: 'r' the interest rate on household savings, 'Curr GDP' the growth of real GDP, 'wage bill' the growth of total real labor earnings, 'avg wage' the growth of real labor earnings per person, and 'LR GDP' the constant long-run real GDP growth rate exp(g_y)(1 + g_n_ss) - 1. Each contribution compounds at the rates credited in the periods between the contribution and retirement. See also ndc_growth_avg_years.",
         "type": "str",
         "value": [
             {
@@ -4117,8 +4248,29 @@
                 "choices": [
                     "r",
                     "Curr GDP",
-                    "LR GDP"
+                    "LR GDP",
+                    "wage bill",
+                    "avg wage"
                 ]
+            }
+        }
+    },
+    "ndc_growth_avg_years": {
+        "title": "Number of years averaged in the rate credited to notional defined contribution balances.",
+        "description": "Number of years over which the growth rate set by ndc_growth_rate is averaged to give the rate credited to notional defined contribution balances in each year.",
+        "section_1": "Fiscal Policy Parameters",
+        "section_2": "Government Pension Parameters",
+        "notes": "The rate credited in a year is the arithmetic mean of the growth rates of that year and the preceding ndc_growth_avg_years - 1 years, converted to model periods. Years before the transition path use the first period's rate. 1 means no averaging; e.g., Italy credits the 5-year average of GDP growth.",
+        "type": "int",
+        "value": [
+            {
+                "value": 1
+            }
+        ],
+        "validators": {
+            "range": {
+                "min": 1,
+                "max": 20
             }
         }
     },
@@ -4127,7 +4279,7 @@
         "description": "Growth rate used in the conversion coefficient of a notional defined contribution system.",
         "section_1": "Fiscal Policy Parameters",
         "section_2": "Government Pension Parameters",
-        "notes": "'r' uses the model interest rate, 'Curr GDP' the current GDP growth rate, and 'LR GDP' the long-run GDP growth rate.",
+        "notes": "Payments in the conversion coefficient are discounted at the chosen rate in the period the household retires, held fixed over its retirement: 'r' the interest rate on household savings, 'Curr GDP' the growth of real GDP, 'wage bill' the growth of total real labor earnings, 'avg wage' the growth of real labor earnings per person, and 'LR GDP' the constant long-run real GDP growth rate exp(g_y)(1 + g_n_ss) - 1.",
         "type": "str",
         "value": [
             {
@@ -4139,7 +4291,31 @@
                 "choices": [
                     "r",
                     "Curr GDP",
-                    "LR GDP"
+                    "LR GDP",
+                    "wage bill",
+                    "avg wage"
+                ]
+            }
+        }
+    },
+    "ndc_mortality": {
+        "title": "Mortality rates used in the conversion coefficient of a notional defined contribution system.",
+        "description": "Mortality rates used to compute the annuity factor in the conversion coefficient of a notional defined contribution system.",
+        "section_1": "Fiscal Policy Parameters",
+        "section_2": "Government Pension Parameters",
+        "notes": "'cohort' uses the mortality rates the retiring cohort faces at each age after retirement, 'period' the mortality rates by age in the period of retirement, and 'steady state' the steady-state mortality rates for every cohort. All three are averaged over lifetime income groups with the weights lambdas and coincide in the steady state.",
+        "type": "str",
+        "value": [
+            {
+                "value": "cohort"
+            }
+        ],
+        "validators": {
+            "choice": {
+                "choices": [
+                    "cohort",
+                    "period",
+                    "steady state"
                 ]
             }
         }
@@ -4150,7 +4326,7 @@
         "param_notation": "$\\alpha^{DB}_{j,t}$",
         "section_1": "Fiscal Policy Parameters",
         "section_2": "Government Pension Parameters",
-        "notes": "Can be specified to vary by type J and over year T. The rate applied is the one in effect in the period the benefit is paid.",
+        "notes": "Can be specified to vary by type J and over year T. The rate applied is the one in effect in the period the benefit is paid. To change the rate only for cohorts not yet retired, enter the change through pension_regimes with a max_age_at_start.",
         "type": "float",
         "number_dims": 2,
         "value": [
@@ -4213,7 +4389,7 @@
         "description": "Number of years of contributions made to defined benefits pension system.",
         "section_1": "Fiscal Policy Parameters",
         "section_2": "Government Pension Parameters",
-        "notes": "Since there is not exit from the labor force in the model, the number of years of contributions is set exogenously.",
+        "notes": "Since there is not exit from the labor force in the model, the number of years of contributions is set exogenously. A single base value; changes by birth cohort or calendar year are entered through pension_regimes.",
         "type": "int",
         "value": [
             {
@@ -4234,7 +4410,7 @@
         "param_notation": "$\\texttt{avg_earn_num_years}$",
         "section_1": "Fiscal Policy Parameters",
         "section_2": "Government Pension Parameters",
-        "notes": "US-styel Social Security AIME is computed using average earnings from the highest earnings years for the number of years specified here.",
+        "notes": "US-style Social Security AIME is computed using average earnings from the highest earnings years for the number of years specified here; the defined benefit system averages the last years before retirement. A single base value; changes by birth cohort or calendar year are entered through pension_regimes.",
         "type": "int",
         "value": [
             {

@@ -168,21 +168,44 @@ def get_initial_SS_values(p):
         (tuple): initial period and steady state values:
 
             * initial_values (tuple): initial period variable values,
-                (B0, b_sinit, b_splus1init, factor, initial_n)
+                (B0, b_sinit, b_splus1init, factor, initial_n), where
+                B0 is aggregate household wealth and b_sinit and
+                b_splus1init the S x J wealth held and savings chosen in
+                the initial period
             * ss_vars (dictionary): dictionary with steady state
                 solution results
             * theta (Numpy array): steady-state retirement replacement
                 rates, length J
             * baseline_values (tuple): (Ybaseline, TRbaseline, Gbaseline,
-                D0_baseline), GDP, lump sum transfer, and government spending
-                amounts from the baseline model run
+                Ig_baseline, FAbaseline, D0_baseline, Kg0_baseline), GDP,
+                lump sum transfer, government spending, infrastructure
+                investment, and foreign aid paths and initial government
+                debt and public capital from the baseline model run
 
     """
     baseline_ss = os.path.join(p.baseline_dir, "SS", "SS_vars.pkl")
     ss_baseline_vars = utils.safe_read_pickle(baseline_ss)
     factor = ss_baseline_vars["factor"]
+    # Initial distribution of savings, b_sp1 chosen at age s and held at
+    # s+1, scaled so that aggregate household wealth evaluated with the
+    # period-0 population equals the steady-state aggregate. Its shape is
+    # the steady-state distribution unless initial_hhwealth_dist (an S x J
+    # matrix of shares of aggregate wealth) is given. When
+    # initial_wealth_ratio is given, the level is revised inside run_TPI
+    # so that initial wealth is that ratio times initial GDP.
     B0 = aggr.get_B(ss_baseline_vars["b_sp1"], p, "SS", True)
-    initial_b_sp1 = ss_baseline_vars["b_sp1"] * (ss_baseline_vars["B"] / B0)
+    if p.initial_hhwealth_dist is None:
+        initial_b_sp1 = ss_baseline_vars["b_sp1"] * (
+            ss_baseline_vars["B"] / B0
+        )
+    else:
+        initial_b_sp1_prelim = (
+            p.initial_hhwealth_dist * ss_baseline_vars["B"]
+        ) / p.omega[0, :, :]
+        initial_b_sp1 = initial_b_sp1_prelim * (
+            ss_baseline_vars["B"]
+            / aggr.get_B(initial_b_sp1_prelim, p, "SS", True)
+        )
     initial_b = np.zeros((p.S, p.J))
     initial_b[1:, :] = initial_b_sp1[:-1, :]
     initial_n = ss_baseline_vars["n"]
@@ -198,6 +221,7 @@ def get_initial_SS_values(p):
     TRbaseline = None
     Gbaseline = None
     Ig_baseline = None
+    FAbaseline = None
     if not p.baseline:
         baseline_tpi = os.path.join(p.baseline_dir, "TPI", "TPI_vars.pkl")
         tpi_baseline_vars = utils.safe_read_pickle(baseline_tpi)
@@ -208,6 +232,9 @@ def get_initial_SS_values(p):
         TRbaseline = tpi_baseline_vars["TR"]
         Gbaseline = tpi_baseline_vars["G"]
         Ig_baseline = tpi_baseline_vars["I_g"]
+        FAbaseline = utils.get_baseline_foreign_aid(
+            tpi_baseline_vars, p, "TPI"
+        )
 
     if p.baseline:
         ss_vars = ss_baseline_vars
@@ -233,17 +260,31 @@ def get_initial_SS_values(p):
     if not p.baseline:
         baseline_tpi = os.path.join(p.baseline_dir, "TPI", "TPI_vars.pkl")
         tpi_baseline_vars = utils.safe_read_pickle(baseline_tpi)
+        if (
+            p.initial_wealth_ratio is not None
+            or p.initial_hhwealth_dist is not None
+        ):
+            # The baseline's initial wealth was set by the initial wealth
+            # parameters (and, for the ratio, solved for along with the
+            # baseline path), so the reform must start from the same
+            # period-0 wealth rather than from the steady-state values.
+            # b_sp1_preTP is the savings chosen before the time path
+            # began (held at t=0); an older baseline pickle without it is
+            # rebuilt from the wealth held at t=0, keeping the current
+            # last row (savings of the oldest cohort, which only enter
+            # period-0 bequests)
+            B0 = tpi_baseline_vars["B"][0]
+            b_sinit = tpi_baseline_vars["b_s"][0, :, :]
+            if "b_sp1_preTP" in tpi_baseline_vars:
+                b_splus1init = tpi_baseline_vars["b_sp1_preTP"]
+            else:
+                b_splus1init = b_splus1init.copy()
+                b_splus1init[:-1, :] = b_sinit[1:, :]
         D0_baseline = tpi_baseline_vars["D"][0]
-        K0_baseline = tpi_baseline_vars["K"][0]
-        Kd0_baseline = tpi_baseline_vars["K_d"][0]
         Kg0_baseline = tpi_baseline_vars["K_g"][0]
-        Km0_baseline = tpi_baseline_vars["K_m"][0, :]
     else:
         D0_baseline = None
-        K0_baseline = None
-        Kd0_baseline = None
         Kg0_baseline = None
-        Km0_baseline = None
 
     initial_values = (B0, b_sinit, b_splus1init, factor, initial_n)
     baseline_values = (
@@ -251,11 +292,9 @@ def get_initial_SS_values(p):
         TRbaseline,
         Gbaseline,
         Ig_baseline,
+        FAbaseline,
         D0_baseline,
-        K0_baseline,
-        Kd0_baseline,
         Kg0_baseline,
-        Km0_baseline,
     )
 
     return initial_values, ss_vars, theta, baseline_values
@@ -276,6 +315,7 @@ def firstdoughnutring(
     j,
     initial_b,
     p,
+    ndc_rates=None,
 ):
     """
     Solves the first entries of the upper triangle of the twist doughnut. This
@@ -298,6 +338,9 @@ def firstdoughnutring(
         j (int): index of ability type
         initial_b (Numpy array): SxJ matrix, savings of agents alive at T=0
         p (OG-Core Specifications object): model parameters
+        ndc_rates (NDCRates): calendar paths of the NDC credited and
+            discount rates (``pensions.ndc_rates_path``); None for the
+            steady-state rates
 
     Returns:
         euler errors (Numpy array): errors from first order conditions,
@@ -330,6 +373,7 @@ def firstdoughnutring(
         j,
         p,
         "TPI_scalar",
+        ndc_rates,
     )
 
     error2 = household.FOC_labor(
@@ -353,6 +397,7 @@ def firstdoughnutring(
         j,
         p,
         "TPI_scalar",
+        ndc_rates,
     )
 
     if n <= 0 or n >= 1:
@@ -383,6 +428,7 @@ def twist_doughnut(
     mtry_params,
     initial_b,
     p,
+    ndc_rates=None,
 ):
     """
     Solves the upper triangle of time path iterations. These are the agents who
@@ -415,6 +461,9 @@ def twist_doughnut(
         initial_b (Numpy array): savings of agents alive at T=0,
             size = SxJ
         p (OG-Core Specifications object): model parameters
+        ndc_rates (NDCRates): calendar paths of the NDC credited and
+            discount rates (``pensions.ndc_rates_path``); None for the
+            steady-state rates
 
     Returns:
         euler errors (Numpy array): errors from first order conditions,
@@ -460,6 +509,7 @@ def twist_doughnut(
         j,
         p,
         "TPI",
+        ndc_rates,
     )
 
     error2 = household.FOC_labor(
@@ -483,6 +533,7 @@ def twist_doughnut(
         j,
         p,
         "TPI",
+        ndc_rates,
     )
 
     # Check and punish constraint violations
@@ -559,7 +610,9 @@ def inner_loop(guesses, outer_loop_vars, initial_values, ubi, j, ind, p):
             guesses_n)
         outer_loop_vars (tuple): values for factor prices and economic
             aggregates used in household problem
-            (r_p, r, w, p_m, BQ, RM, TR, theta)
+            (r_p, r, w, p_m, BQ, RM, TR, theta), optionally followed by
+            ndc_rates (NDCRates), the calendar paths of the NDC credited
+            and discount rates
         r_p (Numpy array): real interest rate on household portfolio
         r (Numpy array): real interest rate on private capital
         w (Numpy array): real wage rate
@@ -590,7 +643,8 @@ def inner_loop(guesses, outer_loop_vars, initial_values, ubi, j, ind, p):
     """
     K0, b_sinit, b_splus1init, factor, initial_n = initial_values
     guesses_b, guesses_n = guesses
-    r_p, r, w, p_m, BQ, RM, TR, theta = outer_loop_vars
+    r_p, r, w, p_m, BQ, RM, TR, theta = outer_loop_vars[:8]
+    ndc_rates = outer_loop_vars[8] if len(outer_loop_vars) > 8 else None
 
     # compute composite good price
     p_i = (
@@ -628,6 +682,7 @@ def inner_loop(guesses, outer_loop_vars, initial_values, ubi, j, ind, p):
         j,
         b_splus1init,
         p,
+        ndc_rates,
     )
     solutions = opt.root(
         firstdoughnutring,
@@ -697,6 +752,7 @@ def inner_loop(guesses, outer_loop_vars, initial_values, ubi, j, ind, p):
             mtry_params_to_use,
             b_splus1init,
             p,
+            ndc_rates,
         )
         _tri_jac = _banded_jac_for(
             twist_doughnut, _tri_x0, _tri_args, p.use_sparse_FOC_jac
@@ -781,6 +837,7 @@ def inner_loop(guesses, outer_loop_vars, initial_values, ubi, j, ind, p):
             mtry_params_to_use,
             b_splus1init,
             p,
+            ndc_rates,
         )
         _td_x0 = list(b_guesses_to_use) + list(n_guesses_to_use)
         # When p.use_sparse_FOC_jac is set, supply a banded finite-difference
@@ -913,11 +970,9 @@ def run_TPI(p, client=None):
         TRbaseline,
         Gbaseline,
         Ig_baseline,
+        FAbaseline,
         D0_baseline,
-        K0_baseline,
-        Kd0_baseline,
         Kg0_baseline,
-        Km0_baseline,
     ) = baseline_values
 
     # Create time path of UBI household benefits and aggregate UBI outlays
@@ -942,34 +997,22 @@ def run_TPI(p, client=None):
     L_init = np.ones((p.T + p.S,)) * ss_vars["L"]
     B_init = utils.get_initial_path(B0, ss_vars["B"], p, "quadratic")
     L_init[: p.T] = aggr.get_L(n_mat[: p.T], p, "TPI")
-    # Get initial paths for aggregate capital. In the baseline, scale the
-    # steady-state capital stocks by the path of B; in a reform, start
-    # from the period-0 capital stocks of the baseline time path
-    if p.baseline:
-        K_init = B_init * ss_vars["K"] / ss_vars["B"]
-        K_d = K_init * ss_vars["K_d"] / ss_vars["K"]
-        K_g = np.ones_like(K_init) * ss_vars["K_g"]
-        K_vec_init = (
-            np.ones((p.T + p.S, p.M))
-            * ss_vars["K_m"].reshape(1, p.M)
-            * np.tile((K_init / ss_vars["K"]).reshape(p.T + p.S, 1), (1, p.M))
-        )
-    else:
-        K_init = utils.get_initial_path(
-            K0_baseline, ss_vars["K"], p, "quadratic"
-        )
-        K_d = utils.get_initial_path(
-            Kd0_baseline, ss_vars["K_d"], p, "quadratic"
-        )
-        K_g = utils.get_initial_path(
-            Kg0_baseline, ss_vars["K_g"], p, "quadratic"
-        )
-        K_vec_init = utils.get_initial_path(
-            Km0_baseline.reshape(1, p.M),
-            ss_vars["K_m"].reshape(1, p.M),
-            p,
-            "quadratic",
-        )
+    # Get initial paths for aggregate capital by scaling the steady-state
+    # capital stocks with the path of B. These paths only serve as guesses
+    # for the first iteration: inside the loop K, K_d, K_f, and K_m are
+    # recomputed from household wealth and K_g from the fiscal rule.
+    # Starting a reform instead from the period-0 capital stocks of the
+    # baseline time path was found to send the outer loop off on a
+    # divergent track in the multi-industry example, so the same guesses
+    # are used for baseline and reform runs.
+    K_init = B_init * ss_vars["K"] / ss_vars["B"]
+    K_d = K_init * ss_vars["K_d"] / ss_vars["K"]
+    K_g = np.ones_like(K_init) * ss_vars["K_g"]
+    K_vec_init = (
+        np.ones((p.T + p.S, p.M))
+        * ss_vars["K_m"].reshape(1, p.M)
+        * np.tile((K_init / ss_vars["K"]).reshape(p.T + p.S, 1), (1, p.M))
+    )
     K = K_init
     K_f = K_init - K_d
     L = L_init
@@ -1043,7 +1086,7 @@ def run_TPI(p, client=None):
         D = np.zeros(p.T + p.S)
         D_d = np.zeros(p.T + p.S)
         D_f = np.zeros(p.T + p.S)
-        I_g = fiscal.get_I_g(Y[: p.T], None, p, "TPI")
+        I_g = fiscal.get_I_g(Y[: p.T], Ig_baseline, p, "TPI")
     else:
         if p.baseline_spending:
             # Will set to TRbaseline here, but will be updated in TPI loop
@@ -1051,10 +1094,13 @@ def run_TPI(p, client=None):
             TR = np.concatenate(
                 (TRbaseline[: p.T], np.ones(p.S) * ss_vars["TR"])
             )
-            # Will set to Ig_baseline here, but will be updated in TPI loop
-            # with call to fiscal.get_I_g
+            # Infrastructure investment is the baseline path scaled by
+            # alpha_bs_I
             I_g = np.concatenate(
-                (Ig_baseline[: p.T], np.ones(p.S) * ss_vars["I_g"])
+                (
+                    fiscal.get_I_g(Y[: p.T], Ig_baseline, p, "TPI"),
+                    np.ones(p.S) * ss_vars["I_g"],
+                )
             )
             # Will set to Gbaseline here, but will be updated in TPI loop
             # with call to fiscal.D_G_path, which also does closure rule
@@ -1066,6 +1112,9 @@ def run_TPI(p, client=None):
         D = np.ones(p.T + p.S) * ss_vars["D"]
         D_d = D * ss_vars["D_d"] / ss_vars["D"]
         D_f = D * ss_vars["D_f"] / ss_vars["D"]
+    # Foreign aid is alpha_FA * Y, or the baseline path scaled by
+    # alpha_bs_FA if baseline_spending=True
+    foreign_aid = fiscal.get_foreign_aid(Y[: p.T], FAbaseline, p, "TPI")
     if p.baseline:
         K_g0 = p.initial_Kg_ratio * Y[0]
     else:
@@ -1173,7 +1222,17 @@ def run_TPI(p, client=None):
 
     # TPI loop
     while (TPIiter < p.maxiter) and (TPIdist >= p.mindist_TPI):
-        outer_loop_vars = (r_p, r, w, p_m, BQ, RM, TR, theta)
+        # NDC credited and discount rates by period, from this
+        # iteration's interest rate, GDP, wage, and labor paths
+        # the hybrid DB-NDC system credits its NDC accounts the same way
+        if p.pension_system in (
+            "Notional Defined Contribution",
+            "Hybrid DB-NDC",
+        ):
+            ndc_rates = pensions.ndc_rates_path(r_p, Y, w, L, p, "TPI")
+        else:
+            ndc_rates = None
+        outer_loop_vars = (r_p, r, w, p_m, BQ, RM, TR, theta, ndc_rates)
         # compute composite good price
         p_i = (
             np.tile(p.io_matrix.reshape(1, p.I, p.M), (p.T + p.S, 1, 1))
@@ -1286,6 +1345,7 @@ def run_TPI(p, client=None):
             p.e,
             etr_params_4D,
             p,
+            ndc_rates,
         )
         income_tax_mat = tax.income_tax_liab(
             r_p[: p.T],
@@ -1304,7 +1364,7 @@ def run_TPI(p, client=None):
             r_p[: p.T],
             w[: p.T],
             n_mat[: p.T, :, :],
-            1,
+            ndc_rates,
             theta,
             0,
             None,
@@ -1463,10 +1523,11 @@ def run_TPI(p, client=None):
             p,
             None,
             "TPI",
+            ndc_rates,
         )
         total_tax_revenue[: p.T] = total_tax_rev
-        if not p.baseline_spending:
-            I_g = fiscal.get_I_g(Y[: p.T], None, p, "TPI")
+        I_g = fiscal.get_I_g(Y[: p.T], Ig_baseline, p, "TPI")
+        foreign_aid = fiscal.get_foreign_aid(Y[: p.T], FAbaseline, p, "TPI")
         if p.baseline:
             K_g0 = p.initial_Kg_ratio * Y[0]
         K_g = fiscal.get_K_g(K_g0, I_g, p, "TPI")
@@ -1477,6 +1538,7 @@ def run_TPI(p, client=None):
             UBI_outlays,
             TR,
             I_g,
+            foreign_aid,
             Gbaseline,
             D0_baseline,
         )
@@ -1575,6 +1637,7 @@ def run_TPI(p, client=None):
             p,
             None,
             "TPI",
+            ndc_rates,
         )
         total_tax_revenue[: p.T] = total_tax_rev
         TR_new = fiscal.get_TR(
@@ -1585,6 +1648,7 @@ def run_TPI(p, client=None):
             agg_pension_outlays[: p.T],
             UBI_outlays[: p.T],
             I_g[: p.T],
+            foreign_aid[: p.T],
             p,
             "TPI",
         )
@@ -1672,6 +1736,22 @@ def run_TPI(p, client=None):
             r_gov_new[: p.T], r_gov[: p.T], p.xi_tpi
         )
         D[: p.T] = Dnew[: p.T]
+        if p.baseline and p.initial_wealth_ratio is not None:
+            # Initial aggregate household wealth is a target ratio to
+            # initial GDP, which is endogenous: move B[0] toward the
+            # target with the outer-loop damping and scale the initial
+            # distribution of savings (whose shape is fixed) to match, so
+            # that the next inner loop starts households from it
+            B0 = utils.convex_combo(
+                p.initial_wealth_ratio * Y[0], B[0], p.xi_tpi
+            )
+            B[0] = B0
+            b_splus1init = b_splus1init * (
+                B0 / aggr.get_B(b_splus1init, p, "SS", True)
+            )
+            b_sinit = np.zeros((p.S, p.J))
+            b_sinit[1:, :] = b_splus1init[:-1, :]
+            initial_values = (B0, b_sinit, b_splus1init, factor, initial_n)
         guesses_b = utils.convex_combo(b_mat, guesses_b, p.xi_tpi)
         guesses_n = utils.convex_combo(n_mat, guesses_n, p.xi_tpi)
         logger.info(
@@ -1884,7 +1964,7 @@ def run_TPI(p, client=None):
     RM_vec = np.zeros((p.T, p.M))
     RM_vec[:, -1] = RM[: p.T]
     foreign_aid_vec = np.zeros((p.T, p.M))
-    foreign_aid_vec[:, -1] = p.alpha_FA[: p.T] * Y[: p.T]
+    foreign_aid_vec[:, -1] = foreign_aid[: p.T]
     RC_error = aggr.resource_constraint(
         Y_vec,
         C_m_vec,
@@ -1939,6 +2019,7 @@ def run_TPI(p, client=None):
         "I_d": I_d[: p.T, ...],
         "K_g": K_g[: p.T, ...],
         "I_g": I_g[: p.T, ...],
+        "foreign_aid": foreign_aid[: p.T, ...],
         "BQ": BQ[: p.T, ...],
         "RM": RM[: p.T, ...],
         "Y_m": Y_vec[: p.T, ...],
@@ -1988,6 +2069,7 @@ def run_TPI(p, client=None):
         "p_tilde": p_tilde[: p.T, ...],
         "b_sp1": bmat_splus1[: p.T, ...],
         "b_s": bmat_s[: p.T, ...],
+        "b_sp1_preTP": b_splus1init,
         "n": n_mat[: p.T, ...],
         "c": c_mat[: p.T, ...],
         "c_i": c_i[: p.T, ...],

@@ -24,8 +24,10 @@ This appendix contains derivations from the theory in the body of this book.
 
   ```{math}
   :label: EqAppDerivCESprodfun
+  \begin{aligned}
     Y &= F(K, K_g, L) \\
     &\equiv Z\biggl[(\gamma)^\frac{1}{\varepsilon}(K)^\frac{\varepsilon-1}{\varepsilon} + (\gamma_g)^\frac{1}{\varepsilon}(K_g)^\frac{\varepsilon-1}{\varepsilon} + (1-\gamma-\gamma_g)^\frac{1}{\varepsilon}(L)^\frac{\varepsilon-1}{\varepsilon}\biggr]^\frac{\varepsilon}{\varepsilon-1}
+  \end{aligned}
   ```
 
   where $Y$ is aggregate output (GDP), $Z$ is total factor productivity, $\gamma$ is a share parameter that represents private capital's share of income in the Cobb-Douglas case ($\varepsilon=1$), $\gamma_g$ is public capital's share of income, and $\varepsilon$ is the elasticity of substitution between capital and labor. The stationary version of this production function is given in Chapter {ref}`Chap_Stnrz`. We drop the $m$ and $t$ subscripts, the ``$\:\,\hat{}\,\:$'' stationary notation, and use the stationarized version of the production function for simplicity.
@@ -39,25 +41,31 @@ This appendix contains derivations from the theory in the body of this book.
   The marginal productivity of private capital $MPK$ is the derivative of the production function with respect to private capital $K$. Let the variable $\Omega$ represent the expression inside the square brackets in the production function {eq}`EqAppDerivCESprodfun`.
   ```{math}
   :label: EqAppDerivCES_MPK
+  \begin{aligned}
     MPK &\equiv \frac{\partial F}{\partial K} = \left(\frac{\varepsilon}{\varepsilon-1}\right)Z\left[\Omega\right]^\frac{1}{\varepsilon-1}\gamma^\frac{1}{\varepsilon}\left(\frac{\varepsilon-1}{\varepsilon}\right)(K)^{-\frac{1}{\varepsilon}} \\
     &= Z\left[\Omega\right]^\frac{1}{\varepsilon-1}\left(\frac{\gamma}{K}\right)^\frac{1}{\varepsilon} = \frac{Z\left[\Omega\right]^\frac{1}{\varepsilon-1}}{Z^\frac{1}{\varepsilon-1}\left[\Omega\right]^\frac{1}{\varepsilon-1}}\left(\frac{\gamma}{K}\right)^\frac{1}{\varepsilon}Y^\frac{1}{\varepsilon} \\
     &= (Z)^\frac{\varepsilon-1}{\varepsilon}\left(\gamma\frac{Y}{K}\right)^\frac{1}{\varepsilon}
+  \end{aligned}
   ```
 
   The marginal productivity of public capital $MPK_g$ is the derivative of the production function with respect to public capital $K_g$.
   ```{math}
   :label: EqAppDerivCES_MPKg
+  \begin{aligned}
     MPK_g &\equiv \frac{\partial F}{\partial K_g} = \left(\frac{\varepsilon}{\varepsilon-1}\right)Z\left[\Omega\right]^\frac{1}{\varepsilon-1}\gamma_g^\frac{1}{\varepsilon}\left(\frac{\varepsilon-1}{\varepsilon}\right)(K_g)^{-\frac{1}{\varepsilon}} \\
     &= Z\left[\Omega\right]^\frac{1}{\varepsilon-1}\left(\frac{\gamma_g}{K_g}\right)^\frac{1}{\varepsilon} = \frac{Z\left[\Omega\right]^\frac{1}{\varepsilon-1}}{Z^\frac{1}{\varepsilon-1}\left[\Omega\right]^\frac{1}{\varepsilon-1}}\left(\frac{\gamma_g}{K_g}\right)^\frac{1}{\varepsilon}Y^\frac{1}{\varepsilon} \\
     &= (Z)^\frac{\varepsilon-1}{\varepsilon}\left(\gamma_g\frac{Y}{K_g}\right)^\frac{1}{\varepsilon}
+  \end{aligned}
   ```
 
   The marginal productivity of labor $MPL$ is the derivative of the production function with respect to labor $L$.
   ```{math}
   :label: EqAppDerivCES_MPL
+  \begin{aligned}
     MPL &\equiv \frac{\partial F}{\partial L} = \left(\frac{\varepsilon}{\varepsilon-1}\right)Z\left[\Omega\right]^\frac{1}{\varepsilon-1}(1-\gamma-\gamma_g)^\frac{1}{\varepsilon}\left(\frac{\varepsilon-1}{\varepsilon}\right)(L)^{-\frac{1}{\varepsilon}} \\
     &= Z\left[\Omega\right]^\frac{1}{\varepsilon-1}\left(\frac{1-\gamma-\gamma_g}{L}\right)^\frac{1}{\varepsilon} = \frac{Z\left[\Omega\right]^\frac{1}{\varepsilon-1}}{Z^\frac{1}{\varepsilon-1}\left[\Omega\right]^\frac{1}{\varepsilon-1}}\left(\frac{1-\gamma-\gamma_g}{L}\right)^\frac{1}{\varepsilon}Y^\frac{1}{\varepsilon} \\
     &= (Z)^\frac{\varepsilon-1}{\varepsilon}\left([1-\gamma-\gamma_g]\frac{Y}{L}\right)^\frac{1}{\varepsilon}
+  \end{aligned}
   ```
 
 

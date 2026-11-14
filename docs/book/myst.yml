@@ -1,0 +1,130 @@
+version: 1
+project:
+  title: OG-Core
+  authors:
+  - name: Jason DeBacker
+  - name: Richard W. Evans
+  copyright: '2024'
+  github: PSLmodels/OG-Core
+  bibliography:
+  - OGCore_references.bib
+  - citations.bib
+  numbering:
+    equation:
+      continue: true
+    figure:
+      continue: true
+    table:
+      continue: true
+  toc:
+  - file: content/intro/intro.md
+  - title: Contributing to OG-Core
+    children:
+    - file: content/contributing/contributor_guide.md
+  - title: OG-Core API
+    children:
+    - title: API overview
+      url: /content/api/public_api.html
+      open_in_same_tab: true
+    - title: ogcore.aggregates
+      url: /content/api/aggregates.html
+      open_in_same_tab: true
+    - title: ogcore.config
+      url: /content/api/config.html
+      open_in_same_tab: true
+    - title: ogcore.demographics
+      url: /content/api/demographics.html
+      open_in_same_tab: true
+    - title: ogcore.elliptical_u_est
+      url: /content/api/elliptical_u_est.html
+      open_in_same_tab: true
+    - title: ogcore.execute
+      url: /content/api/execute.html
+      open_in_same_tab: true
+    - title: ogcore.firm
+      url: /content/api/firm.html
+      open_in_same_tab: true
+    - title: ogcore.fiscal
+      url: /content/api/fiscal.html
+      open_in_same_tab: true
+    - title: ogcore.household
+      url: /content/api/household.html
+      open_in_same_tab: true
+    - title: ogcore.output_plots
+      url: /content/api/output_plots.html
+      open_in_same_tab: true
+    - title: ogcore.output_tables
+      url: /content/api/output_tables.html
+      open_in_same_tab: true
+    - title: ogcore.parameter_plots
+      url: /content/api/parameter_plots.html
+      open_in_same_tab: true
+    - title: ogcore.parameter_tables
+      url: /content/api/parameter_tables.html
+      open_in_same_tab: true
+    - title: ogcore.parameters
+      url: /content/api/parameters.html
+      open_in_same_tab: true
+    - title: ogcore.pensions
+      url: /content/api/pensions.html
+      open_in_same_tab: true
+    - title: ogcore.solvers
+      url: /content/api/solvers.html
+      open_in_same_tab: true
+    - title: ogcore.SS
+      url: /content/api/SS.html
+      open_in_same_tab: true
+    - title: ogcore.tax
+      url: /content/api/tax.html
+      open_in_same_tab: true
+    - title: ogcore.TPI
+      url: /content/api/TPI.html
+      open_in_same_tab: true
+    - title: ogcore.txfunc
+      url: /content/api/txfunc.html
+      open_in_same_tab: true
+    - title: ogcore.utils
+      url: /content/api/utils.html
+      open_in_same_tab: true
+  - title: OG-Core Theory
+    children:
+    - file: content/theory/intro.md
+    - file: content/theory/demographics.md
+    - file: content/theory/households.md
+    - file: content/theory/firms.md
+    - file: content/theory/government.md
+    - file: content/theory/open_economy.md
+    - file: content/theory/financial.md
+    - file: content/theory/market_clearing.md
+    - file: content/theory/stationarization.md
+    - file: content/theory/equilibrium.md
+    - file: content/theory/calibration.md
+  - title: Appendix
+    children:
+    - file: content/theory/derivations.md
+    - file: content/intro/parameters.md
+    - file: content/intro/variables.md
+  - title: References
+    children:
+    - file: content/OGCore_references.md
+  - title: Citations of OG-Core
+    children:
+    - file: content/citations.md
+site:
+  nav:
+  - title: Book
+    url: /index.html
+  - title: Theory
+    url: /content/theory/intro
+  - title: API reference
+    url: /content/api/public_api.html
+  - title: API search
+    url: /content/api/search.html
+  - title: GitHub
+    url: https://github.com/PSLmodels/OG-Core
+  options:
+    logo: OG-Core_logo.png
+    folders: true
+    hide_authors: true
+    style: ogcore.css
+  template: book-theme

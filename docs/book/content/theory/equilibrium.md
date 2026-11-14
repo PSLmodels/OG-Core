@@ -81,9 +81,11 @@ The computational algorithm for solving for the steady-state follows the steps b
 
         ```{math}
         :label: EqSS_HHBC
+        \begin{aligned}
           \bar{c}_{j,s} &= \Bigl[(1 + \bar{r}_{p}^i)\bar{b}_{j,s} + \bar{w}^i e_{j,s}\bar{n}_{j,s} - \sum_{i=1}^I\left(1 + \tau_i^c\right)\bar{p}_i \bar{c}_{min,i} - e^{g_y}\bar{b}_{j,s+1} ... \\
           &\qquad + \overline{bq}_{j,s} + \overline{rm}_{j,s} + \overline{tr}_{j,s} + \overline{ubi}_{j,s} + \overline{pension}_{j,s} - \overline{tax}_{j,s}\Bigr] / \bar{p}  \\
           &\qquad\qquad\forall j\quad\text{and}\quad E+1\leq s\leq E+S \quad\text{where}\quad \bar{b}_{j,E+1}=0
+        \end{aligned}
         ```
 
         ```{math}
@@ -94,9 +96,11 @@ The computational algorithm for solving for the steady-state follows the steps b
 
         ```{math}
         :label: EqSS_HHeul_b
+        \begin{aligned}
           \frac{(\bar{c}_{j,s})^{-\sigma}}{\bar{p}} &= e^{-\sigma g_y}\Biggl[\chi^b_j\rho_s(\bar{b}_{j,s+1})^{-\sigma} ... \\
           &\quad\quad\quad + \beta_j\bigl(1 - \rho_s\bigr)\left(\frac{1 + \bar{r}_{p}^i\bigl[1 - \tau^{mtry}_{s+1}\bigr] - \tau^{mtrw}}{\bar{p}}\right)(\bar{c}_{j,s+1})^{-\sigma}\Biggr] \\
           &\qquad\qquad\qquad\qquad\qquad\qquad\forall j \quad\text{and}\quad E+1\leq s\leq E+S-1 \\
+        \end{aligned}
         ```
 
         ```{math}
@@ -164,8 +168,10 @@ The computational algorithm for solving for the steady-state follows the steps b
 
         ```{math}
         :label: EqSS_factor
+        \begin{aligned}
           factor^{i'} &= \frac{\text{Avg. household income in data}}{\text{Avg. household income in model}} \\
           &= \frac{\text{Avg. household income in data}}{\sum_{s=E+1}^{E+S}\sum_{j=1}^J \lambda_j\bar{\omega}_s\left(\bar{r}_{p}^{i'}\bar{b}_{j,s} + \bar{w}^{i'} e_{j,s}\bar{n}_{j,s}\right)} \quad\forall t
+        \end{aligned}
         ```
 
 4. If the updated values of the outer-loop variables $\Bigl\{\bar{r}_p^{i'}, \bar{r}^{i'}, \bar{w}^{i'}, \{\bar{p}_m^{i'}\}_{m=1}^{M-1}, \overline{BQ}^{i'}, \overline{TR}^{i'}, factor^{i'}\Bigr\}$ are close enough to the initial guess for the outer-loop variables $\Bigl\{\bar{r}_p^i, \bar{r}^i, \bar{w}^{i}, \{\bar{p}_m^{i}\}_{m=1}^{M-1}, \overline{BQ}^i, \overline{TR}^i, factor^i\Bigr\}$ then the fixed point is found and the steady-state equilibrium is the fixed point solution. If the outer-loop variables are not close enough to the initial guess for the outer-loop variables, then update the initial guess of the outer-loop variables $\Bigl\{\bar{r}_p^{i+1}, \bar{r}^{i+1}, \bar{w}^{i+1}, \{\bar{p}_m^{i+1}\}_{m=1}^{M-1}, \overline{BQ}^{i+1}, \overline{TR}^{i+1}, factor^{i+1}\Bigr\}$ as a convex combination of the first initial guess $\Bigl\{\bar{r}_p^{i}, \bar{r}^{i}, \bar{w}^{i}, \{\bar{p}_m^{i}\}_{m=1}^{M-1}, \overline{BQ}^{i}, \overline{TR}^{i}, factor^{i}\Bigr\}$ and the updated values $\Bigl\{\bar{r}_p^{i'}, \bar{r}^{i'}, \bar{w}^{i'}, \{\bar{p}_m^{i'}\}_{m=1}^{M-1}, \overline{BQ}^{i'}, \overline{TR}^{i'}, factor^{i'}\Bigr\}$ and repeat steps (2) through (4).
@@ -174,8 +180,10 @@ The computational algorithm for solving for the steady-state follows the steps b
 
        ```{math}
        :label: EqSS_toldistdone
+       \begin{aligned}
         & \Biggl\lVert\left(\bar{r}_p^{i'}, \bar{r}^{i'}, \bar{w}^{i'}, \{\bar{p}_m^{i'}\}_{m=1}^{M-1}, \overline{BQ}^{i'}, \overline{TR}^{i'}, factor^{i'}\right) ... \\
         &\qquad - \left(\bar{r}_p^{i}, \bar{r}^{i}, \bar{w}^{i}, \{\bar{p}_m^{i}\}_{m=1}^{M-1}, \overline{BQ}^{i}, \overline{TR}^{i}, factor^{i}\right)\Biggr\rVert \leq toler_{ss,out}
+       \end{aligned}
        ```
 
         1. Make sure that steady-state government spending is nonnegative $\bar{G}\geq 0$. If steady-state government spending is negative, that means the government is getting resources to supply the debt from outside the economy each period to stabilize the debt-to-GDP ratio. $\bar{G}<0$ is a good indicator of unsustainable policies.
@@ -189,17 +197,21 @@ The computational algorithm for solving for the steady-state follows the steps b
 
             ```{math}
             :label: EqSS_toldistrepeat
+            \begin{aligned}
               &\Biggl\lVert\left(\bar{r}_p^{i'}, \bar{r}^{i'}, \bar{w}^{i'},  \{\bar{p}_m^{i'}\}_{m=1}^{M-1}, \overline{BQ}^{i'}, \overline{TR}^{i'}, factor^{i'}\right) ... \\
               &\qquad - \left(\bar{r}_p^{i}, \bar{r}^{i}, \bar{w}^{i},  \{\bar{p}_m^{i}\}_{m=1}^{M-1}, \overline{BQ}^{i}, \overline{TR}^{i}, factor^{i}\right)\Biggr\rVert > toler_{ss,out}
+            \end{aligned}
             ```
 
         2. If the distance metric is not satisfied {eq}`EqSS_toldistrepeat`, then an updated initial guess for the outer-loop variables $\Bigl\{\bar{r}_p^{i+1}, \bar{r}^{i+1}, \bar{w}^{i+1}, \{\bar{p}_m^{i+1}\}_{m=1}^{M-1}, \overline{BQ}^{i+1}, \overline{TR}^{i+1}, factor^{i+1}\Bigr\}$ is made as a convex combination of the previous initial guess $\Bigl\{\bar{r}_p^{i}, \bar{r}^{i}, \bar{w}^{i}, \{\bar{p}_m^{i}\}_{m=1}^{M-1}, \overline{BQ}^{i}, \overline{TR}^{i}, factor^{i}\Bigr\}$ and the updated values based on the previous initial guess $\Bigl\{\bar{r}_p^{i'}, \bar{r}^{i'}, \bar{w}^{i'}, \{\bar{p}_m^{i'}\}_{m=1}^{M-1}, \overline{BQ}^{i'}, \overline{TR}^{i'}, factor^{i'}\Bigr\}$ and repeats steps (2) through (4) with this new initial guess. The parameter $\xi_{ss}\in(0,1]$ governs the degree to which the new guess $i+1$ is close to the updated guess $i'$.
 
            ```{math}
            :label: EqSS_updateguess
+           \begin{aligned}
              & \left(\bar{r}_p^{i+1}, \bar{r}^{i+1}, \bar{w}^{i+1}, \{\bar{p}_m^{i+1}\}_{m=1}^{M-1}, \overline{BQ}^{i+1}, \overline{TR}^{i+1}, factor^{i+1}\right) = ... \\
              &\qquad  \xi_{ss}\left(\bar{r}_p^{i'}, \bar{r}^{i'}, \bar{w}^{i'}, \{\bar{p}_m^{i'}\}_{m=1}^{M-1}, \overline{BQ}^{i'}, \overline{TR}^{i'}, factor^{i'}\right) + ... \\
              &\qquad(1-\xi_{ss})\left(\bar{r}_p^{i}, \bar{r}^{i}, \bar{w}^{i}, \{\bar{p}_m^{i}\}_{m=1}^{M-1}, \overline{BQ}^{i}, \overline{TR}^{i}, factor^{i}\right)
+           \end{aligned}
            ```
 
         3. Because the outer loop of the steady-state solution has $M-1+6$ variables, there are $M+5$ functions to minimize or set to zero. We use a root-finder and its corresponding Newton method for the updating the guesses of the outer-loop variables because it works well and is faster than the bisection method described in the previous step. The `OG-Core` code has the option to use either the bisection method or the root fining method to updated the outer-loop variables. The root finding algorithm is generally faster but is less robust than the bisection method in the previous step.
@@ -404,9 +416,11 @@ The stationary non-steady state (transition path) solution algorithm has followi
 23. If the maximum absolute error among the four outer loop error terms is greater than some small positive tolerance $toler_{tpi,out}$, $\max\big|\left(error_{r_p}, error_r, error_w, error_p, error_{bq},error_{tr}\right)\bigr| > toler_{tpi,out}$, then update the guesses for the outer loop variables as a convex combination governed by $\xi_{tpi}\in(0,1]$ of the respective initial guesses and the new implied values and repeat steps (3) through (23).
 
   $$
+   \begin{aligned}
    &\left[\boldsymbol{r}_p^{i+1}, \boldsymbol{r}^{i+1}, \boldsymbol{\hat{w}}^{i+1}, \{\boldsymbol{p}_m^{i+1}\}_{m=1}^{M-1}, \boldsymbol{\hat{BQ}}^{i+1},\boldsymbol{\hat{TR}}^{i+1}\right] = \\
    &\qquad \xi_{tpi}\left[\boldsymbol{r}_p^{i'}, \boldsymbol{r}^{i'}, \boldsymbol{\hat{w}}^{i'}, \{\boldsymbol{p}_m^{i'}\}_{m=1}^{M-1}, \boldsymbol{\hat{BQ}}^{i'},\boldsymbol{\hat{TR}}^{i'}\right] ... \\
    &\qquad + (1-\xi_{tpi})\left[\boldsymbol{r}_p^{i}, \boldsymbol{r}^{i}, \boldsymbol{\hat{w}}^{i}, \{\boldsymbol{p}_m^{i}\}_{m=1}^{M-1}, \boldsymbol{\hat{BQ}}^{i},\boldsymbol{\hat{TR}}^{i}\right]
+   \end{aligned}
   $$
 
 24. If the maximum absolute error among the M-1+5 outer loop error terms is less-than-or-equal-to some small positive tolerance $toler_{tpi,out}$ in each period along the transition path, $\max\big|\left(error_{r_p}, error_r, error_w, error_p, error_{bq},error_{tr}\right)\bigr| \leq toler_{tpi,out}$ then the non-steady-state equilibrium has been found.

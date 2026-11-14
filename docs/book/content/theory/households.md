@@ -75,7 +75,7 @@ In this section, we describe what is arguably the most important economic agent 
 
  We assume that the production good in industry $M$ is the numeraire.[^Numeraire] We can normalize the composite consumption price $\tilde{p}_t$ and the remaining $M-1$ output goods prices $\tilde{p}_{m,t}$ for $m=1,2,...M-1$ in every period $t$ by dividing all the equations with prices by the industry-$M$ price $\tilde{p}_{M,t}$. Similarly, we can divide through all the consumption good prices in every period, $\tilde{p}_{i,t}$ for $i=1,2,...I$ and rewrite the optimal consumption demand {eq}`EqHH_ciDem` and composite price index {eq}`EqCompPnonnorm2` equations as the following functions of normalized prices,
    ```{math}
-    :label: EqHH_pi2
+   :label: EqHH_pi2
     p_{i,t} = \sum_{m=1}^M \pi_{i,m}p_{m,t} \quad\forall i,t
   ```
   ```{math}
@@ -88,8 +88,10 @@ In this section, we describe what is arguably the most important economic agent 
   ```
   ```{math}
   :label: EqPmPcompNormDef
+  \begin{aligned}
     \text{where}\quad &p_{m,t} \equiv \frac{\tilde{p}_{m,t}}{\tilde{p}_{M,t}} \quad\forall m, t \quad\Rightarrow\quad p_{M,t} = 1 \quad\forall t \\
     \quad\text{and}\quad  &p_{i,t} \equiv \frac{\tilde{p}_{i,t}}{\tilde{p}_{M,t}} \quad\forall i, t \quad\text{and}\quad p_t \equiv\frac{\tilde{p}_t}{\tilde{p}_{M,t}} \quad\forall t
+  \end{aligned}
   ```
   where $p_{i,t}$ and $p_t$ defined in {eq}`EqPmPcompNormDef` are normalized consumption goods prices and normalized composite goods price, respectively, with the $M$th industry good being the numeraire.
 
@@ -101,10 +103,12 @@ In this section, we describe what is arguably the most important economic agent 
 
   ```{math}
   :label: EqHHBC
+  \begin{aligned}
     p_t c_{j,s,t} + &\sum_{i=1}^I (1 + \tau^{c}_{i,t})p_{i,t}c_{min,i} + b_{j,s+1,t+1} = \\
     &(1 + r_{p,t})b_{j,s,t} + w_t e_{j,s} n_{j,s,t} ... \\
     &\quad\quad + (1-\tau^{bq}_t)bq_{j,s,t} + rm_{j,s,t} + tr_{j,s,t} + ubi_{j,s,t} + pension_{j,s,t} - tax_{j,s,t}  \\
     &\quad\quad\forall j,t\quad\text{and}\quad E+1\leq s\leq E+S \quad\text{where}\quad b_{j,E+1,t}=0
+  \end{aligned}
   ```
 
   where $c_{j,s,t}$ is consumption, $b_{j,s+1,t+1}$ is savings for the next period, $r_{p,t}$ is the normalized interest rate (return) on household savings invested in the financial intermediary, $b_{j,s,t}$ is current period wealth (savings from last period), $w_t$ is the normalized wage, and $n_{j,s,t}$ is labor supply. Equations {eq}`eq_rK` and {eq}`eq_portfolio_return` of Chapter {ref}`Chap_FinInt` show how the rate of return from the financial intermediary $r_{p,t}$ might differ from the marginal product of capital $r_t$ and from the interest rate the government pays $r_{gov,t}$. Note that we must add in the cost of minimum consumption $c_{min,i}$ for all $i$ because that amount is subtracted out of composite consumption in {eq}`EqHHCompCons`.
@@ -271,8 +275,10 @@ In this section, we describe what is arguably the most important economic agent 
 
   ```{math}
   :label: EqHHPerUtil
+  \begin{aligned}
   u(c_{j,s,t},n_{j,s,t},b_{j,s+1,t+1}) &\equiv \frac{(c_{j,s,t})^{1-\sigma} - 1}{1-\sigma} + e^{g_y t(1-\sigma)}\chi^n_s\biggl(b\left[1 - \left(\frac{n_{j,s,t}}{\tilde{l}}\right)^\upsilon\right]^{\frac{1}{\upsilon}}\biggr) + \\
   &\chi^b_j \rho_s \frac{(b_{j,s+1,t+1})^{1-\sigma} - 1}{1-\sigma} \quad\forall j,t \quad\text{and}\quad E+1 \leq s \leq E+S
+  \end{aligned}
   ```
 
   The period utility function {eq}`EqHHPerUtil` is linearly separable in $c_{j,s,t}$, $n_{j,s,t}$, and $b_{j,s+1,t+1}$. The first term is a constant relative risk aversion (CRRA) utility of consumption. The second term is the elliptical disutility of labor described in Section {ref}`SecHHellipUtil`. The constant $\chi^n_s$ adjusts the disutility of labor supply relative to consumption and can vary by age $s$, which is helpful for calibrating the model to match labor market moments. See the chapters in the Calibration section of this documentation for a discussion of the calibration.
@@ -290,10 +296,12 @@ In this section, we describe what is arguably the most important economic agent 
 
   ```{math}
   :label: EqHHBC2
+  \begin{aligned}
     \text{s.t.}\quad &p_t c_{j,s,t} + \sum_{i=1}^I (1 + \tau^{c}_{i,t})p_{i,t}c_{min,i} + b_{j,s+1,t+1} = \\
     &\quad (1 + r_{p,t})b_{j,s,t} + w_t e_{j,s} n_{j,s,t} ...\\
     &\qquad +\: (1-\tau^{bq}_t)bq_{j,s,t} + rm_{j,s,t} + tr_{j,s,t} + ubi_{j,s,t} + pension_{j,s,t} - tax_{j,s,t} \\
     &\qquad\text{and}\quad c_{j,s,t}\geq 0,\: n_{j,s,t} \in[0,\tilde{l}],\:\text{and}\: b_{j,1,t}=0 \quad\forall j, t, \:\text{and}\: E+1\leq s\leq E+S
+  \end{aligned}
   ```
 
   The nonnegativity constraint on consumption does not bind in equilibrium because of the Inada condition $\lim_{c\rightarrow 0}u_1(c,n,b') = \infty$, which implies consumption is always strictly positive in equilibrium $c_{j,s,t}>0$ for all $j$, $s$, and $t$. The warm glow bequest motive in Equation {eq}`EqHHPerUtil` also has an Inada condition for savings at zero, so $b_{j,s,t}>0$ for all $j$, $s$, and $t$. This is an implicit borrowing constraint.[^constraint_note] And note that the discount factor $\beta_j$ has a $j$ subscript for lifetime income group. We use heterogeneous discount factors following {cite}`CarrollEtAl:2017`. And finally, as discussed in Section {ref}`SecHHellipUtil`, the elliptical disutility of labor supply functional form in Equation {eq}`EqHHPerUtil` imposes Inada conditions on both the upper and lower bounds of labor supply such that labor supply is strictly interior in equilibrium $n_{j,s,t}\in(0,\tilde{l})$ for all $j$, $s$, and $t$.
@@ -302,15 +310,19 @@ In this section, we describe what is arguably the most important economic agent 
 
   ```{math}
   :label: EqHHeul_n
+  \begin{aligned}
     &\frac{w_t e_{j,s}}{p_t}\bigl(1 - \tau^{mtrx}_{s,t}\bigr)(c_{j,s,t})^{-\sigma} = e^{g_y(1-\sigma)}\chi^n_{s}\biggl(\frac{b}{\tilde{l}}\biggr)\biggl(\frac{n_{j,s,t}}{\tilde{l}}\biggr)^{\upsilon-1}\Biggl[1 - \biggl(\frac{n_{j,s,t}}{\tilde{l}}\biggr)^\upsilon\Biggr]^{\frac{1-\upsilon}{\upsilon}} \\
     &\qquad\qquad\qquad\qquad\qquad\qquad\qquad\qquad\forall j,t, \quad\text{and}\quad E+1\leq s\leq E+S \\
+  \end{aligned}
   ```
 
   ```{math}
   :label: EqHHeul_b
+  \begin{aligned}
     \frac{(c_{j,s,t})^{-\sigma}}{p_t} &= \chi^b_j\rho_s(b_{j,s+1,t+1})^{-\sigma} ... \\
     &\qquad+ \beta_j\bigl(1 - \rho_s\bigr)\left(\frac{1 + r_{p,t+1}\bigl[1 - \tau^{mtry}_{s+1,t+1}\bigr] - \tau^{mtrw}_{s+1,t+1}}{p_{t+1}}\right)(c_{j,s+1,t+1})^{-\sigma} \\
     &\qquad\qquad\qquad \forall j,t, \quad\text{and}\quad E+1\leq s\leq E+S-1 \\
+  \end{aligned}
   ```
 
   ```{math}

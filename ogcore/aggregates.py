@@ -363,6 +363,7 @@ def revenue(
     p,
     m,
     method,
+    ndc_rates=None,
 ):
     r"""
     Calculate aggregate tax revenue.
@@ -399,6 +400,9 @@ def revenue(
         p (OG-Core Specifications object): model parameters
         method (str): adjusts calculation dimensions based on 'SS' or
             'TPI'
+        ndc_rates (NDCRates): calendar paths of the NDC credited and
+            discount rates (``pensions.ndc_rates_path``); None for the
+            steady-state rates
 
     Returns:
         (tuple): aggregate tax revenue and outlay components:
@@ -422,7 +426,7 @@ def revenue(
         r, w, b, n, factor, 0, None, method, e, etr_params, p
     )
     pension_benefits = pensions.pension_amount(
-        r, w, n, Y, theta, 0, None, False, method, e, factor, p
+        r, w, n, ndc_rates, theta, 0, None, False, method, e, factor, p
     )
     bq_tax_liab = tax.bequest_tax_liab(r, b, bq, 0, None, method, p)
     w_tax_liab = tax.wealth_tax_liab(r, b, 0, None, method, p)

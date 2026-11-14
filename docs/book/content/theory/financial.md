@@ -35,9 +35,12 @@
   The total amount invested in the financial intermediary is thus:
 
   ```{math}
+
+  \begin{aligned}
   W_{t} & = W^d_{t} + W^f_{t} \\
       & = D^d_t + K^d_t  + D^f_t + K^f_t \\
       & = D_t + K_t
+  \end{aligned}
   ```
 
   Interest rates on private capital through the financial intermediary and on government bonds differ. The return on the portfolio of assets held in the financial intermediary is the weighted average of these two rates of return. As derived in {eq}`EqFirms_rKt` of Section {ref}`EqFirmsPosProfits`, the presence of public infrastructure in the production function means that the returns to private factors of production ($r_t$ and $w_t$) exhibit decreasing returns to scale.[^MoorePecoraro] It is assumed that competition ensures a zero profit condition among firms and the returns to public infrastructure through the returns of firms are captured by the financial intermediary and returned to share holders. The return on capital is therefore the sum of the (after-tax) returns to private and public capital.

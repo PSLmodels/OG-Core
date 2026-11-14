@@ -23,30 +23,32 @@ kernelspec:
 
   The population of agents of each age in each period $\omega_{s,t}$ evolves according to the following function,
   ```{math}
-    :label: EqPopLawofmotion
+  :label: EqPopLawofmotion
+  \begin{aligned}
       \omega_{1,t+1} &= (1 - \rho_0)\sum_{s=1}^{E+S} f_s\omega_{s,t} + i_1\omega_{1,t}\quad\forall t \\
       \omega_{s+1,t+1} &= (1 - \rho_s)\omega_{s,t} + i_{s+1}\omega_{s+1,t}\quad\forall t\quad\text{and}\quad 1\leq s \leq E+S-1
+  \end{aligned}
   ```
 
   where $f_s\geq 0$ is an age-specific fertility rate, $i_s$ is an age-specific net immigration rate, $\rho_s$ is an age-specific mortality hazard rate, and $\rho_0$ is an infant mortality rate.[^houseprob_note] The total population in the economy $N_t$ at any period is simply the sum of households in the economy, the population growth rate in any period $t$ from the previous period $t-1$ is $g_{n,t}$, $\tilde{N}_t$ is the working age population, and $\tilde{g}_{n,t}$ is the working age population growth rate in any period $t$ from the previous period $t-1$.
 
   ```{math}
-    :label: EqPopN
+  :label: EqPopN
     N_t\equiv\sum_{s=1}^{E+S} \omega_{s,t} \quad\forall t
   ```
 
   ```{math}
-    :label: EqPopGrowth
+  :label: EqPopGrowth
     g_{n,t+1} \equiv \frac{N_{t+1}}{N_t} - 1 \quad\forall t
   ```
 
   ```{math}
-    :label: EqPopNtil
+  :label: EqPopNtil
     \tilde{N}_t\equiv\sum_{s=E+1}^{E+S} \omega_{s,t} \quad\forall t
   ```
 
   ```{math}
-    :label: EqPopGrowthTil
+  :label: EqPopGrowthTil
     \tilde{g}_{n,t+1} \equiv \frac{\tilde{N}_{t+1}}{\tilde{N}_t} - 1 \quad\forall t
   ```
 
@@ -60,12 +62,15 @@ kernelspec:
 
   ```{math}
   :label: EqPopLawofmotionStat
+  \begin{aligned}
       \hat{\omega}_{1,t+1} &= \frac{(1-\rho_0)\sum_{s=1}^{E+S} f_s\hat{\omega}_{s,t} + i_1\hat{\omega}_{1,t}}{1+\tilde{g}_{n,t+1}}\quad\forall t \\
       \hat{\omega}_{s+1,t+1} &= \frac{(1 - \rho_s)\hat{\omega}_{s,t} + i_{s+1}\hat{\omega}_{s+1,t}}{1+\tilde{g}_{n,t+1}}\qquad\quad\:\forall t\quad\text{and}\quad 1\leq s \leq E+S-1
+  \end{aligned}
   ```
 
   ```{math}
   :label: EqPopLOMstatmat
+  \begin{aligned}
       & \begin{bmatrix}
         \hat{\omega}_{1,t+1} \\ \hat{\omega}_{2,t+1} \\ \hat{\omega}_{2,t+1} \\ \vdots \\ \hat{\omega}_{E+S-1,t+1} \\ \hat{\omega}_{E+S,t+1}
       \end{bmatrix}= \frac{1}{1 + g_{n,t+1}} \times ... \\
@@ -80,6 +85,7 @@ kernelspec:
       \begin{bmatrix}
         \hat{\omega}_{1,t} \\ \hat{\omega}_{2,t} \\ \hat{\omega}_{2,t} \\ \vdots \\ \hat{\omega}_{E+S-1,t} \\ \hat{\omega}_{E+S,t}
       \end{bmatrix}
+  \end{aligned}
   ```
 
   We can write system {eq}`EqPopLOMstatmat` more simply in the following way.

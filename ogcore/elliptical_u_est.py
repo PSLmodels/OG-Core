@@ -1,9 +1,7 @@
 """
-------------------------------------------------------------------------
 This script takes a Frisch elasticity parameter and then estimates the
 parameters of the elliptical utility fuction that correspond to a
 constant Frisch elasticity function with the input Frisch elasticity.
-------------------------------------------------------------------------
 """
 
 # Import packages

@@ -103,6 +103,22 @@ _Valid Range:_ min = -0.02 and max = 0.15
 _Out-of-Range Action:_ error  
 
 
+####  `initial_hhwealth_dist`  
+_Description:_ Shape of the distribution of household wealth across ages and lifetime income groups in the initial period of the transition path.  
+_Notes:_ An S x J matrix proportional to the wealth held by a household of each age and lifetime income group at the start of the transition path, normalized so that its elements sum to one; it sets only the shape of the initial distribution, whose level is set so that aggregate household wealth matches its initial value. When null (the default), the shape is that of the steady-state distribution of savings. Should be calibrated from household wealth data by age and lifetime income group; shapes far from the steady state can leave the oldest cohorts without enough wealth to solve their remaining lifetimes.  
+_Value Type:_ float  
+_Valid Range:_ min = 0.0 and max = 1.0  
+_Out-of-Range Action:_ error  
+
+
+####  `initial_wealth_ratio`  
+_Description:_ Aggregate household wealth to GDP ratio in the initial period of the transition path.  
+_Notes:_ When null (the default), aggregate household wealth in the initial period is the level implied by the steady-state distribution of savings. Otherwise the time path solution sets initial aggregate household wealth to this ratio times initial GDP, scaling the initial distribution of wealth up or down. Should be calibrated from total household wealth over GDP in the model start year.  
+_Value Type:_ float  
+_Valid Range:_ min = 0.8 and max = 7.0  
+_Out-of-Range Action:_ error  
+
+
 ####  `eta_RM`  
 _Description:_ Matrix that allocates aggregate remittances across households.  
 _Notes:_ This SxJ matrix gives the fraction of total aggregate remittances going to each age s and ability type j.  
@@ -282,7 +298,7 @@ _Out-of-Range Action:_ error
 ### Fiscal Policy Parameters
 
 ####  `alpha_FA`  
-_Description:_ Foreign aid payments to domestic government as a share of GDP. Set value for base year, click '+' to add value for next year.  All future years not specified are set to last value entered.  
+_Description:_ Foreign aid payments to domestic government as a share of GDP. Set value for base year, click '+' to add value for next year.  All future years not specified are set to last value entered. Not used when baseline_spending=True, in which case foreign aid is the baseline level of foreign aid scaled by alpha_bs_FA.  
 _Value Type:_ float  
 _Valid Range:_ min = 0.0 and max = 1.0  
 _Out-of-Range Action:_ error  
@@ -291,7 +307,8 @@ _Out-of-Range Action:_ error
 ### Government Pension Parameters
 
 ####  `retirement_age`  
-_Description:_ Age at which agents can collect Social Security benefits. Set value for base year, click '+' to add value for next year.  All future years not specified are set to last value entered.  
+_Description:_ Age at which agents can collect public pension benefits. A single value. The retirement age belongs to a birth cohort, so changes along the time path are entered through pension_regimes.  
+_Notes:_ Internally expanded to the array retire of retirement periods by model period and age, which the household problem, the aggregates, and the steady state (final period) all read. pension_regimes is a list of dicts, each with a calendar year, an optional max_age_at_start, and the new values of the parameters it sets (retirement_age and the defined benefit and notional defined contribution parameters), applied in order.  
 _Value Type:_ int  
 _Valid Range:_ min = 0 and max = 100  
 _Out-of-Range Action:_ error  
@@ -305,6 +322,7 @@ _Valid Choices:_['US-Style Social Security', 'Defined Benefits', 'Notional Defin
 
 ####  `tau_p`  
 _Description:_ Pension system contribution tax rate under a notional defined contribution system.  
+_Notes:_ A single base value; changes by birth cohort or calendar year are entered through pension_regimes. Contributions are credited at the rate the household's cohort faced at the age they were made.  
 _Value Type:_ float  
 _Valid Range:_ min = 0.0 and max = 1.0  
 _Out-of-Range Action:_ error  
@@ -312,7 +330,7 @@ _Out-of-Range Action:_ error
 
 ####  `indR`  
 _Description:_ Adjustment for survivor benefits under a notional defined contribution system.  
-_Notes:_ indR = 0.0 for no survivor benefits, indR = 0.5 for survivor benefits  
+_Notes:_ indR = 0.0 for no survivor benefits, indR = 0.5 for survivor benefits. A single base value; changes by birth cohort or calendar year are entered through pension_regimes.  
 _Value Type:_ float  
 _Valid Range:_ min = 0.0 and max = 1.0  
 _Out-of-Range Action:_ error  
@@ -320,7 +338,7 @@ _Out-of-Range Action:_ error
 
 ####  `k_ret`  
 _Description:_ Adjustment for frequency of pension payments under a notional defined contribution system.  
-_Notes:_ k = 0.5 - (6/13n), where n is the number of payments per year  
+_Notes:_ k = 0.5 - (6/13n), where n is the number of payments per year. A single base value; changes by birth cohort or calendar year are entered through pension_regimes.  
 _Value Type:_ float  
 _Valid Range:_ min = 0.0 and max = 1.0  
 _Out-of-Range Action:_ error  
@@ -328,21 +346,35 @@ _Out-of-Range Action:_ error
 
 ####  `ndc_growth_rate`  
 _Description:_ Growth rate applied to contributions under a notional defined contribution system.  
-_Notes:_ 'r' uses the model interest rate, 'Curr GDP' the current GDP growth rate, and 'LR GDP' the long-run GDP growth rate.  
+_Notes:_ The rate credited in each period is the growth realized from the previous period: 'r' the interest rate on household savings, 'Curr GDP' the growth of real GDP, 'wage bill' the growth of total real labor earnings, 'avg wage' the growth of real labor earnings per person, and 'LR GDP' the constant long-run real GDP growth rate exp(g_y)(1 + g_n_ss) - 1. Each contribution compounds at the rates credited in the periods between the contribution and retirement. See also ndc_growth_avg_years.  
 _Value Type:_ str  
-_Valid Choices:_['r', 'Curr GDP', 'LR GDP']  
+_Valid Choices:_['r', 'Curr GDP', 'LR GDP', 'wage bill', 'avg wage']  
+
+
+####  `ndc_growth_avg_years`  
+_Description:_ Number of years over which the growth rate set by ndc_growth_rate is averaged to give the rate credited to notional defined contribution balances in each year.  
+_Notes:_ The rate credited in a year is the arithmetic mean of the growth rates of that year and the preceding ndc_growth_avg_years - 1 years, converted to model periods. Years before the transition path use the first period's rate. 1 means no averaging; e.g., Italy credits the 5-year average of GDP growth.  
+_Value Type:_ int  
+_Valid Range:_ min = 1 and max = 20  
 
 
 ####  `dir_growth_rate`  
 _Description:_ Growth rate used in the conversion coefficient of a notional defined contribution system.  
-_Notes:_ 'r' uses the model interest rate, 'Curr GDP' the current GDP growth rate, and 'LR GDP' the long-run GDP growth rate.  
+_Notes:_ Payments in the conversion coefficient are discounted at the chosen rate in the period the household retires, held fixed over its retirement: 'r' the interest rate on household savings, 'Curr GDP' the growth of real GDP, 'wage bill' the growth of total real labor earnings, 'avg wage' the growth of real labor earnings per person, and 'LR GDP' the constant long-run real GDP growth rate exp(g_y)(1 + g_n_ss) - 1.  
 _Value Type:_ str  
-_Valid Choices:_['r', 'Curr GDP', 'LR GDP']  
+_Valid Choices:_['r', 'Curr GDP', 'LR GDP', 'wage bill', 'avg wage']  
+
+
+####  `ndc_mortality`  
+_Description:_ Mortality rates used to compute the annuity factor in the conversion coefficient of a notional defined contribution system.  
+_Notes:_ 'cohort' uses the mortality rates the retiring cohort faces at each age after retirement, 'period' the mortality rates by age in the period of retirement, and 'steady state' the steady-state mortality rates for every cohort. All three are averaged over lifetime income groups with the weights lambdas and coincide in the steady state.  
+_Value Type:_ str  
+_Valid Choices:_['cohort', 'period', 'steady state']  
 
 
 ####  `alpha_db`  
 _Description:_ Replacement rate per year of contribution under a defined benefits system. Set value for base year, click '+' to add value for next year.  All future years not specified are set to last value entered.  
-_Notes:_ Can be specified to vary by type J and over year T. The rate applied is the one in effect in the period the benefit is paid.  
+_Notes:_ Can be specified to vary by type J and over year T. The rate applied is the one in effect in the period the benefit is paid. To change the rate only for cohorts not yet retired, enter the change through pension_regimes with a max_age_at_start.  
 _Value Type:_ float  
 _Valid Range:_ min = 0.0 and max = 1.0  
 _Out-of-Range Action:_ error  
@@ -364,7 +396,7 @@ _Valid Choices:_['r', 'Curr GDP', 'LR GDP']
 
 ####  `yr_contrib`  
 _Description:_ Number of years of contributions made to defined benefits pension system.  
-_Notes:_ Since there is not exit from the labor force in the model, the number of years of contributions is set exogenously.  
+_Notes:_ Since there is not exit from the labor force in the model, the number of years of contributions is set exogenously. A single base value; changes by birth cohort or calendar year are entered through pension_regimes.  
 _Value Type:_ int  
 _Valid Range:_ min = 0 and max = retirement_age  
 _Out-of-Range Action:_ error  
@@ -372,7 +404,7 @@ _Out-of-Range Action:_ error
 
 ####  `avg_earn_num_years`  
 _Description:_ Number of years used to compute average earnings for pension benefits.  
-_Notes:_ US-styel Social Security AIME is computed using average earnings from the highest earnings years for the number of years specified here.  
+_Notes:_ US-style Social Security AIME is computed using average earnings from the highest earnings years for the number of years specified here; the defined benefit system averages the last years before retirement. A single base value; changes by birth cohort or calendar year are entered through pension_regimes.  
 _Value Type:_ int  
 _Valid Range:_ min = 1 and max = retirement_age  
 _Out-of-Range Action:_ error  
@@ -473,21 +505,28 @@ _Out-of-Range Action:_ error
 
 
 ####  `alpha_bs_T`  
-_Description:_ Proportional adjustment to government transfers relative to baseline amount when budget balance is true. Set value for base year, click '+' to add value for next year.  All future years not specified are set to last value entered.  
+_Description:_ Proportional adjustment to government transfers relative to baseline amount when baseline_spending is True. Set value for base year, click '+' to add value for next year.  All future years not specified are set to last value entered.  
 _Value Type:_ float  
 _Valid Range:_ min = 0.0 and max = 9.9999e+103  
 _Out-of-Range Action:_ error  
 
 
 ####  `alpha_bs_G`  
-_Description:_ Proportional adjustment to government consumption expenditures relative to baseline amount when budget balance is true. Set value for base year, click '+' to add value for next year.  All future years not specified are set to last value entered.  
+_Description:_ Proportional adjustment to government consumption expenditures relative to baseline amount when baseline_spending is True. Set value for base year, click '+' to add value for next year.  All future years not specified are set to last value entered.  
 _Value Type:_ float  
 _Valid Range:_ min = 0.0 and max = 9.9999e+103  
 _Out-of-Range Action:_ error  
 
 
 ####  `alpha_bs_I`  
-_Description:_ Proportional adjustment to  infrastructure (public capital) spending relative to baseline amount when balanced budget is true.  
+_Description:_ Proportional adjustment to infrastructure (public capital) spending relative to baseline amount when baseline_spending is True.  
+_Value Type:_ float  
+_Valid Range:_ min = 0.0 and max = 9.9999e+103  
+_Out-of-Range Action:_ error  
+
+
+####  `alpha_bs_FA`  
+_Description:_ Proportional adjustment to foreign aid payments to the domestic government relative to baseline amount when baseline_spending is True. In that case, foreign aid in the reform is this factor times the level of foreign aid in the baseline equilibrium, and alpha_FA is not used.  
 _Value Type:_ float  
 _Valid Range:_ min = 0.0 and max = 9.9999e+103  
 _Out-of-Range Action:_ error  
