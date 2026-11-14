@@ -5,6 +5,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Bug Fixes
+
+- The sparsity pattern of the household Jacobian (`use_sparse_FOC_jac`) could miss real links between equations, which made the household solve much slower without changing the answers. Each entry is now compared with the largest entry in its own row rather than in the whole Jacobian, and patterns are kept separately for each lifetime income group. When a household solve fails with a cached pattern, the pattern is now checked again at that problem and any missing links are added, so a pattern detected for one household cannot slow down another that is linked differently.
+- The pattern cache was meant to be cleared at the start of each `run_TPI` call (#1249), but it read the run identifier from the last element of the household problem's arguments, which has been `ndc_rates` rather than the parameters object since 0.24.2. The cache therefore carried over between runs on the same workers, such as a baseline and a reform. The parameters object is now passed explicitly.
+
 ## [0.24.4] - 2026-11-07
 
 ### Adds

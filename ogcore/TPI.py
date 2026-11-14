@@ -53,16 +53,23 @@ ENFORCE_SOLUTION_CHECKS = True
 
 
 # Cache of detected sparsity patterns, keyed by (function name, problem
-# size) and scoped to a single run_TPI call (see _BANDED_JAC_SCOPE): the
-# pattern depends on the parameterization, e.g. a Defined Benefits pension
-# couples retirement-age conditions to working-age labor, so a pattern
-# detected for an earlier run in this process, or on a long-lived dask
-# worker, must not be reused for a later one.
+# size, lifetime income group) and scoped to a single run_TPI call (see
+# _BANDED_JAC_SCOPE): the pattern depends on the parameterization, e.g. a
+# Defined Benefits pension couples retirement-age conditions to
+# working-age labor, so a pattern detected for an earlier run in this
+# process, or on a long-lived dask worker, must not be reused for a later
+# one. The income group is part of the key because the pattern can differ
+# by group within a run: a group whose pension replacement rate is zero
+# has no such coupling. Problems of the same size and group can still
+# differ (cohorts with different pension rules, or a link that is zero at
+# the point where the pattern was detected), so when a household solve
+# fails with a cached pattern, the pattern is checked again at that
+# problem and any missing links are added (_refresh_jac_sparsity).
 _BANDED_JAC_CACHE = {}
 _BANDED_JAC_SCOPE = None
 
 
-def _detect_jac_sparsity(fun, x0, args, scope=None, thr_rel=1e-9):
+def _detect_jac_sparsity(fun, x0, args, scope=None, thr_rel=1e-9, group=None):
     """Auto-detect the Jacobian sparsity of `fun` near x0 and return a
     (csr_pattern, groups) coloring for sparse finite differences, or None if
     the Jacobian is too dense to benefit (caller then uses plain dense FD).
@@ -82,8 +89,10 @@ def _detect_jac_sparsity(fun, x0, args, scope=None, thr_rel=1e-9):
         scope (hashable or None): identifier of the run the pattern
             belongs to (``p._jac_cache_scope``, set by ``run_TPI``);
             cached patterns from a different scope are discarded
-        thr_rel (float): relative threshold below which an entry is treated
-            as a structural zero
+        thr_rel (float): threshold, relative to the largest entry in its
+            row, below which an entry is treated as a structural zero
+        group (hashable or None): lifetime income group of the household
+            problem; patterns are cached separately for each group
 
     Returns:
         result (tuple or None): ``(csr_pattern, groups)`` coloring for sparse
@@ -95,32 +104,166 @@ def _detect_jac_sparsity(fun, x0, args, scope=None, thr_rel=1e-9):
         _BANDED_JAC_CACHE.clear()
         _BANDED_JAC_SCOPE = scope
     n = len(x0)
-    key = (getattr(fun, "__name__", repr(fun)), n)
+    key = (getattr(fun, "__name__", repr(fun)), n, group)
     cached = _BANDED_JAC_CACHE.get(key, "miss")
     if cached != "miss":
         return cached
-    result = None
     try:
         x = np.asarray(x0, dtype=float)
-        mask = np.zeros((n, n), dtype=bool)
-        for xp in (x, x * 1.05 + 0.01):
-            Jd = approx_derivative(fun, xp, args=args, method="2-point")
-            sc = max(float(np.max(np.abs(Jd))), 1e-300)
-            mask |= np.abs(Jd) > thr_rel * sc
-        P = csr_matrix(mask.astype(int))
-        groups = group_columns(P)
-        if int(groups.max()) + 1 < n // 2:
-            result = (P, groups)
-        # else: pattern not sparse enough to benefit (expected at small
-        # firstdoughnutring dims); silently return None so the caller uses
-        # dense FD without surfacing a noisy notice.
+        mask = _jac_mask(fun, (x, x * 1.05 + 0.01), args, thr_rel)
+        result = _pattern_from_mask(mask)
     except Exception:
         result = None
     _BANDED_JAC_CACHE[key] = result
     return result
 
 
-def _banded_jac_for(fun, x0, args, enabled):
+def _jac_mask(fun, points, args, thr_rel=1e-9):
+    """Nonzero entries of the finite-difference Jacobian of `fun`, unioned
+    over ``points``.
+
+    Each entry is compared with the largest entry in its own row. The
+    conditions of one household differ in scale by orders of magnitude
+    (more for high-productivity groups), so a threshold relative to the
+    largest entry of the whole matrix drops real couplings of the
+    smaller-scale conditions.
+
+    Args:
+        fun (function): the residual function whose Jacobian is probed
+        points (iterable): points at which to probe the Jacobian
+        args (tuple): extra arguments passed to ``fun``
+        thr_rel (float): threshold, relative to the largest entry in its
+            row, below which an entry is treated as a structural zero
+
+    Returns:
+        mask (Numpy array): boolean n x n array of nonzero entries
+    """
+    mask = None
+    for xp in points:
+        Jd = approx_derivative(fun, xp, args=args, method="2-point")
+        sc = np.maximum(np.max(np.abs(Jd), axis=1, keepdims=True), 1e-300)
+        found = np.abs(Jd) > thr_rel * sc
+        mask = found if mask is None else mask | found
+    return mask
+
+
+def _pattern_from_mask(mask):
+    """Coloring for sparse finite differences from a boolean pattern, or
+    None if it is too dense to benefit (expected at small
+    firstdoughnutring dims; the caller then uses dense finite
+    differences)."""
+    P = csr_matrix(mask.astype(int))
+    groups = group_columns(P)
+    if int(groups.max()) + 1 < mask.shape[0] // 2:
+        return (P, groups)
+    return None
+
+
+def _refresh_jac_sparsity(fun, x, args, p, group=None, thr_rel=1e-9):
+    """Check a cached sparsity pattern again at ``x`` and add any links it
+    is missing.
+
+    Called when a household solve with the cached pattern has failed. The
+    pattern was detected at another household's problem, which can be
+    coupled differently (for example a cohort with different pension
+    rules), or at a point where a link happened to be zero.
+
+    Args:
+        fun (function): the residual function whose Jacobian is probed
+        x (array_like): point at which to probe the Jacobian
+        args (tuple): extra arguments passed to ``fun``
+        p (OG-Core Specifications object): model parameters
+        group (hashable or None): lifetime income group of the household
+            problem
+        thr_rel (float): threshold, relative to the largest entry in its
+            row, below which an entry is treated as a structural zero
+
+    Returns:
+        (tuple): (changed, jac): whether links were added, and the
+            ``jac`` callable for ``opt.root`` with the updated pattern (None
+            for dense finite differences)
+    """
+    if getattr(p, "_jac_cache_scope", None) != _BANDED_JAC_SCOPE:
+        # the cache belongs to another run
+        return False, None
+    key = (getattr(fun, "__name__", repr(fun)), len(x), group)
+    cached = _BANDED_JAC_CACHE.get(key)
+    if cached is None:
+        # no pattern cached, or the cached one already means dense
+        # finite differences
+        return False, None
+    try:
+        old = cached[0].toarray().astype(bool)
+        new = _jac_mask(fun, (np.asarray(x, dtype=float),), args, thr_rel)
+    except Exception:
+        return False, None
+    if not np.any(new & ~old):
+        return False, None
+    result = _pattern_from_mask(old | new)
+    _BANDED_JAC_CACHE[key] = result
+    return True, _jac_from_pattern(fun, result)
+
+
+def _jac_from_pattern(fun, pattern):
+    """``jac`` callable for ``opt.root`` building the Jacobian by sparse
+    finite differences with ``pattern``, or None for dense finite
+    differences."""
+    if pattern is None:
+        return None
+    P, groups = pattern
+
+    def _jac(_x, *_a):
+        return approx_derivative(
+            fun, _x, args=_a, method="2-point", sparsity=(P, groups)
+        ).toarray()
+
+    return _jac
+
+
+def _root_converged(solutions, p):
+    """Whether a household root-find reached a root within tolerance."""
+    return solutions.success and np.abs(solutions.fun).max() <= p.mindist_TPI
+
+
+def _retry_with_refreshed_pattern(solutions, fun, x0, args, p, group, jac):
+    """Re-solve a household problem whose solve with a cached sparsity
+    pattern failed, if checking the pattern at that problem finds links it
+    was missing. Returns the better of the two results.
+
+    Args:
+        solutions (OptimizeResult): result of the first root-finding call
+        fun (function): the residual function
+        x0 (array_like): the initial guess used in the first call
+        args (tuple): extra arguments passed to ``fun``
+        p (OG-Core Specifications object): model parameters
+        group (hashable or None): lifetime income group of the household
+            problem
+        jac (function or None): the ``jac`` used in the first call; None
+            if it used dense finite differences, in which case there is
+            no pattern to check
+
+    Returns:
+        solutions (OptimizeResult): the better of the two results
+    """
+    if jac is None or _root_converged(solutions, p):
+        return solutions
+    changed, new_jac = _refresh_jac_sparsity(fun, solutions.x, args, p, group)
+    if not changed:
+        return solutions
+    retry = opt.root(
+        fun,
+        x0,
+        args=args,
+        method=p.FOC_root_method,
+        tol=MINIMIZER_TOL,
+        jac=new_jac,
+    )
+    if np.abs(retry.fun).max() < np.abs(solutions.fun).max():
+        return retry
+    return solutions
+
+
+def _banded_jac_for(fun, x0, args, p, group=None):
     """Return a sparse finite-difference `jac` callable for ``opt.root`` when
     ``enabled`` (``p.use_sparse_FOC_jac``) and the Jacobian is sparse enough to
     benefit; otherwise None, so the caller uses the default dense solver. Used
@@ -130,30 +273,26 @@ def _banded_jac_for(fun, x0, args, enabled):
         fun (function): the residual function passed to ``opt.root``
         x0 (array_like): initial guess for the root-find
         args (tuple): extra arguments passed to ``fun``
-        enabled (bool): value of ``p.use_sparse_FOC_jac``
+        p (OG-Core Specifications object): model parameters; the sparse
+            Jacobian is used when ``p.use_sparse_FOC_jac`` is True
+        group (hashable or None): lifetime income group of the household
+            problem, so that each group gets its own sparsity pattern
 
     Returns:
         _jac (function or None): a callable returning the dense Jacobian built
             by sparse finite differences, or None to use dense finite
             differences
     """
-    if not enabled or not _HAVE_SPARSE_FD:
+    if not p.use_sparse_FOC_jac or not _HAVE_SPARSE_FD:
         return None
-    # the parameters object is the last element of args at both call sites
-    p = args[-1]
     bj = _detect_jac_sparsity(
-        fun, x0, args, scope=getattr(p, "_jac_cache_scope", None)
+        fun,
+        x0,
+        args,
+        scope=getattr(p, "_jac_cache_scope", None),
+        group=group,
     )
-    if bj is None:
-        return None
-    P, groups = bj
-
-    def _jac(_x, *_a):
-        return approx_derivative(
-            fun, _x, args=_a, method="2-point", sparsity=(P, groups)
-        ).toarray()
-
-    return _jac
+    return _jac_from_pattern(fun, bj)
 
 
 def get_initial_SS_values(p):
@@ -585,7 +724,7 @@ def _retry_root_if_failed(solutions, fun, x0, args, p):
         solutions (OptimizeResult): the better of the two results
     """
     max_resid = np.abs(solutions.fun).max()
-    if solutions.success and max_resid <= p.mindist_TPI:
+    if _root_converged(solutions, p):
         return solutions
     retry = opt.root(fun, x0, args=args, method="lm", tol=MINIMIZER_TOL)
     if np.abs(retry.fun).max() < max_resid:
@@ -754,9 +893,7 @@ def inner_loop(guesses, outer_loop_vars, initial_values, ubi, j, ind, p):
             p,
             ndc_rates,
         )
-        _tri_jac = _banded_jac_for(
-            twist_doughnut, _tri_x0, _tri_args, p.use_sparse_FOC_jac
-        )
+        _tri_jac = _banded_jac_for(twist_doughnut, _tri_x0, _tri_args, p, j)
         try:
             solutions = opt.root(
                 twist_doughnut,
@@ -774,6 +911,10 @@ def inner_loop(guesses, outer_loop_vars, initial_values, ubi, j, ind, p):
                 method=p.FOC_root_method,
                 tol=MINIMIZER_TOL,
             )
+            _tri_jac = None
+        solutions = _retry_with_refreshed_pattern(
+            solutions, twist_doughnut, _tri_x0, _tri_args, p, j, _tri_jac
+        )
         solutions = _retry_root_if_failed(
             solutions, twist_doughnut, _tri_x0, _tri_args, p
         )
@@ -845,9 +986,7 @@ def inner_loop(guesses, outer_loop_vars, initial_values, ubi, j, ind, p):
         # and opt.root uses its default dense finite differences. The except
         # clause is a safety net: any solver failure retries with the dense
         # Jacobian, so the result is unchanged.
-        _bj_jac = _banded_jac_for(
-            twist_doughnut, _td_x0, _td_args, p.use_sparse_FOC_jac
-        )
+        _bj_jac = _banded_jac_for(twist_doughnut, _td_x0, _td_args, p, j)
         try:
             solutions = opt.root(
                 twist_doughnut,
@@ -865,6 +1004,10 @@ def inner_loop(guesses, outer_loop_vars, initial_values, ubi, j, ind, p):
                 method=p.FOC_root_method,
                 tol=MINIMIZER_TOL,
             )
+            _bj_jac = None
+        solutions = _retry_with_refreshed_pattern(
+            solutions, twist_doughnut, _td_x0, _td_args, p, j, _bj_jac
+        )
         solutions = _retry_root_if_failed(
             solutions, twist_doughnut, _td_x0, _td_args, p
         )
