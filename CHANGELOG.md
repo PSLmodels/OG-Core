@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- `TPI.twist_doughnut` now computes the household's net taxes once per evaluation and shares them with both first order conditions, through a new optional `net_tax` argument of `household.FOC_savings` and `household.FOC_labor`. Without it, both work as before.
+- `pensions.DB_amount` now caches each household's Defined Benefits parameters along its lifetime (retirement period, averaging window, years of contribution, replacement rate, effective labor units) instead of looking them up at every evaluation. As with `pension_periods`, the cache is reset when one of those arrays is reassigned, but not when it is edited in place. Results are unchanged.
+
 ### Bug Fixes
 
 - The sparsity pattern of the household Jacobian (`use_sparse_FOC_jac`) could miss real links between equations, which made the household solve much slower without changing the answers. Each entry is now compared with the largest entry in its own row rather than in the whole Jacobian, and patterns are kept separately for each lifetime income group. When a household solve fails with a cached pattern, the pattern is now checked again at that problem and any missing links are added, so a pattern detected for one household cannot slow down another that is linked differently.

@@ -409,16 +409,8 @@ file_out2 = os.path.join(
 )
 
 
-@pytest.mark.parametrize(
-    "file_inputs,file_outputs",
-    [(file_in1, file_out1), (file_in2, file_out2)],
-    ids=["s<S", "s==S"],
-)
-def test_twist_doughnut(file_inputs, file_outputs):
-    """
-    Test TPI.twist_doughnut function.  Provide inputs to function and
-    ensure that output returned matches what it has been before.
-    """
+def _twist_doughnut_args(file_inputs):
+    # Arguments of TPI.twist_doughnut from the pickled test inputs
     input_tuple = utils.safe_read_pickle(file_inputs)
     (
         guesses,
@@ -468,9 +460,44 @@ def test_twist_doughnut(file_inputs, file_outputs):
         initial_b,
         p,
     )
+    return input_tuple2
+
+
+@pytest.mark.parametrize(
+    "file_inputs,file_outputs",
+    [(file_in1, file_out1), (file_in2, file_out2)],
+    ids=["s<S", "s==S"],
+)
+def test_twist_doughnut(file_inputs, file_outputs):
+    """
+    Test TPI.twist_doughnut function.  Provide inputs to function and
+    ensure that output returned matches what it has been before.
+    """
+    input_tuple2 = _twist_doughnut_args(file_inputs)
     test_list = TPI.twist_doughnut(*input_tuple2)
     expected_list = utils.safe_read_pickle(file_outputs)
     assert np.allclose(np.array(test_list), np.array(expected_list), atol=1e-5)
+
+
+@pytest.mark.parametrize(
+    "file_inputs",
+    [file_in1, file_in2],
+    ids=["s<S", "s==S"],
+)
+def test_twist_doughnut_net_taxes_once(file_inputs, monkeypatch):
+    # Both first order conditions use the household's net taxes, which
+    # include the pension. twist_doughnut computes them once per
+    # evaluation and passes them to both conditions.
+    calls = []
+    net_taxes = TPI.tax.net_taxes
+
+    def counted(*args, **kwargs):
+        calls.append(1)
+        return net_taxes(*args, **kwargs)
+
+    monkeypatch.setattr(TPI.tax, "net_taxes", counted)
+    TPI.twist_doughnut(*_twist_doughnut_args(file_inputs))
+    assert len(calls) == 1
 
 
 @pytest.mark.parametrize(

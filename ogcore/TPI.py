@@ -626,6 +626,31 @@ def twist_doughnut(
     n_s = n_guess
     chi_n_s = np.diag(p.chi_n[t : t + p.S, :], max(p.S - length, 0))
     rho_s = np.diag(p.rho[t : t + p.S, :, j], max(p.S - length, 0))
+    # Both first order conditions need the household's net taxes, which
+    # include the pension; compute them once per evaluation and pass them
+    # to both, rather than letting each condition recompute them
+    e_s = np.diag(
+        household._get_e_long(p)[t : t + p.S, :, j], max(p.S - length, 0)
+    )
+    net_tax = tax.net_taxes(
+        r_s,
+        w_s,
+        b_s,
+        n_s,
+        bq,
+        factor,
+        tr,
+        ubi,
+        theta,
+        t,
+        j,
+        False,
+        "TPI",
+        e_s,
+        etr_params,
+        p,
+        ndc_rates,
+    )
 
     error1 = household.FOC_savings(
         r_s,
@@ -649,6 +674,7 @@ def twist_doughnut(
         p,
         "TPI",
         ndc_rates,
+        net_tax=net_tax,
     )
 
     error2 = household.FOC_labor(
@@ -673,6 +699,7 @@ def twist_doughnut(
         p,
         "TPI",
         ndc_rates,
+        net_tax=net_tax,
     )
 
     # Check and punish constraint violations
