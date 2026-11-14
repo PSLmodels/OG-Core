@@ -5,6 +5,19 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.25.0] - 2026-11-13
+
+### Adds
+- Adds government debt contracted abroad at its own interest rate, addressing Issue #1125 (concessional debt from official lenders), and usable for any government debt contracted abroad, concessional or commercial. The new time-varying parameter `alpha_D_ext` (default 0.0) sets this debt as a share of GDP, and `r_D_ext_annual` (default 0.0, time varying, converted to a model-period rate `r_D_ext`) its real interest rate. Each period the government receives the new external borrowing and pays its interest, in the budget constraint of the steady state and the time path (`fiscal.D_G_path`, `fiscal.get_G_ss`, and the balanced-budget case of `fiscal.get_TR`), and the interest is paid abroad at `r_D_ext` in the resource constraint. The debt is held only by foreigners and is separate from the market debt `D`: it does not enter households' portfolio return `r_p`, and `debt_ratio_ss`, the closure rule and `zeta_D` refer to market debt.
+- Adds `fiscal.get_D_ext`, which returns the stock of debt contracted abroad, new external borrowing, and its interest in the steady state or along the time path.
+- Adds `D_ext`, `new_borrowing_ext`, and `debt_service_ext` to the steady-state and time-path output (with their descriptions in `model_variables.json`, and in `utils.unstationarize_vars`), and includes external interest in `total_government_outlays`. The debt is a share of GDP in the reform as well, including when `baseline_spending=True`.
+- Adds the debt contracted abroad to the government budget constraint, the budget closure rules, and their stationarized forms in the documentation, and adds it and foreign aid to the goods market clearing condition.
+- Adds tests of `fiscal.get_D_ext`, of the steady-state spending and the time path of debt and spending with debt contracted abroad (the budget constraint holds each period), of the premium on total debt, of the new parameters, a steady-state solution that balances the budget and clears the goods market, and a time path (marked `local`) with a falling external debt that keeps the budget and the goods market in balance in every period.
+
+### Updates
+- The debt-elastic premium on `r_gov` (`r_gov_DY`, `r_gov_DY2`) is evaluated at all government debt, market debt plus debt contracted abroad. With `alpha_D_ext` at its default of zero this is the market-debt ratio, so results are unchanged.
+- The debt-to-GDP ratio in `output_tables.macro_table_SS` and in the calibration moments counts debt contracted abroad, and `output_plots.plot_all` adds it to the debt-to-GDP plot when it is not zero. Both are unchanged when `alpha_D_ext` is zero.
+
 ## [0.24.4] - 2026-11-07
 
 ### Adds
@@ -872,6 +885,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Any earlier versions of OG-USA can be found in the [`OG-Core`](https://github.com/PSLmodels/OG-Core) repository [release history](https://github.com/PSLmodels/OG-Core/releases) from [v.0.6.4](https://github.com/PSLmodels/OG-Core/releases/tag/v0.6.4) (Jul. 20, 2021) or earlier.
 
 
+[0.25.0]: https://github.com/PSLmodels/OG-Core/compare/v0.24.4...v0.25.0
 [0.24.4]: https://github.com/PSLmodels/OG-Core/compare/v0.24.3...v0.24.4
 [0.24.3]: https://github.com/PSLmodels/OG-Core/compare/v0.24.2...v0.24.3
 [0.24.2]: https://github.com/PSLmodels/OG-Core/compare/v0.24.1...v0.24.2
