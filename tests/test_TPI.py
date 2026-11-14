@@ -1434,6 +1434,41 @@ def test_run_TPI_extra(baseline, param_updates, filename, tmpdir, dask_client):
             )
 
 
+@pytest.mark.local
+def test_run_TPI_anderson_initial_wealth(tmpdir, dask_client):
+    """
+    With the initial-wealth anchor (initial_wealth_ratio) and the Anderson
+    outer loop, initial household wealth is accelerated with the prices:
+    the transition converges with B[0] at the target ratio to Y[0] and
+    the goods market cleared.
+    """
+    baseline_dir = os.path.join(tmpdir, "baseline")
+    p = Specifications(
+        baseline=True,
+        baseline_dir=baseline_dir,
+        output_base=baseline_dir,
+        num_workers=NUM_WORKERS,
+    )
+    test_params = TEST_PARAM_DICT.copy()
+    test_params.update(param_updates_iw)
+    test_params.update({"TPI_outer_method": "anderson", "nu": 0.2})
+    p.update_specifications(test_params)
+    SS.ENFORCE_SOLUTION_CHECKS = True
+    ss_outputs = SS.run_SS(p, client=dask_client)
+    utils.mkdirs(os.path.join(p.baseline_dir, "SS"))
+    with open(os.path.join(p.baseline_dir, "SS", "SS_vars.pkl"), "wb") as f:
+        pickle.dump(ss_outputs, f)
+    tpi = TPI.run_TPI(p, client=dask_client)
+
+    # initial wealth is part of the converged fixed point, so its gap to
+    # the target is within the outer loop's tolerance
+    assert tpi["B"][0] / tpi["Y"][0] == pytest.approx(
+        p.initial_wealth_ratio, rel=p.mindist_TPI
+    )
+    rc = np.abs(np.asarray(tpi["resource_constraint_error"])[: p.T - 1])
+    assert rc.max() < p.RC_TPI
+
+
 class _ReachedTPILoop(Exception):
     """Sentinel raised in place of the household inner loop."""
 
