@@ -20,6 +20,7 @@ import numpy as np
 import os
 import sys
 import json
+from types import SimpleNamespace
 from ogcore import SS, TPI, utils, solvers
 from ogcore.parameters import Specifications
 
@@ -408,16 +409,8 @@ file_out2 = os.path.join(
 )
 
 
-@pytest.mark.parametrize(
-    "file_inputs,file_outputs",
-    [(file_in1, file_out1), (file_in2, file_out2)],
-    ids=["s<S", "s==S"],
-)
-def test_twist_doughnut(file_inputs, file_outputs):
-    """
-    Test TPI.twist_doughnut function.  Provide inputs to function and
-    ensure that output returned matches what it has been before.
-    """
+def _twist_doughnut_args(file_inputs):
+    # Arguments of TPI.twist_doughnut from the pickled test inputs
     input_tuple = utils.safe_read_pickle(file_inputs)
     (
         guesses,
@@ -467,9 +460,44 @@ def test_twist_doughnut(file_inputs, file_outputs):
         initial_b,
         p,
     )
+    return input_tuple2
+
+
+@pytest.mark.parametrize(
+    "file_inputs,file_outputs",
+    [(file_in1, file_out1), (file_in2, file_out2)],
+    ids=["s<S", "s==S"],
+)
+def test_twist_doughnut(file_inputs, file_outputs):
+    """
+    Test TPI.twist_doughnut function.  Provide inputs to function and
+    ensure that output returned matches what it has been before.
+    """
+    input_tuple2 = _twist_doughnut_args(file_inputs)
     test_list = TPI.twist_doughnut(*input_tuple2)
     expected_list = utils.safe_read_pickle(file_outputs)
     assert np.allclose(np.array(test_list), np.array(expected_list), atol=1e-5)
+
+
+@pytest.mark.parametrize(
+    "file_inputs",
+    [file_in1, file_in2],
+    ids=["s<S", "s==S"],
+)
+def test_twist_doughnut_net_taxes_once(file_inputs, monkeypatch):
+    # Both first order conditions use the household's net taxes, which
+    # include the pension. twist_doughnut computes them once per
+    # evaluation and passes them to both conditions.
+    calls = []
+    net_taxes = TPI.tax.net_taxes
+
+    def counted(*args, **kwargs):
+        calls.append(1)
+        return net_taxes(*args, **kwargs)
+
+    monkeypatch.setattr(TPI.tax, "net_taxes", counted)
+    TPI.twist_doughnut(*_twist_doughnut_args(file_inputs))
+    assert len(calls) == 1
 
 
 @pytest.mark.parametrize(
@@ -525,6 +553,101 @@ def test_inner_loop():
 
     for i, v in enumerate(expected_tuple):
         assert np.allclose(test_tuple[i], v)
+
+
+def _banded_residuals(x, row_scale, coupling, p=None):
+    # Each condition depends on its own choice and the next one, as the
+    # household conditions do on neighboring ages. ``row_scale`` sets the
+    # size of each condition and ``coupling`` adds a link from the first
+    # choice to the last condition, standing in for a pension that ties
+    # retirement-age conditions to earlier labor.
+    x = np.asarray(x, dtype=float)
+    f = x.copy()
+    f[:-1] += 0.5 * x[1:]
+    f[-1] += coupling * x[0]
+    return row_scale * f
+
+
+def test_detect_jac_sparsity_keeps_small_scale_rows():
+    # The conditions of one household differ in size by orders of
+    # magnitude. The pattern must keep every coupling of a small-scale
+    # condition, not only those within a threshold of the largest entry
+    # of the whole Jacobian.
+    n = 20
+    row_scale = np.ones(n)
+    row_scale[0] = 1e12
+    x0 = np.linspace(0.1, 0.5, n)
+    result = TPI._detect_jac_sparsity(
+        _banded_residuals,
+        x0,
+        (row_scale, 0.0),
+        scope="test_small_scale_rows",
+    )
+    assert result is not None
+    pattern = result[0].toarray().astype(bool)
+    expected = np.eye(n, dtype=bool) | np.eye(n, k=1, dtype=bool)
+    assert np.array_equal(pattern, expected)
+
+
+def test_detect_jac_sparsity_by_group():
+    # Patterns are cached for the life of a run. Two lifetime income groups
+    # whose conditions are coupled differently (for example, one with a
+    # zero pension replacement rate and one without) must each get their
+    # own pattern rather than the one detected first.
+    n = 20
+    row_scale = np.ones(n)
+    x0 = np.linspace(0.1, 0.5, n)
+    scope = "test_by_group"
+    without = TPI._detect_jac_sparsity(
+        _banded_residuals, x0, (row_scale, 0.0), scope=scope, group=0
+    )
+    with_coupling = TPI._detect_jac_sparsity(
+        _banded_residuals, x0, (row_scale, 1.0), scope=scope, group=1
+    )
+    assert not without[0].toarray()[n - 1, 0]
+    assert with_coupling[0].toarray()[n - 1, 0]
+
+
+def test_refresh_jac_sparsity_adds_missing_links():
+    # A pattern detected at one household's problem can miss links that
+    # another household of the same size and group has (for example a
+    # cohort with different pension rules). When a solve with the cached
+    # pattern fails, the pattern is checked again at that problem and the
+    # missing links are added to the cache.
+    n = 20
+    row_scale = np.ones(n)
+    x0 = np.linspace(0.1, 0.5, n)
+    p = SimpleNamespace(_jac_cache_scope="test_refresh")
+    TPI._detect_jac_sparsity(
+        _banded_residuals, x0, (row_scale, 0.0), scope="test_refresh", group=0
+    )
+    changed, jac = TPI._refresh_jac_sparsity(
+        _banded_residuals, x0, (row_scale, 1.0), p, group=0
+    )
+    assert changed
+    key = ("_banded_residuals", n, 0)
+    assert TPI._BANDED_JAC_CACHE[key][0].toarray()[n - 1, 0]
+    J = jac(x0, row_scale, 1.0)
+    assert np.isclose(J[n - 1, 0], 1.0)
+    # nothing new to add the second time
+    changed, _ = TPI._refresh_jac_sparsity(
+        _banded_residuals, x0, (row_scale, 1.0), p, group=0
+    )
+    assert not changed
+
+
+def test_banded_jac_for_uses_run_scope():
+    # The pattern cache is scoped to the run through the parameters
+    # object, which is not the last of the household problem's arguments
+    # (ndc_rates follows it), so it is passed explicitly.
+    p = Specifications()
+    p._jac_cache_scope = "test_run_scope"
+    n = 20
+    x0 = np.linspace(0.1, 0.5, n)
+    args = (np.ones(n), 0.0, p)
+    jac = TPI._banded_jac_for(_banded_residuals, x0, args, p, group=0)
+    assert jac is not None
+    assert TPI._BANDED_JAC_SCOPE == "test_run_scope"
 
 
 def test_inner_loop_sparse_FOC_jac():

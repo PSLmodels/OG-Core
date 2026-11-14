@@ -147,6 +147,57 @@ def cohort_path(arr, t, per_rmn, p):
     return arr[rows, np.arange(p.S)]
 
 
+def _db_cohort_inputs(p, t, per_rmn, j):
+    """
+    The Defined Benefits parameters along one household's lifetime.
+
+    Returns the retirement period, averaging window, years of
+    contribution and replacement rate in effect at each age of the
+    household that has ``per_rmn`` periods of life remaining in period
+    ``t`` (see ``cohort_path``), and its effective labor units by age.
+    None of these depend on the household's choices, but the household
+    problem evaluates the pension many times while it solves, so they are
+    cached on ``p`` by household. The cache is emptied when any of the
+    arrays it is built from is reassigned (compared by identity, as in
+    ``pension_periods``). The returned arrays are read-only.
+
+    Args:
+        p (OG-Core Specifications object): model parameters
+        t (int): model period of the first of the remaining periods
+        per_rmn (int): number of periods of life remaining
+        j (int): index of lifetime income group
+
+    Returns:
+        (tuple): (S_ret_u, ny_u, cy_u, alpha_db_u, e_S), each length S
+    """
+    ny, cy, S_ret = pension_periods(p)
+    sources = (ny, cy, S_ret, p.alpha_db, p.e)
+    cache = getattr(p, "_db_cohort_cache", None)
+    if cache is None or not all(a is b for a, b in zip(cache[0], sources)):
+        cache = (sources, {})
+        p._db_cohort_cache = cache
+    key = (t, per_rmn, j)
+    found = cache[1].get(key)
+    if found is not None:
+        return found
+    alpha_db = cohort_array("alpha_db", p, by_j=True)
+    if np.ndim(p.e) == 3:
+        e_S = cohort_path(np.asarray(p.e), t, per_rmn, p)[:, j]
+    else:
+        e_S = p.e[:, j]
+    found = (
+        cohort_path(S_ret, t, per_rmn, p),
+        cohort_path(ny, t, per_rmn, p),
+        cohort_path(cy, t, per_rmn, p),
+        cohort_path(alpha_db, t, per_rmn, p)[:, j],
+        np.ascontiguousarray(e_S),
+    )
+    for arr in found:
+        arr.setflags(write=False)
+    cache[1][key] = found
+    return found
+
+
 def pension_periods(p):
     """
     Convert the pension parameters measured in calendar years into
@@ -623,20 +674,14 @@ def DB_amount(w, e, n, t, j, method, p, earn_lo=None, earn_hi=None):
             t = 0
         # This household is age S - per_rmn at time t, so its benefit
         # at age u is paid in period t + u - (S - per_rmn); its own
-        # cohort's pension parameters run down that diagonal
-        S_ret_u = cohort_path(S_ret, t, per_rmn, p)
-        ny_u = cohort_path(ny, t, per_rmn, p)
-        cy_u = cohort_path(cy, t, per_rmn, p)
-        alpha_db_u = cohort_path(alpha_db, t, per_rmn, p)[:, j]
-        # Effective labor units over this household's lifetime: the
-        # profile in effect in the period each age is lived in.  Ages
-        # before the time path begins use the period-0 profile (as the
-        # wage above) and ages beyond the end of the path use the
-        # final (steady-state) profile.
-        if np.ndim(p.e) == 3:
-            e_S = cohort_path(np.asarray(p.e), t, per_rmn, p)[:, j]
-        else:
-            e_S = p.e[:, j]
+        # cohort's pension parameters run down that diagonal. Its
+        # effective labor units are the profile in effect in the period
+        # each age is lived in: ages before the time path begins use the
+        # period-0 profile (as the wage above) and ages beyond the end of
+        # the path use the final (steady-state) profile.
+        S_ret_u, ny_u, cy_u, alpha_db_u, e_S = _db_cohort_inputs(
+            p, t, per_rmn, j
+        )
 
         DB = DB_1dim_loop(
             w_S,
@@ -665,10 +710,9 @@ def DB_amount(w, e, n, t, j, method, p, earn_lo=None, earn_hi=None):
                 row = None
             if row is None:
                 # full lifetime of a cohort that is age 0 at time t
-                S_ret_u = cohort_path(S_ret, t, p.S, p)
-                ny_u = cohort_path(ny, t, p.S, p)
-                cy_u = cohort_path(cy, t, p.S, p)
-                alpha_db_u = cohort_path(alpha_db, t, p.S, p)[:, j]
+                S_ret_u, ny_u, cy_u, alpha_db_u, _ = _db_cohort_inputs(
+                    p, t, p.S, j
+                )
             else:
                 S_ret_u, ny_u, cy_u = S_ret[row], ny[row], cy[row]
                 alpha_db_u = alpha_db[row, :, j]
