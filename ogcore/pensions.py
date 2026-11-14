@@ -84,13 +84,14 @@ def cohort_array(name, p, by_j=False):
 
     After ``Specifications.compute_default_params`` the cohort pension
     parameters (``retire``, ``avg_earn_num_years``, ``yr_contrib``,
-    ``tau_p``, ``k_ret``, ``indR``) are (T + S) x S arrays holding, for
-    the household of age s in period t, the value that applies to its
-    birth cohort, and ``alpha_db`` is (T + S) x S x J. This helper also
-    accepts the forms a caller may set by hand: a single number is
-    broadcast to the full shape, and an array without the age dimension
-    (a path by period, or by period and lifetime income group) is taken
-    to hold the same value at every age in a period.
+    ``tau_p``, ``k_ret``, ``indR``, ``fdc_tau``) are (T + S) x S arrays
+    holding, for the household of age s in period t, the value that
+    applies to its birth cohort, and ``alpha_db`` is (T + S) x S x J.
+    This helper also accepts the forms a caller may set by hand: a
+    single number is broadcast to the full shape, and an array without
+    the age dimension (a path by period, or by period and lifetime
+    income group) is taken to hold the same value at every age in a
+    period.
 
     Args:
         name (str): attribute name on ``p``
@@ -2440,3 +2441,369 @@ def NDC_3dim_loop(
             NDC[t, u, :] = delta_ret[t, u] * L.sum(axis=0)
 
     return NDC
+
+
+# ---------------------------------------------------------------------
+# Funded defined contribution (FDC) accounts
+#
+# The FDC pillar runs alongside whatever ``pension_system`` is chosen.
+# Each household pays ``fdc_tau`` of the labor income in its earnings
+# band into an individual account that is invested at the household
+# portfolio return r_p. At retirement the balance buys an actuarially
+# fair life annuity. The functions below compute one household's
+# account over its lifetime from its labor income and the paths of
+# r_p and mortality. They do not depend on any other pension system.
+# ---------------------------------------------------------------------
+
+
+class FDCLifetime(NamedTuple):
+    """
+    A household's funded defined contribution account over its life,
+    returned by ``fdc_lifetime``. Every field except ``R`` is a length
+    S array by age; entries before the first age computed are zero.
+    """
+
+    #: Numpy array: contribution paid at each age, out of that
+    #: period's resources (zero from the retirement age on)
+    contrib: np.ndarray
+    #: Numpy array: account balance at the start of each age, after
+    #: the return credited in that period and before that period's
+    #: contribution or benefit
+    balance: np.ndarray
+    #: Numpy array: annuity benefit received at each age (zero before
+    #: the retirement age)
+    benefit: np.ndarray
+    #: Numpy array: end-of-period holdings at each age, the balance
+    #: plus the contribution before retirement and the balance less
+    #: the benefit after; these are the fund's assets
+    holdings: np.ndarray
+    #: Numpy array: derivative of the contribution with respect to
+    #: labor supply n at each age
+    dcontrib_dn: np.ndarray
+    #: Numpy array: benefit at the retirement age per unit of
+    #: contribution made at each earlier age; the benefit at a later
+    #: age u is that times e^{-g_y (u - R)}
+    benefit_per_contrib: np.ndarray
+    #: int: age at which the balance is annuitized (S if the household
+    #: does not reach retirement within its life)
+    R: int
+
+
+def fdc_earn_bands(p):
+    """
+    Calendar paths of the lower and upper cutoffs of the labor income
+    on which funded defined contribution (FDC) contributions are paid,
+    in model units of labor income.
+
+    The lower cutoff is ``fdc_earn_floor_factor`` times
+    ``avg_labor_inc_t1_model_units``. The upper cutoff is
+    ``fdc_earn_cap_factor`` times ``avg_labor_inc_t1_model_units``
+    when ``fdc_earn_cap`` is True, and infinite otherwise.
+
+    Args:
+        p (OG-Core Specifications object): model parameters
+
+    Returns:
+        lo, hi (Numpy arrays): paths by model period of the cutoffs
+    """
+    avg_inc = float(p.avg_labor_inc_t1_model_units)
+    floor = np.atleast_1d(
+        np.asarray(getattr(p, "fdc_earn_floor_factor", 0.0), dtype=float)
+    ).ravel()
+    lo = np.ascontiguousarray(floor * avg_inc)
+    if getattr(p, "fdc_earn_cap", False):
+        cap = np.atleast_1d(
+            np.asarray(p.fdc_earn_cap_factor, dtype=float)
+        ).ravel()
+        hi = np.ascontiguousarray(cap * avg_inc)
+    else:
+        hi = np.full(lo.shape, np.inf)
+    return lo, hi
+
+
+def fdc_mort_rates(p, j):
+    """
+    Mortality rates by period and age that price the FDC annuity of
+    lifetime income group j.
+
+    The annuity is priced on the mortality of the household's own
+    income group, so that the annuity pool of each group pays out
+    exactly what it holds when mortality differs across groups.
+
+    Args:
+        p (OG-Core Specifications object): model parameters
+        j (int): lifetime income group, or None for the average over
+            groups weighted by ``lambdas``
+
+    Returns:
+        mort_rates (Numpy array): (T + S) x S mortality rates, where
+            row t, column s is the probability that a household of age
+            s in period t dies before period t + 1
+    """
+    rho = np.asarray(p.rho, dtype=float)
+    if rho.ndim == 3:
+        if j is None:
+            rho = rho @ np.asarray(p.lambdas, dtype=float).ravel()
+        else:
+            rho = rho[:, :, j]
+    elif rho.ndim == 2 and rho.shape == (p.S, p.J):
+        # by age and group, the same in every period
+        rho = rho[:, j] if j is not None else rho.mean(axis=1)
+    return np.broadcast_to(rho, (p.T + p.S, p.S))
+
+
+@numba.jit(nopython=True)
+def fdc_annuity_factor_loop(S, a, rho, r):
+    r"""
+    Price, at age a, of an annuity-due paying one unit of real income
+    at each age from a to S - 1 while the household lives:
+
+    .. math::
+        \ddot{a}_{a} = 1 + \frac{1 - \rho_{a}}{1 + r_{p,a+1}}
+            \ddot{a}_{a+1}, \quad \ddot{a}_{S-1} = 1
+
+    The benefit is fixed in real terms, which in detrended model units
+    is a benefit that falls by e^{-g_y} each period while the balance
+    behind it is also detrended by e^{-g_y}, so trend growth does not
+    enter the price.
+
+    Args:
+        S (int): number of periods of life
+        a (int): age at which the annuity is bought
+        rho (Numpy array): mortality rate at each age of the household's
+            life, length S
+        r (Numpy array): return credited at each age of the household's
+            life (r[s] is earned on holdings carried from age s - 1 to
+            age s), length S
+
+    Returns:
+        ann (scalar): annuity factor
+    """
+    ann = 1.0
+    for s in range(S - 2, a - 1, -1):
+        ann = 1.0 + (1.0 - rho[s]) * ann / (1.0 + r[s + 1])
+    return ann
+
+
+@numba.jit(nopython=True)
+def fdc_lifetime_loop(y, tau, lo, hi, r, rho, R, g_y, a0, A0, S):
+    r"""
+    Funded defined contribution account of one household from age a0
+    to the end of life, in detrended model units.
+
+    Before the retirement age R the household contributes
+    $C_s = \tau_s(\min(\max(y_s, lo_s), hi_s) - lo_s)$ out of period
+    resources, and its end-of-period holdings $H_s = A_s + C_s$ earn
+    the next period's return:
+
+    .. math::
+        A_{s+1} = (1 + r_{p,s+1})e^{-g_y}H_s
+
+    The account therefore earns the return in every period from the
+    period after each contribution through the retirement period R
+    itself, one period more than the notional defined contribution
+    system credits. At age $\max(R, a_0)$ the balance buys an annuity,
+    $P = A/\ddot{a}$; a household already retired at a0 holds a
+    remaining balance that is re-annuitized on the rates given. After
+    that $H_s = A_s - P_s$, $P_{s+1} = P_s e^{-g_y}$, and the holdings
+    of those who die stay in the annuity pool:
+
+    .. math::
+        A_{s+1} = \frac{(1 + r_{p,s+1})e^{-g_y}}{1 - \rho_s}H_s
+
+    Args:
+        y (Numpy array): labor income w * e * n at each age, length S
+        tau (Numpy array): contribution rate at each age, length S
+        lo (Numpy array): lower cutoff of the earnings band at each age
+        hi (Numpy array): upper cutoff of the earnings band at each age
+        r (Numpy array): return credited at each age (on holdings
+            carried in from the previous age), length S
+        rho (Numpy array): mortality rate at each age, length S
+        R (int): retirement age (S for none within the household's life)
+        g_y (scalar): growth rate of labor augmenting technology
+        a0 (int): first age computed
+        A0 (scalar): balance at the start of age a0
+        S (int): number of periods of life
+
+    Returns:
+        (tuple): length S arrays by age
+
+            * C (Numpy array): contribution
+            * A (Numpy array): balance at the start of the period
+            * P (Numpy array): annuity benefit
+            * H (Numpy array): end-of-period holdings
+            * dC (Numpy array): derivative of C with respect to y
+            * m (Numpy array): benefit at age R per unit of
+              contribution at each age before R
+    """
+    C = np.zeros(S)
+    A = np.zeros(S)
+    P = np.zeros(S)
+    H = np.zeros(S)
+    dC = np.zeros(S)
+    m = np.zeros(S)
+    detrend = np.exp(-g_y)
+    A[a0] = A0
+    first_payment = max(R, a0)
+    for s in range(a0, S):
+        if s < R:
+            x = min(max(y[s], lo[s]), hi[s]) - lo[s]
+            C[s] = tau[s] * x
+            if y[s] > lo[s] and y[s] < hi[s]:
+                dC[s] = tau[s]
+            H[s] = A[s] + C[s]
+        else:
+            if s == first_payment:
+                P[s] = A[s] / fdc_annuity_factor_loop(S, s, rho, r)
+            else:
+                P[s] = P[s - 1] * detrend
+            H[s] = A[s] - P[s]
+        if s + 1 < S:
+            grow = (1.0 + r[s + 1]) * detrend
+            if s >= R:
+                grow /= 1.0 - rho[s]
+            A[s + 1] = grow * H[s]
+    if a0 < R and R < S:
+        # a unit contributed at age s < R grows to sum of returns
+        # through R and buys 1 / annuity factor of benefit at R
+        G = 1.0 / fdc_annuity_factor_loop(S, R, rho, r)
+        for s in range(R - 1, a0 - 1, -1):
+            G *= (1.0 + r[s + 1]) * detrend
+            m[s] = G
+    return C, A, P, H, dC, m
+
+
+def _cohort_rows(t_birth, n_rows, S):
+    """
+    Rows of a calendar-indexed array that a household born in period
+    t_birth reads at each age, clipped to the array. With t_birth None
+    (the steady state) every age reads the last row.
+    """
+    if t_birth is None:
+        return np.full(S, n_rows - 1)
+    return np.clip(t_birth + np.arange(S), 0, n_rows - 1)
+
+
+def _calendar_by_age(x, t_birth, S):
+    """
+    Value of a scalar or a calendar path at each age of a household
+    born in period t_birth (the last element in the steady state).
+    """
+    x = np.atleast_1d(np.asarray(x, dtype=float)).ravel()
+    return np.ascontiguousarray(x[_cohort_rows(t_birth, x.size, S)])
+
+
+def fdc_lifetime(w, e, n, r_p, t_birth, j, p, a0=0, A0=0.0):
+    """
+    Funded defined contribution account of one household over its
+    lifetime: contributions, balances, annuity benefits, end-of-period
+    holdings, and the derivatives the household's labor decision needs.
+
+    The household is born (age 0) in model period t_birth and lives
+    age s in period t_birth + s. Calendar inputs (the wage, the return,
+    and the parameters) are read in the period each age is lived;
+    periods before or after the time path read its first or last
+    element. With t_birth None every calendar input reads its last
+    element, which gives the steady state.
+
+    The contribution rate ``fdc_tau`` and the retirement age are the
+    household's own cohort values (from ``pension_regimes``), the
+    earnings band cutoffs are those in effect in the period the income
+    is earned, and the annuity is priced on the mortality of income
+    group j along the cohort's life and on the r_p path the household
+    foresees.
+
+    Args:
+        w (scalar or array_like): wage, a single value or a calendar
+            path by model period
+        e (Numpy array): effective labor units at each age, length S
+        n (Numpy array): labor supply at each age, length S; ages
+            before a0 are ignored
+        r_p (scalar or array_like): household portfolio return, a
+            single value or a calendar path by model period; the
+            element for period t is the return earned in t on holdings
+            carried from t - 1
+        t_birth (int or None): model period in which the household is
+            age 0, None for the steady state
+        j (int or None): lifetime income group, which sets the
+            mortality rates that price the annuity (None for the
+            lambda-weighted average)
+        p (OG-Core Specifications object): model parameters
+        a0 (int): first age computed, for a household already alive
+            when the time path begins
+        A0 (scalar): account balance at the start of age a0; a
+            household already retired at a0 annuitizes this remaining
+            balance on the rates given
+
+    Returns:
+        FDCLifetime: the account by age
+    """
+    S = p.S
+    e = np.ascontiguousarray(np.asarray(e, dtype=float).ravel())
+    n = np.ascontiguousarray(np.asarray(n, dtype=float).ravel())
+    w_age = _calendar_by_age(w, t_birth, S)
+    r_age = _calendar_by_age(r_p, t_birth, S)
+    lo, hi = fdc_earn_bands(p)
+    lo_age = _calendar_by_age(lo, t_birth, S)
+    hi_age = _calendar_by_age(hi, t_birth, S)
+    ages = np.arange(S)
+    tau_arr = cohort_array("fdc_tau", p)
+    rows = _cohort_rows(t_birth, tau_arr.shape[0], S)
+    tau_age = np.ascontiguousarray(tau_arr[rows, ages])
+    retire_arr = cohort_array("retire", p)
+    retire_age = retire_arr[
+        _cohort_rows(t_birth, retire_arr.shape[0], S), ages
+    ].astype(int)
+    retired = ages >= retire_age
+    R = int(np.argmax(retired)) if retired.any() else S
+    mort = fdc_mort_rates(p, j)
+    rho_age = np.ascontiguousarray(
+        mort[_cohort_rows(t_birth, mort.shape[0], S), ages]
+    )
+    y = np.ascontiguousarray(w_age * e * n)
+    C, A, P, H, dC, m = fdc_lifetime_loop(
+        y,
+        tau_age,
+        lo_age,
+        hi_age,
+        r_age,
+        rho_age,
+        R,
+        float(np.squeeze(p.g_y)),
+        int(a0),
+        float(A0),
+        S,
+    )
+    return FDCLifetime(C, A, P, H, dC * w_age * e, m, R)
+
+
+def fdc_ss(r_p, w, e, n, p):
+    """
+    Steady-state funded defined contribution accounts of every lifetime
+    income group.
+
+    Args:
+        r_p (scalar): steady-state household portfolio return
+        w (scalar): steady-state wage
+        e (Numpy array): effective labor units, S x J
+        n (Numpy array): labor supply, S x J
+        p (OG-Core Specifications object): model parameters
+
+    Returns:
+        FDCLifetime: each array field S x J, and ``R`` the steady-state
+            retirement age
+    """
+    e = np.asarray(e, dtype=float).reshape(p.S, -1)
+    n = np.asarray(n, dtype=float).reshape(p.S, -1)
+    J = n.shape[1]
+    if e.shape[1] != J:
+        e = np.broadcast_to(e[:, :1], (p.S, J))
+    out = [
+        fdc_lifetime(w, e[:, j], n[:, j], r_p, None, j, p) for j in range(J)
+    ]
+    fields = {
+        name: np.stack([getattr(o, name) for o in out], axis=1)
+        for name in FDCLifetime._fields
+        if name != "R"
+    }
+    return FDCLifetime(R=out[0].R, **fields)
