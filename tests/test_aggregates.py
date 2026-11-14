@@ -2073,3 +2073,34 @@ def test_get_ptilde(p_m, tau_c, alpha_c, method, expected):
     test_vals = aggr.get_ptilde(p_m, tau_c, alpha_c, method)
 
     assert np.allclose(test_vals, expected)
+
+
+def test_get_F_off():
+    assert aggr.get_F(None, Specifications(), "SS") == 0.0
+
+
+def test_get_F_fund_identity():
+    """
+    The fund's assets earn r_p; less the bequests of members who die
+    before retirement, they pay for the start-of-period balances of
+    the members alive (and the immigrants who arrive), each in the
+    period's detrended units.
+    """
+    from ogcore import pensions
+
+    p_f = Specifications()
+    p_f.update_specifications({"fdc_tau": 0.08})
+    r_p, w = 0.05, 1.1
+    n = np.linspace(0.3, 0.5, p_f.S)[:, None] * np.ones((1, p_f.J))
+    fdc = pensions.fdc_ss(r_p, w, p_f.e[-1], n, p_f)
+    F = aggr.get_F(fdc, p_f, "SS")
+    BQ_f = np.sum(
+        aggr.get_BQ(
+            r_p, pensions.fdc_bequeathable(fdc, p_f), None, p_f, "SS", False
+        )
+    )
+    balances = (p_f.omega_SS * fdc.balance).sum()
+    assert F > 0 and BQ_f > 0
+    assert np.isclose((1 + r_p) * F - BQ_f, balances, rtol=1e-7)
+    with pytest.raises(NotImplementedError):
+        aggr.get_F(fdc, p_f, "TPI")

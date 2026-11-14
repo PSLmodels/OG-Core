@@ -6,7 +6,7 @@ Household functions.
 
 # Packages
 import numpy as np
-from ogcore import tax, utils
+from ogcore import tax, utils, pensions
 import logging
 
 logger = logging.getLogger(__name__)
@@ -425,6 +425,148 @@ def get_ci(c_s, p_i, p_tilde, tau_c, alpha_c, c_min, method="SS"):
     return c_si
 
 
+def fdc_active(p):
+    """
+    Whether the funded defined contribution (FDC) pillar is on, that
+    is, whether any cohort pays a positive contribution rate
+    ``fdc_tau``.
+
+    Args:
+        p (OG-Core Specifications object): model parameters
+
+    Returns:
+        bool: True if any element of ``fdc_tau`` is positive
+    """
+    # Specifications objects pickled before fdc_tau existed have none
+    return bool(np.any(np.asarray(getattr(p, "fdc_tau", 0.0)) > 0))
+
+
+def get_fdc(r_p, w, n, e, j, p, method):
+    """
+    Funded defined contribution accounts of the households whose labor
+    supply is ``n``, or None when the FDC pillar is off.
+
+    Only the steady state is supported so far: the time path raises
+    NotImplementedError when the pillar is on.
+
+    Args:
+        r_p (scalar): return on the household investment portfolio,
+            which the accounts also earn
+        w (scalar): real wage rate
+        n (Numpy array): labor supply, length S for one lifetime income
+            group or S x J for all groups
+        e (Numpy array): effective labor units, shaped like ``n``
+        j (int): index of lifetime income group, None if all groups
+        p (OG-Core Specifications object): model parameters
+        method (str): 'SS', 'TPI', or 'TPI_scalar'
+
+    Returns:
+        fdc (pensions.FDCLifetime or None): the accounts by age (by age
+            and group when j is None)
+
+    Raises:
+        NotImplementedError: if the pillar is on and method is not 'SS'
+    """
+    if not fdc_active(p):
+        return None
+    if method != "SS":
+        raise NotImplementedError(
+            "The funded defined contribution pillar (fdc_tau > 0) is "
+            "only supported in the steady state so far."
+        )
+    r_p = float(np.squeeze(r_p))
+    w = float(np.squeeze(w))
+    if j is not None:
+        return pensions.fdc_lifetime(w, e, n, r_p, None, j, p)
+    return pensions.fdc_ss(r_p, w, e, n, p)
+
+
+def fdc_net_flow(fdc):
+    r"""
+    Net payment of households into their funded defined contribution
+    accounts, the contribution less the annuity benefit,
+    $C_{j,s,t} - P_{j,s,t}$. It enters the budget constraint alongside
+    net taxes but is neither government revenue nor a government
+    outlay.
+
+    Args:
+        fdc (pensions.FDCLifetime or None): the accounts, None when the
+            pillar is off
+
+    Returns:
+        net (Numpy array or scalar): contribution less benefit, or 0.0
+            when the pillar is off
+    """
+    if fdc is None:
+        return 0.0
+    return fdc.contrib - fdc.benefit
+
+
+def fdc_labor_wedge(cons, p_tilde, fdc, rho, beta, p):
+    r"""
+    Terms the funded defined contribution (FDC) pillar adds to the
+    first order condition for labor supply.
+
+    An extra unit of labor at working age s raises the contribution by
+    $\partial C_s / \partial n_s$, which lowers consumption at s, and
+    raises the annuity at every age u from the retirement age R on by
+    $\partial C_s / \partial n_s \, m_s e^{-g_y(u - R)}$, where $m_s$ is
+    the benefit at R bought by a unit contributed at s. The second
+    effect is valued with the household's own discounting of future
+    marginal utility:
+
+    .. math::
+        -\frac{u'(c_s)}{\tilde{p}_s}\frac{\partial C_s}{\partial n_s}
+        + \frac{\partial C_s}{\partial n_s}m_s\sum_{u=R}^{S-1}
+        \beta^{u-s}\prod_{i=s}^{u-1}(1 - \rho_i)e^{(1-\sigma)g_y(u-s)}
+        \frac{u'(c_u)}{\tilde{p}_u}e^{-g_y(u-R)}
+
+    The factor $e^{(1-\sigma)g_y}$ per period is the weight of
+    detrended utility in the lifetime objective. (The savings Euler
+    equation shows $e^{-\sigma g_y}$ instead because next period's
+    savings enter this period's budget multiplied by $e^{g_y}$.)
+
+    Contributions of households that die before R go to bequests, which
+    the household does not value here (its bequest motive is over
+    private savings only).
+
+    Args:
+        cons (Numpy array): consumption by age, length S or S x J
+        p_tilde (scalar or Numpy array): composite good price
+        fdc (pensions.FDCLifetime): the accounts, shaped like ``cons``
+        rho (Numpy array): mortality rates, shaped like ``cons``
+        beta (scalar or Numpy array): discount factor (length J when
+            ``cons`` is S x J)
+        p (OG-Core Specifications object): model parameters
+
+    Returns:
+        wedge (Numpy array): term to add to the labor FOC error at
+            each age, shaped like ``cons``
+    """
+    mu = marg_ut_cons(cons, p.sigma) / p_tilde
+    wedge = -mu * fdc.dcontrib_dn
+    S, R = p.S, fdc.R
+    if R >= S:
+        return wedge
+    rho = np.asarray(rho, dtype=float)
+    ages = np.arange(S).reshape((S,) + (1,) * (rho.ndim - 1))
+    surv = np.concatenate(
+        (np.ones((1,) + rho.shape[1:]), np.cumprod(1.0 - rho[:-1], axis=0)),
+        axis=0,
+    )
+    # discount from age 0 to age u, so the discount from s to u is
+    # Q[u] / Q[s]
+    Q = (
+        np.asarray(beta, dtype=float) ** ages
+        * surv
+        * np.exp((1.0 - p.sigma) * p.g_y * ages)
+    )
+    pay = np.exp(-p.g_y * (ages[R:] - R))
+    value_at_0 = (Q[R:] * mu[R:] * pay).sum(axis=0)
+    accrual = fdc.dcontrib_dn * fdc.benefit_per_contrib * value_at_0 / Q
+    return wedge + accrual
+
+
 def FOC_savings(
     r,
     w,
@@ -574,8 +716,22 @@ def FOC_savings(
         p,
         ndc_rates,
     )
+    fdc = get_fdc(r, w, n, e, j, p, method)
     cons = get_cons(
-        r, w, p_tilde, p_i, b, b_splus1, n, bq, rm, taxes, e, tau_c, p, method
+        r,
+        w,
+        p_tilde,
+        p_i,
+        b,
+        b_splus1,
+        n,
+        bq,
+        rm,
+        taxes + fdc_net_flow(fdc),
+        e,
+        tau_c,
+        p,
+        method,
     )
     deriv = (
         (1 + r)
@@ -767,8 +923,22 @@ def FOC_labor(
         p,
         ndc_rates,
     )
+    fdc = get_fdc(r, w, n, e, j, p, method)
     cons = get_cons(
-        r, w, p_tilde, p_i, b, b_splus1, n, bq, rm, taxes, e, tau_c, p, method
+        r,
+        w,
+        p_tilde,
+        p_i,
+        b,
+        b_splus1,
+        n,
+        bq,
+        rm,
+        taxes + fdc_net_flow(fdc),
+        e,
+        tau_c,
+        p,
+        method,
     )
     deriv = (
         1
@@ -791,6 +961,15 @@ def FOC_labor(
     FOC_error = marg_ut_cons(cons, p.sigma) * (
         1 / p_tilde
     ) * w * deriv * e - marg_ut_labor(n, chi_n, p)
+    if fdc is not None:
+        # steady state only (get_fdc raises otherwise)
+        if j is not None:
+            rho, beta = p.rho[-1, :, j], p.beta[j]
+        else:
+            rho, beta = p.rho[-1, :, :], p.beta
+        FOC_error = FOC_error + fdc_labor_wedge(
+            cons, p_tilde, fdc, rho, beta, p
+        )
 
     return FOC_error
 

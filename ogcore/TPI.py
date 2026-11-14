@@ -1099,6 +1099,12 @@ def run_TPI(p, client=None):
             results
 
     """
+    if household.fdc_active(p):
+        raise NotImplementedError(
+            "The funded defined contribution pillar (fdc_tau > 0) is "
+            "only supported in the steady state so far; the time path "
+            "will be added in a later release."
+        )
     if p.use_sparse_FOC_jac and not _HAVE_SPARSE_FD:
         print("[TPI] sparse FOC jacobian unavailable; using dense")
     # Scope the Jacobian sparsity cache to this solve (see

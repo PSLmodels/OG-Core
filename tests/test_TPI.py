@@ -1563,3 +1563,10 @@ def test_run_TPI_pension_regime(
         0, p.S - int((60 - 10 - p.starting_age) / years_per_period)
     )
     assert (born_later, young, old) == (raised, raised, base)
+
+
+def test_run_TPI_fdc_not_supported():
+    p = Specifications()
+    p.update_specifications({"fdc_tau": 0.05})
+    with pytest.raises(NotImplementedError, match="steady state"):
+        TPI.run_TPI(p)

@@ -2807,3 +2807,83 @@ def fdc_ss(r_p, w, e, n, p):
         if name != "R"
     }
     return FDCLifetime(R=out[0].R, **fields)
+
+
+def fdc_holdings(fdc):
+    """
+    End-of-period holdings of funded defined contribution accounts,
+    the fund's assets, by age (and group).
+
+    Args:
+        fdc (FDCLifetime or None): the accounts, None when the pillar
+            is off
+
+    Returns:
+        holdings (Numpy array or scalar): holdings, or 0.0 when the
+            pillar is off
+    """
+    if fdc is None:
+        return 0.0
+    return fdc.holdings
+
+
+def fdc_bequeathable(fdc, p):
+    """
+    End-of-period holdings that go to bequests if the household dies
+    before the next period: the account holdings at ages before the
+    retirement age. After retirement the holdings of those who die
+    stay in the annuity pool.
+
+    The holdings are returned in the next period's detrended units,
+    e^{-g_y} times the holdings, the units of the private savings
+    b_{s+1} they are added to in ``aggregates.get_BQ``.
+
+    Args:
+        fdc (FDCLifetime or None): the accounts, None when the pillar
+            is off
+        p (OG-Core Specifications object): model parameters
+
+    Returns:
+        bequeathable (Numpy array or scalar): holdings at ages before
+            the retirement age and zero after, in next-period units, or
+            0.0 when the pillar is off
+    """
+    if fdc is None:
+        return 0.0
+    ages = np.arange(fdc.holdings.shape[0]).reshape(
+        (-1,) + (1,) * (fdc.holdings.ndim - 1)
+    )
+    return np.where(ages < fdc.R, fdc.holdings, 0.0) * np.exp(-p.g_y)
+
+
+def fdc_survivor_claims(fdc, rho, p):
+    r"""
+    Funded defined contribution holdings per survivor, carried into the
+    next period before its return: the end-of-period holdings before
+    the retirement age, and the holdings divided by the survival rate
+    after it, when the holdings of those who die are shared among the
+    survivors of the annuity pool.
+
+    Immigrants are taken to arrive with the same assets as the natives
+    of their age, so this is what an immigrant brings into the fund
+    (the counterpart of the private savings b that ``get_B`` credits
+    to immigrants). Like b_{s+1}, the claims are in the next period's
+    detrended units, e^{-g_y} times the holdings.
+
+    Args:
+        fdc (FDCLifetime or None): the accounts, None when the pillar
+            is off
+        rho (Numpy array): mortality rates, shaped like the holdings
+        p (OG-Core Specifications object): model parameters
+
+    Returns:
+        claims (Numpy array or scalar): holdings per survivor in
+            next-period units, or 0.0 when the pillar is off
+    """
+    if fdc is None:
+        return 0.0
+    H = fdc.holdings
+    ages = np.arange(H.shape[0]).reshape((-1,) + (1,) * (H.ndim - 1))
+    surv = 1.0 - np.asarray(rho, dtype=float)
+    pooled = np.divide(H, surv, out=np.zeros_like(H), where=surv > 0)
+    return np.where(ages >= fdc.R, pooled, H) * np.exp(-p.g_y)

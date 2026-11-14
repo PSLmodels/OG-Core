@@ -18,4 +18,5 @@ ogcore.pensions
     deriv_NDC_loop, delta_ret_loop, PS_1dim_loop, PS_2dim_loop, DB_1dim_loop,
     DB_2dim_loop, DB_3dim_loop, NDC_1dim_loop, NDC_2dim_loop,
     FDCLifetime, fdc_earn_bands, fdc_mort_rates, fdc_annuity_factor_loop,
-    fdc_lifetime_loop, fdc_lifetime, fdc_ss
+    fdc_lifetime_loop, fdc_lifetime, fdc_ss, fdc_holdings,
+    fdc_bequeathable, fdc_survivor_claims

@@ -1603,3 +1603,34 @@ def test_SS_fsolve_scatters_once(scatter_test_params):
             guesses, bssmat, nssmat, None, None, None, None, p, client
         )
     assert client.scatter_calls == 2
+
+
+def _solve_small_SS(updates):
+    import json
+
+    SS.ENFORCE_SOLUTION_CHECKS = True
+    p = Specifications(baseline=True, num_workers=1)
+    with open(os.path.join(CUR_PATH, "testing_params.json")) as f:
+        p.update_specifications(json.load(f))
+    p.update_specifications(updates)
+    return SS.run_SS(p, client=None)
+
+
+def test_SS_funded_defined_contribution():
+    """
+    The steady state solves with a funded defined contribution pillar:
+    the resource constraint holds with the fund's assets in the capital
+    stock, private savings fall but total savings rise, and the fund's
+    accounts are reported.
+    """
+    base = _solve_small_SS({})
+    fdc = _solve_small_SS({"fdc_tau": 0.05})
+    assert base["F"] == 0.0 and base["agg_fdc_contrib"] == 0.0
+    assert np.all(base["fdc_holdings"] == 0.0)
+    assert np.abs(fdc["resource_constraint_error"]).max() < 1e-7
+    assert fdc["F"] > 0.0
+    assert fdc["agg_fdc_contrib"] > 0.0 and fdc["agg_fdc_benefits"] > 0.0
+    assert fdc["B"] < base["B"]
+    assert fdc["B"] + fdc["F"] > base["B"]
+    assert fdc["K"] > base["K"] and fdc["r"] < base["r"]
+    assert fdc["fdc_contrib"].shape == fdc["n"].shape

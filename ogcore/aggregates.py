@@ -195,6 +195,50 @@ def get_B(b, p, method, preTP):
     return B
 
 
+def get_F(fdc, p, method):
+    r"""
+    Calculation of the assets of the funded defined contribution (FDC)
+    fund, the end-of-period account holdings $\hat{h}$ of every
+    household, aggregated like household savings in ``get_B`` and, like
+    the savings b_{s+1} there, put in the next period's detrended units
+    by the factor e^{-g_y}. The
+    holdings of those who die count until they are bequeathed (before
+    retirement) or shared among the survivors (after retirement), and
+    immigrants arrive with the holdings per survivor of their age,
+    $\hat{x}$ (``pensions.fdc_survivor_claims``):
+
+    .. math::
+        \hat{F}_{t} = \frac{1}{1 + g_{n,t}}\sum_{s=E}^{E+S}\sum_{j=0}^{J}
+        \left(\omega_{s-1,t-1}\lambda_{j}e^{-g_y}\hat{h}_{j,s-1,t-1} +
+        i_{s,t-1}\omega_{s,t-1}\lambda_{j}\hat{x}_{j,s-1,t-1}\right)
+
+    Args:
+        fdc (pensions.FDCLifetime or None): the accounts by age and
+            lifetime income group, None when the pillar is off
+        p (OG-Core Specifications object): model parameters
+        method (str): 'SS' (the time path is not supported yet)
+
+    Returns:
+        F (scalar): FDC fund assets, 0.0 when the pillar is off
+    """
+    if fdc is None:
+        return 0.0
+    if method != "SS":
+        raise NotImplementedError(
+            "FDC fund assets are only computed in the steady state so far"
+        )
+    claims = pensions.fdc_survivor_claims(fdc, p.rho[-1, :, :], p)
+    omega_extended = np.append(p.omega_SS[1:, :], np.zeros((1, p.J)), axis=0)
+    imm_extended = np.append(
+        p.imm_rates[-1, 1:, :], np.zeros((1, p.J)), axis=0
+    )
+    F = (
+        fdc.holdings * np.exp(-p.g_y) * p.omega_SS
+        + claims * omega_extended * imm_extended
+    ).sum()
+    return F / (1.0 + p.g_n_ss)
+
+
 def get_BQ(r, b_splus1, j, p, method, preTP):
     r"""
     Calculation of aggregate bequests.  If `use_zeta` is False, then

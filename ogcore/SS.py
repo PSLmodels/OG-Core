@@ -170,6 +170,7 @@ def euler_equation_solver(guesses, *args):
         p.etr_params[-1],
         p,
     )
+    fdc = household.get_fdc(r, w, n_guess, p.e[-1, :, j], j, p, "SS")
     cons = household.get_cons(
         r,
         w,
@@ -180,7 +181,7 @@ def euler_equation_solver(guesses, *args):
         n_guess,
         bq,
         rm,
-        taxes,
+        taxes + household.fdc_net_flow(fdc),
         p.e[-1, :, j],
         p.tau_c[-1, :],
         p,
@@ -498,6 +499,17 @@ def inner_loop(outer_loop_vars, p, client, scattered_p=None):
         etr_params_3D,
         p,
     )
+    # funded defined contribution accounts at the prices households
+    # solved for (None when the pillar is off)
+    fdc = household.get_fdc(
+        r_p,
+        w,
+        nssmat,
+        np.squeeze(p.e[-1, :, :]).reshape((p.S, p.J)),
+        None,
+        p,
+        "SS",
+    )
     c_s = household.get_cons(
         r_p,
         w,
@@ -508,7 +520,7 @@ def inner_loop(outer_loop_vars, p, client, scattered_p=None):
         nssmat,
         bq,
         rm,
-        net_tax,
+        net_tax + household.fdc_net_flow(fdc),
         np.squeeze(p.e[-1, :, :]).reshape((p.S, p.J)),
         p.tau_c[-1, :],
         p,
@@ -518,6 +530,7 @@ def inner_loop(outer_loop_vars, p, client, scattered_p=None):
     )
     L = aggr.get_L(nssmat, p, "SS")
     B = aggr.get_B(bssmat, p, "SS", False)
+    F = aggr.get_F(fdc, p, "SS")
 
     # Find gov't debt
     r_gov = fiscal.get_r_gov(r, p.debt_ratio_ss, p, "scalar", t=-1)
@@ -554,8 +567,9 @@ def inner_loop(outer_loop_vars, p, client, scattered_p=None):
     K_demand_open_vec[-1] = firm.get_K(
         p.world_int_rate[-1], w_open, L_M, p, "SS", -1
     )
+    # the FDC fund's assets add to domestic savings
     K, K_d, K_f = aggr.get_K_splits(
-        B, K_demand_open_vec.sum(), D_d, p.zeta_K[-1]
+        B + F, K_demand_open_vec.sum(), D_d, p.zeta_K[-1]
     )
     K_M = max(0.001, K - K_vec.sum())  # make sure K_M > 0
     L_vec[-1] = L_M
@@ -600,7 +614,15 @@ def inner_loop(outer_loop_vars, p, client, scattered_p=None):
         new_factor = p.mean_income_data / average_income_model
     else:
         new_factor = factor
-    new_BQ = aggr.get_BQ(new_r_p, bssmat, None, p, "SS", False)
+    # FDC balances of those who die before retirement are bequeathed
+    new_BQ = aggr.get_BQ(
+        new_r_p,
+        bssmat + pensions.fdc_bequeathable(fdc, p),
+        None,
+        p,
+        "SS",
+        False,
+    )
     new_bq = household.get_bq(new_BQ, None, p, "SS")
     new_RM = aggr.get_RM(Y, p, "SS")
     new_rm = household.get_rm(new_RM, None, p, "SS")
@@ -640,6 +662,15 @@ def inner_loop(outer_loop_vars, p, client, scattered_p=None):
         etr_params_3D,
         p,
     )
+    new_fdc = household.get_fdc(
+        new_r_p,
+        new_w,
+        nssmat,
+        np.squeeze(p.e[-1, :, :]).reshape((p.S, p.J)),
+        None,
+        p,
+        "SS",
+    )
     cssmat = household.get_cons(
         new_r_p,
         new_w,
@@ -650,7 +681,7 @@ def inner_loop(outer_loop_vars, p, client, scattered_p=None):
         nssmat,
         new_bq,
         new_rm,
-        taxss,
+        taxss + household.fdc_net_flow(new_fdc),
         np.squeeze(p.e[-1, :, :]).reshape((p.S, p.J)),
         p.tau_c[-1, :],
         p,
@@ -715,7 +746,14 @@ def inner_loop(outer_loop_vars, p, client, scattered_p=None):
     G_vec[-1] = G
     C_m_vec = np.dot(p.io_matrix.T, C_vec)
     I_d_vec = np.zeros(p.M)
-    I_d = aggr.get_I(b_splus1, K_d, K_d, p, "SS")
+    # immigrants arrive with the savings and FDC holdings of their age
+    I_d = aggr.get_I(
+        b_splus1 + pensions.fdc_survivor_claims(fdc, p.rho[-1, :, :], p),
+        K_d,
+        K_d,
+        p,
+        "SS",
+    )
     I_d_vec[-1] = I_d
     I_g_vec = np.zeros(p.M)
     I_g_vec[-1] = I_g
@@ -944,6 +982,17 @@ def SS_solver(
     Lss = aggr.get_L(nssmat, p, "SS")
     Nss = aggr.get_N(nssmat, p, "SS")
     Bss = aggr.get_B(bssmat_splus1, p, "SS", False)
+    # funded defined contribution accounts (None when the pillar is off)
+    fdc_ss = household.get_fdc(
+        new_r_p,
+        new_w,
+        nssmat,
+        np.squeeze(p.e[-1, :, :]).reshape((p.S, p.J)),
+        None,
+        p,
+        "SS",
+    )
+    Fss = aggr.get_F(fdc_ss, p, "SS")
     (
         Dss,
         D_d_ss,
@@ -960,7 +1009,7 @@ def SS_solver(
             p.world_int_rate[-1], w_open, L_vec_ss[m], p, "SS", m
         )
     Kss, K_d_ss, K_f_ss = aggr.get_K_splits(
-        Bss, K_demand_open_ss.sum(), D_d_ss, p.zeta_K[-1]
+        Bss + Fss, K_demand_open_ss.sum(), D_d_ss, p.zeta_K[-1]
     )
     # Yss = firm.get_Y(Kss, K_g_ss, Lss, p, 'SS')
     I_g_ss = fiscal.get_I_g(Yss, Ig_baseline, p, "SS")
@@ -977,8 +1026,12 @@ def SS_solver(
     r_p_ss = new_r_p
     # Note that implicitly in this computation is that immigrants'
     # wealth is all in the form of private capital
-    I_d_ss = aggr.get_I(bssmat_splus1, K_d_ss, K_d_ss, p, "SS")
-    Iss = aggr.get_I(bssmat_splus1, Kss, Kss, p, "SS")
+    # wealth of immigrants includes their FDC holdings
+    imm_wealth_ss = bssmat_splus1 + pensions.fdc_survivor_claims(
+        fdc_ss, p.rho[-1, :, :], p
+    )
+    I_d_ss = aggr.get_I(imm_wealth_ss, K_d_ss, K_d_ss, p, "SS")
+    Iss = aggr.get_I(imm_wealth_ss, Kss, Kss, p, "SS")
     BQss = new_BQ
     factor_ss = factor
     bqssmat = household.get_bq(BQss, None, p, "SS")
@@ -1124,7 +1177,7 @@ def SS_solver(
         nssmat,
         bqssmat,
         rmssmat,
-        taxss,
+        taxss + household.fdc_net_flow(fdc_ss),
         np.squeeze(p.e[-1, :, :]).reshape((p.S, p.J)),
         p.tau_c[-1, :],
         p,
@@ -1267,6 +1320,12 @@ def SS_solver(
         f"Maximum error in savings FOC = {np.absolute(euler_savings).max()}"
     )
 
+    # FDC accounts by age and group (zeros when the pillar is off)
+    zeros_SJ = np.zeros((p.S, p.J))
+    fdc_contrib_ss = zeros_SJ if fdc_ss is None else fdc_ss.contrib
+    fdc_benefits_ss = zeros_SJ if fdc_ss is None else fdc_ss.benefit
+    fdc_holdings_ss = pensions.fdc_holdings(fdc_ss) + zeros_SJ
+
     # Return dictionary of SS results
     output = {
         "Y": Yss,
@@ -1344,6 +1403,12 @@ def SS_solver(
         "wealth_tax": wealth_tax_ss[: p.T, ...],
         "bequest_tax": bq_tax_ss[: p.T, ...],
         "pension_benefits": pension_ss[: p.T, ...],
+        "F": Fss,
+        "fdc_contrib": fdc_contrib_ss,
+        "fdc_benefits": fdc_benefits_ss,
+        "fdc_holdings": fdc_holdings_ss,
+        "agg_fdc_contrib": (fdc_contrib_ss * p.omega_SS).sum(),
+        "agg_fdc_benefits": (fdc_benefits_ss * p.omega_SS).sum(),
         "etr": etr_ss,
         "mtrx": mtrx_ss,
         "mtry": mtry_ss,
