@@ -1739,6 +1739,8 @@
     <span class="n">trust_radius_min</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="s2">"TPI_trust_radius_min"</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">)</span>
     <span class="n">trust_radius_max</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="s2">"TPI_trust_radius_max"</span><span class="p">,</span> <span class="mf">10.0</span><span class="p">)</span>
     <span class="n">prev_accel_dist</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">inf</span>
+    <span class="c1"># whether the initial-wealth anchor (initial_wealth_ratio) is active</span>
+    <span class="n">anchor_wealth</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">baseline</span> <span class="ow">and</span> <span class="n">p</span><span class="o">.</span><span class="n">initial_wealth_ratio</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
 
     <span class="k">if</span> <span class="n">client</span><span class="p">:</span>
         <span class="c1"># Before scattering, temporarily remove unpicklable schema objects</span>
@@ -2212,8 +2214,8 @@
                 <span class="n">TR</span><span class="p">[:</span> <span class="n">p</span><span class="o">.</span><span class="n">T</span><span class="p">]</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">convex_combo</span><span class="p">(</span><span class="n">TR_new</span><span class="p">[:</span> <span class="n">p</span><span class="o">.</span><span class="n">T</span><span class="p">],</span> <span class="n">TR</span><span class="p">[:</span> <span class="n">p</span><span class="o">.</span><span class="n">T</span><span class="p">],</span> <span class="n">p</span><span class="o">.</span><span class="n">nu</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="c1"># Accelerated outer step on the packed macro/price vector</span>
-            <span class="c1"># {r_p, r, w, p_m, BQ[, TR]}; the update rule (Anderson) uses the</span>
-            <span class="c1"># recent residual history. Auxiliaries stay damped below.</span>
+            <span class="c1"># {r_p, r, w, p_m, BQ[, TR][, B0]}; the update rule (Anderson)</span>
+            <span class="c1"># uses the recent residual history. Auxiliaries stay damped below.</span>
             <span class="n">blocks</span> <span class="o">=</span> <span class="p">[</span>
                 <span class="p">(</span><span class="n">r_p</span><span class="p">,</span> <span class="n">r_p_new</span><span class="p">),</span>
                 <span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="n">rnew</span><span class="p">),</span>
@@ -2223,6 +2225,16 @@
             <span class="p">]</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="n">p</span><span class="o">.</span><span class="n">baseline_spending</span><span class="p">:</span>
                 <span class="n">blocks</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">TR</span><span class="p">,</span> <span class="n">TR_new</span><span class="p">))</span>
+            <span class="k">if</span> <span class="n">anchor_wealth</span><span class="p">:</span>
+                <span class="c1"># Initial household wealth targets a ratio to initial GDP,</span>
+                <span class="c1"># which the prices determine, so it belongs to the same fixed</span>
+                <span class="c1"># point. Damped on its own it closes only nu of its gap per</span>
+                <span class="c1"># iteration and keeps shifting the map the accelerator</span>
+                <span class="c1"># extrapolates, so it is accelerated with the prices.</span>
+                <span class="n">B0_iter</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">B</span><span class="p">[</span><span class="mi">0</span><span class="p">]])</span>
+                <span class="n">blocks</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                    <span class="p">(</span><span class="n">B0_iter</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">p</span><span class="o">.</span><span class="n">initial_wealth_ratio</span> <span class="o">*</span> <span class="n">Y</span><span class="p">[</span><span class="mi">0</span><span class="p">]]))</span>
+                <span class="p">)</span>
             <span class="n">x</span><span class="p">,</span> <span class="n">gx</span> <span class="o">=</span> <span class="n">solvers</span><span class="o">.</span><span class="n">pack_outer_vars</span><span class="p">(</span><span class="n">blocks</span><span class="p">,</span> <span class="n">p</span><span class="o">.</span><span class="n">T</span><span class="p">)</span>
             <span class="c1"># True fixed-point residual (implied vs the PRE-update guess). The</span>
             <span class="c1"># post-update TPIdist below is spuriously ~0 for steps that set</span>
@@ -2269,15 +2281,29 @@
             <span class="n">solvers</span><span class="o">.</span><span class="n">unpack_outer_vars</span><span class="p">(</span><span class="n">x_next</span><span class="p">,</span> <span class="n">blocks</span><span class="p">,</span> <span class="n">p</span><span class="o">.</span><span class="n">T</span><span class="p">)</span>
         <span class="c1"># Auxiliaries (unchanged): government rate, debt, and the household</span>
         <span class="c1"># policy warm-starts stay on the damped update.</span>
-        <span class="n">r_gov</span><span class="p">[:</span> <span class="n">p</span><span class="o">.</span><span class="n">T</span><span class="p">]</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">convex_combo</span><span class="p">(</span><span class="n">r_gov_new</span><span class="p">[:</span> <span class="n">p</span><span class="o">.</span><span class="n">T</span><span class="p">],</span> <span class="n">r_gov</span><span class="p">[:</span> <span class="n">p</span><span class="o">.</span><span class="n">T</span><span class="p">],</span> <span class="n">p</span><span class="o">.</span><span class="n">nu</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">outer_updater</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">r_gov</span><span class="p">[:</span> <span class="n">p</span><span class="o">.</span><span class="n">T</span><span class="p">]</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">convex_combo</span><span class="p">(</span>
+                <span class="n">r_gov_new</span><span class="p">[:</span> <span class="n">p</span><span class="o">.</span><span class="n">T</span><span class="p">],</span> <span class="n">r_gov</span><span class="p">[:</span> <span class="n">p</span><span class="o">.</span><span class="n">T</span><span class="p">],</span> <span class="n">p</span><span class="o">.</span><span class="n">nu</span>
+            <span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># Only the reported path: the solve uses the implied rate</span>
+            <span class="c1"># (r_p and the budget), so with the prices accelerated the</span>
+            <span class="c1"># damped copy would lag the solution it reports.</span>
+            <span class="n">r_gov</span><span class="p">[:</span> <span class="n">p</span><span class="o">.</span><span class="n">T</span><span class="p">]</span> <span class="o">=</span> <span class="n">r_gov_new</span><span class="p">[:</span> <span class="n">p</span><span class="o">.</span><span class="n">T</span><span class="p">]</span>
         <span class="n">D</span><span class="p">[:</span> <span class="n">p</span><span class="o">.</span><span class="n">T</span><span class="p">]</span> <span class="o">=</span> <span class="n">Dnew</span><span class="p">[:</span> <span class="n">p</span><span class="o">.</span><span class="n">T</span><span class="p">]</span>
-        <span class="k">if</span> <span class="n">p</span><span class="o">.</span><span class="n">baseline</span> <span class="ow">and</span> <span class="n">p</span><span class="o">.</span><span class="n">initial_wealth_ratio</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">anchor_wealth</span><span class="p">:</span>
             <span class="c1"># Initial aggregate household wealth is a target ratio to</span>
             <span class="c1"># initial GDP, which is endogenous: move B[0] toward the</span>
-            <span class="c1"># target with the outer-loop damping and scale the initial</span>
-            <span class="c1"># distribution of savings (whose shape is fixed) to match, so</span>
-            <span class="c1"># that the next inner loop starts households from it</span>
-            <span class="n">B0</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">convex_combo</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">initial_wealth_ratio</span> <span class="o">*</span> <span class="n">Y</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">B</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">p</span><span class="o">.</span><span class="n">nu</span><span class="p">)</span>
+            <span class="c1"># target (with the outer-loop damping, or with the accelerated</span>
+            <span class="c1"># step above) and scale the initial distribution of savings</span>
+            <span class="c1"># (whose shape is fixed) to match, so that the next inner loop</span>
+            <span class="c1"># starts households from it</span>
+            <span class="k">if</span> <span class="n">outer_updater</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">B0</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">convex_combo</span><span class="p">(</span>
+                    <span class="n">p</span><span class="o">.</span><span class="n">initial_wealth_ratio</span> <span class="o">*</span> <span class="n">Y</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">B</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">p</span><span class="o">.</span><span class="n">nu</span>
+                <span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">B0</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">B0_iter</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
             <span class="n">B</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">B0</span>
             <span class="n">b_splus1init</span> <span class="o">=</span> <span class="n">b_splus1init</span> <span class="o">*</span> <span class="p">(</span>
                 <span class="n">B0</span> <span class="o">/</span> <span class="n">aggr</span><span class="o">.</span><span class="n">get_B</span><span class="p">(</span><span class="n">b_splus1init</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="s2">"SS"</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
