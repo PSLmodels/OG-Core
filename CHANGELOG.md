@@ -5,14 +5,17 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+## [0.24.5] - 2026-11-13
+
+### Updated
+- With `TPI_outer_method = "anderson"` and an initial-wealth target (`initial_wealth_ratio`), initial household wealth is now accelerated together with the prices instead of being moved toward its target by the damped step afterwards. On its own it closed only `nu` of its gap each iteration and kept changing the problem the accelerator extrapolates, so accelerated steps were often rejected and the transition took several times as many iterations. With the prices accelerated, the reported government interest rate path `r_gov` is now the rate the solve uses rather than a damped copy of it that could lag the solution. The damped (`picard`) update is unchanged.d]
 
 ### Changed
 
 - `TPI.twist_doughnut` now computes the household's net taxes once per evaluation and shares them with both first order conditions, through a new optional `net_tax` argument of `household.FOC_savings` and `household.FOC_labor`. Without it, both work as before.
 - `pensions.DB_amount` now caches each household's Defined Benefits parameters along its lifetime (retirement period, averaging window, years of contribution, replacement rate, effective labor units) instead of looking them up at every evaluation. As with `pension_periods`, the cache is reset when one of those arrays is reassigned, but not when it is edited in place. Results are unchanged.
 
-### Bug Fixes
+### Fixed
 
 - The sparsity pattern of the household Jacobian (`use_sparse_FOC_jac`) could miss real links between equations, which made the household solve much slower without changing the answers. Each entry is now compared with the largest entry in its own row rather than in the whole Jacobian, and patterns are kept separately for each lifetime income group. When a household solve fails with a cached pattern, the pattern is now checked again at that problem and any missing links are added, so a pattern detected for one household cannot slow down another that is linked differently.
 - The pattern cache was meant to be cleared at the start of each `run_TPI` call (#1249), but it read the run identifier from the last element of the household problem's arguments, which has been `ndc_rates` rather than the parameters object since 0.24.2. The cache therefore carried over between runs on the same workers, such as a baseline and a reform. The parameters object is now passed explicitly.
@@ -884,6 +887,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Any earlier versions of OG-USA can be found in the [`OG-Core`](https://github.com/PSLmodels/OG-Core) repository [release history](https://github.com/PSLmodels/OG-Core/releases) from [v.0.6.4](https://github.com/PSLmodels/OG-Core/releases/tag/v0.6.4) (Jul. 20, 2021) or earlier.
 
 
+[0.24.5]: https://github.com/PSLmodels/OG-Core/compare/v0.24.4...v0.24.5
 [0.24.4]: https://github.com/PSLmodels/OG-Core/compare/v0.24.3...v0.24.4
 [0.24.3]: https://github.com/PSLmodels/OG-Core/compare/v0.24.2...v0.24.3
 [0.24.2]: https://github.com/PSLmodels/OG-Core/compare/v0.24.1...v0.24.2
