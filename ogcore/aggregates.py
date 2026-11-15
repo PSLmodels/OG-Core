@@ -216,17 +216,37 @@ def get_F(fdc, p, method):
         fdc (pensions.FDCLifetime or None): the accounts by age and
             lifetime income group, None when the pillar is off
         p (OG-Core Specifications object): model parameters
-        method (str): 'SS' (the time path is not supported yet)
+        method (str): 'SS' (with ``fdc`` a ``pensions.FDCLifetime``
+            by age and group) or 'TPI' (with ``fdc`` a
+            ``pensions.FDCPath``, giving the assets in periods 1 to T
+            from the holdings chosen in periods 0 to T - 1)
 
     Returns:
-        F (scalar): FDC fund assets, 0.0 when the pillar is off
+        F (scalar or Numpy array): FDC fund assets, 0.0 when the
+            pillar is off
     """
     if fdc is None:
         return 0.0
-    if method != "SS":
-        raise NotImplementedError(
-            "FDC fund assets are only computed in the steady state so far"
+    if method == "TPI":
+        # fdc is a pensions.FDCPath; the holdings chosen in period t
+        # are the fund's assets in period t + 1
+        omega_shift = np.append(
+            p.omega[: p.T, 1:, :], np.zeros((p.T, 1, p.J)), axis=1
         )
+        imm_shift = np.append(
+            p.imm_rates[: p.T, 1:, :], np.zeros((p.T, 1, p.J)), axis=1
+        )
+        F = (
+            (
+                fdc.holdings * np.exp(-p.g_y) * p.omega[: p.T, :, :]
+                + fdc.claims * omega_shift * imm_shift
+            )
+            .sum(1)
+            .sum(1)
+        )
+        return F / (1.0 + np.hstack((p.g_n[: p.T - 1], p.g_n_ss)))
+    if method != "SS":
+        raise ValueError(f"method must be 'SS' or 'TPI', got {method!r}")
     claims = pensions.fdc_survivor_claims(fdc, p.rho[-1, :, :], p)
     omega_extended = np.append(p.omega_SS[1:, :], np.zeros((1, p.J)), axis=0)
     imm_extended = np.append(

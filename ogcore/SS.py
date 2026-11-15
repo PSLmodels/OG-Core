@@ -1409,6 +1409,7 @@ def SS_solver(
         "fdc_holdings": fdc_holdings_ss,
         "agg_fdc_contrib": (fdc_contrib_ss * p.omega_SS).sum(),
         "agg_fdc_benefits": (fdc_benefits_ss * p.omega_SS).sum(),
+        "fdc_R": p.S if fdc_ss is None else fdc_ss.R,
         "etr": etr_ss,
         "mtrx": mtrx_ss,
         "mtry": mtry_ss,

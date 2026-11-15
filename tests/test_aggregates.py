@@ -2102,5 +2102,46 @@ def test_get_F_fund_identity():
     balances = (p_f.omega_SS * fdc.balance).sum()
     assert F > 0 and BQ_f > 0
     assert np.isclose((1 + r_p) * F - BQ_f, balances, rtol=1e-7)
-    with pytest.raises(NotImplementedError):
-        aggr.get_F(fdc, p_f, "TPI")
+    with pytest.raises(ValueError):
+        aggr.get_F(fdc, p_f, "total_ss")
+
+
+def test_get_F_time_path_fund_identity():
+    """
+    Along the time path, the fund's assets, with the period's return
+    and less the bequests of members who die before retirement, pay
+    for the start-of-period balances of the members alive in each
+    period, starting from the holdings of the households alive at t=0.
+    """
+    from ogcore import pensions
+
+    p_f = Specifications()
+    p_f.update_specifications({"fdc_tau": 0.08})
+    T, S, J = p_f.T, p_f.S, p_f.J
+    H_ss = np.linspace(0.05, 1.0, S)[:, None] * np.ones((1, J))
+    R = int(p_f.retire[-1, 0])
+    H_ss[R:] = np.linspace(1.0, 0.0, S - R)[:, None]
+    H0, claims0, bq0 = pensions.fdc_initial_holdings(
+        {"fdc_holdings": H_ss, "fdc_R": R}, p_f
+    )
+    p_f.fdc_claims_preTP = claims0
+    omega_ext = np.append(p_f.omega_S_preTP[1:], np.zeros((1, J)), axis=0)
+    imm_ext = np.append(p_f.imm_rates_preTP[1:], np.zeros((1, J)), axis=0)
+    F0 = (
+        H0 * np.exp(-p_f.g_y) * p_f.omega_S_preTP
+        + claims0 * omega_ext * imm_ext
+    ).sum() / (1 + p_f.g_n_preTP)
+    r_p = np.linspace(0.04, 0.06, T + S)
+    w = np.linspace(1.0, 1.1, T + S)
+    n_mat = np.full((T + S, S, J), 0.4)
+    path = pensions.fdc_tpi(r_p, w, n_mat, p_f)
+    F = np.zeros(T)
+    F[0] = F0
+    F[1:] = aggr.get_F(path, p_f, "TPI")[: T - 1]
+    bq_shift = np.append(bq0[None], path.bequeathable[: T - 1], axis=0)
+    BQ_f = aggr.get_BQ(r_p[:T], bq_shift, None, p_f, "TPI", False)
+    BQ_f = BQ_f.sum(1) if np.ndim(BQ_f) > 1 else BQ_f
+    balances = (
+        p_f.omega[:T] * (path.holdings - path.contrib + path.benefit)
+    ).sum((1, 2))
+    assert np.allclose((1 + r_p[:T]) * F - BQ_f, balances, rtol=1e-6)

@@ -1627,8 +1627,48 @@ def test_run_TPI_pension_regime(
     assert (born_later, young, old) == (raised, raised, base)
 
 
-def test_run_TPI_fdc_not_supported():
-    p = Specifications()
-    p.update_specifications({"fdc_tau": 0.05})
-    with pytest.raises(NotImplementedError, match="steady state"):
-        TPI.run_TPI(p)
+def _fdc_tpi_run(tmpdir, tau, baseline_dir=None, enforce=True):
+    SS.ENFORCE_SOLUTION_CHECKS = True
+    TPI.ENFORCE_SOLUTION_CHECKS = enforce
+    out = os.path.join(tmpdir, f"OUT_{tau}_{baseline_dir is None}")
+    p = Specifications(
+        baseline=baseline_dir is None,
+        num_workers=1,
+        baseline_dir=baseline_dir or out,
+        output_base=out,
+    )
+    with open(os.path.join(CUR_PATH, "testing_params.json")) as f:
+        p.update_specifications(json.load(f))
+    p.update_specifications({"fdc_tau": tau})
+    utils.mkdirs(os.path.join(out, "SS"))
+    ss = SS.run_SS(p, client=None)
+    with open(os.path.join(out, "SS", "SS_vars.pkl"), "wb") as f:
+        pickle.dump(ss, f)
+    tp = TPI.run_TPI(p, client=None)
+    utils.mkdirs(os.path.join(out, "TPI"))
+    with open(os.path.join(out, "TPI", "TPI_vars.pkl"), "wb") as f:
+        pickle.dump(tp, f)
+    return ss, tp, out
+
+
+@pytest.mark.local
+def test_run_TPI_funded_defined_contribution(tmpdir):
+    """
+    The time path solves with the funded defined contribution pillar,
+    both in a baseline that starts from steady-state FDC holdings and
+    in a reform that introduces the pillar from a baseline without it
+    (all accounts start empty). The fund's assets converge to the
+    steady state.
+    """
+    ss, tp, base_out = _fdc_tpi_run(tmpdir, 0.05)
+    assert np.abs(tp["resource_constraint_error"]).max() < 1e-4
+    assert tp["F"][0] > 0
+    assert np.isclose(tp["F"][-1], ss["F"], rtol=1e-3)
+    # a reform introducing FDC, from a baseline without it (that
+    # baseline's own path is not checked: with testing_params.json it
+    # misses RC_TPI by a little on master too)
+    _, _, no_fdc_out = _fdc_tpi_run(tmpdir, 0.0, enforce=False)
+    ss_r, tp_r, _ = _fdc_tpi_run(tmpdir, 0.05, baseline_dir=no_fdc_out)
+    assert np.abs(tp_r["resource_constraint_error"]).max() < 1e-4
+    assert tp_r["F"][0] == 0.0
+    assert np.isclose(tp_r["F"][-1], ss_r["F"], rtol=1e-3)
