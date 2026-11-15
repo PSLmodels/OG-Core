@@ -40,6 +40,8 @@
     K^d_t + D^d_t = B_t \quad \forall t
   ```
 
+  When the funded defined contribution pillar is on (see {ref}`SecGovPensionsFDC`), the assets held for the individual accounts, $F_t$, are invested in the same portfolio as household savings and add to domestic savings, so the right-hand side of {eq}`EqMarkClr_DomCapCnstr` is $B_t + F_t$ and domestic capital $K^d_t$ includes the fund's holdings.
+
 
   (SecMarkClrMktClr_G)=
   ### Government bond market clearing

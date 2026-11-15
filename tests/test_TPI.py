@@ -1627,10 +1627,11 @@ def test_run_TPI_pension_regime(
     assert (born_later, young, old) == (raised, raised, base)
 
 
-def _fdc_tpi_run(tmpdir, tau, baseline_dir=None, enforce=True):
+def _fdc_tpi_run(tmpdir, tau, baseline_dir=None, enforce=True, updates=None):
     SS.ENFORCE_SOLUTION_CHECKS = True
     TPI.ENFORCE_SOLUTION_CHECKS = enforce
-    out = os.path.join(tmpdir, f"OUT_{tau}_{baseline_dir is None}")
+    tag = "regimes" if updates else tau
+    out = os.path.join(tmpdir, f"OUT_{tag}_{baseline_dir is None}")
     p = Specifications(
         baseline=baseline_dir is None,
         num_workers=1,
@@ -1640,6 +1641,8 @@ def _fdc_tpi_run(tmpdir, tau, baseline_dir=None, enforce=True):
     with open(os.path.join(CUR_PATH, "testing_params.json")) as f:
         p.update_specifications(json.load(f))
     p.update_specifications({"fdc_tau": tau})
+    if updates:
+        p.update_specifications(updates)
     utils.mkdirs(os.path.join(out, "SS"))
     ss = SS.run_SS(p, client=None)
     with open(os.path.join(out, "SS", "SS_vars.pkl"), "wb") as f:
@@ -1672,3 +1675,33 @@ def test_run_TPI_funded_defined_contribution(tmpdir):
     assert np.abs(tp_r["resource_constraint_error"]).max() < 1e-4
     assert tp_r["F"][0] == 0.0
     assert np.isclose(tp_r["F"][-1], ss_r["F"], rtol=1e-3)
+
+
+@pytest.mark.local
+def test_run_TPI_fdc_introduced_for_younger_cohorts(tmpdir):
+    """
+    A reform that introduces funded defined contribution accounts only
+    for cohorts aged 40 or younger in the start year (through
+    pension_regimes): older cohorts never contribute, younger working
+    cohorts contribute from the first period, the fund starts empty,
+    and the path solves and converges to the reform steady state.
+    """
+    _, _, no_fdc_out = _fdc_tpi_run(tmpdir, 0.0, enforce=False)
+    p0 = Specifications()
+    regimes = [
+        {"year": p0.start_year, "max_age_at_start": 40, "fdc_tau": 0.05}
+    ]
+    ss, tp, _ = _fdc_tpi_run(
+        tmpdir,
+        0.0,
+        baseline_dir=no_fdc_out,
+        updates={"pension_regimes": regimes},
+    )
+    assert np.abs(tp["resource_constraint_error"]).max() < 1e-4
+    assert tp["F"][0] == 0.0
+    assert np.isclose(tp["F"][-1], ss["F"], rtol=1e-3)
+    # with S = 40 model periods, a period is two years and age 40 is
+    # model age 10
+    contrib0 = tp["fdc_contrib"][0]
+    assert np.all(contrib0[11:] == 0.0)
+    assert np.all(contrib0[:11] > 0.0)
