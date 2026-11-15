@@ -12,6 +12,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Adds `pensions.pension_earn_caps`, which returns the calendar paths of the two cutoffs in model units of labor income. `pension_amount` passes them to `DB_amount` and `NDC_amount` as `earn_hi` when `pension_earn_cap` is `True`, and `DB_NDC_hybrid_amount` uses the same function.
 - Adds tests that the capped `Defined Benefits` and `Notional Defined Contribution` benefits from `pension_amount` equal the hybrid benefit with one band of zero width (in the steady state and on the full time path), that the cap binds, and that the default leaves both systems unchanged.
 - Documents the cap in the defined benefit and notional defined contribution sections of the pensions chapter.
+- Adds an `'exogenous'` choice to `ndc_growth_rate` and `dir_growth_rate`, with new parameters `ndc_growth_rate_exog_annual` and `dir_growth_rate_exog_annual` (default `0.02`). Each is a path of real annual rates entered by year (later years keep the last value entered), converted to model-period rates in `Specifications` as `ndc_growth_rate_exog` and `dir_growth_rate_exog` (length T + S). The rate is not tied to any variable in the model; the steady state uses the last value of the path, and `ndc_growth_avg_years` averages an exogenous credited rate as it does the others.
+- Adds a test that the exogenous credited and discount rates from `ndc_rates_path`, `g_ndc`, and `g_dir` equal the converted user paths on the time path and in the steady state.
 
 ### Updated
 - The notes of `factor1_db_ndc_hybrid`, `factor2_db_ndc_hybrid`, and `avg_labor_inc_t1_model_units` describe their use under the pure systems with `pension_earn_cap`.

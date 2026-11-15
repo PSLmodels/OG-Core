@@ -443,6 +443,23 @@ class Specifications(paramtools.Parameters):
             self.S,
         )
 
+        # exogenous NDC credited and discount rate paths (used when
+        # ndc_growth_rate or dir_growth_rate is 'exogenous'), converted
+        # to model-period rates and extended to length T + S
+        for name in ("ndc_growth_rate_exog", "dir_growth_rate_exog"):
+            annual = extrapolate_array(
+                getattr(self, name + "_annual"),
+                dims=(self.T + self.S,),
+                item=name + "_annual",
+            )
+            setattr(
+                self,
+                name,
+                rate_conversion(
+                    annual, self.starting_age, self.ending_age, self.S
+                ),
+            )
+
         # expand the cohort-specific pension parameters (retirement age
         # and the DB and NDC system parameters) to arrays by period and
         # age, and set the period of retirement, retire

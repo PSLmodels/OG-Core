@@ -1481,7 +1481,14 @@ def delta_point(r, Y, g_n, g_y, p):
     return delta_point
 
 
-NDC_GROWTH_CHOICES = ("r", "Curr GDP", "LR GDP", "wage bill", "avg wage")
+NDC_GROWTH_CHOICES = (
+    "r",
+    "Curr GDP",
+    "LR GDP",
+    "wage bill",
+    "avg wage",
+    "exogenous",
+)
 
 
 class NDCRates(NamedTuple):
@@ -1503,19 +1510,22 @@ class NDCRates(NamedTuple):
     discount: np.ndarray
 
 
-def _ss_growth_rate(choice, r, p):
+def _ss_growth_rate(choice, r, p, exog=None):
     """
     Steady-state value of an NDC growth rate.
 
     Stationarized aggregates are constant in the steady state, so GDP
     and the wage bill grow at the rate of productivity and population
     growth, exp(g_y)(1 + g_n) - 1, and the average wage at the rate of
-    productivity growth, exp(g_y) - 1.
+    productivity growth, exp(g_y) - 1. An 'exogenous' rate takes the
+    last value of its path.
 
     Args:
         choice (str): one of ``NDC_GROWTH_CHOICES``
         r (array_like): interest rate; its last element is used
         p (OG-Core Specifications object): model parameters
+        exog (array_like or None): model-period rate path used when
+            choice is 'exogenous'
 
     Returns:
         rate (scalar): steady-state growth rate per model period
@@ -1529,12 +1539,34 @@ def _ss_growth_rate(choice, r, p):
         return np.exp(g_y) * (1.0 + g_n_ss) - 1.0
     elif choice == "avg wage":
         return np.exp(g_y) - 1.0
+    elif choice == "exogenous":
+        return float(_exog_path(exog).flat[-1])
     raise ValueError(
         f"NDC growth rate must be one of {NDC_GROWTH_CHOICES}, got {choice!r}"
     )
 
 
-def growth_rate_path(choice, r, Y, w, L, p, method):
+def _exog_path(exog):
+    """
+    Check and return the user-specified rate path for an 'exogenous'
+    NDC growth rate.
+
+    Args:
+        exog (array_like or None): model-period rate path
+
+    Returns:
+        exog (Numpy array): the path as a 1D float array
+
+    """
+    if exog is None:
+        raise ValueError(
+            "An 'exogenous' NDC growth rate requires a rate path "
+            "(ndc_growth_rate_exog or dir_growth_rate_exog)"
+        )
+    return np.atleast_1d(np.asarray(exog, dtype=float)).ravel()
+
+
+def growth_rate_path(choice, r, Y, w, L, p, method, exog=None):
     r"""
     Calendar path of an NDC growth rate.
 
@@ -1551,8 +1583,9 @@ def growth_rate_path(choice, r, Y, w, L, p, method):
     'wage bill'. 'avg wage' is the growth of earnings per person,
     the same expression without population growth. 'r' is the
     interest rate path and 'LR GDP' the constant steady-state growth
-    of GDP. Growth into period 0 uses the period-0 level as the level
-    of the period before.
+    of GDP. 'exogenous' is the user-specified path ``exog``, not tied
+    to any variable in the model. Growth into period 0 uses the
+    period-0 level as the level of the period before.
 
     Args:
         choice (str): one of ``NDC_GROWTH_CHOICES``
@@ -1565,13 +1598,16 @@ def growth_rate_path(choice, r, Y, w, L, p, method):
         p (OG-Core Specifications object): model parameters
         method (str): 'SS' for the steady-state value or 'TPI' for the
             time path
+        exog (array_like or None): model-period rate path used when
+            choice is 'exogenous' (``p.ndc_growth_rate_exog`` or
+            ``p.dir_growth_rate_exog``)
 
     Returns:
         rate (Numpy array): length 1 in the steady state, else T + S
 
     """
     if method == "SS" or choice == "LR GDP":
-        return np.array([_ss_growth_rate(choice, r, p)])
+        return np.array([_ss_growth_rate(choice, r, p, exog)])
     n_per = p.T + p.S
 
     def _extend(x):
@@ -1581,6 +1617,8 @@ def growth_rate_path(choice, r, Y, w, L, p, method):
 
     if choice == "r":
         return _extend(r)
+    if choice == "exogenous":
+        return _extend(_exog_path(exog))
     if choice == "Curr GDP":
         X = _extend(Y)
     elif choice in ("wage bill", "avg wage"):
@@ -1633,13 +1671,31 @@ def ndc_rates_path(r, Y, w, L, p, method):
         rates (NDCRates): credit and discount rate paths
 
     """
-    credit = growth_rate_path(p.ndc_growth_rate, r, Y, w, L, p, method)
+    credit = growth_rate_path(
+        p.ndc_growth_rate,
+        r,
+        Y,
+        w,
+        L,
+        p,
+        method,
+        getattr(p, "ndc_growth_rate_exog", None),
+    )
     years = float(getattr(p, "ndc_growth_avg_years", 1))
     window = max(1, int(np.rint(years * p.S / 80.0)))
     if window > 1 and credit.size > 1:
         padded = np.append(np.full(window - 1, credit[0]), credit)
         credit = np.convolve(padded, np.ones(window) / window, "valid")
-    discount = growth_rate_path(p.dir_growth_rate, r, Y, w, L, p, method)
+    discount = growth_rate_path(
+        p.dir_growth_rate,
+        r,
+        Y,
+        w,
+        L,
+        p,
+        method,
+        getattr(p, "dir_growth_rate_exog", None),
+    )
     return NDCRates(credit, discount)
 
 
@@ -1657,7 +1713,9 @@ def g_ndc(r, Y, p):
         g_ndc (scalar): growth rate credited to NDC balances
 
     """
-    return _ss_growth_rate(p.ndc_growth_rate, r, p)
+    return _ss_growth_rate(
+        p.ndc_growth_rate, r, p, getattr(p, "ndc_growth_rate_exog", None)
+    )
 
 
 def g_dir(r, Y, p):
@@ -1675,7 +1733,9 @@ def g_dir(r, Y, p):
         g_dir (scalar): discount rate in the conversion coefficient
 
     """
-    return _ss_growth_rate(p.dir_growth_rate, r, p)
+    return _ss_growth_rate(
+        p.dir_growth_rate, r, p, getattr(p, "dir_growth_rate_exog", None)
+    )
 
 
 def annuity_mort_rates(p):

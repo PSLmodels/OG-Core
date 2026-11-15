@@ -2675,6 +2675,46 @@ def test_growth_rate_path_units():
     assert np.allclose(path, np.exp(g_y) * (1 + g_n_prev) - 1)
 
 
+def test_ndc_rates_path_exogenous():
+    """
+    An 'exogenous' credited or discount rate is the user-specified
+    annual path (ndc_growth_rate_exog_annual, dir_growth_rate_exog_annual)
+    converted to model-period rates, with years after the last value
+    entered keeping it; it does not depend on r, Y, w, or L, and its
+    steady-state value is the last value of the path.
+    """
+    ndc_annual = [0.01, 0.02, 0.03]
+    dir_annual = [0.04, 0.035]
+    p = _ndc_params(
+        ndc_growth_rate="exogenous",
+        dir_growth_rate="exogenous",
+        ndc_growth_rate_exog_annual=ndc_annual,
+        dir_growth_rate_exog_annual=dir_annual,
+    )
+    n_per = p.T + p.S
+    per_years = (p.ending_age - p.starting_age) / p.S
+
+    def to_model(annual):
+        annual = np.append(annual, np.full(n_per - len(annual), annual[-1]))
+        return (1 + annual) ** per_years - 1
+
+    assert np.allclose(p.ndc_growth_rate_exog, to_model(ndc_annual))
+    assert np.allclose(p.dir_growth_rate_exog, to_model(dir_annual))
+    rng = np.random.default_rng(1)
+    r = 0.03 + 0.01 * rng.random(n_per)
+    Y, w, L = (1 + 0.1 * rng.random(n_per) for _ in range(3))
+    rates = pensions.ndc_rates_path(r, Y, w, L, p, "TPI")
+    assert np.allclose(rates.credit, to_model(ndc_annual))
+    assert np.allclose(rates.discount, to_model(dir_annual))
+    ss = pensions.ndc_rates_path(0.05, 1.0, 1.0, 1.0, p, "SS")
+    assert np.allclose(ss.credit, to_model(ndc_annual)[-1])
+    assert np.allclose(ss.discount, to_model(dir_annual)[-1])
+    assert np.isclose(pensions.g_ndc(0.05, None, p), ss.credit[0])
+    assert np.isclose(pensions.g_dir(0.05, None, p), ss.discount[0])
+    with pytest.raises(ValueError):
+        pensions.growth_rate_path("exogenous", r, Y, w, L, p, "TPI")
+
+
 def test_ndc_rates_path_averaging():
     """
     ndc_growth_avg_years averages the credited rate over that many
