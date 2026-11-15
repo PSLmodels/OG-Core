@@ -5,16 +5,31 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [0.24.5] - 2026-11-09
+## [0.24.6] - 2026-11-15
 
-### Adds
+### Added
 - Adds the boolean parameter `pension_earn_cap` (default `False`). When `True`, the `Defined Benefits` system counts only labor income up to `factor1_db_ndc_hybrid` times `avg_labor_inc_t1_model_units` toward the benefit, and the `Notional Defined Contribution` system credits only labor income up to `factor2_db_ndc_hybrid` times `avg_labor_inc_t1_model_units` to the notional account. These are the same cutoffs, entered and indexed over time in the same way, that bound the defined benefit and notional defined contribution bands of the `Hybrid DB-NDC` system, so an earnings cap can now be applied to either pure system without selecting the hybrid. The cap applies to the income that earns a benefit, not to the payroll tax base.
 - Adds `pensions.pension_earn_caps`, which returns the calendar paths of the two cutoffs in model units of labor income. `pension_amount` passes them to `DB_amount` and `NDC_amount` as `earn_hi` when `pension_earn_cap` is `True`, and `DB_NDC_hybrid_amount` uses the same function.
 - Adds tests that the capped `Defined Benefits` and `Notional Defined Contribution` benefits from `pension_amount` equal the hybrid benefit with one band of zero width (in the steady state and on the full time path), that the cap binds, and that the default leaves both systems unchanged.
 - Documents the cap in the defined benefit and notional defined contribution sections of the pensions chapter.
 
-### Updates
+### Updated
 - The notes of `factor1_db_ndc_hybrid`, `factor2_db_ndc_hybrid`, and `avg_labor_inc_t1_model_units` describe their use under the pure systems with `pension_earn_cap`.
+
+## [0.24.5] - 2026-11-13
+
+### Updated
+- With `TPI_outer_method = "anderson"` and an initial-wealth target (`initial_wealth_ratio`), initial household wealth is now accelerated together with the prices instead of being moved toward its target by the damped step afterwards. On its own it closed only `nu` of its gap each iteration and kept changing the problem the accelerator extrapolates, so accelerated steps were often rejected and the transition took several times as many iterations. With the prices accelerated, the reported government interest rate path `r_gov` is now the rate the solve uses rather than a damped copy of it that could lag the solution. The damped (`picard`) update is unchanged.d]
+
+### Changed
+
+- `TPI.twist_doughnut` now computes the household's net taxes once per evaluation and shares them with both first order conditions, through a new optional `net_tax` argument of `household.FOC_savings` and `household.FOC_labor`. Without it, both work as before.
+- `pensions.DB_amount` now caches each household's Defined Benefits parameters along its lifetime (retirement period, averaging window, years of contribution, replacement rate, effective labor units) instead of looking them up at every evaluation. As with `pension_periods`, the cache is reset when one of those arrays is reassigned, but not when it is edited in place. Results are unchanged.
+
+### Fixed
+
+- The sparsity pattern of the household Jacobian (`use_sparse_FOC_jac`) could miss real links between equations, which made the household solve much slower without changing the answers. Each entry is now compared with the largest entry in its own row rather than in the whole Jacobian, and patterns are kept separately for each lifetime income group. When a household solve fails with a cached pattern, the pattern is now checked again at that problem and any missing links are added, so a pattern detected for one household cannot slow down another that is linked differently.
+- The pattern cache was meant to be cleared at the start of each `run_TPI` call (#1249), but it read the run identifier from the last element of the household problem's arguments, which has been `ndc_rates` rather than the parameters object since 0.24.2. The cache therefore carried over between runs on the same workers, such as a baseline and a reform. The parameters object is now passed explicitly.
 
 ## [0.24.4] - 2026-11-07
 
@@ -883,6 +898,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Any earlier versions of OG-USA can be found in the [`OG-Core`](https://github.com/PSLmodels/OG-Core) repository [release history](https://github.com/PSLmodels/OG-Core/releases) from [v.0.6.4](https://github.com/PSLmodels/OG-Core/releases/tag/v0.6.4) (Jul. 20, 2021) or earlier.
 
 
+[0.24.6]: https://github.com/PSLmodels/OG-Core/compare/v0.24.5...v0.24.6
+[0.24.5]: https://github.com/PSLmodels/OG-Core/compare/v0.24.4...v0.24.5
 [0.24.4]: https://github.com/PSLmodels/OG-Core/compare/v0.24.3...v0.24.4
 [0.24.3]: https://github.com/PSLmodels/OG-Core/compare/v0.24.2...v0.24.3
 [0.24.2]: https://github.com/PSLmodels/OG-Core/compare/v0.24.1...v0.24.2
