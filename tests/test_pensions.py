@@ -3168,17 +3168,23 @@ def test_fdc_accrual_matches_finite_difference(fdc_specs):
 
 
 def test_fdc_earn_cap(fdc_specs):
+    """
+    With pension_earn_cap, FDC contributions are paid on labor income
+    between fdc_earn_floor_factor and the shared dc_earn_cap_factor
+    (times avg_labor_inc_t1_model_units); a factor entered as a path
+    is used as given.
+    """
     p = copy.deepcopy(fdc_specs)
     p.update_specifications(
         {
-            "fdc_earn_cap": True,
-            "fdc_earn_cap_factor": [0.5],
-            "fdc_earn_floor_factor": [0.1],
+            "pension_earn_cap": True,
+            "dc_earn_cap_factor": [0.5, 0.5],
+            "fdc_earn_floor_factor": [0.1, 0.1],
             "avg_labor_inc_t1_model_units": 1.0,
         }
     )
     lo, hi = pensions.fdc_earn_bands(p)
-    # a single value is held fixed in model units
+    assert lo.shape == hi.shape == (p.T + p.S, p.S)
     assert np.allclose(lo, 0.1) and np.allclose(hi, 0.5)
     e = np.ones(p.S)
     n = np.linspace(0.0, 1.0, p.S)
@@ -3190,15 +3196,86 @@ def test_fdc_earn_cap(fdc_specs):
     assert np.allclose(out.dcontrib_dn[:R], np.where(inside, 0.05, 0.0))
 
 
+def test_fdc_earn_cap_off(fdc_specs):
+    """
+    Without pension_earn_cap there is no upper cutoff, whatever
+    dc_earn_cap_factor is.
+    """
+    p = copy.deepcopy(fdc_specs)
+    p.update_specifications({"dc_earn_cap_factor": [0.5, 0.5]})
+    assert not p.pension_earn_cap
+    _, hi = pensions.fdc_earn_bands(p)
+    assert np.all(np.isinf(hi))
+    e = np.ones(p.S)
+    n = np.linspace(0.0, 1.0, p.S)
+    out = pensions.fdc_lifetime(1.0, e, n, 0.04, None, 0, p)
+    assert np.allclose(out.contrib[: out.R], 0.05 * n[: out.R])
+
+
+def test_fdc_earn_band_indexing_and_cohorts(fdc_specs):
+    """
+    A single value of either cutoff factor is indexed to remove trend
+    growth, like the hybrid cutoffs, and a regime may change the floor
+    for younger cohorts only; each household reads its cohort's
+    cutoffs in the period it earns the income.
+    """
+    p = copy.deepcopy(fdc_specs)
+    p.update_specifications(
+        {
+            "pension_earn_cap": True,
+            "dc_earn_cap_factor": [1.5],
+            "fdc_earn_floor_factor": [0.2],
+            "pension_regimes": [
+                {
+                    "year": p.start_year + 4,
+                    "max_age_at_start": 30,
+                    "fdc_earn_floor_factor": 0.4,
+                }
+            ],
+        }
+    )
+    index = np.exp(-p.g_y * np.arange(p.T + p.S))[:, np.newaxis]
+    avg = p.avg_labor_inc_t1_model_units
+    lo, hi = pensions.fdc_earn_bands(p)
+    assert np.allclose(hi, 1.5 * avg * index)
+    covered = np.isclose(p.fdc_earn_floor_factor, 0.4 * index)
+    assert covered.any() and (~covered).any()
+    assert np.allclose(
+        lo[~covered], 0.2 * avg * np.broadcast_to(index, lo.shape)[~covered]
+    )
+    # a cohort born on the path reads its own diagonal
+    t_birth = 10
+    ages = np.arange(p.S)
+    rows = np.clip(t_birth + ages, 0, p.T + p.S - 1)
+    e = np.ones(p.S)
+    n = np.full(p.S, 0.5)
+    out = pensions.fdc_lifetime(1.0, e, n, 0.04, t_birth, 0, p)
+    R = out.R
+    y = n[:R]
+    expected = 0.05 * (
+        np.clip(y, lo[rows, ages][:R], hi[rows, ages][:R]) - lo[rows, ages][:R]
+    )
+    assert np.allclose(out.contrib[:R], expected)
+
+
 def test_fdc_earn_cap_below_floor_raises():
-    p = Specifications()
-    with pytest.raises(ValueError, match="fdc_earn_cap_factor"):
-        p.update_specifications(
+    with pytest.raises(ValueError, match="fdc_earn_floor_factor"):
+        Specifications().update_specifications(
             {
-                "fdc_earn_cap": True,
-                "fdc_earn_cap_factor": [0.5],
+                "fdc_tau": 0.05,
+                "pension_earn_cap": True,
+                "dc_earn_cap_factor": [0.5],
                 "fdc_earn_floor_factor": [1.0],
             }
+        )
+    # no error without the FDC pillar or without the cap
+    for updates in ({"pension_earn_cap": True}, {"fdc_tau": 0.05}):
+        Specifications().update_specifications(
+            dict(
+                updates,
+                dc_earn_cap_factor=[0.5],
+                fdc_earn_floor_factor=[1.0],
+            )
         )
 
 

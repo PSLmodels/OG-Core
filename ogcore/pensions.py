@@ -2667,34 +2667,47 @@ class FDCLifetime(NamedTuple):
 
 def fdc_earn_bands(p):
     """
-    Calendar paths of the lower and upper cutoffs of the labor income
-    on which funded defined contribution (FDC) contributions are paid,
-    in model units of labor income.
+    Lower and upper cutoffs, by model period and age, of the labor
+    income on which funded defined contribution (FDC) contributions
+    are paid, in model units of labor income.
 
     The lower cutoff is ``fdc_earn_floor_factor`` times
-    ``avg_labor_inc_t1_model_units``. The upper cutoff is
-    ``fdc_earn_cap_factor`` times ``avg_labor_inc_t1_model_units``
-    when ``fdc_earn_cap`` is True, and infinite otherwise.
+    ``avg_labor_inc_t1_model_units``. The upper cutoff is the cap
+    shared with the other defined contribution systems,
+    ``dc_earn_cap_factor`` times ``avg_labor_inc_t1_model_units``,
+    when ``pension_earn_cap`` is True, and infinite otherwise. The
+    cutoff at period t and age s is the one that applies to the cohort
+    of that household; it applies to the labor income the household
+    earns in that period.
 
     Args:
         p (OG-Core Specifications object): model parameters
 
     Returns:
-        lo, hi (Numpy arrays): paths by model period of the cutoffs
+        lo, hi (Numpy arrays): the cutoffs as 2-D arrays by period and
+            age ((T + S) x S once ``Specifications`` builds them; a
+            factor set by hand as a single value or a path by period
+            gives one column, applied at every age)
     """
     avg_inc = float(p.avg_labor_inc_t1_model_units)
-    floor = np.atleast_1d(
-        np.asarray(getattr(p, "fdc_earn_floor_factor", 0.0), dtype=float)
-    ).ravel()
-    lo = np.ascontiguousarray(floor * avg_inc)
-    if getattr(p, "fdc_earn_cap", False):
-        cap = np.atleast_1d(
-            np.asarray(p.fdc_earn_cap_factor, dtype=float)
-        ).ravel()
-        hi = np.ascontiguousarray(cap * avg_inc)
+    lo = _period_age(getattr(p, "fdc_earn_floor_factor", 0.0)) * avg_inc
+    if getattr(p, "pension_earn_cap", False):
+        hi = _period_age(p.dc_earn_cap_factor) * avg_inc
     else:
-        hi = np.full(lo.shape, np.inf)
-    return lo, hi
+        hi = np.full((1, 1), np.inf)
+    return np.ascontiguousarray(lo), np.ascontiguousarray(hi)
+
+
+def _cohort_diag(arr, t_birth, S):
+    """
+    Value of a 2-D array by period and age at each age of a household
+    born in period t_birth, read down the cohort's diagonal (the last
+    row in the steady state); an array with a single column applies at
+    every age.
+    """
+    rows = _cohort_rows(t_birth, arr.shape[0], S)
+    cols = np.minimum(np.arange(S), arr.shape[1] - 1)
+    return np.ascontiguousarray(arr[rows, cols], dtype=float)
 
 
 def fdc_mort_rates(p, j):
@@ -2884,8 +2897,8 @@ def fdc_lifetime(w, e, n, r_p, t_birth, j, p, a0=0, A0=0.0):
 
     The contribution rate ``fdc_tau`` and the retirement age are the
     household's own cohort values (from ``pension_regimes``), the
-    earnings band cutoffs are those in effect in the period the income
-    is earned, and the annuity is priced on the mortality of income
+    earnings band cutoffs are those the cohort faces in the period the
+    income is earned, and the annuity is priced on the mortality of income
     group j along the cohort's life and on the r_p path the household
     foresees.
 
@@ -2920,8 +2933,8 @@ def fdc_lifetime(w, e, n, r_p, t_birth, j, p, a0=0, A0=0.0):
     w_age = _calendar_by_age(w, t_birth, S)
     r_age = _calendar_by_age(r_p, t_birth, S)
     lo, hi = fdc_earn_bands(p)
-    lo_age = _calendar_by_age(lo, t_birth, S)
-    hi_age = _calendar_by_age(hi, t_birth, S)
+    lo_age = _cohort_diag(lo, t_birth, S)
+    hi_age = _cohort_diag(hi, t_birth, S)
     ages = np.arange(S)
     tau_arr = cohort_array("fdc_tau", p)
     rows = _cohort_rows(t_birth, tau_arr.shape[0], S)
