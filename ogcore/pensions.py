@@ -81,7 +81,7 @@ def _path_from(path, t):
 def pension_earn_caps(p):
     """
     Calendar paths of the two earnings cutoffs set by
-    ``factor1_db_ndc_hybrid``, ``factor2_db_ndc_hybrid``, and
+    ``db_earn_cap_factor``, ``dc_earn_cap_factor``, and
     ``avg_labor_inc_t1_model_units``, in model units of labor income.
 
     The hybrid DB-NDC system pays a defined benefit on labor income up
@@ -98,16 +98,16 @@ def pension_earn_caps(p):
 
     Returns:
         cut1, cut2 (Numpy arrays): paths by model period of the
-            cutoffs, ``factor1_db_ndc_hybrid`` and
-            ``factor2_db_ndc_hybrid`` in each period times
+            cutoffs, ``db_earn_cap_factor`` and
+            ``dc_earn_cap_factor`` in each period times
             ``avg_labor_inc_t1_model_units``; a factor given as a
             single value gives a path of length one
     """
     factor1 = np.atleast_1d(
-        np.asarray(p.factor1_db_ndc_hybrid, dtype=float)
+        np.asarray(p.db_earn_cap_factor, dtype=float)
     ).ravel()
     factor2 = np.atleast_1d(
-        np.asarray(p.factor2_db_ndc_hybrid, dtype=float)
+        np.asarray(p.dc_earn_cap_factor, dtype=float)
     ).ravel()
     avg_inc = float(p.avg_labor_inc_t1_model_units)
     return factor1 * avg_inc, factor2 * avg_inc
@@ -1087,8 +1087,8 @@ def DB_NDC_hybrid_amount(w, e, n, r, ndc_rates, t, j, method, p):
 
     Labor income $w_t e_{j,s,t} n_{j,s,t}$ is split into two bands at
     the cutoffs $f_{1,t} \bar{y}$ and $f_{2,t} \bar{y}$, where
-    $f_{1,t}$ and $f_{2,t}$ are ``factor1_db_ndc_hybrid`` and
-    ``factor2_db_ndc_hybrid`` in period t and $\bar{y}$ is
+    $f_{1,t}$ and $f_{2,t}$ are ``db_earn_cap_factor`` and
+    ``dc_earn_cap_factor`` in period t and $\bar{y}$ is
     ``avg_labor_inc_t1_model_units``, the average labor income in the
     first model period in model units, taken from outside the model.
     The cutoffs therefore do not depend on any endogenous variable.
@@ -1132,16 +1132,16 @@ def DB_NDC_hybrid_amount(w, e, n, r, ndc_rates, t, j, method, p):
         pension (Numpy array): pension amount for each household
 
     Raises:
-        ValueError: if ``factor2_db_ndc_hybrid`` is less than
-            ``factor1_db_ndc_hybrid`` in any period
+        ValueError: if ``dc_earn_cap_factor`` is less than
+            ``db_earn_cap_factor`` in any period
     """
     # paths by model period (length T + S once Specifications extends
     # them); a single value is also accepted
     factor1 = np.atleast_1d(
-        np.asarray(p.factor1_db_ndc_hybrid, dtype=float)
+        np.asarray(p.db_earn_cap_factor, dtype=float)
     ).ravel()
     factor2 = np.atleast_1d(
-        np.asarray(p.factor2_db_ndc_hybrid, dtype=float)
+        np.asarray(p.dc_earn_cap_factor, dtype=float)
     ).ravel()
     n_per = max(factor1.size, factor2.size)
     f1_full = factor1[np.minimum(np.arange(n_per), factor1.size - 1)]
@@ -1149,9 +1149,9 @@ def DB_NDC_hybrid_amount(w, e, n, r, ndc_rates, t, j, method, p):
     if np.any(f2_full < f1_full):
         bad = int(np.argmax(f2_full < f1_full))
         raise ValueError(
-            "factor2_db_ndc_hybrid must be at least factor1_db_ndc_hybrid "
-            f"in every period: in period {bad}, factor1_db_ndc_hybrid="
-            f"{f1_full[bad]} and factor2_db_ndc_hybrid={f2_full[bad]}"
+            "dc_earn_cap_factor must be at least db_earn_cap_factor "
+            f"in every period: in period {bad}, db_earn_cap_factor="
+            f"{f1_full[bad]} and dc_earn_cap_factor={f2_full[bad]}"
         )
     # cutoffs in model units of labor income
     cut1, cut2 = pension_earn_caps(p)

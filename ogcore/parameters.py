@@ -1,4 +1,5 @@
 import os
+import warnings
 import numpy as np
 import scipy.interpolate as si
 import paramtools
@@ -47,6 +48,50 @@ def _is_number(value):
 
 # The keys of a pension regime that describe when and to whom it applies
 PENSION_REGIME_KEYS = ("year", "max_age_at_start")
+
+# Renamed parameters: old name -> new name. The old names are still
+# accepted by Specifications.update_specifications, with a
+# DeprecationWarning, and will be removed in a future release.
+RENAMED_PARAMS = {
+    "factor1_db_ndc_hybrid": "db_earn_cap_factor",
+    "factor2_db_ndc_hybrid": "dc_earn_cap_factor",
+}
+
+
+def _rename_deprecated_params(revision):
+    """
+    Replace deprecated parameter names in a revision with their new
+    names (``RENAMED_PARAMS``), warning for each one.
+
+    Args:
+        revision (dict): `PARAM: VALUE` pairs
+
+    Returns:
+        revision (dict): the revision with new parameter names; the
+            caller's dict is left unchanged
+
+    Raises:
+        ValueError: if a revision sets both a deprecated name and its
+            new name
+    """
+    old_names = [name for name in RENAMED_PARAMS if name in revision]
+    if not old_names:
+        return revision
+    revision = dict(revision)
+    for old in old_names:
+        new = RENAMED_PARAMS[old]
+        if new in revision:
+            raise ValueError(
+                f"Both {old} and its new name {new} are set; set only {new}"
+            )
+        warnings.warn(
+            f"{old} has been renamed {new}; {old} will be removed in a "
+            "future release",
+            DeprecationWarning,
+            stacklevel=3,
+        )
+        revision[new] = revision.pop(old)
+    return revision
 
 
 class Specifications(paramtools.Parameters):
@@ -274,12 +319,13 @@ class Specifications(paramtools.Parameters):
                 param_in, dims=(self.T + self.S,), item=item
             )
             setattr(self, item, param_out)
-        # The hybrid DB-NDC cutoff factors are paths of length T + S. A
+        # The pension earnings cap factors (the hybrid DB-NDC cutoffs)
+        # are paths of length T + S. A
         # single value is the initial factor of a path indexed to remove
         # trend growth, init_val / e^{g_y t}, so the cutoffs stay fixed
         # in real terms; a list of two or more values is used as given,
         # with every period after the last value entered keeping it.
-        for name in ("factor1_db_ndc_hybrid", "factor2_db_ndc_hybrid"):
+        for name in ("db_earn_cap_factor", "dc_earn_cap_factor"):
             value = np.atleast_1d(
                 np.asarray(getattr(self, name), dtype=float)
             ).ravel()
@@ -300,19 +346,17 @@ class Specifications(paramtools.Parameters):
         # paramtools validator, which cannot compare lists of different
         # lengths
         if self.pension_system == "Hybrid DB-NDC" and np.any(
-            self.factor2_db_ndc_hybrid < self.factor1_db_ndc_hybrid
+            self.dc_earn_cap_factor < self.db_earn_cap_factor
         ):
             bad = int(
-                np.argmax(
-                    self.factor2_db_ndc_hybrid < self.factor1_db_ndc_hybrid
-                )
+                np.argmax(self.dc_earn_cap_factor < self.db_earn_cap_factor)
             )
             raise ValueError(
-                "factor2_db_ndc_hybrid must be at least "
-                "factor1_db_ndc_hybrid in every period: in model period "
-                f"{bad}, factor1_db_ndc_hybrid="
-                f"{self.factor1_db_ndc_hybrid[bad]} and "
-                f"factor2_db_ndc_hybrid={self.factor2_db_ndc_hybrid[bad]}"
+                "dc_earn_cap_factor must be at least "
+                "db_earn_cap_factor in every period: in model period "
+                f"{bad}, db_earn_cap_factor="
+                f"{self.db_earn_cap_factor[bad]} and "
+                f"dc_earn_cap_factor={self.dc_earn_cap_factor[bad]}"
             )
         # Deal with parameters that vary across industry and over time
         tp_param_list2 = [
@@ -940,6 +984,7 @@ class Specifications(paramtools.Parameters):
         if isinstance(revision, str):
             # a JSON string or a path to a JSON file
             revision = self.read_params(revision)
+        revision = _rename_deprecated_params(revision)
         # Pension regimes are a list of dicts, which paramtools cannot
         # validate, so set them aside and check them in
         # _build_cohort_pension_arrays (called by compute_default_params)

@@ -1207,8 +1207,8 @@ def test_get_PS(args, PS_expected):
                 "tau_p": 0.1,
                 "ndc_growth_rate": "LR GDP",
                 "dir_growth_rate": "r",
-                "factor1_db_ndc_hybrid": [0.5],
-                "factor2_db_ndc_hybrid": [1.5],
+                "db_earn_cap_factor": [0.5],
+                "dc_earn_cap_factor": [1.5],
                 "avg_labor_inc_t1_model_units": 0.8,
             },
         ),
@@ -1263,8 +1263,8 @@ def test_pension_amount_with_real_specifications(system, updates):
                 "tau_p": 0.1,
                 "ndc_growth_rate": "LR GDP",
                 "dir_growth_rate": "r",
-                "factor1_db_ndc_hybrid": [0.5],
-                "factor2_db_ndc_hybrid": [1.5],
+                "db_earn_cap_factor": [0.5],
+                "dc_earn_cap_factor": [1.5],
                 "avg_labor_inc_t1_model_units": 0.8,
             },
         ),
@@ -1340,8 +1340,8 @@ def _hybrid_params(
         dict(
             HYBRID_UPDATES,
             pension_system=system,
-            factor1_db_ndc_hybrid=_path(factor1),
-            factor2_db_ndc_hybrid=_path(factor2),
+            db_earn_cap_factor=_path(factor1),
+            dc_earn_cap_factor=_path(factor2),
             avg_labor_inc_t1_model_units=avg_inc,
             **updates,
         )
@@ -1521,29 +1521,55 @@ def test_DB_NDC_hybrid_amount_cutoffs_in_levels(method):
 
 def test_hybrid_factors_scalar_is_indexed():
     """
-    A single value entered for a hybrid factor (as in the defaults) is
+    A single value entered for an earnings cap factor (as in the defaults) is
     the initial value of a path with trend growth removed,
     init_val / e^{g_y t}; two or more values are used as given.
     """
     p = Specifications()
     t = np.arange(p.T + p.S)
-    assert np.allclose(p.factor1_db_ndc_hybrid, 1.0 * np.exp(-p.g_y * t))
-    assert np.allclose(p.factor2_db_ndc_hybrid, 2.0 * np.exp(-p.g_y * t))
+    assert np.allclose(p.db_earn_cap_factor, 1.0 * np.exp(-p.g_y * t))
+    assert np.allclose(p.dc_earn_cap_factor, 2.0 * np.exp(-p.g_y * t))
     assert p.avg_labor_inc_t1_model_units == 1.0
     p.update_specifications(
         {
-            "factor1_db_ndc_hybrid": [0.5],
-            "factor2_db_ndc_hybrid": [1.5, 1.5],
+            "db_earn_cap_factor": [0.5],
+            "dc_earn_cap_factor": [1.5, 1.5],
         }
     )
-    assert np.allclose(p.factor1_db_ndc_hybrid, 0.5 * np.exp(-p.g_y * t))
-    assert np.allclose(p.factor2_db_ndc_hybrid, 1.5)
+    assert np.allclose(p.db_earn_cap_factor, 0.5 * np.exp(-p.g_y * t))
+    assert np.allclose(p.dc_earn_cap_factor, 1.5)
+
+
+def test_earn_cap_factors_deprecated_names():
+    """
+    The old names factor1_db_ndc_hybrid and factor2_db_ndc_hybrid set
+    db_earn_cap_factor and dc_earn_cap_factor with a DeprecationWarning,
+    and setting an old name together with its new name raises.
+    """
+    revision = {
+        "factor1_db_ndc_hybrid": [0.5, 0.5],
+        "factor2_db_ndc_hybrid": [1.5, 1.5],
+    }
+    p = Specifications()
+    with pytest.warns(DeprecationWarning, match="has been renamed"):
+        p.update_specifications(revision)
+    assert list(revision) == [
+        "factor1_db_ndc_hybrid",
+        "factor2_db_ndc_hybrid",
+    ]
+    assert np.allclose(p.db_earn_cap_factor, 0.5)
+    assert np.allclose(p.dc_earn_cap_factor, 1.5)
+    assert not hasattr(p, "factor1_db_ndc_hybrid")
+    with pytest.raises(ValueError):
+        Specifications().update_specifications(
+            {"factor1_db_ndc_hybrid": [0.5], "db_earn_cap_factor": [0.5]}
+        )
 
 
 def test_DB_NDC_hybrid_amount_bad_factors():
-    """factor2_db_ndc_hybrid below factor1_db_ndc_hybrid raises."""
+    """dc_earn_cap_factor below db_earn_cap_factor raises."""
     p = _hybrid_params(1.0, 2.0)
-    p.factor1_db_ndc_hybrid = 3.0
+    p.db_earn_cap_factor = 3.0
     with pytest.raises(ValueError):
         pensions.DB_NDC_hybrid_amount(
             1.2,
@@ -1734,11 +1760,11 @@ def test_hybrid_factors_time_varying_parameters():
     different lengths, and factor2 below factor1 in any period raises.
     """
     p = _hybrid_params([0.5, 0.6, 0.7], [1.5, 1.6])
-    assert p.factor1_db_ndc_hybrid.shape == (p.T + p.S,)
-    assert p.factor2_db_ndc_hybrid.shape == (p.T + p.S,)
-    assert np.allclose(p.factor1_db_ndc_hybrid[:4], [0.5, 0.6, 0.7, 0.7])
-    assert np.allclose(p.factor2_db_ndc_hybrid[:4], [1.5, 1.6, 1.6, 1.6])
-    assert np.allclose(p.factor1_db_ndc_hybrid[-1], 0.7)
+    assert p.db_earn_cap_factor.shape == (p.T + p.S,)
+    assert p.dc_earn_cap_factor.shape == (p.T + p.S,)
+    assert np.allclose(p.db_earn_cap_factor[:4], [0.5, 0.6, 0.7, 0.7])
+    assert np.allclose(p.dc_earn_cap_factor[:4], [1.5, 1.6, 1.6, 1.6])
+    assert np.allclose(p.db_earn_cap_factor[-1], 0.7)
     with pytest.raises(ValueError, match="in every period"):
         _hybrid_params([0.5, 0.6, 2.0], [1.5, 1.6])
 
@@ -1769,8 +1795,8 @@ def test_DB_NDC_hybrid_amount_time_varying_cohort():
         w, e, n, r, ndc_rates, t, j, "TPI", p
     )
     # the household is age 0 in period t, so age s is lived in t + s
-    f1 = p.factor1_db_ndc_hybrid[t : t + p.S]
-    f2 = p.factor2_db_ndc_hybrid[t : t + p.S]
+    f1 = p.db_earn_cap_factor[t : t + p.S]
+    f2 = p.dc_earn_cap_factor[t : t + p.S]
     cut1 = f1 * p.avg_labor_inc_t1_model_units
     cut2 = f2 * p.avg_labor_inc_t1_model_units
     inc = w * e * n
@@ -1836,8 +1862,8 @@ def test_SS_solve_hybrid_db_ndc(tmp_path):
         dict(
             HYBRID_UPDATES,
             pension_system="Hybrid DB-NDC",
-            factor1_db_ndc_hybrid=[0.5],
-            factor2_db_ndc_hybrid=[1.5],
+            db_earn_cap_factor=[0.5],
+            dc_earn_cap_factor=[1.5],
             avg_labor_inc_t1_model_units=0.8,
         )
     )
