@@ -5,14 +5,33 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+## [0.24.6] - 2026-11-15
+
+### Added
+- Adds the boolean parameter `pension_earn_cap` (default `False`). When `True`, the `Defined Benefits` system counts only labor income up to `db_earn_cap_factor` times `avg_labor_inc_t1_model_units` toward the benefit, and the `Notional Defined Contribution` system credits only labor income up to `dc_earn_cap_factor` times `avg_labor_inc_t1_model_units` to the notional account. These are the same cutoffs, entered and indexed over time in the same way, that bound the defined benefit and notional defined contribution bands of the `Hybrid DB-NDC` system, so an earnings cap can now be applied to either pure system without selecting the hybrid. The cap applies to the income that earns a benefit, not to the payroll tax base.
+- Adds `pensions.pension_earn_caps`, which returns the calendar paths of the two cutoffs in model units of labor income. `pension_amount` passes them to `DB_amount` and `NDC_amount` as `earn_hi` when `pension_earn_cap` is `True`, and `DB_NDC_hybrid_amount` uses the same function.
+- Adds tests that the capped `Defined Benefits` and `Notional Defined Contribution` benefits from `pension_amount` equal the hybrid benefit with one band of zero width (in the steady state and on the full time path), that the cap binds, and that the default leaves both systems unchanged.
+- Documents the cap in the defined benefit and notional defined contribution sections of the pensions chapter.
+- Adds an `'exogenous'` choice to `ndc_growth_rate` and `dir_growth_rate`, with new parameters `ndc_growth_rate_exog_annual` and `dir_growth_rate_exog_annual` (default `0.02`). Each is a path of real annual rates entered by year (later years keep the last value entered), converted to model-period rates in `Specifications` as `ndc_growth_rate_exog` and `dir_growth_rate_exog` (length T + S). The rate is not tied to any variable in the model; the steady state uses the last value of the path, and `ndc_growth_avg_years` averages an exogenous credited rate as it does the others.
+- Adds a test that the exogenous credited and discount rates from `ndc_rates_path`, `g_ndc`, and `g_dir` equal the converted user paths on the time path and in the steady state.
+- `db_earn_cap_factor` and `dc_earn_cap_factor` can be set in `pension_regimes`, so a change in an earnings cap can be phased in by birth cohort (for example, exempting workers above `max_age_at_start`). Both are now cohort pension parameters, expanded to (T + S) x S arrays by period and age like `tau_p`. The base value keeps its form (a single value is indexed to remove trend growth, a list is a path by year), and a regime sets a single number that is indexed in the same way as a single base value. The cap that applies to labor income is the one the earner's cohort faces in the period it is earned: `pensions.earnings_band_at` takes the age as well as the period, `pension_earn_caps` returns arrays by period and age, and the hybrid check that `dc_earn_cap_factor` is at least `db_earn_cap_factor` runs cell by cell after the regimes are applied.
+- Adds tests that the regime-built cap arrays are indexed and grandfathered correctly, and that with a cohort-specific cap the full time-path benefits agree with the cross sections and with a covered cohort's lifetime, change the benefits of covered cohorts, and leave older cohorts' benefits unchanged.
+
+### Updated
+- Renames `factor1_db_ndc_hybrid` to `db_earn_cap_factor` and `factor2_db_ndc_hybrid` to `dc_earn_cap_factor`, since they now cap benefit-earning income under the pure `Defined Benefits` and `Notional Defined Contribution` systems as well as bounding the bands of the `Hybrid DB-NDC` system (`dc` rather than `ndc` so the same cap can serve a future funded defined contribution system). `update_specifications` still accepts the old names, mapping them to the new ones with a `DeprecationWarning`, and raises an error if a revision sets both an old name and its new name; the old names will be removed in a future release. Their titles and descriptions now describe both uses.
+- The notes of `db_earn_cap_factor`, `dc_earn_cap_factor`, and `avg_labor_inc_t1_model_units` describe their use under the pure systems with `pension_earn_cap`.
+
+## [0.24.5] - 2026-11-13
+
+### Updated
+- With `TPI_outer_method = "anderson"` and an initial-wealth target (`initial_wealth_ratio`), initial household wealth is now accelerated together with the prices instead of being moved toward its target by the damped step afterwards. On its own it closed only `nu` of its gap each iteration and kept changing the problem the accelerator extrapolates, so accelerated steps were often rejected and the transition took several times as many iterations. With the prices accelerated, the reported government interest rate path `r_gov` is now the rate the solve uses rather than a damped copy of it that could lag the solution. The damped (`picard`) update is unchanged.d]
 
 ### Changed
 
 - `TPI.twist_doughnut` now computes the household's net taxes once per evaluation and shares them with both first order conditions, through a new optional `net_tax` argument of `household.FOC_savings` and `household.FOC_labor`. Without it, both work as before.
 - `pensions.DB_amount` now caches each household's Defined Benefits parameters along its lifetime (retirement period, averaging window, years of contribution, replacement rate, effective labor units) instead of looking them up at every evaluation. As with `pension_periods`, the cache is reset when one of those arrays is reassigned, but not when it is edited in place. Results are unchanged.
 
-### Bug Fixes
+### Fixed
 
 - The sparsity pattern of the household Jacobian (`use_sparse_FOC_jac`) could miss real links between equations, which made the household solve much slower without changing the answers. Each entry is now compared with the largest entry in its own row rather than in the whole Jacobian, and patterns are kept separately for each lifetime income group. When a household solve fails with a cached pattern, the pattern is now checked again at that problem and any missing links are added, so a pattern detected for one household cannot slow down another that is linked differently.
 - The pattern cache was meant to be cleared at the start of each `run_TPI` call (#1249), but it read the run identifier from the last element of the household problem's arguments, which has been `ndc_rates` rather than the parameters object since 0.24.2. The cache therefore carried over between runs on the same workers, such as a baseline and a reform. The parameters object is now passed explicitly.
@@ -892,6 +911,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Any earlier versions of OG-USA can be found in the [`OG-Core`](https://github.com/PSLmodels/OG-Core) repository [release history](https://github.com/PSLmodels/OG-Core/releases) from [v.0.6.4](https://github.com/PSLmodels/OG-Core/releases/tag/v0.6.4) (Jul. 20, 2021) or earlier.
 
 
+[0.24.6]: https://github.com/PSLmodels/OG-Core/compare/v0.24.5...v0.24.6
+[0.24.5]: https://github.com/PSLmodels/OG-Core/compare/v0.24.4...v0.24.5
 [0.24.4]: https://github.com/PSLmodels/OG-Core/compare/v0.24.3...v0.24.4
 [0.24.3]: https://github.com/PSLmodels/OG-Core/compare/v0.24.2...v0.24.3
 [0.24.2]: https://github.com/PSLmodels/OG-Core/compare/v0.24.1...v0.24.2

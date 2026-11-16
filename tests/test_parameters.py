@@ -625,6 +625,73 @@ def test_pension_regimes_expand_db_and_ndc_parameters():
     assert np.all(p.tau_p == 0.1) and np.all(p.alpha_db == 0.02)
 
 
+def test_pension_regime_earn_cap_factors():
+    """
+    db_earn_cap_factor and dc_earn_cap_factor are expanded to arrays by
+    period and age. The base value keeps its indexing (a single value
+    is value / e^{g_y t}, a list is used as given), a regime's single
+    value is indexed like a single base value, and a grandfathered
+    regime changes the cap only for the cohorts it covers. Under the
+    hybrid system a regime that puts the DB cap above the DC cap
+    raises.
+    """
+    p = Specifications()
+    p.update_specifications(
+        {
+            "dc_earn_cap_factor": [2.0, 2.0],
+            "pension_regimes": [
+                {
+                    "year": 2030,
+                    "max_age_at_start": 54,
+                    "db_earn_cap_factor": 0.5,
+                    "dc_earn_cap_factor": 1.5,
+                }
+            ],
+        }
+    )
+    n_rows = p.T + p.S
+    t_idx = np.arange(n_rows)[:, np.newaxis] * np.ones((1, p.S))
+    index = np.exp(-p.g_y * t_idx)
+    for name in ("db_earn_cap_factor", "dc_earn_cap_factor"):
+        assert getattr(p, name).shape == (n_rows, p.S), name
+    covered = np.isclose(p.db_earn_cap_factor, 0.5 * index)
+    assert not covered[: 2030 - p.start_year].any()
+    assert covered[-1].all()
+    # the base: a single value indexed, a list held as entered
+    assert np.allclose(p.db_earn_cap_factor[~covered], index[~covered])
+    assert np.allclose(p.dc_earn_cap_factor[~covered], 2.0)
+    # the regime's value is indexed, for the same cells
+    assert np.allclose(p.dc_earn_cap_factor[covered], 1.5 * index[covered])
+    # grandfathering: aged 40 in 2030 switches that year, aged 60 never
+    E = p.starting_age
+    forty = np.diagonal(covered, offset=35 - E)
+    assert not forty[:5].any() and forty[5:].all()
+    assert not np.diagonal(covered, offset=55 - E).any()
+    # a regime value must be a single number
+    with pytest.raises(ValueError, match="single number"):
+        Specifications().update_specifications(
+            {
+                "pension_regimes": [
+                    {"year": 2030, "db_earn_cap_factor": [0.5, 0.6]}
+                ]
+            }
+        )
+    # under the hybrid, a DB cap above the DC cap in any cell raises
+    with pytest.raises(ValueError, match="at every age"):
+        Specifications().update_specifications(
+            {
+                "pension_system": "Hybrid DB-NDC",
+                "pension_regimes": [
+                    {
+                        "year": 2030,
+                        "max_age_at_start": 54,
+                        "db_earn_cap_factor": 3.0,
+                    }
+                ],
+            }
+        )
+
+
 def test_pension_regime_alpha_db_by_group_and_year_of_payment():
     """
     alpha_db keeps its base form, a path by calendar year of payment and
