@@ -1354,35 +1354,49 @@ def _hybrid_params(
 def test_earnings_band_at():
     """
     earnings_band_at returns the part of labor income between the
-    cutoffs in effect in the period it was earned, and leaves it
-    unchanged with lo = 0 and hi = inf. Periods outside the paths read
-    their first or last element.
+    cutoffs in effect at the period and age it was earned, and leaves it
+    unchanged with lo = 0 and hi = inf. Periods outside the arrays read
+    their first or last row, and a single column applies at every age.
     """
     x = np.array([0.2, 0.7, 1.2, 3.0])
 
-    def band(x, lo, hi, period=0):
+    def band(x, lo, hi, period=0, age=0):
         return pensions.earnings_band_at(
-            x, np.atleast_1d(float(lo)), np.atleast_1d(float(hi)), period
+            x,
+            np.full((1, 1), float(lo)),
+            np.full((1, 1), float(hi)),
+            period,
+            age,
         )
 
     assert np.allclose(band(x, 0.0, np.inf), x)
     assert np.allclose(band(x, 0.0, 1.0), [0.2, 0.7, 1.0, 1.0])
     assert np.allclose(band(x, 1.0, 2.0), [0.0, 0.0, 0.2, 1.0])
     assert np.isclose(band(1.2, 1.0, 2.0), 0.2)
-    lo, hi = np.array([0.0, 1.0]), np.array([1.0, 2.0])
+    # a path by period (one column, applied at every age)
+    lo, hi = np.array([[0.0], [1.0]]), np.array([[1.0], [2.0]])
     assert np.allclose(
-        pensions.earnings_band_at(x, lo, hi, 0), [0.2, 0.7, 1.0, 1.0]
+        pensions.earnings_band_at(x, lo, hi, 0, 5), [0.2, 0.7, 1.0, 1.0]
     )
     assert np.allclose(
-        pensions.earnings_band_at(x, lo, hi, 1), [0.0, 0.0, 0.2, 1.0]
+        pensions.earnings_band_at(x, lo, hi, 1, 5), [0.0, 0.0, 0.2, 1.0]
     )
     assert np.allclose(
-        pensions.earnings_band_at(x, lo, hi, -3),
-        pensions.earnings_band_at(x, lo, hi, 0),
+        pensions.earnings_band_at(x, lo, hi, -3, 0),
+        pensions.earnings_band_at(x, lo, hi, 0, 0),
     )
     assert np.allclose(
-        pensions.earnings_band_at(x, lo, hi, 50),
-        pensions.earnings_band_at(x, lo, hi, 1),
+        pensions.earnings_band_at(x, lo, hi, 50, 0),
+        pensions.earnings_band_at(x, lo, hi, 1, 0),
+    )
+    # cutoffs by period and age: the cohort's own cell applies
+    lo = np.zeros((2, 3))
+    hi = np.array([[1.0, 1.0, 1.0], [1.0, 2.0, 1.0]])
+    assert np.allclose(
+        pensions.earnings_band_at(x, lo, hi, 1, 1), [0.2, 0.7, 1.2, 2.0]
+    )
+    assert np.allclose(
+        pensions.earnings_band_at(x, lo, hi, 1, 2), [0.2, 0.7, 1.0, 1.0]
     )
 
 
@@ -1527,8 +1541,13 @@ def test_hybrid_factors_scalar_is_indexed():
     """
     p = Specifications()
     t = np.arange(p.T + p.S)
-    assert np.allclose(p.db_earn_cap_factor, 1.0 * np.exp(-p.g_y * t))
-    assert np.allclose(p.dc_earn_cap_factor, 2.0 * np.exp(-p.g_y * t))
+    assert p.db_earn_cap_factor.shape == (p.T + p.S, p.S)
+    assert np.allclose(
+        p.db_earn_cap_factor, 1.0 * np.exp(-p.g_y * t)[:, np.newaxis]
+    )
+    assert np.allclose(
+        p.dc_earn_cap_factor, 2.0 * np.exp(-p.g_y * t)[:, np.newaxis]
+    )
     assert p.avg_labor_inc_t1_model_units == 1.0
     p.update_specifications(
         {
@@ -1536,7 +1555,9 @@ def test_hybrid_factors_scalar_is_indexed():
             "dc_earn_cap_factor": [1.5, 1.5],
         }
     )
-    assert np.allclose(p.db_earn_cap_factor, 0.5 * np.exp(-p.g_y * t))
+    assert np.allclose(
+        p.db_earn_cap_factor, 0.5 * np.exp(-p.g_y * t)[:, np.newaxis]
+    )
     assert np.allclose(p.dc_earn_cap_factor, 1.5)
 
 
@@ -1696,13 +1717,14 @@ def test_pension_earn_cap_uses_own_cutoff():
         np.zeros(n.shape), t, j, "TPI", p_db
     )
     cut1, _ = pensions.pension_earn_caps(p_db)
-    assert np.allclose(cut1[:3], np.array([0.4, 0.6, 0.6]) * avg_inc)
+    assert cut1.shape == (p_db.T + p_db.S, p_db.S)
+    assert np.allclose(cut1[:3, 0], np.array([0.4, 0.6, 0.6]) * avg_inc)
     assert np.allclose(
         _pension(p_db, "TPI", w, n, ndc_rates, t, j, e),
         pensions.DB_amount(w, e, n, t, j, "TPI", p_db, earn_hi=cut1) * adj_db,
     )
     _, cut2 = pensions.pension_earn_caps(p_ndc)
-    assert np.allclose(cut2[:3], np.array([0.5, 0.7, 0.7]) * avg_inc)
+    assert np.allclose(cut2[:3, 0], np.array([0.5, 0.7, 0.7]) * avg_inc)
     assert np.allclose(
         _pension(p_ndc, "TPI", w, n, ndc_rates, t, j, e),
         pensions.NDC_amount(
@@ -1755,15 +1777,22 @@ def test_SS_solve_defined_benefits(tmp_path):
 
 def test_hybrid_factors_time_varying_parameters():
     """
-    The hybrid cutoffs are paths of length T + S: values given by year
-    are held at the last value entered, the two lists may have
-    different lengths, and factor2 below factor1 in any period raises.
+    The hybrid cutoffs are (T + S) x S arrays by period and age: values
+    given by year are held at the last value entered and apply at every
+    age, the two lists may have different lengths, and factor2 below
+    factor1 in any period raises.
     """
     p = _hybrid_params([0.5, 0.6, 0.7], [1.5, 1.6])
-    assert p.db_earn_cap_factor.shape == (p.T + p.S,)
-    assert p.dc_earn_cap_factor.shape == (p.T + p.S,)
-    assert np.allclose(p.db_earn_cap_factor[:4], [0.5, 0.6, 0.7, 0.7])
-    assert np.allclose(p.dc_earn_cap_factor[:4], [1.5, 1.6, 1.6, 1.6])
+    assert p.db_earn_cap_factor.shape == (p.T + p.S, p.S)
+    assert p.dc_earn_cap_factor.shape == (p.T + p.S, p.S)
+    assert np.allclose(
+        p.db_earn_cap_factor[:4],
+        np.array([0.5, 0.6, 0.7, 0.7])[:, np.newaxis],
+    )
+    assert np.allclose(
+        p.dc_earn_cap_factor[:4],
+        np.array([1.5, 1.6, 1.6, 1.6])[:, np.newaxis],
+    )
     assert np.allclose(p.db_earn_cap_factor[-1], 0.7)
     with pytest.raises(ValueError, match="in every period"):
         _hybrid_params([0.5, 0.6, 2.0], [1.5, 1.6])
@@ -1795,8 +1824,8 @@ def test_DB_NDC_hybrid_amount_time_varying_cohort():
         w, e, n, r, ndc_rates, t, j, "TPI", p
     )
     # the household is age 0 in period t, so age s is lived in t + s
-    f1 = p.db_earn_cap_factor[t : t + p.S]
-    f2 = p.dc_earn_cap_factor[t : t + p.S]
+    f1 = p.db_earn_cap_factor[t : t + p.S, 0]
+    f2 = p.dc_earn_cap_factor[t : t + p.S, 0]
     cut1 = f1 * p.avg_labor_inc_t1_model_units
     cut2 = f2 * p.avg_labor_inc_t1_model_units
     inc = w * e * n
@@ -1846,6 +1875,72 @@ def test_DB_NDC_hybrid_amount_time_varying_3d_matches_cross_sections():
         assert np.allclose(hybrid3[tt], hybrid2)
     # and the benefits change over time as the cutoffs do
     assert not np.allclose(hybrid3[0], hybrid3[40])
+
+
+def test_DB_NDC_hybrid_amount_earn_cap_regime():
+    """
+    A pension regime that changes db_earn_cap_factor for younger
+    cohorts only gives cutoffs by period and age. The full time-path
+    array agrees with the cross section of each period and with the
+    lifetime of a covered cohort, the regime changes the benefits of
+    the cohorts it covers, and it leaves those of older cohorts
+    unchanged.
+    """
+    year = Specifications().start_year + 10
+    regime = {"year": year, "max_age_at_start": 45, "db_earn_cap_factor": 0.6}
+    p = _hybrid_params(0.3, 1.0, pension_regimes=[regime])
+    p0 = _hybrid_params(0.3, 1.0)
+    r, ndc_rates = 0.05, None
+    T = p.S + 30
+    w_val, n_val = 1.1, 0.4
+    e = p.e[-1, :, :]
+    n3 = n_val * np.ones((T, p.S, p.J))
+    w3 = np.full(T, w_val)
+    hybrid3 = pensions.DB_NDC_hybrid_amount(
+        w3, e, n3, r, ndc_rates, 0, None, "TPI", p
+    )
+    base3 = pensions.DB_NDC_hybrid_amount(
+        w3, e, n3, r, ndc_rates, 0, None, "TPI", p0
+    )
+    for tt in (0, 12, 40, T - 1):
+        hybrid2 = pensions.DB_NDC_hybrid_amount(
+            np.full(p.S, w_val),
+            e,
+            n_val * np.ones((p.S, p.J)),
+            r,
+            ndc_rates,
+            tt,
+            None,
+            "TPI",
+            p,
+        )
+        assert np.allclose(hybrid3[tt], hybrid2)
+    # a cohort born in period 5 is 25 years old in the regime year, so
+    # covered from then on; its lifetime matches the diagonal of the
+    # full array
+    t_birth, j = 5, p.J - 1
+    cohort = pensions.DB_NDC_hybrid_amount(
+        np.full(p.S, w_val),
+        e[:, j],
+        n_val * np.ones(p.S),
+        r,
+        ndc_rates,
+        t_birth,
+        j,
+        "TPI",
+        p,
+    )
+    diag = hybrid3[t_birth + np.arange(p.S), np.arange(p.S), j]
+    assert np.allclose(cohort, diag)
+    base_diag = base3[t_birth + np.arange(p.S), np.arange(p.S), j]
+    assert not np.allclose(diag, base_diag)
+    # a cohort aged 60 in the regime year (period 10) is not covered:
+    # its benefits are those without the regime
+    rows = np.arange(10, T)
+    ages = (60 - p.starting_age) + rows - 10
+    keep = ages < p.S
+    rows, ages = rows[keep], ages[keep]
+    assert np.allclose(hybrid3[rows, ages, :], base3[rows, ages, :])
 
 
 @pytest.mark.local

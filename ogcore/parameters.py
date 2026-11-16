@@ -27,8 +27,14 @@ COHORT_PENSION_PARAMS = (
     "tau_p",
     "k_ret",
     "indR",
+    "db_earn_cap_factor",
+    "dc_earn_cap_factor",
 )
 COHORT_PENSION_PARAMS_J = ("alpha_db",)
+# Cohort pension parameters whose base value is a path by model period
+# (a single value is indexed to remove trend growth, value / e^{g_y t}).
+# A regime's single value is indexed the same way.
+COHORT_PENSION_PARAMS_PATH = ("db_earn_cap_factor", "dc_earn_cap_factor")
 
 
 def _is_number(value):
@@ -319,45 +325,9 @@ class Specifications(paramtools.Parameters):
                 param_in, dims=(self.T + self.S,), item=item
             )
             setattr(self, item, param_out)
-        # The pension earnings cap factors (the hybrid DB-NDC cutoffs)
-        # are paths of length T + S. A
-        # single value is the initial factor of a path indexed to remove
-        # trend growth, init_val / e^{g_y t}, so the cutoffs stay fixed
-        # in real terms; a list of two or more values is used as given,
-        # with every period after the last value entered keeping it.
-        for name in ("db_earn_cap_factor", "dc_earn_cap_factor"):
-            value = np.atleast_1d(
-                np.asarray(getattr(self, name), dtype=float)
-            ).ravel()
-            if value.size == 1:
-                value = value[0] * np.exp(
-                    -self.g_y * np.arange(self.T + self.S)
-                )
-            else:
-                value = extrapolate_array(
-                    value, dims=(self.T + self.S,), item=name
-                )
-            setattr(self, name, value)
         self.avg_labor_inc_t1_model_units = float(
             np.squeeze(self.avg_labor_inc_t1_model_units)
         )
-        # The hybrid DB-NDC cutoffs are checked against each other here,
-        # once both are paths of the same length, rather than with a
-        # paramtools validator, which cannot compare lists of different
-        # lengths
-        if self.pension_system == "Hybrid DB-NDC" and np.any(
-            self.dc_earn_cap_factor < self.db_earn_cap_factor
-        ):
-            bad = int(
-                np.argmax(self.dc_earn_cap_factor < self.db_earn_cap_factor)
-            )
-            raise ValueError(
-                "dc_earn_cap_factor must be at least "
-                "db_earn_cap_factor in every period: in model period "
-                f"{bad}, db_earn_cap_factor="
-                f"{self.db_earn_cap_factor[bad]} and "
-                f"dc_earn_cap_factor={self.dc_earn_cap_factor[bad]}"
-            )
         # Deal with parameters that vary across industry and over time
         tp_param_list2 = [
             "Z",
@@ -723,7 +693,8 @@ class Specifications(paramtools.Parameters):
         Returns:
             base (Numpy array): a 1-element array for the scalar
                 parameters, a (T + S) x J array for those that vary by
-                lifetime income group
+                lifetime income group, and a length T + S path for those
+                in COHORT_PENSION_PARAMS_PATH
 
         Raises:
             ValueError: for a year-varying ``retirement_age`` (changes
@@ -746,6 +717,14 @@ class Specifications(paramtools.Parameters):
                 base, dims=(self.T + self.S, self.J), item=name
             )
         base = base.reshape(-1)
+        if name in COHORT_PENSION_PARAMS_PATH:
+            # a single value is the initial factor of a path indexed to
+            # remove trend growth, value / e^{g_y t}, so the cutoff stays
+            # fixed in real terms; a list of two or more values is used
+            # as given, every period after the last value keeping it
+            if base.size == 1:
+                return base[0] * np.exp(-self.g_y * np.arange(self.T + self.S))
+            return extrapolate_array(base, dims=(self.T + self.S,), item=name)
         if name == "retirement_age" and base.size != 1:
             if np.all(base == base[0]):
                 base = base[:1]
@@ -769,15 +748,19 @@ class Specifications(paramtools.Parameters):
         Each pension parameter in COHORT_PENSION_PARAMS has a base value
         as entered: a single number for ``retirement_age``,
         ``avg_earn_num_years``, ``yr_contrib``, ``tau_p``, ``k_ret``,
-        and ``indR``, and a path by calendar year of payment and
-        lifetime income group for ``alpha_db``. Changes by birth cohort
-        are entered through ``pension_regimes``, a list of dicts
+        and ``indR``, a path by calendar year of payment and
+        lifetime income group for ``alpha_db``, and a path by calendar
+        year for ``db_earn_cap_factor`` and ``dc_earn_cap_factor`` (a
+        single value giving the path value / e^{g_y t}). Changes by
+        birth cohort are entered through ``pension_regimes``, a list of dicts
         applied in order. A regime has a calendar ``year`` from which
         it applies, an optional ``max_age_at_start`` (the oldest age,
         in years, at that calendar year to which it applies; None means
         everyone, including those already retired), and the new values
         of the parameters it sets (for ``alpha_db``, a single number or
-        a list with one value per lifetime income group). A regime that
+        a list with one value per lifetime income group; for the
+        earnings cap factors, a single number indexed like a single base
+        value, value / e^{g_y t}). A regime that
         leaves a parameter out leaves it unchanged, so a later regime
         can change one parameter for a narrow set of cohorts while an
         earlier one still governs the rest. The regime applies to the
@@ -796,8 +779,9 @@ class Specifications(paramtools.Parameters):
         array of the model period at which each household becomes
         eligible for the public pension, ``alpha_db`` is a
         (T + S) x S x J array, and ``avg_earn_num_years``,
-        ``yr_contrib`` (both still in years), ``tau_p``, ``k_ret``, and
-        ``indR`` are (T + S) x S arrays. ``retirement_age`` keeps its
+        ``yr_contrib`` (both still in years), ``tau_p``, ``k_ret``,
+        ``indR``, ``db_earn_cap_factor``, and ``dc_earn_cap_factor`` are
+        (T + S) x S arrays. ``retirement_age`` keeps its
         single base value. The pension functions read a cohort's own
         values down the diagonal of these arrays; the steady state uses
         the final row.
@@ -841,11 +825,20 @@ class Specifications(paramtools.Parameters):
                 arr = np.broadcast_to(
                     base[:, np.newaxis, :], (n_rows, self.S, self.J)
                 ).copy()
+            elif name in COHORT_PENSION_PARAMS_PATH:
+                arr = np.broadcast_to(
+                    base[:, np.newaxis], (n_rows, self.S)
+                ).copy()
             else:
                 arr = np.full((n_rows, self.S), base[0])
             for regime, mask in zip(regimes, masks):
-                if name in regime:
-                    arr[mask] = np.asarray(regime[name], dtype=float)
+                if name not in regime:
+                    continue
+                value = np.asarray(regime[name], dtype=float)
+                if name in COHORT_PENSION_PARAMS_PATH:
+                    # indexed like a single base value
+                    value = (value * np.exp(-self.g_y * t_idx))[mask]
+                arr[mask] = value
             arrays[name] = arr
         self.retirement_age = self._pension_base_value("retirement_age")
         self.retire = (
@@ -860,6 +853,39 @@ class Specifications(paramtools.Parameters):
                 setattr(self, name, arrays[name])
         self._check_retire_schedule()
         self._check_pension_steady_state(arrays)
+        self._check_earn_cap_factors()
+
+    def _check_earn_cap_factors(self):
+        """
+        Under the hybrid DB-NDC system, check that ``dc_earn_cap_factor``
+        is at least ``db_earn_cap_factor`` for every period and age (a
+        check paramtools validators cannot make, since the two may be
+        entered as lists of different lengths and changed by pension
+        regimes).
+
+        Args:
+            None
+
+        Returns:
+            None
+
+        Raises:
+            ValueError: naming the first period and age at which
+                ``dc_earn_cap_factor`` is below ``db_earn_cap_factor``
+
+        """
+        if self.pension_system != "Hybrid DB-NDC":
+            return
+        bad = self.dc_earn_cap_factor < self.db_earn_cap_factor
+        if np.any(bad):
+            t, s = np.argwhere(bad)[0]
+            raise ValueError(
+                "dc_earn_cap_factor must be at least db_earn_cap_factor "
+                f"in every period and at every age: in model period {t} "
+                f"at age period {s}, db_earn_cap_factor="
+                f"{self.db_earn_cap_factor[t, s]} and dc_earn_cap_factor="
+                f"{self.dc_earn_cap_factor[t, s]}"
+            )
 
     def _check_pension_steady_state(self, arrays):
         """
