@@ -5,7 +5,7 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [0.25.0] - 2026-11-13
+## [0.25.0] - 2026-11-16
 
 ### Adds
 - Adds government debt contracted abroad at its own interest rate, addressing Issue #1125 (concessional debt from official lenders), and usable for any government debt contracted abroad, concessional or commercial. The new time-varying parameter `alpha_D_ext` (default 0.0) sets this debt as a share of GDP, and `r_D_ext_annual` (default 0.0, time varying, converted to a model-period rate `r_D_ext`) its real interest rate. Each period the government receives the new external borrowing and pays its interest, in the budget constraint of the steady state and the time path (`fiscal.D_G_path`, `fiscal.get_G_ss`, and the balanced-budget case of `fiscal.get_TR`), and the interest is paid abroad at `r_D_ext` in the resource constraint. The debt is held only by foreigners and is separate from the market debt `D`: it does not enter households' portfolio return `r_p`, and `debt_ratio_ss`, the closure rule and `zeta_D` refer to market debt.
@@ -17,6 +17,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Updates
 - The debt-elastic premium on `r_gov` (`r_gov_DY`, `r_gov_DY2`) is evaluated at all government debt, market debt plus debt contracted abroad. With `alpha_D_ext` at its default of zero this is the market-debt ratio, so results are unchanged.
 - The debt-to-GDP ratio in `output_tables.macro_table_SS` and in the calibration moments counts debt contracted abroad, and `output_plots.plot_all` adds it to the debt-to-GDP plot when it is not zero. Both are unchanged when `alpha_D_ext` is zero.
+
+## [0.24.5] - 2026-11-13
+
+### Updated
+- With `TPI_outer_method = "anderson"` and an initial-wealth target (`initial_wealth_ratio`), initial household wealth is now accelerated together with the prices instead of being moved toward its target by the damped step afterwards. On its own it closed only `nu` of its gap each iteration and kept changing the problem the accelerator extrapolates, so accelerated steps were often rejected and the transition took several times as many iterations. With the prices accelerated, the reported government interest rate path `r_gov` is now the rate the solve uses rather than a damped copy of it that could lag the solution. The damped (`picard`) update is unchanged.d]
+
+### Changed
+
+- `TPI.twist_doughnut` now computes the household's net taxes once per evaluation and shares them with both first order conditions, through a new optional `net_tax` argument of `household.FOC_savings` and `household.FOC_labor`. Without it, both work as before.
+- `pensions.DB_amount` now caches each household's Defined Benefits parameters along its lifetime (retirement period, averaging window, years of contribution, replacement rate, effective labor units) instead of looking them up at every evaluation. As with `pension_periods`, the cache is reset when one of those arrays is reassigned, but not when it is edited in place. Results are unchanged.
+
+### Fixed
+
+- The sparsity pattern of the household Jacobian (`use_sparse_FOC_jac`) could miss real links between equations, which made the household solve much slower without changing the answers. Each entry is now compared with the largest entry in its own row rather than in the whole Jacobian, and patterns are kept separately for each lifetime income group. When a household solve fails with a cached pattern, the pattern is now checked again at that problem and any missing links are added, so a pattern detected for one household cannot slow down another that is linked differently.
+- The pattern cache was meant to be cleared at the start of each `run_TPI` call (#1249), but it read the run identifier from the last element of the household problem's arguments, which has been `ndc_rates` rather than the parameters object since 0.24.2. The cache therefore carried over between runs on the same workers, such as a baseline and a reform. The parameters object is now passed explicitly.
 
 ## [0.24.4] - 2026-11-07
 
@@ -885,7 +900,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Any earlier versions of OG-USA can be found in the [`OG-Core`](https://github.com/PSLmodels/OG-Core) repository [release history](https://github.com/PSLmodels/OG-Core/releases) from [v.0.6.4](https://github.com/PSLmodels/OG-Core/releases/tag/v0.6.4) (Jul. 20, 2021) or earlier.
 
 
-[0.25.0]: https://github.com/PSLmodels/OG-Core/compare/v0.24.4...v0.25.0
+[0.25.0]: https://github.com/PSLmodels/OG-Core/compare/v0.24.5...v0.25.0
+
+[0.24.5]: https://github.com/PSLmodels/OG-Core/compare/v0.24.4...v0.24.5
 [0.24.4]: https://github.com/PSLmodels/OG-Core/compare/v0.24.3...v0.24.4
 [0.24.3]: https://github.com/PSLmodels/OG-Core/compare/v0.24.2...v0.24.3
 [0.24.2]: https://github.com/PSLmodels/OG-Core/compare/v0.24.1...v0.24.2

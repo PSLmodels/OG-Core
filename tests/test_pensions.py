@@ -2672,3 +2672,43 @@ def test_ndc_household_path_matches_full_path_rates(credit_choice, dir_choice):
         assert np.allclose(cohort[:on_path], expected), (kind, k)
     const, _ = _full_path_and_cohort_pensions(p, j, T_path, None)
     assert not np.allclose(full[:60], const[:60])
+
+
+def test_db_cohort_inputs_cache():
+    """
+    The Defined Benefits parameters along a household's lifetime are
+    cached on the parameters object while the household problem solves.
+    The cached values must equal the ones read directly, and replacing
+    one of the arrays they come from must empty the cache.
+    """
+    p = Specifications()
+    p.S = 7
+    p.J = 2
+    p.T = 12
+    p.retire = 4
+    p.avg_earn_num_years = 50
+    p.yr_contrib = 55
+    p.alpha_db = np.ones((p.T + p.S, p.J)) * 0.2
+    p.e = np.tile(
+        np.array([1.1, 1.11, 0.9, 0.87, 0.87, 0.7, 0.6]).reshape(1, 7, 1),
+        (p.T, 1, 2),
+    )
+    ny, cy, S_ret = pensions.pension_periods(p)
+    alpha_db = pensions.cohort_array("alpha_db", p, by_j=True)
+    for t, per_rmn, j in [(0, 3, 1), (2, 7, 0), (5, 7, 1)]:
+        cached = pensions._db_cohort_inputs(p, t, per_rmn, j)
+        expected = (
+            pensions.cohort_path(S_ret, t, per_rmn, p),
+            pensions.cohort_path(ny, t, per_rmn, p),
+            pensions.cohort_path(cy, t, per_rmn, p),
+            pensions.cohort_path(alpha_db, t, per_rmn, p)[:, j],
+            pensions.cohort_path(p.e, t, per_rmn, p)[:, j],
+        )
+        for c, e in zip(cached, expected):
+            assert np.array_equal(c, e)
+        # a second call returns the cached arrays
+        again = pensions._db_cohort_inputs(p, t, per_rmn, j)
+        assert all(a is b for a, b in zip(again, cached))
+    p.alpha_db = np.ones((p.T + p.S, p.J)) * 0.3
+    replaced = pensions._db_cohort_inputs(p, 0, 3, 1)
+    assert np.allclose(replaced[3], 0.3)
