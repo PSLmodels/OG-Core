@@ -4070,7 +4070,7 @@
         "param_notation": "$R$",
         "section_1": "Fiscal Policy Parameters",
         "section_2": "Government Pension Parameters",
-        "notes": "Internally expanded to the array retire of retirement periods by model period and age, which the household problem, the aggregates, and the steady state (final period) all read. pension_regimes is a list of dicts, each with a calendar year, an optional max_age_at_start, and the new values of the parameters it sets (retirement_age, the defined benefit and notional defined contribution parameters, fdc_tau, and the earnings cutoff factors db_earn_cap_factor, dc_earn_cap_factor, and fdc_earn_floor_factor), applied in order.",
+        "notes": "Internally expanded to the array retire of retirement periods by model period and age, which the household problem, the aggregates, and the steady state (final period) all read. pension_regimes is a list of dicts, each with a calendar year, an optional max_age_at_start, and the new values of the parameters it sets (retirement_age, the defined benefit and notional defined contribution parameters, fdc_tau, the earnings cutoff factors db_earn_cap_factor, dc_earn_cap_factor, and fdc_earn_floor_factor, and the FDC return wedge r_fdc_wedge), applied in order.",
         "type": "int",
         "number_dims": 1,
         "value": [
@@ -4148,7 +4148,7 @@
     },
     "fdc_tau": {
         "title": "Contribution rate to funded defined contribution accounts.",
-        "description": "Share of labor income in the funded defined contribution (FDC) earnings band that households pay into individual FDC accounts before the retirement age. Accounts earn the household portfolio return r_p and, at the retirement age, buy an actuarially fair life annuity. The FDC pillar runs alongside whichever pension_system is selected; a rate of zero (the default) turns it off.",
+        "description": "Share of labor income in the funded defined contribution (FDC) earnings band that households pay into individual FDC accounts before the retirement age. Accounts earn the FDC return r_fdc = r_p - r_fdc_wedge (the household portfolio return r_p less the wedge r_fdc_wedge) and, at the retirement age, buy an actuarially fair life annuity. The FDC pillar runs alongside whichever pension_system is selected; a rate of zero (the default) turns it off.",
         "section_1": "Fiscal Policy Parameters",
         "section_2": "Government Pension Parameters",
         "notes": "A single base value; changes by birth cohort or calendar year are entered through pension_regimes. Contributions are not government revenue and benefits are not government outlays: the accounts are held by a fund outside the government budget.",
@@ -4184,6 +4184,28 @@
             "range": {
                 "min": 0.0,
                 "max": 100.0
+            }
+        }
+    },
+    "r_fdc_wedge": {
+        "title": "Wedge between the household portfolio return and the return on funded defined contribution accounts.",
+        "description": "Percentage point wedge between the return households earn on savings r_p and the return earned on funded defined contribution (FDC) account balances, r_fdc = r_p - r_fdc_wedge. A positive value means FDC accounts earn less than household savings (for example, because of fund management fees); a negative value means they earn more.",
+        "section_1": "Fiscal Policy Parameters",
+        "section_2": "Government Pension Parameters",
+        "notes": "Only used when fdc_tau is positive. May vary over time: set value for base year, click '+' to add value for next year. All future years not specified are set to last value entered. A single value is held constant over the time path (it is not indexed to trend growth). The wedge that applies to an FDC account is the one the account holder's cohort faces in each period. Changes by birth cohort are entered through pension_regimes with a single number.",
+        "type": "float",
+        "number_dims": 1,
+        "value": [
+            {
+                "value": [
+                    0.0
+                ]
+            }
+        ],
+        "validators": {
+            "range": {
+                "min": -0.1,
+                "max": 0.1
             }
         }
     },

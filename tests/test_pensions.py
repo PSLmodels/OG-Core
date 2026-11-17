@@ -3324,3 +3324,72 @@ def test_fdc_lifetime_reads_calendar_return():
         out.balance[s + 1],
         (1 + r_path[t_birth + s + 1]) * np.exp(-p.g_y) * out.holdings[s],
     )
+
+
+def test_fdc_return_wedge():
+    """
+    Accounts earn r_fdc = r_p - r_fdc_wedge, and a single value of the
+    wedge is held constant (not indexed to remove trend growth).
+    """
+    p = Specifications()
+    p.update_specifications({"fdc_tau": 0.1, "r_fdc_wedge": [0.01]})
+    assert np.allclose(p.r_fdc_wedge, 0.01)
+    e, n = np.ones(p.S), np.full(p.S, 0.5)
+    r_p = 0.04
+    out = pensions.fdc_lifetime(1.0, e, n, r_p, None, 0, p)
+    s = 5
+    assert np.isclose(
+        out.balance[s + 1],
+        (1 + r_p - 0.01) * np.exp(-p.g_y) * out.holdings[s],
+    )
+    # the same account as one with no wedge and a return of r_p - wedge
+    p0 = Specifications()
+    p0.update_specifications({"fdc_tau": 0.1})
+    out0 = pensions.fdc_lifetime(1.0, e, n, r_p - 0.01, None, 0, p0)
+    for name in ("contrib", "balance", "benefit", "holdings"):
+        assert np.allclose(getattr(out, name), getattr(out0, name))
+
+
+def test_fdc_return_wedge_by_cohort():
+    """
+    A wedge set through pension_regimes applies only to the cohorts
+    the regime covers, in the periods the regime is in effect.
+    """
+    p = Specifications()
+    year = p.start_year + 10
+    p.update_specifications(
+        {
+            "fdc_tau": 0.1,
+            "pension_regimes": [
+                {"year": year, "max_age_at_start": 30, "r_fdc_wedge": 0.02}
+            ],
+        }
+    )
+    ypp = 80 / p.S
+    t_start = int(round(10 / ypp))
+    e, n = np.ones(p.S), np.full(p.S, 0.5)
+    r_path = np.full(p.T + p.S, 0.04)
+    # born after the regime year: wedge 0.02 at every age
+    young = pensions.fdc_lifetime(1.0, e, n, r_path, t_start + 1, 0, p)
+    s = 5
+    assert np.isclose(
+        young.balance[s + 1],
+        (1 + 0.04 - 0.02) * np.exp(-p.g_y) * young.holdings[s],
+    )
+    # too old for the regime: no wedge
+    age0 = int(round((60 - p.starting_age) / ypp))
+    old = pensions.fdc_lifetime(
+        1.0, e, n, r_path, t_start - age0, 0, p, a0=age0, A0=1.0
+    )
+    s = age0 + 1
+    assert np.isclose(
+        old.balance[s + 1],
+        (1 + 0.04)
+        * np.exp(-p.g_y)
+        * old.holdings[s]
+        / (
+            (1 - pensions.fdc_mort_rates(p, 0)[t_start - age0 + s, s])
+            if s >= old.R
+            else 1.0
+        ),
+    )
