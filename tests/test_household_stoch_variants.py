@@ -235,16 +235,33 @@ def test_numpy_backend_zero_income(form):
 # Pension systems other than US-style Social Security
 
 
+# (pension system, whether the labor income that earns a benefit is
+# capped); the hybrid system always applies its earnings cutoffs
 PENSION_SYSTEMS = [
-    "Defined Benefits",
-    "Notional Defined Contribution",
-    "Points System",
+    ("Defined Benefits", False),
+    ("Notional Defined Contribution", False),
+    ("Points System", False),
+    ("Defined Benefits", True),
+    ("Notional Defined Contribution", True),
+    ("Hybrid DB-NDC", False),
 ]
+# systems whose benefits depend on the earnings cutoffs
+BANDED_SYSTEMS = PENSION_SYSTEMS[3:]
 
 
-def _pension_specs(system, nz=3):
+def _pension_specs(system, earn_cap=False, nz=3):
     p = set_ar1_shocks(default_specs(), nz, 0.9, 0.15)
-    p.pension_system = system
+    # earnings cutoffs as shares of avg_labor_inc_t1_model_units (1 by
+    # default), inside the range of labor income across ages and types;
+    # two values give a path that is constant over time
+    p.update_specifications(
+        {
+            "pension_system": system,
+            "pension_earn_cap": earn_cap,
+            "db_earn_cap_factor": [0.4, 0.4],
+            "dc_earn_cap_factor": [1.0, 1.0],
+        }
+    )
     # benefit parameters are zero by default
     # alpha_db is T+S x J since OG-Core 0.21.0; let it differ by type
     p.alpha_db = np.tile(np.linspace(0.012, 0.018, p.J), (p.T + p.S, 1))
@@ -253,13 +270,14 @@ def _pension_specs(system, nz=3):
     return p
 
 
-@pytest.mark.parametrize("system", PENSION_SYSTEMS)
-def test_pension_ss_matches_ogcore_by_type(system):
+@pytest.mark.parametrize("system,earn_cap", PENSION_SYSTEMS)
+def test_pension_ss_matches_ogcore_by_type(system, earn_cap):
     """
     Benefits for all types at once equal OG-Core's pension_amount for
-    each type separately, on a labor profile that differs by type.
+    each type separately, on a labor profile that differs by type, with
+    earnings cutoffs that bind for some households and not for others.
     """
-    p = _pension_specs(system)
+    p = _pension_specs(system, earn_cap)
     n_eff = np.tile(np.linspace(0.3, 0.45, p.S).reshape(p.S, 1), (1, p.J))
     n_eff *= np.linspace(0.9, 1.2, p.J)[None, :]
     pension = household.pension_ss(p, W, FACTOR, n_eff=n_eff, r=R)
@@ -283,15 +301,24 @@ def test_pension_ss_matches_ogcore_by_type(system):
     assert (pension[p.retire[-1, -1] :] > 0).all()
     with pytest.raises(ValueError):
         household.pension_ss(p, W, FACTOR)
+    if (system, earn_cap) in BANDED_SYSTEMS:
+        earnings = (W * n_eff * p.e[-1])[: p.retire[-1, -1]]
+        for cut in pensions.pension_earn_caps(p):
+            assert earnings.min() < cut.min() <= cut.max() < earnings.max()
+        looser = _pension_specs(system, earn_cap)
+        looser.db_earn_cap_factor = 1.2 * p.db_earn_cap_factor
+        looser.dc_earn_cap_factor = 1.2 * p.dc_earn_cap_factor
+        other = household.pension_ss(looser, W, FACTOR, n_eff=n_eff, r=R)
+        assert np.abs(other - pension).max() > 1e-3 * pension.max()
 
 
-@pytest.mark.parametrize("system", PENSION_SYSTEMS)
-def test_pension_fixed_point_other_systems(system):
+@pytest.mark.parametrize("system,earn_cap", PENSION_SYSTEMS)
+def test_pension_fixed_point_other_systems(system, earn_cap):
     """
     With benefits left out, they are made consistent with each type's
     mean effective labor in the solution.
     """
-    p = _pension_specs(system)
+    p = _pension_specs(system, earn_cap)
     sol = household.solve_all_households_ss(R, W, [1.0], BQ, TR, FACTOR, p)
     n_eff = household.mean_effective_labor(sol.dist, sol.n_policy, sol.z_grid)
     implied = household.pension_ss(p, W, FACTOR, n_eff=n_eff, r=R)

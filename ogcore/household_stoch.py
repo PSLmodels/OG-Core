@@ -1331,6 +1331,14 @@ def pension_ss(p, w, factor, theta=None, n_eff=None, r=None):
     effective labor profile E[z n | s, j] (see ``mean_effective_labor``),
     which is exact with one shock state.
 
+    The earnings cutoffs of ``pensions.pension_amount`` (the cap on the
+    labor income that earns a benefit with ``p.pension_earn_cap``, and
+    the bands of the hybrid DB-NDC system) apply to those mean earnings,
+    w e E[z n], not to each household's earnings. With shocks a single
+    cap then counts more earnings than capping each household's would
+    (E[min(x, cap)] <= min(E[x], cap)); in the hybrid system's upper
+    band the difference can have either sign.
+
     Args:
         p (OG-Core Specifications object): model parameters
         w (scalar): wage
@@ -3920,12 +3928,16 @@ def pension_tpi(p, r, w, factor, theta=None, n_eff=None, ndc_rates=None):
     US-style Social Security pays theta_j times the wage from the
     retirement age on, as ``pensions.SS_amount`` does along the time
     path. The other systems pay benefits that depend on a cohort's
-    earnings history. They are computed cohort by cohort, as in OG-Core's
-    household problem (``pensions.DB_amount``, ``NDC_amount`` and
-    ``PS_amount``), from the mean effective labor E[z n | t, s, j] along
-    the cohort's diagonal (``n_eff``) and, before the time path, from
-    ``p.n_preTP``. With shocks this is an approximation, as in the
-    steady state (see ``pension_ss``).
+    earnings history. They are computed cohort by cohort with the
+    function OG-Core's household problem calls
+    (``pensions.pension_amount``, which is also what the steady state
+    and aggregate pension outlays go through), from the mean effective
+    labor E[z n | t, s, j] along the cohort's diagonal (``n_eff``) and,
+    before the time path, from ``p.n_preTP``. With shocks this is an
+    approximation, as in the steady state (see ``pension_ss``), and so
+    are the earnings cutoffs (``p.pension_earn_cap`` and the bands of the
+    hybrid DB-NDC system), which apply to the cohort's mean earnings in
+    the period they are earned.
 
     Benefits are scaled by ``p.replacement_rate_adjust`` of the period
     they are paid in, as OG-Core's household problem and aggregate
@@ -3934,6 +3946,10 @@ def pension_tpi(p, r, w, factor, theta=None, n_eff=None, ndc_rates=None):
     own birth cohort (``p.retire`` by period and age). NDC contributions
     earn the calendar-period credited rates, and annuities use the
     discount rate at retirement, from the same paths as aggregate outlays.
+
+    The Points System has a formula for one cohort, used here, but
+    OG-Core's aggregate pension outlays have none along the time path,
+    so ``TPI.run_TPI`` does not accept it with this solver.
 
     Args:
         p (OG-Core Specifications object): model parameters
@@ -3971,29 +3987,30 @@ def pension_tpi(p, r, w, factor, theta=None, n_eff=None, ndc_rates=None):
     n_eff = np.asarray(n_eff, dtype=float)
     r = np.asarray(r, dtype=float).reshape(TS)
     e = hh_core._get_e_long(p)
-    adjust = np.asarray(p.replacement_rate_adjust, dtype=float)
     pension = np.zeros((TS, S, J))
     for t0 in tpi_cohorts(p):
         ages = np.arange(max(0, -t0), S)
         times = t0 + ages
         # households alive in period 0 compute benefits from period 0,
-        # as in TPI.inner_loop
+        # as in TPI.inner_loop; the benefit at times[i] is then paid in
+        # period t + i, whose replacement rate adjustment pension_amount
+        # applies
         t = max(int(t0), 0)
         for j in range(J):
-            w_c, n_c, e_c = w[times], n_eff[times, ages, j], e[times, ages, j]
-            if p.pension_system == "Defined Benefits":
-                amount = pensions.DB_amount(w_c, e_c, n_c, t, j, "TPI", p)
-            elif p.pension_system == "Notional Defined Contribution":
-                amount = pensions.NDC_amount(
-                    w_c, e_c, n_c, r[: p.T], ndc_rates, t, j, "TPI", p
-                )
-            elif p.pension_system == "Points System":
-                amount = pensions.PS_amount(w_c, e_c, n_c, j, factor, p)
-            else:
-                raise ValueError(
-                    f"Unknown pension_system {p.pension_system!r}"
-                )
-            pension[times, ages, j] = amount * adjust[times, j]
+            pension[times, ages, j] = pensions.pension_amount(
+                r[: p.T],
+                w[times],
+                n_eff[times, ages, j],
+                ndc_rates,
+                None,
+                t,
+                j,
+                False,
+                "TPI",
+                e[times, ages, j],
+                factor,
+                p,
+            )
     return pension
 
 

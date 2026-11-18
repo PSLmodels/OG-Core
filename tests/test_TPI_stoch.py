@@ -203,21 +203,67 @@ def test_cohort_inputs_follow_diagonal():
         )
 
 
+# Earnings cutoffs of the pension systems, as shares of
+# avg_labor_inc_t1_model_units (1 by default), inside the range of labor
+# income so that they bind for some households and not for others: about
+# 0.2 to 0.55 in the tests of benefits at given labor (EARN_CAPS), and
+# 0.44 to 0.49 at working ages in the equilibria of the test calibration
+# with these pension systems (EQ_EARN_CAPS). Two values give a path that
+# is constant over time (a single value is indexed to trend growth).
+EARN_CAPS = {
+    "db_earn_cap_factor": [0.35, 0.35],
+    "dc_earn_cap_factor": [0.45, 0.45],
+}
+EQ_EARN_CAPS = {
+    "db_earn_cap_factor": [0.455, 0.455],
+    "dc_earn_cap_factor": [0.47, 0.47],
+}
+# pension systems whose benefits depend on earnings bands: the two capped
+# systems and the hybrid system, which always applies its cutoffs
+BANDED_SYSTEMS = [
+    ("Defined Benefits", True),
+    ("Notional Defined Contribution", True),
+    ("Hybrid DB-NDC", False),
+]
+
+
+def pension_specs(p, pension_system, earn_cap=False):
+    """
+    p with a pension system and its benefit parameters (zero by default),
+    and the earnings cutoffs ``EARN_CAPS``. Call before changing other
+    attributes of p by hand: the update recomputes derived parameters.
+    """
+    p.update_specifications(
+        {
+            "pension_system": pension_system,
+            "pension_earn_cap": earn_cap,
+            "tau_p": 0.1,
+            **EARN_CAPS,
+        }
+    )
+    p.alpha_db = np.full((p.T + p.S, p.J), 0.01)
+    return p
+
+
 @pytest.mark.parametrize(
-    "pension_system", ["US-Style Social Security", "Defined Benefits"]
+    "pension_system,earn_cap",
+    [("US-Style Social Security", False), ("Defined Benefits", False)]
+    + BANDED_SYSTEMS,
 )
-def test_pension_tpi_matches_ogcore(pension_system):
+def test_pension_tpi_matches_ogcore(pension_system, earn_cap):
     """
     The pension benefits households take as given are OG-Core's along
     the time path (``pensions.pension_amount`` over all periods), with
     replacement rates and their adjustment changing over time and, for
-    defined benefits, labor before the path from n_preTP. (Effective
-    labor units e are constant over time here: OG-Core's household
-    problem takes them along each cohort's diagonal, as pension_tpi does,
-    but its aggregate defined benefits use the steady-state profile.)
+    defined benefits, labor before the path from n_preTP. That holds
+    with the cap on the labor income that earns a benefit and for the
+    hybrid system, whose cutoffs bind for some households and not for
+    others. (Effective labor units e are constant over time here:
+    OG-Core's household problem takes them along each cohort's diagonal,
+    as pension_tpi does, but its aggregate defined benefits use the
+    steady-state profile.)
     """
-    p = hsv_calibration()
-    p.pension_system = pension_system
+    p = pension_specs(hsv_calibration(), pension_system, earn_cap)
     TS = p.T + p.S
     rng = np.random.default_rng(1)
     r = rng.uniform(0.04, 0.06, TS)
@@ -226,26 +272,91 @@ def test_pension_tpi_matches_ogcore(pension_system):
     theta = np.array([0.3, 0.4])
     p.replacement_rate_adjust = np.ones((TS, p.J))
     p.replacement_rate_adjust[10:30] = 1.2
-    p.alpha_db = np.full((TS, p.J), 0.01)
     p.alpha_db[20:40] = 0.015
     p.n_preTP = 0.9 * n[0]
+    if (pension_system, earn_cap) in BANDED_SYSTEMS:
+        # cutoffs that differ by period and by age (cohort), so that each
+        # must be read at the period and age the income is earned
+        p.db_earn_cap_factor = rng.uniform(0.3, 0.4, (TS, p.S))
+        p.dc_earn_cap_factor = rng.uniform(0.42, 0.5, (TS, p.S))
+
+    def outlays(p):
+        return pensions.pension_amount(
+            r[: p.T],
+            w[: p.T],
+            n[: p.T],
+            1,
+            theta,
+            0,
+            None,
+            False,
+            "TPI",
+            p.e,
+            FACTOR,
+            p,
+        )
+
     pension = household_stoch.pension_tpi(p, r, w, FACTOR, theta, n)
-    expected = pensions.pension_amount(
-        r[: p.T],
-        w[: p.T],
-        n[: p.T],
-        1,
-        theta,
-        0,
-        None,
-        False,
-        "TPI",
-        p.e,
-        FACTOR,
-        p,
-    )
+    expected = outlays(p)
     assert expected.max() > 0
     np.testing.assert_allclose(pension[: p.T], expected, rtol=1e-12)
+    if (pension_system, earn_cap) in BANDED_SYSTEMS:
+        # the cutoffs lie inside the range of labor income, and benefits
+        # depend on them
+        earnings = w[:, None, None] * n * p.e[-1]
+        for cut in pensions.pension_earn_caps(p):
+            assert earnings.min() < cut.min() <= cut.max() < earnings.max()
+        looser = copy.deepcopy(p)
+        looser.db_earn_cap_factor = 1.2 * p.db_earn_cap_factor
+        looser.dc_earn_cap_factor = 1.2 * p.dc_earn_cap_factor
+        assert (
+            np.abs(
+                outlays(looser) / expected.max() - expected / expected.max()
+            ).max()
+            > 1e-3
+        )
+
+
+@pytest.mark.parametrize("pension_system,earn_cap", BANDED_SYSTEMS)
+def test_pension_tpi_matches_steady_state(pension_system, earn_cap):
+    """
+    With prices, labor and policy constant over time, the benefits
+    households take as given along the time path are those of the steady
+    state, with the cap on the labor income that earns a benefit and for
+    the hybrid system: the two solvers of the household block read the
+    same earnings cutoffs.
+    """
+    p = pension_specs(hsv_calibration(), pension_system, earn_cap)
+    TS = p.T + p.S
+    rng = np.random.default_rng(2)
+    n = rng.uniform(0.2, 0.5, (p.S, p.J))
+    p.n_preTP = n
+    steady = household_stoch.pension_ss(p, W, FACTOR, n_eff=n, r=R)
+    path = household_stoch.pension_tpi(
+        p, np.full(TS, R), np.full(TS, W), FACTOR, n_eff=np.tile(n, (TS, 1, 1))
+    )
+    retire = int(p.retire[-1, -1])
+    assert (steady[retire:] > 0).all()
+    np.testing.assert_allclose(
+        path[: p.T], np.broadcast_to(steady, (p.T,) + steady.shape), rtol=1e-10
+    )
+    uncapped = copy.deepcopy(p)
+    uncapped.db_earn_cap_factor = 10.0 * p.db_earn_cap_factor
+    uncapped.dc_earn_cap_factor = 10.0 * p.dc_earn_cap_factor
+    other = household_stoch.pension_ss(uncapped, W, FACTOR, n_eff=n, r=R)
+    assert np.abs(other / steady.max() - steady / steady.max()).max() > 1e-3
+
+
+def test_points_system_tpi_not_supported():
+    """
+    OG-Core's aggregate pension outlays have no Points System formula
+    along the time path, so the time path with the stochastic solver
+    says so before solving households.
+    """
+    p = egm_specs(hsv_calibration())
+    p.pension_system = "Points System"
+    with pytest.raises(NotImplementedError, match="Points System"):
+        TPI.run_TPI(p)
 
 
 @pytest.mark.parametrize(
@@ -602,6 +713,60 @@ def test_run_TPI_egm_outputs(tmp_path, monkeypatch, pension_system):
     assert np.abs(tpi["euler_savings"]).max() < 1e-3
 
 
+def test_run_TPI_egm_anderson_initial_wealth(tmp_path, monkeypatch):
+    """
+    With the Anderson outer loop, initial wealth that targets a ratio to
+    initial GDP is accelerated with the prices. Over a few iterations of
+    run_TPI, the households alive in period 0 are solved from that
+    wealth: the distribution each household solve starts from follows
+    the initial savings set by the outer step before it, as with the
+    damped update.
+    """
+    monkeypatch.setattr(TPI, "ENFORCE_SOLUTION_CHECKS", False)
+    solve = TPI.solve_households_egm
+    starts = []
+
+    def record(p, paths, init_dist, b_grid, *args, **kwargs):
+        starts.append((init_dist, b_grid))
+        return solve(p, paths, init_dist, b_grid, *args, **kwargs)
+
+    monkeypatch.setattr(TPI, "solve_households_egm", record)
+    maxiter = 4
+    p = model_specs(
+        tmp_path,
+        nz=2,
+        maxiter=maxiter,
+        initial_wealth_ratio=4.0,
+        TPI_outer_method="anderson",
+        nu=0.2,
+    )
+    ss, tpi = run_model(p)
+    # one solve per iteration and the last pass after the loop
+    assert len(starts) == maxiter + 1
+
+    def held(start):
+        init_dist, b_grid = start
+        return (init_dist * b_grid[None, :, :, None]).sum(axis=(2, 3))[1:]
+
+    # the last pass starts from the initial savings the path reports,
+    # which add up to the initial wealth the outer loop ended on
+    np.testing.assert_allclose(
+        held(starts[-1]), tpi["b_sp1_preTP"][:-1], rtol=1e-9
+    )
+    B0 = aggr.get_B(tpi["b_sp1_preTP"], p, "SS", True)
+    assert np.isfinite(B0) and B0 > 0
+    # initial wealth starts in the steady state's proportions and moves
+    # at every outer step, and households start from it in the iteration
+    # that follows; the savings the path reports as held in period 0 are
+    # those of the last iteration, before its outer step
+    scale = held(starts[0]) / ss["b_sp1"][:-1]
+    np.testing.assert_allclose(scale, scale[0, 0], rtol=1e-9)
+    np.testing.assert_allclose(held(starts[-2]), tpi["b_s"][0, 1:], rtol=1e-9)
+    levels = [held(start).sum() for start in starts]
+    assert np.abs(np.diff(levels[:-1]) / levels[0]).min() > 1e-4
+    assert np.isfinite(tpi["Y"]).all()
+
+
 @pytest.fixture(scope="module")
 def one_state_runs(tmp_path_factory):
     """
@@ -685,43 +850,73 @@ def test_shocks_tpi(tmp_path, one_state_runs):
 
 @pytest.mark.local
 @pytest.mark.parametrize(
-    "pension_system", ["Defined Benefits", "Notional Defined Contribution"]
+    "pension_system,earn_cap",
+    [
+        ("Defined Benefits", False),
+        ("Notional Defined Contribution", False),
+        ("Defined Benefits", True),
+        ("Notional Defined Contribution", True),
+        ("Hybrid DB-NDC", False),
+    ],
 )
-def test_defined_benefits_tpi(tmp_path, pension_system):
+def test_defined_benefits_tpi(tmp_path, pension_system, earn_cap):
     """
     With pensions that depend on each cohort's earnings history, the
     one-state transition path matches OG-Core's, including NDC rates
-    that vary with the interest rate along the path.
+    that vary with the interest rate along the path, the cap on the
+    labor income that earns a benefit, and the hybrid system's earnings
+    bands. (With one shock state, a cohort's mean earnings are each
+    household's, so the cutoffs apply as in OG-Core.)
     """
     updates = {
         "pension_system": pension_system,
+        "pension_earn_cap": earn_cap,
         "alpha_db": [[0.01]],
         "tau_p": 0.1,
         "ndc_growth_rate": "r",
         "dir_growth_rate": "r",
         "mindist_SS": 1e-9,  # the production tolerance
+        **EQ_EARN_CAPS,
     }
     _, root = run_model(
         model_specs(tmp_path / "root", solver="root", **updates)
     )
-    _, egm = run_model(model_specs(tmp_path / "egm", **updates))
+    p = model_specs(tmp_path / "egm", **updates)
+    ss, egm = run_model(p)
     assert egm["agg_pension_outlays"].min() > 0
     for k in MACRO_VARS + ["agg_pension_outlays"]:
         gap = np.abs(egm[k] / root[k] - 1).max()
         assert gap < 1e-3, (k, gap)
+    if (pension_system, earn_cap) in BANDED_SYSTEMS:
+        # the cutoffs bind for some working households and not for
+        # others, and remove several times the share of labor income
+        # that the comparison above tolerates
+        retire = int(p.retire[-1, -1])
+        earnings = (ss["w"] * ss["n"] * p.e[-1])[:retire]
+        for cut in pensions.pension_earn_caps(p):
+            assert earnings.min() < cut.min() <= cut.max() < earnings.max()
+            below = np.minimum(earnings, cut.max()).mean() / earnings.mean()
+            assert 1 - below > 5e-3
 
 
 @pytest.mark.local
-def test_initial_wealth_ratio_stretches_grids(tmp_path):
+@pytest.mark.parametrize("outer_method", ["picard", "anderson"])
+def test_initial_wealth_ratio_stretches_grids(tmp_path, outer_method):
     """
     With an initial wealth ratio that is solved for along the path and
     grids sized closely to the steady state, the grids are stretched
     during the solve, and the path reaches the ratio and the steady
-    state with the wealth households hold matching aggregates.
+    state with the wealth households hold matching aggregates, with the
+    damped outer loop and with the Anderson outer loop, which accelerates
+    initial wealth with the prices.
     """
     ratio = 4.0
     p = model_specs(
-        tmp_path, nz=3, b_grid_margin=1.1, initial_wealth_ratio=ratio
+        tmp_path,
+        nz=3,
+        b_grid_margin=1.1,
+        initial_wealth_ratio=ratio,
+        TPI_outer_method=outer_method,
     )
     ss, tpi = run_model(p)
     assert (tpi["b_grid"][:, -1] > ss["b_grid"][:, -1]).all()

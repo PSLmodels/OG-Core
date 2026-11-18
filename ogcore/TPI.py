@@ -1237,6 +1237,16 @@ def run_TPI(p, client=None):
             results
 
     """
+    if p.household_solver == "egm" and p.pension_system == "Points System":
+        # pensions.PS_amount has no branch for labor by period, age and
+        # type, which aggregate pension outlays below need (with either
+        # household solver); stop before solving households
+        raise NotImplementedError(
+            "The transition path with household_solver = 'egm' does not "
+            "support pension_system = 'Points System': aggregate pension "
+            "outlays have no Points System formula along the time path "
+            "(pensions.PS_amount)."
+        )
     if p.use_sparse_FOC_jac and not _HAVE_SPARSE_FD:
         print("[TPI] sparse FOC jacobian unavailable; using dense")
     # Scope the Jacobian sparsity cache to this solve (see
