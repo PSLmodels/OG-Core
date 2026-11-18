@@ -384,14 +384,31 @@
     <span class="s2">"tau_p"</span><span class="p">,</span>
     <span class="s2">"k_ret"</span><span class="p">,</span>
     <span class="s2">"indR"</span><span class="p">,</span>
+    <span class="s2">"fdc_tau"</span><span class="p">,</span>
     <span class="s2">"db_earn_cap_factor"</span><span class="p">,</span>
     <span class="s2">"dc_earn_cap_factor"</span><span class="p">,</span>
+    <span class="s2">"fdc_earn_floor_factor"</span><span class="p">,</span>
+    <span class="s2">"r_fdc_wedge"</span><span class="p">,</span>
 <span class="p">)</span>
 <span class="n">COHORT_PENSION_PARAMS_J</span> <span class="o">=</span> <span class="p">(</span><span class="s2">"alpha_db"</span><span class="p">,)</span>
-<span class="c1"># Cohort pension parameters whose base value is a path by model period</span>
-<span class="c1"># (a single value is indexed to remove trend growth, value / e^{g_y t}).</span>
-<span class="c1"># A regime's single value is indexed the same way.</span>
-<span class="n">COHORT_PENSION_PARAMS_PATH</span> <span class="o">=</span> <span class="p">(</span><span class="s2">"db_earn_cap_factor"</span><span class="p">,</span> <span class="s2">"dc_earn_cap_factor"</span><span class="p">)</span>
+<span class="c1"># Cohort pension parameters whose base value is a path by model period.</span>
+<span class="c1"># A list of two or more values is used as given; a single value is held</span>
+<span class="c1"># constant over the path, except for those in</span>
+<span class="c1"># COHORT_PENSION_PARAMS_GROWTH_INDEXED.</span>
+<span class="n">COHORT_PENSION_PARAMS_PATH</span> <span class="o">=</span> <span class="p">(</span>
+    <span class="s2">"db_earn_cap_factor"</span><span class="p">,</span>
+    <span class="s2">"dc_earn_cap_factor"</span><span class="p">,</span>
+    <span class="s2">"fdc_earn_floor_factor"</span><span class="p">,</span>
+    <span class="s2">"r_fdc_wedge"</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="c1"># Path parameters (the earnings cutoff factors) whose single value is</span>
+<span class="c1"># indexed to remove trend growth, value / e^{g_y t}, so the cutoff stays</span>
+<span class="c1"># fixed in real terms. A regime's single value is indexed the same way.</span>
+<span class="n">COHORT_PENSION_PARAMS_GROWTH_INDEXED</span> <span class="o">=</span> <span class="p">(</span>
+    <span class="s2">"db_earn_cap_factor"</span><span class="p">,</span>
+    <span class="s2">"dc_earn_cap_factor"</span><span class="p">,</span>
+    <span class="s2">"fdc_earn_floor_factor"</span><span class="p">,</span>
+<span class="p">)</span>
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">_is_number</span><span class="p">(</span><span class="n">value</span><span class="p">):</span>
@@ -1086,11 +1103,13 @@
             <span class="p">)</span>
         <span class="n">base</span> <span class="o">=</span> <span class="n">base</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">COHORT_PENSION_PARAMS_PATH</span><span class="p">:</span>
-            <span class="c1"># a single value is the initial factor of a path indexed to</span>
-            <span class="c1"># remove trend growth, value / e^{g_y t}, so the cutoff stays</span>
-            <span class="c1"># fixed in real terms; a list of two or more values is used</span>
-            <span class="c1"># as given, every period after the last value keeping it</span>
-            <span class="k">if</span> <span class="n">base</span><span class="o">.</span><span class="n">size</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="c1"># for the earnings cutoff factors, a single value is the</span>
+            <span class="c1"># initial factor of a path indexed to remove trend growth,</span>
+            <span class="c1"># value / e^{g_y t}, so the cutoff stays fixed in real terms;</span>
+            <span class="c1"># for other path parameters a single value is held constant;</span>
+            <span class="c1"># a list of two or more values is used as given, every</span>
+            <span class="c1"># period after the last value keeping it</span>
+            <span class="k">if</span> <span class="n">base</span><span class="o">.</span><span class="n">size</span> <span class="o">==</span> <span class="mi">1</span> <span class="ow">and</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">COHORT_PENSION_PARAMS_GROWTH_INDEXED</span><span class="p">:</span>
                 <span class="k">return</span> <span class="n">base</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">g_y</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">T</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">S</span><span class="p">))</span>
             <span class="k">return</span> <span class="n">extrapolate_array</span><span class="p">(</span><span class="n">base</span><span class="p">,</span> <span class="n">dims</span><span class="o">=</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">T</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">S</span><span class="p">,),</span> <span class="n">item</span><span class="o">=</span><span class="n">name</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">name</span> <span class="o">==</span> <span class="s2">"retirement_age"</span> <span class="ow">and</span> <span class="n">base</span><span class="o">.</span><span class="n">size</span> <span class="o">!=</span> <span class="mi">1</span><span class="p">:</span>
@@ -1116,10 +1135,12 @@
 <span class="sd">        Each pension parameter in COHORT_PENSION_PARAMS has a base value</span>
 <span class="sd">        as entered: a single number for ``retirement_age``,</span>
 <span class="sd">        ``avg_earn_num_years``, ``yr_contrib``, ``tau_p``, ``k_ret``,</span>
-<span class="sd">        and ``indR``, a path by calendar year of payment and</span>
+<span class="sd">        ``indR``, and ``fdc_tau``, a path by calendar year of payment and</span>
 <span class="sd">        lifetime income group for ``alpha_db``, and a path by calendar</span>
-<span class="sd">        year for ``db_earn_cap_factor`` and ``dc_earn_cap_factor`` (a</span>
-<span class="sd">        single value giving the path value / e^{g_y t}). Changes by</span>
+<span class="sd">        year for ``db_earn_cap_factor``, ``dc_earn_cap_factor``,</span>
+<span class="sd">        ``fdc_earn_floor_factor`` (a single value giving the path</span>
+<span class="sd">        value / e^{g_y t}), and ``r_fdc_wedge`` (a single value held</span>
+<span class="sd">        constant). Changes by</span>
 <span class="sd">        birth cohort are entered through ``pension_regimes``, a list of dicts</span>
 <span class="sd">        applied in order. A regime has a calendar ``year`` from which</span>
 <span class="sd">        it applies, an optional ``max_age_at_start`` (the oldest age,</span>
@@ -1128,7 +1149,8 @@
 <span class="sd">        of the parameters it sets (for ``alpha_db``, a single number or</span>
 <span class="sd">        a list with one value per lifetime income group; for the</span>
 <span class="sd">        earnings cap factors, a single number indexed like a single base</span>
-<span class="sd">        value, value / e^{g_y t}). A regime that</span>
+<span class="sd">        value, value / e^{g_y t}; for ``r_fdc_wedge``, a single number</span>
+<span class="sd">        held constant). A regime that</span>
 <span class="sd">        leaves a parameter out leaves it unchanged, so a later regime</span>
 <span class="sd">        can change one parameter for a narrow set of cohorts while an</span>
 <span class="sd">        earlier one still governs the rest. The regime applies to the</span>
@@ -1148,11 +1170,12 @@
 <span class="sd">        eligible for the public pension, ``alpha_db`` is a</span>
 <span class="sd">        (T + S) x S x J array, and ``avg_earn_num_years``,</span>
 <span class="sd">        ``yr_contrib`` (both still in years), ``tau_p``, ``k_ret``,</span>
-<span class="sd">        ``indR``, ``db_earn_cap_factor``, and ``dc_earn_cap_factor`` are</span>
-<span class="sd">        (T + S) x S arrays. ``retirement_age`` keeps its</span>
-<span class="sd">        single base value. The pension functions read a cohort's own</span>
-<span class="sd">        values down the diagonal of these arrays; the steady state uses</span>
-<span class="sd">        the final row.</span>
+<span class="sd">        ``indR``, ``fdc_tau``, ``db_earn_cap_factor``,</span>
+<span class="sd">        ``dc_earn_cap_factor``, ``fdc_earn_floor_factor``, and</span>
+<span class="sd">        ``r_fdc_wedge`` are (T + S) x S arrays.</span>
+<span class="sd">        ``retirement_age`` keeps its single base value. The pension</span>
+<span class="sd">        functions read a cohort's own values down the diagonal of these</span>
+<span class="sd">        arrays; the steady state uses the final row.</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            None</span>
@@ -1203,7 +1226,7 @@
                 <span class="k">if</span> <span class="n">name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">regime</span><span class="p">:</span>
                     <span class="k">continue</span>
                 <span class="n">value</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">regime</span><span class="p">[</span><span class="n">name</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
-                <span class="k">if</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">COHORT_PENSION_PARAMS_PATH</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">COHORT_PENSION_PARAMS_GROWTH_INDEXED</span><span class="p">:</span>
                     <span class="c1"># indexed like a single base value</span>
                     <span class="n">value</span> <span class="o">=</span> <span class="p">(</span><span class="n">value</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">g_y</span> <span class="o">*</span> <span class="n">t_idx</span><span class="p">))[</span><span class="n">mask</span><span class="p">]</span>
                 <span class="n">arr</span><span class="p">[</span><span class="n">mask</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span>
@@ -1225,11 +1248,14 @@
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_check_earn_cap_factors</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">"""</span>
-<span class="sd">        Under the hybrid DB-NDC system, check that ``dc_earn_cap_factor``</span>
-<span class="sd">        is at least ``db_earn_cap_factor`` for every period and age (a</span>
-<span class="sd">        check paramtools validators cannot make, since the two may be</span>
-<span class="sd">        entered as lists of different lengths and changed by pension</span>
-<span class="sd">        regimes).</span>
+<span class="sd">        Check that the earnings cutoffs are ordered for every period and</span>
+<span class="sd">        age (a check paramtools validators cannot make, since the</span>
+<span class="sd">        factors may be entered as lists of different lengths and changed</span>
+<span class="sd">        by pension regimes): under the hybrid DB-NDC system,</span>
+<span class="sd">        ``dc_earn_cap_factor`` must be at least ``db_earn_cap_factor``,</span>
+<span class="sd">        and with ``pension_earn_cap`` True, ``dc_earn_cap_factor`` (the</span>
+<span class="sd">        cap on funded defined contribution earnings) must be at least</span>
+<span class="sd">        ``fdc_earn_floor_factor`` wherever ``fdc_tau`` is positive.</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            None</span>
@@ -1238,22 +1264,40 @@
 <span class="sd">            None</span>
 
 <span class="sd">        Raises:</span>
-<span class="sd">            ValueError: naming the first period and age at which</span>
-<span class="sd">                ``dc_earn_cap_factor`` is below ``db_earn_cap_factor``</span>
+<span class="sd">            ValueError: naming the first period and age at which a</span>
+<span class="sd">                cutoff is below the one it must be at least</span>
 
 <span class="sd">        """</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">pension_system</span> <span class="o">!=</span> <span class="s2">"Hybrid DB-NDC"</span><span class="p">:</span>
-            <span class="k">return</span>
-        <span class="n">bad</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dc_earn_cap_factor</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">db_earn_cap_factor</span>
-        <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">bad</span><span class="p">):</span>
-            <span class="n">t</span><span class="p">,</span> <span class="n">s</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">argwhere</span><span class="p">(</span><span class="n">bad</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                <span class="s2">"dc_earn_cap_factor must be at least db_earn_cap_factor "</span>
-                <span class="sa">f</span><span class="s2">"in every period and at every age: in model period </span><span class="si">{</span><span class="n">t</span><span class="si">}</span><span class="s2"> "</span>
-                <span class="sa">f</span><span class="s2">"at age period </span><span class="si">{</span><span class="n">s</span><span class="si">}</span><span class="s2">, db_earn_cap_factor="</span>
-                <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">db_earn_cap_factor</span><span class="p">[</span><span class="n">t</span><span class="p">,</span><span class="w"> </span><span class="n">s</span><span class="p">]</span><span class="si">}</span><span class="s2"> and dc_earn_cap_factor="</span>
-                <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">dc_earn_cap_factor</span><span class="p">[</span><span class="n">t</span><span class="p">,</span><span class="w"> </span><span class="n">s</span><span class="p">]</span><span class="si">}</span><span class="s2">"</span>
+        <span class="n">checks</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">pension_system</span> <span class="o">==</span> <span class="s2">"Hybrid DB-NDC"</span><span class="p">:</span>
+            <span class="n">checks</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                <span class="p">(</span>
+                    <span class="s2">"db_earn_cap_factor"</span><span class="p">,</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">dc_earn_cap_factor</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">db_earn_cap_factor</span><span class="p">,</span>
+                <span class="p">)</span>
             <span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">pension_earn_cap</span><span class="p">:</span>
+            <span class="n">checks</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                <span class="p">(</span>
+                    <span class="s2">"fdc_earn_floor_factor"</span><span class="p">,</span>
+                    <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">fdc_tau</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span>
+                    <span class="o">&amp;</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dc_earn_cap_factor</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">fdc_earn_floor_factor</span><span class="p">),</span>
+                <span class="p">)</span>
+            <span class="p">)</span>
+        <span class="k">for</span> <span class="n">lower</span><span class="p">,</span> <span class="n">bad</span> <span class="ow">in</span> <span class="n">checks</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">bad</span><span class="p">):</span>
+                <span class="n">t</span><span class="p">,</span> <span class="n">s</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">argwhere</span><span class="p">(</span><span class="n">bad</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+                <span class="n">where</span> <span class="o">=</span> <span class="p">(</span>
+                    <span class="s2">"in every period and at every age"</span>
+                    <span class="k">if</span> <span class="n">lower</span> <span class="o">==</span> <span class="s2">"db_earn_cap_factor"</span>
+                    <span class="k">else</span> <span class="s2">"wherever fdc_tau is positive"</span>
+                <span class="p">)</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">"dc_earn_cap_factor must be at least </span><span class="si">{</span><span class="n">lower</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">where</span><span class="si">}</span><span class="s2">: "</span>
+                    <span class="sa">f</span><span class="s2">"in model period </span><span class="si">{</span><span class="n">t</span><span class="si">}</span><span class="s2"> at age period </span><span class="si">{</span><span class="n">s</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="n">lower</span><span class="si">}</span><span class="s2">="</span>
+                    <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="w"> </span><span class="n">lower</span><span class="p">)[</span><span class="n">t</span><span class="p">,</span><span class="w"> </span><span class="n">s</span><span class="p">]</span><span class="si">}</span><span class="s2"> and dc_earn_cap_factor="</span>
+                    <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">dc_earn_cap_factor</span><span class="p">[</span><span class="n">t</span><span class="p">,</span><span class="w"> </span><span class="n">s</span><span class="p">]</span><span class="si">}</span><span class="s2">"</span>
+                <span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_check_pension_steady_state</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">arrays</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">"""</span>

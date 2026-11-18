@@ -496,13 +496,15 @@
 
 <span class="sd">    After ``Specifications.compute_default_params`` the cohort pension</span>
 <span class="sd">    parameters (``retire``, ``avg_earn_num_years``, ``yr_contrib``,</span>
-<span class="sd">    ``tau_p``, ``k_ret``, ``indR``) are (T + S) x S arrays holding, for</span>
-<span class="sd">    the household of age s in period t, the value that applies to its</span>
-<span class="sd">    birth cohort, and ``alpha_db`` is (T + S) x S x J. This helper also</span>
-<span class="sd">    accepts the forms a caller may set by hand: a single number is</span>
-<span class="sd">    broadcast to the full shape, and an array without the age dimension</span>
-<span class="sd">    (a path by period, or by period and lifetime income group) is taken</span>
-<span class="sd">    to hold the same value at every age in a period.</span>
+<span class="sd">    ``tau_p``, ``k_ret``, ``indR``, ``fdc_tau``, ``r_fdc_wedge``) are</span>
+<span class="sd">    (T + S) x S arrays holding, for the household of age s in period t,</span>
+<span class="sd">    the value that applies to its birth cohort, and ``alpha_db`` is</span>
+<span class="sd">    (T + S) x S x J.</span>
+<span class="sd">    This helper also accepts the forms a caller may set by hand: a</span>
+<span class="sd">    single number is broadcast to the full shape, and an array without</span>
+<span class="sd">    the age dimension (a path by period, or by period and lifetime</span>
+<span class="sd">    income group) is taken to hold the same value at every age in a</span>
+<span class="sd">    period.</span>
 
 <span class="sd">    Args:</span>
 <span class="sd">        name (str): attribute name on ``p``</span>
@@ -3069,6 +3071,421 @@
             <span class="n">NDC</span><span class="p">[</span><span class="n">t</span><span class="p">,</span> <span class="n">u</span><span class="p">,</span> <span class="p">:]</span> <span class="o">=</span> <span class="n">delta_ret</span><span class="p">[</span><span class="n">t</span><span class="p">,</span> <span class="n">u</span><span class="p">]</span> <span class="o">*</span> <span class="n">L</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="n">NDC</span>
+
+
+<span class="c1"># ---------------------------------------------------------------------</span>
+<span class="c1"># Funded defined contribution (FDC) accounts</span>
+<span class="c1">#</span>
+<span class="c1"># The FDC pillar runs alongside whatever ``pension_system`` is chosen.</span>
+<span class="c1"># Each household pays ``fdc_tau`` of the labor income in its earnings</span>
+<span class="c1"># band into an individual account that earns the FDC return</span>
+<span class="c1"># r_fdc = r_p - r_fdc_wedge, the household portfolio return r_p less</span>
+<span class="c1"># the wedge ``r_fdc_wedge``. At retirement the balance buys an</span>
+<span class="c1"># actuarially fair life annuity. The functions below compute one</span>
+<span class="c1"># household's account over its lifetime from its labor income and the</span>
+<span class="c1"># paths of r_fdc and mortality. They do not depend on any other</span>
+<span class="c1"># pension system.</span>
+<span class="c1"># ---------------------------------------------------------------------</span>
+
+
+<div class="viewcode-block" id="FDCLifetime">
+<a class="viewcode-back" href="../../pensions.html#ogcore.pensions.FDCLifetime">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">FDCLifetime</span><span class="p">(</span><span class="n">NamedTuple</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""</span>
+<span class="sd">    A household's funded defined contribution account over its life,</span>
+<span class="sd">    returned by ``fdc_lifetime``. Every field except ``R`` is a length</span>
+<span class="sd">    S array by age; entries before the first age computed are zero.</span>
+<span class="sd">    """</span>
+
+    <span class="c1">#: Numpy array: contribution paid at each age, out of that</span>
+    <span class="c1">#: period's resources (zero from the retirement age on)</span>
+    <span class="n">contrib</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span>
+    <span class="c1">#: Numpy array: account balance at the start of each age, after</span>
+    <span class="c1">#: the return credited in that period and before that period's</span>
+    <span class="c1">#: contribution or benefit</span>
+    <span class="n">balance</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span>
+    <span class="c1">#: Numpy array: annuity benefit received at each age (zero before</span>
+    <span class="c1">#: the retirement age)</span>
+    <span class="n">benefit</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span>
+    <span class="c1">#: Numpy array: end-of-period holdings at each age, the balance</span>
+    <span class="c1">#: plus the contribution before retirement and the balance less</span>
+    <span class="c1">#: the benefit after; these are the fund's assets</span>
+    <span class="n">holdings</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span>
+    <span class="c1">#: Numpy array: derivative of the contribution with respect to</span>
+    <span class="c1">#: labor supply n at each age</span>
+    <span class="n">dcontrib_dn</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span>
+    <span class="c1">#: Numpy array: benefit at the retirement age per unit of</span>
+    <span class="c1">#: contribution made at each earlier age; the benefit at a later</span>
+    <span class="c1">#: age u is that times e^{-g_y (u - R)}</span>
+    <span class="n">benefit_per_contrib</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span>
+    <span class="c1">#: int: age at which the balance is annuitized (S if the household</span>
+    <span class="c1">#: does not reach retirement within its life)</span>
+    <span class="n">R</span><span class="p">:</span> <span class="nb">int</span></div>
+
+
+
+<div class="viewcode-block" id="fdc_earn_bands">
+<a class="viewcode-back" href="../../pensions.html#ogcore.pensions.fdc_earn_bands">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">fdc_earn_bands</span><span class="p">(</span><span class="n">p</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""</span>
+<span class="sd">    Lower and upper cutoffs, by model period and age, of the labor</span>
+<span class="sd">    income on which funded defined contribution (FDC) contributions</span>
+<span class="sd">    are paid, in model units of labor income.</span>
+
+<span class="sd">    The lower cutoff is ``fdc_earn_floor_factor`` times</span>
+<span class="sd">    ``avg_labor_inc_t1_model_units``. The upper cutoff is the cap</span>
+<span class="sd">    shared with the other defined contribution systems,</span>
+<span class="sd">    ``dc_earn_cap_factor`` times ``avg_labor_inc_t1_model_units``,</span>
+<span class="sd">    when ``pension_earn_cap`` is True, and infinite otherwise. The</span>
+<span class="sd">    cutoff at period t and age s is the one that applies to the cohort</span>
+<span class="sd">    of that household; it applies to the labor income the household</span>
+<span class="sd">    earns in that period.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        p (OG-Core Specifications object): model parameters</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        lo, hi (Numpy arrays): the cutoffs as 2-D arrays by period and</span>
+<span class="sd">            age ((T + S) x S once ``Specifications`` builds them; a</span>
+<span class="sd">            factor set by hand as a single value or a path by period</span>
+<span class="sd">            gives one column, applied at every age)</span>
+<span class="sd">    """</span>
+    <span class="n">avg_inc</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">avg_labor_inc_t1_model_units</span><span class="p">)</span>
+    <span class="n">lo</span> <span class="o">=</span> <span class="n">_period_age</span><span class="p">(</span><span class="nb">getattr</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="s2">"fdc_earn_floor_factor"</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">))</span> <span class="o">*</span> <span class="n">avg_inc</span>
+    <span class="k">if</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="s2">"pension_earn_cap"</span><span class="p">,</span> <span class="kc">False</span><span class="p">):</span>
+        <span class="n">hi</span> <span class="o">=</span> <span class="n">_period_age</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">dc_earn_cap_factor</span><span class="p">)</span> <span class="o">*</span> <span class="n">avg_inc</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">hi</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">full</span><span class="p">((</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">inf</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">ascontiguousarray</span><span class="p">(</span><span class="n">lo</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">ascontiguousarray</span><span class="p">(</span><span class="n">hi</span><span class="p">)</span></div>
+
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_cohort_diag</span><span class="p">(</span><span class="n">arr</span><span class="p">,</span> <span class="n">t_birth</span><span class="p">,</span> <span class="n">S</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""</span>
+<span class="sd">    Value of a 2-D array by period and age at each age of a household</span>
+<span class="sd">    born in period t_birth, read down the cohort's diagonal (the last</span>
+<span class="sd">    row in the steady state); an array with a single column applies at</span>
+<span class="sd">    every age.</span>
+<span class="sd">    """</span>
+    <span class="n">rows</span> <span class="o">=</span> <span class="n">_cohort_rows</span><span class="p">(</span><span class="n">t_birth</span><span class="p">,</span> <span class="n">arr</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">S</span><span class="p">)</span>
+    <span class="n">cols</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">minimum</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">S</span><span class="p">),</span> <span class="n">arr</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">ascontiguousarray</span><span class="p">(</span><span class="n">arr</span><span class="p">[</span><span class="n">rows</span><span class="p">,</span> <span class="n">cols</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="fdc_mort_rates">
+<a class="viewcode-back" href="../../pensions.html#ogcore.pensions.fdc_mort_rates">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">fdc_mort_rates</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">j</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""</span>
+<span class="sd">    Mortality rates by period and age that price the FDC annuity of</span>
+<span class="sd">    lifetime income group j.</span>
+
+<span class="sd">    The annuity is priced on the mortality of the household's own</span>
+<span class="sd">    income group, so that the annuity pool of each group pays out</span>
+<span class="sd">    exactly what it holds when mortality differs across groups.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        p (OG-Core Specifications object): model parameters</span>
+<span class="sd">        j (int): lifetime income group, or None for the average over</span>
+<span class="sd">            groups weighted by ``lambdas``</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        mort_rates (Numpy array): (T + S) x S mortality rates, where</span>
+<span class="sd">            row t, column s is the probability that a household of age</span>
+<span class="sd">            s in period t dies before period t + 1</span>
+<span class="sd">    """</span>
+    <span class="n">rho</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">rho</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">rho</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">3</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">j</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">rho</span> <span class="o">=</span> <span class="n">rho</span> <span class="o">@</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">lambdas</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span><span class="o">.</span><span class="n">ravel</span><span class="p">()</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">rho</span> <span class="o">=</span> <span class="n">rho</span><span class="p">[:,</span> <span class="p">:,</span> <span class="n">j</span><span class="p">]</span>
+    <span class="k">elif</span> <span class="n">rho</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">2</span> <span class="ow">and</span> <span class="n">rho</span><span class="o">.</span><span class="n">shape</span> <span class="o">==</span> <span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">S</span><span class="p">,</span> <span class="n">p</span><span class="o">.</span><span class="n">J</span><span class="p">):</span>
+        <span class="c1"># by age and group, the same in every period</span>
+        <span class="n">rho</span> <span class="o">=</span> <span class="n">rho</span><span class="p">[:,</span> <span class="n">j</span><span class="p">]</span> <span class="k">if</span> <span class="n">j</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">rho</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">broadcast_to</span><span class="p">(</span><span class="n">rho</span><span class="p">,</span> <span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">T</span> <span class="o">+</span> <span class="n">p</span><span class="o">.</span><span class="n">S</span><span class="p">,</span> <span class="n">p</span><span class="o">.</span><span class="n">S</span><span class="p">))</span></div>
+
+
+
+<div class="viewcode-block" id="fdc_annuity_factor_loop">
+<a class="viewcode-back" href="../../pensions.html#ogcore.pensions.fdc_annuity_factor_loop">[docs]</a>
+<span class="nd">@numba</span><span class="o">.</span><span class="n">jit</span><span class="p">(</span><span class="n">nopython</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">fdc_annuity_factor_loop</span><span class="p">(</span><span class="n">S</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">rho</span><span class="p">,</span> <span class="n">r</span><span class="p">):</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">"""</span>
+<span class="sd">    Price, at age a, of an annuity-due paying one unit of real income</span>
+<span class="sd">    at each age from a to S - 1 while the household lives:</span>
+
+<span class="sd">    .. math::</span>
+<span class="sd">        \ddot{a}_{a} = 1 + \frac{1 - \rho_{a}}{1 + r_{fdc,a+1}}</span>
+<span class="sd">            \ddot{a}_{a+1}, \quad \ddot{a}_{S-1} = 1</span>
+
+<span class="sd">    The benefit is fixed in real terms, which in detrended model units</span>
+<span class="sd">    is a benefit that falls by e^{-g_y} each period while the balance</span>
+<span class="sd">    behind it is also detrended by e^{-g_y}, so trend growth does not</span>
+<span class="sd">    enter the price.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        S (int): number of periods of life</span>
+<span class="sd">        a (int): age at which the annuity is bought</span>
+<span class="sd">        rho (Numpy array): mortality rate at each age of the household's</span>
+<span class="sd">            life, length S</span>
+<span class="sd">        r (Numpy array): FDC return r_fdc = r_p - r_fdc_wedge credited</span>
+<span class="sd">            at each age of the household's life (r[s] is earned on</span>
+<span class="sd">            holdings carried from age s - 1 to age s), length S</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        ann (scalar): annuity factor</span>
+<span class="sd">    """</span>
+    <span class="n">ann</span> <span class="o">=</span> <span class="mf">1.0</span>
+    <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">S</span> <span class="o">-</span> <span class="mi">2</span><span class="p">,</span> <span class="n">a</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">):</span>
+        <span class="n">ann</span> <span class="o">=</span> <span class="mf">1.0</span> <span class="o">+</span> <span class="p">(</span><span class="mf">1.0</span> <span class="o">-</span> <span class="n">rho</span><span class="p">[</span><span class="n">s</span><span class="p">])</span> <span class="o">*</span> <span class="n">ann</span> <span class="o">/</span> <span class="p">(</span><span class="mf">1.0</span> <span class="o">+</span> <span class="n">r</span><span class="p">[</span><span class="n">s</span> <span class="o">+</span> <span class="mi">1</span><span class="p">])</span>
+    <span class="k">return</span> <span class="n">ann</span></div>
+
+
+
+<div class="viewcode-block" id="fdc_lifetime_loop">
+<a class="viewcode-back" href="../../pensions.html#ogcore.pensions.fdc_lifetime_loop">[docs]</a>
+<span class="nd">@numba</span><span class="o">.</span><span class="n">jit</span><span class="p">(</span><span class="n">nopython</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">fdc_lifetime_loop</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">tau</span><span class="p">,</span> <span class="n">lo</span><span class="p">,</span> <span class="n">hi</span><span class="p">,</span> <span class="n">r</span><span class="p">,</span> <span class="n">rho</span><span class="p">,</span> <span class="n">R</span><span class="p">,</span> <span class="n">g_y</span><span class="p">,</span> <span class="n">a0</span><span class="p">,</span> <span class="n">A0</span><span class="p">,</span> <span class="n">S</span><span class="p">):</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">"""</span>
+<span class="sd">    Funded defined contribution account of one household from age a0</span>
+<span class="sd">    to the end of life, in detrended model units.</span>
+
+<span class="sd">    Before the retirement age R the household contributes</span>
+<span class="sd">    $C_s = \tau_s(\min(\max(y_s, lo_s), hi_s) - lo_s)$ out of period</span>
+<span class="sd">    resources, and its end-of-period holdings $H_s = A_s + C_s$ earn</span>
+<span class="sd">    the next period's return:</span>
+
+<span class="sd">    .. math::</span>
+<span class="sd">        A_{s+1} = (1 + r_{fdc,s+1})e^{-g_y}H_s</span>
+
+<span class="sd">    The account therefore earns the return in every period from the</span>
+<span class="sd">    period after each contribution through the retirement period R</span>
+<span class="sd">    itself, one period more than the notional defined contribution</span>
+<span class="sd">    system credits. At age $\max(R, a_0)$ the balance buys an annuity,</span>
+<span class="sd">    $P = A/\ddot{a}$; a household already retired at a0 holds a</span>
+<span class="sd">    remaining balance that is re-annuitized on the rates given. After</span>
+<span class="sd">    that $H_s = A_s - P_s$, $P_{s+1} = P_s e^{-g_y}$, and the holdings</span>
+<span class="sd">    of those who die stay in the annuity pool:</span>
+
+<span class="sd">    .. math::</span>
+<span class="sd">        A_{s+1} = \frac{(1 + r_{fdc,s+1})e^{-g_y}}{1 - \rho_s}H_s</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        y (Numpy array): labor income w * e * n at each age, length S</span>
+<span class="sd">        tau (Numpy array): contribution rate at each age, length S</span>
+<span class="sd">        lo (Numpy array): lower cutoff of the earnings band at each age</span>
+<span class="sd">        hi (Numpy array): upper cutoff of the earnings band at each age</span>
+<span class="sd">        r (Numpy array): FDC return r_fdc = r_p - r_fdc_wedge credited</span>
+<span class="sd">            at each age (on holdings carried in from the previous age),</span>
+<span class="sd">            length S</span>
+<span class="sd">        rho (Numpy array): mortality rate at each age, length S</span>
+<span class="sd">        R (int): retirement age (S for none within the household's life)</span>
+<span class="sd">        g_y (scalar): growth rate of labor augmenting technology</span>
+<span class="sd">        a0 (int): first age computed</span>
+<span class="sd">        A0 (scalar): balance at the start of age a0</span>
+<span class="sd">        S (int): number of periods of life</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        (tuple): length S arrays by age</span>
+
+<span class="sd">            * C (Numpy array): contribution</span>
+<span class="sd">            * A (Numpy array): balance at the start of the period</span>
+<span class="sd">            * P (Numpy array): annuity benefit</span>
+<span class="sd">            * H (Numpy array): end-of-period holdings</span>
+<span class="sd">            * dC (Numpy array): derivative of C with respect to y</span>
+<span class="sd">            * m (Numpy array): benefit at age R per unit of</span>
+<span class="sd">              contribution at each age before R</span>
+<span class="sd">    """</span>
+    <span class="n">C</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">S</span><span class="p">)</span>
+    <span class="n">A</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">S</span><span class="p">)</span>
+    <span class="n">P</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">S</span><span class="p">)</span>
+    <span class="n">H</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">S</span><span class="p">)</span>
+    <span class="n">dC</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">S</span><span class="p">)</span>
+    <span class="n">m</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">S</span><span class="p">)</span>
+    <span class="n">detrend</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="n">g_y</span><span class="p">)</span>
+    <span class="n">A</span><span class="p">[</span><span class="n">a0</span><span class="p">]</span> <span class="o">=</span> <span class="n">A0</span>
+    <span class="n">first_payment</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">R</span><span class="p">,</span> <span class="n">a0</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">a0</span><span class="p">,</span> <span class="n">S</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">s</span> <span class="o">&lt;</span> <span class="n">R</span><span class="p">:</span>
+            <span class="n">x</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="nb">max</span><span class="p">(</span><span class="n">y</span><span class="p">[</span><span class="n">s</span><span class="p">],</span> <span class="n">lo</span><span class="p">[</span><span class="n">s</span><span class="p">]),</span> <span class="n">hi</span><span class="p">[</span><span class="n">s</span><span class="p">])</span> <span class="o">-</span> <span class="n">lo</span><span class="p">[</span><span class="n">s</span><span class="p">]</span>
+            <span class="n">C</span><span class="p">[</span><span class="n">s</span><span class="p">]</span> <span class="o">=</span> <span class="n">tau</span><span class="p">[</span><span class="n">s</span><span class="p">]</span> <span class="o">*</span> <span class="n">x</span>
+            <span class="k">if</span> <span class="n">y</span><span class="p">[</span><span class="n">s</span><span class="p">]</span> <span class="o">&gt;</span> <span class="n">lo</span><span class="p">[</span><span class="n">s</span><span class="p">]</span> <span class="ow">and</span> <span class="n">y</span><span class="p">[</span><span class="n">s</span><span class="p">]</span> <span class="o">&lt;</span> <span class="n">hi</span><span class="p">[</span><span class="n">s</span><span class="p">]:</span>
+                <span class="n">dC</span><span class="p">[</span><span class="n">s</span><span class="p">]</span> <span class="o">=</span> <span class="n">tau</span><span class="p">[</span><span class="n">s</span><span class="p">]</span>
+            <span class="n">H</span><span class="p">[</span><span class="n">s</span><span class="p">]</span> <span class="o">=</span> <span class="n">A</span><span class="p">[</span><span class="n">s</span><span class="p">]</span> <span class="o">+</span> <span class="n">C</span><span class="p">[</span><span class="n">s</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">s</span> <span class="o">==</span> <span class="n">first_payment</span><span class="p">:</span>
+                <span class="n">P</span><span class="p">[</span><span class="n">s</span><span class="p">]</span> <span class="o">=</span> <span class="n">A</span><span class="p">[</span><span class="n">s</span><span class="p">]</span> <span class="o">/</span> <span class="n">fdc_annuity_factor_loop</span><span class="p">(</span><span class="n">S</span><span class="p">,</span> <span class="n">s</span><span class="p">,</span> <span class="n">rho</span><span class="p">,</span> <span class="n">r</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">P</span><span class="p">[</span><span class="n">s</span><span class="p">]</span> <span class="o">=</span> <span class="n">P</span><span class="p">[</span><span class="n">s</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="n">detrend</span>
+            <span class="n">H</span><span class="p">[</span><span class="n">s</span><span class="p">]</span> <span class="o">=</span> <span class="n">A</span><span class="p">[</span><span class="n">s</span><span class="p">]</span> <span class="o">-</span> <span class="n">P</span><span class="p">[</span><span class="n">s</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">s</span> <span class="o">+</span> <span class="mi">1</span> <span class="o">&lt;</span> <span class="n">S</span><span class="p">:</span>
+            <span class="n">grow</span> <span class="o">=</span> <span class="p">(</span><span class="mf">1.0</span> <span class="o">+</span> <span class="n">r</span><span class="p">[</span><span class="n">s</span> <span class="o">+</span> <span class="mi">1</span><span class="p">])</span> <span class="o">*</span> <span class="n">detrend</span>
+            <span class="k">if</span> <span class="n">s</span> <span class="o">&gt;=</span> <span class="n">R</span><span class="p">:</span>
+                <span class="n">grow</span> <span class="o">/=</span> <span class="mf">1.0</span> <span class="o">-</span> <span class="n">rho</span><span class="p">[</span><span class="n">s</span><span class="p">]</span>
+            <span class="n">A</span><span class="p">[</span><span class="n">s</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">grow</span> <span class="o">*</span> <span class="n">H</span><span class="p">[</span><span class="n">s</span><span class="p">]</span>
+    <span class="k">if</span> <span class="n">a0</span> <span class="o">&lt;</span> <span class="n">R</span> <span class="ow">and</span> <span class="n">R</span> <span class="o">&lt;</span> <span class="n">S</span><span class="p">:</span>
+        <span class="c1"># a unit contributed at age s &lt; R grows to sum of returns</span>
+        <span class="c1"># through R and buys 1 / annuity factor of benefit at R</span>
+        <span class="n">G</span> <span class="o">=</span> <span class="mf">1.0</span> <span class="o">/</span> <span class="n">fdc_annuity_factor_loop</span><span class="p">(</span><span class="n">S</span><span class="p">,</span> <span class="n">R</span><span class="p">,</span> <span class="n">rho</span><span class="p">,</span> <span class="n">r</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">R</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="n">a0</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">):</span>
+            <span class="n">G</span> <span class="o">*=</span> <span class="p">(</span><span class="mf">1.0</span> <span class="o">+</span> <span class="n">r</span><span class="p">[</span><span class="n">s</span> <span class="o">+</span> <span class="mi">1</span><span class="p">])</span> <span class="o">*</span> <span class="n">detrend</span>
+            <span class="n">m</span><span class="p">[</span><span class="n">s</span><span class="p">]</span> <span class="o">=</span> <span class="n">G</span>
+    <span class="k">return</span> <span class="n">C</span><span class="p">,</span> <span class="n">A</span><span class="p">,</span> <span class="n">P</span><span class="p">,</span> <span class="n">H</span><span class="p">,</span> <span class="n">dC</span><span class="p">,</span> <span class="n">m</span></div>
+
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_cohort_rows</span><span class="p">(</span><span class="n">t_birth</span><span class="p">,</span> <span class="n">n_rows</span><span class="p">,</span> <span class="n">S</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""</span>
+<span class="sd">    Rows of a calendar-indexed array that a household born in period</span>
+<span class="sd">    t_birth reads at each age, clipped to the array. With t_birth None</span>
+<span class="sd">    (the steady state) every age reads the last row.</span>
+<span class="sd">    """</span>
+    <span class="k">if</span> <span class="n">t_birth</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">full</span><span class="p">(</span><span class="n">S</span><span class="p">,</span> <span class="n">n_rows</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">clip</span><span class="p">(</span><span class="n">t_birth</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">S</span><span class="p">),</span> <span class="mi">0</span><span class="p">,</span> <span class="n">n_rows</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_calendar_by_age</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">t_birth</span><span class="p">,</span> <span class="n">S</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""</span>
+<span class="sd">    Value of a scalar or a calendar path at each age of a household</span>
+<span class="sd">    born in period t_birth (the last element in the steady state).</span>
+<span class="sd">    """</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">atleast_1d</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">))</span><span class="o">.</span><span class="n">ravel</span><span class="p">()</span>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">ascontiguousarray</span><span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="n">_cohort_rows</span><span class="p">(</span><span class="n">t_birth</span><span class="p">,</span> <span class="n">x</span><span class="o">.</span><span class="n">size</span><span class="p">,</span> <span class="n">S</span><span class="p">)])</span>
+
+
+<div class="viewcode-block" id="fdc_lifetime">
+<a class="viewcode-back" href="../../pensions.html#ogcore.pensions.fdc_lifetime">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">fdc_lifetime</span><span class="p">(</span><span class="n">w</span><span class="p">,</span> <span class="n">e</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">r_p</span><span class="p">,</span> <span class="n">t_birth</span><span class="p">,</span> <span class="n">j</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">a0</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">A0</span><span class="o">=</span><span class="mf">0.0</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""</span>
+<span class="sd">    Funded defined contribution account of one household over its</span>
+<span class="sd">    lifetime: contributions, balances, annuity benefits, end-of-period</span>
+<span class="sd">    holdings, and the derivatives the household's labor decision needs.</span>
+
+<span class="sd">    The household is born (age 0) in model period t_birth and lives</span>
+<span class="sd">    age s in period t_birth + s. Calendar inputs (the wage, the return,</span>
+<span class="sd">    and the parameters) are read in the period each age is lived;</span>
+<span class="sd">    periods before or after the time path read its first or last</span>
+<span class="sd">    element. With t_birth None every calendar input reads its last</span>
+<span class="sd">    element, which gives the steady state.</span>
+
+<span class="sd">    The contribution rate ``fdc_tau`` and the retirement age are the</span>
+<span class="sd">    household's own cohort values (from ``pension_regimes``), the</span>
+<span class="sd">    earnings band cutoffs are those the cohort faces in the period the</span>
+<span class="sd">    income is earned, and the annuity is priced on the mortality of income</span>
+<span class="sd">    group j along the cohort's life and on the path of the FDC return</span>
+<span class="sd">    the household foresees. The account earns the FDC return</span>
+<span class="sd">    r_fdc = r_p - r_fdc_wedge at each age, where ``r_fdc_wedge`` is the</span>
+<span class="sd">    value the household's cohort faces in the period that age is lived.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        w (scalar or array_like): wage, a single value or a calendar</span>
+<span class="sd">            path by model period</span>
+<span class="sd">        e (Numpy array): effective labor units at each age, length S</span>
+<span class="sd">        n (Numpy array): labor supply at each age, length S; ages</span>
+<span class="sd">            before a0 are ignored</span>
+<span class="sd">        r_p (scalar or array_like): household portfolio return, a</span>
+<span class="sd">            single value or a calendar path by model period; the</span>
+<span class="sd">            element for period t is the return earned in t on holdings</span>
+<span class="sd">            carried from t - 1; the account earns this less</span>
+<span class="sd">            ``r_fdc_wedge``</span>
+<span class="sd">        t_birth (int or None): model period in which the household is</span>
+<span class="sd">            age 0, None for the steady state</span>
+<span class="sd">        j (int or None): lifetime income group, which sets the</span>
+<span class="sd">            mortality rates that price the annuity (None for the</span>
+<span class="sd">            lambda-weighted average)</span>
+<span class="sd">        p (OG-Core Specifications object): model parameters</span>
+<span class="sd">        a0 (int): first age computed, for a household already alive</span>
+<span class="sd">            when the time path begins</span>
+<span class="sd">        A0 (scalar): account balance at the start of age a0; a</span>
+<span class="sd">            household already retired at a0 annuitizes this remaining</span>
+<span class="sd">            balance on the rates given</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        FDCLifetime: the account by age</span>
+<span class="sd">    """</span>
+    <span class="n">S</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">S</span>
+    <span class="n">e</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ascontiguousarray</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">e</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span><span class="o">.</span><span class="n">ravel</span><span class="p">())</span>
+    <span class="n">n</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ascontiguousarray</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span><span class="o">.</span><span class="n">ravel</span><span class="p">())</span>
+    <span class="n">w_age</span> <span class="o">=</span> <span class="n">_calendar_by_age</span><span class="p">(</span><span class="n">w</span><span class="p">,</span> <span class="n">t_birth</span><span class="p">,</span> <span class="n">S</span><span class="p">)</span>
+    <span class="n">ages</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">S</span><span class="p">)</span>
+    <span class="c1"># FDC return r_fdc = r_p - r_fdc_wedge, with the wedge the</span>
+    <span class="c1"># household's cohort faces at each age</span>
+    <span class="n">r_age</span> <span class="o">=</span> <span class="n">_calendar_by_age</span><span class="p">(</span><span class="n">r_p</span><span class="p">,</span> <span class="n">t_birth</span><span class="p">,</span> <span class="n">S</span><span class="p">)</span>
+    <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="s2">"r_fdc_wedge"</span><span class="p">):</span>
+        <span class="n">wedge_arr</span> <span class="o">=</span> <span class="n">cohort_array</span><span class="p">(</span><span class="s2">"r_fdc_wedge"</span><span class="p">,</span> <span class="n">p</span><span class="p">)</span>
+        <span class="n">r_age</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ascontiguousarray</span><span class="p">(</span>
+            <span class="n">r_age</span>
+            <span class="o">-</span> <span class="n">wedge_arr</span><span class="p">[</span><span class="n">_cohort_rows</span><span class="p">(</span><span class="n">t_birth</span><span class="p">,</span> <span class="n">wedge_arr</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">S</span><span class="p">),</span> <span class="n">ages</span><span class="p">]</span>
+        <span class="p">)</span>
+    <span class="n">lo</span><span class="p">,</span> <span class="n">hi</span> <span class="o">=</span> <span class="n">fdc_earn_bands</span><span class="p">(</span><span class="n">p</span><span class="p">)</span>
+    <span class="n">lo_age</span> <span class="o">=</span> <span class="n">_cohort_diag</span><span class="p">(</span><span class="n">lo</span><span class="p">,</span> <span class="n">t_birth</span><span class="p">,</span> <span class="n">S</span><span class="p">)</span>
+    <span class="n">hi_age</span> <span class="o">=</span> <span class="n">_cohort_diag</span><span class="p">(</span><span class="n">hi</span><span class="p">,</span> <span class="n">t_birth</span><span class="p">,</span> <span class="n">S</span><span class="p">)</span>
+    <span class="n">tau_arr</span> <span class="o">=</span> <span class="n">cohort_array</span><span class="p">(</span><span class="s2">"fdc_tau"</span><span class="p">,</span> <span class="n">p</span><span class="p">)</span>
+    <span class="n">rows</span> <span class="o">=</span> <span class="n">_cohort_rows</span><span class="p">(</span><span class="n">t_birth</span><span class="p">,</span> <span class="n">tau_arr</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">S</span><span class="p">)</span>
+    <span class="n">tau_age</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ascontiguousarray</span><span class="p">(</span><span class="n">tau_arr</span><span class="p">[</span><span class="n">rows</span><span class="p">,</span> <span class="n">ages</span><span class="p">])</span>
+    <span class="n">retire_arr</span> <span class="o">=</span> <span class="n">cohort_array</span><span class="p">(</span><span class="s2">"retire"</span><span class="p">,</span> <span class="n">p</span><span class="p">)</span>
+    <span class="n">retire_age</span> <span class="o">=</span> <span class="n">retire_arr</span><span class="p">[</span>
+        <span class="n">_cohort_rows</span><span class="p">(</span><span class="n">t_birth</span><span class="p">,</span> <span class="n">retire_arr</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">S</span><span class="p">),</span> <span class="n">ages</span>
+    <span class="p">]</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span>
+    <span class="n">retired</span> <span class="o">=</span> <span class="n">ages</span> <span class="o">&gt;=</span> <span class="n">retire_age</span>
+    <span class="n">R</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">argmax</span><span class="p">(</span><span class="n">retired</span><span class="p">))</span> <span class="k">if</span> <span class="n">retired</span><span class="o">.</span><span class="n">any</span><span class="p">()</span> <span class="k">else</span> <span class="n">S</span>
+    <span class="n">mort</span> <span class="o">=</span> <span class="n">fdc_mort_rates</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">j</span><span class="p">)</span>
+    <span class="n">rho_age</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ascontiguousarray</span><span class="p">(</span>
+        <span class="n">mort</span><span class="p">[</span><span class="n">_cohort_rows</span><span class="p">(</span><span class="n">t_birth</span><span class="p">,</span> <span class="n">mort</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">S</span><span class="p">),</span> <span class="n">ages</span><span class="p">]</span>
+    <span class="p">)</span>
+    <span class="n">y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ascontiguousarray</span><span class="p">(</span><span class="n">w_age</span> <span class="o">*</span> <span class="n">e</span> <span class="o">*</span> <span class="n">n</span><span class="p">)</span>
+    <span class="n">C</span><span class="p">,</span> <span class="n">A</span><span class="p">,</span> <span class="n">P</span><span class="p">,</span> <span class="n">H</span><span class="p">,</span> <span class="n">dC</span><span class="p">,</span> <span class="n">m</span> <span class="o">=</span> <span class="n">fdc_lifetime_loop</span><span class="p">(</span>
+        <span class="n">y</span><span class="p">,</span>
+        <span class="n">tau_age</span><span class="p">,</span>
+        <span class="n">lo_age</span><span class="p">,</span>
+        <span class="n">hi_age</span><span class="p">,</span>
+        <span class="n">r_age</span><span class="p">,</span>
+        <span class="n">rho_age</span><span class="p">,</span>
+        <span class="n">R</span><span class="p">,</span>
+        <span class="nb">float</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">squeeze</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">g_y</span><span class="p">)),</span>
+        <span class="nb">int</span><span class="p">(</span><span class="n">a0</span><span class="p">),</span>
+        <span class="nb">float</span><span class="p">(</span><span class="n">A0</span><span class="p">),</span>
+        <span class="n">S</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="k">return</span> <span class="n">FDCLifetime</span><span class="p">(</span><span class="n">C</span><span class="p">,</span> <span class="n">A</span><span class="p">,</span> <span class="n">P</span><span class="p">,</span> <span class="n">H</span><span class="p">,</span> <span class="n">dC</span> <span class="o">*</span> <span class="n">w_age</span> <span class="o">*</span> <span class="n">e</span><span class="p">,</span> <span class="n">m</span><span class="p">,</span> <span class="n">R</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="fdc_ss">
+<a class="viewcode-back" href="../../pensions.html#ogcore.pensions.fdc_ss">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">fdc_ss</span><span class="p">(</span><span class="n">r_p</span><span class="p">,</span> <span class="n">w</span><span class="p">,</span> <span class="n">e</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">p</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""</span>
+<span class="sd">    Steady-state funded defined contribution accounts of every lifetime</span>
+<span class="sd">    income group.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        r_p (scalar): steady-state household portfolio return; the</span>
+<span class="sd">            accounts earn r_fdc = r_p - r_fdc_wedge</span>
+<span class="sd">        w (scalar): steady-state wage</span>
+<span class="sd">        e (Numpy array): effective labor units, S x J</span>
+<span class="sd">        n (Numpy array): labor supply, S x J</span>
+<span class="sd">        p (OG-Core Specifications object): model parameters</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        FDCLifetime: each array field S x J, and ``R`` the steady-state</span>
+<span class="sd">            retirement age</span>
+<span class="sd">    """</span>
+    <span class="n">e</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">e</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">S</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">n</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">S</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">J</span> <span class="o">=</span> <span class="n">n</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+    <span class="k">if</span> <span class="n">e</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">!=</span> <span class="n">J</span><span class="p">:</span>
+        <span class="n">e</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">broadcast_to</span><span class="p">(</span><span class="n">e</span><span class="p">[:,</span> <span class="p">:</span><span class="mi">1</span><span class="p">],</span> <span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">S</span><span class="p">,</span> <span class="n">J</span><span class="p">))</span>
+    <span class="n">out</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="n">fdc_lifetime</span><span class="p">(</span><span class="n">w</span><span class="p">,</span> <span class="n">e</span><span class="p">[:,</span> <span class="n">j</span><span class="p">],</span> <span class="n">n</span><span class="p">[:,</span> <span class="n">j</span><span class="p">],</span> <span class="n">r_p</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="n">j</span><span class="p">,</span> <span class="n">p</span><span class="p">)</span> <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">J</span><span class="p">)</span>
+    <span class="p">]</span>
+    <span class="n">fields</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="n">name</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">stack</span><span class="p">([</span><span class="nb">getattr</span><span class="p">(</span><span class="n">o</span><span class="p">,</span> <span class="n">name</span><span class="p">)</span> <span class="k">for</span> <span class="n">o</span> <span class="ow">in</span> <span class="n">out</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">FDCLifetime</span><span class="o">.</span><span class="n">_fields</span>
+        <span class="k">if</span> <span class="n">name</span> <span class="o">!=</span> <span class="s2">"R"</span>
+    <span class="p">}</span>
+    <span class="k">return</span> <span class="n">FDCLifetime</span><span class="p">(</span><span class="n">R</span><span class="o">=</span><span class="n">out</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">R</span><span class="p">,</span> <span class="o">**</span><span class="n">fields</span><span class="p">)</span></div>
+
 </pre></div>
 
                 </article>

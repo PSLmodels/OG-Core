@@ -1609,6 +1609,354 @@ The cutoffs are read at period t_cross - u + s and age s.</p></li>
 </dl>
 </dd></dl>
 
+<dl class="py class">
+<dt class="sig sig-object py" id="ogcore.pensions.FDCLifetime">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">ogcore.pensions.</span></span><span class="sig-name descname"><span class="pre">FDCLifetime</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">contrib</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">balance</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">benefit</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">holdings</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dcontrib_dn</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">benefit_per_contrib</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">R</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ogcore/pensions.html#FDCLifetime"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogcore.pensions.FDCLifetime" title="Link to this definition">#</a></dt>
+<dd><p>A household’s funded defined contribution account over its life,
+returned by <code class="docutils literal notranslate"><span class="pre">fdc_lifetime</span></code>. Every field except <code class="docutils literal notranslate"><span class="pre">R</span></code> is a length
+S array by age; entries before the first age computed are zero.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>contrib</strong> (<em>ndarray</em>)</p></li>
+<li><p><strong>balance</strong> (<em>ndarray</em>)</p></li>
+<li><p><strong>benefit</strong> (<em>ndarray</em>)</p></li>
+<li><p><strong>holdings</strong> (<em>ndarray</em>)</p></li>
+<li><p><strong>dcontrib_dn</strong> (<em>ndarray</em>)</p></li>
+<li><p><strong>benefit_per_contrib</strong> (<em>ndarray</em>)</p></li>
+<li><p><strong>R</strong> (<em>int</em>)</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ogcore.pensions.FDCLifetime.contrib">
+<span class="sig-name descname"><span class="pre">contrib</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ndarray</span></span><a class="headerlink" href="#ogcore.pensions.FDCLifetime.contrib" title="Link to this definition">#</a></dt>
+<dd><p>contribution paid at each age, out of that
+period’s resources (zero from the retirement age on)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Numpy array</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ogcore.pensions.FDCLifetime.balance">
+<span class="sig-name descname"><span class="pre">balance</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ndarray</span></span><a class="headerlink" href="#ogcore.pensions.FDCLifetime.balance" title="Link to this definition">#</a></dt>
+<dd><p>account balance at the start of each age, after
+the return credited in that period and before that period’s
+contribution or benefit</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Numpy array</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ogcore.pensions.FDCLifetime.benefit">
+<span class="sig-name descname"><span class="pre">benefit</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ndarray</span></span><a class="headerlink" href="#ogcore.pensions.FDCLifetime.benefit" title="Link to this definition">#</a></dt>
+<dd><p>annuity benefit received at each age (zero before
+the retirement age)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Numpy array</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ogcore.pensions.FDCLifetime.holdings">
+<span class="sig-name descname"><span class="pre">holdings</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ndarray</span></span><a class="headerlink" href="#ogcore.pensions.FDCLifetime.holdings" title="Link to this definition">#</a></dt>
+<dd><p>end-of-period holdings at each age, the balance
+plus the contribution before retirement and the balance less
+the benefit after; these are the fund’s assets</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Numpy array</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ogcore.pensions.FDCLifetime.dcontrib_dn">
+<span class="sig-name descname"><span class="pre">dcontrib_dn</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ndarray</span></span><a class="headerlink" href="#ogcore.pensions.FDCLifetime.dcontrib_dn" title="Link to this definition">#</a></dt>
+<dd><p>derivative of the contribution with respect to
+labor supply n at each age</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Numpy array</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ogcore.pensions.FDCLifetime.benefit_per_contrib">
+<span class="sig-name descname"><span class="pre">benefit_per_contrib</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ndarray</span></span><a class="headerlink" href="#ogcore.pensions.FDCLifetime.benefit_per_contrib" title="Link to this definition">#</a></dt>
+<dd><p>benefit at the retirement age per unit of
+contribution made at each earlier age; the benefit at a later
+age u is that times e^{-g_y (u - R)}</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Numpy array</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ogcore.pensions.FDCLifetime.R">
+<span class="sig-name descname"><span class="pre">R</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></span><a class="headerlink" href="#ogcore.pensions.FDCLifetime.R" title="Link to this definition">#</a></dt>
+<dd><p>age at which the balance is annuitized (S if the household
+does not reach retirement within its life)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="ogcore.pensions.fdc_earn_bands">
+<span class="sig-prename descclassname"><span class="pre">ogcore.pensions.</span></span><span class="sig-name descname"><span class="pre">fdc_earn_bands</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">p</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ogcore/pensions.html#fdc_earn_bands"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogcore.pensions.fdc_earn_bands" title="Link to this definition">#</a></dt>
+<dd><p>Lower and upper cutoffs, by model period and age, of the labor
+income on which funded defined contribution (FDC) contributions
+are paid, in model units of labor income.</p>
+<p>The lower cutoff is <code class="docutils literal notranslate"><span class="pre">fdc_earn_floor_factor</span></code> times
+<code class="docutils literal notranslate"><span class="pre">avg_labor_inc_t1_model_units</span></code>. The upper cutoff is the cap
+shared with the other defined contribution systems,
+<code class="docutils literal notranslate"><span class="pre">dc_earn_cap_factor</span></code> times <code class="docutils literal notranslate"><span class="pre">avg_labor_inc_t1_model_units</span></code>,
+when <code class="docutils literal notranslate"><span class="pre">pension_earn_cap</span></code> is True, and infinite otherwise. The
+cutoff at period t and age s is the one that applies to the cohort
+of that household; it applies to the labor income the household
+earns in that period.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>p</strong> (<em>OG-Core Specifications object</em>) – model parameters</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><dl class="simple">
+<dt>the cutoffs as 2-D arrays by period and</dt><dd><p>age ((T + S) x S once <code class="docutils literal notranslate"><span class="pre">Specifications</span></code> builds them; a
+factor set by hand as a single value or a path by period
+gives one column, applied at every age)</p>
+</dd>
+</dl>
+</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>lo, hi (Numpy arrays)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="ogcore.pensions.fdc_mort_rates">
+<span class="sig-prename descclassname"><span class="pre">ogcore.pensions.</span></span><span class="sig-name descname"><span class="pre">fdc_mort_rates</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">p</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">j</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ogcore/pensions.html#fdc_mort_rates"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogcore.pensions.fdc_mort_rates" title="Link to this definition">#</a></dt>
+<dd><p>Mortality rates by period and age that price the FDC annuity of
+lifetime income group j.</p>
+<p>The annuity is priced on the mortality of the household’s own
+income group, so that the annuity pool of each group pays out
+exactly what it holds when mortality differs across groups.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>p</strong> (<em>OG-Core Specifications object</em>) – model parameters</p></li>
+<li><p><strong>j</strong> (<em>int</em>) – lifetime income group, or None for the average over
+groups weighted by <code class="docutils literal notranslate"><span class="pre">lambdas</span></code></p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><dl class="simple">
+<dt>(T + S) x S mortality rates, where</dt><dd><p>row t, column s is the probability that a household of age
+s in period t dies before period t + 1</p>
+</dd>
+</dl>
+</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>mort_rates (Numpy array)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="ogcore.pensions.fdc_annuity_factor_loop">
+<span class="sig-prename descclassname"><span class="pre">ogcore.pensions.</span></span><span class="sig-name descname"><span class="pre">fdc_annuity_factor_loop</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">S</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">a</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rho</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">r</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ogcore/pensions.html#fdc_annuity_factor_loop"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogcore.pensions.fdc_annuity_factor_loop" title="Link to this definition">#</a></dt>
+<dd><p>Price, at age a, of an annuity-due paying one unit of real income
+at each age from a to S - 1 while the household lives:</p>
+<div class="math notranslate nohighlight">
+\[\ddot{a}_{a} = 1 + \frac{1 - \rho_{a}}{1 + r_{fdc,a+1}}
+    \ddot{a}_{a+1}, \quad \ddot{a}_{S-1} = 1\]</div>
+<p>The benefit is fixed in real terms, which in detrended model units
+is a benefit that falls by e^{-g_y} each period while the balance
+behind it is also detrended by e^{-g_y}, so trend growth does not
+enter the price.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>S</strong> (<em>int</em>) – number of periods of life</p></li>
+<li><p><strong>a</strong> (<em>int</em>) – age at which the annuity is bought</p></li>
+<li><p><strong>rho</strong> (<em>Numpy array</em>) – mortality rate at each age of the household’s
+life, length S</p></li>
+<li><p><strong>r</strong> (<em>Numpy array</em>) – FDC return r_fdc = r_p - r_fdc_wedge credited
+at each age of the household’s life (r[s] is earned on
+holdings carried from age s - 1 to age s), length S</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>annuity factor</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>ann (scalar)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="ogcore.pensions.fdc_lifetime_loop">
+<span class="sig-prename descclassname"><span class="pre">ogcore.pensions.</span></span><span class="sig-name descname"><span class="pre">fdc_lifetime_loop</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">y</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tau</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lo</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">hi</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">r</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rho</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">R</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">g_y</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">a0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">A0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">S</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ogcore/pensions.html#fdc_lifetime_loop"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogcore.pensions.fdc_lifetime_loop" title="Link to this definition">#</a></dt>
+<dd><p>Funded defined contribution account of one household from age a0
+to the end of life, in detrended model units.</p>
+<p>Before the retirement age R the household contributes
+<span class="math notranslate nohighlight">\(C_s = \tau_s(\min(\max(y_s, lo_s), hi_s) - lo_s)\)</span> out of period
+resources, and its end-of-period holdings <span class="math notranslate nohighlight">\(H_s = A_s + C_s\)</span> earn
+the next period’s return:</p>
+<div class="math notranslate nohighlight">
+\[A_{s+1} = (1 + r_{fdc,s+1})e^{-g_y}H_s\]</div>
+<p>The account therefore earns the return in every period from the
+period after each contribution through the retirement period R
+itself, one period more than the notional defined contribution
+system credits. At age <span class="math notranslate nohighlight">\(\max(R, a_0)\)</span> the balance buys an annuity,
+<span class="math notranslate nohighlight">\(P = A/\ddot{a}\)</span>; a household already retired at a0 holds a
+remaining balance that is re-annuitized on the rates given. After
+that <span class="math notranslate nohighlight">\(H_s = A_s - P_s\)</span>, <span class="math notranslate nohighlight">\(P_{s+1} = P_s e^{-g_y}\)</span>, and the holdings
+of those who die stay in the annuity pool:</p>
+<div class="math notranslate nohighlight">
+\[A_{s+1} = \frac{(1 + r_{fdc,s+1})e^{-g_y}}{1 - \rho_s}H_s\]</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>y</strong> (<em>Numpy array</em>) – labor income w * e * n at each age, length S</p></li>
+<li><p><strong>tau</strong> (<em>Numpy array</em>) – contribution rate at each age, length S</p></li>
+<li><p><strong>lo</strong> (<em>Numpy array</em>) – lower cutoff of the earnings band at each age</p></li>
+<li><p><strong>hi</strong> (<em>Numpy array</em>) – upper cutoff of the earnings band at each age</p></li>
+<li><p><strong>r</strong> (<em>Numpy array</em>) – FDC return r_fdc = r_p - r_fdc_wedge credited
+at each age (on holdings carried in from the previous age),
+length S</p></li>
+<li><p><strong>rho</strong> (<em>Numpy array</em>) – mortality rate at each age, length S</p></li>
+<li><p><strong>R</strong> (<em>int</em>) – retirement age (S for none within the household’s life)</p></li>
+<li><p><strong>g_y</strong> (<em>scalar</em>) – growth rate of labor augmenting technology</p></li>
+<li><p><strong>a0</strong> (<em>int</em>) – first age computed</p></li>
+<li><p><strong>A0</strong> (<em>scalar</em>) – balance at the start of age a0</p></li>
+<li><p><strong>S</strong> (<em>int</em>) – number of periods of life</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><p>length S arrays by age</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>C (Numpy array): contribution</p></li>
+<li><p>A (Numpy array): balance at the start of the period</p></li>
+<li><p>P (Numpy array): annuity benefit</p></li>
+<li><p>H (Numpy array): end-of-period holdings</p></li>
+<li><p>dC (Numpy array): derivative of C with respect to y</p></li>
+<li><p>m (Numpy array): benefit at age R per unit of
+contribution at each age before R</p></li>
+</ul>
+</div></blockquote>
+</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>(tuple)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="ogcore.pensions.fdc_lifetime">
+<span class="sig-prename descclassname"><span class="pre">ogcore.pensions.</span></span><span class="sig-name descname"><span class="pre">fdc_lifetime</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">w</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">e</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">r_p</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">t_birth</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">j</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">a0</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">A0</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ogcore/pensions.html#fdc_lifetime"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogcore.pensions.fdc_lifetime" title="Link to this definition">#</a></dt>
+<dd><p>Funded defined contribution account of one household over its
+lifetime: contributions, balances, annuity benefits, end-of-period
+holdings, and the derivatives the household’s labor decision needs.</p>
+<p>The household is born (age 0) in model period t_birth and lives
+age s in period t_birth + s. Calendar inputs (the wage, the return,
+and the parameters) are read in the period each age is lived;
+periods before or after the time path read its first or last
+element. With t_birth None every calendar input reads its last
+element, which gives the steady state.</p>
+<p>The contribution rate <code class="docutils literal notranslate"><span class="pre">fdc_tau</span></code> and the retirement age are the
+household’s own cohort values (from <code class="docutils literal notranslate"><span class="pre">pension_regimes</span></code>), the
+earnings band cutoffs are those the cohort faces in the period the
+income is earned, and the annuity is priced on the mortality of income
+group j along the cohort’s life and on the path of the FDC return
+the household foresees. The account earns the FDC return
+r_fdc = r_p - r_fdc_wedge at each age, where <code class="docutils literal notranslate"><span class="pre">r_fdc_wedge</span></code> is the
+value the household’s cohort faces in the period that age is lived.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>w</strong> (<em>scalar</em><em> or </em><em>array_like</em>) – wage, a single value or a calendar
+path by model period</p></li>
+<li><p><strong>e</strong> (<em>Numpy array</em>) – effective labor units at each age, length S</p></li>
+<li><p><strong>n</strong> (<em>Numpy array</em>) – labor supply at each age, length S; ages
+before a0 are ignored</p></li>
+<li><p><strong>r_p</strong> (<em>scalar</em><em> or </em><em>array_like</em>) – household portfolio return, a
+single value or a calendar path by model period; the
+element for period t is the return earned in t on holdings
+carried from t - 1; the account earns this less
+<code class="docutils literal notranslate"><span class="pre">r_fdc_wedge</span></code></p></li>
+<li><p><strong>t_birth</strong> (<em>int</em><em> or </em><em>None</em>) – model period in which the household is
+age 0, None for the steady state</p></li>
+<li><p><strong>j</strong> (<em>int</em><em> or </em><em>None</em>) – lifetime income group, which sets the
+mortality rates that price the annuity (None for the
+lambda-weighted average)</p></li>
+<li><p><strong>p</strong> (<em>OG-Core Specifications object</em>) – model parameters</p></li>
+<li><p><strong>a0</strong> (<em>int</em>) – first age computed, for a household already alive
+when the time path begins</p></li>
+<li><p><strong>A0</strong> (<em>scalar</em>) – account balance at the start of age a0; a
+household already retired at a0 annuitizes this remaining
+balance on the rates given</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>the account by age</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#ogcore.pensions.FDCLifetime" title="ogcore.pensions.FDCLifetime">FDCLifetime</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="ogcore.pensions.fdc_ss">
+<span class="sig-prename descclassname"><span class="pre">ogcore.pensions.</span></span><span class="sig-name descname"><span class="pre">fdc_ss</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">r_p</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">w</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">e</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ogcore/pensions.html#fdc_ss"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogcore.pensions.fdc_ss" title="Link to this definition">#</a></dt>
+<dd><p>Steady-state funded defined contribution accounts of every lifetime
+income group.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>r_p</strong> (<em>scalar</em>) – steady-state household portfolio return; the
+accounts earn r_fdc = r_p - r_fdc_wedge</p></li>
+<li><p><strong>w</strong> (<em>scalar</em>) – steady-state wage</p></li>
+<li><p><strong>e</strong> (<em>Numpy array</em>) – effective labor units, S x J</p></li>
+<li><p><strong>n</strong> (<em>Numpy array</em>) – labor supply, S x J</p></li>
+<li><p><strong>p</strong> (<em>OG-Core Specifications object</em>) – model parameters</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><dl class="simple">
+<dt>each array field S x J, and <code class="docutils literal notranslate"><span class="pre">R</span></code> the steady-state</dt><dd><p>retirement age</p>
+</dd>
+</dl>
+</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#ogcore.pensions.FDCLifetime" title="ogcore.pensions.FDCLifetime">FDCLifetime</a></p>
+</dd>
+</dl>
+</dd></dl>
+
 </section>
 </section>
 
@@ -1696,6 +2044,22 @@ The cutoffs are read at period t_cross - u + s and age s.</p></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.pensions.DB_3dim_loop"><code class="docutils literal notranslate"><span class="pre">DB_3dim_loop()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.pensions.NDC_1dim_loop"><code class="docutils literal notranslate"><span class="pre">NDC_1dim_loop()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.pensions.NDC_2dim_loop"><code class="docutils literal notranslate"><span class="pre">NDC_2dim_loop()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.pensions.FDCLifetime"><code class="docutils literal notranslate"><span class="pre">FDCLifetime</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.pensions.FDCLifetime.contrib"><code class="docutils literal notranslate"><span class="pre">FDCLifetime.contrib</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.pensions.FDCLifetime.balance"><code class="docutils literal notranslate"><span class="pre">FDCLifetime.balance</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.pensions.FDCLifetime.benefit"><code class="docutils literal notranslate"><span class="pre">FDCLifetime.benefit</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.pensions.FDCLifetime.holdings"><code class="docutils literal notranslate"><span class="pre">FDCLifetime.holdings</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.pensions.FDCLifetime.dcontrib_dn"><code class="docutils literal notranslate"><span class="pre">FDCLifetime.dcontrib_dn</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.pensions.FDCLifetime.benefit_per_contrib"><code class="docutils literal notranslate"><span class="pre">FDCLifetime.benefit_per_contrib</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.pensions.FDCLifetime.R"><code class="docutils literal notranslate"><span class="pre">FDCLifetime.R</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.pensions.fdc_earn_bands"><code class="docutils literal notranslate"><span class="pre">fdc_earn_bands()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.pensions.fdc_mort_rates"><code class="docutils literal notranslate"><span class="pre">fdc_mort_rates()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.pensions.fdc_annuity_factor_loop"><code class="docutils literal notranslate"><span class="pre">fdc_annuity_factor_loop()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.pensions.fdc_lifetime_loop"><code class="docutils literal notranslate"><span class="pre">fdc_lifetime_loop()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.pensions.fdc_lifetime"><code class="docutils literal notranslate"><span class="pre">fdc_lifetime()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.pensions.fdc_ss"><code class="docutils literal notranslate"><span class="pre">fdc_ss()</span></code></a></li>
 </ul>
 </li>
 </ul>
