@@ -2550,10 +2550,10 @@ def NDC_3dim_loop(
     at age s of a household aged u at time t was made in period
     t - (u - s), at that period's wage, labor supply, and contribution
     rate, and earns the rates credited in periods t - (u - s) + 1
-    through t - (u - R), the retirement period. Histories that predate the time path use
-    the period-0 wage, contribution rate, and credited rate and the
-    model's initial labor supply, so this reproduces what the
-    per-cohort household solves compute.
+    through t - (u - R), the retirement period. Histories that predate
+    the time path use the period-0 wage, contribution rate, and
+    credited rate and the model's initial labor supply, so this
+    reproduces what the per-cohort household solves compute.
 
     Args:
         w_path (Numpy array): real wage rate path, length T
