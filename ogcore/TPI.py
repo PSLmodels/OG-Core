@@ -421,9 +421,17 @@ def get_initial_SS_values(p):
                 b_splus1init[:-1, :] = b_sinit[1:, :]
         D0_baseline = tpi_baseline_vars["D"][0]
         Kg0_baseline = tpi_baseline_vars["K_g"][0]
+        # debt contracted abroad owed in period 0 is inherited too
+        # (fiscal.get_D_ext reads it); baselines saved before D_ext was
+        # an output fall back to alpha_D_ext times reform output
+        if "D_ext" in tpi_baseline_vars:
+            p.D_ext0_baseline = float(tpi_baseline_vars["D_ext"][0])
+        else:
+            p.D_ext0_baseline = None
     else:
         D0_baseline = None
         Kg0_baseline = None
+        p.D_ext0_baseline = None
 
     initial_values = (B0, b_sinit, b_splus1init, factor, initial_n)
     baseline_values = (
@@ -1295,9 +1303,13 @@ def run_TPI(p, client=None):
     # Compute other interest rates
     r_gov = np.ones_like(r) * ss_vars["r_gov"]
     # the debt-elastic premium prices all government debt: market debt D
-    # plus debt contracted abroad, D_ext = alpha_D_ext * Y
+    # plus debt contracted abroad, D_ext (alpha_D_ext * Y, with a reform's
+    # period-0 stock at the baseline's)
     r_gov[: p.T] = fiscal.get_r_gov(
-        r[: p.T], D[: p.T] / Y[: p.T] + p.alpha_D_ext[: p.T], p, "TPI"
+        r[: p.T],
+        (D[: p.T] + fiscal.get_D_ext(Y, p, "TPI")[0]) / Y[: p.T],
+        p,
+        "TPI",
     )
     r_p = np.ones_like(r) * ss_vars["r_p"]
     MPKg = np.zeros((p.T, p.M))
@@ -1750,7 +1762,7 @@ def run_TPI(p, client=None):
         )
         r_gov_new = fiscal.get_r_gov(
             rnew[: p.T],
-            Dnew[: p.T] / Y[: p.T] + p.alpha_D_ext[: p.T],
+            (Dnew[: p.T] + fiscal.get_D_ext(Y, p, "TPI")[0]) / Y[: p.T],
             p,
             "TPI",
         )

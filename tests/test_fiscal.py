@@ -527,6 +527,43 @@ def test_get_D_ext(method):
         assert np.allclose(test_val, expected_val)
 
 
+def test_get_D_ext_reform_keeps_baseline_initial_stock():
+    """
+    In a reform's time path the debt contracted abroad that is owed in
+    period 0 is the baseline's, not alpha_D_ext times reform output; later
+    periods follow alpha_D_ext, and the first period's new borrowing is
+    measured from the inherited stock. The baseline is unaffected.
+    """
+    p = Specifications()
+    p.T = 2
+    p.g_y = 0.03
+    p.g_n = np.array([0.02, 0.01])
+    p.alpha_D_ext = np.array([0.1, 0.5, 0.5])
+    p.r_D_ext = np.array([0.01, -0.01, -0.01])
+    Y = np.array([0.2, 4.0])
+    p.D_ext0_baseline = 0.03
+    p.baseline = False
+    D_ext, new_borrowing_ext, debt_service_ext = fiscal.get_D_ext(Y, p, "TPI")
+    assert np.allclose(D_ext, [0.03, 2.0])
+    assert np.allclose(
+        new_borrowing_ext,
+        [
+            2.0 * np.exp(0.03) * 1.02 - 0.03,
+            2.0 * np.exp(0.03) * 1.01 - 2.0,
+        ],
+    )
+    assert np.allclose(debt_service_ext, [0.01 * 0.03, -0.01 * 2.0])
+    # the baseline ignores the attribute
+    p.baseline = True
+    D_ext, _, _ = fiscal.get_D_ext(Y, p, "TPI")
+    assert np.allclose(D_ext, [0.02, 2.0])
+    # a reform whose baseline predates D_ext keeps the ratio
+    p.baseline = False
+    p.D_ext0_baseline = None
+    D_ext, _, _ = fiscal.get_D_ext(Y, p, "TPI")
+    assert np.allclose(D_ext, [0.02, 2.0])
+
+
 def test_get_D_ext_zero_by_default():
     """
     With the default parameters there is no debt contracted abroad.

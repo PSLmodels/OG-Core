@@ -554,6 +554,10 @@ def get_D_ext(Y, p, method="SS"):
             \text{external debt service}_t &= r_{ext,t}\hat{D}^{ext}_{t}
         \end{split}
 
+    In a reform's time path the period-0 stock is the baseline's
+    (``p.D_ext0_baseline``), since debt already owed when the reform
+    begins cannot depend on it; later periods follow alpha_D_ext.
+
     Args:
         Y (array_like): aggregate output
         p (OG-Core Specifications object): model parameters
@@ -577,6 +581,12 @@ def get_D_ext(Y, p, method="SS"):
         # last value forward.
         Y_path = np.append(Y[: p.T], Y[p.T - 1])
         D_ext = p.alpha_D_ext[: p.T + 1] * Y_path
+        # In a reform the debt the economy starts with is inherited: it
+        # stays at the baseline's period-0 level, as market debt and
+        # public capital do (set in TPI.get_initial_SS_values)
+        D_ext0 = getattr(p, "D_ext0_baseline", None)
+        if not p.baseline and D_ext0 is not None:
+            D_ext[0] = D_ext0
         new_borrowing_ext = (
             D_ext[1:] * np.exp(p.g_y) * (1 + p.g_n[: p.T]) - D_ext[:-1]
         )
