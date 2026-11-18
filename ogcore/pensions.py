@@ -10,57 +10,70 @@ THOUSAND = 1000
 
 
 @numba.jit(nopython=True)
-def earnings_band_at(x, lo, hi, period):
+def earnings_band_at(x, lo, hi, period, age):
     """
     Part of labor income ``x`` (w * e * n, in model units) that lies
-    between the cutoffs in effect in the model period in which it was
-    earned, min(max(x, lo), hi) - lo. With ``lo = 0`` and ``hi = inf``
-    this returns ``x`` unchanged.
+    between the cutoffs that applied to the earner's cohort in the
+    model period in which it was earned, min(max(x, lo), hi) - lo.
+    With ``lo = 0`` and ``hi = inf`` this returns ``x`` unchanged.
 
     Args:
         x (scalar or Numpy array): labor income, w * e * n
-        lo (Numpy array): calendar path of the lower cutoff, in model
-            units of labor income
-        hi (Numpy array): calendar path of the upper cutoff, in model
-            units of labor income
+        lo (Numpy array): lower cutoff by model period and age, in
+            model units of labor income (2-D; a single column applies
+            at every age)
+        hi (Numpy array): upper cutoff by model period and age, as lo
         period (int): model period in which ``x`` was earned; periods
-            before or after a path read its first or last element
+            before or after the arrays read their first or last row
+        age (int): age (model period of life) at which ``x`` was earned
 
     Returns:
         band (scalar or Numpy array): part of ``x`` between the cutoffs
-            in effect in ``period``
+            in effect at ``period`` and ``age``
     """
-    lo_t = lo[min(max(period, 0), lo.size - 1)]
-    hi_t = hi[min(max(period, 0), hi.size - 1)]
+    lo_t = lo[min(max(period, 0), lo.shape[0] - 1), min(age, lo.shape[1] - 1)]
+    hi_t = hi[min(max(period, 0), hi.shape[0] - 1), min(age, hi.shape[1] - 1)]
     return np.minimum(np.maximum(x, lo_t), hi_t) - lo_t
+
+
+def _period_age(x):
+    """
+    A cutoff as a 2-D float array by model period and age: a single
+    value becomes 1 x 1 and a path by period a single column, which
+    ``earnings_band_at`` applies at every age.
+    """
+    x = np.asarray(x, dtype=float)
+    if x.ndim == 0:
+        return x.reshape(1, 1)
+    if x.ndim == 1:
+        return x[:, np.newaxis]
+    return x
 
 
 def _band_paths(earn_lo, earn_hi, method):
     """
-    Calendar paths of the earnings band cutoffs used by ``DB_amount``
-    and ``NDC_amount``.
+    Earnings band cutoffs by model period and age used by
+    ``DB_amount`` and ``NDC_amount``.
 
     Args:
         earn_lo (scalar, array_like, or None): lower cutoff, in model
-            units of labor income, a single value or a path by period
+            units of labor income: a single value, a path by period, or
+            an array by period and age
         earn_hi (scalar, array_like, or None): upper cutoff
         method (str): 'SS', 'TPI', or 'TPI_scalar'
 
     Returns:
         lo, hi (Numpy arrays or None): None, None when no band is
-            set. Otherwise 1-D float arrays: the full paths for 'TPI',
-            and the final (steady-state) or first value for 'SS' or
-            'TPI_scalar', matching the rows the other pension
-            parameters are read from.
+            set. Otherwise 2-D float arrays by period and age (see
+            ``_period_age``): all rows for 'TPI', and the final
+            (steady-state) or first row for 'SS' or 'TPI_scalar',
+            matching the rows the other pension parameters are read
+            from.
     """
     if earn_lo is None and earn_hi is None:
         return None, None
-    lo = np.atleast_1d(
-        np.asarray(0.0 if earn_lo is None else earn_lo, dtype=float)
-    ).ravel()
-    hi = np.atleast_1d(
-        np.asarray(np.inf if earn_hi is None else earn_hi, dtype=float)
-    ).ravel()
+    lo = _period_age(0.0 if earn_lo is None else earn_lo)
+    hi = _period_age(np.inf if earn_hi is None else earn_hi)
     if method == "SS":
         lo, hi = lo[-1:], hi[-1:]
     elif method == "TPI_scalar":
@@ -70,12 +83,48 @@ def _band_paths(earn_lo, earn_hi, method):
 
 def _path_from(path, t):
     """
-    A calendar path starting in period t (its last element if t is
-    past its end), or None if ``path`` is None.
+    The rows of a cutoff array by period and age starting in period t
+    (its last row if t is past its end), or None if ``path`` is None.
     """
     if path is None:
         return None
-    return np.ascontiguousarray(path[min(t, path.size - 1) :])
+    return np.ascontiguousarray(path[min(t, path.shape[0] - 1) :])
+
+
+def pension_earn_caps(p):
+    """
+    The two earnings cutoffs, by model period and age, set by
+    ``db_earn_cap_factor``, ``dc_earn_cap_factor``, and
+    ``avg_labor_inc_t1_model_units``, in model units of labor income.
+
+    The hybrid DB-NDC system pays a defined benefit on labor income up
+    to the first cutoff and a notional defined contribution benefit on
+    labor income between the two. With ``pension_earn_cap`` True, the
+    Defined Benefits system counts only labor income up to the first
+    cutoff toward the benefit, and the Notional Defined Contribution
+    system credits only labor income up to the second cutoff to the
+    notional account. The cutoffs do not depend on any endogenous
+    variable. The cutoff at period t and age s is the one that applies
+    to the cohort of that household (the factors are cohort pension
+    parameters that ``pension_regimes`` may change); it applies to the
+    labor income the household earns in that period.
+
+    Args:
+        p (OG-Core Specifications object): model parameters
+
+    Returns:
+        cut1, cut2 (Numpy arrays): the cutoffs,
+            ``db_earn_cap_factor`` and ``dc_earn_cap_factor`` times
+            ``avg_labor_inc_t1_model_units``, as 2-D arrays by period
+            and age ((T + S) x S once ``Specifications`` builds them; a
+            factor set by hand as a single value or a path by period
+            gives one column, applied at every age)
+    """
+    avg_inc = float(p.avg_labor_inc_t1_model_units)
+    return (
+        _period_age(p.db_earn_cap_factor) * avg_inc,
+        _period_age(p.dc_earn_cap_factor) * avg_inc,
+    )
 
 
 def cohort_array(name, p, by_j=False):
@@ -84,13 +133,15 @@ def cohort_array(name, p, by_j=False):
 
     After ``Specifications.compute_default_params`` the cohort pension
     parameters (``retire``, ``avg_earn_num_years``, ``yr_contrib``,
-    ``tau_p``, ``k_ret``, ``indR``) are (T + S) x S arrays holding, for
-    the household of age s in period t, the value that applies to its
-    birth cohort, and ``alpha_db`` is (T + S) x S x J. This helper also
-    accepts the forms a caller may set by hand: a single number is
-    broadcast to the full shape, and an array without the age dimension
-    (a path by period, or by period and lifetime income group) is taken
-    to hold the same value at every age in a period.
+    ``tau_p``, ``k_ret``, ``indR``, ``fdc_tau``, ``r_fdc_wedge``) are
+    (T + S) x S arrays holding, for the household of age s in period t,
+    the value that applies to its birth cohort, and ``alpha_db`` is
+    (T + S) x S x J.
+    This helper also accepts the forms a caller may set by hand: a
+    single number is broadcast to the full shape, and an array without
+    the age dimension (a path by period, or by period and lifetime
+    income group) is taken to hold the same value at every age in a
+    period.
 
     Args:
         name (str): attribute name on ``p``
@@ -410,18 +461,32 @@ def pension_amount(
     Returns:
         pension (Numpy array): pension amount for each household
 
+    Under the Defined Benefits and Notional Defined Contribution
+    systems, ``p.pension_earn_cap`` True caps the labor income that
+    earns a benefit at the first and second cutoffs of
+    ``pension_earn_caps`` (the same cutoffs that bound the two bands
+    of the hybrid DB-NDC system). False, the default, counts all
+    labor income.
+
     """
     # TODO: think about how can allow for transition from one
     # pension system to another along the time path
+    # Specifications objects pickled before pension_earn_cap existed
+    # have no such attribute; treat them as uncapped.
+    earn_cap = getattr(p, "pension_earn_cap", False)
     if p.pension_system == "US-Style Social Security":
         pension = SS_amount(w, n, theta, t, j, shift, method, e, p)
     elif p.pension_system == "Defined Benefits":
-        pension = DB_amount(w, e, n, t, j, method, p)
+        earn_hi = pension_earn_caps(p)[0] if earn_cap else None
+        pension = DB_amount(w, e, n, t, j, method, p, earn_hi=earn_hi)
         pension = pension * replacement_rate_adjustment(
             pension, t, j, method, p
         )
     elif p.pension_system == "Notional Defined Contribution":
-        pension = NDC_amount(w, e, n, r, ndc_rates, t, j, method, p)
+        earn_hi = pension_earn_caps(p)[1] if earn_cap else None
+        pension = NDC_amount(
+            w, e, n, r, ndc_rates, t, j, method, p, earn_hi=earn_hi
+        )
         pension = pension * replacement_rate_adjustment(
             pension, t, j, method, p
         )
@@ -636,10 +701,12 @@ def DB_amount(w, e, n, t, j, method, p, earn_lo=None, earn_hi=None):
         p (OG-Core Specifications object): model parameters
         earn_lo (scalar, array_like, or None): only labor income
             w * e * n above earn_lo enters the benefit (used by the
-            hybrid DB-NDC system). In model units of labor income, a
-            single value or a path by model period of length T + S;
-            the cutoff in effect in the period each income was earned
-            applies. None (the default) for no lower cutoff.
+            hybrid DB-NDC system, and by ``pension_amount`` when
+            ``pension_earn_cap`` is True). In model units of labor income, a
+            single value, a path by model period of length T + S, or a
+            (T + S) x S array by period and age; the cutoff at the
+            period and age at which each income was earned applies.
+            None (the default) for no lower cutoff.
         earn_hi (scalar, array_like, or None): only labor income below
             earn_hi enters the benefit, as for earn_lo. None (the
             default) for no upper cutoff.
@@ -729,7 +796,7 @@ def DB_amount(w, e, n, t, j, method, p, earn_lo=None, earn_hi=None):
                 cy_u,
                 earn_lo,
                 earn_hi,
-                # period of age 0 (the band paths of 'SS' and
+                # period of age 0 (the band arrays of 'SS' and
                 # 'TPI_scalar' have a single value)
                 t if row is None else 0,
             )
@@ -831,10 +898,12 @@ def NDC_amount(
         p (OG-Core Specifications object): model parameters
         earn_lo (scalar, array_like, or None): only labor income
             w * e * n above earn_lo enters the benefit (used by the
-            hybrid DB-NDC system). In model units of labor income, a
-            single value or a path by model period of length T + S;
-            the cutoff in effect in the period each income was earned
-            applies. None (the default) for no lower cutoff.
+            hybrid DB-NDC system, and by ``pension_amount`` when
+            ``pension_earn_cap`` is True). In model units of labor income, a
+            single value, a path by model period of length T + S, or a
+            (T + S) x S array by period and age; the cutoff at the
+            period and age at which each income was earned applies.
+            None (the default) for no lower cutoff.
         earn_hi (scalar, array_like, or None): only labor income below
             earn_hi enters the benefit, as for earn_lo. None (the
             default) for no upper cutoff.
@@ -1036,8 +1105,8 @@ def DB_NDC_hybrid_amount(w, e, n, r, ndc_rates, t, j, method, p):
 
     Labor income $w_t e_{j,s,t} n_{j,s,t}$ is split into two bands at
     the cutoffs $f_{1,t} \bar{y}$ and $f_{2,t} \bar{y}$, where
-    $f_{1,t}$ and $f_{2,t}$ are ``factor1_db_ndc_hybrid`` and
-    ``factor2_db_ndc_hybrid`` in period t and $\bar{y}$ is
+    $f_{1,t}$ and $f_{2,t}$ are ``db_earn_cap_factor`` and
+    ``dc_earn_cap_factor`` in period t and $\bar{y}$ is
     ``avg_labor_inc_t1_model_units``, the average labor income in the
     first model period in model units, taken from outside the model.
     The cutoffs therefore do not depend on any endogenous variable.
@@ -1081,30 +1150,33 @@ def DB_NDC_hybrid_amount(w, e, n, r, ndc_rates, t, j, method, p):
         pension (Numpy array): pension amount for each household
 
     Raises:
-        ValueError: if ``factor2_db_ndc_hybrid`` is less than
-            ``factor1_db_ndc_hybrid`` in any period
+        ValueError: if ``dc_earn_cap_factor`` is less than
+            ``db_earn_cap_factor`` in any period
     """
-    # paths by model period (length T + S once Specifications extends
-    # them); a single value is also accepted
-    factor1 = np.atleast_1d(
-        np.asarray(p.factor1_db_ndc_hybrid, dtype=float)
-    ).ravel()
-    factor2 = np.atleast_1d(
-        np.asarray(p.factor2_db_ndc_hybrid, dtype=float)
-    ).ravel()
-    n_per = max(factor1.size, factor2.size)
-    f1_full = factor1[np.minimum(np.arange(n_per), factor1.size - 1)]
-    f2_full = factor2[np.minimum(np.arange(n_per), factor2.size - 1)]
-    if np.any(f2_full < f1_full):
-        bad = int(np.argmax(f2_full < f1_full))
+    # cutoffs in model units of labor income, by period and age
+    # ((T + S) x S once Specifications builds them; a single value or a
+    # path by period, as a caller may set by hand, is also accepted)
+    cut1, cut2 = pension_earn_caps(p)
+    n_per = max(cut1.shape[0], cut2.shape[0])
+    n_age = max(cut1.shape[1], cut2.shape[1])
+    rows = np.arange(n_per)[:, np.newaxis]
+    cols = np.arange(n_age)[np.newaxis, :]
+    c1_full = cut1[
+        np.minimum(rows, cut1.shape[0] - 1),
+        np.minimum(cols, cut1.shape[1] - 1),
+    ]
+    c2_full = cut2[
+        np.minimum(rows, cut2.shape[0] - 1),
+        np.minimum(cols, cut2.shape[1] - 1),
+    ]
+    if np.any(c2_full < c1_full):
+        t_bad, s_bad = np.argwhere(c2_full < c1_full)[0]
         raise ValueError(
-            "factor2_db_ndc_hybrid must be at least factor1_db_ndc_hybrid "
-            f"in every period: in period {bad}, factor1_db_ndc_hybrid="
-            f"{f1_full[bad]} and factor2_db_ndc_hybrid={f2_full[bad]}"
+            "dc_earn_cap_factor must be at least db_earn_cap_factor "
+            f"in every period and at every age: in period {t_bad} at "
+            f"age period {s_bad}, the cutoffs are {c1_full[t_bad, s_bad]} "
+            f"and {c2_full[t_bad, s_bad]}"
         )
-    # cutoffs in model units of labor income
-    cut1 = factor1 * p.avg_labor_inc_t1_model_units
-    cut2 = factor2 * p.avg_labor_inc_t1_model_units
     DB = DB_amount(w, e, n, t, j, method, p, earn_lo=0.0, earn_hi=cut1)
     NDC = NDC_amount(
         w,
@@ -1431,7 +1503,14 @@ def delta_point(r, Y, g_n, g_y, p):
     return delta_point
 
 
-NDC_GROWTH_CHOICES = ("r", "Curr GDP", "LR GDP", "wage bill", "avg wage")
+NDC_GROWTH_CHOICES = (
+    "r",
+    "Curr GDP",
+    "LR GDP",
+    "wage bill",
+    "avg wage",
+    "exogenous",
+)
 
 
 class NDCRates(NamedTuple):
@@ -1453,19 +1532,22 @@ class NDCRates(NamedTuple):
     discount: np.ndarray
 
 
-def _ss_growth_rate(choice, r, p):
+def _ss_growth_rate(choice, r, p, exog=None):
     """
     Steady-state value of an NDC growth rate.
 
     Stationarized aggregates are constant in the steady state, so GDP
     and the wage bill grow at the rate of productivity and population
     growth, exp(g_y)(1 + g_n) - 1, and the average wage at the rate of
-    productivity growth, exp(g_y) - 1.
+    productivity growth, exp(g_y) - 1. An 'exogenous' rate takes the
+    last value of its path.
 
     Args:
         choice (str): one of ``NDC_GROWTH_CHOICES``
         r (array_like): interest rate; its last element is used
         p (OG-Core Specifications object): model parameters
+        exog (array_like or None): model-period rate path used when
+            choice is 'exogenous'
 
     Returns:
         rate (scalar): steady-state growth rate per model period
@@ -1479,12 +1561,34 @@ def _ss_growth_rate(choice, r, p):
         return np.exp(g_y) * (1.0 + g_n_ss) - 1.0
     elif choice == "avg wage":
         return np.exp(g_y) - 1.0
+    elif choice == "exogenous":
+        return float(_exog_path(exog).flat[-1])
     raise ValueError(
         f"NDC growth rate must be one of {NDC_GROWTH_CHOICES}, got {choice!r}"
     )
 
 
-def growth_rate_path(choice, r, Y, w, L, p, method):
+def _exog_path(exog):
+    """
+    Check and return the user-specified rate path for an 'exogenous'
+    NDC growth rate.
+
+    Args:
+        exog (array_like or None): model-period rate path
+
+    Returns:
+        exog (Numpy array): the path as a 1D float array
+
+    """
+    if exog is None:
+        raise ValueError(
+            "An 'exogenous' NDC growth rate requires a rate path "
+            "(ndc_growth_rate_exog or dir_growth_rate_exog)"
+        )
+    return np.atleast_1d(np.asarray(exog, dtype=float)).ravel()
+
+
+def growth_rate_path(choice, r, Y, w, L, p, method, exog=None):
     r"""
     Calendar path of an NDC growth rate.
 
@@ -1501,8 +1605,9 @@ def growth_rate_path(choice, r, Y, w, L, p, method):
     'wage bill'. 'avg wage' is the growth of earnings per person,
     the same expression without population growth. 'r' is the
     interest rate path and 'LR GDP' the constant steady-state growth
-    of GDP. Growth into period 0 uses the period-0 level as the level
-    of the period before.
+    of GDP. 'exogenous' is the user-specified path ``exog``, not tied
+    to any variable in the model. Growth into period 0 uses the
+    period-0 level as the level of the period before.
 
     Args:
         choice (str): one of ``NDC_GROWTH_CHOICES``
@@ -1515,13 +1620,16 @@ def growth_rate_path(choice, r, Y, w, L, p, method):
         p (OG-Core Specifications object): model parameters
         method (str): 'SS' for the steady-state value or 'TPI' for the
             time path
+        exog (array_like or None): model-period rate path used when
+            choice is 'exogenous' (``p.ndc_growth_rate_exog`` or
+            ``p.dir_growth_rate_exog``)
 
     Returns:
         rate (Numpy array): length 1 in the steady state, else T + S
 
     """
     if method == "SS" or choice == "LR GDP":
-        return np.array([_ss_growth_rate(choice, r, p)])
+        return np.array([_ss_growth_rate(choice, r, p, exog)])
     n_per = p.T + p.S
 
     def _extend(x):
@@ -1531,6 +1639,8 @@ def growth_rate_path(choice, r, Y, w, L, p, method):
 
     if choice == "r":
         return _extend(r)
+    if choice == "exogenous":
+        return _extend(_exog_path(exog))
     if choice == "Curr GDP":
         X = _extend(Y)
     elif choice in ("wage bill", "avg wage"):
@@ -1583,13 +1693,31 @@ def ndc_rates_path(r, Y, w, L, p, method):
         rates (NDCRates): credit and discount rate paths
 
     """
-    credit = growth_rate_path(p.ndc_growth_rate, r, Y, w, L, p, method)
+    credit = growth_rate_path(
+        p.ndc_growth_rate,
+        r,
+        Y,
+        w,
+        L,
+        p,
+        method,
+        getattr(p, "ndc_growth_rate_exog", None),
+    )
     years = float(getattr(p, "ndc_growth_avg_years", 1))
     window = max(1, int(np.rint(years * p.S / 80.0)))
     if window > 1 and credit.size > 1:
         padded = np.append(np.full(window - 1, credit[0]), credit)
         credit = np.convolve(padded, np.ones(window) / window, "valid")
-    discount = growth_rate_path(p.dir_growth_rate, r, Y, w, L, p, method)
+    discount = growth_rate_path(
+        p.dir_growth_rate,
+        r,
+        Y,
+        w,
+        L,
+        p,
+        method,
+        getattr(p, "dir_growth_rate_exog", None),
+    )
     return NDCRates(credit, discount)
 
 
@@ -1607,7 +1735,9 @@ def g_ndc(r, Y, p):
         g_ndc (scalar): growth rate credited to NDC balances
 
     """
-    return _ss_growth_rate(p.ndc_growth_rate, r, p)
+    return _ss_growth_rate(
+        p.ndc_growth_rate, r, p, getattr(p, "ndc_growth_rate_exog", None)
+    )
 
 
 def g_dir(r, Y, p):
@@ -1625,7 +1755,9 @@ def g_dir(r, Y, p):
         g_dir (scalar): discount rate in the conversion coefficient
 
     """
-    return _ss_growth_rate(p.dir_growth_rate, r, p)
+    return _ss_growth_rate(
+        p.dir_growth_rate, r, p, getattr(p, "dir_growth_rate_exog", None)
+    )
 
 
 def annuity_mort_rates(p):
@@ -2016,11 +2148,11 @@ def DB_1dim_loop(
             u, length S
         yr_contr (Numpy array): periods of contribution credited, by
             age u, length S
-        earn_lo (Numpy array): calendar path of the lower cutoff of
+        earn_lo (Numpy array): lower cutoff, by model period and age, of
             the earnings band, in model units of labor income; only
             labor income w * e * n above it counts. None (the default)
             applies no band.
-        earn_hi (Numpy array): calendar path of the upper cutoff of
+        earn_hi (Numpy array): upper cutoff, by model period and age, of
             the earnings band; only labor income below it counts
         t_birth (int): model period in which the household is age 0,
             so earnings at age s were made in period t_birth + s
@@ -2039,7 +2171,7 @@ def DB_1dim_loop(
                 L_inc_avg += w[s] * e[s] * n[s] / np.exp(g_y[-1] * (u - s))
             else:
                 x = earnings_band_at(
-                    w[s] * e[s] * n[s], earn_lo, earn_hi, t_birth + s
+                    w[s] * e[s] * n[s], earn_lo, earn_hi, t_birth + s, s
                 )
                 L_inc_avg += x / np.exp(g_y[-1] * (u - s))
         DB[u] = yr_contr[u] * alpha_db[u] * L_inc_avg / ny
@@ -2083,11 +2215,11 @@ def DB_2dim_loop(
             u for each group j, size S x J
         yr_contr (Numpy array): periods of contribution credited, by
             age u, length S
-        earn_lo (Numpy array): calendar path of the lower cutoff of
+        earn_lo (Numpy array): lower cutoff, by model period and age, of
             the earnings band, in model units of labor income; only
             labor income w * e * n above it counts. None (the default)
             applies no band.
-        earn_hi (Numpy array): calendar path of the upper cutoff of
+        earn_hi (Numpy array): upper cutoff, by model period and age, of
             the earnings band; only labor income below it counts
         t_cross (int): model period of the cross section; the
             household of age u earned at age s in period t_cross - u + s
@@ -2113,6 +2245,7 @@ def DB_2dim_loop(
                     earn_lo,
                     earn_hi,
                     t_cross - u + s,
+                    s,
                 )
                 L_inc_avg += x / np.exp(g_y[-1] * (u - s))
         DB[u, :] = yr_contr[u] * alpha_db[u, :] * L_inc_avg / ny
@@ -2169,13 +2302,13 @@ def DB_3dim_loop(
             contribution by period, age, and group, size T x S x J
         yr_contr (Numpy array): periods of contribution credited, by
             period and age, size T x S
-        earn_lo (Numpy array): calendar path of the lower cutoff of
+        earn_lo (Numpy array): lower cutoff, by model period and age, of
             the earnings band, in model units of labor income; only
             labor income w * e * n above it counts. None (the default)
             applies no band.
-        earn_hi (Numpy array): calendar path of the upper cutoff of
+        earn_hi (Numpy array): upper cutoff, by model period and age, of
             the earnings band; only labor income below it counts
-            Both paths start in the period of the first row of n.
+            Both arrays start in the period of the first row of n.
 
     Returns:
         DB (Numpy array): pension amount for each household, size TxSxJ
@@ -2205,7 +2338,7 @@ def DB_3dim_loop(
                 x = w_hist[:, None] * x
                 for i in range(ny):
                     x[i, :] = earnings_band_at(
-                        x[i, :], earn_lo, earn_hi, tau[i]
+                        x[i, :], earn_lo, earn_hi, tau[i], s_idx[i]
                     )
                 L = x / np.exp(g_y * (u - s_idx))[:, None]
             DB[t, u, :] = (
@@ -2261,13 +2394,13 @@ def NDC_1dim_loop(
             pension amount that applies at each age u, length S
         NDC (Numpy array): pension amount for each household (filled
             in and returned), length S
-        earn_lo (Numpy array): calendar path of the lower cutoff of
+        earn_lo (Numpy array): lower cutoff, by model period and age, of
             the earnings band, in model units of labor income; only
             labor income w * e * n above it counts. None (the default)
             applies no band.
-        earn_hi (Numpy array): calendar path of the upper cutoff of
+        earn_hi (Numpy array): upper cutoff, by model period and age, of
             the earnings band; only labor income below it counts
-            The cutoffs are read in period t_birth + s for age s.
+            The cutoffs are read at period t_birth + s and age s.
 
     Returns:
         NDC (Numpy array): pension amount for each household
@@ -2290,7 +2423,7 @@ def NDC_1dim_loop(
                 )
             else:
                 x = earnings_band_at(
-                    w[s] * e[s] * n[s], earn_lo, earn_hi, t_birth + s
+                    w[s] * e[s] * n[s], earn_lo, earn_hi, t_birth + s, s
                 )
                 NDC_s += tau_p[s] * (x / np.exp(g_y[-1] * (u - s))) * growth
             growth *= 1.0 + g_age[s]
@@ -2339,13 +2472,13 @@ def NDC_2dim_loop(
             pension amount of the household of each age u, length S
         NDC (Numpy array): pension amount for each household (filled
             in and returned), size S x J
-        earn_lo (Numpy array): calendar path of the lower cutoff of
+        earn_lo (Numpy array): lower cutoff, by model period and age, of
             the earnings band, in model units of labor income; only
             labor income w * e * n above it counts. None (the default)
             applies no band.
-        earn_hi (Numpy array): calendar path of the upper cutoff of
+        earn_hi (Numpy array): upper cutoff, by model period and age, of
             the earnings band; only labor income below it counts
-            The cutoffs are read in period t_cross - u + s.
+            The cutoffs are read at period t_cross - u + s and age s.
 
     Returns:
         NDC (Numpy array): pension amount for each household
@@ -2370,6 +2503,7 @@ def NDC_2dim_loop(
                     earn_lo,
                     earn_hi,
                     t_cross - u + s,
+                    s,
                 )
                 NDC_s += tau_p[s] * (x / np.exp(g_y[-1] * (u - s))) * growth
             idx = min(max(t_cross - u + s, 0), n_g - 1)
@@ -2424,13 +2558,13 @@ def NDC_3dim_loop(
         g_ndc (Numpy array): calendar path of the credited rate
         delta_ret (Numpy array): conversion coefficient for the NDC
             pension amount by period and age, size T x S
-        earn_lo (Numpy array): calendar path of the lower cutoff of
+        earn_lo (Numpy array): lower cutoff, by model period and age, of
             the earnings band, in model units of labor income; only
             labor income w * e * n above it counts. None (the default)
             applies no band.
-        earn_hi (Numpy array): calendar path of the upper cutoff of
+        earn_hi (Numpy array): upper cutoff, by model period and age, of
             the earnings band; only labor income below it counts
-            Both paths start in the period of the first row of n.
+            Both arrays start in the period of the first row of n.
 
     Returns:
         NDC (Numpy array): pension amount for each household, size
@@ -2478,9 +2612,403 @@ def NDC_3dim_loop(
                 x = w_hist[:, None] * x
                 for i in range(R):
                     x[i, :] = earnings_band_at(
-                        x[i, :], earn_lo, earn_hi, tau[i]
+                        x[i, :], earn_lo, earn_hi, tau[i], s_idx[i]
                     )
             L = contrib[:, None] * x
             NDC[t, u, :] = delta_ret[t, u] * L.sum(axis=0)
 
     return NDC
+
+
+# ---------------------------------------------------------------------
+# Funded defined contribution (FDC) accounts
+#
+# The FDC pillar runs alongside whatever ``pension_system`` is chosen.
+# Each household pays ``fdc_tau`` of the labor income in its earnings
+# band into an individual account that earns the FDC return
+# r_fdc = r_p - r_fdc_wedge, the household portfolio return r_p less
+# the wedge ``r_fdc_wedge``. At retirement the balance buys an
+# actuarially fair life annuity. The functions below compute one
+# household's account over its lifetime from its labor income and the
+# paths of r_fdc and mortality. They do not depend on any other
+# pension system.
+# ---------------------------------------------------------------------
+
+
+class FDCLifetime(NamedTuple):
+    """
+    A household's funded defined contribution account over its life,
+    returned by ``fdc_lifetime``. Every field except ``R`` is a length
+    S array by age; entries before the first age computed are zero.
+    """
+
+    #: Numpy array: contribution paid at each age, out of that
+    #: period's resources (zero from the retirement age on)
+    contrib: np.ndarray
+    #: Numpy array: account balance at the start of each age, after
+    #: the return credited in that period and before that period's
+    #: contribution or benefit
+    balance: np.ndarray
+    #: Numpy array: annuity benefit received at each age (zero before
+    #: the retirement age)
+    benefit: np.ndarray
+    #: Numpy array: end-of-period holdings at each age, the balance
+    #: plus the contribution before retirement and the balance less
+    #: the benefit after; these are the fund's assets
+    holdings: np.ndarray
+    #: Numpy array: derivative of the contribution with respect to
+    #: labor supply n at each age
+    dcontrib_dn: np.ndarray
+    #: Numpy array: benefit at the retirement age per unit of
+    #: contribution made at each earlier age; the benefit at a later
+    #: age u is that times e^{-g_y (u - R)}
+    benefit_per_contrib: np.ndarray
+    #: int: age at which the balance is annuitized (S if the household
+    #: does not reach retirement within its life)
+    R: int
+
+
+def fdc_earn_bands(p):
+    """
+    Lower and upper cutoffs, by model period and age, of the labor
+    income on which funded defined contribution (FDC) contributions
+    are paid, in model units of labor income.
+
+    The lower cutoff is ``fdc_earn_floor_factor`` times
+    ``avg_labor_inc_t1_model_units``. The upper cutoff is the cap
+    shared with the other defined contribution systems,
+    ``dc_earn_cap_factor`` times ``avg_labor_inc_t1_model_units``,
+    when ``pension_earn_cap`` is True, and infinite otherwise. The
+    cutoff at period t and age s is the one that applies to the cohort
+    of that household; it applies to the labor income the household
+    earns in that period.
+
+    Args:
+        p (OG-Core Specifications object): model parameters
+
+    Returns:
+        lo, hi (Numpy arrays): the cutoffs as 2-D arrays by period and
+            age ((T + S) x S once ``Specifications`` builds them; a
+            factor set by hand as a single value or a path by period
+            gives one column, applied at every age)
+    """
+    avg_inc = float(p.avg_labor_inc_t1_model_units)
+    lo = _period_age(getattr(p, "fdc_earn_floor_factor", 0.0)) * avg_inc
+    if getattr(p, "pension_earn_cap", False):
+        hi = _period_age(p.dc_earn_cap_factor) * avg_inc
+    else:
+        hi = np.full((1, 1), np.inf)
+    return np.ascontiguousarray(lo), np.ascontiguousarray(hi)
+
+
+def _cohort_diag(arr, t_birth, S):
+    """
+    Value of a 2-D array by period and age at each age of a household
+    born in period t_birth, read down the cohort's diagonal (the last
+    row in the steady state); an array with a single column applies at
+    every age.
+    """
+    rows = _cohort_rows(t_birth, arr.shape[0], S)
+    cols = np.minimum(np.arange(S), arr.shape[1] - 1)
+    return np.ascontiguousarray(arr[rows, cols], dtype=float)
+
+
+def fdc_mort_rates(p, j):
+    """
+    Mortality rates by period and age that price the FDC annuity of
+    lifetime income group j.
+
+    The annuity is priced on the mortality of the household's own
+    income group, so that the annuity pool of each group pays out
+    exactly what it holds when mortality differs across groups.
+
+    Args:
+        p (OG-Core Specifications object): model parameters
+        j (int): lifetime income group, or None for the average over
+            groups weighted by ``lambdas``
+
+    Returns:
+        mort_rates (Numpy array): (T + S) x S mortality rates, where
+            row t, column s is the probability that a household of age
+            s in period t dies before period t + 1
+    """
+    rho = np.asarray(p.rho, dtype=float)
+    if rho.ndim == 3:
+        if j is None:
+            rho = rho @ np.asarray(p.lambdas, dtype=float).ravel()
+        else:
+            rho = rho[:, :, j]
+    elif rho.ndim == 2 and rho.shape == (p.S, p.J):
+        # by age and group, the same in every period
+        rho = rho[:, j] if j is not None else rho.mean(axis=1)
+    return np.broadcast_to(rho, (p.T + p.S, p.S))
+
+
+@numba.jit(nopython=True)
+def fdc_annuity_factor_loop(S, a, rho, r):
+    r"""
+    Price, at age a, of an annuity-due paying one unit of real income
+    at each age from a to S - 1 while the household lives:
+
+    .. math::
+        \ddot{a}_{a} = 1 + \frac{1 - \rho_{a}}{1 + r_{fdc,a+1}}
+            \ddot{a}_{a+1}, \quad \ddot{a}_{S-1} = 1
+
+    The benefit is fixed in real terms, which in detrended model units
+    is a benefit that falls by e^{-g_y} each period while the balance
+    behind it is also detrended by e^{-g_y}, so trend growth does not
+    enter the price.
+
+    Args:
+        S (int): number of periods of life
+        a (int): age at which the annuity is bought
+        rho (Numpy array): mortality rate at each age of the household's
+            life, length S
+        r (Numpy array): FDC return r_fdc = r_p - r_fdc_wedge credited
+            at each age of the household's life (r[s] is earned on
+            holdings carried from age s - 1 to age s), length S
+
+    Returns:
+        ann (scalar): annuity factor
+    """
+    ann = 1.0
+    for s in range(S - 2, a - 1, -1):
+        ann = 1.0 + (1.0 - rho[s]) * ann / (1.0 + r[s + 1])
+    return ann
+
+
+@numba.jit(nopython=True)
+def fdc_lifetime_loop(y, tau, lo, hi, r, rho, R, g_y, a0, A0, S):
+    r"""
+    Funded defined contribution account of one household from age a0
+    to the end of life, in detrended model units.
+
+    Before the retirement age R the household contributes
+    $C_s = \tau_s(\min(\max(y_s, lo_s), hi_s) - lo_s)$ out of period
+    resources, and its end-of-period holdings $H_s = A_s + C_s$ earn
+    the next period's return:
+
+    .. math::
+        A_{s+1} = (1 + r_{fdc,s+1})e^{-g_y}H_s
+
+    The account therefore earns the return in every period from the
+    period after each contribution through the retirement period R
+    itself, one period more than the notional defined contribution
+    system credits. At age $\max(R, a_0)$ the balance buys an annuity,
+    $P = A/\ddot{a}$; a household already retired at a0 holds a
+    remaining balance that is re-annuitized on the rates given. After
+    that $H_s = A_s - P_s$, $P_{s+1} = P_s e^{-g_y}$, and the holdings
+    of those who die stay in the annuity pool:
+
+    .. math::
+        A_{s+1} = \frac{(1 + r_{fdc,s+1})e^{-g_y}}{1 - \rho_s}H_s
+
+    Args:
+        y (Numpy array): labor income w * e * n at each age, length S
+        tau (Numpy array): contribution rate at each age, length S
+        lo (Numpy array): lower cutoff of the earnings band at each age
+        hi (Numpy array): upper cutoff of the earnings band at each age
+        r (Numpy array): FDC return r_fdc = r_p - r_fdc_wedge credited
+            at each age (on holdings carried in from the previous age),
+            length S
+        rho (Numpy array): mortality rate at each age, length S
+        R (int): retirement age (S for none within the household's life)
+        g_y (scalar): growth rate of labor augmenting technology
+        a0 (int): first age computed
+        A0 (scalar): balance at the start of age a0
+        S (int): number of periods of life
+
+    Returns:
+        (tuple): length S arrays by age
+
+            * C (Numpy array): contribution
+            * A (Numpy array): balance at the start of the period
+            * P (Numpy array): annuity benefit
+            * H (Numpy array): end-of-period holdings
+            * dC (Numpy array): derivative of C with respect to y
+            * m (Numpy array): benefit at age R per unit of
+              contribution at each age before R
+    """
+    C = np.zeros(S)
+    A = np.zeros(S)
+    P = np.zeros(S)
+    H = np.zeros(S)
+    dC = np.zeros(S)
+    m = np.zeros(S)
+    detrend = np.exp(-g_y)
+    A[a0] = A0
+    first_payment = max(R, a0)
+    for s in range(a0, S):
+        if s < R:
+            x = min(max(y[s], lo[s]), hi[s]) - lo[s]
+            C[s] = tau[s] * x
+            if y[s] > lo[s] and y[s] < hi[s]:
+                dC[s] = tau[s]
+            H[s] = A[s] + C[s]
+        else:
+            if s == first_payment:
+                P[s] = A[s] / fdc_annuity_factor_loop(S, s, rho, r)
+            else:
+                P[s] = P[s - 1] * detrend
+            H[s] = A[s] - P[s]
+        if s + 1 < S:
+            grow = (1.0 + r[s + 1]) * detrend
+            if s >= R:
+                grow /= 1.0 - rho[s]
+            A[s + 1] = grow * H[s]
+    if a0 < R and R < S:
+        # a unit contributed at age s < R grows to sum of returns
+        # through R and buys 1 / annuity factor of benefit at R
+        G = 1.0 / fdc_annuity_factor_loop(S, R, rho, r)
+        for s in range(R - 1, a0 - 1, -1):
+            G *= (1.0 + r[s + 1]) * detrend
+            m[s] = G
+    return C, A, P, H, dC, m
+
+
+def _cohort_rows(t_birth, n_rows, S):
+    """
+    Rows of a calendar-indexed array that a household born in period
+    t_birth reads at each age, clipped to the array. With t_birth None
+    (the steady state) every age reads the last row.
+    """
+    if t_birth is None:
+        return np.full(S, n_rows - 1)
+    return np.clip(t_birth + np.arange(S), 0, n_rows - 1)
+
+
+def _calendar_by_age(x, t_birth, S):
+    """
+    Value of a scalar or a calendar path at each age of a household
+    born in period t_birth (the last element in the steady state).
+    """
+    x = np.atleast_1d(np.asarray(x, dtype=float)).ravel()
+    return np.ascontiguousarray(x[_cohort_rows(t_birth, x.size, S)])
+
+
+def fdc_lifetime(w, e, n, r_p, t_birth, j, p, a0=0, A0=0.0):
+    """
+    Funded defined contribution account of one household over its
+    lifetime: contributions, balances, annuity benefits, end-of-period
+    holdings, and the derivatives the household's labor decision needs.
+
+    The household is born (age 0) in model period t_birth and lives
+    age s in period t_birth + s. Calendar inputs (the wage, the return,
+    and the parameters) are read in the period each age is lived;
+    periods before or after the time path read its first or last
+    element. With t_birth None every calendar input reads its last
+    element, which gives the steady state.
+
+    The contribution rate ``fdc_tau`` and the retirement age are the
+    household's own cohort values (from ``pension_regimes``), the
+    earnings band cutoffs are those the cohort faces in the period the
+    income is earned, and the annuity is priced on the mortality of income
+    group j along the cohort's life and on the path of the FDC return
+    the household foresees. The account earns the FDC return
+    r_fdc = r_p - r_fdc_wedge at each age, where ``r_fdc_wedge`` is the
+    value the household's cohort faces in the period that age is lived.
+
+    Args:
+        w (scalar or array_like): wage, a single value or a calendar
+            path by model period
+        e (Numpy array): effective labor units at each age, length S
+        n (Numpy array): labor supply at each age, length S; ages
+            before a0 are ignored
+        r_p (scalar or array_like): household portfolio return, a
+            single value or a calendar path by model period; the
+            element for period t is the return earned in t on holdings
+            carried from t - 1; the account earns this less
+            ``r_fdc_wedge``
+        t_birth (int or None): model period in which the household is
+            age 0, None for the steady state
+        j (int or None): lifetime income group, which sets the
+            mortality rates that price the annuity (None for the
+            lambda-weighted average)
+        p (OG-Core Specifications object): model parameters
+        a0 (int): first age computed, for a household already alive
+            when the time path begins
+        A0 (scalar): account balance at the start of age a0; a
+            household already retired at a0 annuitizes this remaining
+            balance on the rates given
+
+    Returns:
+        FDCLifetime: the account by age
+    """
+    S = p.S
+    e = np.ascontiguousarray(np.asarray(e, dtype=float).ravel())
+    n = np.ascontiguousarray(np.asarray(n, dtype=float).ravel())
+    w_age = _calendar_by_age(w, t_birth, S)
+    ages = np.arange(S)
+    # FDC return r_fdc = r_p - r_fdc_wedge, with the wedge the
+    # household's cohort faces at each age
+    r_age = _calendar_by_age(r_p, t_birth, S)
+    if hasattr(p, "r_fdc_wedge"):
+        wedge_arr = cohort_array("r_fdc_wedge", p)
+        r_age = np.ascontiguousarray(
+            r_age
+            - wedge_arr[_cohort_rows(t_birth, wedge_arr.shape[0], S), ages]
+        )
+    lo, hi = fdc_earn_bands(p)
+    lo_age = _cohort_diag(lo, t_birth, S)
+    hi_age = _cohort_diag(hi, t_birth, S)
+    tau_arr = cohort_array("fdc_tau", p)
+    rows = _cohort_rows(t_birth, tau_arr.shape[0], S)
+    tau_age = np.ascontiguousarray(tau_arr[rows, ages])
+    retire_arr = cohort_array("retire", p)
+    retire_age = retire_arr[
+        _cohort_rows(t_birth, retire_arr.shape[0], S), ages
+    ].astype(int)
+    retired = ages >= retire_age
+    R = int(np.argmax(retired)) if retired.any() else S
+    mort = fdc_mort_rates(p, j)
+    rho_age = np.ascontiguousarray(
+        mort[_cohort_rows(t_birth, mort.shape[0], S), ages]
+    )
+    y = np.ascontiguousarray(w_age * e * n)
+    C, A, P, H, dC, m = fdc_lifetime_loop(
+        y,
+        tau_age,
+        lo_age,
+        hi_age,
+        r_age,
+        rho_age,
+        R,
+        float(np.squeeze(p.g_y)),
+        int(a0),
+        float(A0),
+        S,
+    )
+    return FDCLifetime(C, A, P, H, dC * w_age * e, m, R)
+
+
+def fdc_ss(r_p, w, e, n, p):
+    """
+    Steady-state funded defined contribution accounts of every lifetime
+    income group.
+
+    Args:
+        r_p (scalar): steady-state household portfolio return; the
+            accounts earn r_fdc = r_p - r_fdc_wedge
+        w (scalar): steady-state wage
+        e (Numpy array): effective labor units, S x J
+        n (Numpy array): labor supply, S x J
+        p (OG-Core Specifications object): model parameters
+
+    Returns:
+        FDCLifetime: each array field S x J, and ``R`` the steady-state
+            retirement age
+    """
+    e = np.asarray(e, dtype=float).reshape(p.S, -1)
+    n = np.asarray(n, dtype=float).reshape(p.S, -1)
+    J = n.shape[1]
+    if e.shape[1] != J:
+        e = np.broadcast_to(e[:, :1], (p.S, J))
+    out = [
+        fdc_lifetime(w, e[:, j], n[:, j], r_p, None, j, p) for j in range(J)
+    ]
+    fields = {
+        name: np.stack([getattr(o, name) for o in out], axis=1)
+        for name in FDCLifetime._fields
+        if name != "R"
+    }
+    return FDCLifetime(R=out[0].R, **fields)
