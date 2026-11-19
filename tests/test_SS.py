@@ -1640,24 +1640,30 @@ def test_SS_funded_defined_contribution():
     assert fdc["fdc_contrib"].shape == fdc["n"].shape
     assert fdc["pension_reserves"] == 0.0
     assert fdc["pension_reserve_revenue"] == 0.0
+    assert fdc["pension_reserve_transfer"] == 0.0
 
 
 @pytest.mark.parametrize(
-    "max_ratio,at_cap",
-    [(0.5, False), (0.2, True)],
-    ids=["reserve below ceiling", "reserve at ceiling"],
+    "wedge,max_ratio,bound",
+    [(0.01, 0.5, None), (0.01, 0.2, "ceiling"), (-0.01, 0.5, "floor")],
+    ids=[
+        "reserve below ceiling",
+        "reserve at ceiling",
+        "negative wedge, reserve at floor",
+    ],
 )
-def test_SS_funded_defined_contribution_wedge(max_ratio, at_cap):
+def test_SS_funded_defined_contribution_wedge(wedge, max_ratio, bound):
     """
-    With a positive wedge between r_p and r_fdc, the fund keeps the
-    spread on the balances it owes as a pension reserve, invested in
-    the capital stock and capped at pension_reserve_max_GDPratio times
-    GDP, and pays reserves above the cap to the government. The
-    resource constraint holds whether or not the ceiling binds. (With
-    the testing parameters r_p is below the growth rate, so the
-    reserve settles below a ceiling of 0.5 and reaches one of 0.2.)
+    With a wedge between r_p and r_fdc, the fund keeps the spread on
+    the balances it owes as a pension reserve, invested in the capital
+    stock, which must lie between zero and pension_reserve_max_GDPratio
+    times GDP. Reserves above the ceiling are paid to the government,
+    and with a negative wedge the government transfers enough to keep
+    the reserve at zero. The resource constraint holds in each case.
+    (With the testing parameters r_p is below the growth rate, so with
+    a positive wedge the reserve settles below a ceiling of 0.5 and
+    reaches one of 0.2.)
     """
-    wedge = 0.01
     updates = {
         "fdc_tau": 0.05,
         "r_fdc_wedge": [wedge],
@@ -1668,16 +1674,23 @@ def test_SS_funded_defined_contribution_wedge(max_ratio, at_cap):
     assert np.abs(fdc["resource_constraint_error"]).max() < 1e-7
     assert fdc["F"] > 0.0
     assert np.isclose(fdc["fdc_spread"], wedge * fdc["F"], rtol=1e-8)
-    Z, revenue = fdc["pension_reserves"], fdc["pension_reserve_revenue"]
+    Z = fdc["pension_reserves"]
+    revenue = fdc["pension_reserve_revenue"]
+    transfer = fdc["pension_reserve_transfer"]
     Z_max = p_ss.pension_reserve_max_GDPratio * fdc["Y"]
-    assert 0.0 < Z <= Z_max * (1 + 1e-10)
+    assert 0.0 <= Z <= Z_max * (1 + 1e-10)
+    assert revenue >= 0.0 and transfer >= 0.0
     # steady-state flow identity of the reserve
     G = (1 + p_ss.g_n_ss) * np.exp(p_ss.g_y)
     assert np.isclose(
-        G * Z, (1 + fdc["r_p"]) * Z + fdc["fdc_spread"] - revenue
+        G * Z,
+        (1 + fdc["r_p"]) * Z + fdc["fdc_spread"] - revenue + transfer,
     )
-    # the reserve pays revenue to the government only at the ceiling
-    if at_cap:
-        assert np.isclose(Z, Z_max) and revenue > 0.0
+    if bound == "ceiling":
+        assert np.isclose(Z, Z_max) and revenue > 0.0 and transfer == 0.0
+    elif bound == "floor":
+        assert fdc["fdc_spread"] < 0.0
+        assert Z == 0.0 and revenue == 0.0
+        assert np.isclose(transfer, -fdc["fdc_spread"])
     else:
-        assert Z < Z_max and np.isclose(revenue, 0.0)
+        assert 0.0 < Z < Z_max and revenue == 0.0 and transfer == 0.0

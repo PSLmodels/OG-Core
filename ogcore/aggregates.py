@@ -286,25 +286,31 @@ def get_pension_reserves(r_p, spread, Y, p, method):
     r"""
     Steady-state pension reserve $\hat{Z}$ of the funded defined
     contribution (FDC) fund, the assets it holds beyond the balances
-    owed to households, and the pension reserve revenue $\hat{\Psi}$ it
-    pays to the government.
+    owed to households, the pension reserve revenue $\hat{\Psi}$ it
+    pays to the government, and the transfer $\hat{\Phi}$ it receives
+    from the government.
 
     The reserve is invested in the household portfolio and earns
     $r_p$, receives the spread $\hat{\Pi}$ (``get_fdc_spread``), and
-    may not exceed ``pension_reserve_max_GDPratio`` times GDP. Any
-    reserve above that ceiling is paid to the government:
+    must lie between zero and ``pension_reserve_max_GDPratio`` times
+    GDP at the beginning of every period. At the end of each period,
+    any reserve above the ceiling is paid to the government
+    ($\hat{\Psi}$), and any shortfall below zero is made up by a
+    transfer from the government ($\hat{\Phi}$), so that
 
     .. math::
         (1 + \bar{g}_{n})e^{g_y}\hat{Z} = (1 + \bar{r}_{p})\hat{Z}
-        + \hat{\Pi} - \hat{\Psi}
+        + \hat{\Pi} - \hat{\Psi} + \hat{\Phi},
+        \quad 0 \leq \hat{Z} \leq \bar{z}\bar{Y},
+        \quad \hat{\Psi}, \hat{\Phi} \geq 0
 
     Without the ceiling the reserve would settle at
     $\hat{Z}^{*} = \hat{\Pi}/[(1 + \bar{g}_{n})e^{g_y} - 1 - \bar{r}_p]$
     only when $\bar{r}_p$ is below the growth rate; otherwise it grows
     without bound relative to the economy and so stops at the ceiling.
-    The reserve may not fall below zero: when the spread is negative
-    (``r_fdc_wedge`` < 0) the government covers the shortfall, which is
-    negative revenue.
+    The floor binds when the spread is negative (``r_fdc_wedge`` < 0):
+    the reserve starts every period at zero and the government covers
+    the spread each period.
 
     Args:
         r_p (scalar): steady-state household portfolio return
@@ -316,8 +322,12 @@ def get_pension_reserves(r_p, spread, Y, p, method):
     Returns:
         (tuple): pension reserve quantities
 
-            * Z (scalar): pension reserve $\hat{Z}$
-            * revenue (scalar): pension reserve revenue $\hat{\Psi}$
+            * Z (scalar): pension reserve $\hat{Z}$ at the beginning
+              of the period
+            * revenue (scalar): pension reserve revenue paid to the
+              government, $\hat{\Psi} \geq 0$
+            * transfer (scalar): transfer from the government to the
+              reserve, $\hat{\Phi} \geq 0$
     """
     if method != "SS":
         raise NotImplementedError(
@@ -329,14 +339,25 @@ def get_pension_reserves(r_p, spread, Y, p, method):
     # growth rate less the reserve's return: the share of the reserve
     # needed each period to keep pace with the economy, net of earnings
     net_growth = (1.0 + p.g_n_ss) * np.exp(p.g_y) - 1.0 - r_p
-    if spread <= 0.0:
-        Z = 0.0
-    elif net_growth > 0.0:
-        Z = min(spread / net_growth, Z_max)
-    else:
+    if spread > 0.0 and net_growth <= 0.0:
+        # the reserve grows faster than the economy: it reaches the
+        # ceiling
         Z = Z_max
-    revenue = spread - net_growth * Z
-    return Z, revenue
+    elif spread > 0.0:
+        Z = spread / net_growth
+    else:
+        # a stationary reserve below zero, or one that falls without
+        # bound: it is held at the floor
+        Z = 0.0
+    # the floor and ceiling on the beginning-of-period reserve
+    Z = min(max(Z, 0.0), Z_max)
+    # end-of-period payment that keeps the reserve stationary at Z:
+    # positive above the ceiling (to the government), negative below
+    # the floor (from the government)
+    net_payment = spread - net_growth * Z
+    revenue = max(net_payment, 0.0)
+    transfer = max(-net_payment, 0.0)
+    return Z, revenue, transfer
 
 
 def get_BQ(r, b_splus1, j, p, method, preTP):

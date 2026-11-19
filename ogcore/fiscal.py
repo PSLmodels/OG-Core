@@ -275,7 +275,7 @@ def get_G_ss(
     Calculate the steady-state values of government spending.
 
     .. math::
-            \bar{G} = \bar{Rev} + \bar{\Psi} + \overline{FA}
+            \bar{G} = \bar{Rev} + \bar{\Psi} - \bar{\Phi} + \overline{FA}
             + \bar{D}\bigl[(1 + \bar{g}_n)e^{g_y} - (1 + \bar{r}_{gov})\bigr]
             - \bar{I}_g - \bar{TR} - \overline{UBI}
 
@@ -291,9 +291,11 @@ def get_G_ss(
         new_borrowing (scalar): steady-state amount of new borrowing
         debt_service (scalar): steady-state debt service costs
         p (OG-Core Specifications object): model parameters
-        pension_reserve_revenue (scalar): pension reserves above the
-            ceiling that the funded defined contribution fund pays the
-            government, $\bar{\Psi}$ (not tax revenue)
+        pension_reserve_revenue (scalar): net payment from the funded
+            defined contribution fund's pension reserve to the
+            government, $\bar{\Psi} - \bar{\Phi}$: reserves above the
+            ceiling less the transfer that keeps the reserve from
+            falling below zero (not tax revenue)
 
     Returns:
         G (tuple): steady-state government spending
@@ -370,9 +372,11 @@ def get_TR(
             government
         p (OG-Core Specifications object): model parameters
         method (str): whether doing SS or TP calculation
-        pension_reserve_revenue (array_like): pension reserves above
-            the ceiling that the funded defined contribution fund pays
-            the government (not tax revenue)
+        pension_reserve_revenue (array_like): net payment from the
+            funded defined contribution fund's pension reserve to the
+            government: reserves above the ceiling less the transfer
+            that keeps the reserve from falling below zero (not tax
+            revenue)
 
     Returns:
         new_TR (array_like): new value of aggregate government transfers

@@ -2140,22 +2140,31 @@ def test_get_pension_reserves(r_p, spread, Z_expected):
     """
     The reserve follows its steady-state flow identity, settles below
     the ceiling only when r_p is below the growth rate, never exceeds
-    the ceiling or falls below zero, and pays revenue only at a bound.
+    the ceiling or falls below zero, pays revenue to the government
+    only at the ceiling, and receives a transfer from the government
+    only at the floor.
     """
     p_z = Specifications()
     Y = 2.0
     G = (1 + p_z.g_n_ss) * np.exp(p_z.g_y)
-    Z, revenue = aggr.get_pension_reserves(r_p, spread, Y, p_z, "SS")
+    Z, revenue, transfer = aggr.get_pension_reserves(
+        r_p, spread, Y, p_z, "SS"
+    )
     Z_max = p_z.pension_reserve_max_GDPratio * Y
-    assert np.isclose(G * Z, (1 + r_p) * Z + spread - revenue)
+    assert np.isclose(G * Z, (1 + r_p) * Z + spread - revenue + transfer)
     assert 0.0 <= Z <= Z_max + 1e-12
+    assert revenue >= 0.0 and transfer >= 0.0
+    assert revenue == 0.0 or transfer == 0.0
     if Z_expected == "cap":
-        assert np.isclose(Z, Z_max) and revenue > 0
+        assert np.isclose(Z, Z_max) and revenue > 0 and transfer == 0.0
     elif Z_expected == "interior":
         assert 0.0 < Z < Z_max
         assert np.isclose(Z, spread / (G - 1 - r_p))
-        assert np.isclose(revenue, 0.0)
+        assert np.isclose(revenue, 0.0) and np.isclose(transfer, 0.0)
+    elif spread < 0.0:
+        # the floor binds: the government covers the shortfall
+        assert Z == 0.0 and revenue == 0.0 and transfer == -spread
     else:
-        assert Z == 0.0 and revenue == spread
+        assert Z == 0.0 and revenue == 0.0 and transfer == 0.0
     with pytest.raises(NotImplementedError):
         aggr.get_pension_reserves(r_p, spread, Y, p_z, "TPI")
