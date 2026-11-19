@@ -270,6 +270,8 @@ def net_taxes(
     etr_params,
     p,
     ndc_rates=None,
+    inc_pay_tax_liab=None,
+    w_tax_liab=None,
 ):
     """
     Calculate net taxes paid for each household.
@@ -298,17 +300,31 @@ def net_taxes(
         ndc_rates (NDCRates): calendar paths of the NDC credited and
             discount rates (``pensions.ndc_rates_path``); None for the
             steady-state rates
+        inc_pay_tax_liab (Numpy array): income and payroll tax liability
+            of each household, if already computed (with idiosyncratic
+            shocks, the mean over each age and type's distribution);
+            computed from b, n and e if None
+        w_tax_liab (Numpy array): wealth tax liability of each
+            household, if already computed; computed from b if None
 
     Returns:
         net_tax (Numpy array): net taxes paid for each household
 
     """
-    T_I = income_tax_liab(r, w, b, n, factor, t, j, method, e, etr_params, p)
+    if inc_pay_tax_liab is None:
+        T_I = income_tax_liab(
+            r, w, b, n, factor, t, j, method, e, etr_params, p
+        )
+    else:
+        T_I = inc_pay_tax_liab
     pension = pensions.pension_amount(
         r, w, n, ndc_rates, theta, t, j, shift, method, e, factor, p
     )
     T_BQ = bequest_tax_liab(r, b, bq, t, j, method, p)
-    T_W = wealth_tax_liab(r, b, t, j, method, p)
+    if w_tax_liab is None:
+        T_W = wealth_tax_liab(r, b, t, j, method, p)
+    else:
+        T_W = w_tax_liab
     # print("Net taxes shapes = ", T_I.shape, pension.shape,
     #        T_BQ.shape, T_W.shape)
     net_tax = T_I - pension + T_BQ + T_W - tr - ubi
