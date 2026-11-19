@@ -255,7 +255,7 @@ def get_fdc_spread(fdc, p, method):
     $\hat{F}_t$ in the household portfolio, which earns $r_{p,t}$, but
     credits the accounts (including those bequeathed by members who die
     before retirement) only $r_{fdc} = r_{p} - r_{fdc\_wedge}$. The
-    difference goes to the pension reserve (``get_pension_reserves``):
+    difference goes to the FDC fund reserve (``get_fdc_fund_reserves``):
 
     .. math::
         \hat{\Pi}_{t} = \sum_{s=E+1}^{E+S}\sum_{j=0}^{J}
@@ -282,17 +282,17 @@ def get_fdc_spread(fdc, p, method):
     return float((wedge_next[:, None] * terms).sum())
 
 
-def get_pension_reserves(r_p, spread, Y, p, method):
+def get_fdc_fund_reserves(r_p, spread, Y, p, method):
     r"""
-    Steady-state pension reserve $\hat{Z}$ of the funded defined
+    Steady-state reserve $\hat{Z}$ of the funded defined
     contribution (FDC) fund, the assets it holds beyond the balances
-    owed to households, the pension reserve revenue $\hat{\Psi}$ it
+    owed to households, the FDC fund revenue $\hat{\Psi}$ it
     pays to the government, and the transfer $\hat{\Phi}$ it receives
     from the government.
 
     The reserve is invested in the household portfolio and earns
     $r_p$, receives the spread $\hat{\Pi}$ (``get_fdc_spread``), and
-    must lie between zero and ``pension_reserve_max_GDPratio`` times
+    must lie between zero and ``fdc_fund_reserve_max_GDPratio`` times
     GDP at the beginning of every period. At the end of each period,
     any reserve above the ceiling is paid to the government
     ($\hat{\Psi}$), and any shortfall below zero is made up by a
@@ -320,22 +320,22 @@ def get_pension_reserves(r_p, spread, Y, p, method):
         method (str): 'SS' (the time path is not supported yet)
 
     Returns:
-        (tuple): pension reserve quantities
+        (tuple): FDC fund reserve quantities
 
-            * Z (scalar): pension reserve $\hat{Z}$ at the beginning
+            * Z (scalar): FDC fund reserve $\hat{Z}$ at the beginning
               of the period
-            * revenue (scalar): pension reserve revenue paid to the
+            * revenue (scalar): FDC fund revenue paid to the
               government, $\hat{\Psi} \geq 0$
             * transfer (scalar): transfer from the government to the
               reserve, $\hat{\Phi} \geq 0$
     """
     if method != "SS":
         raise NotImplementedError(
-            "Pension reserves are only computed in the steady state so far"
+            "FDC fund reserves are only computed in the steady state so far"
         )
     r_p = float(np.squeeze(r_p))
     Y = float(np.squeeze(Y))
-    Z_max = max(p.pension_reserve_max_GDPratio * Y, 0.0)
+    Z_max = max(p.fdc_fund_reserve_max_GDPratio * Y, 0.0)
     # growth rate less the reserve's return: the share of the reserve
     # needed each period to keep pace with the economy, net of earnings
     net_growth = (1.0 + p.g_n_ss) * np.exp(p.g_y) - 1.0 - r_p

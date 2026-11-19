@@ -2084,7 +2084,7 @@ def test_get_F_fund_identity(wedge):
     """
     The fund's owed balances earn r_p; less the bequests of members who
     die before retirement (credited r_fdc) and the spread kept for the
-    pension reserve, they pay for the start-of-period balances of the
+    FDC fund reserve, they pay for the start-of-period balances of the
     members alive (and the immigrants who arrive), each in the period's
     detrended units.
     """
@@ -2136,7 +2136,7 @@ def test_get_fdc_spread_off():
         "negative spread",
     ],
 )
-def test_get_pension_reserves(r_p, spread, Z_expected):
+def test_get_fdc_fund_reserves(r_p, spread, Z_expected):
     """
     The reserve follows its steady-state flow identity, settles below
     the ceiling only when r_p is below the growth rate, never exceeds
@@ -2147,8 +2147,10 @@ def test_get_pension_reserves(r_p, spread, Z_expected):
     p_z = Specifications()
     Y = 2.0
     G = (1 + p_z.g_n_ss) * np.exp(p_z.g_y)
-    Z, revenue, transfer = aggr.get_pension_reserves(r_p, spread, Y, p_z, "SS")
-    Z_max = p_z.pension_reserve_max_GDPratio * Y
+    Z, revenue, transfer = aggr.get_fdc_fund_reserves(
+        r_p, spread, Y, p_z, "SS"
+    )
+    Z_max = p_z.fdc_fund_reserve_max_GDPratio * Y
     assert np.isclose(G * Z, (1 + r_p) * Z + spread - revenue + transfer)
     assert 0.0 <= Z <= Z_max + 1e-12
     assert revenue >= 0.0 and transfer >= 0.0
@@ -2165,19 +2167,19 @@ def test_get_pension_reserves(r_p, spread, Z_expected):
     else:
         assert Z == 0.0 and revenue == 0.0 and transfer == 0.0
     with pytest.raises(NotImplementedError):
-        aggr.get_pension_reserves(r_p, spread, Y, p_z, "TPI")
+        aggr.get_fdc_fund_reserves(r_p, spread, Y, p_z, "TPI")
 
 
 @pytest.mark.parametrize("spread", [0.02, -0.02], ids=["positive", "negative"])
-def test_get_pension_reserves_zero_cap(spread):
+def test_get_fdc_fund_reserves_zero_cap(spread):
     """
     With a cap of zero the fund holds no reserve: the whole spread is
     paid to the government each period, or, if negative, covered by a
     transfer from the government.
     """
     p_z = Specifications()
-    p_z.update_specifications({"pension_reserve_max_GDPratio": 0.0})
-    Z, revenue, transfer = aggr.get_pension_reserves(
+    p_z.update_specifications({"fdc_fund_reserve_max_GDPratio": 0.0})
+    Z, revenue, transfer = aggr.get_fdc_fund_reserves(
         0.05, spread, 2.0, p_z, "SS"
     )
     assert Z == 0.0

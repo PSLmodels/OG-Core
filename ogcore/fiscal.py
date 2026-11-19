@@ -269,7 +269,7 @@ def get_G_ss(
     new_borrowing,
     debt_service,
     p,
-    pension_reserve_revenue=0.0,
+    fdc_fund_revenue=0.0,
 ):
     r"""
     Calculate the steady-state values of government spending.
@@ -291,8 +291,8 @@ def get_G_ss(
         new_borrowing (scalar): steady-state amount of new borrowing
         debt_service (scalar): steady-state debt service costs
         p (OG-Core Specifications object): model parameters
-        pension_reserve_revenue (scalar): net payment from the funded
-            defined contribution fund's pension reserve to the
+        fdc_fund_revenue (scalar): net payment from the funded
+            defined contribution fund's reserve to the
             government, $\bar{\Psi} - \bar{\Phi}$: reserves above the
             ceiling less the transfer that keeps the reserve from
             falling below zero (not tax revenue)
@@ -306,7 +306,7 @@ def get_G_ss(
     else:
         G = (
             total_tax_revenue
-            + pension_reserve_revenue
+            + fdc_fund_revenue
             + new_borrowing
             + foreign_aid
             - (agg_pension_outlays + TR + debt_service + UBI_outlays + I_g)
@@ -344,7 +344,7 @@ def get_TR(
     foreign_aid,
     p,
     method,
-    pension_reserve_revenue=0.0,
+    fdc_fund_revenue=0.0,
 ):
     r"""
     Function to compute aggregate transfers.  Note that this excludes
@@ -372,8 +372,8 @@ def get_TR(
             government
         p (OG-Core Specifications object): model parameters
         method (str): whether doing SS or TP calculation
-        pension_reserve_revenue (array_like): net payment from the
-            funded defined contribution fund's pension reserve to the
+        fdc_fund_revenue (array_like): net payment from the
+            funded defined contribution fund's reserve to the
             government: reserves above the ceiling less the transfer
             that keeps the reserve from falling below zero (not tax
             revenue)
@@ -385,7 +385,7 @@ def get_TR(
     if p.budget_balance:
         new_TR = (
             total_tax_revenue
-            + pension_reserve_revenue
+            + fdc_fund_revenue
             + foreign_aid
             - agg_pension_outlays
             - G
