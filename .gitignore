@@ -42,6 +42,7 @@ docs/book/_build/*
 docs/build/*
 *micro_data_*.pkl
 examples/OG-Core-Example/*
+examples/OG-Core-Shocks-Example/*
 ogcore/tests/test_io_data/tax_func_loop_inputs_large.pkl
 ogcore/tests/baseline/*
 ogcore/tests/reform/*
