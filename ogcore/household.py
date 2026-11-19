@@ -453,11 +453,11 @@ def get_fdc(r_p, w, n, e, j, p, method, t=None):
     ``w`` are the paths over those periods. A cohort alive before the
     time path begins starts from the FDC claims of its age in
     ``p.fdc_claims_preTP`` (set by ``TPI.get_initial_SS_values``),
-    credited with the period-0 return.
+    credited with the period-0 FDC return r_fdc = r_p - r_fdc_wedge.
 
     Args:
         r_p (scalar or Numpy array): return on the household investment
-            portfolio, which the accounts also earn
+            portfolio; the accounts earn this less ``r_fdc_wedge``
         w (scalar or Numpy array): real wage rate
         n (Numpy array): labor supply
         e (Numpy array): effective labor units, shaped like ``n``
@@ -508,7 +508,11 @@ def get_fdc(r_p, w, n, e, j, p, method, t=None):
     if a0 > 0:
         claims0 = getattr(p, "fdc_claims_preTP", None)
         if claims0 is not None:
-            A0 = (1.0 + r_p[0]) * claims0[a0 - 1, j]
+            # balances carried in earn the FDC return of age a0 in
+            # period t, r_fdc = r_p - r_fdc_wedge, as in pensions.fdc_tpi
+            wedge_arr = pensions.fdc_wedge_path(p)
+            wedge0 = wedge_arr[min(t, wedge_arr.shape[0] - 1), a0]
+            A0 = (1.0 + r_p[0] - wedge0) * claims0[a0 - 1, j]
     acct = pensions.fdc_lifetime(
         pad(w),
         e_full,

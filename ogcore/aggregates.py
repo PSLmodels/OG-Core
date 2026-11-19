@@ -227,6 +227,17 @@ def get_F(fdc, p, method):
     """
     if fdc is None:
         return 0.0
+    return _fdc_owed_terms(fdc, p, method).sum(axis=(-2, -1))
+
+
+def _fdc_owed_terms(fdc, p, method):
+    """
+    Terms of ``get_F`` by the age s - 1 at which the holdings were
+    carried out of the previous period: the balances owed to households
+    of age s at the start of the period, before its return. S x J in
+    the steady state; T x S x J on the time path, where row t holds the
+    balances owed in period t + 1 from the holdings chosen in period t.
+    """
     if method == "TPI":
         # fdc is a pensions.FDCPath; the holdings chosen in period t
         # are the fund's assets in period t + 1
@@ -236,15 +247,12 @@ def get_F(fdc, p, method):
         imm_shift = np.append(
             p.imm_rates[: p.T, 1:, :], np.zeros((p.T, 1, p.J)), axis=1
         )
-        F = (
-            (
-                fdc.holdings * np.exp(-p.g_y) * p.omega[: p.T, :, :]
-                + fdc.claims * omega_shift * imm_shift
-            )
-            .sum(1)
-            .sum(1)
+        terms = (
+            fdc.holdings * np.exp(-p.g_y) * p.omega[: p.T, :, :]
+            + fdc.claims * omega_shift * imm_shift
         )
-        return F / (1.0 + np.hstack((p.g_n[: p.T - 1], p.g_n_ss)))
+        growth = 1.0 + np.hstack((p.g_n[: p.T - 1], p.g_n_ss))
+        return terms / growth.reshape(p.T, 1, 1)
     if method != "SS":
         raise ValueError(f"method must be 'SS' or 'TPI', got {method!r}")
     claims = pensions.fdc_survivor_claims(fdc, p.rho[-1, :, :], p)
@@ -252,11 +260,176 @@ def get_F(fdc, p, method):
     imm_extended = np.append(
         p.imm_rates[-1, 1:, :], np.zeros((1, p.J)), axis=0
     )
-    F = (
+    terms = (
         fdc.holdings * np.exp(-p.g_y) * p.omega_SS
         + claims * omega_extended * imm_extended
-    ).sum()
-    return F / (1.0 + p.g_n_ss)
+    )
+    return terms / (1.0 + p.g_n_ss)
+
+
+def get_fdc_spread(fdc, p, method):
+    r"""
+    Spread the funded defined contribution (FDC) fund earns on the
+    balances it owes households. The fund invests the owed balances
+    $\hat{F}_t$ in the household portfolio, which earns $r_{p,t}$, but
+    credits the accounts (including those bequeathed by members who die
+    before retirement) only $r_{fdc} = r_{p} - r_{fdc\_wedge}$. The
+    difference goes to the FDC fund reserve (``get_fdc_fund_reserves``):
+
+    .. math::
+        \hat{\Pi}_{t} = \sum_{s=E+1}^{E+S}\sum_{j=0}^{J}
+        r_{fdc\_wedge,s,t}\,\hat{f}_{j,s,t}
+
+    where $\hat{f}_{j,s,t}$ are the terms of ``get_F`` owed to members
+    of age s and $r_{fdc\_wedge,s,t}$ is the wedge on the return of
+    age s in period t.
+
+    Args:
+        fdc (pensions.FDCLifetime, pensions.FDCPath, or None): the
+            accounts, None when the pillar is off
+        p (OG-Core Specifications object): model parameters
+        method (str): 'SS' (with ``fdc`` a ``pensions.FDCLifetime``)
+            or 'TPI' (with ``fdc`` a ``pensions.FDCPath``, giving the
+            spread in periods 1 to T, like ``get_F``)
+
+    Returns:
+        spread (scalar or Numpy array): the spread, 0.0 when the pillar
+            is off (negative when ``r_fdc_wedge`` is negative)
+    """
+    if fdc is None:
+        return 0.0
+    terms = _fdc_owed_terms(fdc, p, method)
+    if method == "TPI":
+        # holdings carried out of age s - 1 in period t earn the return
+        # of age s in period t + 1
+        wedge_arr = pensions.fdc_wedge_path(p)
+        rows = np.minimum(np.arange(1, p.T + 1), wedge_arr.shape[0] - 1)
+        wedge_next = np.append(wedge_arr[rows, 1:], np.zeros((p.T, 1)), axis=1)
+        return (wedge_next[:, :, None] * terms).sum(axis=(1, 2))
+    # holdings carried out of age s - 1 earn the return of age s
+    wedge_next = np.append(pensions.fdc_wedge_ss(p)[1:], 0.0)
+    return float((wedge_next[:, None] * terms).sum())
+
+
+def get_fdc_fund_reserves(r_p, spread, Y, p, method, Z0=0.0, Z_T=None):
+    r"""
+    Reserve $\hat{Z}$ of the funded defined contribution (FDC) fund,
+    the assets it holds beyond the balances owed to households, the
+    FDC fund revenue $\hat{\Psi}$ it pays to the government, and the
+    transfer $\hat{\Phi}$ it receives from the government.
+
+    The reserve is invested in the household portfolio and earns
+    $r_p$, receives the spread $\hat{\Pi}$ (``get_fdc_spread``), and
+    must lie between zero and ``fdc_fund_reserve_max_GDPratio`` times
+    GDP at the beginning of every period. At the end of each period,
+    any reserve above the ceiling is paid to the government
+    ($\hat{\Psi}$), and any shortfall below zero is made up by a
+    transfer from the government ($\hat{\Phi}$), so that
+
+    .. math::
+        (1 + g_{n,t+1})e^{g_y}\hat{Z}_{t+1} = (1 + r_{p,t})\hat{Z}_{t}
+        + \hat{\Pi}_{t} - \hat{\Psi}_{t} + \hat{\Phi}_{t},
+        \quad 0 \leq \hat{Z}_{t+1} \leq \bar{z}\hat{Y}_{t+1},
+        \quad \hat{\Psi}_{t}, \hat{\Phi}_{t} \geq 0
+
+    On the time path the reserve starts from ``Z0`` and each period's
+    payment is the smallest that keeps the next period's reserve within
+    its bounds. Because the reserve has no forward-looking adjustment,
+    it can approach its steady state slowly, more slowly than the time
+    path converges. Given a terminal reserve ``Z_T`` (the steady-state
+    reserve), the payment in the last period, T - 1, instead settles
+    the gap so that the reserve begins period T at ``Z_T``, as the
+    time path assumes of every variable. In the steady state the
+    reserve is stationary. Without
+    the ceiling it would settle at
+    $\hat{Z}^{*} = \hat{\Pi}/[(1 + \bar{g}_{n})e^{g_y} - 1 - \bar{r}_p]$
+    only when $\bar{r}_p$ is below the growth rate; otherwise it grows
+    without bound relative to the economy and so stops at the ceiling.
+    The floor binds when the spread is negative (``r_fdc_wedge`` < 0):
+    the reserve starts every period at zero and the government covers
+    the spread each period.
+
+    Args:
+        r_p (scalar or Numpy array): household portfolio return, in the
+            steady state or in periods 0 to T - 1
+        spread (scalar or Numpy array): spread on the owed balances,
+            $\hat{\Pi}$, in the steady state or in periods 0 to T - 1
+        Y (scalar or Numpy array): GDP, in the steady state or in
+            periods 0 to T - 1 (periods after the path take the last
+            value)
+        p (OG-Core Specifications object): model parameters
+        method (str): 'SS' or 'TPI'
+        Z0 (scalar): reserve at the beginning of period 0 (time path
+            only)
+        Z_T (scalar or None): reserve at the beginning of period T, which
+            the payment in period T - 1 settles to (time path only);
+            None applies the bounds in period T - 1 like any other
+
+    Returns:
+        (tuple): FDC fund reserve quantities, scalars in the steady
+        state and length T arrays on the time path
+
+            * Z (scalar or Numpy array): FDC fund reserve $\hat{Z}$ at
+              the beginning of the period
+            * revenue (scalar or Numpy array): FDC fund revenue paid to
+              the government, $\hat{\Psi} \geq 0$
+            * transfer (scalar or Numpy array): transfer from the
+              government to the reserve, $\hat{\Phi} \geq 0$
+    """
+    if method == "TPI":
+        T = p.T
+        r_p = np.asarray(r_p, dtype=float).ravel()[:T]
+        spread = np.broadcast_to(np.asarray(spread, dtype=float).ravel(), (T,))
+        Y = np.asarray(Y, dtype=float).ravel()[:T]
+        Y_next = np.append(Y[1:], Y[-1])
+        growth = (1.0 + np.hstack((p.g_n[: T - 1], p.g_n_ss))) * np.exp(p.g_y)
+        Z = np.zeros(T + 1)
+        Z[0] = float(np.squeeze(Z0))
+        net_payment = np.zeros(T)
+        for t in range(T):
+            Z_max = max(p.fdc_fund_reserve_max_GDPratio * Y_next[t], 0.0)
+            # end-of-period reserve before any payment, in next-period
+            # units, kept within the floor and the ceiling
+            Z_free = ((1.0 + r_p[t]) * Z[t] + spread[t]) / growth[t]
+            if t == T - 1 and Z_T is not None:
+                # terminal settlement: the reserve begins period T at
+                # its steady-state value
+                Z[t + 1] = float(np.squeeze(Z_T))
+            else:
+                Z[t + 1] = min(max(Z_free, 0.0), Z_max)
+            # positive above the ceiling (to the government), negative
+            # below the floor (from the government)
+            net_payment[t] = growth[t] * (Z_free - Z[t + 1])
+        revenue = np.maximum(net_payment, 0.0)
+        transfer = np.maximum(-net_payment, 0.0)
+        return Z[:T], revenue, transfer
+    if method != "SS":
+        raise ValueError(f"method must be 'SS' or 'TPI', got {method!r}")
+    r_p = float(np.squeeze(r_p))
+    Y = float(np.squeeze(Y))
+    Z_max = max(p.fdc_fund_reserve_max_GDPratio * Y, 0.0)
+    # growth rate less the reserve's return: the share of the reserve
+    # needed each period to keep pace with the economy, net of earnings
+    net_growth = (1.0 + p.g_n_ss) * np.exp(p.g_y) - 1.0 - r_p
+    if spread > 0.0 and net_growth <= 0.0:
+        # the reserve grows faster than the economy: it reaches the
+        # ceiling
+        Z = Z_max
+    elif spread > 0.0:
+        Z = spread / net_growth
+    else:
+        # a stationary reserve below zero, or one that falls without
+        # bound: it is held at the floor
+        Z = 0.0
+    # the floor and ceiling on the beginning-of-period reserve
+    Z = min(max(Z, 0.0), Z_max)
+    # end-of-period payment that keeps the reserve stationary at Z:
+    # positive above the ceiling (to the government), negative below
+    # the floor (from the government)
+    net_payment = spread - net_growth * Z
+    revenue = max(net_payment, 0.0)
+    transfer = max(-net_payment, 0.0)
+    return Z, revenue, transfer
 
 
 def get_BQ(r, b_splus1, j, p, method, preTP):
