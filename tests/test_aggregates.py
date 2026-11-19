@@ -2147,9 +2147,7 @@ def test_get_pension_reserves(r_p, spread, Z_expected):
     p_z = Specifications()
     Y = 2.0
     G = (1 + p_z.g_n_ss) * np.exp(p_z.g_y)
-    Z, revenue, transfer = aggr.get_pension_reserves(
-        r_p, spread, Y, p_z, "SS"
-    )
+    Z, revenue, transfer = aggr.get_pension_reserves(r_p, spread, Y, p_z, "SS")
     Z_max = p_z.pension_reserve_max_GDPratio * Y
     assert np.isclose(G * Z, (1 + r_p) * Z + spread - revenue + transfer)
     assert 0.0 <= Z <= Z_max + 1e-12
