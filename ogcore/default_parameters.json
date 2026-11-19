@@ -4214,7 +4214,7 @@
         "description": "Maximum pension reserve, as a share of GDP, that the funded defined contribution (FDC) fund may hold beyond the balances it owes households. The reserve is invested in the household portfolio, earns r_p, and accumulates the spread r_fdc_wedge times the owed balances. Reserves above this ceiling are paid to the government as pension reserve revenue, which enters the government budget constraint but is not tax revenue. The reserve also has a floor of zero: at the end of any period in which it would fall below zero, the government transfers enough to the reserve that it begins the next period at zero or above.",
         "section_1": "Fiscal Policy Parameters",
         "section_2": "Government Pension Parameters",
-        "notes": "Only used when fdc_tau is positive. The reserve settles below the ceiling (and pays no revenue) only if r_p is below the growth rate (1 + g_n) e^{g_y} - 1 and the spread is small enough; otherwise it stays at the ceiling. Currently applied in the steady state only.",
+        "notes": "Only used when fdc_tau is positive. The reserve settles below the ceiling (and pays no revenue) only if r_p is below the growth rate (1 + g_n) e^{g_y} - 1 and the spread is small enough; otherwise it stays at the ceiling. A value of zero means the fund holds no reserve: each period the whole spread is paid to the government (or, with a negative wedge, covered by a transfer from the government). Currently applied in the steady state only.",
         "type": "float",
         "value": [
             {
@@ -4223,7 +4223,7 @@
         ],
         "validators": {
             "range": {
-                "min": 0.2,
+                "min": 0.0,
                 "max": 0.8
             }
         }

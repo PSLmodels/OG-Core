@@ -2166,3 +2166,20 @@ def test_get_pension_reserves(r_p, spread, Z_expected):
         assert Z == 0.0 and revenue == 0.0 and transfer == 0.0
     with pytest.raises(NotImplementedError):
         aggr.get_pension_reserves(r_p, spread, Y, p_z, "TPI")
+
+
+@pytest.mark.parametrize("spread", [0.02, -0.02], ids=["positive", "negative"])
+def test_get_pension_reserves_zero_cap(spread):
+    """
+    With a cap of zero the fund holds no reserve: the whole spread is
+    paid to the government each period, or, if negative, covered by a
+    transfer from the government.
+    """
+    p_z = Specifications()
+    p_z.update_specifications({"pension_reserve_max_GDPratio": 0.0})
+    Z, revenue, transfer = aggr.get_pension_reserves(
+        0.05, spread, 2.0, p_z, "SS"
+    )
+    assert Z == 0.0
+    assert np.isclose(revenue - transfer, spread)
+    assert revenue == max(spread, 0.0) and transfer == max(-spread, 0.0)
