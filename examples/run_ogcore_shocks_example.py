@@ -37,8 +37,7 @@ def main():
         mtry_params=[[[2.5, 0.1]]],
     )
 
-    cores = int(os.environ.get("SSCC_CORES", os.cpu_count() or 1))
-    workers = min(7, max(1, cores - 1))
+    workers = min(7, max(1, (os.cpu_count() or 1) - 1))
     paths = []
     with Client(n_workers=workers, threads_per_worker=1) as client:
         for directory, rate in ((BASELINE_DIR, 0.21), (REFORM_DIR, 0.35)):
