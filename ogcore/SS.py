@@ -531,6 +531,14 @@ def inner_loop(outer_loop_vars, p, client, scattered_p=None):
     L = aggr.get_L(nssmat, p, "SS")
     B = aggr.get_B(bssmat, p, "SS", False)
     F = aggr.get_F(fdc, p, "SS")
+    # pension reserve the fund holds beyond the balances it owes, from
+    # the spread between r_p and r_fdc, capped at a share of GDP
+    Z_pen, Psi, Phi = aggr.get_pension_reserves(
+        r_p, aggr.get_fdc_spread(fdc, p, "SS"), Y, p, "SS"
+    )
+    # net pension reserve revenue: payments above the ceiling less
+    # transfers that keep the reserve from falling below zero
+    pension_reserve_revenue = Psi - Phi
 
     # Find gov't debt
     r_gov = fiscal.get_r_gov(r, p.debt_ratio_ss, p, "scalar", t=-1)
@@ -567,9 +575,10 @@ def inner_loop(outer_loop_vars, p, client, scattered_p=None):
     K_demand_open_vec[-1] = firm.get_K(
         p.world_int_rate[-1], w_open, L_M, p, "SS", -1
     )
-    # the FDC fund's assets add to domestic savings
+    # the FDC fund's assets (owed balances and reserve) add to
+    # domestic savings
     K, K_d, K_f = aggr.get_K_splits(
-        B + F, K_demand_open_vec.sum(), D_d, p.zeta_K[-1]
+        B + F + Z_pen, K_demand_open_vec.sum(), D_d, p.zeta_K[-1]
     )
     K_M = max(0.001, K - K_vec.sum())  # make sure K_M > 0
     L_vec[-1] = L_M
@@ -617,7 +626,7 @@ def inner_loop(outer_loop_vars, p, client, scattered_p=None):
     # FDC balances of those who die before retirement are bequeathed
     new_BQ = aggr.get_BQ(
         new_r_p,
-        bssmat + pensions.fdc_bequeathable(fdc, p),
+        bssmat + pensions.fdc_bequeathable(fdc, new_r_p, p),
         None,
         p,
         "SS",
@@ -728,6 +737,7 @@ def inner_loop(outer_loop_vars, p, client, scattered_p=None):
         new_borrowing,
         debt_service,
         p,
+        pension_reserve_revenue,
     )
     new_TR = fiscal.get_TR(
         Y,
@@ -740,6 +750,7 @@ def inner_loop(outer_loop_vars, p, client, scattered_p=None):
         foreign_aid,
         p,
         "SS",
+        pension_reserve_revenue,
     )
 
     G_vec = np.zeros(p.M)
@@ -993,6 +1004,12 @@ def SS_solver(
         "SS",
     )
     Fss = aggr.get_F(fdc_ss, p, "SS")
+    fdc_spread_ss = aggr.get_fdc_spread(fdc_ss, p, "SS")
+    (
+        Zss,
+        pension_reserve_revenue_ss,
+        pension_reserve_transfer_ss,
+    ) = aggr.get_pension_reserves(new_r_p, fdc_spread_ss, Yss, p, "SS")
     (
         Dss,
         D_d_ss,
@@ -1009,7 +1026,7 @@ def SS_solver(
             p.world_int_rate[-1], w_open, L_vec_ss[m], p, "SS", m
         )
     Kss, K_d_ss, K_f_ss = aggr.get_K_splits(
-        Bss + Fss, K_demand_open_ss.sum(), D_d_ss, p.zeta_K[-1]
+        Bss + Fss + Zss, K_demand_open_ss.sum(), D_d_ss, p.zeta_K[-1]
     )
     # Yss = firm.get_Y(Kss, K_g_ss, Lss, p, 'SS')
     I_g_ss = fiscal.get_I_g(Yss, Ig_baseline, p, "SS")
@@ -1255,6 +1272,7 @@ def SS_solver(
         new_borrowing,
         debt_service,
         p,
+        pension_reserve_revenue_ss - pension_reserve_transfer_ss,
     )
 
     # Compute total investment (not just domestic)
@@ -1404,6 +1422,10 @@ def SS_solver(
         "bequest_tax": bq_tax_ss[: p.T, ...],
         "pension_benefits": pension_ss[: p.T, ...],
         "F": Fss,
+        "fdc_spread": fdc_spread_ss,
+        "pension_reserves": Zss,
+        "pension_reserve_revenue": pension_reserve_revenue_ss,
+        "pension_reserve_transfer": pension_reserve_transfer_ss,
         "fdc_contrib": fdc_contrib_ss,
         "fdc_benefits": fdc_benefits_ss,
         "fdc_holdings": fdc_holdings_ss,

@@ -3032,20 +3032,45 @@ def fdc_holdings(fdc):
     return fdc.holdings
 
 
-def fdc_bequeathable(fdc, p):
+def fdc_wedge_ss(p):
+    """
+    Steady-state wedge ``r_fdc_wedge`` between the portfolio return
+    r_p and the FDC return r_fdc at each age, the value
+    ``fdc_lifetime`` uses for a household with t_birth None.
+
+    Args:
+        p (OG-Core Specifications object): model parameters
+
+    Returns:
+        wedge (Numpy array): wedge at each age, length S (zeros if the
+            parameter is absent)
+    """
+    if not hasattr(p, "r_fdc_wedge"):
+        return np.zeros(p.S)
+    wedge_arr = cohort_array("r_fdc_wedge", p)
+    return np.asarray(wedge_arr[-1, :], dtype=float).ravel()[: p.S]
+
+
+def fdc_bequeathable(fdc, r_p, p):
     """
     End-of-period holdings that go to bequests if the household dies
     before the next period: the account holdings at ages before the
     retirement age. After retirement the holdings of those who die
     stay in the annuity pool.
 
-    The holdings are returned in the next period's detrended units,
+    The account of a member who dies is credited the FDC return
+    r_fdc = r_p - r_fdc_wedge, like the account of a survivor, and the
+    fund keeps the spread. Because ``aggregates.get_BQ`` multiplies the
+    savings it is given by (1 + r_p), the holdings are scaled here by
+    (1 + r_fdc) / (1 + r_p), with r_fdc the return at the next age.
+    They are also returned in the next period's detrended units,
     e^{-g_y} times the holdings, the units of the private savings
-    b_{s+1} they are added to in ``aggregates.get_BQ``.
+    b_{s+1} they are added to.
 
     Args:
         fdc (FDCLifetime or None): the accounts, None when the pillar
             is off
+        r_p (scalar): steady-state household portfolio return
         p (OG-Core Specifications object): model parameters
 
     Returns:
@@ -3055,10 +3080,13 @@ def fdc_bequeathable(fdc, p):
     """
     if fdc is None:
         return 0.0
-    ages = np.arange(fdc.holdings.shape[0]).reshape(
-        (-1,) + (1,) * (fdc.holdings.ndim - 1)
-    )
-    return np.where(ages < fdc.R, fdc.holdings, 0.0) * np.exp(-p.g_y)
+    H = fdc.holdings
+    shape = (-1,) + (1,) * (H.ndim - 1)
+    ages = np.arange(H.shape[0]).reshape(shape)
+    r_p = float(np.squeeze(r_p))
+    wedge_next = np.append(fdc_wedge_ss(p)[1:], 0.0).reshape(shape)
+    scale = (1.0 + r_p - wedge_next) / (1.0 + r_p)
+    return np.where(ages < fdc.R, H * scale, 0.0) * np.exp(-p.g_y)
 
 
 def fdc_survivor_claims(fdc, rho, p):
