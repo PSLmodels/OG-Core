@@ -269,12 +269,13 @@ def get_G_ss(
     new_borrowing,
     debt_service,
     p,
+    pension_reserve_revenue=0.0,
 ):
     r"""
     Calculate the steady-state values of government spending.
 
     .. math::
-            \bar{G} = \bar{Rev} + \overline{FA}
+            \bar{G} = \bar{Rev} + \bar{\Psi} + \overline{FA}
             + \bar{D}\bigl[(1 + \bar{g}_n)e^{g_y} - (1 + \bar{r}_{gov})\bigr]
             - \bar{I}_g - \bar{TR} - \overline{UBI}
 
@@ -290,6 +291,9 @@ def get_G_ss(
         new_borrowing (scalar): steady-state amount of new borrowing
         debt_service (scalar): steady-state debt service costs
         p (OG-Core Specifications object): model parameters
+        pension_reserve_revenue (scalar): pension reserves above the
+            ceiling that the funded defined contribution fund pays the
+            government, $\bar{\Psi}$ (not tax revenue)
 
     Returns:
         G (tuple): steady-state government spending
@@ -300,6 +304,7 @@ def get_G_ss(
     else:
         G = (
             total_tax_revenue
+            + pension_reserve_revenue
             + new_borrowing
             + foreign_aid
             - (agg_pension_outlays + TR + debt_service + UBI_outlays + I_g)
@@ -337,6 +342,7 @@ def get_TR(
     foreign_aid,
     p,
     method,
+    pension_reserve_revenue=0.0,
 ):
     r"""
     Function to compute aggregate transfers.  Note that this excludes
@@ -364,6 +370,9 @@ def get_TR(
             government
         p (OG-Core Specifications object): model parameters
         method (str): whether doing SS or TP calculation
+        pension_reserve_revenue (array_like): pension reserves above
+            the ceiling that the funded defined contribution fund pays
+            the government (not tax revenue)
 
     Returns:
         new_TR (array_like): new value of aggregate government transfers
@@ -372,6 +381,7 @@ def get_TR(
     if p.budget_balance:
         new_TR = (
             total_tax_revenue
+            + pension_reserve_revenue
             + foreign_aid
             - agg_pension_outlays
             - G

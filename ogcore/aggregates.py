@@ -223,6 +223,15 @@ def get_F(fdc, p, method):
     """
     if fdc is None:
         return 0.0
+    return _fdc_owed_terms(fdc, p, method).sum()
+
+
+def _fdc_owed_terms(fdc, p, method):
+    """
+    Terms of ``get_F`` by the age s - 1 at which the holdings were
+    carried out of the previous period (S x J): the balances owed to
+    households of age s at the start of the period, before its return.
+    """
     if method != "SS":
         raise NotImplementedError(
             "FDC fund assets are only computed in the steady state so far"
@@ -232,11 +241,102 @@ def get_F(fdc, p, method):
     imm_extended = np.append(
         p.imm_rates[-1, 1:, :], np.zeros((1, p.J)), axis=0
     )
-    F = (
+    terms = (
         fdc.holdings * np.exp(-p.g_y) * p.omega_SS
         + claims * omega_extended * imm_extended
-    ).sum()
-    return F / (1.0 + p.g_n_ss)
+    )
+    return terms / (1.0 + p.g_n_ss)
+
+
+def get_fdc_spread(fdc, p, method):
+    r"""
+    Spread the funded defined contribution (FDC) fund earns on the
+    balances it owes households. The fund invests the owed balances
+    $\hat{F}_t$ in the household portfolio, which earns $r_{p,t}$, but
+    credits the accounts (including those bequeathed by members who die
+    before retirement) only $r_{fdc} = r_{p} - r_{fdc\_wedge}$. The
+    difference goes to the pension reserve (``get_pension_reserves``):
+
+    .. math::
+        \hat{\Pi}_{t} = \sum_{s=E+1}^{E+S}\sum_{j=0}^{J}
+        r_{fdc\_wedge,s}\,\hat{f}_{j,s,t}
+
+    where $\hat{f}_{j,s,t}$ are the terms of ``get_F`` owed to members
+    of age s.
+
+    Args:
+        fdc (pensions.FDCLifetime or None): the accounts by age and
+            lifetime income group, None when the pillar is off
+        p (OG-Core Specifications object): model parameters
+        method (str): 'SS' (the time path is not supported yet)
+
+    Returns:
+        spread (scalar): the spread, 0.0 when the pillar is off
+            (negative when ``r_fdc_wedge`` is negative)
+    """
+    if fdc is None:
+        return 0.0
+    terms = _fdc_owed_terms(fdc, p, method)
+    # holdings carried out of age s - 1 earn the return of age s
+    wedge_next = np.append(pensions.fdc_wedge_ss(p)[1:], 0.0)
+    return float((wedge_next[:, None] * terms).sum())
+
+
+def get_pension_reserves(r_p, spread, Y, p, method):
+    r"""
+    Steady-state pension reserve $\hat{Z}$ of the funded defined
+    contribution (FDC) fund, the assets it holds beyond the balances
+    owed to households, and the pension reserve revenue $\hat{\Psi}$ it
+    pays to the government.
+
+    The reserve is invested in the household portfolio and earns
+    $r_p$, receives the spread $\hat{\Pi}$ (``get_fdc_spread``), and
+    may not exceed ``pension_reserve_max_GDPratio`` times GDP. Any
+    reserve above that ceiling is paid to the government:
+
+    .. math::
+        (1 + \bar{g}_{n})e^{g_y}\hat{Z} = (1 + \bar{r}_{p})\hat{Z}
+        + \hat{\Pi} - \hat{\Psi}
+
+    Without the ceiling the reserve would settle at
+    $\hat{Z}^{*} = \hat{\Pi}/[(1 + \bar{g}_{n})e^{g_y} - 1 - \bar{r}_p]$
+    only when $\bar{r}_p$ is below the growth rate; otherwise it grows
+    without bound relative to the economy and so stops at the ceiling.
+    The reserve may not fall below zero: when the spread is negative
+    (``r_fdc_wedge`` < 0) the government covers the shortfall, which is
+    negative revenue.
+
+    Args:
+        r_p (scalar): steady-state household portfolio return
+        spread (scalar): spread on the owed balances, $\hat{\Pi}$
+        Y (scalar): steady-state GDP
+        p (OG-Core Specifications object): model parameters
+        method (str): 'SS' (the time path is not supported yet)
+
+    Returns:
+        (tuple): pension reserve quantities
+
+            * Z (scalar): pension reserve $\hat{Z}$
+            * revenue (scalar): pension reserve revenue $\hat{\Psi}$
+    """
+    if method != "SS":
+        raise NotImplementedError(
+            "Pension reserves are only computed in the steady state so far"
+        )
+    r_p = float(np.squeeze(r_p))
+    Y = float(np.squeeze(Y))
+    Z_max = max(p.pension_reserve_max_GDPratio * Y, 0.0)
+    # growth rate less the reserve's return: the share of the reserve
+    # needed each period to keep pace with the economy, net of earnings
+    net_growth = (1.0 + p.g_n_ss) * np.exp(p.g_y) - 1.0 - r_p
+    if spread <= 0.0:
+        Z = 0.0
+    elif net_growth > 0.0:
+        Z = min(spread / net_growth, Z_max)
+    else:
+        Z = Z_max
+    revenue = spread - net_growth * Z
+    return Z, revenue
 
 
 def get_BQ(r, b_splus1, j, p, method, preTP):

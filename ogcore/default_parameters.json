@@ -4192,7 +4192,7 @@
         "description": "Percentage point wedge between the return households earn on savings r_p and the return earned on funded defined contribution (FDC) account balances, r_fdc = r_p - r_fdc_wedge. A positive value means FDC accounts earn less than household savings (for example, because of fund management fees); a negative value means they earn more.",
         "section_1": "Fiscal Policy Parameters",
         "section_2": "Government Pension Parameters",
-        "notes": "Only used when fdc_tau is positive. May vary over time: set value for base year, click '+' to add value for next year. All future years not specified are set to last value entered. A single value is held constant over the time path (it is not indexed to trend growth). The wedge that applies to an FDC account is the one the account holder's cohort faces in each period. Changes by birth cohort are entered through pension_regimes with a single number.",
+        "notes": "Only used when fdc_tau is positive. May vary over time: set value for base year, click '+' to add value for next year. All future years not specified are set to last value entered. A single value is held constant over the time path (it is not indexed to trend growth). The wedge that applies to an FDC account is the one the account holder's cohort faces in each period. Changes by birth cohort are entered through pension_regimes with a single number. The fund invests the balances it owes in the household portfolio, which earns r_p, so it keeps the spread r_fdc_wedge times those balances as a pension reserve, capped at pension_reserve_max_GDPratio times GDP; reserves above the cap are paid to the government as pension reserve revenue. With a negative wedge the reserve stays at zero and the government covers the shortfall.",
         "type": "float",
         "number_dims": 1,
         "value": [
@@ -4206,6 +4206,25 @@
             "range": {
                 "min": -0.1,
                 "max": 0.1
+            }
+        }
+    },
+    "pension_reserve_max_GDPratio": {
+        "title": "Ceiling on the pension reserve of the funded defined contribution fund as a share of GDP.",
+        "description": "Maximum pension reserve, as a share of GDP, that the funded defined contribution (FDC) fund may hold beyond the balances it owes households. The reserve is invested in the household portfolio, earns r_p, and accumulates the spread r_fdc_wedge times the owed balances. Reserves above this ceiling are paid to the government as pension reserve revenue, which enters the government budget constraint but is not tax revenue.",
+        "section_1": "Fiscal Policy Parameters",
+        "section_2": "Government Pension Parameters",
+        "notes": "Only used when fdc_tau is positive. The reserve settles below the ceiling (and pays no revenue) only if r_p is below the growth rate (1 + g_n) e^{g_y} - 1 and the spread is small enough; otherwise it stays at the ceiling. Currently applied in the steady state only.",
+        "type": "float",
+        "value": [
+            {
+                "value": 0.5
+            }
+        ],
+        "validators": {
+            "range": {
+                "min": 0.2,
+                "max": 0.8
             }
         }
     },
