@@ -2073,3 +2073,69 @@ def test_get_ptilde(p_m, tau_c, alpha_c, method, expected):
     test_vals = aggr.get_ptilde(p_m, tau_c, alpha_c, method)
 
     assert np.allclose(test_vals, expected)
+
+
+def test_get_F_off():
+    assert aggr.get_F(None, Specifications(), "SS") == 0.0
+
+
+@pytest.mark.parametrize("wedge", [0.0, 0.01], ids=["no wedge", "wedge"])
+def test_get_F_fund_identity(wedge):
+    """
+    The fund's owed balances earn r_p; less the bequests of members who
+    die before retirement (credited r_fdc) and the spread kept for the
+    FDC fund reserve, they pay for the start-of-period balances of the
+    members alive (and the immigrants who arrive), each in the period's
+    detrended units.
+    """
+    from ogcore import pensions
+
+    p_f = Specifications()
+    p_f.update_specifications({"fdc_tau": 0.08, "r_fdc_wedge": [wedge]})
+    r_p, w = 0.05, 1.1
+    n = np.linspace(0.3, 0.5, p_f.S)[:, None] * np.ones((1, p_f.J))
+    fdc = pensions.fdc_ss(r_p, w, p_f.e[-1], n, p_f)
+    F = aggr.get_F(fdc, p_f, "SS")
+    spread = aggr.get_fdc_spread(fdc, p_f, "SS")
+    BQ_f = np.sum(
+        aggr.get_BQ(
+            r_p,
+            pensions.fdc_bequeathable(fdc, r_p, p_f),
+            None,
+            p_f,
+            "SS",
+            False,
+        )
+    )
+    balances = (p_f.omega_SS * fdc.balance).sum()
+    assert F > 0 and BQ_f > 0
+    assert np.isclose(spread, wedge * F, rtol=1e-10)
+    assert np.isclose((1 + r_p) * F - spread - BQ_f, balances, rtol=1e-7)
+    with pytest.raises(NotImplementedError):
+        aggr.get_F(fdc, p_f, "TPI")
+
+
+def test_get_fdc_spread_off():
+    assert aggr.get_fdc_spread(None, Specifications(), "SS") == 0.0
+
+
+@pytest.mark.parametrize(
+    "spread", [0.02, 0.0, -0.02], ids=["positive", "zero", "negative"]
+)
+def test_get_fdc_fund_reserves(spread):
+    """
+    In the steady state the FDC fund holds no reserve: the spread is
+    paid to the government each period, or, if negative, covered by a
+    transfer from the government, whatever the ceiling.
+    """
+    for ratio in (0.5, 0.0):
+        p_z = Specifications()
+        p_z.update_specifications({"fdc_fund_reserve_max_GDPratio": ratio})
+        Z, revenue, transfer = aggr.get_fdc_fund_reserves(
+            0.05, spread, 2.0, p_z, "SS"
+        )
+        assert Z == 0.0
+        assert revenue == max(spread, 0.0)
+        assert transfer == max(-spread, 0.0)
+    with pytest.raises(NotImplementedError):
+        aggr.get_fdc_fund_reserves(0.05, spread, 2.0, p_z, "TPI")
