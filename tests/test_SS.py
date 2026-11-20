@@ -1605,15 +1605,19 @@ def test_SS_fsolve_scatters_once(scatter_test_params):
     assert client.scatter_calls == 2
 
 
-def _solve_small_SS(updates):
+def _small_SS_params(updates):
     import json
 
-    SS.ENFORCE_SOLUTION_CHECKS = True
     p = Specifications(baseline=True, num_workers=1)
     with open(os.path.join(CUR_PATH, "testing_params.json")) as f:
         p.update_specifications(json.load(f))
     p.update_specifications(updates)
-    return SS.run_SS(p, client=None)
+    return p
+
+
+def _solve_small_SS(updates):
+    SS.ENFORCE_SOLUTION_CHECKS = True
+    return SS.run_SS(_small_SS_params(updates), client=None)
 
 
 def test_SS_funded_defined_contribution():
@@ -1634,3 +1638,26 @@ def test_SS_funded_defined_contribution():
     assert fdc["B"] + fdc["F"] > base["B"]
     assert fdc["K"] > base["K"] and fdc["r"] < base["r"]
     assert fdc["fdc_contrib"].shape == fdc["n"].shape
+    assert fdc["fdc_fund_reserves"] == 0.0
+    assert fdc["fdc_fund_revenue"] == 0.0
+    assert fdc["fdc_fund_transfer"] == 0.0
+
+
+@pytest.mark.parametrize(
+    "wedge", [0.01, -0.01], ids=["wedge", "negative wedge"]
+)
+def test_SS_funded_defined_contribution_wedge(wedge):
+    """
+    With a wedge between r_p and r_fdc, the fund earns the spread on the
+    balances it owes. In the steady state it holds no reserve: the
+    spread is paid to the government each period, or, with a negative
+    wedge, covered by a transfer from the government. The resource
+    constraint holds in each case.
+    """
+    fdc = _solve_small_SS({"fdc_tau": 0.05, "r_fdc_wedge": [wedge]})
+    assert np.abs(fdc["resource_constraint_error"]).max() < 1e-7
+    assert fdc["F"] > 0.0
+    assert np.isclose(fdc["fdc_spread"], wedge * fdc["F"], rtol=1e-8)
+    assert fdc["fdc_fund_reserves"] == 0.0
+    assert fdc["fdc_fund_revenue"] == max(fdc["fdc_spread"], 0.0)
+    assert fdc["fdc_fund_transfer"] == max(-fdc["fdc_spread"], 0.0)
