@@ -2886,7 +2886,7 @@ def _calendar_by_age(x, t_birth, S):
     return np.ascontiguousarray(x[_cohort_rows(t_birth, x.size, S)])
 
 
-def fdc_lifetime(w, e, n, r_p, t_birth, j, p, a0=0, A0=0.0):
+def fdc_lifetime(w, e, n, r_p, t_birth, j, p, a0=0, A0=0.0, by_age=False):
     """
     Funded defined contribution account of one household over its
     lifetime: contributions, balances, annuity benefits, end-of-period
@@ -2930,6 +2930,10 @@ def fdc_lifetime(w, e, n, r_p, t_birth, j, p, a0=0, A0=0.0):
         A0 (scalar): account balance at the start of age a0; a
             household already retired at a0 annuitizes this remaining
             balance on the rates given
+        by_age (bool): if True, ``w`` and ``r_p`` are length S arrays
+            already indexed by the household's age (entries before a0
+            are ignored) rather than calendar paths; the parameters
+            are still read in the periods given by t_birth
 
     Returns:
         FDCLifetime: the account by age
@@ -2937,17 +2941,19 @@ def fdc_lifetime(w, e, n, r_p, t_birth, j, p, a0=0, A0=0.0):
     S = p.S
     e = np.ascontiguousarray(np.asarray(e, dtype=float).ravel())
     n = np.ascontiguousarray(np.asarray(n, dtype=float).ravel())
-    w_age = _calendar_by_age(w, t_birth, S)
+    if by_age:
+        w_age = np.ascontiguousarray(np.asarray(w, dtype=float).ravel())
+        r_age = np.ascontiguousarray(np.asarray(r_p, dtype=float).ravel())
+    else:
+        w_age = _calendar_by_age(w, t_birth, S)
+        r_age = _calendar_by_age(r_p, t_birth, S)
     ages = np.arange(S)
     # FDC return r_fdc = r_p - r_fdc_wedge, with the wedge the
     # household's cohort faces at each age
-    r_age = _calendar_by_age(r_p, t_birth, S)
-    if hasattr(p, "r_fdc_wedge"):
-        wedge_arr = cohort_array("r_fdc_wedge", p)
-        r_age = np.ascontiguousarray(
-            r_age
-            - wedge_arr[_cohort_rows(t_birth, wedge_arr.shape[0], S), ages]
-        )
+    wedge_arr = fdc_wedge_path(p)
+    r_age = np.ascontiguousarray(
+        r_age - wedge_arr[_cohort_rows(t_birth, wedge_arr.shape[0], S), ages]
+    )
     lo, hi = fdc_earn_bands(p)
     lo_age = _cohort_diag(lo, t_birth, S)
     hi_age = _cohort_diag(hi, t_birth, S)
@@ -3024,7 +3030,7 @@ def fdc_holdings(fdc):
             is off
 
     Returns:
-        holdings (Numpy array or scalar): holdings, or 0.0 when the
+        H (Numpy array or scalar): holdings, or 0.0 when the
             pillar is off
     """
     if fdc is None:
@@ -3032,11 +3038,34 @@ def fdc_holdings(fdc):
     return fdc.holdings
 
 
+def fdc_wedge_path(p):
+    """
+    Wedge ``r_fdc_wedge`` between the portfolio return r_p and the FDC
+    return r_fdc by model period and age: element [t, s] is the wedge
+    on the return earned in period t at age s, by the household of
+    that age's cohort. ``fdc_lifetime`` reads a cohort's values down
+    the diagonal; periods after the array read its last row, the
+    steady state.
+
+    Args:
+        p (OG-Core Specifications object): model parameters
+
+    Returns:
+        wedge (Numpy array): wedge by period and age, (T + S) x S (a
+            single row of zeros if the parameter is absent)
+    """
+    if not hasattr(p, "r_fdc_wedge"):
+        return np.zeros((1, p.S))
+    wedge_arr = np.asarray(cohort_array("r_fdc_wedge", p), dtype=float)
+    return wedge_arr.reshape(wedge_arr.shape[0], -1)[:, : p.S]
+
+
 def fdc_wedge_ss(p):
     """
     Steady-state wedge ``r_fdc_wedge`` between the portfolio return
     r_p and the FDC return r_fdc at each age, the value
-    ``fdc_lifetime`` uses for a household with t_birth None.
+    ``fdc_lifetime`` uses for a household with t_birth None (the last
+    row of ``fdc_wedge_path``).
 
     Args:
         p (OG-Core Specifications object): model parameters
@@ -3045,10 +3074,7 @@ def fdc_wedge_ss(p):
         wedge (Numpy array): wedge at each age, length S (zeros if the
             parameter is absent)
     """
-    if not hasattr(p, "r_fdc_wedge"):
-        return np.zeros(p.S)
-    wedge_arr = cohort_array("r_fdc_wedge", p)
-    return np.asarray(wedge_arr[-1, :], dtype=float).ravel()[: p.S]
+    return fdc_wedge_path(p)[-1, :]
 
 
 def fdc_bequeathable(fdc, r_p, p):
@@ -3074,7 +3100,7 @@ def fdc_bequeathable(fdc, r_p, p):
         p (OG-Core Specifications object): model parameters
 
     Returns:
-        bequeathable (Numpy array or scalar): holdings at ages before
+        H_bq (Numpy array or scalar): holdings at ages before
             the retirement age and zero after, in next-period units, or
             0.0 when the pillar is off
     """
@@ -3087,6 +3113,38 @@ def fdc_bequeathable(fdc, r_p, p):
     wedge_next = np.append(fdc_wedge_ss(p)[1:], 0.0).reshape(shape)
     scale = (1.0 + r_p - wedge_next) / (1.0 + r_p)
     return np.where(ages < fdc.R, H * scale, 0.0) * np.exp(-p.g_y)
+
+
+def fdc_bequeathable_tpi(bq, r_p, p):
+    """
+    Time-path counterpart of ``fdc_bequeathable``: scales the funded
+    defined contribution holdings bequeathed in each period so that the
+    accounts of members who die are credited the FDC return
+    r_fdc = r_p - r_fdc_wedge, like those of survivors, and the fund
+    keeps the spread. ``aggregates.get_BQ`` multiplies the holdings
+    it is given for period t by (1 + r_{p,t}), so the holdings carried
+    out of age s are scaled by (1 + r_{p,t} - w_{t,s+1}) / (1 + r_{p,t}),
+    with w_{t,s+1} the wedge on the return of age s + 1 in period t.
+
+    Args:
+        bq (Numpy array): holdings bequeathed in periods 0 to T - 1,
+            T x S x J, in each period's units (row 0 from
+            ``p.fdc_bequeathable_preTP`` and the rest from
+            ``FDCPath.bequeathable``)
+        r_p (Numpy array): household portfolio return in periods 0 to
+            T - 1
+        p (OG-Core Specifications object): model parameters
+
+    Returns:
+        bq_fdc (Numpy array): the scaled holdings, T x S x J
+    """
+    T = bq.shape[0]
+    r_p = np.asarray(r_p, dtype=float).ravel()[:T].reshape(T, 1)
+    wedge_arr = fdc_wedge_path(p)
+    rows = np.minimum(np.arange(T), wedge_arr.shape[0] - 1)
+    wedge_next = np.append(wedge_arr[rows, 1:], np.zeros((T, 1)), axis=1)
+    scale = (1.0 + r_p - wedge_next) / (1.0 + r_p)
+    return bq * scale[:, :, None]
 
 
 def fdc_survivor_claims(fdc, rho, p):
@@ -3110,7 +3168,7 @@ def fdc_survivor_claims(fdc, rho, p):
         p (OG-Core Specifications object): model parameters
 
     Returns:
-        claims (Numpy array or scalar): holdings per survivor in
+        H_claims (Numpy array or scalar): holdings per survivor in
             next-period units, or 0.0 when the pillar is off
     """
     if fdc is None:
@@ -3120,3 +3178,153 @@ def fdc_survivor_claims(fdc, rho, p):
     surv = 1.0 - np.asarray(rho, dtype=float)
     pooled = np.divide(H, surv, out=np.zeros_like(H), where=surv > 0)
     return np.where(ages >= fdc.R, pooled, H) * np.exp(-p.g_y)
+
+
+class FDCPath(NamedTuple):
+    """
+    Funded defined contribution accounts of every household along the
+    time path, returned by ``fdc_tpi``. Every field is a T x S x J
+    array indexed by model period, age, and lifetime income group.
+    """
+
+    #: Numpy array: contribution paid
+    contrib: np.ndarray
+    #: Numpy array: annuity benefit received
+    benefit: np.ndarray
+    #: Numpy array: end-of-period holdings, in the period's units
+    holdings: np.ndarray
+    #: Numpy array: holdings per survivor carried into the next period,
+    #: in the next period's units (``fdc_survivor_claims``)
+    claims: np.ndarray
+    #: Numpy array: holdings bequeathed if the household dies before
+    #: the next period, in the next period's units, before
+    #: ``fdc_bequeathable_tpi`` credits them the FDC return
+    bequeathable: np.ndarray
+
+
+def fdc_initial_holdings(ss, p):
+    """
+    Funded defined contribution holdings of the households alive when
+    the time path begins, from the baseline steady state, in the units
+    of the first model period.
+
+    The steady-state end-of-period holdings by age are scaled by
+    ``scale`` (the same population adjustment applied to initial
+    private savings) and carried into period 0 with the mortality rates
+    of the period before the time path (``rho_preTP``).
+
+    Args:
+        ss (dict): baseline steady-state output; the holdings are zero
+            if it has no FDC output (the pillar off, or output saved
+            before the pillar existed)
+        p (OG-Core Specifications object): model parameters
+
+    Returns:
+        (tuple): S x J arrays
+
+            * holdings (Numpy array): end-of-period holdings in the
+              period before the time path, in that period's units
+            * claims (Numpy array): holdings per survivor carried into
+              period 0, in period-0 units
+            * bequeathable (Numpy array): holdings bequeathed in period
+              0 by those who die before it, in period-0 units
+    """
+    zeros = np.zeros((p.S, p.J))
+    H = np.asarray(ss.get("fdc_holdings", zeros), dtype=float)
+    if H.shape != (p.S, p.J) or not np.any(H):
+        return zeros, zeros.copy(), zeros.copy()
+    R = int(ss.get("fdc_R", p.S))
+    ages = np.arange(p.S)[:, None]
+    surv = 1.0 - np.asarray(p.rho_preTP, dtype=float).reshape(p.S, -1)
+    surv = np.broadcast_to(surv, (p.S, p.J))
+    carried = H * np.exp(-p.g_y)
+    pooled = np.divide(
+        carried, surv, out=np.zeros_like(carried), where=surv > 0
+    )
+    claims = np.where(ages >= R, pooled, carried)
+    bequeathable = np.where(ages < R, carried, 0.0)
+    return H, claims, bequeathable
+
+
+def fdc_tpi(r_p, w, n_mat, p):
+    """
+    Funded defined contribution accounts of every household along the
+    time path, cohort by cohort.
+
+    Each cohort's account is computed with ``fdc_lifetime`` along its
+    diagonal of ``n_mat``, from the r_p and wage paths it foresees.
+    Households alive when the path begins start from the claims of
+    their age in ``p.fdc_claims_preTP`` (set by
+    ``TPI.get_initial_SS_values``), credited with the period-0 FDC
+    return r_fdc = r_p - r_fdc_wedge;
+    those already retired re-annuitize those balances on the path.
+
+    Args:
+        r_p (Numpy array): household portfolio return, length T + S
+        w (Numpy array): wage, length T + S
+        n_mat (Numpy array): labor supply, (T + S) x S x J
+        p (OG-Core Specifications object): model parameters
+
+    Returns:
+        FDCPath: the accounts by period, age, and income group
+    """
+    from ogcore.household import _get_e_long
+
+    T, S = p.T, p.S
+    J = n_mat.shape[2]
+    r_p = np.asarray(r_p, dtype=float).ravel()
+    w = np.asarray(w, dtype=float).ravel()
+    e_long = _get_e_long(p)
+    wedge_arr = fdc_wedge_path(p)
+    claims0 = getattr(p, "fdc_claims_preTP", None)
+    if claims0 is None:
+        claims0 = np.zeros((S, J))
+    out = {
+        name: np.zeros((T, S, J))
+        for name in ("contrib", "benefit", "holdings", "claims", "bq")
+    }
+    g = float(np.squeeze(p.g_y))
+    ages = np.arange(S)
+    n_rows = n_mat.shape[0]
+    for j in range(J):
+        mort = fdc_mort_rates(p, j)
+        for tb in range(-(S - 1), T):
+            a0 = max(-tb, 0)
+            rows = tb + ages[a0:]
+            keep = rows < T
+            if not np.any(keep):
+                continue
+            n_full = np.zeros(S)
+            e_full = np.zeros(S)
+            n_full[a0:] = n_mat[np.minimum(rows, n_rows - 1), ages[a0:], j]
+            e_full[a0:] = e_long[
+                np.minimum(rows, e_long.shape[0] - 1), ages[a0:], j
+            ]
+            # balances carried into period 0 earn the period-0 FDC
+            # return r_fdc = r_p - r_fdc_wedge of their age
+            A0 = (
+                (1.0 + r_p[0] - wedge_arr[0, a0]) * claims0[a0 - 1, j]
+                if a0 > 0
+                else 0.0
+            )
+            acct = fdc_lifetime(w, e_full, n_full, r_p, tb, j, p, a0=a0, A0=A0)
+            r_idx, s_idx = rows[keep], ages[a0:][keep]
+            out["contrib"][r_idx, s_idx, j] = acct.contrib[s_idx]
+            out["benefit"][r_idx, s_idx, j] = acct.benefit[s_idx]
+            H = acct.holdings[s_idx]
+            out["holdings"][r_idx, s_idx, j] = H
+            carried = H * np.exp(-g)
+            retired = s_idx >= acct.R
+            surv = 1.0 - mort[r_idx, s_idx]
+            pooled = np.divide(
+                carried, surv, out=np.zeros_like(carried), where=surv > 0
+            )
+            out["claims"][r_idx, s_idx, j] = np.where(retired, pooled, carried)
+            out["bq"][r_idx, s_idx, j] = np.where(retired, 0.0, carried)
+    return FDCPath(
+        out["contrib"],
+        out["benefit"],
+        out["holdings"],
+        out["claims"],
+        out["bq"],
+    )

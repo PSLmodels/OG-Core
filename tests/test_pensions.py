@@ -3326,6 +3326,82 @@ def test_fdc_lifetime_reads_calendar_return():
     )
 
 
+def test_fdc_initial_holdings():
+    p = Specifications()
+    zeros = np.zeros((p.S, p.J))
+    for ss in ({}, {"fdc_holdings": zeros, "fdc_R": 40}):
+        H, claims, bq = pensions.fdc_initial_holdings(ss, p)
+        assert not np.any(H) and not np.any(claims) and not np.any(bq)
+    R = 40
+    H = np.linspace(0.1, 1.0, p.S)[:, None] * np.ones((1, p.J))
+    H0, claims, bq = pensions.fdc_initial_holdings(
+        {"fdc_holdings": H, "fdc_R": R}, p
+    )
+    carried = H * np.exp(-p.g_y)
+    assert np.allclose(H0, H)
+    assert np.allclose(claims[:R], carried[:R])
+    assert np.allclose(bq[:R], carried[:R]) and np.all(bq[R:] == 0)
+    surv = 1 - p.rho_preTP
+    ok = surv[R:] > 0
+    assert np.allclose(claims[R:][ok], (carried[R:] / surv[R:])[ok])
+
+
+@pytest.mark.parametrize("wedge", [0.0, 0.01], ids=["no wedge", "wedge"])
+def test_fdc_tpi_matches_cohort_lifetimes(wedge):
+    """
+    The time-path accounts are each cohort's own lifetime accounts
+    read down its diagonal, for a cohort born on the path and for one
+    alive when it begins (whose balance carried into period 0 earns
+    the period-0 FDC return).
+    """
+    p = Specifications()
+    p.update_specifications({"fdc_tau": 0.06, "r_fdc_wedge": [wedge]})
+    T, S, J = p.T, p.S, p.J
+    r_path = np.linspace(0.03, 0.06, T + S)
+    w_path = np.linspace(1.0, 1.2, T + S)
+    n_mat = np.broadcast_to(
+        np.linspace(0.3, 0.5, S)[None, :, None], (T + S, S, J)
+    ).copy()
+    claims = np.zeros((S, J))
+    claims[:, :] = np.linspace(0.0, 0.8, S)[:, None]
+    p.fdc_claims_preTP = claims
+    path = pensions.fdc_tpi(r_path, w_path, n_mat, p)
+    e_long = np.concatenate(
+        (p.e, np.broadcast_to(p.e[-1:], (S, S, J))), axis=0
+    )
+    j = 3
+    s = np.arange(S)
+    # born in period 4
+    tb = 4
+    life = pensions.fdc_lifetime(
+        w_path, e_long[tb + s, s, j], n_mat[tb + s, s, j], r_path, tb, j, p
+    )
+    on = tb + s < T
+    assert np.allclose(path.contrib[(tb + s)[on], s[on], j], life.contrib[on])
+    assert np.allclose(path.benefit[(tb + s)[on], s[on], j], life.benefit[on])
+    # aged 50 in period 0 (retired), and aged 10 (working)
+    for a0 in (50, 10):
+        n_full = n_mat[0, :, j].copy()
+        n_full[:a0] = 0.0
+        e_full = np.zeros(S)
+        e_full[a0:] = e_long[s[a0:] - a0, s[a0:], j]
+        n_full[a0:] = n_mat[s[a0:] - a0, s[a0:], j]
+        life = pensions.fdc_lifetime(
+            w_path,
+            e_full,
+            n_full,
+            r_path,
+            -a0,
+            j,
+            p,
+            a0=a0,
+            A0=(1 + r_path[0] - wedge) * claims[a0 - 1, j],
+        )
+        rows = s[a0:] - a0
+        assert np.allclose(path.holdings[rows, s[a0:], j], life.holdings[a0:])
+        assert np.allclose(path.benefit[rows, s[a0:], j], life.benefit[a0:])
+
+
 def test_fdc_return_wedge():
     """
     Accounts earn r_fdc = r_p - r_fdc_wedge, and a single value of the
@@ -3393,3 +3469,33 @@ def test_fdc_return_wedge_by_cohort():
             else 1.0
         ),
     )
+
+
+def test_fdc_bequeathable_tpi():
+    """
+    On the time path, holdings bequeathed in period t are scaled by
+    (1 + r_fdc) / (1 + r_p), with the wedge on the return of the next
+    age in period t, so that with get_BQ's (1 + r_p) they earn r_fdc;
+    with no wedge they are unchanged.
+    """
+    p = Specifications()
+    year = p.start_year + 10
+    p.update_specifications(
+        {
+            "fdc_tau": 0.1,
+            "r_fdc_wedge": [0.01],
+            "pension_regimes": [{"year": year, "r_fdc_wedge": 0.02}],
+        }
+    )
+    T, S, J = p.T, p.S, p.J
+    bq = np.ones((T, S, J))
+    r_p = np.linspace(0.03, 0.05, T)
+    out = pensions.fdc_bequeathable_tpi(bq, r_p, p)
+    wedge = pensions.fdc_wedge_path(p)
+    t, s = 3, 7
+    assert np.allclose(
+        out[t, s], (1 + r_p[t] - wedge[t, s + 1]) / (1 + r_p[t])
+    )
+    assert np.allclose(out[:, -1, :], 1.0)
+    p0 = Specifications()
+    assert np.allclose(pensions.fdc_bequeathable_tpi(bq, r_p, p0), bq)

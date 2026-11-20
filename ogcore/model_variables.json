@@ -17,6 +17,51 @@
       "label": "HH Savings ($B_t$)",
       "toGDP_label": "Savings-to-GDP ($B_{t}/Y_t$)"
     },
+    "F": {
+      "desc": "Assets of the funded defined contribution fund (individual account holdings)",
+      "section": "Economic Aggregates",
+      "type": "array-like",
+      "TPI dimensions": "T",
+      "SS dimensions": "scalar",
+      "label": "FDC Fund Assets ($F_t$)",
+      "toGDP_label": "FDC Fund Assets-to-GDP ($F_{t}/Y_t$)"
+    },
+    "fdc_spread": {
+      "desc": "Spread the funded defined contribution fund earns on the balances it owes (r_fdc_wedge times the owed balances)",
+      "section": "Economic Aggregates",
+      "type": "array-like",
+      "TPI dimensions": "T",
+      "SS dimensions": "scalar",
+      "label": "FDC Fund Spread ($\\Pi^{fdc}_t$)",
+      "toGDP_label": "FDC Fund Spread-to-GDP ($\\Pi^{fdc}_t/Y_t$)"
+    },
+    "fdc_fund_reserves": {
+      "desc": "Reserve of the funded defined contribution fund at the beginning of the period (temporary: zero from tG1 on and in the steady state)",
+      "section": "Economic Aggregates",
+      "type": "array-like",
+      "TPI dimensions": "T",
+      "SS dimensions": "scalar",
+      "label": "FDC Fund Reserve ($Z^{fdc}_t$)",
+      "toGDP_label": "FDC Fund Reserve-to-GDP ($Z^{fdc}_t/Y_t$)"
+    },
+    "fdc_fund_revenue": {
+      "desc": "FDC fund revenue paid by the funded defined contribution fund to the government (not tax revenue)",
+      "section": "Economic Aggregates",
+      "type": "array-like",
+      "TPI dimensions": "T",
+      "SS dimensions": "scalar",
+      "label": "FDC Fund Revenue ($\\Psi^{fdc}_t$)",
+      "toGDP_label": "FDC Fund Revenue-to-GDP ($\\Psi^{fdc}_t/Y_t$)"
+    },
+    "fdc_fund_transfer": {
+      "desc": "Transfer from the government to the funded defined contribution fund covering a negative spread or reserve deficit",
+      "section": "Economic Aggregates",
+      "type": "array-like",
+      "TPI dimensions": "T",
+      "SS dimensions": "scalar",
+      "label": "FDC Fund Transfer ($\\Phi^{fdc}_t$)",
+      "toGDP_label": "FDC Fund Transfer-to-GDP ($\\Phi^{fdc}_t/Y_t$)"
+    },
     "K": {
       "desc": "Aggregate capital stock",
       "section": "Economic Aggregates",
@@ -520,6 +565,33 @@
         "SS dimensions": "SxJ",
         "label": "Marginal Tax Rates on Capital Income",
         "toGDP_label": ""
+    },
+    "fdc_contrib": {
+      "desc": "Household contributions to funded defined contribution accounts",
+      "section": "Household Variables",
+      "type": "array-like",
+      "TPI dimensions": "TxSxJ",
+      "SS dimensions": "SxJ",
+      "label": "FDC Contributions ($C^{fdc}_{j,s,t}$)",
+      "toGDP_label": ""
+    },
+    "fdc_benefits": {
+      "desc": "Annuity benefits from funded defined contribution accounts",
+      "section": "Household Variables",
+      "type": "array-like",
+      "TPI dimensions": "TxSxJ",
+      "SS dimensions": "SxJ",
+      "label": "FDC Benefits ($P_{j,s,t}$)",
+      "toGDP_label": ""
+    },
+    "fdc_holdings": {
+      "desc": "End-of-period holdings of funded defined contribution accounts",
+      "section": "Household Variables",
+      "type": "array-like",
+      "TPI dimensions": "TxSxJ",
+      "SS dimensions": "SxJ",
+      "label": "FDC Holdings ($h_{j,s,t}$)",
+      "toGDP_label": ""
     },
     "theta": {
         "desc": "Replacement rate for US-style social security pension system.  Steady-state only.",
