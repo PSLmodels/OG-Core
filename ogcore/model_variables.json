@@ -26,6 +26,42 @@
       "label": "FDC Fund Assets ($F_t$)",
       "toGDP_label": "FDC Fund Assets-to-GDP ($F_{t}/Y_t$)"
     },
+    "fdc_spread": {
+      "desc": "Spread the funded defined contribution fund earns on the balances it owes (r_fdc_wedge times the owed balances)",
+      "section": "Economic Aggregates",
+      "type": "array-like",
+      "TPI dimensions": "T",
+      "SS dimensions": "scalar",
+      "label": "FDC Fund Spread ($\\Pi^{fdc}_t$)",
+      "toGDP_label": "FDC Fund Spread-to-GDP ($\\Pi^{fdc}_t/Y_t$)"
+    },
+    "fdc_fund_reserves": {
+      "desc": "Reserve of the funded defined contribution fund at the beginning of the period (temporary: zero from tG1 on and in the steady state)",
+      "section": "Economic Aggregates",
+      "type": "array-like",
+      "TPI dimensions": "T",
+      "SS dimensions": "scalar",
+      "label": "FDC Fund Reserve ($Z^{fdc}_t$)",
+      "toGDP_label": "FDC Fund Reserve-to-GDP ($Z^{fdc}_t/Y_t$)"
+    },
+    "fdc_fund_revenue": {
+      "desc": "FDC fund revenue paid by the funded defined contribution fund to the government (not tax revenue)",
+      "section": "Economic Aggregates",
+      "type": "array-like",
+      "TPI dimensions": "T",
+      "SS dimensions": "scalar",
+      "label": "FDC Fund Revenue ($\\Psi^{fdc}_t$)",
+      "toGDP_label": "FDC Fund Revenue-to-GDP ($\\Psi^{fdc}_t/Y_t$)"
+    },
+    "fdc_fund_transfer": {
+      "desc": "Transfer from the government to the funded defined contribution fund covering a negative spread or reserve deficit",
+      "section": "Economic Aggregates",
+      "type": "array-like",
+      "TPI dimensions": "T",
+      "SS dimensions": "scalar",
+      "label": "FDC Fund Transfer ($\\Phi^{fdc}_t$)",
+      "toGDP_label": "FDC Fund Transfer-to-GDP ($\\Phi^{fdc}_t/Y_t$)"
+    },
     "K": {
       "desc": "Aggregate capital stock",
       "section": "Economic Aggregates",
