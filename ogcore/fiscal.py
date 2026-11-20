@@ -17,14 +17,15 @@ import numpy as np
 """
 
 
-def D_G_path(r, dg_fixed_values, p):
+def D_G_path(r, dg_fixed_values, p, fdc_fund_revenue=0.0):
     r"""
     Calculate the time paths of debt and government spending
 
     .. math::
         \begin{split}
             &e^{g_y}\left(1 + \tilde{g}_{n,t+1}\right)\hat{D}_{t+1}
-            + \hat{Rev}_t = (1 + r_{gov,t})\hat{D}_t + \hat{G}_t
+            + \hat{Rev}_t + \hat{\Psi}_t - \hat{\Phi}_t
+            = (1 + r_{gov,t})\hat{D}_t + \hat{G}_t
             + \hat{TR}_t + \hat{UBI}_t \quad\forall t \\
             &\hat{G}_t = g_{g,t}\:\alpha_{g}\: \hat{Y}_t \\
             &\text{where}\quad g_{g,t} =
@@ -59,6 +60,14 @@ def D_G_path(r, dg_fixed_values, p):
             and D0_baseline is initial debt in the baseline equilibrium
             (used only if baseline=False)
         p (OG-Core Specifications object): model parameters
+        fdc_fund_revenue (scalar or array_like): net payment from the
+            funded defined contribution fund's reserve to the
+            government over the time path, $\hat{\Psi}_t -
+            \hat{\Phi}_t$: before ``tG1`` the reserve above its
+            ceiling, in period ``tG1 - 1`` the whole remaining balance
+            (negative for a deficit the government covers), and from
+            ``tG1`` on the spread (not tax revenue); it enters the
+            budget constraint wherever tax revenue $\hat{Rev}_t$ does
 
     Returns:
         (tuple): fiscal variable path output:
@@ -83,6 +92,12 @@ def D_G_path(r, dg_fixed_values, p):
         Gbaseline,
         D0_baseline,
     ) = dg_fixed_values
+    # FDC fund revenue is not tax revenue, but it enters the budget
+    # constraint in the same way
+    total_tax_revenue = np.asarray(total_tax_revenue, dtype=float).copy()
+    total_tax_revenue[: p.T] += np.broadcast_to(
+        np.asarray(fdc_fund_revenue, dtype=float), (p.T,)
+    )
 
     growth = (1 + np.append(p.g_n_preTP, p.g_n[: p.T])) * np.exp(p.g_y)
 

@@ -2111,8 +2111,60 @@ def test_get_F_fund_identity(wedge):
     assert F > 0 and BQ_f > 0
     assert np.isclose(spread, wedge * F, rtol=1e-10)
     assert np.isclose((1 + r_p) * F - spread - BQ_f, balances, rtol=1e-7)
-    with pytest.raises(NotImplementedError):
-        aggr.get_F(fdc, p_f, "TPI")
+    with pytest.raises(ValueError):
+        aggr.get_F(fdc, p_f, "total_ss")
+
+
+@pytest.mark.parametrize("wedge", [0.0, 0.01], ids=["no wedge", "wedge"])
+def test_get_F_time_path_fund_identity(wedge):
+    """
+    Along the time path, the fund's assets, with the period's return
+    and less the bequests of members who die before retirement
+    (credited r_fdc) and the spread kept for the FDC fund reserve, pay
+    for the start-of-period balances of the members alive in each
+    period, starting from the holdings of the households alive at t=0.
+    """
+    from ogcore import pensions
+
+    p_f = Specifications()
+    p_f.update_specifications({"fdc_tau": 0.08, "r_fdc_wedge": [wedge]})
+    T, S, J = p_f.T, p_f.S, p_f.J
+    H_ss = np.linspace(0.05, 1.0, S)[:, None] * np.ones((1, J))
+    R = int(p_f.retire[-1, 0])
+    H_ss[R:] = np.linspace(1.0, 0.0, S - R)[:, None]
+    H0, claims0, bq0 = pensions.fdc_initial_holdings(
+        {"fdc_holdings": H_ss, "fdc_R": R}, p_f
+    )
+    p_f.fdc_claims_preTP = claims0
+    omega_ext = np.append(p_f.omega_S_preTP[1:], np.zeros((1, J)), axis=0)
+    imm_ext = np.append(p_f.imm_rates_preTP[1:], np.zeros((1, J)), axis=0)
+    terms0 = (
+        H0 * np.exp(-p_f.g_y) * p_f.omega_S_preTP
+        + claims0 * omega_ext * imm_ext
+    ) / (1 + p_f.g_n_preTP)
+    wedge0 = np.append(pensions.fdc_wedge_path(p_f)[0, 1:], 0.0)
+    r_p = np.linspace(0.04, 0.06, T + S)
+    w = np.linspace(1.0, 1.1, T + S)
+    n_mat = np.full((T + S, S, J), 0.4)
+    path = pensions.fdc_tpi(r_p, w, n_mat, p_f)
+    F = np.zeros(T)
+    F[0] = terms0.sum()
+    F[1:] = aggr.get_F(path, p_f, "TPI")[: T - 1]
+    spread = np.zeros(T)
+    spread[0] = (wedge0[:, None] * terms0).sum()
+    spread[1:] = aggr.get_fdc_spread(path, p_f, "TPI")[: T - 1]
+    assert np.allclose(spread, wedge * F, rtol=1e-10)
+    bq_shift = pensions.fdc_bequeathable_tpi(
+        np.append(bq0[None], path.bequeathable[: T - 1], axis=0),
+        r_p[:T],
+        p_f,
+    )
+    BQ_f = aggr.get_BQ(r_p[:T], bq_shift, None, p_f, "TPI", False)
+    BQ_f = BQ_f.sum(1) if np.ndim(BQ_f) > 1 else BQ_f
+    balances = (
+        p_f.omega[:T] * (path.holdings - path.contrib + path.benefit)
+    ).sum((1, 2))
+    assert np.allclose((1 + r_p[:T]) * F - spread - BQ_f, balances, rtol=1e-6)
 
 
 def test_get_fdc_spread_off():
@@ -2137,5 +2189,68 @@ def test_get_fdc_fund_reserves(spread):
         assert Z == 0.0
         assert revenue == max(spread, 0.0)
         assert transfer == max(-spread, 0.0)
-    with pytest.raises(NotImplementedError):
-        aggr.get_fdc_fund_reserves(0.05, spread, 2.0, p_z, "TPI")
+    with pytest.raises(ValueError):
+        aggr.get_fdc_fund_reserves(0.05, spread, 2.0, p_z, "total_ss")
+
+
+@pytest.mark.parametrize(
+    "r_p,spread,ratio,Z0",
+    [
+        (0.05, 0.02, 0.5, 0.0),
+        (0.05, 0.02, 0.05, 0.0),
+        (0.05, -0.02, 0.5, 0.0),
+        (0.05, 0.0, 0.5, 0.3),
+        (0.05, 0.02, 0.0, 0.0),
+    ],
+    ids=[
+        "below ceiling",
+        "at ceiling",
+        "deficit",
+        "initial reserve",
+        "zero ceiling",
+    ],
+)
+def test_get_fdc_fund_reserves_time_path(r_p, spread, ratio, Z0):
+    """
+    On the time path the reserve follows its flow identity in every
+    period from its initial value. Before tG1 it has no floor (a
+    negative spread runs a deficit), never exceeds the ceiling, and pays
+    only what exceeds the ceiling; at the end of period tG1 - 1 the
+    whole balance is paid to the government (or the deficit covered by
+    it); from tG1 on it is zero and the spread goes to the government
+    each period, as in the steady state.
+    """
+    p_z = Specifications()
+    p_z.update_specifications({"fdc_fund_reserve_max_GDPratio": ratio})
+    T, tG1 = p_z.T, p_z.tG1
+    Y = np.full(T, 2.0)
+    Z, revenue, transfer = aggr.get_fdc_fund_reserves(
+        np.full(T, r_p), np.full(T, spread), Y, p_z, "TPI", Z0=Z0
+    )
+    assert Z.shape == revenue.shape == transfer.shape == (T,)
+    assert Z[0] == Z0
+    growth = (1.0 + np.hstack((p_z.g_n[: T - 1], p_z.g_n_ss))) * np.exp(
+        p_z.g_y
+    )
+    Z_next = np.append(Z[1:], 0.0)
+    assert np.allclose(
+        growth * Z_next, (1 + r_p) * Z + spread - revenue + transfer
+    )
+    assert np.all(revenue >= 0.0) and np.all(transfer >= 0.0)
+    assert np.all((revenue == 0.0) | (transfer == 0.0))
+    # before tG1: below the ceiling, no transfers from the government
+    assert np.all(Z[1:tG1] <= ratio * Y[1:tG1] + 1e-12)
+    assert np.all(transfer[: tG1 - 1] == 0.0)
+    if spread < 0.0:
+        assert np.all(Z[1:tG1] < 0.0)
+    # at tG1 - 1 the balance is paid out; from tG1 on the reserve is
+    # zero and the spread is paid to (or covered by) the government
+    free = (1 + r_p) * Z[tG1 - 1] + spread
+    assert np.isclose(revenue[tG1 - 1] - transfer[tG1 - 1], free)
+    assert np.all(Z[tG1:] == 0.0)
+    assert np.allclose(revenue[tG1:] - transfer[tG1:], spread)
+    _, revenue_ss, transfer_ss = aggr.get_fdc_fund_reserves(
+        r_p, spread, 2.0, p_z, "SS"
+    )
+    assert np.isclose(revenue[-1], revenue_ss)
+    assert np.isclose(transfer[-1], transfer_ss)
