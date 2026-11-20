@@ -307,10 +307,14 @@ def get_G_ss(
         debt_service (scalar): steady-state debt service costs
         p (OG-Core Specifications object): model parameters
         fdc_fund_revenue (scalar): net payment from the funded
-            defined contribution fund to the government,
-            $\bar{\Psi} - \bar{\Phi}$: the fund's spread, since the
-            steady state holds no reserve (negative when the government
-            covers a negative spread; not tax revenue)
+            defined contribution (FDC) fund to the government,
+            $\bar{\Psi} - \bar{\Phi}$ (not tax revenue). The fund holds
+            no reserve in the steady state, so this equals the spread
+            $\bar{\Pi}$ it earns on the balances it owes households
+            (``aggregates.get_fdc_spread``): FDC fund revenue
+            $\bar{\Psi}$ paid to the government when the spread is
+            positive, or a transfer $\bar{\Phi}$ from the government
+            when it is negative
 
     Returns:
         G (tuple): steady-state government spending
@@ -387,12 +391,18 @@ def get_TR(
             government
         p (OG-Core Specifications object): model parameters
         method (str): whether doing SS or TP calculation
-        fdc_fund_revenue (array_like): net payment from the
-            funded defined contribution fund's reserve to the
-            government, revenue less transfers: before ``tG1`` the
-            reserve above its ceiling, in period ``tG1 - 1`` the whole
-            remaining balance, and from ``tG1`` on (and in the steady
-            state) the spread (not tax revenue)
+        fdc_fund_revenue (array_like): net payment from the funded
+            defined contribution (FDC) fund to the government,
+            $\Psi_t - \Phi_t$ (not tax revenue). In the steady state
+            (and on the time path from period ``tG1`` on) the fund
+            holds no reserve, so this equals the spread $\Pi_t$ it
+            earns on the balances it owes households
+            (``aggregates.get_fdc_spread``), paid to the government if
+            positive and covered by it if negative. Before ``tG1`` the
+            fund keeps the spread as a reserve and pays only any
+            amount above its ceiling; at the end of period ``tG1 - 1``
+            it pays its whole reserve to the government (or the
+            government covers its deficit)
 
     Returns:
         new_TR (array_like): new value of aggregate government transfers
