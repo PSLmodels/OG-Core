@@ -2120,68 +2120,22 @@ def test_get_fdc_spread_off():
 
 
 @pytest.mark.parametrize(
-    "r_p,spread,Z_expected",
-    [
-        (0.05, 0.0, 0.0),
-        (0.05, 0.02, "cap"),
-        (0.0, 0.001, "interior"),
-        (0.0, 0.5, "cap"),
-        (0.05, -0.02, 0.0),
-    ],
-    ids=[
-        "no spread",
-        "r_p above growth",
-        "below cap",
-        "above cap",
-        "negative spread",
-    ],
+    "spread", [0.02, 0.0, -0.02], ids=["positive", "zero", "negative"]
 )
-def test_get_fdc_fund_reserves(r_p, spread, Z_expected):
+def test_get_fdc_fund_reserves(spread):
     """
-    The reserve follows its steady-state flow identity, settles below
-    the ceiling only when r_p is below the growth rate, never exceeds
-    the ceiling or falls below zero, pays revenue to the government
-    only at the ceiling, and receives a transfer from the government
-    only at the floor.
-    """
-    p_z = Specifications()
-    Y = 2.0
-    G = (1 + p_z.g_n_ss) * np.exp(p_z.g_y)
-    Z, revenue, transfer = aggr.get_fdc_fund_reserves(
-        r_p, spread, Y, p_z, "SS"
-    )
-    Z_max = p_z.fdc_fund_reserve_max_GDPratio * Y
-    assert np.isclose(G * Z, (1 + r_p) * Z + spread - revenue + transfer)
-    assert 0.0 <= Z <= Z_max + 1e-12
-    assert revenue >= 0.0 and transfer >= 0.0
-    assert revenue == 0.0 or transfer == 0.0
-    if Z_expected == "cap":
-        assert np.isclose(Z, Z_max) and revenue > 0 and transfer == 0.0
-    elif Z_expected == "interior":
-        assert 0.0 < Z < Z_max
-        assert np.isclose(Z, spread / (G - 1 - r_p))
-        assert np.isclose(revenue, 0.0) and np.isclose(transfer, 0.0)
-    elif spread < 0.0:
-        # the floor binds: the government covers the shortfall
-        assert Z == 0.0 and revenue == 0.0 and transfer == -spread
-    else:
-        assert Z == 0.0 and revenue == 0.0 and transfer == 0.0
-    with pytest.raises(NotImplementedError):
-        aggr.get_fdc_fund_reserves(r_p, spread, Y, p_z, "TPI")
-
-
-@pytest.mark.parametrize("spread", [0.02, -0.02], ids=["positive", "negative"])
-def test_get_fdc_fund_reserves_zero_cap(spread):
-    """
-    With a cap of zero the fund holds no reserve: the whole spread is
+    In the steady state the FDC fund holds no reserve: the spread is
     paid to the government each period, or, if negative, covered by a
-    transfer from the government.
+    transfer from the government, whatever the ceiling.
     """
-    p_z = Specifications()
-    p_z.update_specifications({"fdc_fund_reserve_max_GDPratio": 0.0})
-    Z, revenue, transfer = aggr.get_fdc_fund_reserves(
-        0.05, spread, 2.0, p_z, "SS"
-    )
-    assert Z == 0.0
-    assert np.isclose(revenue - transfer, spread)
-    assert revenue == max(spread, 0.0) and transfer == max(-spread, 0.0)
+    for ratio in (0.5, 0.0):
+        p_z = Specifications()
+        p_z.update_specifications({"fdc_fund_reserve_max_GDPratio": ratio})
+        Z, revenue, transfer = aggr.get_fdc_fund_reserves(
+            0.05, spread, 2.0, p_z, "SS"
+        )
+        assert Z == 0.0
+        assert revenue == max(spread, 0.0)
+        assert transfer == max(-spread, 0.0)
+    with pytest.raises(NotImplementedError):
+        aggr.get_fdc_fund_reserves(0.05, spread, 2.0, p_z, "TPI")

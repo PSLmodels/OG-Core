@@ -255,7 +255,9 @@ def get_fdc_spread(fdc, p, method):
     $\hat{F}_t$ in the household portfolio, which earns $r_{p,t}$, but
     credits the accounts (including those bequeathed by members who die
     before retirement) only $r_{fdc} = r_{p} - r_{fdc\_wedge}$. The
-    difference goes to the FDC fund reserve (``get_fdc_fund_reserves``):
+    difference goes to the FDC fund reserve or, once the budget closure
+    rule begins and in the steady state, to the government budget
+    (``get_fdc_fund_reserves``):
 
     .. math::
         \hat{\Pi}_{t} = \sum_{s=E+1}^{E+S}\sum_{j=0}^{J}
@@ -284,38 +286,28 @@ def get_fdc_spread(fdc, p, method):
 
 def get_fdc_fund_reserves(r_p, spread, Y, p, method):
     r"""
-    Steady-state reserve $\hat{Z}$ of the funded defined
-    contribution (FDC) fund, the assets it holds beyond the balances
-    owed to households, the FDC fund revenue $\hat{\Psi}$ it
-    pays to the government, and the transfer $\hat{\Phi}$ it receives
-    from the government.
+    Reserve $\hat{Z}$ of the funded defined contribution (FDC) fund,
+    the assets it holds beyond the balances owed to households, the
+    FDC fund revenue $\hat{\Psi}$ it pays to the government, and the
+    transfer $\hat{\Phi}$ it receives from the government.
 
-    The reserve is invested in the household portfolio and earns
-    $r_p$, receives the spread $\hat{\Pi}$ (``get_fdc_spread``), and
-    must lie between zero and ``fdc_fund_reserve_max_GDPratio`` times
-    GDP at the beginning of every period. At the end of each period,
-    any reserve above the ceiling is paid to the government
-    ($\hat{\Psi}$), and any shortfall below zero is made up by a
-    transfer from the government ($\hat{\Phi}$), so that
+    The fund keeps the spread $\hat{\Pi}$ (``get_fdc_spread``) as a
+    reserve only temporarily: on the time path the reserve builds up
+    until the budget closure rule begins in period ``tG1``, when the
+    government receives the whole balance (or covers a deficit), and
+    from then on the spread goes to the government budget each period.
+    So in the steady state there is no reserve, and the spread is paid
+    to the government (or, if negative, covered by it) each period:
 
     .. math::
-        (1 + \bar{g}_{n})e^{g_y}\hat{Z} = (1 + \bar{r}_{p})\hat{Z}
-        + \hat{\Pi} - \hat{\Psi} + \hat{\Phi},
-        \quad 0 \leq \hat{Z} \leq \bar{z}\bar{Y},
+        \hat{Z} = 0, \quad \hat{\Psi} - \hat{\Phi} = \hat{\Pi},
         \quad \hat{\Psi}, \hat{\Phi} \geq 0
 
-    Without the ceiling the reserve would settle at
-    $\hat{Z}^{*} = \hat{\Pi}/[(1 + \bar{g}_{n})e^{g_y} - 1 - \bar{r}_p]$
-    only when $\bar{r}_p$ is below the growth rate; otherwise it grows
-    without bound relative to the economy and so stops at the ceiling.
-    The floor binds when the spread is negative (``r_fdc_wedge`` < 0):
-    the reserve starts every period at zero and the government covers
-    the spread each period.
-
     Args:
-        r_p (scalar): steady-state household portfolio return
+        r_p (scalar): steady-state household portfolio return (unused
+            in the steady state)
         spread (scalar): spread on the owed balances, $\hat{\Pi}$
-        Y (scalar): steady-state GDP
+        Y (scalar): steady-state GDP (unused in the steady state)
         p (OG-Core Specifications object): model parameters
         method (str): 'SS' (the time path is not supported yet)
 
@@ -323,41 +315,18 @@ def get_fdc_fund_reserves(r_p, spread, Y, p, method):
         (tuple): FDC fund reserve quantities
 
             * Z (scalar): FDC fund reserve $\hat{Z}$ at the beginning
-              of the period
+              of the period, zero in the steady state
             * revenue (scalar): FDC fund revenue paid to the
               government, $\hat{\Psi} \geq 0$
             * transfer (scalar): transfer from the government to the
-              reserve, $\hat{\Phi} \geq 0$
+              fund, $\hat{\Phi} \geq 0$
     """
     if method != "SS":
         raise NotImplementedError(
             "FDC fund reserves are only computed in the steady state so far"
         )
-    r_p = float(np.squeeze(r_p))
-    Y = float(np.squeeze(Y))
-    Z_max = max(p.fdc_fund_reserve_max_GDPratio * Y, 0.0)
-    # growth rate less the reserve's return: the share of the reserve
-    # needed each period to keep pace with the economy, net of earnings
-    net_growth = (1.0 + p.g_n_ss) * np.exp(p.g_y) - 1.0 - r_p
-    if spread > 0.0 and net_growth <= 0.0:
-        # the reserve grows faster than the economy: it reaches the
-        # ceiling
-        Z = Z_max
-    elif spread > 0.0:
-        Z = spread / net_growth
-    else:
-        # a stationary reserve below zero, or one that falls without
-        # bound: it is held at the floor
-        Z = 0.0
-    # the floor and ceiling on the beginning-of-period reserve
-    Z = min(max(Z, 0.0), Z_max)
-    # end-of-period payment that keeps the reserve stationary at Z:
-    # positive above the ceiling (to the government), negative below
-    # the floor (from the government)
-    net_payment = spread - net_growth * Z
-    revenue = max(net_payment, 0.0)
-    transfer = max(-net_payment, 0.0)
-    return Z, revenue, transfer
+    spread = float(np.squeeze(spread))
+    return 0.0, max(spread, 0.0), max(-spread, 0.0)
 
 
 def get_BQ(r, b_splus1, j, p, method, preTP):
