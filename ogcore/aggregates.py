@@ -274,7 +274,9 @@ def get_fdc_spread(fdc, p, method):
     $\hat{F}_t$ in the household portfolio, which earns $r_{p,t}$, but
     credits the accounts (including those bequeathed by members who die
     before retirement) only $r_{fdc} = r_{p} - r_{fdc\_wedge}$. The
-    difference goes to the FDC fund reserve (``get_fdc_fund_reserves``):
+    difference goes to the FDC fund reserve or, once the budget closure
+    rule begins and in the steady state, to the government budget
+    (``get_fdc_fund_reserves``):
 
     .. math::
         \hat{\Pi}_{t} = \sum_{s=E+1}^{E+S}\sum_{j=0}^{J}
@@ -311,43 +313,36 @@ def get_fdc_spread(fdc, p, method):
     return float((wedge_next[:, None] * terms).sum())
 
 
-def get_fdc_fund_reserves(r_p, spread, Y, p, method, Z0=0.0, Z_T=None):
+def get_fdc_fund_reserves(r_p, spread, Y, p, method, Z0=0.0):
     r"""
     Reserve $\hat{Z}$ of the funded defined contribution (FDC) fund,
     the assets it holds beyond the balances owed to households, the
     FDC fund revenue $\hat{\Psi}$ it pays to the government, and the
     transfer $\hat{\Phi}$ it receives from the government.
 
-    The reserve is invested in the household portfolio and earns
-    $r_p$, receives the spread $\hat{\Pi}$ (``get_fdc_spread``), and
-    must lie between zero and ``fdc_fund_reserve_max_GDPratio`` times
-    GDP at the beginning of every period. At the end of each period,
-    any reserve above the ceiling is paid to the government
-    ($\hat{\Psi}$), and any shortfall below zero is made up by a
-    transfer from the government ($\hat{\Phi}$), so that
+    The fund keeps the spread $\hat{\Pi}$ (``get_fdc_spread``) as a
+    reserve only temporarily. On the time path the reserve starts from
+    ``Z0``, is invested in the household portfolio, earns $r_p$, and
+    accumulates the spread until the budget closure rule begins in
+    period ``tG1``. It has no floor, so a negative spread runs a
+    deficit, and any reserve above ``fdc_fund_reserve_max_GDPratio``
+    times GDP is paid to the government. At the end of period
+    ``tG1 - 1`` the whole balance is paid to the government (or the
+    deficit covered by the government), and from then on the reserve
+    is zero and the spread goes to the government budget each period:
 
     .. math::
         (1 + g_{n,t+1})e^{g_y}\hat{Z}_{t+1} = (1 + r_{p,t})\hat{Z}_{t}
         + \hat{\Pi}_{t} - \hat{\Psi}_{t} + \hat{\Phi}_{t},
-        \quad 0 \leq \hat{Z}_{t+1} \leq \bar{z}\hat{Y}_{t+1},
-        \quad \hat{\Psi}_{t}, \hat{\Phi}_{t} \geq 0
+        \quad \hat{Z}_{t+1} \leq \bar{z}\hat{Y}_{t+1}
+        \text{ for } t + 1 < t_{G1},
+        \quad \hat{Z}_{t+1} = 0 \text{ for } t + 1 \geq t_{G1}
 
-    On the time path the reserve starts from ``Z0`` and each period's
-    payment is the smallest that keeps the next period's reserve within
-    its bounds. Because the reserve has no forward-looking adjustment,
-    it can approach its steady state slowly, more slowly than the time
-    path converges. Given a terminal reserve ``Z_T`` (the steady-state
-    reserve), the payment in the last period, T - 1, instead settles
-    the gap so that the reserve begins period T at ``Z_T``, as the
-    time path assumes of every variable. In the steady state the
-    reserve is stationary. Without
-    the ceiling it would settle at
-    $\hat{Z}^{*} = \hat{\Pi}/[(1 + \bar{g}_{n})e^{g_y} - 1 - \bar{r}_p]$
-    only when $\bar{r}_p$ is below the growth rate; otherwise it grows
-    without bound relative to the economy and so stops at the ceiling.
-    The floor binds when the spread is negative (``r_fdc_wedge`` < 0):
-    the reserve starts every period at zero and the government covers
-    the spread each period.
+    with $\hat{\Psi}_{t}, \hat{\Phi}_{t} \geq 0$. Before ``tG1`` the
+    fund pays only what exceeds the ceiling, so $\hat{\Phi}_{t} = 0$.
+    The steady state has no reserve, and the spread is paid to the
+    government (or, if negative, covered by it) each period:
+    $\hat{Z} = 0$, $\hat{\Psi} - \hat{\Phi} = \hat{\Pi}$.
 
     Args:
         r_p (scalar or Numpy array): household portfolio return, in the
@@ -361,75 +356,48 @@ def get_fdc_fund_reserves(r_p, spread, Y, p, method, Z0=0.0, Z_T=None):
         method (str): 'SS' or 'TPI'
         Z0 (scalar): reserve at the beginning of period 0 (time path
             only)
-        Z_T (scalar or None): reserve at the beginning of period T, which
-            the payment in period T - 1 settles to (time path only);
-            None applies the bounds in period T - 1 like any other
 
     Returns:
         (tuple): FDC fund reserve quantities, scalars in the steady
         state and length T arrays on the time path
 
             * Z (scalar or Numpy array): FDC fund reserve $\hat{Z}$ at
-              the beginning of the period
+              the beginning of the period (negative for a deficit)
             * revenue (scalar or Numpy array): FDC fund revenue paid to
               the government, $\hat{\Psi} \geq 0$
             * transfer (scalar or Numpy array): transfer from the
-              government to the reserve, $\hat{\Phi} \geq 0$
+              government to the fund, $\hat{\Phi} \geq 0$
     """
-    if method == "TPI":
-        T = p.T
-        r_p = np.asarray(r_p, dtype=float).ravel()[:T]
-        spread = np.broadcast_to(np.asarray(spread, dtype=float).ravel(), (T,))
-        Y = np.asarray(Y, dtype=float).ravel()[:T]
-        Y_next = np.append(Y[1:], Y[-1])
-        growth = (1.0 + np.hstack((p.g_n[: T - 1], p.g_n_ss))) * np.exp(p.g_y)
-        Z = np.zeros(T + 1)
-        Z[0] = float(np.squeeze(Z0))
-        net_payment = np.zeros(T)
-        for t in range(T):
-            Z_max = max(p.fdc_fund_reserve_max_GDPratio * Y_next[t], 0.0)
-            # end-of-period reserve before any payment, in next-period
-            # units, kept within the floor and the ceiling
-            Z_free = ((1.0 + r_p[t]) * Z[t] + spread[t]) / growth[t]
-            if t == T - 1 and Z_T is not None:
-                # terminal settlement: the reserve begins period T at
-                # its steady-state value
-                Z[t + 1] = float(np.squeeze(Z_T))
-            else:
-                Z[t + 1] = min(max(Z_free, 0.0), Z_max)
-            # positive above the ceiling (to the government), negative
-            # below the floor (from the government)
-            net_payment[t] = growth[t] * (Z_free - Z[t + 1])
-        revenue = np.maximum(net_payment, 0.0)
-        transfer = np.maximum(-net_payment, 0.0)
-        return Z[:T], revenue, transfer
-    if method != "SS":
+    if method == "SS":
+        spread = float(np.squeeze(spread))
+        return 0.0, max(spread, 0.0), max(-spread, 0.0)
+    if method != "TPI":
         raise ValueError(f"method must be 'SS' or 'TPI', got {method!r}")
-    r_p = float(np.squeeze(r_p))
-    Y = float(np.squeeze(Y))
-    Z_max = max(p.fdc_fund_reserve_max_GDPratio * Y, 0.0)
-    # growth rate less the reserve's return: the share of the reserve
-    # needed each period to keep pace with the economy, net of earnings
-    net_growth = (1.0 + p.g_n_ss) * np.exp(p.g_y) - 1.0 - r_p
-    if spread > 0.0 and net_growth <= 0.0:
-        # the reserve grows faster than the economy: it reaches the
-        # ceiling
-        Z = Z_max
-    elif spread > 0.0:
-        Z = spread / net_growth
-    else:
-        # a stationary reserve below zero, or one that falls without
-        # bound: it is held at the floor
-        Z = 0.0
-    # the floor and ceiling on the beginning-of-period reserve
-    Z = min(max(Z, 0.0), Z_max)
-    # end-of-period payment that keeps the reserve stationary at Z:
-    # positive above the ceiling (to the government), negative below
-    # the floor (from the government)
-    net_payment = spread - net_growth * Z
-    revenue = max(net_payment, 0.0)
-    transfer = max(-net_payment, 0.0)
-    return Z, revenue, transfer
+    T = p.T
+    r_p = np.asarray(r_p, dtype=float).ravel()[:T]
+    spread = np.broadcast_to(np.asarray(spread, dtype=float).ravel(), (T,))
+    Y = np.asarray(Y, dtype=float).ravel()[:T]
+    Y_next = np.append(Y[1:], Y[-1])
+    growth = (1.0 + np.hstack((p.g_n[: T - 1], p.g_n_ss))) * np.exp(p.g_y)
+    Z = np.zeros(T + 1)
+    Z[0] = float(np.squeeze(Z0))
+    net_payment = np.zeros(T)
+    for t in range(T):
+        # end-of-period reserve before any payment, in next-period units
+        Z_free = ((1.0 + r_p[t]) * Z[t] + spread[t]) / growth[t]
+        if t + 1 >= p.tG1:
+            # the budget closure rule has begun: the whole balance goes
+            # to the government (or the deficit is covered by it)
+            Z[t + 1] = 0.0
+        else:
+            # no floor; reserves above the ceiling go to the government
+            Z_max = max(p.fdc_fund_reserve_max_GDPratio * Y_next[t], 0.0)
+            Z[t + 1] = min(Z_free, Z_max)
+        # positive to the government, negative from it
+        net_payment[t] = growth[t] * (Z_free - Z[t + 1])
+    revenue = np.maximum(net_payment, 0.0)
+    transfer = np.maximum(-net_payment, 0.0)
+    return Z[:T], revenue, transfer
 
 
 def get_BQ(r, b_splus1, j, p, method, preTP):

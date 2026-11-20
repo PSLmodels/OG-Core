@@ -531,13 +531,14 @@ def inner_loop(outer_loop_vars, p, client, scattered_p=None):
     L = aggr.get_L(nssmat, p, "SS")
     B = aggr.get_B(bssmat, p, "SS", False)
     F = aggr.get_F(fdc, p, "SS")
-    # reserve the FDC fund holds beyond the balances it owes, from
-    # the spread between r_p and r_fdc, capped at a share of GDP
+    # the FDC fund holds no reserve in the steady state: the spread
+    # between r_p and r_fdc on the balances it owes goes to the
+    # government budget each period
     Z_fdc, Psi, Phi = aggr.get_fdc_fund_reserves(
         r_p, aggr.get_fdc_spread(fdc, p, "SS"), Y, p, "SS"
     )
-    # net FDC fund revenue: payments above the ceiling less
-    # transfers that keep the reserve from falling below zero
+    # net FDC fund revenue: the spread, paid to the government if
+    # positive and covered by it if negative
     fdc_fund_revenue = Psi - Phi
 
     # Find gov't debt

@@ -368,9 +368,8 @@ def get_initial_SS_values(p):
     # carried out of age s - 1 earn the period-0 return of age s
     wedge0 = np.append(pensions.fdc_wedge_path(p)[0, 1:], 0.0)
     p.fdc_spread0 = float((wedge0[:, None] * fdc_terms0).sum())
-    # the FDC fund reserve at t=0 is the baseline steady-state reserve
-    # (zero if the baseline had no FDC pillar), an aggregate that, like
-    # the scaled holdings, keeps its steady-state value
+    # the FDC fund reserve at t=0 is the baseline steady-state reserve,
+    # which is zero (the steady state holds no reserve)
     p.fdc_Z0 = float(ss_baseline_vars.get("fdc_fund_reserves", 0.0))
     # The DB/NDC/PS pension formulas need the labor supplied before the
     # time path begins by cohorts alive at t=0. Use the model's initial
@@ -1661,8 +1660,10 @@ def run_TPI(p, client=None):
         if fdc_on:
             F[1 : p.T] = aggr.get_F(fdc_path, p, "TPI")[: p.T - 1]
             # FDC fund reserve the fund holds beyond the balances it
-            # owes, from the spread between r_p and r_fdc, capped at a
-            # share of GDP
+            # owes, from the spread between r_p and r_fdc, until the
+            # budget closure rule begins in period tG1, when it is paid
+            # to the government; the spread goes to the government from
+            # then on
             fdc_spread[0] = p.fdc_spread0
             fdc_spread[1:] = aggr.get_fdc_spread(fdc_path, p, "TPI")[: p.T - 1]
             (
@@ -1670,16 +1671,12 @@ def run_TPI(p, client=None):
                 fdc_fund_payment,
                 fdc_fund_transfer,
             ) = aggr.get_fdc_fund_reserves(
-                r_p[: p.T],
-                fdc_spread,
-                Y[: p.T],
-                p,
-                "TPI",
-                Z0=p.fdc_Z0,
-                Z_T=Z_ss,
+                r_p[: p.T], fdc_spread, Y[: p.T], p, "TPI", Z0=p.fdc_Z0
             )
-            # net FDC fund revenue: payments above the ceiling less
-            # transfers that keep the reserve from falling below zero
+            # net FDC fund revenue: payments above the ceiling, the
+            # balance paid at tG1, and the spread after it, less the
+            # government's transfers (a deficit at tG1, or a negative
+            # spread after it)
             fdc_fund_revenue = fdc_fund_payment - fdc_fund_transfer
         w_open = firm.get_w_from_r(p.world_int_rate[: p.T], p, "TPI")
 
@@ -2253,26 +2250,6 @@ def run_TPI(p, client=None):
     RM_vec[:, -1] = RM[: p.T]
     foreign_aid_vec = np.zeros((p.T, p.M))
     foreign_aid_vec[:, -1] = foreign_aid[: p.T]
-    if fdc_on:
-        # size of the terminal settlement between the FDC fund and the
-        # government: the payment in period T - 1 with the settlement
-        # less the payment the reserve rule alone would make
-        _, pay_free, transfer_free = aggr.get_fdc_fund_reserves(
-            r_p[: p.T], fdc_spread, Y[: p.T], p, "TPI", Z0=p.fdc_Z0
-        )
-        fdc_fund_settlement = (fdc_fund_payment - fdc_fund_transfer)[-1] - (
-            pay_free - transfer_free
-        )[-1]
-        settlement_share = fdc_fund_settlement / Y[p.T - 1]
-        if np.abs(settlement_share) > 1e-3:
-            logger.warning(
-                "The FDC fund reserve had not reached its steady state by "
-                "the end of the time path. A terminal settlement of "
-                f"{fdc_fund_settlement:.3g} ({settlement_share:.2%} of "
-                "GDP) in period T - 1 moves it there, paid to the "
-                "government if positive and by the government if "
-                "negative. Consider a longer time path (T)."
-            )
     RC_error = aggr.resource_constraint(
         Y_vec,
         C_m_vec,

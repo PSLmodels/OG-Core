@@ -1676,47 +1676,54 @@ def test_run_TPI_funded_defined_contribution(tmpdir):
     assert np.isclose(tp_r["F"][-1], ss_r["F"], rtol=1e-3)
 
 
-def _check_fdc_fund_reserve_path(tp, ss, p_growth):
+def _check_fdc_fund_reserve_path(tp, ss, p_growth, tG1):
     """
-    The FDC fund reserve path stays within its bounds, follows its flow
-    identity in every period, and reaches the steady state.
+    The FDC fund reserve follows its flow identity in every period, is
+    paid out at the end of period tG1 - 1, and is zero from tG1 on, when
+    the spread goes to the government each period, as in the steady
+    state (which holds no reserve).
     """
     Z = tp["fdc_fund_reserves"]
     revenue, transfer = tp["fdc_fund_revenue"], tp["fdc_fund_transfer"]
-    assert np.all(Z >= 0.0) and np.all(revenue >= 0.0)
-    assert np.all(transfer >= 0.0)
-    # the next period's reserve, with the terminal settlement bringing
-    # it to the steady state at T
-    Z_next = np.append(Z[1:], ss["fdc_fund_reserves"])
+    assert ss["fdc_fund_reserves"] == 0.0
+    assert np.all(revenue >= 0.0) and np.all(transfer >= 0.0)
+    Z_next = np.append(Z[1:], 0.0)
+    # the reserve is computed with the r_p of the last iteration, and the
+    # output r_p is updated once more, so they differ by the convergence
+    # tolerance
     assert np.allclose(
         p_growth * Z_next,
         (1 + tp["r_p"][: len(Z)]) * Z + tp["fdc_spread"] - revenue + transfer,
+        atol=1e-6,
     )
+    assert np.all(Z[tG1:] == 0.0)
+    assert np.allclose(revenue[tG1:] - transfer[tG1:], tp["fdc_spread"][tG1:])
 
 
 @pytest.mark.local
 def test_run_TPI_fdc_return_wedge(tmpdir):
     """
     The time path solves with a wedge between r_p and the FDC return.
-    In a baseline the FDC fund reserve starts from its steady-state
-    value; in a reform that introduces the pillar it starts at zero and
-    builds toward the ceiling. The reserve follows its flow identity,
-    with a settlement in period T - 1 that brings it to its steady state
-    (with these parameters it approaches the steady state more slowly
-    than the time path converges), the spread is the wedge times the
-    owed balances, and the resource constraint holds.
+    The FDC fund reserve starts at zero (the steady state holds none),
+    accumulates the spread until the budget closure rule begins in
+    period tG1, is then paid to the government, and is zero from then
+    on, both in a baseline and in a reform that introduces the pillar
+    (with the reserve capped at 0.2 of GDP). The spread is the wedge
+    times the owed balances, the reserve follows its flow identity, and
+    the resource constraint holds.
     """
     p = Specifications(baseline=True, num_workers=1)
     with open(os.path.join(CUR_PATH, "testing_params.json")) as f:
         p.update_specifications(json.load(f))
-    T = p.T
+    T, tG1 = p.T, p.tG1
     growth = (1.0 + np.hstack((p.g_n[: T - 1], p.g_n_ss))) * np.exp(p.g_y)
     wedge = {"r_fdc_wedge": [0.01]}
     ss, tp, _ = _fdc_tpi_run(tmpdir, 0.05, updates=wedge, tag="_wedge")
     assert np.abs(tp["resource_constraint_error"]).max() < 1e-4
     assert np.allclose(tp["fdc_spread"], 0.01 * tp["F"], rtol=1e-8)
-    assert np.isclose(tp["fdc_fund_reserves"][0], ss["fdc_fund_reserves"])
-    _check_fdc_fund_reserve_path(tp, ss, growth)
+    assert tp["fdc_fund_reserves"][0] == 0.0
+    assert np.all(tp["fdc_fund_reserves"][1:tG1] > 0.0)
+    _check_fdc_fund_reserve_path(tp, ss, growth, tG1)
     # a reform introducing the pillar with a wedge, with the reserve
     # capped at 0.2 of GDP
     _, _, no_fdc_out = _fdc_tpi_run(tmpdir, 0.0, enforce=False)
@@ -1730,4 +1737,4 @@ def test_run_TPI_fdc_return_wedge(tmpdir):
     assert np.abs(tp_r["resource_constraint_error"]).max() < 1e-4
     assert tp_r["fdc_fund_reserves"][0] == 0.0
     assert ss_r["fdc_fund_revenue"] > 0.0
-    _check_fdc_fund_reserve_path(tp_r, ss_r, growth)
+    _check_fdc_fund_reserve_path(tp_r, ss_r, growth, tG1)
