@@ -1005,13 +1005,17 @@ def plot_all(base_output_path, reform_output_path, save_path):
         path=os.path.join(save_path, "SpendGDPratio.png"),
     )
 
-    # Debt-GDP in base and reform-- vertical lines at tG1, tG2
+    # Debt-GDP in base and reform-- vertical lines at tG1, tG2; with debt
+    # contracted abroad (D_ext), plot it alongside market debt
+    debt_vars = ["D"]
+    if "D_ext" in base_tpi and np.any(np.asarray(base_tpi["D_ext"]) != 0):
+        debt_vars.append("D_ext")
     plot_gdp_ratio(
         base_tpi,
         base_params,
         reform_tpi,
         reform_params,
-        var_list=["D"],
+        var_list=debt_vars,
         num_years_to_plot=min(base_params.T, 150),
         start_year=base_params.start_year,
         vertical_line_years=[

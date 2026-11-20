@@ -195,9 +195,10 @@ def macro_table_SS(
         if v != "D/Y":
             diff = ((reform_ss[v] - base_ss[v]) / base_ss[v]) * 100
         else:
-            diff = (
-                reform_ss["D"] / reform_ss["Y"] - base_ss["D"] / base_ss["Y"]
-            )
+            # all government debt: market debt plus debt contracted abroad
+            diff = (reform_ss["D"] + reform_ss.get("D_ext", 0.0)) / reform_ss[
+                "Y"
+            ] - (base_ss["D"] + base_ss.get("D_ext", 0.0)) / base_ss["Y"]
         table_dict["% Change (or pp diff)"].append(diff)
         # Make df with dict so can use pandas functions
         table_df = pd.DataFrame.from_dict(
@@ -1199,7 +1200,11 @@ def model_fit_table(
         elif target_desc == r"Infrastructure spending to GDP ratio $(I_g/Y)$":
             model_val = tpi_output["I_g"][t] / tpi_output["Y"][t]
         elif target_desc == r"Debt to GDP ratio $(D/Y)$":
-            model_val = tpi_output["D"][t] / tpi_output["Y"][t]
+            # all government debt: market debt plus debt contracted abroad
+            model_val = (
+                tpi_output["D"][t]
+                + (tpi_output["D_ext"][t] if "D_ext" in tpi_output else 0.0)
+            ) / tpi_output["Y"][t]
         # Distributional moments
         elif target_desc == "Gini coefficient, wealth":
             dist = tpi_output["b_sp1"][t]
