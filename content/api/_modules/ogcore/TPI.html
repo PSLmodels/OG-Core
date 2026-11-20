@@ -1497,6 +1497,12 @@
 <span class="sd">            results</span>
 
 <span class="sd">    """</span>
+    <span class="k">if</span> <span class="n">household</span><span class="o">.</span><span class="n">fdc_active</span><span class="p">(</span><span class="n">p</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span>
+            <span class="s2">"The funded defined contribution pillar (fdc_tau &gt; 0) is "</span>
+            <span class="s2">"only supported in the steady state so far; the time path "</span>
+            <span class="s2">"will be added in a later release."</span>
+        <span class="p">)</span>
     <span class="k">if</span> <span class="n">p</span><span class="o">.</span><span class="n">use_sparse_FOC_jac</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">_HAVE_SPARSE_FD</span><span class="p">:</span>
         <span class="nb">print</span><span class="p">(</span><span class="s2">"[TPI] sparse FOC jacobian unavailable; using dense"</span><span class="p">)</span>
     <span class="c1"># Scope the Jacobian sparsity cache to this solve (see</span>

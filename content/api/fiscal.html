@@ -500,10 +500,10 @@ and D0_baseline is initial debt in the baseline equilibrium
 
 <dl class="py function">
 <dt class="sig sig-object py" id="ogcore.fiscal.get_G_ss">
-<span class="sig-prename descclassname"><span class="pre">ogcore.fiscal.</span></span><span class="sig-name descname"><span class="pre">get_G_ss</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">Y</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">total_tax_revenue</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">agg_pension_outlays</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">TR</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">UBI_outlays</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">I_g</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">foreign_aid</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">new_borrowing</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">debt_service</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ogcore/fiscal.html#get_G_ss"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogcore.fiscal.get_G_ss" title="Link to this definition">#</a></dt>
+<span class="sig-prename descclassname"><span class="pre">ogcore.fiscal.</span></span><span class="sig-name descname"><span class="pre">get_G_ss</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">Y</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">total_tax_revenue</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">agg_pension_outlays</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">TR</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">UBI_outlays</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">I_g</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">foreign_aid</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">new_borrowing</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">debt_service</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fdc_fund_revenue</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ogcore/fiscal.html#get_G_ss"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogcore.fiscal.get_G_ss" title="Link to this definition">#</a></dt>
 <dd><p>Calculate the steady-state values of government spending.</p>
 <div class="math notranslate nohighlight">
-\[\bar{G} = \bar{Rev} + \overline{FA}
+\[\bar{G} = \bar{Rev} + \bar{\Psi} - \bar{\Phi} + \overline{FA}
 + \bar{D}\bigl[(1 + \bar{g}_n)e^{g_y} - (1 + \bar{r}_{gov})\bigr]
 - \bar{I}_g - \bar{TR} - \overline{UBI}\]</div>
 <dl class="field-list simple">
@@ -520,6 +520,15 @@ domestic government</p></li>
 <li><p><strong>new_borrowing</strong> (<em>scalar</em>) – steady-state amount of new borrowing</p></li>
 <li><p><strong>debt_service</strong> (<em>scalar</em>) – steady-state debt service costs</p></li>
 <li><p><strong>p</strong> (<em>OG-Core Specifications object</em>) – model parameters</p></li>
+<li><p><strong>fdc_fund_revenue</strong> (<em>scalar</em>) – net payment from the funded
+defined contribution (FDC) fund to the government,
+<span class="math notranslate nohighlight">\(\bar{\Psi} - \bar{\Phi}\)</span> (not tax revenue). The fund holds
+no reserve in the steady state, so this equals the spread
+<span class="math notranslate nohighlight">\(\bar{\Pi}\)</span> it earns on the balances it owes households
+(<code class="docutils literal notranslate"><span class="pre">aggregates.get_fdc_spread</span></code>): FDC fund revenue
+<span class="math notranslate nohighlight">\(\bar{\Psi}\)</span> paid to the government when the spread is
+positive, or a transfer <span class="math notranslate nohighlight">\(\bar{\Phi}\)</span> from the government
+when it is negative</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -550,7 +559,7 @@ domestic government</p></li>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="ogcore.fiscal.get_TR">
-<span class="sig-prename descclassname"><span class="pre">ogcore.fiscal.</span></span><span class="sig-name descname"><span class="pre">get_TR</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">Y</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">TR</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">G</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">total_tax_revenue</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">agg_pension_outlays</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">UBI_outlays</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">I_g</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">foreign_aid</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">method</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ogcore/fiscal.html#get_TR"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogcore.fiscal.get_TR" title="Link to this definition">#</a></dt>
+<span class="sig-prename descclassname"><span class="pre">ogcore.fiscal.</span></span><span class="sig-name descname"><span class="pre">get_TR</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">Y</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">TR</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">G</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">total_tax_revenue</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">agg_pension_outlays</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">UBI_outlays</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">I_g</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">foreign_aid</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">method</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fdc_fund_revenue</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ogcore/fiscal.html#get_TR"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogcore.fiscal.get_TR" title="Link to this definition">#</a></dt>
 <dd><p>Function to compute aggregate transfers.  Note that this excludes
 transfer spending through the public pension system.</p>
 <div class="math notranslate nohighlight">
@@ -576,6 +585,18 @@ outlays</p></li>
 government</p></li>
 <li><p><strong>p</strong> (<em>OG-Core Specifications object</em>) – model parameters</p></li>
 <li><p><strong>method</strong> (<em>str</em>) – whether doing SS or TP calculation</p></li>
+<li><p><strong>fdc_fund_revenue</strong> (<em>array_like</em>) – net payment from the funded
+defined contribution (FDC) fund to the government,
+<span class="math notranslate nohighlight">\(\Psi_t - \Phi_t\)</span> (not tax revenue). In the steady state
+(and on the time path from period <code class="docutils literal notranslate"><span class="pre">tG1</span></code> on) the fund
+holds no reserve, so this equals the spread <span class="math notranslate nohighlight">\(\Pi_t\)</span> it
+earns on the balances it owes households
+(<code class="docutils literal notranslate"><span class="pre">aggregates.get_fdc_spread</span></code>), paid to the government if
+positive and covered by it if negative. Before <code class="docutils literal notranslate"><span class="pre">tG1</span></code> the
+fund keeps the spread as a reserve and pays only any
+amount above its ceiling; in period <code class="docutils literal notranslate"><span class="pre">tG1</span></code> it pays its
+whole reserve to the government (or the government covers
+its deficit). The time path is not yet implemented</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>

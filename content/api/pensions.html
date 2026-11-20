@@ -1957,6 +1957,125 @@ accounts earn r_fdc = r_p - r_fdc_wedge</p></li>
 </dl>
 </dd></dl>
 
+<dl class="py function">
+<dt class="sig sig-object py" id="ogcore.pensions.fdc_holdings">
+<span class="sig-prename descclassname"><span class="pre">ogcore.pensions.</span></span><span class="sig-name descname"><span class="pre">fdc_holdings</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fdc</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ogcore/pensions.html#fdc_holdings"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogcore.pensions.fdc_holdings" title="Link to this definition">#</a></dt>
+<dd><p>End-of-period holdings of funded defined contribution accounts,
+the fund’s assets, by age (and group).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>fdc</strong> (<a class="reference internal" href="#ogcore.pensions.FDCLifetime" title="ogcore.pensions.FDCLifetime"><em>FDCLifetime</em></a><em> or </em><em>None</em>) – the accounts, None when the pillar
+is off</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><dl class="simple">
+<dt>holdings, or 0.0 when the</dt><dd><p>pillar is off</p>
+</dd>
+</dl>
+</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#ogcore.pensions.FDCLifetime.holdings" title="ogcore.pensions.FDCLifetime.holdings">holdings</a> (Numpy array or scalar)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="ogcore.pensions.fdc_wedge_ss">
+<span class="sig-prename descclassname"><span class="pre">ogcore.pensions.</span></span><span class="sig-name descname"><span class="pre">fdc_wedge_ss</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">p</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ogcore/pensions.html#fdc_wedge_ss"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogcore.pensions.fdc_wedge_ss" title="Link to this definition">#</a></dt>
+<dd><p>Steady-state wedge <code class="docutils literal notranslate"><span class="pre">r_fdc_wedge</span></code> between the portfolio return
+r_p and the FDC return r_fdc at each age, the value
+<code class="docutils literal notranslate"><span class="pre">fdc_lifetime</span></code> uses for a household with t_birth None.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>p</strong> (<em>OG-Core Specifications object</em>) – model parameters</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><dl class="simple">
+<dt>wedge at each age, length S (zeros if the</dt><dd><p>parameter is absent)</p>
+</dd>
+</dl>
+</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>wedge (Numpy array)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="ogcore.pensions.fdc_bequeathable">
+<span class="sig-prename descclassname"><span class="pre">ogcore.pensions.</span></span><span class="sig-name descname"><span class="pre">fdc_bequeathable</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fdc</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">r_p</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ogcore/pensions.html#fdc_bequeathable"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogcore.pensions.fdc_bequeathable" title="Link to this definition">#</a></dt>
+<dd><p>End-of-period holdings that go to bequests if the household dies
+before the next period: the account holdings at ages before the
+retirement age. After retirement the holdings of those who die
+stay in the annuity pool.</p>
+<p>The account of a member who dies is credited the FDC return
+r_fdc = r_p - r_fdc_wedge, like the account of a survivor, and the
+fund keeps the spread. Because <code class="docutils literal notranslate"><span class="pre">aggregates.get_BQ</span></code> multiplies the
+savings it is given by (1 + r_p), the holdings are scaled here by
+(1 + r_fdc) / (1 + r_p), with r_fdc the return at the next age.
+They are also returned in the next period’s detrended units,
+e^{-g_y} times the holdings, the units of the private savings
+b_{s+1} they are added to.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>fdc</strong> (<a class="reference internal" href="#ogcore.pensions.FDCLifetime" title="ogcore.pensions.FDCLifetime"><em>FDCLifetime</em></a><em> or </em><em>None</em>) – the accounts, None when the pillar
+is off</p></li>
+<li><p><strong>r_p</strong> (<em>scalar</em>) – steady-state household portfolio return</p></li>
+<li><p><strong>p</strong> (<em>OG-Core Specifications object</em>) – model parameters</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><dl class="simple">
+<dt>holdings at ages before</dt><dd><p>the retirement age and zero after, in next-period units, or
+0.0 when the pillar is off</p>
+</dd>
+</dl>
+</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>bequeathable (Numpy array or scalar)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="ogcore.pensions.fdc_survivor_claims">
+<span class="sig-prename descclassname"><span class="pre">ogcore.pensions.</span></span><span class="sig-name descname"><span class="pre">fdc_survivor_claims</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fdc</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rho</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ogcore/pensions.html#fdc_survivor_claims"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogcore.pensions.fdc_survivor_claims" title="Link to this definition">#</a></dt>
+<dd><p>Funded defined contribution holdings per survivor, carried into the
+next period before its return: the end-of-period holdings before
+the retirement age, and the holdings divided by the survival rate
+after it, when the holdings of those who die are shared among the
+survivors of the annuity pool.</p>
+<p>Immigrants are taken to arrive with the same assets as the natives
+of their age, so this is what an immigrant brings into the fund
+(the counterpart of the private savings b that <code class="docutils literal notranslate"><span class="pre">get_B</span></code> credits
+to immigrants). Like b_{s+1}, the claims are in the next period’s
+detrended units, e^{-g_y} times the holdings.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>fdc</strong> (<a class="reference internal" href="#ogcore.pensions.FDCLifetime" title="ogcore.pensions.FDCLifetime"><em>FDCLifetime</em></a><em> or </em><em>None</em>) – the accounts, None when the pillar
+is off</p></li>
+<li><p><strong>rho</strong> (<em>Numpy array</em>) – mortality rates, shaped like the holdings</p></li>
+<li><p><strong>p</strong> (<em>OG-Core Specifications object</em>) – model parameters</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><dl class="simple">
+<dt>holdings per survivor in</dt><dd><p>next-period units, or 0.0 when the pillar is off</p>
+</dd>
+</dl>
+</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>claims (Numpy array or scalar)</p>
+</dd>
+</dl>
+</dd></dl>
+
 </section>
 </section>
 
@@ -2060,6 +2179,10 @@ accounts earn r_fdc = r_p - r_fdc_wedge</p></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.pensions.fdc_lifetime_loop"><code class="docutils literal notranslate"><span class="pre">fdc_lifetime_loop()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.pensions.fdc_lifetime"><code class="docutils literal notranslate"><span class="pre">fdc_lifetime()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.pensions.fdc_ss"><code class="docutils literal notranslate"><span class="pre">fdc_ss()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.pensions.fdc_holdings"><code class="docutils literal notranslate"><span class="pre">fdc_holdings()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.pensions.fdc_wedge_ss"><code class="docutils literal notranslate"><span class="pre">fdc_wedge_ss()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.pensions.fdc_bequeathable"><code class="docutils literal notranslate"><span class="pre">fdc_bequeathable()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.pensions.fdc_survivor_claims"><code class="docutils literal notranslate"><span class="pre">fdc_survivor_claims()</span></code></a></li>
 </ul>
 </li>
 </ul>

@@ -466,6 +466,126 @@ period amount of savings.  If True, then need to use
 </dd></dl>
 
 <dl class="py function">
+<dt class="sig sig-object py" id="ogcore.aggregates.get_F">
+<span class="sig-prename descclassname"><span class="pre">ogcore.aggregates.</span></span><span class="sig-name descname"><span class="pre">get_F</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fdc</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">method</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ogcore/aggregates.html#get_F"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogcore.aggregates.get_F" title="Link to this definition">#</a></dt>
+<dd><p>Calculation of the assets of the funded defined contribution (FDC)
+fund, the end-of-period account holdings <span class="math notranslate nohighlight">\(\hat{h}\)</span> of every
+household, aggregated like household savings in <code class="docutils literal notranslate"><span class="pre">get_B</span></code> and, like
+the savings b_{s+1} there, put in the next period’s detrended units
+by the factor e^{-g_y}. The
+holdings of those who die count until they are bequeathed (before
+retirement) or shared among the survivors (after retirement), and
+immigrants arrive with the holdings per survivor of their age,
+<span class="math notranslate nohighlight">\(\hat{x}\)</span> (<code class="docutils literal notranslate"><span class="pre">pensions.fdc_survivor_claims</span></code>):</p>
+<div class="math notranslate nohighlight">
+\[\hat{F}_{t} = \frac{1}{1 + g_{n,t}}\sum_{s=E}^{E+S}\sum_{j=0}^{J}
+\left(\omega_{s-1,t-1}\lambda_{j}e^{-g_y}\hat{h}_{j,s-1,t-1} +
+i_{s,t-1}\omega_{s,t-1}\lambda_{j}\hat{x}_{j,s-1,t-1}\right)\]</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>fdc</strong> (<a class="reference internal" href="pensions.html#ogcore.pensions.FDCLifetime" title="ogcore.pensions.FDCLifetime"><em>pensions.FDCLifetime</em></a><em> or </em><em>None</em>) – the accounts by age and
+lifetime income group, None when the pillar is off</p></li>
+<li><p><strong>p</strong> (<em>OG-Core Specifications object</em>) – model parameters</p></li>
+<li><p><strong>method</strong> (<em>str</em>) – ‘SS’ (the time path is not supported yet)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>FDC fund assets, 0.0 when the pillar is off</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>F (scalar)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="ogcore.aggregates.get_fdc_spread">
+<span class="sig-prename descclassname"><span class="pre">ogcore.aggregates.</span></span><span class="sig-name descname"><span class="pre">get_fdc_spread</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fdc</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">method</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ogcore/aggregates.html#get_fdc_spread"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogcore.aggregates.get_fdc_spread" title="Link to this definition">#</a></dt>
+<dd><p>Spread the funded defined contribution (FDC) fund earns on the
+balances it owes households. The fund invests the owed balances
+<span class="math notranslate nohighlight">\(\hat{F}_t\)</span> in the household portfolio, which earns <span class="math notranslate nohighlight">\(r_{p,t}\)</span>, but
+credits the accounts (including those bequeathed by members who die
+before retirement) only <span class="math notranslate nohighlight">\(r_{fdc} = r_{p} - r_{fdc\_wedge}\)</span>. The
+difference goes to the FDC fund reserve or, once the budget closure
+rule begins and in the steady state, to the government budget
+(<code class="docutils literal notranslate"><span class="pre">get_fdc_fund_reserves</span></code>):</p>
+<div class="math notranslate nohighlight">
+\[\hat{\Pi}_{t} = \sum_{s=E+1}^{E+S}\sum_{j=0}^{J}
+r_{fdc\_wedge,s}\,\hat{f}_{j,s,t}\]</div>
+<p>where <span class="math notranslate nohighlight">\(\hat{f}_{j,s,t}\)</span> are the terms of <code class="docutils literal notranslate"><span class="pre">get_F</span></code> owed to members
+of age s.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>fdc</strong> (<a class="reference internal" href="pensions.html#ogcore.pensions.FDCLifetime" title="ogcore.pensions.FDCLifetime"><em>pensions.FDCLifetime</em></a><em> or </em><em>None</em>) – the accounts by age and
+lifetime income group, None when the pillar is off</p></li>
+<li><p><strong>p</strong> (<em>OG-Core Specifications object</em>) – model parameters</p></li>
+<li><p><strong>method</strong> (<em>str</em>) – ‘SS’ (the time path is not supported yet)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><dl class="simple">
+<dt>the spread, 0.0 when the pillar is off</dt><dd><p>(negative when <code class="docutils literal notranslate"><span class="pre">r_fdc_wedge</span></code> is negative)</p>
+</dd>
+</dl>
+</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>spread (scalar)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="ogcore.aggregates.get_fdc_fund_reserves">
+<span class="sig-prename descclassname"><span class="pre">ogcore.aggregates.</span></span><span class="sig-name descname"><span class="pre">get_fdc_fund_reserves</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">r_p</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">spread</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Y</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">method</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ogcore/aggregates.html#get_fdc_fund_reserves"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogcore.aggregates.get_fdc_fund_reserves" title="Link to this definition">#</a></dt>
+<dd><p>Reserve <span class="math notranslate nohighlight">\(\hat{Z}\)</span> of the funded defined contribution (FDC) fund,
+the assets it holds beyond the balances owed to households, the
+FDC fund revenue <span class="math notranslate nohighlight">\(\hat{\Psi}\)</span> it pays to the government, and the
+transfer <span class="math notranslate nohighlight">\(\hat{\Phi}\)</span> it receives from the government.</p>
+<p>The fund keeps the spread <span class="math notranslate nohighlight">\(\hat{\Pi}\)</span> (<code class="docutils literal notranslate"><span class="pre">get_fdc_spread</span></code>) as a
+reserve only temporarily: on the time path the reserve builds up
+until the budget closure rule begins in period <code class="docutils literal notranslate"><span class="pre">tG1</span></code>, when the
+government receives the whole balance (or covers a deficit), and
+from then on the spread goes to the government budget each period.
+So in the steady state there is no reserve, and the spread is paid
+to the government (or, if negative, covered by it) each period:</p>
+<div class="math notranslate nohighlight">
+\[\hat{Z} = 0, \quad \hat{\Psi} - \hat{\Phi} = \hat{\Pi},
+\quad \hat{\Psi}, \hat{\Phi} \geq 0\]</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>r_p</strong> (<em>scalar</em>) – steady-state household portfolio return (unused
+in the steady state)</p></li>
+<li><p><strong>spread</strong> (<em>scalar</em>) – spread on the owed balances, <span class="math notranslate nohighlight">\(\hat{\Pi}\)</span></p></li>
+<li><p><strong>Y</strong> (<em>scalar</em>) – steady-state GDP (unused in the steady state)</p></li>
+<li><p><strong>p</strong> (<em>OG-Core Specifications object</em>) – model parameters</p></li>
+<li><p><strong>method</strong> (<em>str</em>) – ‘SS’ (the time path is not supported yet)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><p>FDC fund reserve quantities</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>Z (scalar): FDC fund reserve <span class="math notranslate nohighlight">\(\hat{Z}\)</span> at the beginning
+of the period, zero in the steady state</p></li>
+<li><p>revenue (scalar): FDC fund revenue paid to the
+government, <span class="math notranslate nohighlight">\(\hat{\Psi} \geq 0\)</span></p></li>
+<li><p>transfer (scalar): transfer from the government to the
+fund, <span class="math notranslate nohighlight">\(\hat{\Phi} \geq 0\)</span></p></li>
+</ul>
+</div></blockquote>
+</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>(tuple)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
 <dt class="sig sig-object py" id="ogcore.aggregates.get_BQ">
 <span class="sig-prename descclassname"><span class="pre">ogcore.aggregates.</span></span><span class="sig-name descname"><span class="pre">get_BQ</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">r</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">b_splus1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">j</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">method</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">preTP</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ogcore/aggregates.html#get_BQ"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogcore.aggregates.get_BQ" title="Link to this definition">#</a></dt>
 <dd><p>Calculation of aggregate bequests.  If <cite>use_zeta</cite> is False, then
@@ -885,6 +1005,9 @@ by foreign investors</p></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.aggregates.get_L"><code class="docutils literal notranslate"><span class="pre">get_L()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.aggregates.get_I"><code class="docutils literal notranslate"><span class="pre">get_I()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.aggregates.get_B"><code class="docutils literal notranslate"><span class="pre">get_B()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.aggregates.get_F"><code class="docutils literal notranslate"><span class="pre">get_F()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.aggregates.get_fdc_spread"><code class="docutils literal notranslate"><span class="pre">get_fdc_spread()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.aggregates.get_fdc_fund_reserves"><code class="docutils literal notranslate"><span class="pre">get_fdc_fund_reserves()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.aggregates.get_BQ"><code class="docutils literal notranslate"><span class="pre">get_BQ()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.aggregates.get_RM"><code class="docutils literal notranslate"><span class="pre">get_RM()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.aggregates.get_C"><code class="docutils literal notranslate"><span class="pre">get_C()</span></code></a></li>

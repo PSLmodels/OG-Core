@@ -634,12 +634,13 @@
     <span class="n">new_borrowing</span><span class="p">,</span>
     <span class="n">debt_service</span><span class="p">,</span>
     <span class="n">p</span><span class="p">,</span>
+    <span class="n">fdc_fund_revenue</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span>
 <span class="p">):</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">"""</span>
 <span class="sd">    Calculate the steady-state values of government spending.</span>
 
 <span class="sd">    .. math::</span>
-<span class="sd">            \bar{G} = \bar{Rev} + \overline{FA}</span>
+<span class="sd">            \bar{G} = \bar{Rev} + \bar{\Psi} - \bar{\Phi} + \overline{FA}</span>
 <span class="sd">            + \bar{D}\bigl[(1 + \bar{g}_n)e^{g_y} - (1 + \bar{r}_{gov})\bigr]</span>
 <span class="sd">            - \bar{I}_g - \bar{TR} - \overline{UBI}</span>
 
@@ -655,6 +656,15 @@
 <span class="sd">        new_borrowing (scalar): steady-state amount of new borrowing</span>
 <span class="sd">        debt_service (scalar): steady-state debt service costs</span>
 <span class="sd">        p (OG-Core Specifications object): model parameters</span>
+<span class="sd">        fdc_fund_revenue (scalar): net payment from the funded</span>
+<span class="sd">            defined contribution (FDC) fund to the government,</span>
+<span class="sd">            $\bar{\Psi} - \bar{\Phi}$ (not tax revenue). The fund holds</span>
+<span class="sd">            no reserve in the steady state, so this equals the spread</span>
+<span class="sd">            $\bar{\Pi}$ it earns on the balances it owes households</span>
+<span class="sd">            (``aggregates.get_fdc_spread``): FDC fund revenue</span>
+<span class="sd">            $\bar{\Psi}$ paid to the government when the spread is</span>
+<span class="sd">            positive, or a transfer $\bar{\Phi}$ from the government</span>
+<span class="sd">            when it is negative</span>
 
 <span class="sd">    Returns:</span>
 <span class="sd">        G (tuple): steady-state government spending</span>
@@ -665,6 +675,7 @@
     <span class="k">else</span><span class="p">:</span>
         <span class="n">G</span> <span class="o">=</span> <span class="p">(</span>
             <span class="n">total_tax_revenue</span>
+            <span class="o">+</span> <span class="n">fdc_fund_revenue</span>
             <span class="o">+</span> <span class="n">new_borrowing</span>
             <span class="o">+</span> <span class="n">foreign_aid</span>
             <span class="o">-</span> <span class="p">(</span><span class="n">agg_pension_outlays</span> <span class="o">+</span> <span class="n">TR</span> <span class="o">+</span> <span class="n">debt_service</span> <span class="o">+</span> <span class="n">UBI_outlays</span> <span class="o">+</span> <span class="n">I_g</span><span class="p">)</span>
@@ -708,6 +719,7 @@
     <span class="n">foreign_aid</span><span class="p">,</span>
     <span class="n">p</span><span class="p">,</span>
     <span class="n">method</span><span class="p">,</span>
+    <span class="n">fdc_fund_revenue</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span>
 <span class="p">):</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">"""</span>
 <span class="sd">    Function to compute aggregate transfers.  Note that this excludes</span>
@@ -735,6 +747,18 @@
 <span class="sd">            government</span>
 <span class="sd">        p (OG-Core Specifications object): model parameters</span>
 <span class="sd">        method (str): whether doing SS or TP calculation</span>
+<span class="sd">        fdc_fund_revenue (array_like): net payment from the funded</span>
+<span class="sd">            defined contribution (FDC) fund to the government,</span>
+<span class="sd">            $\Psi_t - \Phi_t$ (not tax revenue). In the steady state</span>
+<span class="sd">            (and on the time path from period ``tG1`` on) the fund</span>
+<span class="sd">            holds no reserve, so this equals the spread $\Pi_t$ it</span>
+<span class="sd">            earns on the balances it owes households</span>
+<span class="sd">            (``aggregates.get_fdc_spread``), paid to the government if</span>
+<span class="sd">            positive and covered by it if negative. Before ``tG1`` the</span>
+<span class="sd">            fund keeps the spread as a reserve and pays only any</span>
+<span class="sd">            amount above its ceiling; in period ``tG1`` it pays its</span>
+<span class="sd">            whole reserve to the government (or the government covers</span>
+<span class="sd">            its deficit). The time path is not yet implemented</span>
 
 <span class="sd">    Returns:</span>
 <span class="sd">        new_TR (array_like): new value of aggregate government transfers</span>
@@ -743,6 +767,7 @@
     <span class="k">if</span> <span class="n">p</span><span class="o">.</span><span class="n">budget_balance</span><span class="p">:</span>
         <span class="n">new_TR</span> <span class="o">=</span> <span class="p">(</span>
             <span class="n">total_tax_revenue</span>
+            <span class="o">+</span> <span class="n">fdc_fund_revenue</span>
             <span class="o">+</span> <span class="n">foreign_aid</span>
             <span class="o">-</span> <span class="n">agg_pension_outlays</span>
             <span class="o">-</span> <span class="n">G</span>

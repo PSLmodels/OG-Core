@@ -561,6 +561,149 @@
 
 
 
+<div class="viewcode-block" id="get_F">
+<a class="viewcode-back" href="../../aggregates.html#ogcore.aggregates.get_F">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">get_F</span><span class="p">(</span><span class="n">fdc</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">method</span><span class="p">):</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">"""</span>
+<span class="sd">    Calculation of the assets of the funded defined contribution (FDC)</span>
+<span class="sd">    fund, the end-of-period account holdings $\hat{h}$ of every</span>
+<span class="sd">    household, aggregated like household savings in ``get_B`` and, like</span>
+<span class="sd">    the savings b_{s+1} there, put in the next period's detrended units</span>
+<span class="sd">    by the factor e^{-g_y}. The</span>
+<span class="sd">    holdings of those who die count until they are bequeathed (before</span>
+<span class="sd">    retirement) or shared among the survivors (after retirement), and</span>
+<span class="sd">    immigrants arrive with the holdings per survivor of their age,</span>
+<span class="sd">    $\hat{x}$ (``pensions.fdc_survivor_claims``):</span>
+
+<span class="sd">    .. math::</span>
+<span class="sd">        \hat{F}_{t} = \frac{1}{1 + g_{n,t}}\sum_{s=E}^{E+S}\sum_{j=0}^{J}</span>
+<span class="sd">        \left(\omega_{s-1,t-1}\lambda_{j}e^{-g_y}\hat{h}_{j,s-1,t-1} +</span>
+<span class="sd">        i_{s,t-1}\omega_{s,t-1}\lambda_{j}\hat{x}_{j,s-1,t-1}\right)</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        fdc (pensions.FDCLifetime or None): the accounts by age and</span>
+<span class="sd">            lifetime income group, None when the pillar is off</span>
+<span class="sd">        p (OG-Core Specifications object): model parameters</span>
+<span class="sd">        method (str): 'SS' (the time path is not supported yet)</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        F (scalar): FDC fund assets, 0.0 when the pillar is off</span>
+<span class="sd">    """</span>
+    <span class="k">if</span> <span class="n">fdc</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">return</span> <span class="mf">0.0</span>
+    <span class="k">return</span> <span class="n">_fdc_owed_terms</span><span class="p">(</span><span class="n">fdc</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">method</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span></div>
+
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_fdc_owed_terms</span><span class="p">(</span><span class="n">fdc</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">method</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""</span>
+<span class="sd">    Terms of ``get_F`` by the age s - 1 at which the holdings were</span>
+<span class="sd">    carried out of the previous period (S x J): the balances owed to</span>
+<span class="sd">    households of age s at the start of the period, before its return.</span>
+<span class="sd">    """</span>
+    <span class="k">if</span> <span class="n">method</span> <span class="o">!=</span> <span class="s2">"SS"</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span>
+            <span class="s2">"FDC fund assets are only computed in the steady state so far"</span>
+        <span class="p">)</span>
+    <span class="n">claims</span> <span class="o">=</span> <span class="n">pensions</span><span class="o">.</span><span class="n">fdc_survivor_claims</span><span class="p">(</span><span class="n">fdc</span><span class="p">,</span> <span class="n">p</span><span class="o">.</span><span class="n">rho</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="p">:,</span> <span class="p">:],</span> <span class="n">p</span><span class="p">)</span>
+    <span class="n">omega_extended</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">omega_SS</span><span class="p">[</span><span class="mi">1</span><span class="p">:,</span> <span class="p">:],</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="mi">1</span><span class="p">,</span> <span class="n">p</span><span class="o">.</span><span class="n">J</span><span class="p">)),</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+    <span class="n">imm_extended</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+        <span class="n">p</span><span class="o">.</span><span class="n">imm_rates</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">:,</span> <span class="p">:],</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="mi">1</span><span class="p">,</span> <span class="n">p</span><span class="o">.</span><span class="n">J</span><span class="p">)),</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span>
+    <span class="p">)</span>
+    <span class="n">terms</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="n">fdc</span><span class="o">.</span><span class="n">holdings</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="n">p</span><span class="o">.</span><span class="n">g_y</span><span class="p">)</span> <span class="o">*</span> <span class="n">p</span><span class="o">.</span><span class="n">omega_SS</span>
+        <span class="o">+</span> <span class="n">claims</span> <span class="o">*</span> <span class="n">omega_extended</span> <span class="o">*</span> <span class="n">imm_extended</span>
+    <span class="p">)</span>
+    <span class="k">return</span> <span class="n">terms</span> <span class="o">/</span> <span class="p">(</span><span class="mf">1.0</span> <span class="o">+</span> <span class="n">p</span><span class="o">.</span><span class="n">g_n_ss</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="get_fdc_spread">
+<a class="viewcode-back" href="../../aggregates.html#ogcore.aggregates.get_fdc_spread">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">get_fdc_spread</span><span class="p">(</span><span class="n">fdc</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">method</span><span class="p">):</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">"""</span>
+<span class="sd">    Spread the funded defined contribution (FDC) fund earns on the</span>
+<span class="sd">    balances it owes households. The fund invests the owed balances</span>
+<span class="sd">    $\hat{F}_t$ in the household portfolio, which earns $r_{p,t}$, but</span>
+<span class="sd">    credits the accounts (including those bequeathed by members who die</span>
+<span class="sd">    before retirement) only $r_{fdc} = r_{p} - r_{fdc\_wedge}$. The</span>
+<span class="sd">    difference goes to the FDC fund reserve or, once the budget closure</span>
+<span class="sd">    rule begins and in the steady state, to the government budget</span>
+<span class="sd">    (``get_fdc_fund_reserves``):</span>
+
+<span class="sd">    .. math::</span>
+<span class="sd">        \hat{\Pi}_{t} = \sum_{s=E+1}^{E+S}\sum_{j=0}^{J}</span>
+<span class="sd">        r_{fdc\_wedge,s}\,\hat{f}_{j,s,t}</span>
+
+<span class="sd">    where $\hat{f}_{j,s,t}$ are the terms of ``get_F`` owed to members</span>
+<span class="sd">    of age s.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        fdc (pensions.FDCLifetime or None): the accounts by age and</span>
+<span class="sd">            lifetime income group, None when the pillar is off</span>
+<span class="sd">        p (OG-Core Specifications object): model parameters</span>
+<span class="sd">        method (str): 'SS' (the time path is not supported yet)</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        spread (scalar): the spread, 0.0 when the pillar is off</span>
+<span class="sd">            (negative when ``r_fdc_wedge`` is negative)</span>
+<span class="sd">    """</span>
+    <span class="k">if</span> <span class="n">fdc</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">return</span> <span class="mf">0.0</span>
+    <span class="n">terms</span> <span class="o">=</span> <span class="n">_fdc_owed_terms</span><span class="p">(</span><span class="n">fdc</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">method</span><span class="p">)</span>
+    <span class="c1"># holdings carried out of age s - 1 earn the return of age s</span>
+    <span class="n">wedge_next</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">pensions</span><span class="o">.</span><span class="n">fdc_wedge_ss</span><span class="p">(</span><span class="n">p</span><span class="p">)[</span><span class="mi">1</span><span class="p">:],</span> <span class="mf">0.0</span><span class="p">)</span>
+    <span class="k">return</span> <span class="nb">float</span><span class="p">((</span><span class="n">wedge_next</span><span class="p">[:,</span> <span class="kc">None</span><span class="p">]</span> <span class="o">*</span> <span class="n">terms</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">())</span></div>
+
+
+
+<div class="viewcode-block" id="get_fdc_fund_reserves">
+<a class="viewcode-back" href="../../aggregates.html#ogcore.aggregates.get_fdc_fund_reserves">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">get_fdc_fund_reserves</span><span class="p">(</span><span class="n">r_p</span><span class="p">,</span> <span class="n">spread</span><span class="p">,</span> <span class="n">Y</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">method</span><span class="p">):</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">"""</span>
+<span class="sd">    Reserve $\hat{Z}$ of the funded defined contribution (FDC) fund,</span>
+<span class="sd">    the assets it holds beyond the balances owed to households, the</span>
+<span class="sd">    FDC fund revenue $\hat{\Psi}$ it pays to the government, and the</span>
+<span class="sd">    transfer $\hat{\Phi}$ it receives from the government.</span>
+
+<span class="sd">    The fund keeps the spread $\hat{\Pi}$ (``get_fdc_spread``) as a</span>
+<span class="sd">    reserve only temporarily: on the time path the reserve builds up</span>
+<span class="sd">    until the budget closure rule begins in period ``tG1``, when the</span>
+<span class="sd">    government receives the whole balance (or covers a deficit), and</span>
+<span class="sd">    from then on the spread goes to the government budget each period.</span>
+<span class="sd">    So in the steady state there is no reserve, and the spread is paid</span>
+<span class="sd">    to the government (or, if negative, covered by it) each period:</span>
+
+<span class="sd">    .. math::</span>
+<span class="sd">        \hat{Z} = 0, \quad \hat{\Psi} - \hat{\Phi} = \hat{\Pi},</span>
+<span class="sd">        \quad \hat{\Psi}, \hat{\Phi} \geq 0</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        r_p (scalar): steady-state household portfolio return (unused</span>
+<span class="sd">            in the steady state)</span>
+<span class="sd">        spread (scalar): spread on the owed balances, $\hat{\Pi}$</span>
+<span class="sd">        Y (scalar): steady-state GDP (unused in the steady state)</span>
+<span class="sd">        p (OG-Core Specifications object): model parameters</span>
+<span class="sd">        method (str): 'SS' (the time path is not supported yet)</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        (tuple): FDC fund reserve quantities</span>
+
+<span class="sd">            * Z (scalar): FDC fund reserve $\hat{Z}$ at the beginning</span>
+<span class="sd">              of the period, zero in the steady state</span>
+<span class="sd">            * revenue (scalar): FDC fund revenue paid to the</span>
+<span class="sd">              government, $\hat{\Psi} \geq 0$</span>
+<span class="sd">            * transfer (scalar): transfer from the government to the</span>
+<span class="sd">              fund, $\hat{\Phi} \geq 0$</span>
+<span class="sd">    """</span>
+    <span class="k">if</span> <span class="n">method</span> <span class="o">!=</span> <span class="s2">"SS"</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span>
+            <span class="s2">"FDC fund reserves are only computed in the steady state so far"</span>
+        <span class="p">)</span>
+    <span class="n">spread</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">squeeze</span><span class="p">(</span><span class="n">spread</span><span class="p">))</span>
+    <span class="k">return</span> <span class="mf">0.0</span><span class="p">,</span> <span class="nb">max</span><span class="p">(</span><span class="n">spread</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">),</span> <span class="nb">max</span><span class="p">(</span><span class="o">-</span><span class="n">spread</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">)</span></div>
+
+
+
 <div class="viewcode-block" id="get_BQ">
 <a class="viewcode-back" href="../../aggregates.html#ogcore.aggregates.get_BQ">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">get_BQ</span><span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="n">b_splus1</span><span class="p">,</span> <span class="n">j</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">method</span><span class="p">,</span> <span class="n">preTP</span><span class="p">):</span>
