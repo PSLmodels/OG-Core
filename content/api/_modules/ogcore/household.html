@@ -824,44 +824,91 @@
 
 <div class="viewcode-block" id="get_fdc">
 <a class="viewcode-back" href="../../household.html#ogcore.household.get_fdc">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">get_fdc</span><span class="p">(</span><span class="n">r_p</span><span class="p">,</span> <span class="n">w</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">e</span><span class="p">,</span> <span class="n">j</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">method</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">get_fdc</span><span class="p">(</span><span class="n">r_p</span><span class="p">,</span> <span class="n">w</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">e</span><span class="p">,</span> <span class="n">j</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">method</span><span class="p">,</span> <span class="n">t</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Funded defined contribution accounts of the households whose labor</span>
 <span class="sd">    supply is ``n``, or None when the FDC pillar is off.</span>
 
-<span class="sd">    Only the steady state is supported so far: the time path raises</span>
-<span class="sd">    NotImplementedError when the pillar is on.</span>
+<span class="sd">    In the steady state, ``n`` covers a whole lifetime (length S, or</span>
+<span class="sd">    S x J for all income groups). On the time path ('TPI' or</span>
+<span class="sd">    'TPI_scalar'), ``n`` covers the remaining lifetime of one cohort of</span>
+<span class="sd">    income group j that is age S - len(n) in period t, and ``r_p`` and</span>
+<span class="sd">    ``w`` are the paths over those periods. A cohort alive before the</span>
+<span class="sd">    time path begins starts from the FDC claims of its age in</span>
+<span class="sd">    ``p.fdc_claims_preTP`` (set by ``TPI.get_initial_SS_values``),</span>
+<span class="sd">    credited with the period-0 FDC return r_fdc = r_p - r_fdc_wedge.</span>
 
 <span class="sd">    Args:</span>
-<span class="sd">        r_p (scalar): return on the household investment portfolio,</span>
-<span class="sd">            which the accounts also earn</span>
-<span class="sd">        w (scalar): real wage rate</span>
-<span class="sd">        n (Numpy array): labor supply, length S for one lifetime income</span>
-<span class="sd">            group or S x J for all groups</span>
+<span class="sd">        r_p (scalar or Numpy array): return on the household investment</span>
+<span class="sd">            portfolio; the accounts earn this less ``r_fdc_wedge``</span>
+<span class="sd">        w (scalar or Numpy array): real wage rate</span>
+<span class="sd">        n (Numpy array): labor supply</span>
 <span class="sd">        e (Numpy array): effective labor units, shaped like ``n``</span>
 <span class="sd">        j (int): index of lifetime income group, None if all groups</span>
+<span class="sd">            (steady state only)</span>
 <span class="sd">        p (OG-Core Specifications object): model parameters</span>
 <span class="sd">        method (str): 'SS', 'TPI', or 'TPI_scalar'</span>
+<span class="sd">        t (int): on the time path, the model period of the first</span>
+<span class="sd">            element of ``n`` (None means period 0)</span>
 
 <span class="sd">    Returns:</span>
-<span class="sd">        fdc (pensions.FDCLifetime or None): the accounts by age (by age</span>
-<span class="sd">            and group when j is None)</span>
-
-<span class="sd">    Raises:</span>
-<span class="sd">        NotImplementedError: if the pillar is on and method is not 'SS'</span>
+<span class="sd">        fdc (pensions.FDCLifetime or None): the accounts by age for</span>
+<span class="sd">            the ages in ``n`` (the field R is the cohort's retirement</span>
+<span class="sd">            age)</span>
 <span class="sd">    """</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">fdc_active</span><span class="p">(</span><span class="n">p</span><span class="p">):</span>
         <span class="k">return</span> <span class="kc">None</span>
-    <span class="k">if</span> <span class="n">method</span> <span class="o">!=</span> <span class="s2">"SS"</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">method</span> <span class="o">==</span> <span class="s2">"SS"</span><span class="p">:</span>
+        <span class="n">r_p</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">squeeze</span><span class="p">(</span><span class="n">r_p</span><span class="p">))</span>
+        <span class="n">w</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">squeeze</span><span class="p">(</span><span class="n">w</span><span class="p">))</span>
+        <span class="k">if</span> <span class="n">j</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">pensions</span><span class="o">.</span><span class="n">fdc_lifetime</span><span class="p">(</span><span class="n">w</span><span class="p">,</span> <span class="n">e</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">r_p</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="n">j</span><span class="p">,</span> <span class="n">p</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">pensions</span><span class="o">.</span><span class="n">fdc_ss</span><span class="p">(</span><span class="n">r_p</span><span class="p">,</span> <span class="n">w</span><span class="p">,</span> <span class="n">e</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">p</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">j</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">np</span><span class="o">.</span><span class="n">ndim</span><span class="p">(</span><span class="n">n</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span>
-            <span class="s2">"The funded defined contribution pillar (fdc_tau &gt; 0) is "</span>
-            <span class="s2">"only supported in the steady state so far."</span>
+            <span class="s2">"On the time path, FDC accounts are computed one cohort of "</span>
+            <span class="s2">"one income group at a time"</span>
         <span class="p">)</span>
-    <span class="n">r_p</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">squeeze</span><span class="p">(</span><span class="n">r_p</span><span class="p">))</span>
-    <span class="n">w</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">squeeze</span><span class="p">(</span><span class="n">w</span><span class="p">))</span>
-    <span class="k">if</span> <span class="n">j</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="k">return</span> <span class="n">pensions</span><span class="o">.</span><span class="n">fdc_lifetime</span><span class="p">(</span><span class="n">w</span><span class="p">,</span> <span class="n">e</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">r_p</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="n">j</span><span class="p">,</span> <span class="n">p</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">pensions</span><span class="o">.</span><span class="n">fdc_ss</span><span class="p">(</span><span class="n">r_p</span><span class="p">,</span> <span class="n">w</span><span class="p">,</span> <span class="n">e</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">p</span><span class="p">)</span></div>
+    <span class="n">S</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">S</span>
+    <span class="n">n</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">atleast_1d</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">))</span><span class="o">.</span><span class="n">ravel</span><span class="p">()</span>
+    <span class="n">L</span> <span class="o">=</span> <span class="n">n</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">a0</span> <span class="o">=</span> <span class="n">S</span> <span class="o">-</span> <span class="n">L</span>
+    <span class="n">t</span> <span class="o">=</span> <span class="mi">0</span> <span class="k">if</span> <span class="n">t</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="nb">int</span><span class="p">(</span><span class="n">t</span><span class="p">)</span>
+    <span class="n">e</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">atleast_1d</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">e</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">))</span><span class="o">.</span><span class="n">ravel</span><span class="p">()[</span><span class="o">-</span><span class="n">L</span><span class="p">:]</span>
+    <span class="n">r_p</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">atleast_1d</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">r_p</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">))</span><span class="o">.</span><span class="n">ravel</span><span class="p">()[:</span><span class="n">L</span><span class="p">]</span>
+    <span class="n">w</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">atleast_1d</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">w</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">))</span><span class="o">.</span><span class="n">ravel</span><span class="p">()[:</span><span class="n">L</span><span class="p">]</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">pad</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+        <span class="n">full</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">full</span><span class="p">(</span><span class="n">S</span><span class="p">,</span> <span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+        <span class="n">full</span><span class="p">[</span><span class="n">a0</span><span class="p">:]</span> <span class="o">=</span> <span class="n">x</span>
+        <span class="k">return</span> <span class="n">full</span>
+
+    <span class="n">n_full</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">S</span><span class="p">)</span>
+    <span class="n">n_full</span><span class="p">[</span><span class="n">a0</span><span class="p">:]</span> <span class="o">=</span> <span class="n">n</span>
+    <span class="n">e_full</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">S</span><span class="p">)</span>
+    <span class="n">e_full</span><span class="p">[</span><span class="n">a0</span><span class="p">:]</span> <span class="o">=</span> <span class="n">e</span>
+    <span class="n">A0</span> <span class="o">=</span> <span class="mf">0.0</span>
+    <span class="k">if</span> <span class="n">a0</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="n">claims0</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="s2">"fdc_claims_preTP"</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">claims0</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="c1"># balances carried in earn the FDC return of age a0 in</span>
+            <span class="c1"># period t, r_fdc = r_p - r_fdc_wedge, as in pensions.fdc_tpi</span>
+            <span class="n">wedge_arr</span> <span class="o">=</span> <span class="n">pensions</span><span class="o">.</span><span class="n">fdc_wedge_path</span><span class="p">(</span><span class="n">p</span><span class="p">)</span>
+            <span class="n">wedge0</span> <span class="o">=</span> <span class="n">wedge_arr</span><span class="p">[</span><span class="nb">min</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="n">wedge_arr</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="mi">1</span><span class="p">),</span> <span class="n">a0</span><span class="p">]</span>
+            <span class="n">A0</span> <span class="o">=</span> <span class="p">(</span><span class="mf">1.0</span> <span class="o">+</span> <span class="n">r_p</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="n">wedge0</span><span class="p">)</span> <span class="o">*</span> <span class="n">claims0</span><span class="p">[</span><span class="n">a0</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span>
+    <span class="n">acct</span> <span class="o">=</span> <span class="n">pensions</span><span class="o">.</span><span class="n">fdc_lifetime</span><span class="p">(</span>
+        <span class="n">pad</span><span class="p">(</span><span class="n">w</span><span class="p">),</span>
+        <span class="n">e_full</span><span class="p">,</span>
+        <span class="n">n_full</span><span class="p">,</span>
+        <span class="n">pad</span><span class="p">(</span><span class="n">r_p</span><span class="p">),</span>
+        <span class="n">t</span> <span class="o">-</span> <span class="n">a0</span><span class="p">,</span>
+        <span class="n">j</span><span class="p">,</span>
+        <span class="n">p</span><span class="p">,</span>
+        <span class="n">a0</span><span class="o">=</span><span class="n">a0</span><span class="p">,</span>
+        <span class="n">A0</span><span class="o">=</span><span class="n">A0</span><span class="p">,</span>
+        <span class="n">by_age</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="k">return</span> <span class="n">pensions</span><span class="o">.</span><span class="n">FDCLifetime</span><span class="p">(</span><span class="o">*</span><span class="p">[</span><span class="n">x</span><span class="p">[</span><span class="n">a0</span><span class="p">:]</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">acct</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]],</span> <span class="n">acct</span><span class="o">.</span><span class="n">R</span><span class="p">)</span></div>
 
 
 
@@ -919,6 +966,10 @@
 <span class="sd">    the household does not value here (its bequest motive is over</span>
 <span class="sd">    private savings only).</span>
 
+<span class="sd">    The arrays may cover the whole life (ages 0 to S - 1) or, on the</span>
+<span class="sd">    time path, the remaining ages S - L to S - 1 of a cohort alive when</span>
+<span class="sd">    the path begins.</span>
+
 <span class="sd">    Args:</span>
 <span class="sd">        cons (Numpy array): consumption by age, length S or S x J</span>
 <span class="sd">        p_tilde (scalar or Numpy array): composite good price</span>
@@ -934,11 +985,15 @@
 <span class="sd">    """</span>
     <span class="n">mu</span> <span class="o">=</span> <span class="n">marg_ut_cons</span><span class="p">(</span><span class="n">cons</span><span class="p">,</span> <span class="n">p</span><span class="o">.</span><span class="n">sigma</span><span class="p">)</span> <span class="o">/</span> <span class="n">p_tilde</span>
     <span class="n">wedge</span> <span class="o">=</span> <span class="o">-</span><span class="n">mu</span> <span class="o">*</span> <span class="n">fdc</span><span class="o">.</span><span class="n">dcontrib_dn</span>
-    <span class="n">S</span><span class="p">,</span> <span class="n">R</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">S</span><span class="p">,</span> <span class="n">fdc</span><span class="o">.</span><span class="n">R</span>
-    <span class="k">if</span> <span class="n">R</span> <span class="o">&gt;=</span> <span class="n">S</span><span class="p">:</span>
+    <span class="c1"># the arrays may cover only the remaining ages a0, ..., S - 1 of a</span>
+    <span class="c1"># cohort alive when the time path begins</span>
+    <span class="n">L</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">shape</span><span class="p">(</span><span class="n">cons</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">a0</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">S</span> <span class="o">-</span> <span class="n">L</span>
+    <span class="n">R</span> <span class="o">=</span> <span class="n">fdc</span><span class="o">.</span><span class="n">R</span> <span class="o">-</span> <span class="n">a0</span>
+    <span class="k">if</span> <span class="n">fdc</span><span class="o">.</span><span class="n">R</span> <span class="o">&gt;=</span> <span class="n">p</span><span class="o">.</span><span class="n">S</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">np</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">fdc</span><span class="o">.</span><span class="n">benefit_per_contrib</span><span class="p">):</span>
         <span class="k">return</span> <span class="n">wedge</span>
-    <span class="n">rho</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">rho</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
-    <span class="n">ages</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">S</span><span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="n">S</span><span class="p">,)</span> <span class="o">+</span> <span class="p">(</span><span class="mi">1</span><span class="p">,)</span> <span class="o">*</span> <span class="p">(</span><span class="n">rho</span><span class="o">.</span><span class="n">ndim</span> <span class="o">-</span> <span class="mi">1</span><span class="p">))</span>
+    <span class="n">rho</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">rho</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">shape</span><span class="p">(</span><span class="n">cons</span><span class="p">))</span>
+    <span class="n">ages</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">L</span><span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="n">L</span><span class="p">,)</span> <span class="o">+</span> <span class="p">(</span><span class="mi">1</span><span class="p">,)</span> <span class="o">*</span> <span class="p">(</span><span class="n">rho</span><span class="o">.</span><span class="n">ndim</span> <span class="o">-</span> <span class="mi">1</span><span class="p">))</span>
     <span class="n">surv</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">(</span>
         <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">((</span><span class="mi">1</span><span class="p">,)</span> <span class="o">+</span> <span class="n">rho</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">:]),</span> <span class="n">np</span><span class="o">.</span><span class="n">cumprod</span><span class="p">(</span><span class="mf">1.0</span> <span class="o">-</span> <span class="n">rho</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)),</span>
         <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
@@ -1115,7 +1170,7 @@
         <span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="n">taxes</span> <span class="o">=</span> <span class="n">net_tax</span>
-    <span class="n">fdc</span> <span class="o">=</span> <span class="n">get_fdc</span><span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="n">w</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">e</span><span class="p">,</span> <span class="n">j</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">method</span><span class="p">)</span>
+    <span class="n">fdc</span> <span class="o">=</span> <span class="n">get_fdc</span><span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="n">w</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">e</span><span class="p">,</span> <span class="n">j</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">method</span><span class="p">,</span> <span class="n">t</span><span class="p">)</span>
     <span class="n">cons</span> <span class="o">=</span> <span class="n">get_cons</span><span class="p">(</span>
         <span class="n">r</span><span class="p">,</span>
         <span class="n">w</span><span class="p">,</span>
@@ -1332,7 +1387,7 @@
         <span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="n">taxes</span> <span class="o">=</span> <span class="n">net_tax</span>
-    <span class="n">fdc</span> <span class="o">=</span> <span class="n">get_fdc</span><span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="n">w</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">e</span><span class="p">,</span> <span class="n">j</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">method</span><span class="p">)</span>
+    <span class="n">fdc</span> <span class="o">=</span> <span class="n">get_fdc</span><span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="n">w</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">e</span><span class="p">,</span> <span class="n">j</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">method</span><span class="p">,</span> <span class="n">t</span><span class="p">)</span>
     <span class="n">cons</span> <span class="o">=</span> <span class="n">get_cons</span><span class="p">(</span>
         <span class="n">r</span><span class="p">,</span>
         <span class="n">w</span><span class="p">,</span>
@@ -1371,13 +1426,21 @@
         <span class="mi">1</span> <span class="o">/</span> <span class="n">p_tilde</span>
     <span class="p">)</span> <span class="o">*</span> <span class="n">w</span> <span class="o">*</span> <span class="n">deriv</span> <span class="o">*</span> <span class="n">e</span> <span class="o">-</span> <span class="n">marg_ut_labor</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">chi_n</span><span class="p">,</span> <span class="n">p</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">fdc</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="c1"># steady state only (get_fdc raises otherwise)</span>
-        <span class="k">if</span> <span class="n">j</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">rho</span><span class="p">,</span> <span class="n">beta</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">rho</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="p">:,</span> <span class="n">j</span><span class="p">],</span> <span class="n">p</span><span class="o">.</span><span class="n">beta</span><span class="p">[</span><span class="n">j</span><span class="p">]</span>
+        <span class="c1"># mortality along the household's own lifetime</span>
+        <span class="k">if</span> <span class="n">method</span> <span class="o">==</span> <span class="s2">"SS"</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">j</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">rho</span><span class="p">,</span> <span class="n">beta</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">rho</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="p">:,</span> <span class="n">j</span><span class="p">],</span> <span class="n">p</span><span class="o">.</span><span class="n">beta</span><span class="p">[</span><span class="n">j</span><span class="p">]</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">rho</span><span class="p">,</span> <span class="n">beta</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">rho</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="p">:,</span> <span class="p">:],</span> <span class="n">p</span><span class="o">.</span><span class="n">beta</span>
+        <span class="k">elif</span> <span class="n">method</span> <span class="o">==</span> <span class="s2">"TPI_scalar"</span><span class="p">:</span>
+            <span class="n">rho</span><span class="p">,</span> <span class="n">beta</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">p</span><span class="o">.</span><span class="n">rho</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">j</span><span class="p">]]),</span> <span class="n">p</span><span class="o">.</span><span class="n">beta</span><span class="p">[</span><span class="n">j</span><span class="p">]</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">rho</span><span class="p">,</span> <span class="n">beta</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">rho</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="p">:,</span> <span class="p">:],</span> <span class="n">p</span><span class="o">.</span><span class="n">beta</span>
+            <span class="n">L</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">size</span><span class="p">(</span><span class="n">cons</span><span class="p">)</span>
+            <span class="n">rho</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">diag</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">rho</span><span class="p">[</span><span class="n">t</span> <span class="p">:</span> <span class="n">t</span> <span class="o">+</span> <span class="n">p</span><span class="o">.</span><span class="n">S</span><span class="p">,</span> <span class="p">:,</span> <span class="n">j</span><span class="p">],</span> <span class="nb">max</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">S</span> <span class="o">-</span> <span class="n">L</span><span class="p">,</span> <span class="mi">0</span><span class="p">))</span>
+            <span class="n">beta</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">beta</span><span class="p">[</span><span class="n">j</span><span class="p">]</span>
+        <span class="n">cons_w</span> <span class="o">=</span> <span class="n">cons</span> <span class="k">if</span> <span class="n">method</span> <span class="o">==</span> <span class="s2">"SS"</span> <span class="k">else</span> <span class="n">np</span><span class="o">.</span><span class="n">ravel</span><span class="p">(</span><span class="n">cons</span><span class="p">)</span>
         <span class="n">FOC_error</span> <span class="o">=</span> <span class="n">FOC_error</span> <span class="o">+</span> <span class="n">fdc_labor_wedge</span><span class="p">(</span>
-            <span class="n">cons</span><span class="p">,</span> <span class="n">p_tilde</span><span class="p">,</span> <span class="n">fdc</span><span class="p">,</span> <span class="n">rho</span><span class="p">,</span> <span class="n">beta</span><span class="p">,</span> <span class="n">p</span>
+            <span class="n">cons_w</span><span class="p">,</span> <span class="n">p_tilde</span><span class="p">,</span> <span class="n">fdc</span><span class="p">,</span> <span class="n">rho</span><span class="p">,</span> <span class="n">beta</span><span class="p">,</span> <span class="n">p</span>
         <span class="p">)</span>
 
     <span class="k">return</span> <span class="n">FOC_error</span></div>

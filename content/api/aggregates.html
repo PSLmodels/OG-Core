@@ -487,14 +487,21 @@ i_{s,t-1}\omega_{s,t-1}\lambda_{j}\hat{x}_{j,s-1,t-1}\right)\]</div>
 <li><p><strong>fdc</strong> (<a class="reference internal" href="pensions.html#ogcore.pensions.FDCLifetime" title="ogcore.pensions.FDCLifetime"><em>pensions.FDCLifetime</em></a><em> or </em><em>None</em>) – the accounts by age and
 lifetime income group, None when the pillar is off</p></li>
 <li><p><strong>p</strong> (<em>OG-Core Specifications object</em>) – model parameters</p></li>
-<li><p><strong>method</strong> (<em>str</em>) – ‘SS’ (the time path is not supported yet)</p></li>
+<li><p><strong>method</strong> (<em>str</em>) – ‘SS’ (with <code class="docutils literal notranslate"><span class="pre">fdc</span></code> a <code class="docutils literal notranslate"><span class="pre">pensions.FDCLifetime</span></code>
+by age and group) or ‘TPI’ (with <code class="docutils literal notranslate"><span class="pre">fdc</span></code> a
+<code class="docutils literal notranslate"><span class="pre">pensions.FDCPath</span></code>, giving the assets in periods 1 to T
+from the holdings chosen in periods 0 to T - 1)</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>FDC fund assets, 0.0 when the pillar is off</p>
+<dd class="field-even"><p><dl class="simple">
+<dt>FDC fund assets, 0.0 when the</dt><dd><p>pillar is off</p>
+</dd>
+</dl>
+</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>F (scalar)</p>
+<dd class="field-odd"><p>F (scalar or Numpy array)</p>
 </dd>
 </dl>
 </dd></dl>
@@ -512,69 +519,89 @@ rule begins and in the steady state, to the government budget
 (<code class="docutils literal notranslate"><span class="pre">get_fdc_fund_reserves</span></code>):</p>
 <div class="math notranslate nohighlight">
 \[\hat{\Pi}_{t} = \sum_{s=E+1}^{E+S}\sum_{j=0}^{J}
-r_{fdc\_wedge,s}\,\hat{f}_{j,s,t}\]</div>
+r_{fdc\_wedge,s,t}\,\hat{f}_{j,s,t}\]</div>
 <p>where <span class="math notranslate nohighlight">\(\hat{f}_{j,s,t}\)</span> are the terms of <code class="docutils literal notranslate"><span class="pre">get_F</span></code> owed to members
-of age s.</p>
+of age s and <span class="math notranslate nohighlight">\(r_{fdc\_wedge,s,t}\)</span> is the wedge on the return of
+age s in period t.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>fdc</strong> (<a class="reference internal" href="pensions.html#ogcore.pensions.FDCLifetime" title="ogcore.pensions.FDCLifetime"><em>pensions.FDCLifetime</em></a><em> or </em><em>None</em>) – the accounts by age and
-lifetime income group, None when the pillar is off</p></li>
+<li><p><strong>fdc</strong> (<a class="reference internal" href="pensions.html#ogcore.pensions.FDCLifetime" title="ogcore.pensions.FDCLifetime"><em>pensions.FDCLifetime</em></a><em>, </em><a class="reference internal" href="pensions.html#ogcore.pensions.FDCPath" title="ogcore.pensions.FDCPath"><em>pensions.FDCPath</em></a><em>, or </em><em>None</em>) – the
+accounts, None when the pillar is off</p></li>
 <li><p><strong>p</strong> (<em>OG-Core Specifications object</em>) – model parameters</p></li>
-<li><p><strong>method</strong> (<em>str</em>) – ‘SS’ (the time path is not supported yet)</p></li>
+<li><p><strong>method</strong> (<em>str</em>) – ‘SS’ (with <code class="docutils literal notranslate"><span class="pre">fdc</span></code> a <code class="docutils literal notranslate"><span class="pre">pensions.FDCLifetime</span></code>)
+or ‘TPI’ (with <code class="docutils literal notranslate"><span class="pre">fdc</span></code> a <code class="docutils literal notranslate"><span class="pre">pensions.FDCPath</span></code>, giving the
+spread in periods 1 to T, like <code class="docutils literal notranslate"><span class="pre">get_F</span></code>)</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p><dl class="simple">
-<dt>the spread, 0.0 when the pillar is off</dt><dd><p>(negative when <code class="docutils literal notranslate"><span class="pre">r_fdc_wedge</span></code> is negative)</p>
+<dt>the spread, 0.0 when the pillar</dt><dd><p>is off (negative when <code class="docutils literal notranslate"><span class="pre">r_fdc_wedge</span></code> is negative)</p>
 </dd>
 </dl>
 </p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>spread (scalar)</p>
+<dd class="field-odd"><p>spread (scalar or Numpy array)</p>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="ogcore.aggregates.get_fdc_fund_reserves">
-<span class="sig-prename descclassname"><span class="pre">ogcore.aggregates.</span></span><span class="sig-name descname"><span class="pre">get_fdc_fund_reserves</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">r_p</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">spread</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Y</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">method</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ogcore/aggregates.html#get_fdc_fund_reserves"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogcore.aggregates.get_fdc_fund_reserves" title="Link to this definition">#</a></dt>
+<span class="sig-prename descclassname"><span class="pre">ogcore.aggregates.</span></span><span class="sig-name descname"><span class="pre">get_fdc_fund_reserves</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">r_p</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">spread</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Y</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">method</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Z0</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ogcore/aggregates.html#get_fdc_fund_reserves"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogcore.aggregates.get_fdc_fund_reserves" title="Link to this definition">#</a></dt>
 <dd><p>Reserve <span class="math notranslate nohighlight">\(\hat{Z}\)</span> of the funded defined contribution (FDC) fund,
 the assets it holds beyond the balances owed to households, the
 FDC fund revenue <span class="math notranslate nohighlight">\(\hat{\Psi}\)</span> it pays to the government, and the
 transfer <span class="math notranslate nohighlight">\(\hat{\Phi}\)</span> it receives from the government.</p>
 <p>The fund keeps the spread <span class="math notranslate nohighlight">\(\hat{\Pi}\)</span> (<code class="docutils literal notranslate"><span class="pre">get_fdc_spread</span></code>) as a
-reserve only temporarily: on the time path the reserve builds up
-until the budget closure rule begins in period <code class="docutils literal notranslate"><span class="pre">tG1</span></code>, when the
-government receives the whole balance (or covers a deficit), and
-from then on the spread goes to the government budget each period.
-So in the steady state there is no reserve, and the spread is paid
-to the government (or, if negative, covered by it) each period:</p>
+reserve only temporarily. On the time path the reserve starts from
+<code class="docutils literal notranslate"><span class="pre">Z0</span></code>, is invested in the household portfolio, earns <span class="math notranslate nohighlight">\(r_p\)</span>, and
+accumulates the spread until the budget closure rule begins in
+period <code class="docutils literal notranslate"><span class="pre">tG1</span></code>. It has no floor, so a negative spread runs a
+deficit, and any reserve above <code class="docutils literal notranslate"><span class="pre">fdc_fund_reserve_max_GDPratio</span></code>
+times GDP is paid to the government. At the end of period
+<code class="docutils literal notranslate"><span class="pre">tG1</span> <span class="pre">-</span> <span class="pre">1</span></code> the whole balance is paid to the government (or the
+deficit covered by the government), and from then on the reserve
+is zero and the spread goes to the government budget each period:</p>
 <div class="math notranslate nohighlight">
-\[\hat{Z} = 0, \quad \hat{\Psi} - \hat{\Phi} = \hat{\Pi},
-\quad \hat{\Psi}, \hat{\Phi} \geq 0\]</div>
+\[(1 + g_{n,t+1})e^{g_y}\hat{Z}_{t+1} = (1 + r_{p,t})\hat{Z}_{t}
++ \hat{\Pi}_{t} - \hat{\Psi}_{t} + \hat{\Phi}_{t},
+\quad \hat{Z}_{t+1} \leq \bar{z}\hat{Y}_{t+1}
+\text{ for } t + 1 &lt; t_{G1},
+\quad \hat{Z}_{t+1} = 0 \text{ for } t + 1 \geq t_{G1}\]</div>
+<p>with <span class="math notranslate nohighlight">\(\hat{\Psi}_{t}, \hat{\Phi}_{t} \geq 0\)</span>. Before <code class="docutils literal notranslate"><span class="pre">tG1</span></code> the
+fund pays only what exceeds the ceiling, so <span class="math notranslate nohighlight">\(\hat{\Phi}_{t} = 0\)</span>.
+The steady state has no reserve, and the spread is paid to the
+government (or, if negative, covered by it) each period:
+<span class="math notranslate nohighlight">\(\hat{Z} = 0\)</span>, <span class="math notranslate nohighlight">\(\hat{\Psi} - \hat{\Phi} = \hat{\Pi}\)</span>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>r_p</strong> (<em>scalar</em>) – steady-state household portfolio return (unused
-in the steady state)</p></li>
-<li><p><strong>spread</strong> (<em>scalar</em>) – spread on the owed balances, <span class="math notranslate nohighlight">\(\hat{\Pi}\)</span></p></li>
-<li><p><strong>Y</strong> (<em>scalar</em>) – steady-state GDP (unused in the steady state)</p></li>
+<li><p><strong>r_p</strong> (<em>scalar</em><em> or </em><em>Numpy array</em>) – household portfolio return, in the
+steady state or in periods 0 to T - 1</p></li>
+<li><p><strong>spread</strong> (<em>scalar</em><em> or </em><em>Numpy array</em>) – spread on the owed balances,
+<span class="math notranslate nohighlight">\(\hat{\Pi}\)</span>, in the steady state or in periods 0 to T - 1</p></li>
+<li><p><strong>Y</strong> (<em>scalar</em><em> or </em><em>Numpy array</em>) – GDP, in the steady state or in
+periods 0 to T - 1 (periods after the path take the last
+value)</p></li>
 <li><p><strong>p</strong> (<em>OG-Core Specifications object</em>) – model parameters</p></li>
-<li><p><strong>method</strong> (<em>str</em>) – ‘SS’ (the time path is not supported yet)</p></li>
+<li><p><strong>method</strong> (<em>str</em>) – ‘SS’ or ‘TPI’</p></li>
+<li><p><strong>Z0</strong> (<em>scalar</em>) – reserve at the beginning of period 0 (time path
+only)</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p><p>FDC fund reserve quantities</p>
+<dd class="field-even"><p><p>FDC fund reserve quantities, scalars in the steady
+state and length T arrays on the time path</p>
 <blockquote>
 <div><ul class="simple">
-<li><p>Z (scalar): FDC fund reserve <span class="math notranslate nohighlight">\(\hat{Z}\)</span> at the beginning
-of the period, zero in the steady state</p></li>
-<li><p>revenue (scalar): FDC fund revenue paid to the
-government, <span class="math notranslate nohighlight">\(\hat{\Psi} \geq 0\)</span></p></li>
-<li><p>transfer (scalar): transfer from the government to the
-fund, <span class="math notranslate nohighlight">\(\hat{\Phi} \geq 0\)</span></p></li>
+<li><p>Z (scalar or Numpy array): FDC fund reserve <span class="math notranslate nohighlight">\(\hat{Z}\)</span> at
+the beginning of the period (negative for a deficit)</p></li>
+<li><p>revenue (scalar or Numpy array): FDC fund revenue paid to
+the government, <span class="math notranslate nohighlight">\(\hat{\Psi} \geq 0\)</span></p></li>
+<li><p>transfer (scalar or Numpy array): transfer from the
+government to the fund, <span class="math notranslate nohighlight">\(\hat{\Phi} \geq 0\)</span></p></li>
 </ul>
 </div></blockquote>
 </p>

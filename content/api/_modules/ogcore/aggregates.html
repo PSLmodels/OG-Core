@@ -584,27 +584,46 @@
 <span class="sd">        fdc (pensions.FDCLifetime or None): the accounts by age and</span>
 <span class="sd">            lifetime income group, None when the pillar is off</span>
 <span class="sd">        p (OG-Core Specifications object): model parameters</span>
-<span class="sd">        method (str): 'SS' (the time path is not supported yet)</span>
+<span class="sd">        method (str): 'SS' (with ``fdc`` a ``pensions.FDCLifetime``</span>
+<span class="sd">            by age and group) or 'TPI' (with ``fdc`` a</span>
+<span class="sd">            ``pensions.FDCPath``, giving the assets in periods 1 to T</span>
+<span class="sd">            from the holdings chosen in periods 0 to T - 1)</span>
 
 <span class="sd">    Returns:</span>
-<span class="sd">        F (scalar): FDC fund assets, 0.0 when the pillar is off</span>
+<span class="sd">        F (scalar or Numpy array): FDC fund assets, 0.0 when the</span>
+<span class="sd">            pillar is off</span>
 <span class="sd">    """</span>
     <span class="k">if</span> <span class="n">fdc</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="k">return</span> <span class="mf">0.0</span>
-    <span class="k">return</span> <span class="n">_fdc_owed_terms</span><span class="p">(</span><span class="n">fdc</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">method</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span></div>
+    <span class="k">return</span> <span class="n">_fdc_owed_terms</span><span class="p">(</span><span class="n">fdc</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">method</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="p">(</span><span class="o">-</span><span class="mi">2</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">))</span></div>
 
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">_fdc_owed_terms</span><span class="p">(</span><span class="n">fdc</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">method</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Terms of ``get_F`` by the age s - 1 at which the holdings were</span>
-<span class="sd">    carried out of the previous period (S x J): the balances owed to</span>
-<span class="sd">    households of age s at the start of the period, before its return.</span>
+<span class="sd">    carried out of the previous period: the balances owed to households</span>
+<span class="sd">    of age s at the start of the period, before its return. S x J in</span>
+<span class="sd">    the steady state; T x S x J on the time path, where row t holds the</span>
+<span class="sd">    balances owed in period t + 1 from the holdings chosen in period t.</span>
 <span class="sd">    """</span>
-    <span class="k">if</span> <span class="n">method</span> <span class="o">!=</span> <span class="s2">"SS"</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span>
-            <span class="s2">"FDC fund assets are only computed in the steady state so far"</span>
+    <span class="k">if</span> <span class="n">method</span> <span class="o">==</span> <span class="s2">"TPI"</span><span class="p">:</span>
+        <span class="c1"># fdc is a pensions.FDCPath; the holdings chosen in period t</span>
+        <span class="c1"># are the fund's assets in period t + 1</span>
+        <span class="n">omega_shift</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+            <span class="n">p</span><span class="o">.</span><span class="n">omega</span><span class="p">[:</span> <span class="n">p</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="mi">1</span><span class="p">:,</span> <span class="p">:],</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">p</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">p</span><span class="o">.</span><span class="n">J</span><span class="p">)),</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span>
         <span class="p">)</span>
+        <span class="n">imm_shift</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+            <span class="n">p</span><span class="o">.</span><span class="n">imm_rates</span><span class="p">[:</span> <span class="n">p</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="mi">1</span><span class="p">:,</span> <span class="p">:],</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">p</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">p</span><span class="o">.</span><span class="n">J</span><span class="p">)),</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span>
+        <span class="p">)</span>
+        <span class="n">terms</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="n">fdc</span><span class="o">.</span><span class="n">holdings</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="n">p</span><span class="o">.</span><span class="n">g_y</span><span class="p">)</span> <span class="o">*</span> <span class="n">p</span><span class="o">.</span><span class="n">omega</span><span class="p">[:</span> <span class="n">p</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="p">:,</span> <span class="p">:]</span>
+            <span class="o">+</span> <span class="n">fdc</span><span class="o">.</span><span class="n">claims</span> <span class="o">*</span> <span class="n">omega_shift</span> <span class="o">*</span> <span class="n">imm_shift</span>
+        <span class="p">)</span>
+        <span class="n">growth</span> <span class="o">=</span> <span class="mf">1.0</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">hstack</span><span class="p">((</span><span class="n">p</span><span class="o">.</span><span class="n">g_n</span><span class="p">[:</span> <span class="n">p</span><span class="o">.</span><span class="n">T</span> <span class="o">-</span> <span class="mi">1</span><span class="p">],</span> <span class="n">p</span><span class="o">.</span><span class="n">g_n_ss</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">terms</span> <span class="o">/</span> <span class="n">growth</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">method</span> <span class="o">!=</span> <span class="s2">"SS"</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"method must be 'SS' or 'TPI', got </span><span class="si">{</span><span class="n">method</span><span class="si">!r}</span><span class="s2">"</span><span class="p">)</span>
     <span class="n">claims</span> <span class="o">=</span> <span class="n">pensions</span><span class="o">.</span><span class="n">fdc_survivor_claims</span><span class="p">(</span><span class="n">fdc</span><span class="p">,</span> <span class="n">p</span><span class="o">.</span><span class="n">rho</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="p">:,</span> <span class="p">:],</span> <span class="n">p</span><span class="p">)</span>
     <span class="n">omega_extended</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">omega_SS</span><span class="p">[</span><span class="mi">1</span><span class="p">:,</span> <span class="p">:],</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="mi">1</span><span class="p">,</span> <span class="n">p</span><span class="o">.</span><span class="n">J</span><span class="p">)),</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
     <span class="n">imm_extended</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
@@ -632,24 +651,34 @@
 
 <span class="sd">    .. math::</span>
 <span class="sd">        \hat{\Pi}_{t} = \sum_{s=E+1}^{E+S}\sum_{j=0}^{J}</span>
-<span class="sd">        r_{fdc\_wedge,s}\,\hat{f}_{j,s,t}</span>
+<span class="sd">        r_{fdc\_wedge,s,t}\,\hat{f}_{j,s,t}</span>
 
 <span class="sd">    where $\hat{f}_{j,s,t}$ are the terms of ``get_F`` owed to members</span>
-<span class="sd">    of age s.</span>
+<span class="sd">    of age s and $r_{fdc\_wedge,s,t}$ is the wedge on the return of</span>
+<span class="sd">    age s in period t.</span>
 
 <span class="sd">    Args:</span>
-<span class="sd">        fdc (pensions.FDCLifetime or None): the accounts by age and</span>
-<span class="sd">            lifetime income group, None when the pillar is off</span>
+<span class="sd">        fdc (pensions.FDCLifetime, pensions.FDCPath, or None): the</span>
+<span class="sd">            accounts, None when the pillar is off</span>
 <span class="sd">        p (OG-Core Specifications object): model parameters</span>
-<span class="sd">        method (str): 'SS' (the time path is not supported yet)</span>
+<span class="sd">        method (str): 'SS' (with ``fdc`` a ``pensions.FDCLifetime``)</span>
+<span class="sd">            or 'TPI' (with ``fdc`` a ``pensions.FDCPath``, giving the</span>
+<span class="sd">            spread in periods 1 to T, like ``get_F``)</span>
 
 <span class="sd">    Returns:</span>
-<span class="sd">        spread (scalar): the spread, 0.0 when the pillar is off</span>
-<span class="sd">            (negative when ``r_fdc_wedge`` is negative)</span>
+<span class="sd">        spread (scalar or Numpy array): the spread, 0.0 when the pillar</span>
+<span class="sd">            is off (negative when ``r_fdc_wedge`` is negative)</span>
 <span class="sd">    """</span>
     <span class="k">if</span> <span class="n">fdc</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="k">return</span> <span class="mf">0.0</span>
     <span class="n">terms</span> <span class="o">=</span> <span class="n">_fdc_owed_terms</span><span class="p">(</span><span class="n">fdc</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">method</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">method</span> <span class="o">==</span> <span class="s2">"TPI"</span><span class="p">:</span>
+        <span class="c1"># holdings carried out of age s - 1 in period t earn the return</span>
+        <span class="c1"># of age s in period t + 1</span>
+        <span class="n">wedge_arr</span> <span class="o">=</span> <span class="n">pensions</span><span class="o">.</span><span class="n">fdc_wedge_path</span><span class="p">(</span><span class="n">p</span><span class="p">)</span>
+        <span class="n">rows</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">minimum</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">p</span><span class="o">.</span><span class="n">T</span> <span class="o">+</span> <span class="mi">1</span><span class="p">),</span> <span class="n">wedge_arr</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="n">wedge_next</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">wedge_arr</span><span class="p">[</span><span class="n">rows</span><span class="p">,</span> <span class="mi">1</span><span class="p">:],</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">p</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="mi">1</span><span class="p">)),</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+        <span class="k">return</span> <span class="p">(</span><span class="n">wedge_next</span><span class="p">[:,</span> <span class="p">:,</span> <span class="kc">None</span><span class="p">]</span> <span class="o">*</span> <span class="n">terms</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">))</span>
     <span class="c1"># holdings carried out of age s - 1 earn the return of age s</span>
     <span class="n">wedge_next</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">pensions</span><span class="o">.</span><span class="n">fdc_wedge_ss</span><span class="p">(</span><span class="n">p</span><span class="p">)[</span><span class="mi">1</span><span class="p">:],</span> <span class="mf">0.0</span><span class="p">)</span>
     <span class="k">return</span> <span class="nb">float</span><span class="p">((</span><span class="n">wedge_next</span><span class="p">[:,</span> <span class="kc">None</span><span class="p">]</span> <span class="o">*</span> <span class="n">terms</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">())</span></div>
@@ -658,7 +687,7 @@
 
 <div class="viewcode-block" id="get_fdc_fund_reserves">
 <a class="viewcode-back" href="../../aggregates.html#ogcore.aggregates.get_fdc_fund_reserves">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">get_fdc_fund_reserves</span><span class="p">(</span><span class="n">r_p</span><span class="p">,</span> <span class="n">spread</span><span class="p">,</span> <span class="n">Y</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">method</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">get_fdc_fund_reserves</span><span class="p">(</span><span class="n">r_p</span><span class="p">,</span> <span class="n">spread</span><span class="p">,</span> <span class="n">Y</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">method</span><span class="p">,</span> <span class="n">Z0</span><span class="o">=</span><span class="mf">0.0</span><span class="p">):</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">"""</span>
 <span class="sd">    Reserve $\hat{Z}$ of the funded defined contribution (FDC) fund,</span>
 <span class="sd">    the assets it holds beyond the balances owed to households, the</span>
@@ -666,41 +695,83 @@
 <span class="sd">    transfer $\hat{\Phi}$ it receives from the government.</span>
 
 <span class="sd">    The fund keeps the spread $\hat{\Pi}$ (``get_fdc_spread``) as a</span>
-<span class="sd">    reserve only temporarily: on the time path the reserve builds up</span>
-<span class="sd">    until the budget closure rule begins in period ``tG1``, when the</span>
-<span class="sd">    government receives the whole balance (or covers a deficit), and</span>
-<span class="sd">    from then on the spread goes to the government budget each period.</span>
-<span class="sd">    So in the steady state there is no reserve, and the spread is paid</span>
-<span class="sd">    to the government (or, if negative, covered by it) each period:</span>
+<span class="sd">    reserve only temporarily. On the time path the reserve starts from</span>
+<span class="sd">    ``Z0``, is invested in the household portfolio, earns $r_p$, and</span>
+<span class="sd">    accumulates the spread until the budget closure rule begins in</span>
+<span class="sd">    period ``tG1``. It has no floor, so a negative spread runs a</span>
+<span class="sd">    deficit, and any reserve above ``fdc_fund_reserve_max_GDPratio``</span>
+<span class="sd">    times GDP is paid to the government. At the end of period</span>
+<span class="sd">    ``tG1 - 1`` the whole balance is paid to the government (or the</span>
+<span class="sd">    deficit covered by the government), and from then on the reserve</span>
+<span class="sd">    is zero and the spread goes to the government budget each period:</span>
 
 <span class="sd">    .. math::</span>
-<span class="sd">        \hat{Z} = 0, \quad \hat{\Psi} - \hat{\Phi} = \hat{\Pi},</span>
-<span class="sd">        \quad \hat{\Psi}, \hat{\Phi} \geq 0</span>
+<span class="sd">        (1 + g_{n,t+1})e^{g_y}\hat{Z}_{t+1} = (1 + r_{p,t})\hat{Z}_{t}</span>
+<span class="sd">        + \hat{\Pi}_{t} - \hat{\Psi}_{t} + \hat{\Phi}_{t},</span>
+<span class="sd">        \quad \hat{Z}_{t+1} \leq \bar{z}\hat{Y}_{t+1}</span>
+<span class="sd">        \text{ for } t + 1 &lt; t_{G1},</span>
+<span class="sd">        \quad \hat{Z}_{t+1} = 0 \text{ for } t + 1 \geq t_{G1}</span>
+
+<span class="sd">    with $\hat{\Psi}_{t}, \hat{\Phi}_{t} \geq 0$. Before ``tG1`` the</span>
+<span class="sd">    fund pays only what exceeds the ceiling, so $\hat{\Phi}_{t} = 0$.</span>
+<span class="sd">    The steady state has no reserve, and the spread is paid to the</span>
+<span class="sd">    government (or, if negative, covered by it) each period:</span>
+<span class="sd">    $\hat{Z} = 0$, $\hat{\Psi} - \hat{\Phi} = \hat{\Pi}$.</span>
 
 <span class="sd">    Args:</span>
-<span class="sd">        r_p (scalar): steady-state household portfolio return (unused</span>
-<span class="sd">            in the steady state)</span>
-<span class="sd">        spread (scalar): spread on the owed balances, $\hat{\Pi}$</span>
-<span class="sd">        Y (scalar): steady-state GDP (unused in the steady state)</span>
+<span class="sd">        r_p (scalar or Numpy array): household portfolio return, in the</span>
+<span class="sd">            steady state or in periods 0 to T - 1</span>
+<span class="sd">        spread (scalar or Numpy array): spread on the owed balances,</span>
+<span class="sd">            $\hat{\Pi}$, in the steady state or in periods 0 to T - 1</span>
+<span class="sd">        Y (scalar or Numpy array): GDP, in the steady state or in</span>
+<span class="sd">            periods 0 to T - 1 (periods after the path take the last</span>
+<span class="sd">            value)</span>
 <span class="sd">        p (OG-Core Specifications object): model parameters</span>
-<span class="sd">        method (str): 'SS' (the time path is not supported yet)</span>
+<span class="sd">        method (str): 'SS' or 'TPI'</span>
+<span class="sd">        Z0 (scalar): reserve at the beginning of period 0 (time path</span>
+<span class="sd">            only)</span>
 
 <span class="sd">    Returns:</span>
-<span class="sd">        (tuple): FDC fund reserve quantities</span>
+<span class="sd">        (tuple): FDC fund reserve quantities, scalars in the steady</span>
+<span class="sd">        state and length T arrays on the time path</span>
 
-<span class="sd">            * Z (scalar): FDC fund reserve $\hat{Z}$ at the beginning</span>
-<span class="sd">              of the period, zero in the steady state</span>
-<span class="sd">            * revenue (scalar): FDC fund revenue paid to the</span>
-<span class="sd">              government, $\hat{\Psi} \geq 0$</span>
-<span class="sd">            * transfer (scalar): transfer from the government to the</span>
-<span class="sd">              fund, $\hat{\Phi} \geq 0$</span>
+<span class="sd">            * Z (scalar or Numpy array): FDC fund reserve $\hat{Z}$ at</span>
+<span class="sd">              the beginning of the period (negative for a deficit)</span>
+<span class="sd">            * revenue (scalar or Numpy array): FDC fund revenue paid to</span>
+<span class="sd">              the government, $\hat{\Psi} \geq 0$</span>
+<span class="sd">            * transfer (scalar or Numpy array): transfer from the</span>
+<span class="sd">              government to the fund, $\hat{\Phi} \geq 0$</span>
 <span class="sd">    """</span>
-    <span class="k">if</span> <span class="n">method</span> <span class="o">!=</span> <span class="s2">"SS"</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span>
-            <span class="s2">"FDC fund reserves are only computed in the steady state so far"</span>
-        <span class="p">)</span>
-    <span class="n">spread</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">squeeze</span><span class="p">(</span><span class="n">spread</span><span class="p">))</span>
-    <span class="k">return</span> <span class="mf">0.0</span><span class="p">,</span> <span class="nb">max</span><span class="p">(</span><span class="n">spread</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">),</span> <span class="nb">max</span><span class="p">(</span><span class="o">-</span><span class="n">spread</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">)</span></div>
+    <span class="k">if</span> <span class="n">method</span> <span class="o">==</span> <span class="s2">"SS"</span><span class="p">:</span>
+        <span class="n">spread</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">squeeze</span><span class="p">(</span><span class="n">spread</span><span class="p">))</span>
+        <span class="k">return</span> <span class="mf">0.0</span><span class="p">,</span> <span class="nb">max</span><span class="p">(</span><span class="n">spread</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">),</span> <span class="nb">max</span><span class="p">(</span><span class="o">-</span><span class="n">spread</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">method</span> <span class="o">!=</span> <span class="s2">"TPI"</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"method must be 'SS' or 'TPI', got </span><span class="si">{</span><span class="n">method</span><span class="si">!r}</span><span class="s2">"</span><span class="p">)</span>
+    <span class="n">T</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">T</span>
+    <span class="n">r_p</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">r_p</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span><span class="o">.</span><span class="n">ravel</span><span class="p">()[:</span><span class="n">T</span><span class="p">]</span>
+    <span class="n">spread</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">broadcast_to</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">spread</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span><span class="o">.</span><span class="n">ravel</span><span class="p">(),</span> <span class="p">(</span><span class="n">T</span><span class="p">,))</span>
+    <span class="n">Y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">Y</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span><span class="o">.</span><span class="n">ravel</span><span class="p">()[:</span><span class="n">T</span><span class="p">]</span>
+    <span class="n">Y_next</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Y</span><span class="p">[</span><span class="mi">1</span><span class="p">:],</span> <span class="n">Y</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+    <span class="n">growth</span> <span class="o">=</span> <span class="p">(</span><span class="mf">1.0</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">hstack</span><span class="p">((</span><span class="n">p</span><span class="o">.</span><span class="n">g_n</span><span class="p">[:</span> <span class="n">T</span> <span class="o">-</span> <span class="mi">1</span><span class="p">],</span> <span class="n">p</span><span class="o">.</span><span class="n">g_n_ss</span><span class="p">)))</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">g_y</span><span class="p">)</span>
+    <span class="n">Z</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">T</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+    <span class="n">Z</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">squeeze</span><span class="p">(</span><span class="n">Z0</span><span class="p">))</span>
+    <span class="n">net_payment</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">T</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">T</span><span class="p">):</span>
+        <span class="c1"># end-of-period reserve before any payment, in next-period units</span>
+        <span class="n">Z_free</span> <span class="o">=</span> <span class="p">((</span><span class="mf">1.0</span> <span class="o">+</span> <span class="n">r_p</span><span class="p">[</span><span class="n">t</span><span class="p">])</span> <span class="o">*</span> <span class="n">Z</span><span class="p">[</span><span class="n">t</span><span class="p">]</span> <span class="o">+</span> <span class="n">spread</span><span class="p">[</span><span class="n">t</span><span class="p">])</span> <span class="o">/</span> <span class="n">growth</span><span class="p">[</span><span class="n">t</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">t</span> <span class="o">+</span> <span class="mi">1</span> <span class="o">&gt;=</span> <span class="n">p</span><span class="o">.</span><span class="n">tG1</span><span class="p">:</span>
+            <span class="c1"># the budget closure rule has begun: the whole balance goes</span>
+            <span class="c1"># to the government (or the deficit is covered by it)</span>
+            <span class="n">Z</span><span class="p">[</span><span class="n">t</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.0</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># no floor; reserves above the ceiling go to the government</span>
+            <span class="n">Z_max</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">fdc_fund_reserve_max_GDPratio</span> <span class="o">*</span> <span class="n">Y_next</span><span class="p">[</span><span class="n">t</span><span class="p">],</span> <span class="mf">0.0</span><span class="p">)</span>
+            <span class="n">Z</span><span class="p">[</span><span class="n">t</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">Z_free</span><span class="p">,</span> <span class="n">Z_max</span><span class="p">)</span>
+        <span class="c1"># positive to the government, negative from it</span>
+        <span class="n">net_payment</span><span class="p">[</span><span class="n">t</span><span class="p">]</span> <span class="o">=</span> <span class="n">growth</span><span class="p">[</span><span class="n">t</span><span class="p">]</span> <span class="o">*</span> <span class="p">(</span><span class="n">Z_free</span> <span class="o">-</span> <span class="n">Z</span><span class="p">[</span><span class="n">t</span> <span class="o">+</span> <span class="mi">1</span><span class="p">])</span>
+    <span class="n">revenue</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">maximum</span><span class="p">(</span><span class="n">net_payment</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">)</span>
+    <span class="n">transfer</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">maximum</span><span class="p">(</span><span class="o">-</span><span class="n">net_payment</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">Z</span><span class="p">[:</span><span class="n">T</span><span class="p">],</span> <span class="n">revenue</span><span class="p">,</span> <span class="n">transfer</span></div>
 
 
 

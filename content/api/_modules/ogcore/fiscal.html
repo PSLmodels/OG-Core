@@ -376,14 +376,15 @@
 
 <div class="viewcode-block" id="D_G_path">
 <a class="viewcode-back" href="../../fiscal.html#ogcore.fiscal.D_G_path">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">D_G_path</span><span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="n">dg_fixed_values</span><span class="p">,</span> <span class="n">p</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">D_G_path</span><span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="n">dg_fixed_values</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">fdc_fund_revenue</span><span class="o">=</span><span class="mf">0.0</span><span class="p">):</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">"""</span>
 <span class="sd">    Calculate the time paths of debt and government spending</span>
 
 <span class="sd">    .. math::</span>
 <span class="sd">        \begin{split}</span>
 <span class="sd">            &amp;e^{g_y}\left(1 + \tilde{g}_{n,t+1}\right)\hat{D}_{t+1}</span>
-<span class="sd">            + \hat{Rev}_t = (1 + r_{gov,t})\hat{D}_t + \hat{G}_t</span>
+<span class="sd">            + \hat{Rev}_t + \hat{\Psi}_t - \hat{\Phi}_t</span>
+<span class="sd">            = (1 + r_{gov,t})\hat{D}_t + \hat{G}_t</span>
 <span class="sd">            + \hat{TR}_t + \hat{UBI}_t \quad\forall t \\</span>
 <span class="sd">            &amp;\hat{G}_t = g_{g,t}\:\alpha_{g}\: \hat{Y}_t \\</span>
 <span class="sd">            &amp;\text{where}\quad g_{g,t} =</span>
@@ -418,6 +419,14 @@
 <span class="sd">            and D0_baseline is initial debt in the baseline equilibrium</span>
 <span class="sd">            (used only if baseline=False)</span>
 <span class="sd">        p (OG-Core Specifications object): model parameters</span>
+<span class="sd">        fdc_fund_revenue (scalar or array_like): net payment from the</span>
+<span class="sd">            funded defined contribution fund's reserve to the</span>
+<span class="sd">            government over the time path, $\hat{\Psi}_t -</span>
+<span class="sd">            \hat{\Phi}_t$: before ``tG1`` the reserve above its</span>
+<span class="sd">            ceiling, in period ``tG1 - 1`` the whole remaining balance</span>
+<span class="sd">            (negative for a deficit the government covers), and from</span>
+<span class="sd">            ``tG1`` on the spread (not tax revenue); it enters the</span>
+<span class="sd">            budget constraint wherever tax revenue $\hat{Rev}_t$ does</span>
 
 <span class="sd">    Returns:</span>
 <span class="sd">        (tuple): fiscal variable path output:</span>
@@ -442,6 +451,12 @@
         <span class="n">Gbaseline</span><span class="p">,</span>
         <span class="n">D0_baseline</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">=</span> <span class="n">dg_fixed_values</span>
+    <span class="c1"># FDC fund revenue is not tax revenue, but it enters the budget</span>
+    <span class="c1"># constraint in the same way</span>
+    <span class="n">total_tax_revenue</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">total_tax_revenue</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+    <span class="n">total_tax_revenue</span><span class="p">[:</span> <span class="n">p</span><span class="o">.</span><span class="n">T</span><span class="p">]</span> <span class="o">+=</span> <span class="n">np</span><span class="o">.</span><span class="n">broadcast_to</span><span class="p">(</span>
+        <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">fdc_fund_revenue</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">),</span> <span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">T</span><span class="p">,)</span>
+    <span class="p">)</span>
 
     <span class="n">growth</span> <span class="o">=</span> <span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">g_n_preTP</span><span class="p">,</span> <span class="n">p</span><span class="o">.</span><span class="n">g_n</span><span class="p">[:</span> <span class="n">p</span><span class="o">.</span><span class="n">T</span><span class="p">]))</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">g_y</span><span class="p">)</span>
 

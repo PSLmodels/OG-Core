@@ -385,12 +385,13 @@ functions require time-path calculation.</p>
 <hr class="docutils" />
 <dl class="py function">
 <dt class="sig sig-object py" id="ogcore.fiscal.D_G_path">
-<span class="sig-prename descclassname"><span class="pre">ogcore.fiscal.</span></span><span class="sig-name descname"><span class="pre">D_G_path</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">r</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dg_fixed_values</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ogcore/fiscal.html#D_G_path"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogcore.fiscal.D_G_path" title="Link to this definition">#</a></dt>
+<span class="sig-prename descclassname"><span class="pre">ogcore.fiscal.</span></span><span class="sig-name descname"><span class="pre">D_G_path</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">r</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dg_fixed_values</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fdc_fund_revenue</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ogcore/fiscal.html#D_G_path"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogcore.fiscal.D_G_path" title="Link to this definition">#</a></dt>
 <dd><p>Calculate the time paths of debt and government spending</p>
 <div class="math notranslate nohighlight">
 \[\begin{split}\begin{split}
     &amp;e^{g_y}\left(1 + \tilde{g}_{n,t+1}\right)\hat{D}_{t+1}
-    + \hat{Rev}_t = (1 + r_{gov,t})\hat{D}_t + \hat{G}_t
+    + \hat{Rev}_t + \hat{\Psi}_t - \hat{\Phi}_t
+    = (1 + r_{gov,t})\hat{D}_t + \hat{G}_t
     + \hat{TR}_t + \hat{UBI}_t \quad\forall t \\
     &amp;\hat{G}_t = g_{g,t}\:\alpha_{g}\: \hat{Y}_t \\
     &amp;\text{where}\quad g_{g,t} =
@@ -426,6 +427,14 @@ baseline equilibrium (used only if baseline_spending=True)
 and D0_baseline is initial debt in the baseline equilibrium
 (used only if baseline=False)</p></li>
 <li><p><strong>p</strong> (<em>OG-Core Specifications object</em>) – model parameters</p></li>
+<li><p><strong>fdc_fund_revenue</strong> (<em>scalar</em><em> or </em><em>array_like</em>) – net payment from the
+funded defined contribution fund’s reserve to the
+government over the time path, <span class="math notranslate nohighlight">\(\hat{\Psi}_t -
+\hat{\Phi}_t\)</span>: before <code class="docutils literal notranslate"><span class="pre">tG1</span></code> the reserve above its
+ceiling, in period <code class="docutils literal notranslate"><span class="pre">tG1</span> <span class="pre">-</span> <span class="pre">1</span></code> the whole remaining balance
+(negative for a deficit the government covers), and from
+<code class="docutils literal notranslate"><span class="pre">tG1</span></code> on the spread (not tax revenue); it enters the
+budget constraint wherever tax revenue <span class="math notranslate nohighlight">\(\hat{Rev}_t\)</span> does</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>

@@ -1875,7 +1875,7 @@ contribution at each age before R</p></li>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="ogcore.pensions.fdc_lifetime">
-<span class="sig-prename descclassname"><span class="pre">ogcore.pensions.</span></span><span class="sig-name descname"><span class="pre">fdc_lifetime</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">w</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">e</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">r_p</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">t_birth</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">j</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">a0</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">A0</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ogcore/pensions.html#fdc_lifetime"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogcore.pensions.fdc_lifetime" title="Link to this definition">#</a></dt>
+<span class="sig-prename descclassname"><span class="pre">ogcore.pensions.</span></span><span class="sig-name descname"><span class="pre">fdc_lifetime</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">w</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">e</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">r_p</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">t_birth</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">j</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">a0</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">A0</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">by_age</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ogcore/pensions.html#fdc_lifetime"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogcore.pensions.fdc_lifetime" title="Link to this definition">#</a></dt>
 <dd><p>Funded defined contribution account of one household over its
 lifetime: contributions, balances, annuity benefits, end-of-period
 holdings, and the derivatives the household’s labor decision needs.</p>
@@ -1917,6 +1917,10 @@ when the time path begins</p></li>
 <li><p><strong>A0</strong> (<em>scalar</em>) – account balance at the start of age a0; a
 household already retired at a0 annuitizes this remaining
 balance on the rates given</p></li>
+<li><p><strong>by_age</strong> (<em>bool</em>) – if True, <code class="docutils literal notranslate"><span class="pre">w</span></code> and <code class="docutils literal notranslate"><span class="pre">r_p</span></code> are length S arrays
+already indexed by the household’s age (entries before a0
+are ignored) rather than calendar paths; the parameters
+are still read in the periods given by t_birth</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -1975,7 +1979,33 @@ is off</p>
 </p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="#ogcore.pensions.FDCLifetime.holdings" title="ogcore.pensions.FDCLifetime.holdings">holdings</a> (Numpy array or scalar)</p>
+<dd class="field-odd"><p>H (Numpy array or scalar)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="ogcore.pensions.fdc_wedge_path">
+<span class="sig-prename descclassname"><span class="pre">ogcore.pensions.</span></span><span class="sig-name descname"><span class="pre">fdc_wedge_path</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">p</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ogcore/pensions.html#fdc_wedge_path"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogcore.pensions.fdc_wedge_path" title="Link to this definition">#</a></dt>
+<dd><p>Wedge <code class="docutils literal notranslate"><span class="pre">r_fdc_wedge</span></code> between the portfolio return r_p and the FDC
+return r_fdc by model period and age: element [t, s] is the wedge
+on the return earned in period t at age s, by the household of
+that age’s cohort. <code class="docutils literal notranslate"><span class="pre">fdc_lifetime</span></code> reads a cohort’s values down
+the diagonal; periods after the array read its last row, the
+steady state.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>p</strong> (<em>OG-Core Specifications object</em>) – model parameters</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><dl class="simple">
+<dt>wedge by period and age, (T + S) x S (a</dt><dd><p>single row of zeros if the parameter is absent)</p>
+</dd>
+</dl>
+</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>wedge (Numpy array)</p>
 </dd>
 </dl>
 </dd></dl>
@@ -1985,7 +2015,8 @@ is off</p>
 <span class="sig-prename descclassname"><span class="pre">ogcore.pensions.</span></span><span class="sig-name descname"><span class="pre">fdc_wedge_ss</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">p</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ogcore/pensions.html#fdc_wedge_ss"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogcore.pensions.fdc_wedge_ss" title="Link to this definition">#</a></dt>
 <dd><p>Steady-state wedge <code class="docutils literal notranslate"><span class="pre">r_fdc_wedge</span></code> between the portfolio return
 r_p and the FDC return r_fdc at each age, the value
-<code class="docutils literal notranslate"><span class="pre">fdc_lifetime</span></code> uses for a household with t_birth None.</p>
+<code class="docutils literal notranslate"><span class="pre">fdc_lifetime</span></code> uses for a household with t_birth None (the last
+row of <code class="docutils literal notranslate"><span class="pre">fdc_wedge_path</span></code>).</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>p</strong> (<em>OG-Core Specifications object</em>) – model parameters</p>
@@ -2036,7 +2067,39 @@ is off</p></li>
 </p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>bequeathable (Numpy array or scalar)</p>
+<dd class="field-odd"><p>H_bq (Numpy array or scalar)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="ogcore.pensions.fdc_bequeathable_tpi">
+<span class="sig-prename descclassname"><span class="pre">ogcore.pensions.</span></span><span class="sig-name descname"><span class="pre">fdc_bequeathable_tpi</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">bq</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">r_p</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ogcore/pensions.html#fdc_bequeathable_tpi"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogcore.pensions.fdc_bequeathable_tpi" title="Link to this definition">#</a></dt>
+<dd><p>Time-path counterpart of <code class="docutils literal notranslate"><span class="pre">fdc_bequeathable</span></code>: scales the funded
+defined contribution holdings bequeathed in each period so that the
+accounts of members who die are credited the FDC return
+r_fdc = r_p - r_fdc_wedge, like those of survivors, and the fund
+keeps the spread. <code class="docutils literal notranslate"><span class="pre">aggregates.get_BQ</span></code> multiplies the holdings
+it is given for period t by (1 + r_{p,t}), so the holdings carried
+out of age s are scaled by (1 + r_{p,t} - w_{t,s+1}) / (1 + r_{p,t}),
+with w_{t,s+1} the wedge on the return of age s + 1 in period t.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>bq</strong> (<em>Numpy array</em>) – holdings bequeathed in periods 0 to T - 1,
+T x S x J, in each period’s units (row 0 from
+<code class="docutils literal notranslate"><span class="pre">p.fdc_bequeathable_preTP</span></code> and the rest from
+<code class="docutils literal notranslate"><span class="pre">FDCPath.bequeathable</span></code>)</p></li>
+<li><p><strong>r_p</strong> (<em>Numpy array</em>) – household portfolio return in periods 0 to
+T - 1</p></li>
+<li><p><strong>p</strong> (<em>OG-Core Specifications object</em>) – model parameters</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>the scaled holdings, T x S x J</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>bq_fdc (Numpy array)</p>
 </dd>
 </dl>
 </dd></dl>
@@ -2071,7 +2134,153 @@ is off</p></li>
 </p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>claims (Numpy array or scalar)</p>
+<dd class="field-odd"><p>H_claims (Numpy array or scalar)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="ogcore.pensions.FDCPath">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">ogcore.pensions.</span></span><span class="sig-name descname"><span class="pre">FDCPath</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">contrib</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">benefit</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">holdings</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">claims</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bequeathable</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ogcore/pensions.html#FDCPath"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogcore.pensions.FDCPath" title="Link to this definition">#</a></dt>
+<dd><p>Funded defined contribution accounts of every household along the
+time path, returned by <code class="docutils literal notranslate"><span class="pre">fdc_tpi</span></code>. Every field is a T x S x J
+array indexed by model period, age, and lifetime income group.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>contrib</strong> (<em>ndarray</em>)</p></li>
+<li><p><strong>benefit</strong> (<em>ndarray</em>)</p></li>
+<li><p><strong>holdings</strong> (<em>ndarray</em>)</p></li>
+<li><p><strong>claims</strong> (<em>ndarray</em>)</p></li>
+<li><p><strong>bequeathable</strong> (<em>ndarray</em>)</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ogcore.pensions.FDCPath.contrib">
+<span class="sig-name descname"><span class="pre">contrib</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ndarray</span></span><a class="headerlink" href="#ogcore.pensions.FDCPath.contrib" title="Link to this definition">#</a></dt>
+<dd><p>contribution paid</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Numpy array</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ogcore.pensions.FDCPath.benefit">
+<span class="sig-name descname"><span class="pre">benefit</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ndarray</span></span><a class="headerlink" href="#ogcore.pensions.FDCPath.benefit" title="Link to this definition">#</a></dt>
+<dd><p>annuity benefit received</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Numpy array</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ogcore.pensions.FDCPath.holdings">
+<span class="sig-name descname"><span class="pre">holdings</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ndarray</span></span><a class="headerlink" href="#ogcore.pensions.FDCPath.holdings" title="Link to this definition">#</a></dt>
+<dd><p>end-of-period holdings, in the period’s units</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Numpy array</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ogcore.pensions.FDCPath.claims">
+<span class="sig-name descname"><span class="pre">claims</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ndarray</span></span><a class="headerlink" href="#ogcore.pensions.FDCPath.claims" title="Link to this definition">#</a></dt>
+<dd><p>holdings per survivor carried into the next period,
+in the next period’s units (<code class="docutils literal notranslate"><span class="pre">fdc_survivor_claims</span></code>)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Numpy array</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ogcore.pensions.FDCPath.bequeathable">
+<span class="sig-name descname"><span class="pre">bequeathable</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ndarray</span></span><a class="headerlink" href="#ogcore.pensions.FDCPath.bequeathable" title="Link to this definition">#</a></dt>
+<dd><p>holdings bequeathed if the household dies before
+the next period, in the next period’s units, before
+<code class="docutils literal notranslate"><span class="pre">fdc_bequeathable_tpi</span></code> credits them the FDC return</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Numpy array</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="ogcore.pensions.fdc_initial_holdings">
+<span class="sig-prename descclassname"><span class="pre">ogcore.pensions.</span></span><span class="sig-name descname"><span class="pre">fdc_initial_holdings</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ss</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ogcore/pensions.html#fdc_initial_holdings"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogcore.pensions.fdc_initial_holdings" title="Link to this definition">#</a></dt>
+<dd><p>Funded defined contribution holdings of the households alive when
+the time path begins, from the baseline steady state, in the units
+of the first model period.</p>
+<p>The steady-state end-of-period holdings by age are scaled by
+<code class="docutils literal notranslate"><span class="pre">scale</span></code> (the same population adjustment applied to initial
+private savings) and carried into period 0 with the mortality rates
+of the period before the time path (<code class="docutils literal notranslate"><span class="pre">rho_preTP</span></code>).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>ss</strong> (<em>dict</em>) – baseline steady-state output; the holdings are zero
+if it has no FDC output (the pillar off, or output saved
+before the pillar existed)</p></li>
+<li><p><strong>p</strong> (<em>OG-Core Specifications object</em>) – model parameters</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><p>S x J arrays</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>holdings (Numpy array): end-of-period holdings in the
+period before the time path, in that period’s units</p></li>
+<li><p>claims (Numpy array): holdings per survivor carried into
+period 0, in period-0 units</p></li>
+<li><p>bequeathable (Numpy array): holdings bequeathed in period
+0 by those who die before it, in period-0 units</p></li>
+</ul>
+</div></blockquote>
+</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>(tuple)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="ogcore.pensions.fdc_tpi">
+<span class="sig-prename descclassname"><span class="pre">ogcore.pensions.</span></span><span class="sig-name descname"><span class="pre">fdc_tpi</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">r_p</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">w</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_mat</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ogcore/pensions.html#fdc_tpi"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogcore.pensions.fdc_tpi" title="Link to this definition">#</a></dt>
+<dd><p>Funded defined contribution accounts of every household along the
+time path, cohort by cohort.</p>
+<p>Each cohort’s account is computed with <code class="docutils literal notranslate"><span class="pre">fdc_lifetime</span></code> along its
+diagonal of <code class="docutils literal notranslate"><span class="pre">n_mat</span></code>, from the r_p and wage paths it foresees.
+Households alive when the path begins start from the claims of
+their age in <code class="docutils literal notranslate"><span class="pre">p.fdc_claims_preTP</span></code> (set by
+<code class="docutils literal notranslate"><span class="pre">TPI.get_initial_SS_values</span></code>), credited with the period-0 FDC
+return r_fdc = r_p - r_fdc_wedge;
+those already retired re-annuitize those balances on the path.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>r_p</strong> (<em>Numpy array</em>) – household portfolio return, length T + S</p></li>
+<li><p><strong>w</strong> (<em>Numpy array</em>) – wage, length T + S</p></li>
+<li><p><strong>n_mat</strong> (<em>Numpy array</em>) – labor supply, (T + S) x S x J</p></li>
+<li><p><strong>p</strong> (<em>OG-Core Specifications object</em>) – model parameters</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>the accounts by period, age, and income group</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#ogcore.pensions.FDCPath" title="ogcore.pensions.FDCPath">FDCPath</a></p>
 </dd>
 </dl>
 </dd></dl>
@@ -2180,9 +2389,21 @@ is off</p></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.pensions.fdc_lifetime"><code class="docutils literal notranslate"><span class="pre">fdc_lifetime()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.pensions.fdc_ss"><code class="docutils literal notranslate"><span class="pre">fdc_ss()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.pensions.fdc_holdings"><code class="docutils literal notranslate"><span class="pre">fdc_holdings()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.pensions.fdc_wedge_path"><code class="docutils literal notranslate"><span class="pre">fdc_wedge_path()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.pensions.fdc_wedge_ss"><code class="docutils literal notranslate"><span class="pre">fdc_wedge_ss()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.pensions.fdc_bequeathable"><code class="docutils literal notranslate"><span class="pre">fdc_bequeathable()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.pensions.fdc_bequeathable_tpi"><code class="docutils literal notranslate"><span class="pre">fdc_bequeathable_tpi()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.pensions.fdc_survivor_claims"><code class="docutils literal notranslate"><span class="pre">fdc_survivor_claims()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.pensions.FDCPath"><code class="docutils literal notranslate"><span class="pre">FDCPath</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.pensions.FDCPath.contrib"><code class="docutils literal notranslate"><span class="pre">FDCPath.contrib</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.pensions.FDCPath.benefit"><code class="docutils literal notranslate"><span class="pre">FDCPath.benefit</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.pensions.FDCPath.holdings"><code class="docutils literal notranslate"><span class="pre">FDCPath.holdings</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.pensions.FDCPath.claims"><code class="docutils literal notranslate"><span class="pre">FDCPath.claims</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.pensions.FDCPath.bequeathable"><code class="docutils literal notranslate"><span class="pre">FDCPath.bequeathable</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.pensions.fdc_initial_holdings"><code class="docutils literal notranslate"><span class="pre">fdc_initial_holdings()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.pensions.fdc_tpi"><code class="docutils literal notranslate"><span class="pre">fdc_tpi()</span></code></a></li>
 </ul>
 </li>
 </ul>
