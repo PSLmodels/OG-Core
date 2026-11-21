@@ -1212,8 +1212,20 @@ def test_get_PS(args, PS_expected):
                 "avg_labor_inc_t1_model_units": 0.8,
             },
         ),
+        (
+            "Hybrid DB-FDC",
+            {
+                "alpha_db": [[0.02]],
+                "yr_contrib": 35,
+                "avg_earn_num_years": 40,
+                "fdc_tau": 0.05,
+                "db_earn_cap_factor": [0.5],
+                "dc_earn_cap_factor": [1.5],
+                "avg_labor_inc_t1_model_units": 0.8,
+            },
+        ),
     ],
-    ids=["DB", "PS", "NDC", "Hybrid"],
+    ids=["DB", "PS", "NDC", "Hybrid", "Hybrid DB-FDC"],
 )
 def test_pension_amount_with_real_specifications(system, updates):
     """
@@ -1268,8 +1280,20 @@ def test_pension_amount_with_real_specifications(system, updates):
                 "avg_labor_inc_t1_model_units": 0.8,
             },
         ),
+        (
+            "Hybrid DB-FDC",
+            {
+                "alpha_db": [[0.02]],
+                "yr_contrib": 35,
+                "avg_earn_num_years": 40,
+                "fdc_tau": 0.05,
+                "db_earn_cap_factor": [0.5],
+                "dc_earn_cap_factor": [1.5],
+                "avg_labor_inc_t1_model_units": 0.8,
+            },
+        ),
     ],
-    ids=["SS", "DB", "PS", "NDC", "Hybrid"],
+    ids=["SS", "DB", "PS", "NDC", "Hybrid", "Hybrid DB-FDC"],
 )
 def test_replacement_rate_adjust_applies_to_every_system(system, updates):
     """
@@ -3276,6 +3300,138 @@ def test_fdc_earn_cap_below_floor_raises():
                 dc_earn_cap_factor=[0.5],
                 fdc_earn_floor_factor=[1.0],
             )
+        )
+
+
+def _db_fdc_params(factor1=0.5, factor2=1.5, **updates):
+    """
+    Specifications for the hybrid DB-FDC system with constant cutoff
+    factors (entered twice so they are not indexed) and the defined
+    benefit parameters of the hybrid DB-NDC tests.
+    """
+    p = Specifications()
+    p.update_specifications(
+        dict(
+            {
+                "alpha_db": [[0.02]],
+                "yr_contrib": 35,
+                "avg_earn_num_years": 40,
+                "fdc_tau": 0.05,
+                "pension_system": "Hybrid DB-FDC",
+                "db_earn_cap_factor": [factor1, factor1],
+                "dc_earn_cap_factor": [factor2, factor2],
+                "avg_labor_inc_t1_model_units": 0.8,
+            },
+            **updates,
+        )
+    )
+    p.n_preTP = 0.4 * np.ones((p.S, p.J))
+    return p
+
+
+@pytest.mark.parametrize("ndim", [1, 2], ids=["S", "SxJ"])
+def test_DB_FDC_hybrid_amount_SS(ndim):
+    """
+    The public pension of the hybrid DB-FDC system is the defined
+    benefit on labor income capped at the first cutoff: the same as the
+    Defined Benefits system with pension_earn_cap and the same cap. The
+    funded band pays no public pension.
+    """
+    p = _db_fdc_params()
+    p_db = copy.deepcopy(p)
+    p_db.pension_system = "Defined Benefits"
+    p_db.pension_earn_cap = True
+    w = 1.2
+    if ndim == 1:
+        j = p.J - 1
+        e = p.e[-1, :, j]
+        n = 0.4 * np.ones(p.S)
+    else:
+        j = None
+        e = p.e[-1, :, :]
+        n = 0.4 * np.ones((p.S, p.J))
+    hybrid = pensions.DB_FDC_hybrid_amount(w, e, n, None, j, "SS", p)
+    capped = pensions.DB_amount(
+        w, e, n, None, j, "SS", p_db, earn_hi=pensions.pension_earn_caps(p)[0]
+    )
+    uncapped = pensions.DB_amount(w, e, n, None, j, "SS", p_db)
+    assert np.any(hybrid > 0.0)
+    assert np.allclose(hybrid, capped)
+    # the cap binds for the top earners, so the cap matters
+    assert np.any(hybrid < uncapped)
+    theta = np.zeros(p.J)
+    args = (0.05, w, n, 1.0, theta, None, j, False, "SS", e, 1e5)
+    assert np.allclose(
+        pensions.pension_amount(*args, p),
+        pensions.pension_amount(*args, p_db),
+    )
+
+
+def test_fdc_earn_bands_hybrid_db_fdc():
+    """
+    Under the hybrid DB-FDC system, FDC contributions are paid on labor
+    income between the two hybrid cutoffs, whatever
+    fdc_earn_floor_factor and pension_earn_cap, as the notional account
+    of the hybrid DB-NDC system is credited.
+    """
+    p = _db_fdc_params(fdc_earn_floor_factor=[0.1, 0.1])
+    assert not p.pension_earn_cap
+    lo, hi = pensions.fdc_earn_bands(p)
+    cut1, cut2 = pensions.pension_earn_caps(p)
+    assert np.allclose(lo, cut1) and np.allclose(hi, cut2)
+    assert np.allclose(lo, 0.5 * 0.8) and np.allclose(hi, 1.5 * 0.8)
+    e = np.ones(p.S)
+    n = np.linspace(0.0, 1.5, p.S)
+    out = pensions.fdc_lifetime(1.0, e, n, 0.04, None, 0, p)
+    R = out.R
+    expected = 0.05 * (np.clip(n[:R], 0.4, 1.2) - 0.4)
+    assert np.allclose(out.contrib[:R], expected)
+    inside = (n[:R] > 0.4) & (n[:R] < 1.2)
+    assert np.allclose(out.dcontrib_dn[:R], np.where(inside, 0.05, 0.0))
+    # the same accounts as the FDC pillar alongside a capped DB system
+    # with its floor at the DB cap
+    p_db = _db_fdc_params(
+        pension_system="Defined Benefits",
+        pension_earn_cap=True,
+        fdc_earn_floor_factor=[0.5, 0.5],
+    )
+    out_db = pensions.fdc_lifetime(1.0, e, n, 0.04, None, 0, p_db)
+    assert np.allclose(out.contrib, out_db.contrib)
+    assert np.allclose(out.benefit, out_db.benefit)
+
+
+def test_hybrid_db_fdc_cutoff_checks():
+    """
+    Under the hybrid DB-FDC system the DB cap may not exceed the DC cap
+    for any cohort; fdc_earn_floor_factor is not checked against the DC
+    cap, since the system does not use it; and a zero fdc_tau warns.
+    """
+    with pytest.raises(ValueError, match="at every age"):
+        Specifications().update_specifications(
+            {
+                "pension_system": "Hybrid DB-FDC",
+                "fdc_tau": 0.05,
+                "pension_regimes": [
+                    {
+                        "year": 2030,
+                        "max_age_at_start": 54,
+                        "db_earn_cap_factor": 3.0,
+                    }
+                ],
+            }
+        )
+    Specifications().update_specifications(
+        {
+            "pension_system": "Hybrid DB-FDC",
+            "fdc_tau": 0.05,
+            "pension_earn_cap": True,
+            "dc_earn_cap_factor": [1.5],
+            "fdc_earn_floor_factor": [2.0],
+        }
+    )
+    with pytest.warns(UserWarning, match="fdc_tau is zero"):
+        Specifications().update_specifications(
+            {"pension_system": "Hybrid DB-FDC"}
         )
 
 

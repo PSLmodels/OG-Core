@@ -573,6 +573,11 @@ def fdc_labor_wedge(cons, p_tilde, fdc, rho, beta, p):
     equation shows $e^{-\sigma g_y}$ instead because next period's
     savings enter this period's budget multiplied by $e^{g_y}$.)
 
+    The second (accrual) term is included only when
+    ``p.pension_FOC_linkage`` is true; otherwise households choose labor
+    as if the annuity did not depend on their contributions. The first
+    term is always included.
+
     Contributions of households that die before R go to bequests, which
     the household does not value here (its bequest motive is over
     private savings only).
@@ -601,7 +606,10 @@ def fdc_labor_wedge(cons, p_tilde, fdc, rho, beta, p):
     L = np.shape(cons)[0]
     a0 = p.S - L
     R = fdc.R - a0
-    if fdc.R >= p.S or not np.any(fdc.benefit_per_contrib):
+    # Specifications objects pickled before pension_FOC_linkage existed
+    # have none; they were solved with the accrual term
+    linkage = getattr(p, "pension_FOC_linkage", True)
+    if not linkage or fdc.R >= p.S or not np.any(fdc.benefit_per_contrib):
         return wedge
     rho = np.asarray(rho, dtype=float).reshape(np.shape(cons))
     ages = np.arange(L).reshape((L,) + (1,) * (rho.ndim - 1))
