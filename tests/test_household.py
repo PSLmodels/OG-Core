@@ -1286,11 +1286,54 @@ def test_get_fdc_off_by_default():
     assert household.fdc_net_flow(None) == 0.0
 
 
-def test_get_fdc_time_path_not_supported():
+def test_get_fdc_time_path_one_group_at_a_time():
     p = _fdc_on_specs()
-    n = np.full(p.S, 0.4)
-    with pytest.raises(NotImplementedError, match="steady state"):
-        household.get_fdc(0.04, 1.0, n, p.e[0, :, 0], 0, p, "TPI")
+    n = np.full((p.S, p.J), 0.4)
+    with pytest.raises(NotImplementedError, match="one income group"):
+        household.get_fdc(0.04, 1.0, n, p.e[0], None, p, "TPI", 0)
+
+
+def test_get_fdc_time_path_matches_lifetime():
+    """
+    On the time path, a cohort born in period t solves with the
+    accounts that fdc_lifetime gives on the calendar paths, and a
+    cohort alive when the path begins starts from its claims, credited
+    with the period-0 return.
+    """
+    from ogcore import pensions
+
+    p = _fdc_on_specs()
+    j = 2
+    r_path = np.linspace(0.03, 0.06, p.T + p.S)
+    w_path = np.linspace(1.0, 1.2, p.T + p.S)
+    n = np.linspace(0.3, 0.5, p.S)
+    e = p.e[0, :, j]
+    # a cohort born in period 5
+    t = 5
+    tpi = household.get_fdc(
+        r_path[t : t + p.S], w_path[t : t + p.S], n, e, j, p, "TPI", t
+    )
+    full = pensions.fdc_lifetime(w_path, e, n, r_path, t, j, p)
+    for a, b in zip(tpi[:-1], full[:-1]):
+        assert np.allclose(a, b)
+    # a cohort aged a0 when the path begins
+    a0 = 30
+    claims = np.zeros((p.S, p.J))
+    claims[a0 - 1, j] = 0.7
+    p.fdc_claims_preTP = claims
+    L = p.S - a0
+    part = household.get_fdc(
+        r_path[:L], w_path[:L], n[a0:], e[a0:], j, p, "TPI", 0
+    )
+    assert part.balance.shape == (L,)
+    assert np.isclose(part.balance[0], (1 + r_path[0]) * 0.7)
+    n_full = n.copy()
+    n_full[:a0] = 0.0
+    ref = pensions.fdc_lifetime(
+        w_path, e, n_full, r_path, -a0, j, p, a0=a0, A0=(1 + r_path[0]) * 0.7
+    )
+    for a, b in zip(part[:-1], ref[:-1]):
+        assert np.allclose(a, b[a0:])
 
 
 def test_get_fdc_group_matches_all_groups():
@@ -1448,3 +1491,41 @@ def test_FOC_labor_includes_fdc():
     )
     assert np.allclose(err_on, err_off + wedge)
     assert np.any(wedge != 0)
+
+
+def test_fdc_labor_wedge_partial_lifetime():
+    """
+    For a cohort alive when the time path begins, the wedge on its
+    remaining ages equals the full-life wedge at those ages: the
+    discounting from s to u does not depend on where the arrays start.
+    """
+    from ogcore import pensions
+    from types import SimpleNamespace
+
+    S, R = 10, 6
+    p = SimpleNamespace(S=S, sigma=2.0, g_y=0.02)
+    rho = np.linspace(0.01, 0.3, S)
+    rho[-1] = 1.0
+    r = np.full(S, 0.05)
+    C, A, P, H, dC, m = pensions.fdc_lifetime_loop(
+        np.linspace(0.5, 1.0, S),
+        np.full(S, 0.1),
+        np.zeros(S),
+        np.full(S, np.inf),
+        r,
+        rho,
+        R,
+        0.02,
+        0,
+        0.0,
+        S,
+    )
+    fdc = pensions.FDCLifetime(C, A, P, H, dC, m, R)
+    cons = np.linspace(0.6, 0.9, S)
+    full = household.fdc_labor_wedge(cons, 1.0, fdc, rho, 0.97, p)
+    for a0 in (2, 7):
+        part = pensions.FDCLifetime(*[x[a0:] for x in fdc[:-1]], R)
+        wedge = household.fdc_labor_wedge(
+            cons[a0:], 1.0, part, rho[a0:], 0.97, p
+        )
+        assert np.allclose(wedge, full[a0:])
