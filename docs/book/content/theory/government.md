@@ -563,7 +563,22 @@ Given this pension system, the partial derivative of the benefit with respect to
 (SecGovPensionsFDC)=
 ##### Funded defined contribution pillar
 
-In addition to the public pension system selected with `pension_system`, `OG-Core` can model a funded defined contribution (FDC) pillar: mandatory individual accounts that are invested in the economy's assets and converted to a life annuity at retirement. Unlike the five systems above, which are pay-as-you-go, the FDC pillar is not part of the government budget. Contributions are not government revenue, benefits are not government outlays, and the assets held for the accounts add to the capital stock. The only flows between the fund and the government are the spread the fund earns when the accounts are credited less than the portfolio return (see {ref}`the fund's spread and reserve <fund-spread-and-reserve>` below), which is zero by default. The pillar runs alongside whichever `pension_system` is selected, so it can model, for example, a notional defined contribution system with a funded premium pension (as in Sweden) or a reform that moves younger cohorts from a pay-as-you-go system to individual accounts. It is turned on by a positive contribution rate `fdc_tau` ($\tau^{fdc}$, zero by default), which, like the other cohort pension parameters, can be changed by birth cohort through `pension_regimes`.
+In addition to the public pension system selected with `pension_system`, `OG-Core` can model a funded defined contribution (FDC) pillar: mandatory individual accounts that are invested in the economy's assets and converted to a life annuity at retirement. Unlike the five systems above, which are pay-as-you-go, the FDC pillar is not part of the government budget. Contributions are not government revenue, benefits are not government outlays, and the assets held for the accounts add to the capital stock. The only flows between the fund and the government are the spread the fund earns when the accounts are credited less than the portfolio return (see {ref}`the fund's spread and reserve <fund-spread-and-reserve>` below), which is zero by default. The pillar runs alongside whichever `pension_system` is selected, so it can model, for example, a notional defined contribution system with a funded premium pension (as in Sweden) or a reform that moves younger cohorts from a pay-as-you-go system to individual accounts. It is turned on by a positive contribution rate `fdc_tau` ($\tau^{fdc}$, zero by default), which, like the other cohort pension parameters, can be changed by birth cohort through `pension_regimes`. For example, starting from a baseline with `pension_system` set to `Notional Defined Contribution` and `tau_p` of 0.16, the following reform moves 4 of the 16 percentage points of contributions into funded accounts for cohorts aged 40 or younger in 2025, while older cohorts keep the baseline system:
+
+```python
+p.update_specifications(
+    {
+        "pension_regimes": [
+            {
+                "year": 2025,
+                "max_age_at_start": 40,
+                "tau_p": 0.12,
+                "fdc_tau": 0.04,
+            }
+        ]
+    }
+)
+```
 
 **Contributions.** At each working age $s < R$, a household pays a share $\tau^{fdc}_{s,t}$ of the labor income in the FDC earnings band into its account, out of that period's resources:
 
