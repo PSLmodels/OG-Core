@@ -5,7 +5,7 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+## [0.25.0] - 2026-11-21
 
 ### Added
 - Adds the building blocks of a funded defined contribution (FDC) pension pillar, which runs alongside whichever `pension_system` is selected. This change adds the parameters and the account calculations; the household problem, aggregates, steady state, and time path do not use them yet, so model results are unchanged.
@@ -922,6 +922,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Any earlier versions of OG-USA can be found in the [`OG-Core`](https://github.com/PSLmodels/OG-Core) repository [release history](https://github.com/PSLmodels/OG-Core/releases) from [v.0.6.4](https://github.com/PSLmodels/OG-Core/releases/tag/v0.6.4) (Jul. 20, 2021) or earlier.
 
 
+[0.25.0]: https://github.com/PSLmodels/OG-Core/compare/v0.24.6...v0.25.0
 [0.24.6]: https://github.com/PSLmodels/OG-Core/compare/v0.24.5...v0.24.6
 [0.24.5]: https://github.com/PSLmodels/OG-Core/compare/v0.24.4...v0.24.5
 [0.24.4]: https://github.com/PSLmodels/OG-Core/compare/v0.24.3...v0.24.4
