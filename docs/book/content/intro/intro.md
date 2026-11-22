@@ -12,9 +12,9 @@
 **Country calibrations of OG-Core**
 |               |             |             |
 | :-----------: | :---------: | :---------: |
-| United States, [OG-USA](https://github.com/PSLmodels/OG-USA) | United Kingdom, [OG-UK](https://github.com/PSLmodels/OG-USA) | Phillipines, [OG-PHL](https://github.com/EAPD-DRB/OG-PHL) |
+| United States, [OG-USA](https://github.com/PSLmodels/OG-USA) | United Kingdom, [OG-UK](https://github.com/PSLmodels/OG-UK) | Philippines, [OG-PHL](https://github.com/EAPD-DRB/OG-PHL) |
 |  South Africa, [OG-ZAF](https://github.com/EAPD-DRB/OG-ZAF) | Indonesia, [OG-IDN](https://github.com/EAPD-DRB/OG-IDN) | Ethiopia, [OG-ETH](https://github.com/EAPD-DRB/OG-ETH) |
-| India, [OG-IND](https://github.com/OpenSourceEcon/OG-IND) | Malaysia, [OG-MYS](https://github.com/OpenSourceEcon/OG-MYS) |  |
+| India, [OG-IND](https://github.com/OpenSourceEcon/OG-IND) | Malaysia, [OG-MYS](https://github.com/Revenue-Academy/OG-MYS) | Japan, [OG-JPN](https://github.com/arihantlodha-cmd/OG-JPN) |
 
 The model output focuses changes in macroeconomic aggregates (GDP, investment, consumption), wages, interest rates, and the stream of tax revenues over time. Although `OG-Core` can be run independently based on default parameter values (currently representing something similar to the United States), it is meant to be a dependency of a country-specific calibration. This documentation contains the following major sections, which are regularly updated.
 
