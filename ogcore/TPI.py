@@ -751,6 +751,49 @@ def _params_to_array(nested, tax_func_type):
     return np.array(nested)
 
 
+def _retry_dense_if_failed(solutions, fun, x0, args, p, jac):
+    """
+    Re-solve a household problem with dense finite differences when the
+    solve with the sparse FOC Jacobian did not reach a root.
+
+    The sparse (banded) Jacobian speeds up the household solve, and a solve
+    that raises an exception already falls back to dense finite
+    differences. A solve that returns without converging does not raise,
+    though, so without this step it would only get the
+    Levenberg-Marquardt retry. For some cohorts that retry also stops short
+    and the household's Euler errors are left large, while the dense
+    ``FOC_root_method`` solve reaches a root. Called only when ``jac`` was
+    the sparse Jacobian; the result with the smaller maximum residual is
+    kept.
+
+    Args:
+        solutions (OptimizeResult): result of the sparse-Jacobian solve
+            (after any pattern refresh)
+        fun (function): the residual function
+        x0 (array_like): the initial guess used in the first call
+        args (tuple): extra arguments passed to ``fun``
+        p (OG-Core Specifications object): model parameters
+        jac (function or None): the sparse Jacobian used, or None if the
+            solve already used dense finite differences
+
+    Returns:
+        solutions (OptimizeResult): the better of the two results
+    """
+    if jac is None or _root_converged(solutions, p):
+        return solutions
+    retry = opt.root(
+        fun, x0, args=args, method=p.FOC_root_method, tol=MINIMIZER_TOL
+    )
+    if np.abs(retry.fun).max() < np.abs(solutions.fun).max():
+        logger.debug(
+            "Household solve with the sparse FOC Jacobian did not converge "
+            f"(max residual {np.abs(solutions.fun).max():.2e}); the dense "
+            f"retry reached {np.abs(retry.fun).max():.2e}"
+        )
+        return retry
+    return solutions
+
+
 def _retry_root_if_failed(solutions, fun, x0, args, p):
     """
     Re-solve a household problem with Levenberg-Marquardt when the
@@ -965,6 +1008,9 @@ def inner_loop(guesses, outer_loop_vars, initial_values, ubi, j, ind, p):
         solutions = _retry_with_refreshed_pattern(
             solutions, twist_doughnut, _tri_x0, _tri_args, p, j, _tri_jac
         )
+        solutions = _retry_dense_if_failed(
+            solutions, twist_doughnut, _tri_x0, _tri_args, p, _tri_jac
+        )
         solutions = _retry_root_if_failed(
             solutions, twist_doughnut, _tri_x0, _tri_args, p
         )
@@ -1033,9 +1079,10 @@ def inner_loop(guesses, outer_loop_vars, initial_values, ubi, j, ind, p):
         _td_x0 = list(b_guesses_to_use) + list(n_guesses_to_use)
         # When p.use_sparse_FOC_jac is set, supply a banded finite-difference
         # Jacobian (far fewer evaluations per build); otherwise _bj_jac is None
-        # and opt.root uses its default dense finite differences. The except
-        # clause is a safety net: any solver failure retries with the dense
-        # Jacobian, so the result is unchanged.
+        # and opt.root uses its default dense finite differences. A sparse
+        # solve that raises is retried with the dense Jacobian by the except
+        # clause, and one that returns without converging by
+        # _retry_dense_if_failed below.
         _bj_jac = _banded_jac_for(twist_doughnut, _td_x0, _td_args, p, j)
         try:
             solutions = opt.root(
@@ -1057,6 +1104,9 @@ def inner_loop(guesses, outer_loop_vars, initial_values, ubi, j, ind, p):
             _bj_jac = None
         solutions = _retry_with_refreshed_pattern(
             solutions, twist_doughnut, _td_x0, _td_args, p, j, _bj_jac
+        )
+        solutions = _retry_dense_if_failed(
+            solutions, twist_doughnut, _td_x0, _td_args, p, _bj_jac
         )
         solutions = _retry_root_if_failed(
             solutions, twist_doughnut, _td_x0, _td_args, p
