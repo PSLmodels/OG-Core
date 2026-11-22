@@ -1111,9 +1111,9 @@ _Out-of-Range Action:_ error
 
 
 ####  `initial_guess_factor_SS`  
-_Description:_ Initial guess of factor for the SS solution.  
+_Description:_ Initial guess of factor for the SS solution. The factor converts model units to currency units, so it scales with mean_income_data: about 140,000 when that is US mean income in dollars, and correspondingly larger for a calibration anchored to a currency with smaller units (millions for yen).  
 _Value Type:_ float  
-_Valid Range:_ min = 1.0 and max = 500000  
+_Valid Range:_ min = 1.0 and max = 9.9e+100  
 _Out-of-Range Action:_ error  
 
 

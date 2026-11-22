@@ -5324,7 +5324,7 @@
     },
     "initial_guess_factor_SS": {
         "title": "Initial guess of factor for the SS solution",
-        "description": "Initial guess of factor for the SS solution.",
+        "description": "Initial guess of factor for the SS solution. The factor converts model units to currency units, so it scales with mean_income_data: about 140,000 when that is US mean income in dollars, and correspondingly larger for a calibration anchored to a currency with smaller units (millions for yen).",
         "section_1": "Model Solution Parameters",
         "notes": "",
         "type": "float",
@@ -5336,7 +5336,7 @@
         "validators": {
             "range": {
                 "min": 1.0,
-                "max": 500000
+                "max": 9.9e+100
             }
         }
     },
