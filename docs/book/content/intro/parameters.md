@@ -743,7 +743,7 @@ _Valid Choices:_[True, False]
 
 
 ####  `age_specific`  
-_Description:_ Flag to use analytically derived marginal tax rates in tax functions.  
+_Description:_ Flag to estimate separate tax functions for each age. If false, one set of tax function parameters is estimated on all ages pooled and used for every age.  
 _Value Type:_ bool  
 _Valid Choices:_[True, False]  
 
