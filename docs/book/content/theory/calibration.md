@@ -56,7 +56,7 @@ The `OG-Core` model represents all the general model solution code for any overl
 * - Japan
   - `OG-JPN`
   - https://github.com/arihantlodha-cmd/OG-JPN
-  -
+  - https://arihantlodha-cmd.github.io/OG-JPN
   - Aug. 9, 2026
 ```
 
