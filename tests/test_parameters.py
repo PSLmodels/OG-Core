@@ -138,6 +138,12 @@ def test_eta_accepts_SxJ_or_time_path():
     assert specs.eta.shape == (TS, S, J)
     assert np.allclose(specs.eta[0], 1 / (S * J))
     assert np.allclose(specs.eta[2:], eta_SJ)
+    # a T x S path is still split equally across ability types
+    TxS = np.ones((specs.T, S)) / S
+    specs = Specifications()
+    specs.update_specifications({"eta": TxS.tolist()})
+    assert specs.eta.shape == (TS, S, J)
+    assert np.allclose(specs.eta, 1 / (S * J))
     # shares outside [0, 1] are still rejected
     bad = eta_SJ.copy()
     bad[0, 0] = -0.01
@@ -145,6 +151,26 @@ def test_eta_accepts_SxJ_or_time_path():
         specs = Specifications()
         with pytest.raises(Exception):
             specs.update_specifications({"eta": value})
+    # a period that does not sum to one is warned about
+    specs = Specifications()
+    with pytest.warns(UserWarning, match="eta does not sum to one"):
+        specs.update_specifications({"eta": (eta_SJ * 1.1).tolist()})
+
+
+def test_eta_RM_accepts_SxJ_or_time_path():
+    # eta_RM shares out remittances as eta shares out transfers
+    specs = Specifications()
+    TS, S, J = specs.T + specs.S, specs.S, specs.J
+    assert specs.eta_RM.shape == (TS, S, J)
+    flat = np.ones((S, J)) / (S * J)
+    specs.update_specifications({"eta_RM": flat.tolist()})
+    assert np.allclose(specs.eta_RM, flat)
+    path = np.tile(flat, (TS, 1, 1))
+    path[0] = specs.eta[0]
+    specs = Specifications()
+    specs.update_specifications({"eta_RM": path.tolist()})
+    assert np.allclose(specs.eta_RM[0], path[0])
+    assert np.allclose(specs.eta_RM[1:], flat)
 
 
 def test_TxJ_params_collapse_when_J_changes():
