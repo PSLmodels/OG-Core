@@ -4106,7 +4106,8 @@
                     "Defined Benefits",
                     "Notional Defined Contribution",
                     "Points System",
-                    "Hybrid DB-NDC"
+                    "Hybrid DB-NDC",
+                    "Hybrid DB-FDC"
                 ]
             }
         }
@@ -4116,7 +4117,23 @@
         "description": "Whether the labor income that earns a pension benefit is capped under the Defined Benefits and Notional Defined Contribution systems. When true, under the Defined Benefits system only labor income up to db_earn_cap_factor in period t times avg_labor_inc_t1_model_units (average labor income in the first model period) enters the benefit, and under the Notional Defined Contribution system only labor income up to dc_earn_cap_factor in period t times avg_labor_inc_t1_model_units is credited to the notional account. When true, funded defined contribution (FDC) contributions are also paid only on labor income up to dc_earn_cap_factor in period t times avg_labor_inc_t1_model_units. When false, all labor income enters the benefit and all labor income above the FDC floor (fdc_earn_floor_factor) is subject to FDC contributions.",
         "section_1": "Fiscal Policy Parameters",
         "section_2": "Government Pension Parameters",
-        "notes": "Used when pension_system is 'Defined Benefits' or 'Notional Defined Contribution', and for the funded defined contribution pillar under any pension_system; the 'Hybrid DB-NDC' system always applies its cutoffs. These are the same cutoffs, set and indexed in the same way, that bound the defined benefit and notional defined contribution bands of the hybrid system. The cutoff that applies to any labor income is the one in effect in the period in which it was earned. The cap applies to the income that earns a benefit, not to the payroll tax base: tau_payroll applies to all labor income under every system.",
+        "notes": "Used when pension_system is 'Defined Benefits' or 'Notional Defined Contribution', and for the funded defined contribution pillar under any pension_system other than 'Hybrid DB-FDC'; the 'Hybrid DB-NDC' and 'Hybrid DB-FDC' systems always apply their cutoffs. These are the same cutoffs, set and indexed in the same way, that bound the defined benefit and notional defined contribution bands of the hybrid system. The cutoff that applies to any labor income is the one in effect in the period in which it was earned. The cap applies to the income that earns a benefit, not to the payroll tax base: tau_payroll applies to all labor income under every system.",
+        "type": "bool",
+        "value": [
+            {
+                "value": false
+            }
+        ],
+        "validators": {
+           "choice": {"choices": [true, false]}
+            }
+    },
+    "pension_FOC_linkage": {
+        "title": "Households value the pension benefit their labor earns",
+        "description": "Whether the household's first order condition for labor supply includes the value of the additional pension benefit that an extra unit of labor earns. When false, households choose labor as if their pension benefits did not depend on their earnings, although benefits are still computed from actual earnings. Pension contributions that come out of household income (the funded defined contribution pillar, fdc_tau) enter the labor first order condition regardless of this setting.",
+        "section_1": "Fiscal Policy Parameters",
+        "section_2": "Government Pension Parameters",
+        "notes": "Currently affects only the funded defined contribution (FDC) pillar, whose accrual term (the value of the annuity bought by a marginal contribution) is included in the labor first order condition only when this is true. The pay-as-you-go systems (US Social Security, Defined Benefits, Notional Defined Contribution, Points System, and the hybrid systems) do not yet include an accrual term in the labor first order condition, so this setting does not affect them.",
         "type": "bool",
         "value": [
             {
@@ -4148,7 +4165,7 @@
     },
     "fdc_tau": {
         "title": "Contribution rate to funded defined contribution accounts.",
-        "description": "Share of labor income in the funded defined contribution (FDC) earnings band that households pay into individual FDC accounts before the retirement age. Accounts earn the FDC return r_fdc = r_p - r_fdc_wedge (the household portfolio return r_p less the wedge r_fdc_wedge) and, at the retirement age, buy an actuarially fair life annuity. The FDC pillar runs alongside whichever pension_system is selected; a rate of zero (the default) turns it off.",
+        "description": "Share of labor income in the funded defined contribution (FDC) earnings band that households pay into individual FDC accounts before the retirement age. Accounts earn the FDC return r_fdc = r_p - r_fdc_wedge (the household portfolio return r_p less the wedge r_fdc_wedge) and, at the retirement age, buy an actuarially fair life annuity. The FDC pillar runs alongside whichever pension_system is selected; a rate of zero (the default) turns it off. Under the 'Hybrid DB-FDC' pension_system, the FDC earnings band is the labor income between db_earn_cap_factor and dc_earn_cap_factor times avg_labor_inc_t1_model_units, and fdc_tau should be positive.",
         "section_1": "Fiscal Policy Parameters",
         "section_2": "Government Pension Parameters",
         "notes": "A single base value; changes by birth cohort or calendar year are entered through pension_regimes. Contributions are not government revenue and benefits are not government outlays: the accounts are held by a fund outside the government budget.",
@@ -4167,10 +4184,10 @@
     },
     "fdc_earn_floor_factor": {
         "title": "Lower cutoff of the labor income on which funded defined contribution contributions are paid, as a multiple of initial-period average labor income.",
-        "description": "FDC contributions are paid only on labor income above fdc_earn_floor_factor in period t times avg_labor_inc_t1_model_units (average labor income in the first model period). Setting it to the upper cutoff of another pension system's band makes the FDC pillar cover the earnings above that band. The upper cutoff is the shared dc_earn_cap_factor when pension_earn_cap is true (and there is none otherwise).",
+        "description": "FDC contributions are paid only on labor income above fdc_earn_floor_factor in period t times avg_labor_inc_t1_model_units (average labor income in the first model period). Setting it to the upper cutoff of another pension system's band makes the FDC pillar cover the earnings above that band. The upper cutoff is the shared dc_earn_cap_factor when pension_earn_cap is true (and there is none otherwise). Under the 'Hybrid DB-FDC' pension_system, the band is set by db_earn_cap_factor and dc_earn_cap_factor instead, and this floor is not used.",
         "section_1": "Fiscal Policy Parameters",
         "section_2": "Government Pension Parameters",
-        "notes": "Only used when fdc_tau is positive. May vary over time: set value for base year, click '+' to add value for next year. All future years not specified are set to last value entered. The cutoff that applies to any labor income is the one the earner's cohort faces in the period in which it was earned. Changes by birth cohort are entered through pension_regimes with a single number, indexed like a single value below. Entered and indexed in the same way as db_earn_cap_factor and dc_earn_cap_factor: a single value is the initial factor of a path indexed to remove trend growth, value / e^(g_y t) in model period t, so the cutoff is fixed in real terms; enter two or more values to supply your own path. With pension_earn_cap true, must be no greater than dc_earn_cap_factor wherever fdc_tau is positive.",
+        "notes": "Only used when fdc_tau is positive and pension_system is not 'Hybrid DB-FDC'. May vary over time: set value for base year, click '+' to add value for next year. All future years not specified are set to last value entered. The cutoff that applies to any labor income is the one the earner's cohort faces in the period in which it was earned. Changes by birth cohort are entered through pension_regimes with a single number, indexed like a single value below. Entered and indexed in the same way as db_earn_cap_factor and dc_earn_cap_factor: a single value is the initial factor of a path indexed to remove trend growth, value / e^(g_y t) in model period t, so the cutoff is fixed in real terms; enter two or more values to supply your own path. With pension_earn_cap true, must be no greater than dc_earn_cap_factor wherever fdc_tau is positive.",
         "type": "float",
         "number_dims": 1,
         "value": [
@@ -4230,10 +4247,10 @@
     },
     "db_earn_cap_factor": {
         "title": "Cap on the labor income that earns a defined benefit, as a multiple of initial-period average labor income.",
-        "description": "Labor income up to db_earn_cap_factor in period t times avg_labor_inc_t1_model_units (average labor income in the first model period) earns a defined benefit (computed with the Defined Benefits parameters). Under the Defined Benefits system with pension_earn_cap true, labor income above this cap earns no benefit. Under the hybrid defined benefit and notional defined contribution system, this is the upper cutoff of the defined benefit band and the lower cutoff of the notional defined contribution band, and labor income up to it is subject to the payroll tax tau_payroll.",
+        "description": "Labor income up to db_earn_cap_factor in period t times avg_labor_inc_t1_model_units (average labor income in the first model period) earns a defined benefit (computed with the Defined Benefits parameters). Under the Defined Benefits system with pension_earn_cap true, labor income above this cap earns no benefit. Under the hybrid defined benefit and notional defined contribution system, this is the upper cutoff of the defined benefit band and the lower cutoff of the notional defined contribution band, and labor income up to it is subject to the payroll tax tau_payroll. Under the hybrid defined benefit and funded defined contribution system, it is the upper cutoff of the defined benefit band and the lower cutoff of the funded defined contribution (FDC) band.",
         "section_1": "Fiscal Policy Parameters",
         "section_2": "Government Pension Parameters",
-        "notes": "Used when pension_system is 'Hybrid DB-NDC', and when pension_earn_cap is true and pension_system is 'Defined Benefits'. Formerly factor1_db_ndc_hybrid, which is still accepted with a deprecation warning. May vary over time: set value for base year, click '+' to add value for next year. All future years not specified are set to last value entered. The cutoffs that apply to any labor income are those the earner's cohort faces in the period in which it was earned. Changes by birth cohort are entered through pension_regimes with a single number, indexed like a single value below. Under the hybrid system, must be no greater than dc_earn_cap_factor in every period. A single value is the initial factor of a path indexed to remove trend growth, value / e^(g_y t) in model period t, so the cutoff is fixed in real terms; enter two or more values to supply your own path.",
+        "notes": "Used when pension_system is 'Hybrid DB-NDC' or 'Hybrid DB-FDC', and when pension_earn_cap is true and pension_system is 'Defined Benefits'. Formerly factor1_db_ndc_hybrid, which is still accepted with a deprecation warning. May vary over time: set value for base year, click '+' to add value for next year. All future years not specified are set to last value entered. The cutoffs that apply to any labor income are those the earner's cohort faces in the period in which it was earned. Changes by birth cohort are entered through pension_regimes with a single number, indexed like a single value below. Under the hybrid systems, must be no greater than dc_earn_cap_factor in every period. A single value is the initial factor of a path indexed to remove trend growth, value / e^(g_y t) in model period t, so the cutoff is fixed in real terms; enter two or more values to supply your own path.",
         "type": "float",
         "number_dims": 1,
         "value": [
@@ -4252,10 +4269,10 @@
     },
     "dc_earn_cap_factor": {
         "title": "Cap on the labor income credited to a defined contribution account, as a multiple of initial-period average labor income.",
-        "description": "Labor income up to dc_earn_cap_factor in period t times avg_labor_inc_t1_model_units (average labor income in the first model period) is credited to a notional defined contribution account (computed with the Notional Defined Contribution parameters). Under the Notional Defined Contribution system with pension_earn_cap true, labor income above this cap is not credited. Under the hybrid defined benefit and notional defined contribution system, labor income between db_earn_cap_factor and dc_earn_cap_factor times avg_labor_inc_t1_model_units is subject to the contribution rate tau_p and earns a notional defined contribution benefit in addition to the defined benefit, and labor income above dc_earn_cap_factor times avg_labor_inc_t1_model_units earns no benefit. With pension_earn_cap true, it is also the cap on the labor income on which funded defined contribution (FDC) contributions are paid, under any pension_system.",
+        "description": "Labor income up to dc_earn_cap_factor in period t times avg_labor_inc_t1_model_units (average labor income in the first model period) is credited to a notional defined contribution account (computed with the Notional Defined Contribution parameters). Under the Notional Defined Contribution system with pension_earn_cap true, labor income above this cap is not credited. Under the hybrid defined benefit and notional defined contribution system, labor income between db_earn_cap_factor and dc_earn_cap_factor times avg_labor_inc_t1_model_units is subject to the contribution rate tau_p and earns a notional defined contribution benefit in addition to the defined benefit, and labor income above dc_earn_cap_factor times avg_labor_inc_t1_model_units earns no benefit. Under the hybrid defined benefit and funded defined contribution system, labor income between db_earn_cap_factor and dc_earn_cap_factor times avg_labor_inc_t1_model_units pays the funded defined contribution (FDC) rate fdc_tau into an individual account, and labor income above it earns no benefit. With pension_earn_cap true, it is also the cap on the labor income on which FDC contributions are paid, under any other pension_system.",
         "section_1": "Fiscal Policy Parameters",
         "section_2": "Government Pension Parameters",
-        "notes": "Used when pension_system is 'Hybrid DB-NDC', when pension_earn_cap is true and pension_system is 'Notional Defined Contribution', and when pension_earn_cap is true and fdc_tau is positive. Formerly factor2_db_ndc_hybrid, which is still accepted with a deprecation warning. May vary over time: set value for base year, click '+' to add value for next year. All future years not specified are set to last value entered. The cutoffs that apply to any labor income are those the earner's cohort faces in the period in which it was earned. Changes by birth cohort are entered through pension_regimes with a single number, indexed like a single value below. Under the hybrid system, must be at least db_earn_cap_factor in every period. With pension_earn_cap true, must be at least fdc_earn_floor_factor wherever fdc_tau is positive. A single value is the initial factor of a path indexed to remove trend growth, value / e^(g_y t) in model period t, so the cutoff is fixed in real terms; enter two or more values to supply your own path.",
+        "notes": "Used when pension_system is 'Hybrid DB-NDC' or 'Hybrid DB-FDC', when pension_earn_cap is true and pension_system is 'Notional Defined Contribution', and when pension_earn_cap is true and fdc_tau is positive. Formerly factor2_db_ndc_hybrid, which is still accepted with a deprecation warning. May vary over time: set value for base year, click '+' to add value for next year. All future years not specified are set to last value entered. The cutoffs that apply to any labor income are those the earner's cohort faces in the period in which it was earned. Changes by birth cohort are entered through pension_regimes with a single number, indexed like a single value below. Under the hybrid systems, must be at least db_earn_cap_factor in every period. With pension_earn_cap true (and a pension_system other than 'Hybrid DB-FDC'), must be at least fdc_earn_floor_factor wherever fdc_tau is positive. A single value is the initial factor of a path indexed to remove trend growth, value / e^(g_y t) in model period t, so the cutoff is fixed in real terms; enter two or more values to supply your own path.",
         "type": "float",
         "number_dims": 1,
         "value": [
@@ -4274,10 +4291,10 @@
     },
     "avg_labor_inc_t1_model_units": {
         "title": "Average labor income in the first model period, in model units.",
-        "description": "Average labor income in the first model period, in model units, taken from an outside model. The earnings cutoffs of the hybrid DB-NDC pension system, and the caps applied by pension_earn_cap under the Defined Benefits and Notional Defined Contribution systems, are db_earn_cap_factor and dc_earn_cap_factor times this value, so the cutoffs do not depend on endogenous model variables such as the wage.",
+        "description": "Average labor income in the first model period, in model units, taken from an outside model. The earnings cutoffs of the hybrid DB-NDC and DB-FDC pension systems, and the caps applied by pension_earn_cap under the Defined Benefits and Notional Defined Contribution systems, are db_earn_cap_factor and dc_earn_cap_factor times this value, so the cutoffs do not depend on endogenous model variables such as the wage.",
         "section_1": "Fiscal Policy Parameters",
         "section_2": "Government Pension Parameters",
-        "notes": "Used when pension_system is 'Hybrid DB-NDC', when pension_earn_cap is true under 'Defined Benefits' or 'Notional Defined Contribution' or with a funded defined contribution pillar (fdc_tau positive), and to set the lower cutoff of the funded defined contribution earnings band (fdc_earn_floor_factor). Must be expressed in the same (stationarized) model units as labor income w * e * n.",
+        "notes": "Used when pension_system is 'Hybrid DB-NDC' or 'Hybrid DB-FDC', when pension_earn_cap is true under 'Defined Benefits' or 'Notional Defined Contribution' or with a funded defined contribution pillar (fdc_tau positive), and to set the lower cutoff of the funded defined contribution earnings band (fdc_earn_floor_factor). Must be expressed in the same (stationarized) model units as labor income w * e * n.",
         "type": "float",
         "value": [
             {

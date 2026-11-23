@@ -99,6 +99,8 @@ def pension_earn_caps(p):
 
     The hybrid DB-NDC system pays a defined benefit on labor income up
     to the first cutoff and a notional defined contribution benefit on
+    labor income between the two. The hybrid DB-FDC system pays the
+    same defined benefit and collects funded defined contributions on
     labor income between the two. With ``pension_earn_cap`` True, the
     Defined Benefits system counts only labor income up to the first
     cutoff toward the benefit, and the Notional Defined Contribution
@@ -500,12 +502,17 @@ def pension_amount(
         pension = pension * replacement_rate_adjustment(
             pension, t, j, method, p
         )
+    elif p.pension_system == "Hybrid DB-FDC":
+        pension = DB_FDC_hybrid_amount(w, e, n, t, j, method, p)
+        pension = pension * replacement_rate_adjustment(
+            pension, t, j, method, p
+        )
     else:
         raise ValueError(
             "pension_system must be one of the following: "
             "'US-Style Social Security', 'Defined Benefits', "
             "'Notional Defined Contribution', 'Points System', "
-            "'Hybrid DB-NDC'"
+            "'Hybrid DB-NDC', 'Hybrid DB-FDC'"
         )
     return pension
 
@@ -1100,6 +1107,49 @@ def NDC_amount(
     return NDC
 
 
+def hybrid_earn_cutoffs(p):
+    """
+    The two earnings cutoffs of the hybrid systems (``Hybrid DB-NDC``
+    and ``Hybrid DB-FDC``), from ``pension_earn_caps``, checked to be
+    ordered in every period and at every age.
+
+    Args:
+        p (OG-Core Specifications object): model parameters
+
+    Returns:
+        cut1, cut2 (Numpy arrays): the cutoffs in model units of labor
+            income, by period and age ((T + S) x S once
+            ``Specifications`` builds them; a single value or a path by
+            period, as a caller may set by hand, is also accepted)
+
+    Raises:
+        ValueError: if ``dc_earn_cap_factor`` is less than
+            ``db_earn_cap_factor`` in any period
+    """
+    cut1, cut2 = pension_earn_caps(p)
+    n_per = max(cut1.shape[0], cut2.shape[0])
+    n_age = max(cut1.shape[1], cut2.shape[1])
+    rows = np.arange(n_per)[:, np.newaxis]
+    cols = np.arange(n_age)[np.newaxis, :]
+    c1_full = cut1[
+        np.minimum(rows, cut1.shape[0] - 1),
+        np.minimum(cols, cut1.shape[1] - 1),
+    ]
+    c2_full = cut2[
+        np.minimum(rows, cut2.shape[0] - 1),
+        np.minimum(cols, cut2.shape[1] - 1),
+    ]
+    if np.any(c2_full < c1_full):
+        t_bad, s_bad = np.argwhere(c2_full < c1_full)[0]
+        raise ValueError(
+            "dc_earn_cap_factor must be at least db_earn_cap_factor "
+            f"in every period and at every age: in period {t_bad} at "
+            f"age period {s_bad}, the cutoffs are {c1_full[t_bad, s_bad]} "
+            f"and {c2_full[t_bad, s_bad]}"
+        )
+    return cut1, cut2
+
+
 def DB_NDC_hybrid_amount(w, e, n, r, ndc_rates, t, j, method, p):
     r"""
     Calculate public pension from a hybrid defined benefit and notional
@@ -1155,30 +1205,7 @@ def DB_NDC_hybrid_amount(w, e, n, r, ndc_rates, t, j, method, p):
         ValueError: if ``dc_earn_cap_factor`` is less than
             ``db_earn_cap_factor`` in any period
     """
-    # cutoffs in model units of labor income, by period and age
-    # ((T + S) x S once Specifications builds them; a single value or a
-    # path by period, as a caller may set by hand, is also accepted)
-    cut1, cut2 = pension_earn_caps(p)
-    n_per = max(cut1.shape[0], cut2.shape[0])
-    n_age = max(cut1.shape[1], cut2.shape[1])
-    rows = np.arange(n_per)[:, np.newaxis]
-    cols = np.arange(n_age)[np.newaxis, :]
-    c1_full = cut1[
-        np.minimum(rows, cut1.shape[0] - 1),
-        np.minimum(cols, cut1.shape[1] - 1),
-    ]
-    c2_full = cut2[
-        np.minimum(rows, cut2.shape[0] - 1),
-        np.minimum(cols, cut2.shape[1] - 1),
-    ]
-    if np.any(c2_full < c1_full):
-        t_bad, s_bad = np.argwhere(c2_full < c1_full)[0]
-        raise ValueError(
-            "dc_earn_cap_factor must be at least db_earn_cap_factor "
-            f"in every period and at every age: in period {t_bad} at "
-            f"age period {s_bad}, the cutoffs are {c1_full[t_bad, s_bad]} "
-            f"and {c2_full[t_bad, s_bad]}"
-        )
+    cut1, cut2 = hybrid_earn_cutoffs(p)
     DB = DB_amount(w, e, n, t, j, method, p, earn_lo=0.0, earn_hi=cut1)
     NDC = NDC_amount(
         w,
@@ -1194,6 +1221,54 @@ def DB_NDC_hybrid_amount(w, e, n, r, ndc_rates, t, j, method, p):
         earn_hi=cut2,
     )
     return DB + NDC
+
+
+def DB_FDC_hybrid_amount(w, e, n, t, j, method, p):
+    r"""
+    Calculate public pension from a hybrid defined benefit and funded
+    defined contribution system.
+
+    This system has the same structure as the hybrid DB-NDC system
+    (``DB_NDC_hybrid_amount``), with a funded defined contribution (FDC)
+    account in place of the notional one. Labor income
+    $w_t e_{j,s,t} n_{j,s,t}$ is split into two bands at the cutoffs
+    $f_{1,t} \bar{y}$ and $f_{2,t} \bar{y}$ of ``pension_earn_caps``.
+    Income up to $f_{1,t} \bar{y}$ earns a defined benefit computed
+    with the ``DB_amount`` formula and parameters on that capped
+    income, which this function returns. Income between
+    $f_{1,t} \bar{y}$ and $f_{2,t} \bar{y}$ pays the FDC contribution
+    rate ``fdc_tau`` into the household's individual account, which
+    buys an annuity at retirement (``fdc_earn_bands`` sets this band
+    under this system). The annuity is paid by the FDC fund, not the
+    government, so it is not part of this public pension; the household
+    receives it through the FDC pillar. Income above $f_{2,t} \bar{y}$
+    earns no benefit:
+
+    .. math::
+        pension_{j,s,t} = pension^{DB}_{j,s,t}\bigl(\min\{w e n,
+            f_1 \bar{y}\}\bigr) \quad \forall s \geq R
+
+    Args:
+        w (array_like): real wage rate
+        e (Numpy array): effective labor units
+        n (Numpy array): labor supply; same shapes as accepted by
+            ``DB_amount``
+        t (int): model period of the first element of ``n``
+        j (int): index of lifetime income group, None if all groups
+        method (str): adjusts calculation dimensions based on 'SS',
+            'TPI', or 'TPI_scalar'
+        p (OG-Core Specifications object): model parameters
+
+    Returns:
+        pension (Numpy array): defined benefit pension amount for each
+            household
+
+    Raises:
+        ValueError: if ``dc_earn_cap_factor`` is less than
+            ``db_earn_cap_factor`` in any period
+    """
+    cut1, _ = hybrid_earn_cutoffs(p)
+    return DB_amount(w, e, n, t, j, method, p, earn_lo=0.0, earn_hi=cut1)
 
 
 def PS_amount(w, e, n, j, factor, p):
@@ -2693,7 +2768,12 @@ def fdc_earn_bands(p):
     ``avg_labor_inc_t1_model_units``. The upper cutoff is the cap
     shared with the other defined contribution systems,
     ``dc_earn_cap_factor`` times ``avg_labor_inc_t1_model_units``,
-    when ``pension_earn_cap`` is True, and infinite otherwise. The
+    when ``pension_earn_cap`` is True, and infinite otherwise. Under
+    the hybrid DB-FDC system (``pension_system`` 'Hybrid DB-FDC'), the
+    band is instead the one between the two cutoffs of
+    ``pension_earn_caps``, as for the notional band of the hybrid
+    DB-NDC system, whatever ``fdc_earn_floor_factor`` and
+    ``pension_earn_cap``. The
     cutoff at period t and age s is the one that applies to the cohort
     of that household; it applies to the labor income the household
     earns in that period.
@@ -2707,6 +2787,9 @@ def fdc_earn_bands(p):
             factor set by hand as a single value or a path by period
             gives one column, applied at every age)
     """
+    if getattr(p, "pension_system", None) == "Hybrid DB-FDC":
+        # the FDC band of the hybrid system lies between its two cutoffs
+        return tuple(np.ascontiguousarray(c) for c in hybrid_earn_cutoffs(p))
     avg_inc = float(p.avg_labor_inc_t1_model_units)
     lo = _period_age(getattr(p, "fdc_earn_floor_factor", 0.0)) * avg_inc
     if getattr(p, "pension_earn_cap", False):

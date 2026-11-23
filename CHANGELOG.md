@@ -5,6 +5,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.25.2] - 2026-11-23
+
+### Added
+- Adds the hybrid defined benefit and funded defined contribution pension system (`pension_system` set to `'Hybrid DB-FDC'`), which has the same structure as the hybrid DB-NDC system with an FDC account in place of the notional account. Labor income up to `db_earn_cap_factor` times `avg_labor_inc_t1_model_units` earns a defined benefit (`pensions.DB_FDC_hybrid_amount`, the public pension), and labor income between that cutoff and `dc_earn_cap_factor` times `avg_labor_inc_t1_model_units` pays `fdc_tau` into an FDC account (`pensions.fdc_earn_bands` sets this band under the system, whatever `fdc_earn_floor_factor` and `pension_earn_cap`). The two hybrid systems share the cutoff check, now `pensions.hybrid_earn_cutoffs`, and `Specifications` checks the cutoffs are ordered for every cohort under both, and warns if `fdc_tau` is zero under the new system. Documents the system in the pensions chapter, and adds tests that its public pension is the capped defined benefit, that its FDC band lies between the two cutoffs, and that its steady state is the same as that of the Defined Benefits system with `pension_earn_cap` and the FDC floor at the defined benefit cap.
+- Adds the parameter `pension_FOC_linkage` (default false), which sets whether the household's labor first order condition includes the value of the additional pension benefit that an extra unit of labor earns. It currently affects only the FDC pillar: when false, `household.fdc_labor_wedge` drops the accrual term (the value of the annuity bought by a marginal contribution) and keeps the contribution cost, so FDC contributions act on labor supply like a tax on earnings in the FDC band, as the pay-as-you-go systems already treat benefits. **This changes FDC results from earlier versions, which always included the accrual term;** set `pension_FOC_linkage` to true to reproduce them. The FDC tests now set it to true, and a new test checks that it removes only the accrual term. Under the hybrid DB-FDC system, contributions start at the defined benefit cutoff, which puts a discrete change in the marginal return to labor at that cutoff; the hybrid steady-state test uses `FOC_root_method` set to `lm`, since the default `hybr` does not converge there.
+
 ## [0.25.1] - 2026-11-22
 
 ### Changed
@@ -936,6 +942,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Any earlier versions of OG-USA can be found in the [`OG-Core`](https://github.com/PSLmodels/OG-Core) repository [release history](https://github.com/PSLmodels/OG-Core/releases) from [v.0.6.4](https://github.com/PSLmodels/OG-Core/releases/tag/v0.6.4) (Jul. 20, 2021) or earlier.
 
 
+[0.25.2]: https://github.com/PSLmodels/OG-Core/compare/v0.25.1...v0.25.2
 [0.25.1]: https://github.com/PSLmodels/OG-Core/compare/v0.25.0...v0.25.1
 [0.25.0]: https://github.com/PSLmodels/OG-Core/compare/v0.24.6...v0.25.0
 [0.24.6]: https://github.com/PSLmodels/OG-Core/compare/v0.24.5...v0.24.6

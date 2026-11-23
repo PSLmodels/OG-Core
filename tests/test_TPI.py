@@ -1641,7 +1641,9 @@ def _fdc_tpi_run(
     )
     with open(os.path.join(CUR_PATH, "testing_params.json")) as f:
         p.update_specifications(json.load(f))
-    p.update_specifications({"fdc_tau": tau, **(updates or {})})
+    p.update_specifications(
+        {"fdc_tau": tau, "pension_FOC_linkage": True, **(updates or {})}
+    )
     utils.mkdirs(os.path.join(out, "SS"))
     ss = SS.run_SS(p, client=None)
     with open(os.path.join(out, "SS", "SS_vars.pkl"), "wb") as f:

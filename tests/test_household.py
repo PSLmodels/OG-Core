@@ -1274,7 +1274,7 @@ def test_get_ci(c_s, p_i, p_tilde, tau_c, alpha_c, c_min, method, expected):
 
 def _fdc_on_specs(tau=0.05):
     p = Specifications()
-    p.update_specifications({"fdc_tau": tau})
+    p.update_specifications({"fdc_tau": tau, "pension_FOC_linkage": True})
     return p
 
 
@@ -1529,3 +1529,40 @@ def test_fdc_labor_wedge_partial_lifetime():
             cons[a0:], 1.0, part, rho[a0:], 0.97, p
         )
         assert np.allclose(wedge, full[a0:])
+
+
+@pytest.mark.parametrize("linkage", [True, False], ids=["linked", "unlinked"])
+def test_fdc_labor_wedge_linkage(linkage):
+    """
+    With pension_FOC_linkage false, the wedge is only the contribution
+    cost, -MU_s dC_s; the value of the annuity the contribution buys
+    is left out. With it true, that value is added.
+    """
+    from ogcore import pensions
+    from types import SimpleNamespace
+
+    S, R = 10, 6
+    p = SimpleNamespace(S=S, sigma=2.0, g_y=0.02, pension_FOC_linkage=linkage)
+    rho = np.linspace(0.01, 0.3, S)
+    rho[-1] = 1.0
+    C, A, P, H, dC, m = pensions.fdc_lifetime_loop(
+        np.linspace(0.5, 1.0, S),
+        np.full(S, 0.1),
+        np.zeros(S),
+        np.full(S, np.inf),
+        np.full(S, 0.05),
+        rho,
+        R,
+        0.02,
+        0,
+        0.0,
+        S,
+    )
+    fdc = pensions.FDCLifetime(C, A, P, H, dC, m, R)
+    cons = np.linspace(0.6, 0.9, S)
+    wedge = household.fdc_labor_wedge(cons, 1.0, fdc, rho, 0.97, p)
+    cost = -household.marg_ut_cons(cons, p.sigma) * dC
+    if linkage:
+        assert np.all(wedge[:R] > cost[:R])
+    else:
+        assert np.allclose(wedge, cost)
