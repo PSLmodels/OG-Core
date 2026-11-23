@@ -628,7 +628,7 @@ system.</p>
 <div class="math notranslate nohighlight">
 \[pension_{j,s,t} = \biggl[\sum_{u=E}^{R-1}\tau^{p}_{u,t-s+u}
     w_{t-s+u}e_{j,u,t-s+u}n_{j,u,t-s+u}
-    \prod_{a=u+1}^{R-1}(1 + g_{NDC,t-s+a})
+    \prod_{a=u+1}^{R}(1 + g_{NDC,t-s+a})
     \biggr]\delta_{R,s,t} \quad \forall s \geq R\]</div>
 <p>where the retirement age <span class="math notranslate nohighlight">\(R\)</span> and the conversion coefficient
 <span class="math notranslate nohighlight">\(\delta_{R,s,t}\)</span> (through <code class="docutils literal notranslate"><span class="pre">k_ret</span></code> and <code class="docutils literal notranslate"><span class="pre">indR</span></code>) are those of the
@@ -636,8 +636,10 @@ household’s own birth cohort at the age and period the benefit is
 paid, and the contribution rate <span class="math notranslate nohighlight">\(\tau^{p}_{u,t-s+u}\)</span> is the one the
 cohort faced at each working age u, all read from the period-by-age
 arrays that <code class="docutils literal notranslate"><span class="pre">pension_regimes</span></code> builds. Each contribution earns
-the rate credited in each period between the contribution and
-retirement, <span class="math notranslate nohighlight">\(g_{NDC,t}\)</span>, and the conversion coefficient discounts
+the rate credited in each period from the one after the
+contribution through the retirement period, <span class="math notranslate nohighlight">\(g_{NDC,t}\)</span> (the
+balance is valued in the period of the first payment, as the
+conversion coefficient assumes), and the conversion coefficient discounts
 payments at the rate in the period the household retires.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -811,8 +813,8 @@ pension system selected</p>
 <div class="math notranslate nohighlight">
 \[\begin{split}\frac{\partial \theta_{j,u,t+u-s}}{\partial n_{j,s,t}} =
     \begin{cases}
-    \tau^{p}_{t}w_{t}e_{j,s}(1+g_{NDC,t})^{u - s}\delta_{R,t},
-    &amp; \text{if}\ s&lt;R-1 \\
+    \tau^{p}_{t}w_{t}e_{j,s}(1+g_{NDC})^{R - s}\delta_{R},
+    &amp; \text{if}\ s&lt;R \\
     0, &amp; \text{if}\ s \geq R \\
     \end{cases}\end{split}\]</div>
 <dl class="field-list simple">
@@ -1255,6 +1257,11 @@ local currency</p></li>
 <dt class="sig sig-object py" id="ogcore.pensions.deriv_NDC_loop">
 <span class="sig-prename descclassname"><span class="pre">ogcore.pensions.</span></span><span class="sig-name descname"><span class="pre">deriv_NDC_loop</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">w</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">e</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">per_rmn</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">S</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">S_ret</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tau_p</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">g_ndc_value</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">delta_ret_value</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">d_theta</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ogcore/pensions.html#deriv_NDC_loop"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogcore.pensions.deriv_NDC_loop" title="Link to this definition">#</a></dt>
 <dd><p>Change in NDC pension benefits for another unit of labor supply</p>
+<p>The benefit rises with labor supply at working age s by</p>
+<div class="math notranslate nohighlight">
+\[\tau^{p}w_{s}e_{s}(1 + g_{NDC})^{R - s}\delta_{R}\]</div>
+<p>since a contribution at age s is credited in each period from
+s + 1 through the retirement period R.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
@@ -1522,9 +1529,10 @@ Both arrays start in the period of the first row of n.</p></li>
 <dd><p>Calculate public pension from a notional defined contribution
 system for one household over its lifetime.</p>
 <p>The contribution made at working age s earns the rate credited in
-each later period up to the period before retirement:</p>
+each later period through the retirement period R, in which the
+first benefit is paid:</p>
 <div class="math notranslate nohighlight">
-\[\prod_{a=s+1}^{R-1}(1 + g_{NDC,t_0 + a})\]</div>
+\[\prod_{a=s+1}^{R}(1 + g_{NDC,t_0 + a})\]</div>
 <p>where <span class="math notranslate nohighlight">\(t_0\)</span> is the household’s period of birth (age 0).</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -1826,11 +1834,11 @@ the next period’s return:</p>
 \[A_{s+1} = (1 + r_{fdc,s+1})e^{-g_y}H_s\]</div>
 <p>The account therefore earns the return in every period from the
 period after each contribution through the retirement period R
-itself, one period more than the notional defined contribution
-system credits. At age <span class="math notranslate nohighlight">\(\max(R, a_0)\)</span> the balance buys an annuity,
-<span class="math notranslate nohighlight">\(P = A/\ddot{a}\)</span>; a household already retired at a0 holds a
-remaining balance that is re-annuitized on the rates given. After
-that <span class="math notranslate nohighlight">\(H_s = A_s - P_s\)</span>, <span class="math notranslate nohighlight">\(P_{s+1} = P_s e^{-g_y}\)</span>, and the holdings
+itself, the same window over which the notional defined
+contribution system credits. At age <span class="math notranslate nohighlight">\(\max(R, a_0)\)</span> the balance buys
+an annuity, <span class="math notranslate nohighlight">\(P = A/\ddot{a}\)</span>; a household already retired at a0
+holds a remaining balance that is re-annuitized on the rates given.
+After that <span class="math notranslate nohighlight">\(H_s = A_s - P_s\)</span>, <span class="math notranslate nohighlight">\(P_{s+1} = P_s e^{-g_y}\)</span>, and the holdings
 of those who die stay in the annuity pool:</p>
 <div class="math notranslate nohighlight">
 \[A_{s+1} = \frac{(1 + r_{fdc,s+1})e^{-g_y}}{1 - \rho_s}H_s\]</div>

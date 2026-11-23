@@ -1240,7 +1240,7 @@
 <span class="sd">    .. math::</span>
 <span class="sd">        pension_{j,s,t} = \biggl[\sum_{u=E}^{R-1}\tau^{p}_{u,t-s+u}</span>
 <span class="sd">            w_{t-s+u}e_{j,u,t-s+u}n_{j,u,t-s+u}</span>
-<span class="sd">            \prod_{a=u+1}^{R-1}(1 + g_{NDC,t-s+a})</span>
+<span class="sd">            \prod_{a=u+1}^{R}(1 + g_{NDC,t-s+a})</span>
 <span class="sd">            \biggr]\delta_{R,s,t} \quad \forall s \geq R</span>
 
 <span class="sd">    where the retirement age $R$ and the conversion coefficient</span>
@@ -1249,8 +1249,10 @@
 <span class="sd">    paid, and the contribution rate $\tau^{p}_{u,t-s+u}$ is the one the</span>
 <span class="sd">    cohort faced at each working age u, all read from the period-by-age</span>
 <span class="sd">    arrays that ``pension_regimes`` builds. Each contribution earns</span>
-<span class="sd">    the rate credited in each period between the contribution and</span>
-<span class="sd">    retirement, $g_{NDC,t}$, and the conversion coefficient discounts</span>
+<span class="sd">    the rate credited in each period from the one after the</span>
+<span class="sd">    contribution through the retirement period, $g_{NDC,t}$ (the</span>
+<span class="sd">    balance is valued in the period of the first payment, as the</span>
+<span class="sd">    conversion coefficient assumes), and the conversion coefficient discounts</span>
 <span class="sd">    payments at the rate in the period the household retires.</span>
 
 <span class="sd">    Args:</span>
@@ -1719,8 +1721,8 @@
 <span class="sd">    .. math::</span>
 <span class="sd">        \frac{\partial \theta_{j,u,t+u-s}}{\partial n_{j,s,t}} =</span>
 <span class="sd">            \begin{cases}</span>
-<span class="sd">            \tau^{p}_{t}w_{t}e_{j,s}(1+g_{NDC,t})^{u - s}\delta_{R,t},</span>
-<span class="sd">            &amp; \text{if}\ s&lt;R-1 \\</span>
+<span class="sd">            \tau^{p}_{t}w_{t}e_{j,s}(1+g_{NDC})^{R - s}\delta_{R},</span>
+<span class="sd">            &amp; \text{if}\ s&lt;R \\</span>
 <span class="sd">            0, &amp; \text{if}\ s \geq R \\</span>
 <span class="sd">            \end{cases}</span>
 
@@ -2400,8 +2402,16 @@
 <span class="k">def</span><span class="w"> </span><span class="nf">deriv_NDC_loop</span><span class="p">(</span>
     <span class="n">w</span><span class="p">,</span> <span class="n">e</span><span class="p">,</span> <span class="n">per_rmn</span><span class="p">,</span> <span class="n">S</span><span class="p">,</span> <span class="n">S_ret</span><span class="p">,</span> <span class="n">tau_p</span><span class="p">,</span> <span class="n">g_ndc_value</span><span class="p">,</span> <span class="n">delta_ret_value</span><span class="p">,</span> <span class="n">d_theta</span>
 <span class="p">):</span>
-<span class="w">    </span><span class="sd">"""</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">"""</span>
 <span class="sd">    Change in NDC pension benefits for another unit of labor supply</span>
+
+<span class="sd">    The benefit rises with labor supply at working age s by</span>
+
+<span class="sd">    .. math::</span>
+<span class="sd">        \tau^{p}w_{s}e_{s}(1 + g_{NDC})^{R - s}\delta_{R}</span>
+
+<span class="sd">    since a contribution at age s is credited in each period from</span>
+<span class="sd">    s + 1 through the retirement period R.</span>
 
 <span class="sd">    Args:</span>
 <span class="sd">        w (array_like): real wage rate</span>
@@ -2427,7 +2437,7 @@
             <span class="o">*</span> <span class="n">w</span><span class="p">[</span><span class="n">s</span> <span class="o">-</span> <span class="p">(</span><span class="n">S</span> <span class="o">-</span> <span class="n">per_rmn</span><span class="p">)]</span>
             <span class="o">*</span> <span class="n">e</span><span class="p">[</span><span class="n">s</span> <span class="o">-</span> <span class="p">(</span><span class="n">S</span> <span class="o">-</span> <span class="n">per_rmn</span><span class="p">)]</span>
             <span class="o">*</span> <span class="n">delta_ret_value</span>
-            <span class="o">*</span> <span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="n">g_ndc_value</span><span class="p">)</span> <span class="o">**</span> <span class="p">(</span><span class="n">S_ret</span> <span class="o">-</span> <span class="n">s</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
+            <span class="o">*</span> <span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="n">g_ndc_value</span><span class="p">)</span> <span class="o">**</span> <span class="p">(</span><span class="n">S_ret</span> <span class="o">-</span> <span class="n">s</span><span class="p">)</span>
         <span class="p">)</span>
 
     <span class="k">return</span> <span class="n">d_theta</span></div>
@@ -2818,10 +2828,11 @@
 <span class="sd">    system for one household over its lifetime.</span>
 
 <span class="sd">    The contribution made at working age s earns the rate credited in</span>
-<span class="sd">    each later period up to the period before retirement:</span>
+<span class="sd">    each later period through the retirement period R, in which the</span>
+<span class="sd">    first benefit is paid:</span>
 
 <span class="sd">    .. math::</span>
-<span class="sd">        \prod_{a=s+1}^{R-1}(1 + g_{NDC,t_0 + a})</span>
+<span class="sd">        \prod_{a=s+1}^{R}(1 + g_{NDC,t_0 + a})</span>
 
 <span class="sd">    where $t_0$ is the household's period of birth (age 0).</span>
 
@@ -2862,7 +2873,9 @@
         <span class="k">if</span> <span class="n">u</span> <span class="o">&lt;</span> <span class="n">R</span><span class="p">:</span>
             <span class="k">continue</span>
         <span class="n">NDC_s</span> <span class="o">=</span> <span class="mf">0.0</span>
-        <span class="n">growth</span> <span class="o">=</span> <span class="mf">1.0</span>
+        <span class="c1"># the balance is credited through the retirement period R, in</span>
+        <span class="c1"># which the first benefit is paid</span>
+        <span class="n">growth</span> <span class="o">=</span> <span class="mf">1.0</span> <span class="o">+</span> <span class="n">g_age</span><span class="p">[</span><span class="n">R</span><span class="p">]</span>
         <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">R</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">):</span>
             <span class="c1"># TODO: update so can take g_y from period t</span>
             <span class="k">if</span> <span class="n">earn_lo</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
@@ -2942,7 +2955,8 @@
         <span class="k">if</span> <span class="n">u</span> <span class="o">&lt;</span> <span class="n">R</span><span class="p">:</span>
             <span class="k">continue</span>
         <span class="n">NDC_s</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">NDC</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
-        <span class="n">growth</span> <span class="o">=</span> <span class="mf">1.0</span>
+        <span class="c1"># credited through the retirement period, t_cross - u + R</span>
+        <span class="n">growth</span> <span class="o">=</span> <span class="mf">1.0</span> <span class="o">+</span> <span class="n">g_ndc</span><span class="p">[</span><span class="nb">min</span><span class="p">(</span><span class="nb">max</span><span class="p">(</span><span class="n">t_cross</span> <span class="o">-</span> <span class="n">u</span> <span class="o">+</span> <span class="n">R</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="n">n_g</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)]</span>
         <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">R</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">):</span>
             <span class="k">if</span> <span class="n">earn_lo</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
                 <span class="n">x</span> <span class="o">=</span> <span class="n">e</span><span class="p">[</span><span class="n">s</span><span class="p">,</span> <span class="p">:]</span> <span class="o">*</span> <span class="n">n</span><span class="p">[</span><span class="n">s</span><span class="p">,</span> <span class="p">:]</span>
@@ -2991,10 +3005,10 @@
 <span class="sd">    at age s of a household aged u at time t was made in period</span>
 <span class="sd">    t - (u - s), at that period's wage, labor supply, and contribution</span>
 <span class="sd">    rate, and earns the rates credited in periods t - (u - s) + 1</span>
-<span class="sd">    through t - (u - R) - 1. Histories that predate the time path use</span>
-<span class="sd">    the period-0 wage, contribution rate, and credited rate and the</span>
-<span class="sd">    model's initial labor supply, so this reproduces what the</span>
-<span class="sd">    per-cohort household solves compute.</span>
+<span class="sd">    through t - (u - R), the retirement period. Histories that predate</span>
+<span class="sd">    the time path use the period-0 wage, contribution rate, and</span>
+<span class="sd">    credited rate and the model's initial labor supply, so this</span>
+<span class="sd">    reproduces what the per-cohort household solves compute.</span>
 
 <span class="sd">    Args:</span>
 <span class="sd">        w_path (Numpy array): real wage rate path, length T</span>
@@ -3041,7 +3055,8 @@
                 <span class="n">n_preTP</span><span class="p">[</span><span class="n">s_idx</span><span class="p">,</span> <span class="p">:],</span>
             <span class="p">)</span>
             <span class="n">contrib</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">R</span><span class="p">)</span>
-            <span class="n">growth</span> <span class="o">=</span> <span class="mf">1.0</span>
+            <span class="c1"># credited through the retirement period, t - (u - R)</span>
+            <span class="n">growth</span> <span class="o">=</span> <span class="mf">1.0</span> <span class="o">+</span> <span class="n">g_ndc</span><span class="p">[</span><span class="nb">min</span><span class="p">(</span><span class="nb">max</span><span class="p">(</span><span class="n">t</span> <span class="o">-</span> <span class="p">(</span><span class="n">u</span> <span class="o">-</span> <span class="n">R</span><span class="p">),</span> <span class="mi">0</span><span class="p">),</span> <span class="n">n_g</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)]</span>
             <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">R</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">):</span>
                 <span class="n">s</span> <span class="o">=</span> <span class="n">s_idx</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
                 <span class="k">if</span> <span class="n">earn_lo</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
@@ -3260,11 +3275,11 @@
 
 <span class="sd">    The account therefore earns the return in every period from the</span>
 <span class="sd">    period after each contribution through the retirement period R</span>
-<span class="sd">    itself, one period more than the notional defined contribution</span>
-<span class="sd">    system credits. At age $\max(R, a_0)$ the balance buys an annuity,</span>
-<span class="sd">    $P = A/\ddot{a}$; a household already retired at a0 holds a</span>
-<span class="sd">    remaining balance that is re-annuitized on the rates given. After</span>
-<span class="sd">    that $H_s = A_s - P_s$, $P_{s+1} = P_s e^{-g_y}$, and the holdings</span>
+<span class="sd">    itself, the same window over which the notional defined</span>
+<span class="sd">    contribution system credits. At age $\max(R, a_0)$ the balance buys</span>
+<span class="sd">    an annuity, $P = A/\ddot{a}$; a household already retired at a0</span>
+<span class="sd">    holds a remaining balance that is re-annuitized on the rates given.</span>
+<span class="sd">    After that $H_s = A_s - P_s$, $P_{s+1} = P_s e^{-g_y}$, and the holdings</span>
 <span class="sd">    of those who die stay in the annuity pool:</span>
 
 <span class="sd">    .. math::</span>
