@@ -420,6 +420,8 @@ before or after the arrays read their first or last row</p></li>
 <code class="docutils literal notranslate"><span class="pre">avg_labor_inc_t1_model_units</span></code>, in model units of labor income.</p>
 <p>The hybrid DB-NDC system pays a defined benefit on labor income up
 to the first cutoff and a notional defined contribution benefit on
+labor income between the two. The hybrid DB-FDC system pays the
+same defined benefit and collects funded defined contributions on
 labor income between the two. With <code class="docutils literal notranslate"><span class="pre">pension_earn_cap</span></code> True, the
 Defined Benefits system counts only labor income up to the first
 cutoff toward the benefit, and the Notional Defined Contribution
@@ -686,6 +688,35 @@ default) for no upper cutoff.</p></li>
 </dd></dl>
 
 <dl class="py function">
+<dt class="sig sig-object py" id="ogcore.pensions.hybrid_earn_cutoffs">
+<span class="sig-prename descclassname"><span class="pre">ogcore.pensions.</span></span><span class="sig-name descname"><span class="pre">hybrid_earn_cutoffs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">p</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ogcore/pensions.html#hybrid_earn_cutoffs"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogcore.pensions.hybrid_earn_cutoffs" title="Link to this definition">#</a></dt>
+<dd><p>The two earnings cutoffs of the hybrid systems (<code class="docutils literal notranslate"><span class="pre">Hybrid</span> <span class="pre">DB-NDC</span></code>
+and <code class="docutils literal notranslate"><span class="pre">Hybrid</span> <span class="pre">DB-FDC</span></code>), from <code class="docutils literal notranslate"><span class="pre">pension_earn_caps</span></code>, checked to be
+ordered in every period and at every age.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>p</strong> (<em>OG-Core Specifications object</em>) – model parameters</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><dl class="simple">
+<dt>the cutoffs in model units of labor</dt><dd><p>income, by period and age ((T + S) x S once
+<code class="docutils literal notranslate"><span class="pre">Specifications</span></code> builds them; a single value or a path by
+period, as a caller may set by hand, is also accepted)</p>
+</dd>
+</dl>
+</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>cut1, cut2 (Numpy arrays)</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>ValueError</strong> – if <code class="docutils literal notranslate"><span class="pre">dc_earn_cap_factor</span></code> is less than
+    <code class="docutils literal notranslate"><span class="pre">db_earn_cap_factor</span></code> in any period</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
 <dt class="sig sig-object py" id="ogcore.pensions.DB_NDC_hybrid_amount">
 <span class="sig-prename descclassname"><span class="pre">ogcore.pensions.</span></span><span class="sig-name descname"><span class="pre">DB_NDC_hybrid_amount</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">w</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">e</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">r</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ndc_rates</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">t</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">j</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">method</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ogcore/pensions.html#DB_NDC_hybrid_amount"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogcore.pensions.DB_NDC_hybrid_amount" title="Link to this definition">#</a></dt>
 <dd><p>Calculate public pension from a hybrid defined benefit and notional
@@ -735,6 +766,60 @@ steady-state rates; see <code class="docutils literal notranslate"><span class="
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>pension amount for each household</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>pension (Numpy array)</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>ValueError</strong> – if <code class="docutils literal notranslate"><span class="pre">dc_earn_cap_factor</span></code> is less than
+    <code class="docutils literal notranslate"><span class="pre">db_earn_cap_factor</span></code> in any period</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="ogcore.pensions.DB_FDC_hybrid_amount">
+<span class="sig-prename descclassname"><span class="pre">ogcore.pensions.</span></span><span class="sig-name descname"><span class="pre">DB_FDC_hybrid_amount</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">w</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">e</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">t</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">j</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">method</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ogcore/pensions.html#DB_FDC_hybrid_amount"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ogcore.pensions.DB_FDC_hybrid_amount" title="Link to this definition">#</a></dt>
+<dd><p>Calculate public pension from a hybrid defined benefit and funded
+defined contribution system.</p>
+<p>This system has the same structure as the hybrid DB-NDC system
+(<code class="docutils literal notranslate"><span class="pre">DB_NDC_hybrid_amount</span></code>), with a funded defined contribution (FDC)
+account in place of the notional one. Labor income
+<span class="math notranslate nohighlight">\(w_t e_{j,s,t} n_{j,s,t}\)</span> is split into two bands at the cutoffs
+<span class="math notranslate nohighlight">\(f_{1,t} \bar{y}\)</span> and <span class="math notranslate nohighlight">\(f_{2,t} \bar{y}\)</span> of <code class="docutils literal notranslate"><span class="pre">pension_earn_caps</span></code>.
+Income up to <span class="math notranslate nohighlight">\(f_{1,t} \bar{y}\)</span> earns a defined benefit computed
+with the <code class="docutils literal notranslate"><span class="pre">DB_amount</span></code> formula and parameters on that capped
+income, which this function returns. Income between
+<span class="math notranslate nohighlight">\(f_{1,t} \bar{y}\)</span> and <span class="math notranslate nohighlight">\(f_{2,t} \bar{y}\)</span> pays the FDC contribution
+rate <code class="docutils literal notranslate"><span class="pre">fdc_tau</span></code> into the household’s individual account, which
+buys an annuity at retirement (<code class="docutils literal notranslate"><span class="pre">fdc_earn_bands</span></code> sets this band
+under this system). The annuity is paid by the FDC fund, not the
+government, so it is not part of this public pension; the household
+receives it through the FDC pillar. Income above <span class="math notranslate nohighlight">\(f_{2,t} \bar{y}\)</span>
+earns no benefit:</p>
+<div class="math notranslate nohighlight">
+\[pension_{j,s,t} = pension^{DB}_{j,s,t}\bigl(\min\{w e n,
+    f_1 \bar{y}\}\bigr) \quad \forall s \geq R\]</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>w</strong> (<em>array_like</em>) – real wage rate</p></li>
+<li><p><strong>e</strong> (<em>Numpy array</em>) – effective labor units</p></li>
+<li><p><strong>n</strong> (<em>Numpy array</em>) – labor supply; same shapes as accepted by
+<code class="docutils literal notranslate"><span class="pre">DB_amount</span></code></p></li>
+<li><p><strong>t</strong> (<em>int</em>) – model period of the first element of <code class="docutils literal notranslate"><span class="pre">n</span></code></p></li>
+<li><p><strong>j</strong> (<em>int</em>) – index of lifetime income group, None if all groups</p></li>
+<li><p><strong>method</strong> (<em>str</em>) – adjusts calculation dimensions based on ‘SS’,
+‘TPI’, or ‘TPI_scalar’</p></li>
+<li><p><strong>p</strong> (<em>OG-Core Specifications object</em>) – model parameters</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><dl class="simple">
+<dt>defined benefit pension amount for each</dt><dd><p>household</p>
+</dd>
+</dl>
+</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>pension (Numpy array)</p>
@@ -1735,7 +1820,12 @@ are paid, in model units of labor income.</p>
 <code class="docutils literal notranslate"><span class="pre">avg_labor_inc_t1_model_units</span></code>. The upper cutoff is the cap
 shared with the other defined contribution systems,
 <code class="docutils literal notranslate"><span class="pre">dc_earn_cap_factor</span></code> times <code class="docutils literal notranslate"><span class="pre">avg_labor_inc_t1_model_units</span></code>,
-when <code class="docutils literal notranslate"><span class="pre">pension_earn_cap</span></code> is True, and infinite otherwise. The
+when <code class="docutils literal notranslate"><span class="pre">pension_earn_cap</span></code> is True, and infinite otherwise. Under
+the hybrid DB-FDC system (<code class="docutils literal notranslate"><span class="pre">pension_system</span></code> ‘Hybrid DB-FDC’), the
+band is instead the one between the two cutoffs of
+<code class="docutils literal notranslate"><span class="pre">pension_earn_caps</span></code>, as for the notional band of the hybrid
+DB-NDC system, whatever <code class="docutils literal notranslate"><span class="pre">fdc_earn_floor_factor</span></code> and
+<code class="docutils literal notranslate"><span class="pre">pension_earn_cap</span></code>. The
 cutoff at period t and age s is the one that applies to the cohort
 of that household; it applies to the labor income the household
 earns in that period.</p>
@@ -2351,7 +2441,9 @@ those already retired re-annuitize those balances on the path.</p>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.pensions.SS_amount"><code class="docutils literal notranslate"><span class="pre">SS_amount()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.pensions.DB_amount"><code class="docutils literal notranslate"><span class="pre">DB_amount()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.pensions.NDC_amount"><code class="docutils literal notranslate"><span class="pre">NDC_amount()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.pensions.hybrid_earn_cutoffs"><code class="docutils literal notranslate"><span class="pre">hybrid_earn_cutoffs()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.pensions.DB_NDC_hybrid_amount"><code class="docutils literal notranslate"><span class="pre">DB_NDC_hybrid_amount()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.pensions.DB_FDC_hybrid_amount"><code class="docutils literal notranslate"><span class="pre">DB_FDC_hybrid_amount()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.pensions.PS_amount"><code class="docutils literal notranslate"><span class="pre">PS_amount()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.pensions.deriv_theta"><code class="docutils literal notranslate"><span class="pre">deriv_theta()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ogcore.pensions.deriv_NDC"><code class="docutils literal notranslate"><span class="pre">deriv_NDC()</span></code></a></li>

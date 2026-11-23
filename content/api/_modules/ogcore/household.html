@@ -962,6 +962,11 @@
 <span class="sd">    equation shows $e^{-\sigma g_y}$ instead because next period's</span>
 <span class="sd">    savings enter this period's budget multiplied by $e^{g_y}$.)</span>
 
+<span class="sd">    The second (accrual) term is included only when</span>
+<span class="sd">    ``p.pension_FOC_linkage`` is true; otherwise households choose labor</span>
+<span class="sd">    as if the annuity did not depend on their contributions. The first</span>
+<span class="sd">    term is always included.</span>
+
 <span class="sd">    Contributions of households that die before R go to bequests, which</span>
 <span class="sd">    the household does not value here (its bequest motive is over</span>
 <span class="sd">    private savings only).</span>
@@ -990,7 +995,10 @@
     <span class="n">L</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">shape</span><span class="p">(</span><span class="n">cons</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
     <span class="n">a0</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">S</span> <span class="o">-</span> <span class="n">L</span>
     <span class="n">R</span> <span class="o">=</span> <span class="n">fdc</span><span class="o">.</span><span class="n">R</span> <span class="o">-</span> <span class="n">a0</span>
-    <span class="k">if</span> <span class="n">fdc</span><span class="o">.</span><span class="n">R</span> <span class="o">&gt;=</span> <span class="n">p</span><span class="o">.</span><span class="n">S</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">np</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">fdc</span><span class="o">.</span><span class="n">benefit_per_contrib</span><span class="p">):</span>
+    <span class="c1"># Specifications objects pickled before pension_FOC_linkage existed</span>
+    <span class="c1"># have none; they were solved with the accrual term</span>
+    <span class="n">linkage</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="s2">"pension_FOC_linkage"</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">linkage</span> <span class="ow">or</span> <span class="n">fdc</span><span class="o">.</span><span class="n">R</span> <span class="o">&gt;=</span> <span class="n">p</span><span class="o">.</span><span class="n">S</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">np</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">fdc</span><span class="o">.</span><span class="n">benefit_per_contrib</span><span class="p">):</span>
         <span class="k">return</span> <span class="n">wedge</span>
     <span class="n">rho</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">rho</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">shape</span><span class="p">(</span><span class="n">cons</span><span class="p">))</span>
     <span class="n">ages</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">L</span><span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="n">L</span><span class="p">,)</span> <span class="o">+</span> <span class="p">(</span><span class="mi">1</span><span class="p">,)</span> <span class="o">*</span> <span class="p">(</span><span class="n">rho</span><span class="o">.</span><span class="n">ndim</span> <span class="o">-</span> <span class="mi">1</span><span class="p">))</span>

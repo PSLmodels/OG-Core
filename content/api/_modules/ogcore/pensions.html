@@ -461,6 +461,8 @@
 
 <span class="sd">    The hybrid DB-NDC system pays a defined benefit on labor income up</span>
 <span class="sd">    to the first cutoff and a notional defined contribution benefit on</span>
+<span class="sd">    labor income between the two. The hybrid DB-FDC system pays the</span>
+<span class="sd">    same defined benefit and collects funded defined contributions on</span>
 <span class="sd">    labor income between the two. With ``pension_earn_cap`` True, the</span>
 <span class="sd">    Defined Benefits system counts only labor income up to the first</span>
 <span class="sd">    cutoff toward the benefit, and the Notional Defined Contribution</span>
@@ -868,12 +870,17 @@
         <span class="n">pension</span> <span class="o">=</span> <span class="n">pension</span> <span class="o">*</span> <span class="n">replacement_rate_adjustment</span><span class="p">(</span>
             <span class="n">pension</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="n">j</span><span class="p">,</span> <span class="n">method</span><span class="p">,</span> <span class="n">p</span>
         <span class="p">)</span>
+    <span class="k">elif</span> <span class="n">p</span><span class="o">.</span><span class="n">pension_system</span> <span class="o">==</span> <span class="s2">"Hybrid DB-FDC"</span><span class="p">:</span>
+        <span class="n">pension</span> <span class="o">=</span> <span class="n">DB_FDC_hybrid_amount</span><span class="p">(</span><span class="n">w</span><span class="p">,</span> <span class="n">e</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="n">j</span><span class="p">,</span> <span class="n">method</span><span class="p">,</span> <span class="n">p</span><span class="p">)</span>
+        <span class="n">pension</span> <span class="o">=</span> <span class="n">pension</span> <span class="o">*</span> <span class="n">replacement_rate_adjustment</span><span class="p">(</span>
+            <span class="n">pension</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="n">j</span><span class="p">,</span> <span class="n">method</span><span class="p">,</span> <span class="n">p</span>
+        <span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
             <span class="s2">"pension_system must be one of the following: "</span>
             <span class="s2">"'US-Style Social Security', 'Defined Benefits', "</span>
             <span class="s2">"'Notional Defined Contribution', 'Points System', "</span>
-            <span class="s2">"'Hybrid DB-NDC'"</span>
+            <span class="s2">"'Hybrid DB-NDC', 'Hybrid DB-FDC'"</span>
         <span class="p">)</span>
     <span class="k">return</span> <span class="n">pension</span></div>
 
@@ -1478,6 +1485,52 @@
 
 
 
+<div class="viewcode-block" id="hybrid_earn_cutoffs">
+<a class="viewcode-back" href="../../pensions.html#ogcore.pensions.hybrid_earn_cutoffs">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">hybrid_earn_cutoffs</span><span class="p">(</span><span class="n">p</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""</span>
+<span class="sd">    The two earnings cutoffs of the hybrid systems (``Hybrid DB-NDC``</span>
+<span class="sd">    and ``Hybrid DB-FDC``), from ``pension_earn_caps``, checked to be</span>
+<span class="sd">    ordered in every period and at every age.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        p (OG-Core Specifications object): model parameters</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        cut1, cut2 (Numpy arrays): the cutoffs in model units of labor</span>
+<span class="sd">            income, by period and age ((T + S) x S once</span>
+<span class="sd">            ``Specifications`` builds them; a single value or a path by</span>
+<span class="sd">            period, as a caller may set by hand, is also accepted)</span>
+
+<span class="sd">    Raises:</span>
+<span class="sd">        ValueError: if ``dc_earn_cap_factor`` is less than</span>
+<span class="sd">            ``db_earn_cap_factor`` in any period</span>
+<span class="sd">    """</span>
+    <span class="n">cut1</span><span class="p">,</span> <span class="n">cut2</span> <span class="o">=</span> <span class="n">pension_earn_caps</span><span class="p">(</span><span class="n">p</span><span class="p">)</span>
+    <span class="n">n_per</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">cut1</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">cut2</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+    <span class="n">n_age</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">cut1</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">cut2</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+    <span class="n">rows</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">n_per</span><span class="p">)[:,</span> <span class="n">np</span><span class="o">.</span><span class="n">newaxis</span><span class="p">]</span>
+    <span class="n">cols</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">n_age</span><span class="p">)[</span><span class="n">np</span><span class="o">.</span><span class="n">newaxis</span><span class="p">,</span> <span class="p">:]</span>
+    <span class="n">c1_full</span> <span class="o">=</span> <span class="n">cut1</span><span class="p">[</span>
+        <span class="n">np</span><span class="o">.</span><span class="n">minimum</span><span class="p">(</span><span class="n">rows</span><span class="p">,</span> <span class="n">cut1</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="mi">1</span><span class="p">),</span>
+        <span class="n">np</span><span class="o">.</span><span class="n">minimum</span><span class="p">(</span><span class="n">cols</span><span class="p">,</span> <span class="n">cut1</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="mi">1</span><span class="p">),</span>
+    <span class="p">]</span>
+    <span class="n">c2_full</span> <span class="o">=</span> <span class="n">cut2</span><span class="p">[</span>
+        <span class="n">np</span><span class="o">.</span><span class="n">minimum</span><span class="p">(</span><span class="n">rows</span><span class="p">,</span> <span class="n">cut2</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="mi">1</span><span class="p">),</span>
+        <span class="n">np</span><span class="o">.</span><span class="n">minimum</span><span class="p">(</span><span class="n">cols</span><span class="p">,</span> <span class="n">cut2</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="mi">1</span><span class="p">),</span>
+    <span class="p">]</span>
+    <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">c2_full</span> <span class="o">&lt;</span> <span class="n">c1_full</span><span class="p">):</span>
+        <span class="n">t_bad</span><span class="p">,</span> <span class="n">s_bad</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">argwhere</span><span class="p">(</span><span class="n">c2_full</span> <span class="o">&lt;</span> <span class="n">c1_full</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+            <span class="s2">"dc_earn_cap_factor must be at least db_earn_cap_factor "</span>
+            <span class="sa">f</span><span class="s2">"in every period and at every age: in period </span><span class="si">{</span><span class="n">t_bad</span><span class="si">}</span><span class="s2"> at "</span>
+            <span class="sa">f</span><span class="s2">"age period </span><span class="si">{</span><span class="n">s_bad</span><span class="si">}</span><span class="s2">, the cutoffs are </span><span class="si">{</span><span class="n">c1_full</span><span class="p">[</span><span class="n">t_bad</span><span class="p">,</span><span class="w"> </span><span class="n">s_bad</span><span class="p">]</span><span class="si">}</span><span class="s2"> "</span>
+            <span class="sa">f</span><span class="s2">"and </span><span class="si">{</span><span class="n">c2_full</span><span class="p">[</span><span class="n">t_bad</span><span class="p">,</span><span class="w"> </span><span class="n">s_bad</span><span class="p">]</span><span class="si">}</span><span class="s2">"</span>
+        <span class="p">)</span>
+    <span class="k">return</span> <span class="n">cut1</span><span class="p">,</span> <span class="n">cut2</span></div>
+
+
+
 <div class="viewcode-block" id="DB_NDC_hybrid_amount">
 <a class="viewcode-back" href="../../pensions.html#ogcore.pensions.DB_NDC_hybrid_amount">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">DB_NDC_hybrid_amount</span><span class="p">(</span><span class="n">w</span><span class="p">,</span> <span class="n">e</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">r</span><span class="p">,</span> <span class="n">ndc_rates</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="n">j</span><span class="p">,</span> <span class="n">method</span><span class="p">,</span> <span class="n">p</span><span class="p">):</span>
@@ -1535,30 +1588,7 @@
 <span class="sd">        ValueError: if ``dc_earn_cap_factor`` is less than</span>
 <span class="sd">            ``db_earn_cap_factor`` in any period</span>
 <span class="sd">    """</span>
-    <span class="c1"># cutoffs in model units of labor income, by period and age</span>
-    <span class="c1"># ((T + S) x S once Specifications builds them; a single value or a</span>
-    <span class="c1"># path by period, as a caller may set by hand, is also accepted)</span>
-    <span class="n">cut1</span><span class="p">,</span> <span class="n">cut2</span> <span class="o">=</span> <span class="n">pension_earn_caps</span><span class="p">(</span><span class="n">p</span><span class="p">)</span>
-    <span class="n">n_per</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">cut1</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">cut2</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
-    <span class="n">n_age</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">cut1</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">cut2</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
-    <span class="n">rows</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">n_per</span><span class="p">)[:,</span> <span class="n">np</span><span class="o">.</span><span class="n">newaxis</span><span class="p">]</span>
-    <span class="n">cols</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">n_age</span><span class="p">)[</span><span class="n">np</span><span class="o">.</span><span class="n">newaxis</span><span class="p">,</span> <span class="p">:]</span>
-    <span class="n">c1_full</span> <span class="o">=</span> <span class="n">cut1</span><span class="p">[</span>
-        <span class="n">np</span><span class="o">.</span><span class="n">minimum</span><span class="p">(</span><span class="n">rows</span><span class="p">,</span> <span class="n">cut1</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="mi">1</span><span class="p">),</span>
-        <span class="n">np</span><span class="o">.</span><span class="n">minimum</span><span class="p">(</span><span class="n">cols</span><span class="p">,</span> <span class="n">cut1</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="mi">1</span><span class="p">),</span>
-    <span class="p">]</span>
-    <span class="n">c2_full</span> <span class="o">=</span> <span class="n">cut2</span><span class="p">[</span>
-        <span class="n">np</span><span class="o">.</span><span class="n">minimum</span><span class="p">(</span><span class="n">rows</span><span class="p">,</span> <span class="n">cut2</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="mi">1</span><span class="p">),</span>
-        <span class="n">np</span><span class="o">.</span><span class="n">minimum</span><span class="p">(</span><span class="n">cols</span><span class="p">,</span> <span class="n">cut2</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="mi">1</span><span class="p">),</span>
-    <span class="p">]</span>
-    <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">c2_full</span> <span class="o">&lt;</span> <span class="n">c1_full</span><span class="p">):</span>
-        <span class="n">t_bad</span><span class="p">,</span> <span class="n">s_bad</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">argwhere</span><span class="p">(</span><span class="n">c2_full</span> <span class="o">&lt;</span> <span class="n">c1_full</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
-        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-            <span class="s2">"dc_earn_cap_factor must be at least db_earn_cap_factor "</span>
-            <span class="sa">f</span><span class="s2">"in every period and at every age: in period </span><span class="si">{</span><span class="n">t_bad</span><span class="si">}</span><span class="s2"> at "</span>
-            <span class="sa">f</span><span class="s2">"age period </span><span class="si">{</span><span class="n">s_bad</span><span class="si">}</span><span class="s2">, the cutoffs are </span><span class="si">{</span><span class="n">c1_full</span><span class="p">[</span><span class="n">t_bad</span><span class="p">,</span><span class="w"> </span><span class="n">s_bad</span><span class="p">]</span><span class="si">}</span><span class="s2"> "</span>
-            <span class="sa">f</span><span class="s2">"and </span><span class="si">{</span><span class="n">c2_full</span><span class="p">[</span><span class="n">t_bad</span><span class="p">,</span><span class="w"> </span><span class="n">s_bad</span><span class="p">]</span><span class="si">}</span><span class="s2">"</span>
-        <span class="p">)</span>
+    <span class="n">cut1</span><span class="p">,</span> <span class="n">cut2</span> <span class="o">=</span> <span class="n">hybrid_earn_cutoffs</span><span class="p">(</span><span class="n">p</span><span class="p">)</span>
     <span class="n">DB</span> <span class="o">=</span> <span class="n">DB_amount</span><span class="p">(</span><span class="n">w</span><span class="p">,</span> <span class="n">e</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="n">j</span><span class="p">,</span> <span class="n">method</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">earn_lo</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">earn_hi</span><span class="o">=</span><span class="n">cut1</span><span class="p">)</span>
     <span class="n">NDC</span> <span class="o">=</span> <span class="n">NDC_amount</span><span class="p">(</span>
         <span class="n">w</span><span class="p">,</span>
@@ -1574,6 +1604,57 @@
         <span class="n">earn_hi</span><span class="o">=</span><span class="n">cut2</span><span class="p">,</span>
     <span class="p">)</span>
     <span class="k">return</span> <span class="n">DB</span> <span class="o">+</span> <span class="n">NDC</span></div>
+
+
+
+<div class="viewcode-block" id="DB_FDC_hybrid_amount">
+<a class="viewcode-back" href="../../pensions.html#ogcore.pensions.DB_FDC_hybrid_amount">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">DB_FDC_hybrid_amount</span><span class="p">(</span><span class="n">w</span><span class="p">,</span> <span class="n">e</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="n">j</span><span class="p">,</span> <span class="n">method</span><span class="p">,</span> <span class="n">p</span><span class="p">):</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">"""</span>
+<span class="sd">    Calculate public pension from a hybrid defined benefit and funded</span>
+<span class="sd">    defined contribution system.</span>
+
+<span class="sd">    This system has the same structure as the hybrid DB-NDC system</span>
+<span class="sd">    (``DB_NDC_hybrid_amount``), with a funded defined contribution (FDC)</span>
+<span class="sd">    account in place of the notional one. Labor income</span>
+<span class="sd">    $w_t e_{j,s,t} n_{j,s,t}$ is split into two bands at the cutoffs</span>
+<span class="sd">    $f_{1,t} \bar{y}$ and $f_{2,t} \bar{y}$ of ``pension_earn_caps``.</span>
+<span class="sd">    Income up to $f_{1,t} \bar{y}$ earns a defined benefit computed</span>
+<span class="sd">    with the ``DB_amount`` formula and parameters on that capped</span>
+<span class="sd">    income, which this function returns. Income between</span>
+<span class="sd">    $f_{1,t} \bar{y}$ and $f_{2,t} \bar{y}$ pays the FDC contribution</span>
+<span class="sd">    rate ``fdc_tau`` into the household's individual account, which</span>
+<span class="sd">    buys an annuity at retirement (``fdc_earn_bands`` sets this band</span>
+<span class="sd">    under this system). The annuity is paid by the FDC fund, not the</span>
+<span class="sd">    government, so it is not part of this public pension; the household</span>
+<span class="sd">    receives it through the FDC pillar. Income above $f_{2,t} \bar{y}$</span>
+<span class="sd">    earns no benefit:</span>
+
+<span class="sd">    .. math::</span>
+<span class="sd">        pension_{j,s,t} = pension^{DB}_{j,s,t}\bigl(\min\{w e n,</span>
+<span class="sd">            f_1 \bar{y}\}\bigr) \quad \forall s \geq R</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        w (array_like): real wage rate</span>
+<span class="sd">        e (Numpy array): effective labor units</span>
+<span class="sd">        n (Numpy array): labor supply; same shapes as accepted by</span>
+<span class="sd">            ``DB_amount``</span>
+<span class="sd">        t (int): model period of the first element of ``n``</span>
+<span class="sd">        j (int): index of lifetime income group, None if all groups</span>
+<span class="sd">        method (str): adjusts calculation dimensions based on 'SS',</span>
+<span class="sd">            'TPI', or 'TPI_scalar'</span>
+<span class="sd">        p (OG-Core Specifications object): model parameters</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        pension (Numpy array): defined benefit pension amount for each</span>
+<span class="sd">            household</span>
+
+<span class="sd">    Raises:</span>
+<span class="sd">        ValueError: if ``dc_earn_cap_factor`` is less than</span>
+<span class="sd">            ``db_earn_cap_factor`` in any period</span>
+<span class="sd">    """</span>
+    <span class="n">cut1</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">hybrid_earn_cutoffs</span><span class="p">(</span><span class="n">p</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">DB_amount</span><span class="p">(</span><span class="n">w</span><span class="p">,</span> <span class="n">e</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="n">j</span><span class="p">,</span> <span class="n">method</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">earn_lo</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">earn_hi</span><span class="o">=</span><span class="n">cut1</span><span class="p">)</span></div>
 
 
 
@@ -3151,7 +3232,12 @@
 <span class="sd">    ``avg_labor_inc_t1_model_units``. The upper cutoff is the cap</span>
 <span class="sd">    shared with the other defined contribution systems,</span>
 <span class="sd">    ``dc_earn_cap_factor`` times ``avg_labor_inc_t1_model_units``,</span>
-<span class="sd">    when ``pension_earn_cap`` is True, and infinite otherwise. The</span>
+<span class="sd">    when ``pension_earn_cap`` is True, and infinite otherwise. Under</span>
+<span class="sd">    the hybrid DB-FDC system (``pension_system`` 'Hybrid DB-FDC'), the</span>
+<span class="sd">    band is instead the one between the two cutoffs of</span>
+<span class="sd">    ``pension_earn_caps``, as for the notional band of the hybrid</span>
+<span class="sd">    DB-NDC system, whatever ``fdc_earn_floor_factor`` and</span>
+<span class="sd">    ``pension_earn_cap``. The</span>
 <span class="sd">    cutoff at period t and age s is the one that applies to the cohort</span>
 <span class="sd">    of that household; it applies to the labor income the household</span>
 <span class="sd">    earns in that period.</span>
@@ -3165,6 +3251,9 @@
 <span class="sd">            factor set by hand as a single value or a path by period</span>
 <span class="sd">            gives one column, applied at every age)</span>
 <span class="sd">    """</span>
+    <span class="k">if</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="s2">"pension_system"</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span> <span class="o">==</span> <span class="s2">"Hybrid DB-FDC"</span><span class="p">:</span>
+        <span class="c1"># the FDC band of the hybrid system lies between its two cutoffs</span>
+        <span class="k">return</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">ascontiguousarray</span><span class="p">(</span><span class="n">c</span><span class="p">)</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">hybrid_earn_cutoffs</span><span class="p">(</span><span class="n">p</span><span class="p">))</span>
     <span class="n">avg_inc</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">avg_labor_inc_t1_model_units</span><span class="p">)</span>
     <span class="n">lo</span> <span class="o">=</span> <span class="n">_period_age</span><span class="p">(</span><span class="nb">getattr</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="s2">"fdc_earn_floor_factor"</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">))</span> <span class="o">*</span> <span class="n">avg_inc</span>
     <span class="k">if</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="s2">"pension_earn_cap"</span><span class="p">,</span> <span class="kc">False</span><span class="p">):</span>

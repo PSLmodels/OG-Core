@@ -687,6 +687,10 @@ marginal utility:</p>
 detrended utility in the lifetime objective. (The savings Euler
 equation shows <span class="math notranslate nohighlight">\(e^{-\sigma g_y}\)</span> instead because next period’s
 savings enter this period’s budget multiplied by <span class="math notranslate nohighlight">\(e^{g_y}\)</span>.)</p>
+<p>The second (accrual) term is included only when
+<code class="docutils literal notranslate"><span class="pre">p.pension_FOC_linkage</span></code> is true; otherwise households choose labor
+as if the annuity did not depend on their contributions. The first
+term is always included.</p>
 <p>Contributions of households that die before R go to bequests, which
 the household does not value here (its bequest motive is over
 private savings only).</p>
