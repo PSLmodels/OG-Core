@@ -1676,6 +1676,37 @@ def test_run_TPI_funded_defined_contribution(tmpdir):
     assert np.isclose(tp_r["F"][-1], ss_r["F"], rtol=1e-3)
 
 
+@pytest.mark.local
+def test_run_TPI_fdc_introduced_for_younger_cohorts(tmpdir):
+    """
+    A reform that introduces funded defined contribution accounts only
+    for cohorts aged 40 or younger in the start year (through
+    pension_regimes): older cohorts never contribute, younger working
+    cohorts contribute from the first period, the fund starts empty,
+    and the path solves and converges to the reform steady state.
+    """
+    _, _, no_fdc_out = _fdc_tpi_run(tmpdir, 0.0, enforce=False)
+    p0 = Specifications()
+    regimes = [
+        {"year": p0.start_year, "max_age_at_start": 40, "fdc_tau": 0.05}
+    ]
+    ss, tp, _ = _fdc_tpi_run(
+        tmpdir,
+        0.0,
+        baseline_dir=no_fdc_out,
+        updates={"pension_regimes": regimes},
+        tag="_regimes",
+    )
+    assert np.abs(tp["resource_constraint_error"]).max() < 1e-4
+    assert tp["F"][0] == 0.0
+    assert np.isclose(tp["F"][-1], ss["F"], rtol=1e-3)
+    # with S = 40 model periods, a period is two years and age 40 is
+    # model age 10
+    contrib0 = tp["fdc_contrib"][0]
+    assert np.all(contrib0[11:] == 0.0)
+    assert np.all(contrib0[:11] > 0.0)
+
+
 def _check_fdc_fund_reserve_path(tp, ss, p_growth, tG1):
     """
     The FDC fund reserve follows its flow identity in every period, is

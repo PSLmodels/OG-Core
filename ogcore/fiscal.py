@@ -400,9 +400,9 @@ def get_TR(
             (``aggregates.get_fdc_spread``), paid to the government if
             positive and covered by it if negative. Before ``tG1`` the
             fund keeps the spread as a reserve and pays only any
-            amount above its ceiling; in period ``tG1`` it pays its
-            whole reserve to the government (or the government covers
-            its deficit). The time path is not yet implemented
+            amount above its ceiling; at the end of period ``tG1 - 1``
+            it pays its whole reserve to the government (or the
+            government covers its deficit)
 
     Returns:
         new_TR (array_like): new value of aggregate government transfers

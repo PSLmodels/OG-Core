@@ -361,9 +361,9 @@ The `OG-Core` model allows for five different systems for public pensions:
 4. Points system
 5. Hybrid defined benefit and notional defined contribution system
 
-These can be selected with the `pension_system` parameter.  Accepted values are `US-Style Social Security`, `Defined Benefits`, `Notional Defined Contribution`, `Points System`, `Hybrid DB-NDC`.  We discuss each of these in turn below.
+These can be selected with the `pension_system` parameter.  Accepted values are `US-Style Social Security`, `Defined Benefits`, `Notional Defined Contribution`, `Points System`, `Hybrid DB-NDC`.  We discuss each of these in turn below. Any of them can be combined with a {ref}`funded defined contribution pillar <SecGovPensionsFDC>` of individual accounts, which is not part of the government budget and is turned on with `fdc_tau`.
 
-For all systems, $R$ represents the age at which the individual becomes eligible to receive the government provided retirement benefit. The retirement age is a property of a birth cohort rather than of a calendar year: a household born in period $t-s$ (of age $s$ in period $t$) faces the retirement age $R_{t-s}$, and it faces the same $R_{t-s}$ in every period of its life unless a reform moves its cohort to a new value. The base value is the parameter `retirement_age`. Changes are entered through `pension_regimes`, a list of reforms applied in order, each with a calendar `year` from which it applies, an optional `max_age_at_start` (the oldest age, in that calendar year, to which the reform applies; cohorts not yet born always qualify, and leaving it out applies the reform to everyone including current retirees), and the new parameter values. This is how a phased-in increase in the retirement age that exempts those near retirement is expressed. The model expands these inputs into an array over periods and ages, so the household problem, the aggregates, and the steady state (which uses the final period's value) all read the same cohort-specific retirement age. The parameters of the defined benefit system (`alpha_db`, `avg_earn_num_years`, `yr_contrib`) and of the notional defined contribution system (`tau_p`, `k_ret`, `indR`) can be changed by cohort in the same way, so a reform of the benefit formula can also be phased in by birth cohort. So can the earnings cap factors `db_earn_cap_factor` and `dc_earn_cap_factor` (used by the hybrid system and by `pension_earn_cap`), so that a change in the cap can exempt older workers; the cap that applies to labor income is the one the earner's cohort faces in the period in which the income is earned. With no regimes, the base `alpha_db` is a path by lifetime income group and the calendar year in which a benefit is paid, the base earnings cap factors are paths by calendar year (see the [hybrid system](#hybrid-defined-benefit-and-notional-defined-contribution-system)), and the other parameters are single values. A regime sets an earnings cap factor with a single number, which is indexed to remove trend growth in the same way as a single base value, $f e^{-g_y t}$, so the cap it sets is fixed in real terms. The replacement-rate adjustment `replacement_rate_adjust` is, by contrast, always indexed by the calendar year in which a benefit is paid.
+For all systems, $R$ represents the age at which the individual becomes eligible to receive the government provided retirement benefit. The retirement age is a property of a birth cohort rather than of a calendar year: a household born in period $t-s$ (of age $s$ in period $t$) faces the retirement age $R_{t-s}$, and it faces the same $R_{t-s}$ in every period of its life unless a reform moves its cohort to a new value. The base value is the parameter `retirement_age`. Changes are entered through `pension_regimes`, a list of reforms applied in order, each with a calendar `year` from which it applies, an optional `max_age_at_start` (the oldest age, in that calendar year, to which the reform applies; cohorts not yet born always qualify, and leaving it out applies the reform to everyone including current retirees), and the new parameter values. This is how a phased-in increase in the retirement age that exempts those near retirement is expressed. The model expands these inputs into an array over periods and ages, so the household problem, the aggregates, and the steady state (which uses the final period's value) all read the same cohort-specific retirement age. The parameters of the defined benefit system (`alpha_db`, `avg_earn_num_years`, `yr_contrib`), of the notional defined contribution system (`tau_p`, `k_ret`, `indR`), and the contribution rate of the {ref}`funded defined contribution pillar <SecGovPensionsFDC>` (`fdc_tau`) can be changed by cohort in the same way, so a reform of the benefit formula can also be phased in by birth cohort. So can the earnings cap factors `db_earn_cap_factor` and `dc_earn_cap_factor` (used by the hybrid system and by `pension_earn_cap`) and the floor of the funded defined contribution earnings band `fdc_earn_floor_factor`, so that a change in a cutoff can exempt older workers; the cutoff that applies to labor income is the one the earner's cohort faces in the period in which the income is earned. With no regimes, the base `alpha_db` is a path by lifetime income group and the calendar year in which a benefit is paid, the base earnings cutoff factors are paths by calendar year (see the [hybrid system](#hybrid-defined-benefit-and-notional-defined-contribution-system)), and the other parameters are single values. A regime sets an earnings cutoff factor with a single number, which is indexed to remove trend growth in the same way as a single base value, $f e^{-g_y t}$, so the cutoff it sets is fixed in real terms. The replacement-rate adjustment `replacement_rate_adjust` is, by contrast, always indexed by the calendar year in which a benefit is paid.
 
 ##### US-style social security system
 
@@ -560,9 +560,117 @@ where, as in the separate systems, each sum runs over the household's own earnin
 
 Given this pension system, the partial derivative of the benefit with respect to labor supply at a working age $s < R$ is the defined benefit derivative in equation {eq}`eqn:db_deriv` when the household's labor income is below $f_{1,t} \bar{y}$, the notional defined contribution derivative in equation {eq}`eqn:ndc_deriv` when it is between $f_{1,t} \bar{y}$ and $f_{2,t} \bar{y}$, and zero when it is above $f_{2,t} \bar{y}$.
 
+(SecGovPensionsFDC)=
+##### Funded defined contribution pillar
+
+In addition to the public pension system selected with `pension_system`, `OG-Core` can model a funded defined contribution (FDC) pillar: mandatory individual accounts that are invested in the economy's assets and converted to a life annuity at retirement. Unlike the five systems above, which are pay-as-you-go, the FDC pillar is not part of the government budget. Contributions are not government revenue, benefits are not government outlays, and the assets held for the accounts add to the capital stock. The only flows between the fund and the government are the spread the fund earns when the accounts are credited less than the portfolio return (see {ref}`the fund's spread and reserve <fund-spread-and-reserve>` below), which is zero by default. The pillar runs alongside whichever `pension_system` is selected, so it can model, for example, a notional defined contribution system with a funded premium pension (as in Sweden) or a reform that moves younger cohorts from a pay-as-you-go system to individual accounts. It is turned on by a positive contribution rate `fdc_tau` ($\tau^{fdc}$, zero by default), which, like the other cohort pension parameters, can be changed by birth cohort through `pension_regimes`. For example, starting from a baseline with `pension_system` set to `Notional Defined Contribution` and `tau_p` of 0.16, the following reform moves 4 of the 16 percentage points of contributions into funded accounts for cohorts aged 40 or younger in 2025, while older cohorts keep the baseline system:
+
+```python
+p.update_specifications(
+    {
+        "pension_regimes": [
+            {
+                "year": 2025,
+                "max_age_at_start": 40,
+                "tau_p": 0.12,
+                "fdc_tau": 0.04,
+            }
+        ]
+    }
+)
+```
+
+**Contributions.** At each working age $s < R$, a household pays a share $\tau^{fdc}_{s,t}$ of the labor income in the FDC earnings band into its account, out of that period's resources:
+
+  ```{math}
+  :label: eqn:fdc_contrib
+  C^{fdc}_{j,s,t} = \tau^{fdc}_{s,t}\Bigl(\min\bigl\{\max\{y_{j,s,t}, f^{lo}_{s,t}\bar{y}\}, f^{hi}_{s,t}\bar{y}\bigr\} - f^{lo}_{s,t}\bar{y}\Bigr) \quad\text{for}\quad s < R
+  ```
+
+where $y_{j,s,t} = w_t e_{j,s,t} n_{j,s,t}$ is labor income, $\bar{y}$ is `avg_labor_inc_t1_model_units`, and $f^{lo}_{s,t}$ is `fdc_earn_floor_factor` (zero by default). There is no cap specific to the FDC pillar: the cap is the one shared with the [notional defined contribution system](#notional-defined-contribution-system), so $f^{hi}_{s,t}$ is `dc_earn_cap_factor` when `pension_earn_cap` is true, whichever `pension_system` is selected, and infinite otherwise. With `pension_system` set to `Notional Defined Contribution` and `pension_earn_cap` true, the notional and funded accounts are therefore credited on the same capped earnings, as in Sweden. Setting `fdc_earn_floor_factor` to the same values as `db_earn_cap_factor` instead makes the funded accounts cover only the earnings above a defined benefit band. The floor is entered and indexed in the same way as the [hybrid system's](#hybrid-defined-benefit-and-notional-defined-contribution-system) cutoffs: a single value $f$ is the path $f e^{-g_y t}$, fixed in real terms, and a list of values by year is used as entered (to hold a cutoff fixed in model units, so that it grows with wages, enter the same value twice). As for the other systems, the cutoffs that apply to any labor income are those the earner's cohort faces in the period in which it is earned, and `pension_regimes` can change them by cohort. With `pension_earn_cap` true, `dc_earn_cap_factor` must be at least `fdc_earn_floor_factor` wherever $\tau^{fdc}$ is positive. No contributions are paid from the retirement age on.
+
+**Return on the accounts.** The accounts are credited the FDC return
+
+  ```{math}
+  :label: eqn:fdc_return
+  r_{fdc,s,t} = r_{p,t} - \varphi_{s,t}
+  ```
+
+where $r_{p,t}$ is the household portfolio return {eq}`eq_portfolio_return` and $\varphi_{s,t}$ is the wedge `r_fdc_wedge` (zero by default) on the return earned at age $s$ in period $t$. A positive wedge represents, for example, the fees charged for managing the accounts; a negative wedge means the accounts earn more than household savings. The wedge is a cohort pension parameter: the wedge that applies to an account in any period is the one the account holder's cohort faces in that period, and `pension_regimes` can change it by cohort. A single value is held constant over the time path (it is not indexed to trend growth).
+
+**Accumulation.** End-of-period holdings $h_{j,s,t} = a_{j,s,t} + C^{fdc}_{j,s,t}$ earn the FDC return with the same timing as private savings: holdings carried from age $s$ in period $t$ earn $r_{fdc,s+1,t+1}$. In stationarized units,
+
+  ```{math}
+  :label: eqn:fdc_accum
+  \hat{a}_{j,s+1,t+1} = (1 + r_{fdc,s+1,t+1})e^{-g_y}\hat{h}_{j,s,t} \quad\text{for}\quad s < R
+  ```
+
+so each contribution earns the return in every period from the one after it is made through the retirement period itself (one period more than notional balances are credited). If the household dies before retirement, its holdings and their FDC return go to bequests, together with its private savings.
+
+**Annuitization.** At the retirement age $R$ the balance buys an actuarially fair life annuity-due, fixed in real terms (so falling at rate $e^{-g_y}$ in stationarized units), with the first payment in period $R$:
+
+  ```{math}
+  :label: eqn:fdc_annuity
+  \hat{P}_{j,R,t} = \frac{\hat{a}_{j,R,t}}{\ddot{a}_{j,R,t}}, \qquad \ddot{a}_{j,s,t} = 1 + \frac{1 - \rho_{j,s,t}}{1 + r_{fdc,s+1,t+1}}\ddot{a}_{j,s+1,t+1}, \qquad \ddot{a}_{j,E+S,t} = 1
+  ```
+
+The annuity is priced on the mortality rates of the household's own lifetime income group along its cohort's life and on the path of $r_{fdc}$ the household foresees, so that each group's annuity pool pays out exactly what it holds. After retirement, $\hat{h}_{j,s,t} = \hat{a}_{j,s,t} - \hat{P}_{j,s,t}$, and the holdings of those who die stay in the pool, shared among the survivors:
+
+  ```{math}
+  :label: eqn:fdc_pool
+  \hat{a}_{j,s+1,t+1} = \frac{(1 + r_{fdc,s+1,t+1})e^{-g_y}}{1 - \rho_{j,s,t}}\hat{h}_{j,s,t} \quad\text{for}\quad s \geq R
+  ```
+
+Households alive when the transition path begins start from the FDC holdings of their age in the baseline steady state (zero if the baseline has no FDC pillar), scaled for the period-0 population in the same way as their private savings. Their balances earn the FDC return of period 0, and those already retired re-annuitize their remaining balances on the new path of $r_{fdc}$.
+
+**Household problem.** The household budget constraint includes $-C^{fdc}_{j,s,t} + P_{j,s,t}$. Because a contribution buys a future annuity, the first order condition for labor supply values that annuity rather than treating the contribution as a tax. At a working age $s < R$, the FDC pillar adds to the marginal benefit of labor
+
+  ```{math}
+  :label: eqn:fdc_foc
+  -\frac{u'(c_{j,s,t})}{\tilde{p}_t}\frac{\partial C^{fdc}_{j,s,t}}{\partial n_{j,s,t}} + \frac{\partial C^{fdc}_{j,s,t}}{\partial n_{j,s,t}}m_{j,s,t}\sum_{u=R}^{E+S}\beta_j^{u-s}\prod_{i=s}^{u-1}(1 - \rho_{j,i})e^{(1-\sigma)g_y(u-s)}\frac{u'(c_{j,u,t+u-s})}{\tilde{p}_{t+u-s}}e^{-g_y(u-R)}
+  ```
+
+where $m_{j,s,t}$ is the benefit at age $R$ bought by a unit contributed at age $s$. Along a consumption path that satisfies the savings Euler equation, contributions before retirement are valued like private saving, and the annuity adds the value of its mortality credits.
+
+**Aggregates.** The balances the fund owes households, $\hat{F}_t$, are the end-of-period holdings aggregated like household savings {eq}`EqMarkClr_Bt`, with immigrants arriving with the holdings per survivor of their age. The fund invests them in the same portfolio as household savings.
+
+(fund-spread-and-reserve)=
+**The fund's spread and reserve.** The fund earns $r_{p,t}$ on the balances it owes but credits the accounts only $r_{fdc,s,t}$, so it earns the spread
+
+  ```{math}
+  :label: eqn:fdc_spread
+  \hat{\Pi}^{fdc}_t = \sum_{s=E+1}^{E+S}\sum_{j=1}^{J}\varphi_{s,t}\,\hat{f}_{j,s,t}
+  ```
+
+where $\hat{f}_{j,s,t}$ are the balances owed to members of age $s$ in lifetime income group $j$ at the start of period $t$ (the terms of $\hat{F}_t$, including the balances of members who died before retirement, which are bequeathed with the FDC return). The spread is negative when the wedge is negative. The fund keeps the spread only temporarily, in an FDC fund reserve $\hat{Z}^{fdc}_t$ that is invested in the household portfolio and earns $r_{p,t}$. The reserve pays FDC fund revenue $\hat{\Psi}^{fdc}_t \geq 0$ to the government and receives transfers $\hat{\Phi}^{fdc}_t \geq 0$ from it:
+
+  ```{math}
+  :label: eqn:fdc_reserve
+  e^{g_y}\left(1 + \tilde{g}_{n,t+1}\right)\hat{Z}^{fdc}_{t+1} = (1 + r_{p,t})\hat{Z}^{fdc}_t + \hat{\Pi}^{fdc}_t - \hat{\Psi}^{fdc}_t + \hat{\Phi}^{fdc}_t
+  ```
+
+On the transition path the reserve starts at $\hat{Z}^{fdc}_0 = 0$ and builds up until the budget closure rule begins in period $T_{G1}$ (see Section {ref}`SecUnbalGBCcloseRule`):
+
+  * In periods $t < T_{G1} - 1$, the reserve accumulates the spread and its own return. It is capped at $\bar{z}\hat{Y}_{t+1}$, where $\bar{z}$ is `fdc_fund_reserve_max_GDPratio` (0.5 by default; zero means the fund never holds a reserve), and any amount above the cap is paid to the government as FDC fund revenue $\hat{\Psi}^{fdc}_t$. The reserve has no floor, so a negative wedge runs a deficit, and $\hat{\Phi}^{fdc}_t = 0$.
+  * At the end of period $T_{G1} - 1$, the whole balance is paid to the government, or, if the reserve is in deficit, the government covers it with a transfer $\hat{\Phi}^{fdc}_{T_{G1}-1}$.
+  * From period $T_{G1}$ on, the reserve is zero, and the spread is paid to the government each period, or covered by it if negative: $\hat{\Psi}^{fdc}_t - \hat{\Phi}^{fdc}_t = \hat{\Pi}^{fdc}_t$.
+
+In the steady state, the fund holds no reserve, $\bar{Z}^{fdc} = 0$, and $\bar{\Psi}^{fdc} - \bar{\Phi}^{fdc} = \bar{\Pi}^{fdc}$. Paying the reserve out when the closure rule begins means the rule that stabilizes government debt also absorbs the reserve, and the economy can reach the steady state by the end of the time path. Net FDC fund revenue $\hat{\Psi}^{fdc}_t - \hat{\Phi}^{fdc}_t$ enters the government budget constraint {eq}`EqUnbalGBCbudgConstr`, but it is not tax revenue. The fund's owed balances and its reserve add to domestic savings in the capital market, $K^d_t + D^d_t = B_t + F_t + Z^{fdc}_t$.
+
+**Modeling choices to note.**
+
+  * The bequest motive is over private savings only: households do not value the FDC balances bequeathed if they die before retirement.
+  * Contributions are paid from after-tax income, and the fund's returns and the annuity benefits are untaxed, as pay-as-you-go pension benefits are.
+  * The fund's returns are not included in before-tax income or in the income used to calibrate the factor that converts model units to dollars.
+  * Domestic capital $K^d_t$ includes the fund's holdings.
+  * The FDC earnings cap is the one shared with the notional defined contribution system (`dc_earn_cap_factor`, applied when `pension_earn_cap` is true), and the floor `fdc_earn_floor_factor` is indexed like the shared cutoffs: a single value is fixed in real terms.
+  * Contributions stop at the retirement age.
+  * The wedge `r_fdc_wedge` is a spread the fund keeps, and it flows to the government budget (through the temporary reserve on the time path). It is not a resource cost: fees are not paid to an asset manager outside the model.
+  * When `initial_wealth_ratio` rescales initial private savings, initial FDC holdings are not rescaled.
+
 ##### Aggregate Pension Spending
 
-Total pension spending is the sum of the pension payments to each household in the model:
+Total pension spending is the sum of the public pension payments to each household in the model (benefits from the funded defined contribution pillar are paid by the fund, not the government, and are not included):
 
   ```{math}
   :label: EqPensionSpending
@@ -700,14 +808,14 @@ Note that the budget closure rule (described in Section ref{`SecUnbalGBCcloseRul
 (SecUnbalGBCbudgConstr)=
 ## Government Budget Constraint
 
-  Let the level of government debt in period $t$ be given by $D_t$. The government budget constraint requires that government revenue $Rev_t$, external foreign assistance, $FA_t$, plus the budget deficit ($D_{t+1} - D_t$) equal expenditures on interest on the debt, government spending on public goods $G_t$, total infrastructure investments $I_{g,t}$, total pension outlays, total transfer payments to households $TR_t$, and $UBI_t$ every period $t$,
+  Let the level of government debt in period $t$ be given by $D_t$. The government budget constraint requires that government revenue $Rev_t$, external foreign assistance, $FA_t$, plus the budget deficit ($D_{t+1} - D_t$) equal expenditures on interest on the debt, government spending on public goods $G_t$, total infrastructure investments $I_{g,t}$, total pension outlays, total transfer payments to households $TR_t$, and $UBI_t$ every period $t$. When the funded defined contribution pillar is on, net FDC fund revenue $\Psi^{fdc}_t - \Phi^{fdc}_t$ also enters the constraint (see {ref}`SecGovPensionsFDC`),
 
   ```{math}
   :label: EqUnbalGBCbudgConstr
-    D_{t+1} + Rev_t + FA_t = (1 + r_{gov,t})D_t + G_t + I_{g,t} + Pensions_t + TR_t + UBI_t  \quad\forall t
+    D_{t+1} + Rev_t + \Psi^{fdc}_t + FA_t = (1 + r_{gov,t})D_t + G_t + I_{g,t} + Pensions_t + TR_t + UBI_t + \Phi^{fdc}_t  \quad\forall t
   ```
 
-  where $r_{gov,t}$ is the interest rate paid by the government defined in equation {eq}`EqUnbalGBC_rate_wedge` below, $G_{t}$ is government spending on public goods, $I_{g,t}$ is total government spending on infrastructure investment, $TR_{t}$ are non-pension government transfers, and $UBI_t$ is the total UBI transfer outlays across households in time $t$. All variables in {eq}`EqUnbalGBCbudgConstr` are real variables denominated in units of current-period output in industry $M$ the numeraire ($p_{M,t}=1$ for all $t$).
+  where $r_{gov,t}$ is the interest rate paid by the government defined in equation {eq}`EqUnbalGBC_rate_wedge` below, $G_{t}$ is government spending on public goods, $I_{g,t}$ is total government spending on infrastructure investment, $TR_{t}$ are non-pension government transfers, $UBI_t$ is the total UBI transfer outlays across households in time $t$, and $\Psi^{fdc}_t$ and $\Phi^{fdc}_t$ are the FDC fund revenue paid to the government and the transfers the government pays the fund, both zero when the pillar is off or `r_fdc_wedge` is zero. All variables in {eq}`EqUnbalGBCbudgConstr` are real variables denominated in units of current-period output in industry $M$ the numeraire ($p_{M,t}=1$ for all $t$).
 
   We assume that government spending on public goods in terms of the numeraire good is a fixed fraction of GDP each period in the initial periods.
 
