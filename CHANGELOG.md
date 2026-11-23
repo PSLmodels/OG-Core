@@ -5,6 +5,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Fixed
+- `demographics.get_pop_objs` now starts the population projection from the last year of population data. The population data have one more year than the fertility, mortality, and immigration rates (T0 + 1 years with user-provided data, T0 + 2 with UN data, whose rates run from `start_data_year` to `final_data_year`), but the projection started from year T0 - 1. With UN data it replaced data year T0 with a step that applied the extrapolated rates (`mort_rates[-1]`, `imm_rates_orig[-1]`) where the rate arrays the model uses (`rho`, `imm_rates`) list the year T0 - 1 rates, so when mortality changed in the last data year the population path broke its own law of motion in that one period. In a Japan calibration (UN data, `initial_data_year = start_year - 1`) this caused a resource-constraint error of 1.5e-3 of GDP in period 2 of every transition; with the fix the law of motion holds to 1e-17 in every period before `fixper`, the period-2 error is gone (below 1e-6), and aggregates move by under 0.06 percent. User-provided data, whose rates cover T0 years, give the same path as before. Adds `test_pop_path_follows_its_law_of_motion`.
+
 ## [0.25.1] - 2026-11-22
 
 ### Changed

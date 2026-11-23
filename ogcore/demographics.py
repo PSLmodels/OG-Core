@@ -1775,10 +1775,20 @@ def get_pop_objs(
 
     # Generate time path of the population distribution after final
     # year of data
+    # pop_2D has one more year than the rates, which map each year into
+    # the next: T0 + 1 years with user-provided data, T0 + 2 with UN data
+    # (whose rates run from start_data_year to final_data_year). The
+    # projection starts from the last data year. Starting it from
+    # pop_2D[T0 - 1] would, with UN data, replace data year T0 with a step
+    # that applies the extrapolated rates (mort_rates[-1],
+    # imm_rates_orig[-1]) where the rate arrays the model uses list the
+    # period-(T0 - 1) rates. When mortality changes in the last data year,
+    # the population then breaks its own law of motion in that period,
+    # which shows up as a resource-constraint error in the transition.
     omega_path_lev = np.zeros((T + S, E + S))
-    pop_curr = pop_2D[T0 - 1, :]
-    omega_path_lev[:T0, :] = pop_2D[:T0, :]
-    for per in range(T0, T + S):
+    pop_curr = pop_2D[len_pop_dist - 1, :]
+    omega_path_lev[:len_pop_dist, :] = pop_2D
+    for per in range(len_pop_dist, T + S):
         pop_next = np.dot(OMEGA_orig, pop_curr)
         omega_path_lev[per, :] = pop_next.copy()
         pop_curr = pop_next.copy()

@@ -1247,3 +1247,48 @@ def test_cli_show_reports_expiry(
     out = capsys.readouterr().out
     assert expected in out
     assert token not in out
+
+
+def test_pop_path_follows_its_law_of_motion(monkeypatch):
+    """
+    The population path must satisfy the law of motion implied by the rate
+    arrays the model uses in every period before the fixper adjustment,
+    including the first projected period. With UN data the rates cover
+    T0 + 1 years and the population T0 + 2, so mortality can change in the
+    last data year; the projection must start from the last data year
+    rather than replace it with a step that uses the extrapolated rates.
+    Mimics the UN path with T0 = 2 (rates for 3 years, population for 4),
+    mortality falling in the last year.
+    """
+    E, S = 20, 80
+    T = int(round(4.0 * S))
+    start_year = 2024
+    fert_3 = np.vstack((fert_rates, fert_rates[-1:, :]))
+    mort_3 = np.vstack((mort_rates, mort_rates[-1:, :] * 0.95))
+    infmort_3 = np.append(infmort_rates, infmort_rates[-1])
+    pop_4 = np.vstack((pop_dist, pop_dist[-1:, :] * 0.997))
+
+    monkeypatch.setattr(demographics, "get_fert", lambda *a, **k: fert_3)
+    monkeypatch.setattr(
+        demographics, "get_mort", lambda *a, **k: (mort_3, infmort_3)
+    )
+    monkeypatch.setattr(demographics, "get_pop", lambda *a, **k: pop_4)
+    pop_dict = demographics.get_pop_objs(
+        E,
+        S,
+        T,
+        0,
+        99,
+        initial_data_year=start_year - 1,
+        final_data_year=start_year,
+        GraphDiag=False,
+    )
+    omega = pop_dict["omega"].sum(axis=-1)
+    rho = pop_dict["rho"][:, :, 0]
+    imm = pop_dict["imm_rates"][:, :, 0]
+    g_n = pop_dict["g_n"]
+    fixper = int(1.5 * S)
+    for t in range(fixper - 2):
+        lhs = omega[t + 1, 1:] * (1 + g_n[t])
+        rhs = omega[t, :-1] * (1 - rho[t, :-1]) + imm[t, 1:] * omega[t, 1:]
+        assert np.allclose(lhs, rhs, rtol=0, atol=1e-12), t
