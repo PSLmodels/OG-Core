@@ -441,13 +441,13 @@ The pension amount under a notional defined contribution system is given as:
 
   ```{math}
   :label: eqn:ndc_pension
-   pension_{j,s,t} = \biggl[\sum_{u=E}^{R-1}\tau^{p}_{u,t-s+u}w_{t-s+u}e_{j,u,t-s+u}n_{j,u,t-s+u}\prod_{a=u+1}^{R-1}(1 + g_{NDC,t-s+a})\biggr]\delta_{R,s,t} \quad \forall s \geq R
+   pension_{j,s,t} = \biggl[\sum_{u=E}^{R-1}\tau^{p}_{u,t-s+u}w_{t-s+u}e_{j,u,t-s+u}n_{j,u,t-s+u}\prod_{a=u+1}^{R}(1 + g_{NDC,t-s+a})\biggr]\delta_{R,s,t} \quad \forall s \geq R
   ```
 
 where the sum runs over the household's own contribution history, quantities are in real, non-stationarized units, and:
 
   * $\tau^{p}_{u,t-s+u}$ is the notional contribution rate (`tau_p`) that the household's cohort faced at working age $u$, in period $t-s+u$. It sets the share of labor income credited to the household's notional account. It is not a tax: it is not deducted from household income or counted as government revenue. The only payroll tax households pay is `tau_payroll`, which applies to all labor income under every pension system
-  * $g_{NDC,t}$ is the rate credited to notional balances in period $t$. A contribution made at age $u$ earns the rates credited in each period from the next one through the period before retirement. The credited rate is the growth realized from period $t-1$ to period $t$ of the measure chosen with `ndc_growth_rate`. Because model aggregates are stationarized by $e^{g_y t}$ and by population, the growth of an aggregate $X$ is recovered from its stationarized value $\hat{X}$ as
+  * $g_{NDC,t}$ is the rate credited to notional balances in period $t$. A contribution made at age $u$ earns the rates credited in each period from the next one through the retirement period $R$, in which the first benefit is paid. This is the timing of private savings in the household's problem, where a stock carried into a period earns that period's return, and it is the timing the conversion coefficient $\delta_{R}$ assumes: its annuity factor $dir_{R}$ values the balance in period $R$ and does not discount the first payment. With the discount rate equal to the credited rate, $k = 0$, and $ind_R = 0$, the expected present value of the benefits in period $R$ therefore equals the notional balance. The credited rate is the growth realized from period $t-1$ to period $t$ of the measure chosen with `ndc_growth_rate`. Because model aggregates are stationarized by $e^{g_y t}$ and by population, the growth of an aggregate $X$ is recovered from its stationarized value $\hat{X}$ as
 
     ```{math}
     1 + g_{X,t} = \frac{\hat{X}_{t}}{\hat{X}_{t-1}}e^{g_y}(1 + g_{n,t-1})
@@ -488,10 +488,12 @@ Given this pension system, the partial derivatives from the household section ar
   :label: eqn:ndc_deriv
   \frac{\partial \theta_{j,u,t+u-s}}{\partial n_{j,s,t}} =
     \begin{cases}
-      \tau^{p}_{t}w_{t}e_{j,s}(1+g_{NDC,t})^{u - s}\delta_{R,t}, & \text{if}\ s<R-1 \\
+      \tau^{p}_{t}w_{t}e_{j,s}(1+g_{NDC})^{R - s}\delta_{R}, & \text{if}\ s<R \\
       0, & \text{if}\ s \geq R \\
     \end{cases}
   ```
+
+for every age $u \geq R$ at which a benefit is paid: a contribution at working age $s$ is credited in each period from $s+1$ through $R$. The derivative is evaluated at a single credited rate $g_{NDC}$ and conversion coefficient $\delta_{R}$.
 
 By default all labor income is credited to the notional account. Setting the boolean parameter `pension_earn_cap` to `True` caps the labor income credited to the account at $f_{2,t}\bar{y}$, where $f_{2,t}$ is the parameter `dc_earn_cap_factor` and $\bar{y}$ is the parameter `avg_labor_inc_t1_model_units`, so that $\min\{w_{t-s+u}e_{j,u,t-s+u}n_{j,u,t-s+u}, f_{2,t-s+u}\bar{y}\}$ replaces $w_{t-s+u}e_{j,u,t-s+u}n_{j,u,t-s+u}$ in equation {eq}`eqn:ndc_pension`. This is the upper cutoff of the notional defined contribution band of the [hybrid system](#hybrid-defined-benefit-and-notional-defined-contribution-system), and the path of $f_{2,t}$ is entered and indexed over time in the way described there. The cutoff that applies to any labor income is the one in effect in the period in which it was earned, and the derivative in equation {eq}`eqn:ndc_deriv` is zero at a working age at which labor income is above the cutoff. The cap applies only to the income credited to the account; the payroll tax `tau_payroll` applies to all labor income.
 
@@ -553,7 +555,7 @@ The pension amount under the hybrid system is then the sum of the two benefits:
   :label: eqn:hybrid_pension
   \begin{split}
    pension_{j,s,t} = &\biggl[\frac{\sum_{u=R-ny}^{R-1}y^{DB}_{j,u,t-s+u}}{ny}\biggr]\times Cy \times \alpha^{DB}_{j,s,t} \\
-   &+ \biggl[\sum_{u=E}^{R-1}\tau^{p}_{u,t-s+u}y^{NDC}_{j,u,t-s+u}\prod_{a=u+1}^{R-1}(1 + g_{NDC,t-s+a})\biggr]\delta_{R,s,t} \quad \forall s \geq R
+   &+ \biggl[\sum_{u=E}^{R-1}\tau^{p}_{u,t-s+u}y^{NDC}_{j,u,t-s+u}\prod_{a=u+1}^{R}(1 + g_{NDC,t-s+a})\biggr]\delta_{R,s,t} \quad \forall s \geq R
   \end{split}
   ```
 
@@ -583,7 +585,22 @@ The same economy can be specified without this system, by selecting the `Defined
 (SecGovPensionsFDC)=
 ##### Funded defined contribution pillar
 
-In addition to the public pension system selected with `pension_system`, `OG-Core` can model a funded defined contribution (FDC) pillar: mandatory individual accounts that are invested in the economy's assets and converted to a life annuity at retirement. Unlike the five systems above, which are pay-as-you-go, the FDC pillar is not part of the government budget. Contributions are not government revenue, benefits are not government outlays, and the assets held for the accounts add to the capital stock. The only flows between the fund and the government are the spread the fund earns when the accounts are credited less than the portfolio return (see {ref}`the fund's spread and reserve <fund-spread-and-reserve>` below), which is zero by default. The pillar runs alongside whichever `pension_system` is selected, so it can model, for example, a notional defined contribution system with a funded premium pension (as in Sweden) or a reform that moves younger cohorts from a pay-as-you-go system to individual accounts. It is turned on by a positive contribution rate `fdc_tau` ($\tau^{fdc}$, zero by default), which, like the other cohort pension parameters, can be changed by birth cohort through `pension_regimes`.
+In addition to the public pension system selected with `pension_system`, `OG-Core` can model a funded defined contribution (FDC) pillar: mandatory individual accounts that are invested in the economy's assets and converted to a life annuity at retirement. Unlike the five systems above, which are pay-as-you-go, the FDC pillar is not part of the government budget. Contributions are not government revenue, benefits are not government outlays, and the assets held for the accounts add to the capital stock. The only flows between the fund and the government are the spread the fund earns when the accounts are credited less than the portfolio return (see {ref}`the fund's spread and reserve <fund-spread-and-reserve>` below), which is zero by default. The pillar runs alongside whichever `pension_system` is selected, so it can model, for example, a notional defined contribution system with a funded premium pension (as in Sweden) or a reform that moves younger cohorts from a pay-as-you-go system to individual accounts. It is turned on by a positive contribution rate `fdc_tau` ($\tau^{fdc}$, zero by default), which, like the other cohort pension parameters, can be changed by birth cohort through `pension_regimes`. For example, starting from a baseline with `pension_system` set to `Notional Defined Contribution` and `tau_p` of 0.16, the following reform moves 4 of the 16 percentage points of contributions into funded accounts for cohorts aged 40 or younger in 2025, while older cohorts keep the baseline system:
+
+```python
+p.update_specifications(
+    {
+        "pension_regimes": [
+            {
+                "year": 2025,
+                "max_age_at_start": 40,
+                "tau_p": 0.12,
+                "fdc_tau": 0.04,
+            }
+        ]
+    }
+)
+```
 
 **Contributions.** At each working age $s < R$, a household pays a share $\tau^{fdc}_{s,t}$ of the labor income in the FDC earnings band into its account, out of that period's resources:
 
@@ -610,7 +627,7 @@ where $r_{p,t}$ is the household portfolio return {eq}`eq_portfolio_return` and 
   \hat{a}_{j,s+1,t+1} = (1 + r_{fdc,s+1,t+1})e^{-g_y}\hat{h}_{j,s,t} \quad\text{for}\quad s < R
   ```
 
-so each contribution earns the return in every period from the one after it is made through the retirement period itself (one period more than notional balances are credited). If the household dies before retirement, its holdings and their FDC return go to bequests, together with its private savings.
+so each contribution earns the return in every period from the one after it is made through the retirement period itself (the same window over which notional balances are credited). If the household dies before retirement, its holdings and their FDC return go to bequests, together with its private savings.
 
 **Annuitization.** At the retirement age $R$ the balance buys an actuarially fair life annuity-due, fixed in real terms (so falling at rate $e^{-g_y}$ in stationarized units), with the first payment in period $R$:
 
