@@ -23,6 +23,36 @@ _TPI dimensions:_ T
 _SS dimensions:_ scalar  
 
 
+###  `F`  
+_Description:_ Assets of the funded defined contribution fund (individual account holdings)  
+_TPI dimensions:_ T  
+_SS dimensions:_ scalar  
+
+
+###  `fdc_spread`  
+_Description:_ Spread the funded defined contribution fund earns on the balances it owes (r_fdc_wedge times the owed balances)  
+_TPI dimensions:_ T  
+_SS dimensions:_ scalar  
+
+
+###  `fdc_fund_reserves`  
+_Description:_ Reserve of the funded defined contribution fund at the beginning of the period (temporary: zero from tG1 on and in the steady state)  
+_TPI dimensions:_ T  
+_SS dimensions:_ scalar  
+
+
+###  `fdc_fund_revenue`  
+_Description:_ FDC fund revenue paid by the funded defined contribution fund to the government (not tax revenue)  
+_TPI dimensions:_ T  
+_SS dimensions:_ scalar  
+
+
+###  `fdc_fund_transfer`  
+_Description:_ Transfer from the government to the funded defined contribution fund covering a negative spread or reserve deficit  
+_TPI dimensions:_ T  
+_SS dimensions:_ scalar  
+
+
 ###  `K`  
 _Description:_ Aggregate capital stock  
 _TPI dimensions:_ T  
@@ -363,6 +393,24 @@ _SS dimensions:_ SxJ
 
 ###  `mtry`  
 _Description:_ Marginal tax rate on capital income  
+_TPI dimensions:_ TxSxJ  
+_SS dimensions:_ SxJ  
+
+
+###  `fdc_contrib`  
+_Description:_ Household contributions to funded defined contribution accounts  
+_TPI dimensions:_ TxSxJ  
+_SS dimensions:_ SxJ  
+
+
+###  `fdc_benefits`  
+_Description:_ Annuity benefits from funded defined contribution accounts  
+_TPI dimensions:_ TxSxJ  
+_SS dimensions:_ SxJ  
+
+
+###  `fdc_holdings`  
+_Description:_ End-of-period holdings of funded defined contribution accounts  
 _TPI dimensions:_ TxSxJ  
 _SS dimensions:_ SxJ  
 

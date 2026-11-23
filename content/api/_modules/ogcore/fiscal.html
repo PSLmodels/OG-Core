@@ -771,9 +771,9 @@
 <span class="sd">            (``aggregates.get_fdc_spread``), paid to the government if</span>
 <span class="sd">            positive and covered by it if negative. Before ``tG1`` the</span>
 <span class="sd">            fund keeps the spread as a reserve and pays only any</span>
-<span class="sd">            amount above its ceiling; in period ``tG1`` it pays its</span>
-<span class="sd">            whole reserve to the government (or the government covers</span>
-<span class="sd">            its deficit). The time path is not yet implemented</span>
+<span class="sd">            amount above its ceiling; at the end of period ``tG1 - 1``</span>
+<span class="sd">            it pays its whole reserve to the government (or the</span>
+<span class="sd">            government covers its deficit)</span>
 
 <span class="sd">    Returns:</span>
 <span class="sd">        new_TR (array_like): new value of aggregate government transfers</span>
