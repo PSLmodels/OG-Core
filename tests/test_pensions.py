@@ -3059,3 +3059,483 @@ def test_db_cohort_inputs_cache():
     p.alpha_db = np.ones((p.T + p.S, p.J)) * 0.3
     replaced = pensions._db_cohort_inputs(p, 0, 3, 1)
     assert np.allclose(replaced[3], 0.3)
+
+
+# ---------------------------------------------------------------------
+# Funded defined contribution (FDC) accounts
+# ---------------------------------------------------------------------
+
+
+@pytest.fixture(scope="module")
+def fdc_specs():
+    p = Specifications()
+    p.update_specifications({"fdc_tau": 0.05})
+    return p
+
+
+def _fdc_e(p):
+    return p.e[-1] if np.ndim(p.e) == 3 else p.e
+
+
+def test_fdc_annuity_factor_loop():
+    rho = np.array([0.0, 0.1, 0.2, 1.0])
+    r = np.array([0.0, 0.05, 0.05, 0.05])
+    a2 = 1.0 + 0.8 / 1.05
+    a1 = 1.0 + 0.9 * a2 / 1.05
+    assert pensions.fdc_annuity_factor_loop(4, 3, rho, r) == 1.0
+    assert np.isclose(pensions.fdc_annuity_factor_loop(4, 2, rho, r), a2)
+    assert np.isclose(pensions.fdc_annuity_factor_loop(4, 1, rho, r), a1)
+
+
+def test_fdc_lifetime_loop_by_hand():
+    """
+    Contributions earn the return through the retirement period itself,
+    the benefit is an annuity-due on the balance at R, and the annuity
+    pool is exhausted at the last age.
+    """
+    S, R, g = 4, 2, 0.02
+    d = np.exp(-g)
+    y = np.array([1.0, 2.0, 0.5, 0.5])
+    tau = np.full(S, 0.1)
+    lo, hi = np.zeros(S), np.full(S, np.inf)
+    r = np.array([0.03, 0.04, 0.05, 0.06])
+    rho = np.array([0.0, 0.0, 0.5, 1.0])
+    C, A, P, H, dC, m = pensions.fdc_lifetime_loop(
+        y, tau, lo, hi, r, rho, R, g, 0, 0.0, S
+    )
+    A1 = 1.04 * d * 0.1
+    A2 = 1.05 * d * (A1 + 0.2)
+    ann2 = 1.0 + 0.5 / 1.06
+    P2 = A2 / ann2
+    A3 = 1.06 * d * (A2 - P2) / 0.5
+    assert np.allclose(C, [0.1, 0.2, 0.0, 0.0])
+    assert np.allclose(A, [0.0, A1, A2, A3])
+    assert np.allclose(P, [0.0, 0.0, P2, P2 * d])
+    assert np.allclose(H, [0.1, A1 + 0.2, A2 - P2, 0.0])
+    assert np.allclose(dC, [0.1, 0.1, 0.0, 0.0])
+    m1 = 1.05 * d / ann2
+    assert np.allclose(m, [m1 * 1.04 * d, m1, 0.0, 0.0])
+
+
+def test_fdc_lifetime_loop_band():
+    S, R = 4, 3
+    y = np.array([0.5, 1.5, 3.0, 1.0])
+    tau = np.full(S, 0.2)
+    lo, hi = np.full(S, 1.0), np.full(S, 2.0)
+    r, rho = np.zeros(S), np.array([0.0, 0.0, 0.0, 1.0])
+    C, _, _, _, dC, _ = pensions.fdc_lifetime_loop(
+        y, tau, lo, hi, r, rho, R, 0.0, 0, 0.0, S
+    )
+    # below the floor, inside the band, above the cap, retired
+    assert np.allclose(C, [0.0, 0.2 * 0.5, 0.2 * 1.0, 0.0])
+    assert np.allclose(dC, [0.0, 0.2, 0.0, 0.0])
+
+
+def test_fdc_lifetime_loop_retired_at_start():
+    """A household already retired re-annuitizes its remaining balance."""
+    S, R = 4, 1
+    rho = np.array([0.0, 0.2, 0.3, 1.0])
+    r = np.full(S, 0.04)
+    C, A, P, H, _, m = pensions.fdc_lifetime_loop(
+        np.ones(S),
+        np.full(S, 0.1),
+        np.zeros(S),
+        np.full(S, np.inf),
+        r,
+        rho,
+        R,
+        0.0,
+        2,
+        1.5,
+        S,
+    )
+    ann2 = pensions.fdc_annuity_factor_loop(S, 2, rho, r)
+    assert np.allclose(C, 0.0) and np.allclose(m, 0.0)
+    assert np.allclose(A[:2], 0.0) and np.allclose(P[:2], 0.0)
+    assert np.isclose(P[2], 1.5 / ann2)
+    assert np.isclose(H[-1], 0.0)
+
+
+def test_fdc_default_is_off():
+    p = Specifications()
+    assert np.all(p.fdc_tau == 0.0)
+    out = pensions.fdc_ss(0.04, 1.0, _fdc_e(p), np.full((p.S, p.J), 0.4), p)
+    for name in ("contrib", "balance", "benefit", "holdings", "dcontrib_dn"):
+        assert np.all(getattr(out, name) == 0.0)
+
+
+def test_fdc_ss_annuity_is_fair(fdc_specs):
+    """
+    The present value of the benefits, on the income group's mortality
+    and the return, equals the balance at retirement, and the pool's
+    holdings run out at the last age.
+    """
+    p = fdc_specs
+    r = 0.04
+    out = pensions.fdc_ss(r, 1.0, _fdc_e(p), np.full((p.S, p.J), 0.4), p)
+    R = out.R
+    assert R == p.retire[-1, 0]
+    assert np.all(out.contrib[:R] > 0) and np.all(out.contrib[R:] == 0)
+    assert np.all(out.benefit[:R] == 0) and np.all(out.benefit[R:] > 0)
+    for j in range(p.J):
+        rho = p.rho[-1, :, j]
+        surv = np.concatenate(([1.0], np.cumprod(1 - rho[R:-1])))
+        k = np.arange(p.S - R)
+        pv = np.sum(
+            out.benefit[R:, j] * np.exp(p.g_y * k) * surv / (1 + r) ** k
+        )
+        assert np.isclose(pv, out.balance[R, j])
+    assert np.allclose(out.holdings[-1], 0.0, atol=1e-12)
+
+
+def test_fdc_accrual_matches_finite_difference(fdc_specs):
+    p = fdc_specs
+    e = _fdc_e(p)[:, 1]
+    n = np.full(p.S, 0.4)
+    base = pensions.fdc_lifetime(1.0, e, n, 0.04, None, 1, p)
+    s, h = 10, 1e-6
+    n_up = n.copy()
+    n_up[s] += h
+    up = pensions.fdc_lifetime(1.0, e, n_up, 0.04, None, 1, p)
+    R = base.R
+    fd = (up.benefit[R:] - base.benefit[R:]) / h
+    analytic = (
+        base.dcontrib_dn[s]
+        * base.benefit_per_contrib[s]
+        * np.exp(-p.g_y * np.arange(p.S - R))
+    )
+    assert np.allclose(fd, analytic, rtol=1e-5)
+
+
+def test_fdc_earn_cap(fdc_specs):
+    """
+    With pension_earn_cap, FDC contributions are paid on labor income
+    between fdc_earn_floor_factor and the shared dc_earn_cap_factor
+    (times avg_labor_inc_t1_model_units); a factor entered as a path
+    is used as given.
+    """
+    p = copy.deepcopy(fdc_specs)
+    p.update_specifications(
+        {
+            "pension_earn_cap": True,
+            "dc_earn_cap_factor": [0.5, 0.5],
+            "fdc_earn_floor_factor": [0.1, 0.1],
+            "avg_labor_inc_t1_model_units": 1.0,
+        }
+    )
+    lo, hi = pensions.fdc_earn_bands(p)
+    assert lo.shape == hi.shape == (p.T + p.S, p.S)
+    assert np.allclose(lo, 0.1) and np.allclose(hi, 0.5)
+    e = np.ones(p.S)
+    n = np.linspace(0.0, 1.0, p.S)
+    out = pensions.fdc_lifetime(1.0, e, n, 0.04, None, 0, p)
+    R = out.R
+    expected = 0.05 * (np.clip(n[:R], 0.1, 0.5) - 0.1)
+    assert np.allclose(out.contrib[:R], expected)
+    inside = (n[:R] > 0.1) & (n[:R] < 0.5)
+    assert np.allclose(out.dcontrib_dn[:R], np.where(inside, 0.05, 0.0))
+
+
+def test_fdc_earn_cap_off(fdc_specs):
+    """
+    Without pension_earn_cap there is no upper cutoff, whatever
+    dc_earn_cap_factor is.
+    """
+    p = copy.deepcopy(fdc_specs)
+    p.update_specifications({"dc_earn_cap_factor": [0.5, 0.5]})
+    assert not p.pension_earn_cap
+    _, hi = pensions.fdc_earn_bands(p)
+    assert np.all(np.isinf(hi))
+    e = np.ones(p.S)
+    n = np.linspace(0.0, 1.0, p.S)
+    out = pensions.fdc_lifetime(1.0, e, n, 0.04, None, 0, p)
+    assert np.allclose(out.contrib[: out.R], 0.05 * n[: out.R])
+
+
+def test_fdc_earn_band_indexing_and_cohorts(fdc_specs):
+    """
+    A single value of either cutoff factor is indexed to remove trend
+    growth, like the hybrid cutoffs, and a regime may change the floor
+    for younger cohorts only; each household reads its cohort's
+    cutoffs in the period it earns the income.
+    """
+    p = copy.deepcopy(fdc_specs)
+    p.update_specifications(
+        {
+            "pension_earn_cap": True,
+            "dc_earn_cap_factor": [1.5],
+            "fdc_earn_floor_factor": [0.2],
+            "pension_regimes": [
+                {
+                    "year": p.start_year + 4,
+                    "max_age_at_start": 30,
+                    "fdc_earn_floor_factor": 0.4,
+                }
+            ],
+        }
+    )
+    index = np.exp(-p.g_y * np.arange(p.T + p.S))[:, np.newaxis]
+    avg = p.avg_labor_inc_t1_model_units
+    lo, hi = pensions.fdc_earn_bands(p)
+    assert np.allclose(hi, 1.5 * avg * index)
+    covered = np.isclose(p.fdc_earn_floor_factor, 0.4 * index)
+    assert covered.any() and (~covered).any()
+    assert np.allclose(
+        lo[~covered], 0.2 * avg * np.broadcast_to(index, lo.shape)[~covered]
+    )
+    # a cohort born on the path reads its own diagonal
+    t_birth = 10
+    ages = np.arange(p.S)
+    rows = np.clip(t_birth + ages, 0, p.T + p.S - 1)
+    e = np.ones(p.S)
+    n = np.full(p.S, 0.5)
+    out = pensions.fdc_lifetime(1.0, e, n, 0.04, t_birth, 0, p)
+    R = out.R
+    y = n[:R]
+    expected = 0.05 * (
+        np.clip(y, lo[rows, ages][:R], hi[rows, ages][:R]) - lo[rows, ages][:R]
+    )
+    assert np.allclose(out.contrib[:R], expected)
+
+
+def test_fdc_earn_cap_below_floor_raises():
+    with pytest.raises(ValueError, match="fdc_earn_floor_factor"):
+        Specifications().update_specifications(
+            {
+                "fdc_tau": 0.05,
+                "pension_earn_cap": True,
+                "dc_earn_cap_factor": [0.5],
+                "fdc_earn_floor_factor": [1.0],
+            }
+        )
+    # no error without the FDC pillar or without the cap
+    for updates in ({"pension_earn_cap": True}, {"fdc_tau": 0.05}):
+        Specifications().update_specifications(
+            dict(
+                updates,
+                dc_earn_cap_factor=[0.5],
+                fdc_earn_floor_factor=[1.0],
+            )
+        )
+
+
+def test_fdc_tau_by_cohort():
+    """
+    A regime introducing FDC for younger cohorts: older cohorts never
+    contribute, younger cohorts contribute from the year it starts.
+    """
+    p = Specifications()
+    p.update_specifications(
+        {
+            "pension_regimes": [
+                {
+                    "year": p.start_year + 4,
+                    "max_age_at_start": 40,
+                    "fdc_tau": 0.1,
+                }
+            ]
+        }
+    )
+    ypp = 80 / p.S
+    e, n = np.ones(p.S), np.full(p.S, 0.5)
+    t_start = int(round(4 / ypp))
+    # aged 60 at the start year: never covered
+    old = pensions.fdc_lifetime(
+        1.0, e, n, 0.04, t_start - int((60 - p.starting_age) / ypp), 0, p
+    )
+    assert np.all(old.contrib == 0)
+    # aged 30 at the start year: covered from then on
+    age0 = int((30 - p.starting_age) / ypp)
+    young = pensions.fdc_lifetime(1.0, e, n, 0.04, t_start - age0, 0, p)
+    assert np.all(young.contrib[:age0] == 0)
+    assert np.all(young.contrib[age0 : young.R] > 0)
+
+
+def test_fdc_lifetime_reads_calendar_return():
+    """The return credited at age s is the one in period t_birth + s."""
+    p = Specifications()
+    p.update_specifications({"fdc_tau": 0.1})
+    e, n = np.ones(p.S), np.full(p.S, 0.5)
+    r_path = np.linspace(0.02, 0.06, p.T + p.S)
+    t_birth = 7
+    out = pensions.fdc_lifetime(1.0, e, n, r_path, t_birth, 0, p)
+    s = 5
+    assert np.isclose(
+        out.balance[s + 1],
+        (1 + r_path[t_birth + s + 1]) * np.exp(-p.g_y) * out.holdings[s],
+    )
+
+
+def test_fdc_initial_holdings():
+    p = Specifications()
+    zeros = np.zeros((p.S, p.J))
+    for ss in ({}, {"fdc_holdings": zeros, "fdc_R": 40}):
+        H, claims, bq = pensions.fdc_initial_holdings(ss, p)
+        assert not np.any(H) and not np.any(claims) and not np.any(bq)
+    R = 40
+    H = np.linspace(0.1, 1.0, p.S)[:, None] * np.ones((1, p.J))
+    H0, claims, bq = pensions.fdc_initial_holdings(
+        {"fdc_holdings": H, "fdc_R": R}, p
+    )
+    carried = H * np.exp(-p.g_y)
+    assert np.allclose(H0, H)
+    assert np.allclose(claims[:R], carried[:R])
+    assert np.allclose(bq[:R], carried[:R]) and np.all(bq[R:] == 0)
+    surv = 1 - p.rho_preTP
+    ok = surv[R:] > 0
+    assert np.allclose(claims[R:][ok], (carried[R:] / surv[R:])[ok])
+
+
+@pytest.mark.parametrize("wedge", [0.0, 0.01], ids=["no wedge", "wedge"])
+def test_fdc_tpi_matches_cohort_lifetimes(wedge):
+    """
+    The time-path accounts are each cohort's own lifetime accounts
+    read down its diagonal, for a cohort born on the path and for one
+    alive when it begins (whose balance carried into period 0 earns
+    the period-0 FDC return).
+    """
+    p = Specifications()
+    p.update_specifications({"fdc_tau": 0.06, "r_fdc_wedge": [wedge]})
+    T, S, J = p.T, p.S, p.J
+    r_path = np.linspace(0.03, 0.06, T + S)
+    w_path = np.linspace(1.0, 1.2, T + S)
+    n_mat = np.broadcast_to(
+        np.linspace(0.3, 0.5, S)[None, :, None], (T + S, S, J)
+    ).copy()
+    claims = np.zeros((S, J))
+    claims[:, :] = np.linspace(0.0, 0.8, S)[:, None]
+    p.fdc_claims_preTP = claims
+    path = pensions.fdc_tpi(r_path, w_path, n_mat, p)
+    e_long = np.concatenate(
+        (p.e, np.broadcast_to(p.e[-1:], (S, S, J))), axis=0
+    )
+    j = 3
+    s = np.arange(S)
+    # born in period 4
+    tb = 4
+    life = pensions.fdc_lifetime(
+        w_path, e_long[tb + s, s, j], n_mat[tb + s, s, j], r_path, tb, j, p
+    )
+    on = tb + s < T
+    assert np.allclose(path.contrib[(tb + s)[on], s[on], j], life.contrib[on])
+    assert np.allclose(path.benefit[(tb + s)[on], s[on], j], life.benefit[on])
+    # aged 50 in period 0 (retired), and aged 10 (working)
+    for a0 in (50, 10):
+        n_full = n_mat[0, :, j].copy()
+        n_full[:a0] = 0.0
+        e_full = np.zeros(S)
+        e_full[a0:] = e_long[s[a0:] - a0, s[a0:], j]
+        n_full[a0:] = n_mat[s[a0:] - a0, s[a0:], j]
+        life = pensions.fdc_lifetime(
+            w_path,
+            e_full,
+            n_full,
+            r_path,
+            -a0,
+            j,
+            p,
+            a0=a0,
+            A0=(1 + r_path[0] - wedge) * claims[a0 - 1, j],
+        )
+        rows = s[a0:] - a0
+        assert np.allclose(path.holdings[rows, s[a0:], j], life.holdings[a0:])
+        assert np.allclose(path.benefit[rows, s[a0:], j], life.benefit[a0:])
+
+
+def test_fdc_return_wedge():
+    """
+    Accounts earn r_fdc = r_p - r_fdc_wedge, and a single value of the
+    wedge is held constant (not indexed to remove trend growth).
+    """
+    p = Specifications()
+    p.update_specifications({"fdc_tau": 0.1, "r_fdc_wedge": [0.01]})
+    assert np.allclose(p.r_fdc_wedge, 0.01)
+    e, n = np.ones(p.S), np.full(p.S, 0.5)
+    r_p = 0.04
+    out = pensions.fdc_lifetime(1.0, e, n, r_p, None, 0, p)
+    s = 5
+    assert np.isclose(
+        out.balance[s + 1],
+        (1 + r_p - 0.01) * np.exp(-p.g_y) * out.holdings[s],
+    )
+    # the same account as one with no wedge and a return of r_p - wedge
+    p0 = Specifications()
+    p0.update_specifications({"fdc_tau": 0.1})
+    out0 = pensions.fdc_lifetime(1.0, e, n, r_p - 0.01, None, 0, p0)
+    for name in ("contrib", "balance", "benefit", "holdings"):
+        assert np.allclose(getattr(out, name), getattr(out0, name))
+
+
+def test_fdc_return_wedge_by_cohort():
+    """
+    A wedge set through pension_regimes applies only to the cohorts
+    the regime covers, in the periods the regime is in effect.
+    """
+    p = Specifications()
+    year = p.start_year + 10
+    p.update_specifications(
+        {
+            "fdc_tau": 0.1,
+            "pension_regimes": [
+                {"year": year, "max_age_at_start": 30, "r_fdc_wedge": 0.02}
+            ],
+        }
+    )
+    ypp = 80 / p.S
+    t_start = int(round(10 / ypp))
+    e, n = np.ones(p.S), np.full(p.S, 0.5)
+    r_path = np.full(p.T + p.S, 0.04)
+    # born after the regime year: wedge 0.02 at every age
+    young = pensions.fdc_lifetime(1.0, e, n, r_path, t_start + 1, 0, p)
+    s = 5
+    assert np.isclose(
+        young.balance[s + 1],
+        (1 + 0.04 - 0.02) * np.exp(-p.g_y) * young.holdings[s],
+    )
+    # too old for the regime: no wedge
+    age0 = int(round((60 - p.starting_age) / ypp))
+    old = pensions.fdc_lifetime(
+        1.0, e, n, r_path, t_start - age0, 0, p, a0=age0, A0=1.0
+    )
+    s = age0 + 1
+    assert np.isclose(
+        old.balance[s + 1],
+        (1 + 0.04)
+        * np.exp(-p.g_y)
+        * old.holdings[s]
+        / (
+            (1 - pensions.fdc_mort_rates(p, 0)[t_start - age0 + s, s])
+            if s >= old.R
+            else 1.0
+        ),
+    )
+
+
+def test_fdc_bequeathable_tpi():
+    """
+    On the time path, holdings bequeathed in period t are scaled by
+    (1 + r_fdc) / (1 + r_p), with the wedge on the return of the next
+    age in period t, so that with get_BQ's (1 + r_p) they earn r_fdc;
+    with no wedge they are unchanged.
+    """
+    p = Specifications()
+    year = p.start_year + 10
+    p.update_specifications(
+        {
+            "fdc_tau": 0.1,
+            "r_fdc_wedge": [0.01],
+            "pension_regimes": [{"year": year, "r_fdc_wedge": 0.02}],
+        }
+    )
+    T, S, J = p.T, p.S, p.J
+    bq = np.ones((T, S, J))
+    r_p = np.linspace(0.03, 0.05, T)
+    out = pensions.fdc_bequeathable_tpi(bq, r_p, p)
+    wedge = pensions.fdc_wedge_path(p)
+    t, s = 3, 7
+    assert np.allclose(
+        out[t, s], (1 + r_p[t] - wedge[t, s + 1]) / (1 + r_p[t])
+    )
+    assert np.allclose(out[:, -1, :], 1.0)
+    p0 = Specifications()
+    assert np.allclose(pensions.fdc_bequeathable_tpi(bq, r_p, p0), bq)

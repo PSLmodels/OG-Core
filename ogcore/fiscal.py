@@ -17,14 +17,15 @@ import numpy as np
 """
 
 
-def D_G_path(r, dg_fixed_values, p):
+def D_G_path(r, dg_fixed_values, p, fdc_fund_revenue=0.0):
     r"""
     Calculate the time paths of debt and government spending
 
     .. math::
         \begin{split}
             &e^{g_y}\left(1 + \tilde{g}_{n,t+1}\right)\hat{D}_{t+1}
-            + \hat{Rev}_t = (1 + r_{gov,t})\hat{D}_t + \hat{G}_t
+            + \hat{Rev}_t + \hat{\Psi}_t - \hat{\Phi}_t
+            = (1 + r_{gov,t})\hat{D}_t + \hat{G}_t
             + \hat{TR}_t + \hat{UBI}_t \quad\forall t \\
             &\hat{G}_t = g_{g,t}\:\alpha_{g}\: \hat{Y}_t \\
             &\text{where}\quad g_{g,t} =
@@ -59,6 +60,14 @@ def D_G_path(r, dg_fixed_values, p):
             and D0_baseline is initial debt in the baseline equilibrium
             (used only if baseline=False)
         p (OG-Core Specifications object): model parameters
+        fdc_fund_revenue (scalar or array_like): net payment from the
+            funded defined contribution fund's reserve to the
+            government over the time path, $\hat{\Psi}_t -
+            \hat{\Phi}_t$: before ``tG1`` the reserve above its
+            ceiling, in period ``tG1 - 1`` the whole remaining balance
+            (negative for a deficit the government covers), and from
+            ``tG1`` on the spread (not tax revenue); it enters the
+            budget constraint wherever tax revenue $\hat{Rev}_t$ does
 
     Returns:
         (tuple): fiscal variable path output:
@@ -83,6 +92,12 @@ def D_G_path(r, dg_fixed_values, p):
         Gbaseline,
         D0_baseline,
     ) = dg_fixed_values
+    # FDC fund revenue is not tax revenue, but it enters the budget
+    # constraint in the same way
+    total_tax_revenue = np.asarray(total_tax_revenue, dtype=float).copy()
+    total_tax_revenue[: p.T] += np.broadcast_to(
+        np.asarray(fdc_fund_revenue, dtype=float), (p.T,)
+    )
 
     growth = (1 + np.append(p.g_n_preTP, p.g_n[: p.T])) * np.exp(p.g_y)
 
@@ -269,12 +284,13 @@ def get_G_ss(
     new_borrowing,
     debt_service,
     p,
+    fdc_fund_revenue=0.0,
 ):
     r"""
     Calculate the steady-state values of government spending.
 
     .. math::
-            \bar{G} = \bar{Rev} + \overline{FA}
+            \bar{G} = \bar{Rev} + \bar{\Psi} - \bar{\Phi} + \overline{FA}
             + \bar{D}\bigl[(1 + \bar{g}_n)e^{g_y} - (1 + \bar{r}_{gov})\bigr]
             - \bar{I}_g - \bar{TR} - \overline{UBI}
 
@@ -290,6 +306,15 @@ def get_G_ss(
         new_borrowing (scalar): steady-state amount of new borrowing
         debt_service (scalar): steady-state debt service costs
         p (OG-Core Specifications object): model parameters
+        fdc_fund_revenue (scalar): net payment from the funded
+            defined contribution (FDC) fund to the government,
+            $\bar{\Psi} - \bar{\Phi}$ (not tax revenue). The fund holds
+            no reserve in the steady state, so this equals the spread
+            $\bar{\Pi}$ it earns on the balances it owes households
+            (``aggregates.get_fdc_spread``): FDC fund revenue
+            $\bar{\Psi}$ paid to the government when the spread is
+            positive, or a transfer $\bar{\Phi}$ from the government
+            when it is negative
 
     Returns:
         G (tuple): steady-state government spending
@@ -300,6 +325,7 @@ def get_G_ss(
     else:
         G = (
             total_tax_revenue
+            + fdc_fund_revenue
             + new_borrowing
             + foreign_aid
             - (agg_pension_outlays + TR + debt_service + UBI_outlays + I_g)
@@ -337,6 +363,7 @@ def get_TR(
     foreign_aid,
     p,
     method,
+    fdc_fund_revenue=0.0,
 ):
     r"""
     Function to compute aggregate transfers.  Note that this excludes
@@ -364,6 +391,18 @@ def get_TR(
             government
         p (OG-Core Specifications object): model parameters
         method (str): whether doing SS or TP calculation
+        fdc_fund_revenue (array_like): net payment from the funded
+            defined contribution (FDC) fund to the government,
+            $\Psi_t - \Phi_t$ (not tax revenue). In the steady state
+            (and on the time path from period ``tG1`` on) the fund
+            holds no reserve, so this equals the spread $\Pi_t$ it
+            earns on the balances it owes households
+            (``aggregates.get_fdc_spread``), paid to the government if
+            positive and covered by it if negative. Before ``tG1`` the
+            fund keeps the spread as a reserve and pays only any
+            amount above its ceiling; at the end of period ``tG1 - 1``
+            it pays its whole reserve to the government (or the
+            government covers its deficit)
 
     Returns:
         new_TR (array_like): new value of aggregate government transfers
@@ -372,6 +411,7 @@ def get_TR(
     if p.budget_balance:
         new_TR = (
             total_tax_revenue
+            + fdc_fund_revenue
             + foreign_aid
             - agg_pension_outlays
             - G
