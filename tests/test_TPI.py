@@ -21,6 +21,7 @@ import os
 import sys
 import json
 from types import SimpleNamespace
+import scipy.optimize as opt
 from ogcore import SS, TPI, utils, solvers
 from ogcore.parameters import Specifications
 
@@ -634,6 +635,47 @@ def test_refresh_jac_sparsity_adds_missing_links():
         _banded_residuals, x0, (row_scale, 1.0), p, group=0
     )
     assert not changed
+
+
+def _cubic_residuals(x):
+    return np.array([x[0] ** 3 - 2.0, x[1] - x[0]])
+
+
+def _singular_jac(x):
+    return np.array([[1.0, 1.0], [1.0, 1.0]])
+
+
+def test_retry_dense_if_failed():
+    # A solve with a poor sparse Jacobian can return without raising and
+    # without converging ("not making good progress"). It must be retried
+    # with dense finite differences, not passed on with large residuals.
+    p = SimpleNamespace(FOC_root_method="hybr", mindist_TPI=1e-9)
+    x0 = [3.0, 0.0]
+    failed = opt.root(
+        _cubic_residuals,
+        x0,
+        method="hybr",
+        tol=TPI.MINIMIZER_TOL,
+        jac=_singular_jac,
+    )
+    assert not TPI._root_converged(failed, p)
+    fixed = TPI._retry_dense_if_failed(
+        failed, _cubic_residuals, x0, (), p, _singular_jac
+    )
+    assert TPI._root_converged(fixed, p)
+    assert np.allclose(fixed.x, 2.0 ** (1.0 / 3.0))
+    # no sparse Jacobian was used: nothing to retry
+    assert (
+        TPI._retry_dense_if_failed(failed, _cubic_residuals, x0, (), p, None)
+        is failed
+    )
+    # an already converged solve is returned as is
+    assert (
+        TPI._retry_dense_if_failed(
+            fixed, _cubic_residuals, x0, (), p, _singular_jac
+        )
+        is fixed
+    )
 
 
 def test_banded_jac_for_uses_run_scope():
