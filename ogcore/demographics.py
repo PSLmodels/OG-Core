@@ -1483,6 +1483,7 @@ def get_pop_objs(
     final_data_year=START_YEAR + 2,
     GraphDiag=True,
     download_path=None,
+    fixper=None,
 ):
     """
     This function produces the demographics objects to be used in the
@@ -1531,11 +1532,18 @@ def get_pop_objs(
         initial_data_year (int): initial year of data to use
             (not relevant if have user provided data)
         final_data_year (int): final year of data to use,
-            T0=initial_year-final_year + 1
+            T0=final_year-initial_year + 1
         pop_dist (array_like): user provided population distribution, last
             dimension is of length E+S
         GraphDiag (bool): =True if want graphical output and printed
                 diagnostics
+        download_path (str): path to save the downloaded data
+        fixper (int): period from which the population distribution is
+            held fixed at its steady state, with immigration adjusted to
+            hold growth at the steady-state rate. Defaults to
+            int(1.5 * S). A later value suits populations that are still
+            converging at 1.5 * S periods (fast-aging, very low fertility
+            countries). Must be after the data periods and before T.
 
     Returns:
         pop_dict (dict): includes:
@@ -1558,6 +1566,12 @@ def get_pop_objs(
             * g_n_preTP (scalar): pre-transition population growth rate
 
     """
+    if fixper is not None and not 0 < int(fixper) < T:
+        raise ValueError(
+            "fixper must be a period inside the time path "
+            f"(0 < fixper < T = {T}); "
+            f"got {fixper}"
+        )
     start_data_year = initial_data_year - 1  # grab data from one year
     T = T + 1  # add one period to T to account for period -1 pop
     # before initial so have pre-start year population distribution
@@ -1787,7 +1801,9 @@ def get_pop_objs(
     # steady-state distribution by adjusting immigration rates, holding
     # constant mortality, fertility, and SS growth rates
     imm_tol = 1e-14
-    fixper = int(1.5 * S)
+    if fixper is None:
+        fixper = int(1.5 * S)
+    fixper = int(fixper)
     assert fixper > T0  # ensure that we are fixing period after data
     omega_SSfx = omega_path_lev[fixper, :] / omega_path_lev[fixper, :].sum()
     imm_objs = (

@@ -84,6 +84,55 @@ def test_get_pop_objs():
     assert np.allclose(pop_dict["omega_SS"], pop_dict["omega"][-1, :, :])
 
 
+def _pop_objs_fixper(fixper):
+    E, S = 20, 80
+    T = int(round(4.0 * S))
+    start_year = 2024
+    return demographics.get_pop_objs(
+        E,
+        S,
+        T,
+        0,
+        99,
+        fert_rates=fert_rates,
+        mort_rates=mort_rates,
+        infmort_rates=infmort_rates,
+        imm_rates=imm_rates,
+        infer_pop=True,
+        income_percentiles=[0.25, 0.25, 0.2, 0.2, 0.05, 0.04, 0.01],
+        pop_dist=pop_dist[0, :].reshape(1, E + S),
+        initial_data_year=start_year - 1,
+        final_data_year=start_year,
+        GraphDiag=False,
+        fixper=fixper,
+    )
+
+
+def test_get_pop_objs_fixper():
+    """
+    The default fixper reproduces the previous fixed value of 1.5 * S, a
+    later fixper moves the period from which the population distribution
+    is held constant, and an out-of-range fixper is rejected.
+    """
+    S = 80
+    default = _pop_objs_fixper(None)
+    explicit = _pop_objs_fixper(int(1.5 * S))
+    for key in ("omega", "g_n", "omega_SS", "imm_rates"):
+        assert np.allclose(default[key], explicit[key])
+
+    later = _pop_objs_fixper(200)
+    omega = later["omega"]
+    # held constant from period 200 on, still moving before it
+    assert np.allclose(omega[200:], omega[200])
+    assert not np.allclose(omega[150], omega[199])
+    assert np.allclose(later["g_n"][201:], later["g_n_ss"])
+
+    with pytest.raises(AssertionError):
+        _pop_objs_fixper(2)  # not after the data periods (T0 = 2 here)
+    with pytest.raises(ValueError):
+        _pop_objs_fixper(4 * S)  # at or beyond T
+
+
 def test_pop_smooth():
     """
     Test that population distribution and pop growth rates evolve smoothly.
