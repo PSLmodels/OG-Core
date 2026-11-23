@@ -173,6 +173,35 @@ def test_eta_RM_accepts_SxJ_or_time_path():
     assert np.allclose(specs.eta_RM[1:], flat)
 
 
+def test_phi_FT_off_by_default_and_must_net_to_zero():
+    # net family transfers are zero by default; a profile that nets to
+    # zero in every period is accepted (an S x J matrix is held constant
+    # over time); one that does not, or of the wrong shape, is rejected
+    specs = Specifications()
+    TS, S, J = specs.T + specs.S, specs.S, specs.J
+    assert specs.phi_FT.shape == (TS, S, J)
+    assert not np.any(specs.phi_FT)
+    phi = np.zeros((S, J))
+    phi[-1, :] = 0.001
+    phi[30, :] = -0.001
+    specs.update_specifications({"phi_FT": phi.tolist()})
+    assert np.array_equal(specs.phi_FT, np.tile(phi, (TS, 1, 1)))
+    path = np.tile(phi, (TS, 1, 1))
+    path[0] *= 2
+    specs = Specifications()
+    specs.update_specifications({"phi_FT": path.tolist()})
+    assert np.allclose(specs.phi_FT[0], 2 * phi)
+    assert np.allclose(specs.phi_FT[1:], phi)
+    bad = phi.copy()
+    bad[0, 0] = 0.001
+    specs = Specifications()
+    with pytest.raises(ValueError, match="sum to zero"):
+        specs.update_specifications({"phi_FT": bad.tolist()})
+    specs = Specifications()
+    with pytest.raises(Exception):
+        specs.update_specifications({"phi_FT": [phi[:, :3].tolist()]})
+
+
 def test_TxJ_params_collapse_when_J_changes():
     # A previously extrapolated T+S x J array that is uniform across J
     # should be re-extrapolated to the new J when J is changed, rather

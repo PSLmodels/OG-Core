@@ -298,6 +298,69 @@ def get_rm(RM, j, p, method):
     return rm
 
 
+def get_ft(Y, j, p, method):
+    r"""
+    Calculate net family transfers received by each household.
+
+    .. math::
+        \hat{ft}_{j,s,t} = \phi_{FT,j,s,t}
+        \frac{\hat{Y}_{t}}{\lambda_{j}\hat{\omega}_{s,t}} \quad\forall j,s,t
+
+    Each period of :math:`\phi_{FT}` sums to zero, so the transfers net
+    out across households: what the givers (negative shares) pay is what
+    the receivers (positive shares) get.
+
+    Args:
+        Y (array_like): aggregate output
+        j (int): index of lifetime ability group
+        p (OG-Core Specifications object): model parameters
+        method (str): adjusts calculation dimensions based on 'SS' or
+            'TPI'
+
+    Returns:
+        ft (array_like): net family transfers received by household
+
+    """
+    if j is not None:
+        if method == "SS":
+            ft = (p.phi_FT[-1, :, j] * Y) / p.omega_SS[:, j]
+        else:
+            len_T = Y.shape[0]
+            ft = (p.phi_FT[:len_T, :, j] * Y.reshape((len_T, 1))) / (
+                p.omega[:len_T, :, j]
+            )
+    else:
+        if method == "SS":
+            ft = (p.phi_FT[-1, :, :] * Y) / p.omega_SS
+        else:
+            len_T = Y.shape[0]
+            ft = (p.phi_FT[:len_T, :, :] * utils.to_timepath_shape(Y)) / (
+                p.omega[:len_T, :, :]
+            )
+
+    return ft
+
+
+def add_family_transfers(rm, Y, p, method):
+    """
+    Remittances plus net family transfers: both reach the household
+    budget outside taxes and government transfers. With ``phi_FT`` zero
+    (the default) the remittances are returned unchanged.
+
+    Args:
+        rm (array_like): remittances received by household
+        Y (array_like): aggregate output
+        p (OG-Core Specifications object): model parameters
+        method (str): 'SS' or 'TPI'
+
+    Returns:
+        (array_like): remittances plus net family transfers
+    """
+    if not np.any(p.phi_FT):
+        return rm
+    return rm + get_ft(Y, None, p, method)
+
+
 def get_cons(
     r_p,
     w,

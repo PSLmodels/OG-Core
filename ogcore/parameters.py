@@ -119,7 +119,11 @@ def _rename_deprecated_params(revision):
 
 # Parameters stored by period, age and ability type, (T+S) x S x J, that
 # also accept a single S x J matrix held constant over time
-TIME_VARYING_SJ_PARAMS = ["eta", "eta_RM"]
+TIME_VARYING_SJ_PARAMS = ["eta", "eta_RM", "phi_FT"]
+# Of those, the allocation matrices, each period of which sums to one
+ALLOCATION_PARAMS = ["eta", "eta_RM"]
+# Tolerance on each period's sum of the net family transfer shares, phi_FT
+PHI_FT_SUM_TOL = 1e-9
 
 
 def _sj_to_time_path(revision, S, T, J):
@@ -472,7 +476,18 @@ class Specifications(paramtools.Parameters):
         # Try to deal with size of eta and eta_RM. They may vary by S, J, T,
         # but want to allow user to enter one that varies by only S, S and J,
         # S and T, or T and S and J.
-        eta_params_to_TP = ["eta", "eta_RM", "omega", "rho", "imm_rates"]
+        # net family transfers are off by default: zeros sized to the
+        # current S and J, so changing either does not require them
+        if not np.any(self.phi_FT):
+            self.phi_FT = np.zeros((1, self.S, self.J))
+        eta_params_to_TP = [
+            "eta",
+            "eta_RM",
+            "phi_FT",
+            "omega",
+            "rho",
+            "imm_rates",
+        ]
         for item in eta_params_to_TP:
             param_in = getattr(self, item)
             param_out = extrapolate_array(
@@ -482,7 +497,7 @@ class Specifications(paramtools.Parameters):
         # each period of an allocation matrix should sum to one, or the
         # transfers (remittances) households receive differ from the
         # aggregate in the budget (resource constraint)
-        for item in TIME_VARYING_SJ_PARAMS:
+        for item in ALLOCATION_PARAMS:
             sums = getattr(self, item).sum(axis=(1, 2))
             off = np.flatnonzero(np.abs(sums - 1.0) > 1e-6)
             if off.size:
@@ -492,6 +507,22 @@ class Specifications(paramtools.Parameters):
                     f"{sums[off[0]]:.6f}); households then receive a "
                     "different total than the aggregate"
                 )
+        # net family transfers move resources between households: in each
+        # period what the givers pay equals what the receivers get, so
+        # they leave aggregate resources and the budget unchanged
+        if self.phi_FT.shape != (self.T + self.S, self.S, self.J):
+            raise ValueError(
+                f"phi_FT has shape {self.phi_FT.shape[1:]} by age and "
+                f"ability type; it must be ({self.S}, {self.J})"
+            )
+        ft_sums = self.phi_FT.sum(axis=(1, 2))
+        off = np.flatnonzero(np.abs(ft_sums) > PHI_FT_SUM_TOL)
+        if off.size:
+            raise ValueError(
+                f"phi_FT must sum to zero in every period, but it does "
+                f"not in {off.size} of {ft_sums.size} periods (period "
+                f"{off[0]} sums to {ft_sums[off[0]]:.3e})"
+            )
         # extrapolate SS demog objects
         demog_obj_to_SS = [
             "omega_SS",
