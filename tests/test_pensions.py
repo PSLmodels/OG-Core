@@ -390,7 +390,7 @@ w = np.array([1.2, 1.1, 1.21, 1])
 e = np.array([1.1, 1.11, 0.9, 0.87])
 r = np.ones(p.T) * 0.02
 # annuity factor 1 + 0.7 / 1.02 (survival timing fixed in Issue #1268)
-d_NDC_expected1 = np.array([0.33317153, 0.29907546, 0.0, 0.0])
+d_NDC_expected1 = np.array([0.34331811, 0.30818366, 0.0, 0.0])
 args1 = (r, w, e, None, per_rmn, p)
 
 #############Incomplete lifetimes###################
@@ -409,7 +409,7 @@ p2.mort_rates_SS = np.array([0.1, 0.2, 0.4, 0.6, 1.0])
 w2 = np.array([1.1, 1.21, 1.25])
 e2 = np.array([1.11, 0.9, 1.0])
 r2 = np.ones(p2.T) * 0.04
-d_NDC_expected2 = np.array([0.32852794, 0.0, 0.0])
+d_NDC_expected2 = np.array([0.34193542, 0.0, 0.0])
 args2 = (r2, w2, e2, None, per_rmn2, p2)
 
 test_data = [(args1, d_NDC_expected1), (args2, d_NDC_expected2)]
@@ -475,7 +475,7 @@ p2.k_ret = 0.4615
 p2.mort_rates_SS = np.array([0.01, 0.05, 0.3, 0.4, 1])
 omegas = None
 lambdas = 1
-pension_expected_ndc = [0, 0, 0.25751495, 0.24990423]
+pension_expected_ndc = [0, 0, 0.26535745, 0.25751495]
 args_ndc = (r, w_ndc, n_ndc, Y, theta, t, j, shift, method, e_ndc, factor, p2)
 
 ################pension benefit: PS############
@@ -568,7 +568,7 @@ p.k_ret = 0.4615
 delta_ret = 0.816476822
 g_ndc = p.g_y[-1] + p.g_n_ss
 p.mort_rates_SS = np.array([0.1, 0.2, 0.4, 1.0])
-deriv_NDC_loop_expected1 = np.array([0.33302457, 0.29907546, 0.0])
+deriv_NDC_loop_expected1 = np.array([0.3430153, 0.30804772, 0.0])
 d_theta_empty = np.zeros_like(w)
 args3 = (w, e, per_rmn, g_ndc, delta_ret, d_theta_empty, p)
 
@@ -589,7 +589,7 @@ p2.k_ret = 0.4615
 delta_ret2 = 0.896520810
 g_ndc2 = p2.g_y[-1] + p2.g_n_ss
 p2.mort_rates_SS = np.array([0.2, 0.4, 1.0])
-deriv_NDC_loop_expected2 = np.array([0.32839557, 0.0, 0.0])
+deriv_NDC_loop_expected2 = np.array([0.3415314, 0.0, 0.0])
 d_theta_empty = np.zeros(per_rmn)
 args4 = (w2, e2, per_rmn2, g_ndc2, delta_ret2, d_theta_empty, p2)
 
@@ -948,7 +948,7 @@ r_dndc = np.ones(p2.T) * 0.02
 p2.tau_p = 0.3
 p2.k_ret = 0.4615
 p2.mort_rates_SS = np.array([0.01, 0.05, 0.3, 1])
-d_theta_expected_dndc = np.array([0.33317153, 0.29907546, 0, 0])
+d_theta_expected_dndc = np.array([0.34331811, 0.30818366, 0, 0])
 Y = None
 factor = 2
 args_dndc = (r_dndc, w_dndc, e_dndc, Y, per_rmn, factor, 0, 1, p2)
@@ -1007,8 +1007,7 @@ r = np.ones(p.T) * 0.03
 p.tau_p = 0.3
 p.k_ret = 0.4615
 p.mort_rates_SS = np.array([0.01, 0.05, 0.3, 0.4, 1])
-NDC_expected1 = np.array([0, 0, 0.25751495, 0.24990423])
-# NDC_expected1 = np.array([0, 0, 0.279756794, 0.271488732])
+NDC_expected1 = np.array([0, 0, 0.26535745, 0.25751495])
 args1 = (w, e, n, r, None, None, j, "SS", p)
 
 #############incomplete lifetimes###################
@@ -1032,11 +1031,12 @@ p2.mort_rates_SS = np.array([0.01, 0.05, 0.3, 0.4, 1])
 p2.e = e
 # Pre-time-path wages are anchored to the period-0 wage of the passed
 # path (w[0] = 1.1), not the old w_preTP attribute. Earlier expected
-# values under the old convention, kept for reference:
+# values under the old convention (and with balances credited only through
+# the period before retirement), kept for reference:
 # NDC_expected2 = np.array([0, 0.25185784, 0.24441432])
 # TODO: why move from numbers below to those above ?  Diff in numpy rounding??
 # NDC_expected2 = np.array([0, 0.251721214, 0.244281728])
-NDC_expected2 = np.array([0, 0.23648259, 0.22949347])
+NDC_expected2 = np.array([0, 0.24368456, 0.23648259])
 args2 = (w, e, n, r, None, 0, j, "TPI", p2)
 
 test_data = [(args1, NDC_expected1), (args2, NDC_expected2)]
@@ -2862,7 +2862,7 @@ def test_ndc_rates_path_averaging():
 def test_NDC_1dim_loop_time_varying_credit():
     """
     A contribution made at age s compounds at the rates credited in
-    periods t_birth + s + 1 through t_birth + R - 1.
+    periods t_birth + s + 1 through t_birth + R, the retirement period.
     """
     S, R, t_birth = 6, 4, 3
     w = np.array([1.0, 1.1, 1.2, 1.3, 1.4, 1.5])
@@ -2895,10 +2895,50 @@ def test_NDC_1dim_loop_time_varying_credit():
             * np.exp(-0.02 * (u - s))
             * e[s]
             * n[s]
-            * np.prod(1 + credit[t_birth + s + 1 : t_birth + R])
+            * np.prod(1 + credit[t_birth + s + 1 : t_birth + R + 1])
             for s in range(R)
         )
         assert np.isclose(out[u], expected)
+
+
+def test_NDC_fair_at_credited_rate():
+    """
+    With the conversion coefficient set to the inverse of the annuity
+    factor at the credited rate g (k_ret = indR = 0, discount rate equal
+    to the credited rate), the expected present value at the retirement
+    period R of the benefits equals the contributions accumulated at g
+    through R. A stock carried into a period earns that period's rate,
+    as private savings do, so a contribution at age s is worth
+    (1 + g)^(R - s) in period R, when the first benefit is paid.
+    """
+    S, R, t_birth = 7, 4, 0
+    g = 0.03
+    w = np.array([1.0, 1.1, 1.2, 1.3, 1.4, 1.5, 1.6])
+    e = np.array([1.0, 1.2, 1.1, 0.9, 0.8, 0.7, 0.6])
+    n = np.array([0.4, 0.5, 0.45, 0.4, 0.2, 0.1, 0.1])
+    tau_p = np.full(S, 0.2)
+    rho = np.array([0.0, 0.0, 0.0, 0.1, 0.2, 0.4, 1.0])
+    surv = np.concatenate(([1.0], np.cumprod(1 - rho[R:-1])))
+    discount = (1 + g) ** -np.arange(S - R)
+    annuity = np.sum(surv * discount)
+    out = pensions.NDC_1dim_loop(
+        w,
+        e,
+        n,
+        np.full(S, R),
+        S,
+        np.array([0.0]),
+        tau_p,
+        np.full(S + 1, g),
+        t_birth,
+        np.full(S, 1.0 / annuity),
+        np.zeros(S),
+    )
+    balance_R = np.sum(
+        tau_p[:R] * w[:R] * e[:R] * n[:R] * (1 + g) ** (R - np.arange(R))
+    )
+    assert np.allclose(out[R:], out[R])
+    assert np.isclose(np.sum(surv * discount * out[R:]), balance_R)
 
 
 def test_delta_ret_discount_at_retirement():

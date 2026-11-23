@@ -356,7 +356,7 @@ The stationarized NDC pension amount is given by:
   \hat{\theta}_{j,u,t+u-s}=
     \begin{cases}
       0, & \text{if}\ u < R \\
-      \biggl[\sum_{s=E}^{R-1}\tau^{p}_{t}\frac{\hat{w}_{t}}{e^{g_{y}(u-s)}}e_{j,s}n_{j,s,t}(1 + g_{NDC,t})^{R-s-1}\biggr]\delta_{R, t}, & \text{otherwise}
+      \biggl[\sum_{s=E}^{R-1}\tau^{p}_{t}\frac{\hat{w}_{t}}{e^{g_{y}(u-s)}}e_{j,s}n_{j,s,t}(1 + g_{NDC,t})^{R-s}\biggr]\delta_{R, t}, & \text{otherwise}
     \end{cases}
   ```
 
@@ -396,7 +396,7 @@ where $\frac{\partial \hat{\theta}_{j,u,t+u-s}}{\partial n_{j,s,t}}$ is given by
   :label: eqn:ndc_deriv_stationarized
   \frac{\partial \theta_{j,u,t+u-s}}{\partial n_{j,s,t}} =
     \begin{cases}
-      \tau^{p}_{t}\hat{w}_{t}e_{j,s}(1+g_{NDC,t})^{u - s}\delta_{R,t}, & \text{if}\ s<R-1 \\
+      \tau^{p}_{t}\hat{w}_{t}e_{j,s}(1+g_{NDC,t})^{R - s}\delta_{R,t}, & \text{if}\ s<R \\
       0, & \text{if}\ s \geq R \\
     \end{cases}
   ```

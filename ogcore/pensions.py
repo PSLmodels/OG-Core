@@ -863,7 +863,7 @@ def NDC_amount(
     .. math::
         pension_{j,s,t} = \biggl[\sum_{u=E}^{R-1}\tau^{p}_{u,t-s+u}
             w_{t-s+u}e_{j,u,t-s+u}n_{j,u,t-s+u}
-            \prod_{a=u+1}^{R-1}(1 + g_{NDC,t-s+a})
+            \prod_{a=u+1}^{R}(1 + g_{NDC,t-s+a})
             \biggr]\delta_{R,s,t} \quad \forall s \geq R
 
     where the retirement age $R$ and the conversion coefficient
@@ -872,8 +872,10 @@ def NDC_amount(
     paid, and the contribution rate $\tau^{p}_{u,t-s+u}$ is the one the
     cohort faced at each working age u, all read from the period-by-age
     arrays that ``pension_regimes`` builds. Each contribution earns
-    the rate credited in each period between the contribution and
-    retirement, $g_{NDC,t}$, and the conversion coefficient discounts
+    the rate credited in each period from the one after the
+    contribution through the retirement period, $g_{NDC,t}$ (the
+    balance is valued in the period of the first payment, as the
+    conversion coefficient assumes), and the conversion coefficient discounts
     payments at the rate in the period the household retires.
 
     Args:
@@ -1330,8 +1332,8 @@ def deriv_NDC(r, w, e, Y, per_rmn, p):
     .. math::
         \frac{\partial \theta_{j,u,t+u-s}}{\partial n_{j,s,t}} =
             \begin{cases}
-            \tau^{p}_{t}w_{t}e_{j,s}(1+g_{NDC,t})^{u - s}\delta_{R,t},
-            & \text{if}\ s<R-1 \\
+            \tau^{p}_{t}w_{t}e_{j,s}(1+g_{NDC})^{R - s}\delta_{R},
+            & \text{if}\ s<R \\
             0, & \text{if}\ s \geq R \\
             \end{cases}
 
@@ -1972,8 +1974,16 @@ def deriv_PS_loop(w, e, S, S_ret, per_rmn, d_theta, vpoint, factor):
 def deriv_NDC_loop(
     w, e, per_rmn, S, S_ret, tau_p, g_ndc_value, delta_ret_value, d_theta
 ):
-    """
+    r"""
     Change in NDC pension benefits for another unit of labor supply
+
+    The benefit rises with labor supply at working age s by
+
+    .. math::
+        \tau^{p}w_{s}e_{s}(1 + g_{NDC})^{R - s}\delta_{R}
+
+    since a contribution at age s is credited in each period from
+    s + 1 through the retirement period R.
 
     Args:
         w (array_like): real wage rate
@@ -1999,7 +2009,7 @@ def deriv_NDC_loop(
             * w[s - (S - per_rmn)]
             * e[s - (S - per_rmn)]
             * delta_ret_value
-            * (1 + g_ndc_value) ** (S_ret - s - 1)
+            * (1 + g_ndc_value) ** (S_ret - s)
         )
 
     return d_theta
@@ -2369,10 +2379,11 @@ def NDC_1dim_loop(
     system for one household over its lifetime.
 
     The contribution made at working age s earns the rate credited in
-    each later period up to the period before retirement:
+    each later period through the retirement period R, in which the
+    first benefit is paid:
 
     .. math::
-        \prod_{a=s+1}^{R-1}(1 + g_{NDC,t_0 + a})
+        \prod_{a=s+1}^{R}(1 + g_{NDC,t_0 + a})
 
     where $t_0$ is the household's period of birth (age 0).
 
@@ -2413,7 +2424,9 @@ def NDC_1dim_loop(
         if u < R:
             continue
         NDC_s = 0.0
-        growth = 1.0
+        # the balance is credited through the retirement period R, in
+        # which the first benefit is paid
+        growth = 1.0 + g_age[R]
         for s in range(R - 1, -1, -1):
             # TODO: update so can take g_y from period t
             if earn_lo is None:
@@ -2490,7 +2503,8 @@ def NDC_2dim_loop(
         if u < R:
             continue
         NDC_s = np.zeros(NDC.shape[1])
-        growth = 1.0
+        # credited through the retirement period, t_cross - u + R
+        growth = 1.0 + g_ndc[min(max(t_cross - u + R, 0), n_g - 1)]
         for s in range(R - 1, -1, -1):
             if earn_lo is None:
                 x = e[s, :] * n[s, :]
@@ -2538,10 +2552,10 @@ def NDC_3dim_loop(
     at age s of a household aged u at time t was made in period
     t - (u - s), at that period's wage, labor supply, and contribution
     rate, and earns the rates credited in periods t - (u - s) + 1
-    through t - (u - R) - 1. Histories that predate the time path use
-    the period-0 wage, contribution rate, and credited rate and the
-    model's initial labor supply, so this reproduces what the
-    per-cohort household solves compute.
+    through t - (u - R), the retirement period. Histories that predate
+    the time path use the period-0 wage, contribution rate, and
+    credited rate and the model's initial labor supply, so this
+    reproduces what the per-cohort household solves compute.
 
     Args:
         w_path (Numpy array): real wage rate path, length T
@@ -2588,7 +2602,8 @@ def NDC_3dim_loop(
                 n_preTP[s_idx, :],
             )
             contrib = np.zeros(R)
-            growth = 1.0
+            # credited through the retirement period, t - (u - R)
+            growth = 1.0 + g_ndc[min(max(t - (u - R), 0), n_g - 1)]
             for i in range(R - 1, -1, -1):
                 s = s_idx[i]
                 if earn_lo is None:
@@ -2793,11 +2808,11 @@ def fdc_lifetime_loop(y, tau, lo, hi, r, rho, R, g_y, a0, A0, S):
 
     The account therefore earns the return in every period from the
     period after each contribution through the retirement period R
-    itself, one period more than the notional defined contribution
-    system credits. At age $\max(R, a_0)$ the balance buys an annuity,
-    $P = A/\ddot{a}$; a household already retired at a0 holds a
-    remaining balance that is re-annuitized on the rates given. After
-    that $H_s = A_s - P_s$, $P_{s+1} = P_s e^{-g_y}$, and the holdings
+    itself, the same window over which the notional defined
+    contribution system credits. At age $\max(R, a_0)$ the balance buys
+    an annuity, $P = A/\ddot{a}$; a household already retired at a0
+    holds a remaining balance that is re-annuitized on the rates given.
+    After that $H_s = A_s - P_s$, $P_{s+1} = P_s e^{-g_y}$, and the holdings
     of those who die stay in the annuity pool:
 
     .. math::

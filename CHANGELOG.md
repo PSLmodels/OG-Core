@@ -5,6 +5,20 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.25.1] - 2026-11-22
+
+### Changed
+- Notional defined contribution balances are now credited through the retirement period R, in which the first benefit is paid, rather than through the period before it. A contribution made at working age s now grows by (1 + g_NDC) in each period from s + 1 through R. This is the timing of private savings in the household's problem, where a stock carried into a period earns that period's return, and the timing the conversion coefficient already assumed: its annuity factor dir_R values the balance in period R and does not discount the first payment. With the discount rate equal to the credited rate, `k_ret = 0`, and `indR = 0`, the expected present value of the benefits in period R now equals the notional balance; before, it fell short by a factor of 1 + g_NDC in period R. The change applies to the `Notional Defined Contribution` system and the notional band of the `Hybrid DB-NDC` system, in the steady state and on the time path (`NDC_1dim_loop`, `NDC_2dim_loop`, `NDC_3dim_loop`), and to the derivative of the benefit with respect to labor supply (`deriv_NDC_loop`, now (1 + g_NDC)^(R - s)), which the household problem does not currently use. **Model results change:** NDC benefits are higher by a factor of 1 + g_NDC in the retirement period (about 3 percent with the default `'LR GDP'` rate and one-year model periods).
+- Updates the expected values of the NDC tests in `tests/test_pensions.py` (each by exactly one more period of the credited rate) and the hand calculation in `test_NDC_1dim_loop_time_varying_credit`.
+
+### Added
+- Adds `test_NDC_fair_at_credited_rate`, which checks that with the conversion coefficient at the inverse of the annuity factor at the credited rate, the expected present value of the benefits in the retirement period equals the contributions accumulated through that period.
+
+### Fixed
+- The partial derivative of the NDC benefit with respect to labor supply in the pensions chapter of the documentation (`eqn:ndc_deriv`) and in the `deriv_NDC` docstring had the exponent u - s and the condition s < R - 1, which did not match the benefit formula or the code. It now reads tau_p * w * e * (1 + g_NDC)^(R - s) * delta_R for every working age s < R, and notes that the code evaluates it at a single credited rate and conversion coefficient.
+- The NDC benefit formulas in the pensions chapter (the NDC system and the notional band of the hybrid system) and the docstrings of `NDC_amount`, `NDC_1dim_loop`, and `NDC_3dim_loop` describe the new crediting window.
+- The stationarized NDC benefit and its derivative with respect to labor supply in the stationarization chapter of the documentation (`eqn:ndc_amount_stationarized`, `eqn:ndc_deriv_stationarized`) now use the new crediting window, (1 + g_NDC)^(R - s) for every working age s < R. The FDC section of the pensions chapter and the `pensions.fdc_lifetime_loop` docstring no longer say FDC accounts are credited one period longer than notional balances: both are now credited through the retirement period.
+
 ## [0.25.0] - 2026-11-21
 
 ### Added
@@ -922,6 +936,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Any earlier versions of OG-USA can be found in the [`OG-Core`](https://github.com/PSLmodels/OG-Core) repository [release history](https://github.com/PSLmodels/OG-Core/releases) from [v.0.6.4](https://github.com/PSLmodels/OG-Core/releases/tag/v0.6.4) (Jul. 20, 2021) or earlier.
 
 
+[0.25.1]: https://github.com/PSLmodels/OG-Core/compare/v0.25.0...v0.25.1
 [0.25.0]: https://github.com/PSLmodels/OG-Core/compare/v0.24.6...v0.25.0
 [0.24.6]: https://github.com/PSLmodels/OG-Core/compare/v0.24.5...v0.24.6
 [0.24.5]: https://github.com/PSLmodels/OG-Core/compare/v0.24.4...v0.24.5
