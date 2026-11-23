@@ -108,6 +108,45 @@ def test_tau_payroll_extended_over_T_and_J():
     assert np.allclose(specs.tau_payroll[1, :], 0.2)
 
 
+def test_eta_accepts_SxJ_or_time_path():
+    # eta may vary over the time path, (T+S) x S x J, so transfers per
+    # person can keep their profile as the population ages; an S x J
+    # matrix is still accepted and held constant over time.
+    specs = Specifications()
+    TS, S, J = specs.T + specs.S, specs.S, specs.J
+    assert specs.eta.shape == (TS, S, J)
+    eta_SJ = specs.eta[-1].copy()
+    # S x J, as a list or an array, gives the same constant path
+    for value in (eta_SJ.tolist(), eta_SJ):
+        revision = {"eta": value}
+        specs = Specifications()
+        specs.update_specifications(revision)
+        assert np.array_equal(specs.eta, np.tile(eta_SJ, (TS, 1, 1)))
+        # the caller's revision is left as it was
+        assert np.ndim(revision["eta"]) == 2
+    # a full path is used period by period; the steady state uses the
+    # last period
+    path = np.tile(eta_SJ, (TS, 1, 1))
+    path[0] = np.ones((S, J)) / (S * J)
+    specs = Specifications()
+    specs.update_specifications({"eta": path.tolist()})
+    assert np.allclose(specs.eta[0], 1 / (S * J))
+    assert np.allclose(specs.eta[1:], eta_SJ)
+    # a shorter path is extended with its last period
+    specs = Specifications()
+    specs.update_specifications({"eta": path[:2].tolist()})
+    assert specs.eta.shape == (TS, S, J)
+    assert np.allclose(specs.eta[0], 1 / (S * J))
+    assert np.allclose(specs.eta[2:], eta_SJ)
+    # shares outside [0, 1] are still rejected
+    bad = eta_SJ.copy()
+    bad[0, 0] = -0.01
+    for value in (bad.tolist(), [bad.tolist()]):
+        specs = Specifications()
+        with pytest.raises(Exception):
+            specs.update_specifications({"eta": value})
+
+
 def test_TxJ_params_collapse_when_J_changes():
     # A previously extrapolated T+S x J array that is uniform across J
     # should be re-extrapolated to the new J when J is changed, rather

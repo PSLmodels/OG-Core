@@ -117,6 +117,38 @@ def _rename_deprecated_params(revision):
     return revision
 
 
+# Parameters stored by period, age and ability type, (T+S) x S x J, that
+# also accept a single S x J matrix held constant over time
+TIME_VARYING_SJ_PARAMS = ["eta"]
+
+
+def _sj_to_time_path(revision):
+    """
+    Wrap an S x J value of a parameter in ``TIME_VARYING_SJ_PARAMS`` as a
+    single period, so revisions written before the parameter could vary
+    over time still validate; ``extrapolate_array`` then holds it
+    constant over the time path.
+
+    Args:
+        revision (dict): `PARAM: VALUE` pairs
+
+    Returns:
+        revision (dict): the revision with such values wrapped; the
+            caller's dict is left unchanged
+    """
+    wrap = [
+        name
+        for name in TIME_VARYING_SJ_PARAMS
+        if name in revision and np.ndim(revision[name]) == 2
+    ]
+    if not wrap:
+        return revision
+    revision = dict(revision)
+    for name in wrap:
+        revision[name] = [np.asarray(revision[name]).tolist()]
+    return revision
+
+
 class Specifications(paramtools.Parameters):
     """
     Inherits ParamTools Parameters abstract base class.
@@ -1066,6 +1098,7 @@ class Specifications(paramtools.Parameters):
             # a JSON string or a path to a JSON file
             revision = self.read_params(revision)
         revision = _rename_deprecated_params(revision)
+        revision = _sj_to_time_path(revision)
         # Pension regimes are a list of dicts, which paramtools cannot
         # validate, so set them aside and check them in
         # _build_cohort_pension_arrays (called by compute_default_params)

@@ -1755,12 +1755,12 @@
         "param_notation": "$\\eta_{j,s,t}$",
         "section_1": "Fiscal Policy Parameters",
         "section_2": "Spending",
-        "notes": "This SxJ matrix gives the fraction of total aggregate transfers going to each age s and ability type j.",
+        "notes": "This (T+S)xSxJ array gives the fraction of total aggregate transfers going to each age s and ability type j in each period t; each period should sum to one. An SxJ matrix is also accepted and held constant over time; a path shorter than T+S is extended with its last period.",
         "type": "float",
-        "number_dims": 2,
+        "number_dims": 3,
         "value": [
             {
-                "value": [
+                "value": [[
                     [
                         0.00395156539,
                         0.00395156539,
@@ -2481,7 +2481,7 @@
                         4.26755474e-05,
                         4.74172749e-06
                     ]
-                ]
+                ]]
             }
         ],
         "validators": {
