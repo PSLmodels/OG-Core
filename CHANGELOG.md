@@ -5,6 +5,15 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.25.4] - 2026-11-23
+
+### Added
+- Adds net family transfers between households, set by the new parameter `phi_FT`: support that moves from some households to others, such as working-age children supporting their parents. Each household has its own budget constraint, so before this nothing could move resources between households outside bequests, and in countries where older people live mostly on family support their consumption fell far below what the data show. `phi_FT` is a (T+S) x S x J path (an S x J matrix is also accepted and held constant) giving the transfers received by each age and lifetime income group as a share of GDP, positive for receivers and negative for givers.
+- Each period of `phi_FT` must sum to zero, so the transfers net out: they leave aggregate resources and the government budget unchanged. `Specifications` raises an error if a period does not sum to zero or the shape is wrong. The default is zero, which turns them off, so results are unchanged unless a calibration sets it.
+- The transfers reach households next to remittances, outside taxes and government transfers, in the steady state and on the time path. Adds `household.get_ft` and `household.add_family_transfers`, and an `ft` output in the steady state and on the time path (also in `model_variables.json`).
+- Documents net family transfers in the households chapter (a new section, and the budget constraint) and in the stationarization and government chapters.
+- Adds tests that the transfers net to zero in the steady state and in every period of the path, that they are added to remittances only when turned on, and that `Specifications` rejects shares that do not sum to zero.
+
 ## [0.25.3] - 2026-11-23
 
 ### Added

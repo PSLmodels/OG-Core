@@ -106,16 +106,16 @@ In this section, we describe what is arguably the most important economic agent 
   \begin{aligned}
     p_t c_{j,s,t} + &\sum_{i=1}^I (1 + \tau^{c}_{i,t})p_{i,t}c_{min,i} + b_{j,s+1,t+1} = \\
     &(1 + r_{p,t})b_{j,s,t} + w_t e_{j,s} n_{j,s,t} ... \\
-    &\quad\quad + (1-\tau^{bq}_t)bq_{j,s,t} + rm_{j,s,t} + tr_{j,s,t} + ubi_{j,s,t} + pension_{j,s,t} - tax_{j,s,t}  \\
+    &\quad\quad + (1-\tau^{bq}_t)bq_{j,s,t} + rm_{j,s,t} + ft_{j,s,t} + tr_{j,s,t} + ubi_{j,s,t} + pension_{j,s,t} - tax_{j,s,t}  \\
     &\quad\quad\forall j,t\quad\text{and}\quad E+1\leq s\leq E+S \quad\text{where}\quad b_{j,E+1,t}=0
   \end{aligned}
   ```
 
   where $c_{j,s,t}$ is consumption, $b_{j,s+1,t+1}$ is savings for the next period, $r_{p,t}$ is the normalized interest rate (return) on household savings invested in the financial intermediary, $b_{j,s,t}$ is current period wealth (savings from last period), $w_t$ is the normalized wage, and $n_{j,s,t}$ is labor supply. Equations {eq}`eq_rK` and {eq}`eq_portfolio_return` of Chapter {ref}`Chap_FinInt` show how the rate of return from the financial intermediary $r_{p,t}$ might differ from the marginal product of capital $r_t$ and from the interest rate the government pays $r_{gov,t}$. Note that we must add in the cost of minimum consumption $c_{min,i}$ for all $i$ because that amount is subtracted out of composite consumption in {eq}`EqHHCompCons`.
 
-  The last six terms on the right-hand-side of the budget constraint {eq}`EqHHBC` have to do with dfferent types of transfers to households: bequests $bq_{j,s,t}$, remittances $rm_{j,s,t}$, government transfers $tr_{j,s,t}$, universal basic income $ubi_{j,s,t}$, public pension benefits $pension_{j,s,t}$, and net taxes $tax_{j,s,t}$. The first four types of transfers to households are detailed in the section below entitled {ref}`SecHHtransfers`.
+  The last seven terms on the right-hand-side of the budget constraint {eq}`EqHHBC` have to do with dfferent types of transfers to households: bequests $bq_{j,s,t}$, remittances $rm_{j,s,t}$, net family transfers $ft_{j,s,t}$, government transfers $tr_{j,s,t}$, universal basic income $ubi_{j,s,t}$, public pension benefits $pension_{j,s,t}$, and net taxes $tax_{j,s,t}$. The first five types of transfers to households are detailed in the section below entitled {ref}`SecHHtransfers`.
 
-  The third term $bq_{j,s,t}$ on the right-hand-side of the budget constraint {eq}`EqHHBC` represents the portion of total bequests $BQ_t$ that go to the age-$s$, income-group-$j$ household. Section {ref}`SecHHbequests` details how total bequests are distributed among the different households. The next term on the right-hand-side of the budget constraint {eq}`EqHHBC` represents remittances received by the household $rm_{j,s,t}$. We describe these remittances in Section {ref}`SecHHremit` below.
+  The third term $bq_{j,s,t}$ on the right-hand-side of the budget constraint {eq}`EqHHBC` represents the portion of total bequests $BQ_t$ that go to the age-$s$, income-group-$j$ household. Section {ref}`SecHHbequests` details how total bequests are distributed among the different households. The next term on the right-hand-side of the budget constraint {eq}`EqHHBC` represents remittances received by the household $rm_{j,s,t}$. We describe these remittances in Section {ref}`SecHHremit` below. The term after it, $ft_{j,s,t}$, is net family transfers received from other households, described in Section {ref}`SecHHfamily`.
 
   The next term is government transfers $tr_{j,s,t}$ to households of lifetime income group $j$ in age $s$ at time $t$. Section {ref}`SecHHgovtransfers` details how total government transfers to households are distributed among the differenty household types. The term $ubi_{j,s,t}$ the time series of a matrix of universal basic income (UBI) transfers by lifetime income group $j$ and age group $s$ in each period $t$. There is a specification where the time series of this matrix is stationary (growth adjusted) and a specification in which it's stationary value is going to zero in the limit (non-growth-adjusted). The calibration chapter on UBI in the country-specific repository documentation describes the exact way in which this matrix is calibrated from the values of five parameters, household composition data, and OG-Core's demographics. Similar to the transfers term $TR_{t}$, the UBI transfers will not be distortionary.
 
@@ -181,7 +181,7 @@ In this section, we describe what is arguably the most important economic agent 
 (SecHHtransfers)=
 ## Transfers to household
 
-  The household budget constraint {eq}`EqHHBC` includes four terms that represent different types of transfers to households: bequests $bq_{j,s,t}$, remittances $rm_{j,s,t}$, government transfers $tr_{j,s,t}$, and universal basic income $ubi_{j,s,t}$. These four types of household transfers are detailed in the following subsections.
+  The household budget constraint {eq}`EqHHBC` includes five terms that represent different types of transfers to households: bequests $bq_{j,s,t}$, remittances $rm_{j,s,t}$, net family transfers $ft_{j,s,t}$, government transfers $tr_{j,s,t}$, and universal basic income $ubi_{j,s,t}$. These five types of household transfers are detailed in the following subsections.
 
 
 (SecHHbequests)=
@@ -247,6 +247,19 @@ In this section, we describe what is arguably the most important economic agent 
   The distribution object $\eta_{RM,j,s,t}$ is an $S\times J$ matrix in every period $t$ whose elements sum to one in every period. This object governs how total remittances in every period $RM_t$ are distributed as income among household budget constraints. Both $\eta_{RM,j,s,t}$ and the transfer allocation $\eta_{j,s,t}$ below can be entered as a path over the time periods, or as a single $S\times J$ matrix held constant over time.
 
 
+(SecHHfamily)=
+### Net family transfers
+
+  In many countries, older people rely on support from their working-age children and other relatives, more than on savings or government programs. Each household in the model has its own budget constraint, so without this term nothing can move resources from one household to another outside bequests. Net family transfers $ft_{j,s,t}$ add that channel. They are a share $\phi_{FT,j,s,t}$ of GDP received by all households of age $s$ in lifetime income group $j$, positive for households that receive support and negative for those that give it.
+
+  ```{math}
+  :label: EqHH_IndFamilyTfer
+  ft_{j,s,t} = \phi_{FT,j,s,t}\frac{Y_t}{\lambda_j\omega_{s,t}} \quad\forall \quad j,s,t \quad\text{where}\quad \sum_{s=E+1}^{E+S}\sum_{j=1}^J\phi_{FT,j,s,t}=0 \quad\forall t
+  ```
+
+  Because the shares sum to zero in every period, what the givers pay is exactly what the receivers get. Family transfers therefore leave aggregate resources, market clearing, and the government budget unchanged; they only move resources between households. Like remittances, they are lump sum from the household's point of view, so they do not directly distort its choices. The default $\phi_{FT,j,s,t}=0$ turns them off. Country calibrations set the shares from data on transfers within families by age, such as the National Transfer Accounts.
+
+
 (SecHHgovtransfers)=
 ### Government transfers
 
@@ -299,7 +312,7 @@ In this section, we describe what is arguably the most important economic agent 
   \begin{aligned}
     \text{s.t.}\quad &p_t c_{j,s,t} + \sum_{i=1}^I (1 + \tau^{c}_{i,t})p_{i,t}c_{min,i} + b_{j,s+1,t+1} = \\
     &\quad (1 + r_{p,t})b_{j,s,t} + w_t e_{j,s} n_{j,s,t} ...\\
-    &\qquad +\: (1-\tau^{bq}_t)bq_{j,s,t} + rm_{j,s,t} + tr_{j,s,t} + ubi_{j,s,t} + pension_{j,s,t} - tax_{j,s,t} \\
+    &\qquad +\: (1-\tau^{bq}_t)bq_{j,s,t} + rm_{j,s,t} + ft_{j,s,t} + tr_{j,s,t} + ubi_{j,s,t} + pension_{j,s,t} - tax_{j,s,t} \\
     &\qquad\text{and}\quad c_{j,s,t}\geq 0,\: n_{j,s,t} \in[0,\tilde{l}],\:\text{and}\: b_{j,1,t}=0 \quad\forall j, t, \:\text{and}\: E+1\leq s\leq E+S
   \end{aligned}
   ```

@@ -50,6 +50,7 @@ The previous chapters derive all the equations necessary to solve for the steady
   - $\hat{D}_t\equiv\frac{D_t}{e^{g_y t}\tilde{N}_t}$
   - $p_{m,t} \equiv \frac{\tilde{p}_{m,t}}{\tilde{p}_{M,t}}$
 * - $\hat{rm}_{j,s,t} \equiv \frac{rm_{j,s,t}}{e^{g_y t}}$
+* - $\hat{ft}_{j,s,t} \equiv \frac{ft_{j,s,t}}{e^{g_y t}}$
   -
   - $\hat{RM}_t \equiv \frac{RM_t}{e^{g_y t}\tilde{N}_t}$
   -
@@ -95,7 +96,7 @@ The usual definition of equilibrium would be allocations and prices such that ho
   \begin{aligned}
     p_t\hat{c}_{j,s,t} + &\sum_{i=1}^I (1 + \tau^{c}_{i,t})p_{i,t}\hat{c}_{min,i} + e^{g_y}\hat{b}_{j,s+1,t+1} = \\
     &(1 + r_{p,t})\hat{b}_{j,s,t} + \hat{w}_t e_{j,s} n_{j,s,t} ... \\
-    &\qquad +\: (1-\tau^{bq}_t)\hat{bq}_{j,s,t} + \hat{rm}_{j,s,t} + \hat{tr}_{j,s,t} + \hat{ubi}_{j,s,t} + \hat{pension}_{j,s,t} - \hat{tax}_{j,s,t}  \\
+    &\qquad +\: (1-\tau^{bq}_t)\hat{bq}_{j,s,t} + \hat{rm}_{j,s,t} + \hat{ft}_{j,s,t} + \hat{tr}_{j,s,t} + \hat{ubi}_{j,s,t} + \hat{pension}_{j,s,t} - \hat{tax}_{j,s,t}  \\
     &\quad\forall j,t\quad\text{and}\quad E+1\leq s\leq E+S \quad\text{where}\quad \hat{b}_{j,E+1,t}=0
   \end{aligned}
   ```
@@ -145,6 +146,13 @@ The usual definition of equilibrium would be allocations and prices such that ho
   ```{math}
   :label: EqHH_IndRemitRecStnrz
   \hat{rm}_{j,s,t} = \eta_{RM,j,s,t}\frac{\hat{RM}_t}{\lambda_j\hat{\omega}_{s,t}} \quad\forall \quad j,s,t
+  ```
+
+  Net family transfers {eq}`EqHH_IndFamilyTfer` are a share of GDP, so their stationarized form follows directly.
+
+  ```{math}
+  :label: EqHH_IndFamilyTferStnrz
+  \hat{ft}_{j,s,t} = \phi_{FT,j,s,t}\frac{\hat{Y}_t}{\lambda_j\hat{\omega}_{s,t}} \quad\forall \quad j,s,t
   ```
 
 
