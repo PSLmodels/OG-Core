@@ -444,9 +444,17 @@ def get_initial_SS_values(p):
                 b_splus1init[:-1, :] = b_sinit[1:, :]
         D0_baseline = tpi_baseline_vars["D"][0]
         Kg0_baseline = tpi_baseline_vars["K_g"][0]
+        # debt contracted abroad owed in period 0 is inherited too
+        # (fiscal.get_D_ext reads it); baselines saved before D_ext was
+        # an output fall back to alpha_D_ext times reform output
+        if "D_ext" in tpi_baseline_vars:
+            p.D_ext0_baseline = float(tpi_baseline_vars["D_ext"][0])
+        else:
+            p.D_ext0_baseline = None
     else:
         D0_baseline = None
         Kg0_baseline = None
+        p.D_ext0_baseline = None
 
     initial_values = (B0, b_sinit, b_splus1init, factor, initial_n)
     baseline_values = (
@@ -1336,7 +1344,15 @@ def run_TPI(p, client=None):
 
     # Compute other interest rates
     r_gov = np.ones_like(r) * ss_vars["r_gov"]
-    r_gov[: p.T] = fiscal.get_r_gov(r[: p.T], D[: p.T] / Y[: p.T], p, "TPI")
+    # the debt-elastic premium prices all government debt: market debt D
+    # plus debt contracted abroad, D_ext (alpha_D_ext * Y, with a reform's
+    # period-0 stock at the baseline's)
+    r_gov[: p.T] = fiscal.get_r_gov(
+        r[: p.T],
+        (D[: p.T] + fiscal.get_D_ext(Y, p, "TPI")[0]) / Y[: p.T],
+        p,
+        "TPI",
+    )
     r_p = np.ones_like(r) * ss_vars["r_p"]
     MPKg = np.zeros((p.T, p.M))
     for m in range(p.M):
@@ -1818,7 +1834,10 @@ def run_TPI(p, client=None):
             p.zeta_K[: p.T],
         )
         r_gov_new = fiscal.get_r_gov(
-            rnew[: p.T], Dnew[: p.T] / Y[: p.T], p, "TPI"
+            rnew[: p.T],
+            (Dnew[: p.T] + fiscal.get_D_ext(Y, p, "TPI")[0]) / Y[: p.T],
+            p,
+            "TPI",
         )
         r_p_new = aggr.get_r_p(
             rnew[: p.T],
@@ -2225,11 +2244,15 @@ def run_TPI(p, client=None):
     # solve resource constraint
     # foreign debt service costs
     debt_service_f = fiscal.get_debt_service_f(r_p, D_f)
+    # government debt contracted abroad (D_ext) is also owed to foreigners
+    D_ext, new_borrowing_ext, debt_service_ext = fiscal.get_D_ext(
+        Y[: p.T], p, "TPI"
+    )
     net_capital_outflows = aggr.get_capital_outflows(
         r_p[: p.T],
         K_f[: p.T],
-        new_borrowing_f[: p.T],
-        debt_service_f[: p.T],
+        new_borrowing_f[: p.T] + new_borrowing_ext,
+        debt_service_f[: p.T] + debt_service_ext,
         p,
     )
     # Fill in arrays, noting that M-1 industries only produce consumption goods
@@ -2321,6 +2344,7 @@ def run_TPI(p, client=None):
             + G[: p.T, ...]
             + I_g[: p.T, ...]
             + debt_service[: p.T, ...]
+            + debt_service_ext
             + agg_pension_outlays[: p.T, ...]
         ),
         "total_primary_government_outlays": (
@@ -2345,6 +2369,9 @@ def run_TPI(p, client=None):
         "debt_service": debt_service[: p.T, ...],
         "new_borrowing_f": new_borrowing_f[: p.T, ...],
         "debt_service_f": debt_service_f[: p.T, ...],
+        "D_ext": D_ext,
+        "new_borrowing_ext": new_borrowing_ext,
+        "debt_service_ext": debt_service_ext,
         "r": r[: p.T, ...],
         "r_gov": r_gov[: p.T, ...],
         "r_p": r_p[: p.T, ...],

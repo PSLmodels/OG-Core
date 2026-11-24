@@ -8,7 +8,7 @@ import pytest
 import numpy as np
 import os
 import pickle
-from ogcore import SS, utils, aggregates
+from ogcore import SS, utils, aggregates, fiscal
 from ogcore.parameters import Specifications
 from ogcore import firm
 
@@ -445,6 +445,66 @@ def test_SS_solver(baseline, param_updates, filename, dask_client):
         assert np.allclose(
             test_dict[VAR_NAME_MAPPING[k]], v, atol=1e-04, equal_nan=True
         )
+
+
+def test_SS_solver_D_ext(dask_client):
+    # With government debt contracted abroad (D_ext), the steady state
+    # holds the stock at its share of GDP, balances the government budget
+    # with its flows, clears the goods market with its interest paid
+    # abroad, and prices the premium on r_gov at all government debt.
+    p = Specifications(baseline=True, num_workers=NUM_WORKERS)
+    p.update_specifications({"alpha_D_ext": [0.3], "r_D_ext_annual": [0.01]})
+    p.frac_tax_payroll = np.zeros(p.frac_tax_payroll.shape)
+    p.output_base = CUR_PATH
+    b_guess = np.ones((p.S, p.J)) * 0.07
+    n_guess = np.ones((p.S, p.J)) * 0.35 * p.ltilde
+    rguess = 0.06483431412921253
+    wguess = firm.get_w_from_r(rguess, p, "SS")
+    BQguess = aggregates.get_BQ(rguess, b_guess, None, p, "SS", False)
+    ss = SS.SS_solver(
+        b_guess,
+        n_guess,
+        rguess,
+        rguess,
+        wguess,
+        np.ones(p.M),
+        0.6376591201150815,
+        BQguess,
+        0.05738932081035772,
+        None,
+        None,
+        139355.1547340256,
+        p,
+        dask_client,
+        False,
+    )
+
+    Y = ss["Y"]
+    assert np.isclose(ss["D_ext"], 0.3 * Y)
+    assert np.isclose(
+        ss["new_borrowing_ext"],
+        0.3 * Y * ((1 + p.g_n_ss) * np.exp(p.g_y) - 1),
+    )
+    assert np.isclose(ss["debt_service_ext"], p.r_D_ext[-1] * 0.3 * Y)
+    assert np.isclose(
+        ss["G"],
+        ss["total_tax_revenue"]
+        + ss["new_borrowing"]
+        + ss["foreign_aid"]
+        + ss["new_borrowing_ext"]
+        - ss["debt_service_ext"]
+        - ss["agg_pension_outlays"]
+        - ss["TR"]
+        - ss["debt_service"]
+        - ss["UBI"]
+        - ss["I_g"],
+    )
+    # the premium is evaluated at all long-run government debt
+    assert np.isclose(
+        ss["r_gov"],
+        fiscal.get_r_gov(ss["r"], p.debt_ratio_ss + 0.3, p, "scalar", t=-1),
+    )
+    assert np.abs(ss["resource_constraint_error"]).max() < 1e-6
 
 
 param_updates5 = {"zeta_K": [1.0], "budget_balance": True, "alpha_G": [0.0]}
