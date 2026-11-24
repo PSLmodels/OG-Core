@@ -1265,3 +1265,304 @@ def test_get_ci(c_s, p_i, p_tilde, tau_c, alpha_c, c_min, method, expected):
     )
 
     assert np.allclose(test_ci, expected_ci)
+
+
+# ---------------------------------------------------------------------
+# Funded defined contribution (FDC) pillar
+# ---------------------------------------------------------------------
+
+
+def _fdc_on_specs(tau=0.05):
+    p = Specifications()
+    p.update_specifications({"fdc_tau": tau, "pension_FOC_linkage": True})
+    return p
+
+
+def test_get_fdc_off_by_default():
+    p = Specifications()
+    assert not household.fdc_active(p)
+    n = np.full((p.S, p.J), 0.4)
+    assert household.get_fdc(0.04, 1.0, n, p.e[-1], None, p, "SS") is None
+    assert household.fdc_net_flow(None) == 0.0
+
+
+def test_get_fdc_time_path_one_group_at_a_time():
+    p = _fdc_on_specs()
+    n = np.full((p.S, p.J), 0.4)
+    with pytest.raises(NotImplementedError, match="one income group"):
+        household.get_fdc(0.04, 1.0, n, p.e[0], None, p, "TPI", 0)
+
+
+def test_get_fdc_time_path_matches_lifetime():
+    """
+    On the time path, a cohort born in period t solves with the
+    accounts that fdc_lifetime gives on the calendar paths, and a
+    cohort alive when the path begins starts from its claims, credited
+    with the period-0 return.
+    """
+    from ogcore import pensions
+
+    p = _fdc_on_specs()
+    j = 2
+    r_path = np.linspace(0.03, 0.06, p.T + p.S)
+    w_path = np.linspace(1.0, 1.2, p.T + p.S)
+    n = np.linspace(0.3, 0.5, p.S)
+    e = p.e[0, :, j]
+    # a cohort born in period 5
+    t = 5
+    tpi = household.get_fdc(
+        r_path[t : t + p.S], w_path[t : t + p.S], n, e, j, p, "TPI", t
+    )
+    full = pensions.fdc_lifetime(w_path, e, n, r_path, t, j, p)
+    for a, b in zip(tpi[:-1], full[:-1]):
+        assert np.allclose(a, b)
+    # a cohort aged a0 when the path begins
+    a0 = 30
+    claims = np.zeros((p.S, p.J))
+    claims[a0 - 1, j] = 0.7
+    p.fdc_claims_preTP = claims
+    L = p.S - a0
+    part = household.get_fdc(
+        r_path[:L], w_path[:L], n[a0:], e[a0:], j, p, "TPI", 0
+    )
+    assert part.balance.shape == (L,)
+    assert np.isclose(part.balance[0], (1 + r_path[0]) * 0.7)
+    n_full = n.copy()
+    n_full[:a0] = 0.0
+    ref = pensions.fdc_lifetime(
+        w_path, e, n_full, r_path, -a0, j, p, a0=a0, A0=(1 + r_path[0]) * 0.7
+    )
+    for a, b in zip(part[:-1], ref[:-1]):
+        assert np.allclose(a, b[a0:])
+
+
+def test_get_fdc_group_matches_all_groups():
+    p = _fdc_on_specs()
+    n = np.full((p.S, p.J), 0.4)
+    e = p.e[-1]
+    all_j = household.get_fdc(0.04, 1.0, n, e, None, p, "SS")
+    j = p.J - 1
+    one_j = household.get_fdc(0.04, 1.0, n[:, j], e[:, j], j, p, "SS")
+    assert np.allclose(all_j.contrib[:, j], one_j.contrib)
+    assert np.allclose(all_j.benefit[:, j], one_j.benefit)
+    assert np.allclose(
+        household.fdc_net_flow(one_j), one_j.contrib - one_j.benefit
+    )
+
+
+@pytest.mark.parametrize("two_dim", [False, True], ids=["S", "S x J"])
+def test_fdc_labor_wedge_on_euler_path(two_dim):
+    """
+    Along a consumption path that satisfies the savings Euler equation
+    with no bequest motive, a contribution before retirement is worth
+    what private saving is worth (both are lost at death), so the
+    wedge is the value of the annuity's mortality credits:
+    MU_s dC_s (sum_k (1 + r)^-k / annuity factor - 1).
+    """
+    from ogcore import pensions
+    from types import SimpleNamespace
+
+    S, R, r, g, sigma, beta = 8, 5, 0.04, 0.02, 1.5, 0.96
+    p = SimpleNamespace(S=S, sigma=sigma, g_y=g)
+    rho = np.array([0.01, 0.02, 0.02, 0.03, 0.05, 0.1, 0.2, 1.0])
+    mu = np.ones(S)
+    for s in range(S - 1):
+        mu[s + 1] = mu[s] / (
+            beta * (1 - rho[s]) * np.exp(-sigma * g) * (1 + r)
+        )
+    cons = mu ** (-1 / sigma)
+    r_age = np.full(S, r)
+    C, A, P, H, dC, m = pensions.fdc_lifetime_loop(
+        np.linspace(0.5, 1.0, S),
+        np.full(S, 0.1),
+        np.zeros(S),
+        np.full(S, np.inf),
+        r_age,
+        rho,
+        R,
+        g,
+        0,
+        0.0,
+        S,
+    )
+    fdc = pensions.FDCLifetime(C, A, P, H, dC, m, R)
+    ann = pensions.fdc_annuity_factor_loop(S, R, rho, r_age)
+    certain = np.sum((1 + r) ** -np.arange(S - R))
+    expected = np.where(np.arange(S) < R, mu * dC * (certain / ann - 1.0), 0.0)
+    if two_dim:
+        cons2 = np.column_stack((cons, cons))
+        fdc2 = pensions.FDCLifetime(
+            *[np.column_stack((x, x)) for x in fdc[:-1]], R
+        )
+        rho2 = np.column_stack((rho, rho))
+        wedge = household.fdc_labor_wedge(
+            cons2, 1.0, fdc2, rho2, np.array([beta, beta]), p
+        )
+        assert np.allclose(wedge, np.column_stack((expected, expected)))
+    else:
+        wedge = household.fdc_labor_wedge(cons, 1.0, fdc, rho, beta, p)
+        assert np.allclose(wedge, expected)
+    assert np.all(expected[:R] > 0)
+
+
+def test_FOC_labor_includes_fdc():
+    """
+    With the pillar on, the labor FOC error equals the error computed
+    with the FDC net flow added to taxes, plus the FDC wedge.
+    """
+    from ogcore import tax
+
+    p = _fdc_on_specs(0.1)
+    j = 0
+    r, w, factor = 0.04, 1.0, 100000.0
+    b = np.linspace(0.0, 0.5, p.S)
+    b_splus1 = np.append(b[1:], 0.1)
+    n = np.full(p.S, 0.4)
+    zeros = np.zeros(p.S)
+    args = (
+        r,
+        w,
+        1.0,
+        np.ones(p.I),
+        b,
+        b_splus1,
+        n,
+        zeros,
+        zeros,
+        factor,
+        zeros,
+        zeros,
+        zeros,
+        p.chi_n[-1],
+        p.etr_params[-1],
+        p.mtrx_params[-1],
+        None,
+        j,
+        p,
+        "SS",
+    )
+    err_on = household.FOC_labor(*args)
+    e = np.squeeze(p.e[-1, :, j])
+    fdc = household.get_fdc(r, w, n, e, j, p, "SS")
+    taxes = tax.net_taxes(
+        r,
+        w,
+        b,
+        n,
+        zeros,
+        factor,
+        zeros,
+        zeros,
+        zeros,
+        None,
+        j,
+        False,
+        "SS",
+        e,
+        p.etr_params[-1],
+        p,
+    )
+    cons = household.get_cons(
+        r,
+        w,
+        1.0,
+        np.ones(p.I),
+        b,
+        b_splus1,
+        n,
+        zeros,
+        zeros,
+        taxes + household.fdc_net_flow(fdc),
+        e,
+        p.tau_c[-1, :],
+        p,
+    )
+    p_off = copy.deepcopy(p)
+    p_off.fdc_tau = np.zeros_like(p.fdc_tau)
+    # the FOC without FDC, evaluated at the consumption with FDC, by
+    # passing the net FDC flow through the remittances (rm enters the
+    # budget with the opposite sign)
+    args_off = list(args)
+    args_off[8] = -household.fdc_net_flow(fdc)
+    args_off[18] = p_off
+    err_off = household.FOC_labor(*args_off)
+    wedge = household.fdc_labor_wedge(
+        cons, 1.0, fdc, p.rho[-1, :, j], p.beta[j], p
+    )
+    assert np.allclose(err_on, err_off + wedge)
+    assert np.any(wedge != 0)
+
+
+def test_fdc_labor_wedge_partial_lifetime():
+    """
+    For a cohort alive when the time path begins, the wedge on its
+    remaining ages equals the full-life wedge at those ages: the
+    discounting from s to u does not depend on where the arrays start.
+    """
+    from ogcore import pensions
+    from types import SimpleNamespace
+
+    S, R = 10, 6
+    p = SimpleNamespace(S=S, sigma=2.0, g_y=0.02)
+    rho = np.linspace(0.01, 0.3, S)
+    rho[-1] = 1.0
+    r = np.full(S, 0.05)
+    C, A, P, H, dC, m = pensions.fdc_lifetime_loop(
+        np.linspace(0.5, 1.0, S),
+        np.full(S, 0.1),
+        np.zeros(S),
+        np.full(S, np.inf),
+        r,
+        rho,
+        R,
+        0.02,
+        0,
+        0.0,
+        S,
+    )
+    fdc = pensions.FDCLifetime(C, A, P, H, dC, m, R)
+    cons = np.linspace(0.6, 0.9, S)
+    full = household.fdc_labor_wedge(cons, 1.0, fdc, rho, 0.97, p)
+    for a0 in (2, 7):
+        part = pensions.FDCLifetime(*[x[a0:] for x in fdc[:-1]], R)
+        wedge = household.fdc_labor_wedge(
+            cons[a0:], 1.0, part, rho[a0:], 0.97, p
+        )
+        assert np.allclose(wedge, full[a0:])
+
+
+@pytest.mark.parametrize("linkage", [True, False], ids=["linked", "unlinked"])
+def test_fdc_labor_wedge_linkage(linkage):
+    """
+    With pension_FOC_linkage false, the wedge is only the contribution
+    cost, -MU_s dC_s; the value of the annuity the contribution buys
+    is left out. With it true, that value is added.
+    """
+    from ogcore import pensions
+    from types import SimpleNamespace
+
+    S, R = 10, 6
+    p = SimpleNamespace(S=S, sigma=2.0, g_y=0.02, pension_FOC_linkage=linkage)
+    rho = np.linspace(0.01, 0.3, S)
+    rho[-1] = 1.0
+    C, A, P, H, dC, m = pensions.fdc_lifetime_loop(
+        np.linspace(0.5, 1.0, S),
+        np.full(S, 0.1),
+        np.zeros(S),
+        np.full(S, np.inf),
+        np.full(S, 0.05),
+        rho,
+        R,
+        0.02,
+        0,
+        0.0,
+        S,
+    )
+    fdc = pensions.FDCLifetime(C, A, P, H, dC, m, R)
+    cons = np.linspace(0.6, 0.9, S)
+    wedge = household.fdc_labor_wedge(cons, 1.0, fdc, rho, 0.97, p)
+    cost = -household.marg_ut_cons(cons, p.sigma) * dC
+    if linkage:
+        assert np.all(wedge[:R] > cost[:R])
+    else:
+        assert np.allclose(wedge, cost)

@@ -390,7 +390,7 @@ w = np.array([1.2, 1.1, 1.21, 1])
 e = np.array([1.1, 1.11, 0.9, 0.87])
 r = np.ones(p.T) * 0.02
 # annuity factor 1 + 0.7 / 1.02 (survival timing fixed in Issue #1268)
-d_NDC_expected1 = np.array([0.33317153, 0.29907546, 0.0, 0.0])
+d_NDC_expected1 = np.array([0.34331811, 0.30818366, 0.0, 0.0])
 args1 = (r, w, e, None, per_rmn, p)
 
 #############Incomplete lifetimes###################
@@ -409,7 +409,7 @@ p2.mort_rates_SS = np.array([0.1, 0.2, 0.4, 0.6, 1.0])
 w2 = np.array([1.1, 1.21, 1.25])
 e2 = np.array([1.11, 0.9, 1.0])
 r2 = np.ones(p2.T) * 0.04
-d_NDC_expected2 = np.array([0.32852794, 0.0, 0.0])
+d_NDC_expected2 = np.array([0.34193542, 0.0, 0.0])
 args2 = (r2, w2, e2, None, per_rmn2, p2)
 
 test_data = [(args1, d_NDC_expected1), (args2, d_NDC_expected2)]
@@ -475,7 +475,7 @@ p2.k_ret = 0.4615
 p2.mort_rates_SS = np.array([0.01, 0.05, 0.3, 0.4, 1])
 omegas = None
 lambdas = 1
-pension_expected_ndc = [0, 0, 0.25751495, 0.24990423]
+pension_expected_ndc = [0, 0, 0.26535745, 0.25751495]
 args_ndc = (r, w_ndc, n_ndc, Y, theta, t, j, shift, method, e_ndc, factor, p2)
 
 ################pension benefit: PS############
@@ -568,7 +568,7 @@ p.k_ret = 0.4615
 delta_ret = 0.816476822
 g_ndc = p.g_y[-1] + p.g_n_ss
 p.mort_rates_SS = np.array([0.1, 0.2, 0.4, 1.0])
-deriv_NDC_loop_expected1 = np.array([0.33302457, 0.29907546, 0.0])
+deriv_NDC_loop_expected1 = np.array([0.3430153, 0.30804772, 0.0])
 d_theta_empty = np.zeros_like(w)
 args3 = (w, e, per_rmn, g_ndc, delta_ret, d_theta_empty, p)
 
@@ -589,7 +589,7 @@ p2.k_ret = 0.4615
 delta_ret2 = 0.896520810
 g_ndc2 = p2.g_y[-1] + p2.g_n_ss
 p2.mort_rates_SS = np.array([0.2, 0.4, 1.0])
-deriv_NDC_loop_expected2 = np.array([0.32839557, 0.0, 0.0])
+deriv_NDC_loop_expected2 = np.array([0.3415314, 0.0, 0.0])
 d_theta_empty = np.zeros(per_rmn)
 args4 = (w2, e2, per_rmn2, g_ndc2, delta_ret2, d_theta_empty, p2)
 
@@ -948,7 +948,7 @@ r_dndc = np.ones(p2.T) * 0.02
 p2.tau_p = 0.3
 p2.k_ret = 0.4615
 p2.mort_rates_SS = np.array([0.01, 0.05, 0.3, 1])
-d_theta_expected_dndc = np.array([0.33317153, 0.29907546, 0, 0])
+d_theta_expected_dndc = np.array([0.34331811, 0.30818366, 0, 0])
 Y = None
 factor = 2
 args_dndc = (r_dndc, w_dndc, e_dndc, Y, per_rmn, factor, 0, 1, p2)
@@ -1007,8 +1007,7 @@ r = np.ones(p.T) * 0.03
 p.tau_p = 0.3
 p.k_ret = 0.4615
 p.mort_rates_SS = np.array([0.01, 0.05, 0.3, 0.4, 1])
-NDC_expected1 = np.array([0, 0, 0.25751495, 0.24990423])
-# NDC_expected1 = np.array([0, 0, 0.279756794, 0.271488732])
+NDC_expected1 = np.array([0, 0, 0.26535745, 0.25751495])
 args1 = (w, e, n, r, None, None, j, "SS", p)
 
 #############incomplete lifetimes###################
@@ -1032,11 +1031,12 @@ p2.mort_rates_SS = np.array([0.01, 0.05, 0.3, 0.4, 1])
 p2.e = e
 # Pre-time-path wages are anchored to the period-0 wage of the passed
 # path (w[0] = 1.1), not the old w_preTP attribute. Earlier expected
-# values under the old convention, kept for reference:
+# values under the old convention (and with balances credited only through
+# the period before retirement), kept for reference:
 # NDC_expected2 = np.array([0, 0.25185784, 0.24441432])
 # TODO: why move from numbers below to those above ?  Diff in numpy rounding??
 # NDC_expected2 = np.array([0, 0.251721214, 0.244281728])
-NDC_expected2 = np.array([0, 0.23648259, 0.22949347])
+NDC_expected2 = np.array([0, 0.24368456, 0.23648259])
 args2 = (w, e, n, r, None, 0, j, "TPI", p2)
 
 test_data = [(args1, NDC_expected1), (args2, NDC_expected2)]
@@ -1212,8 +1212,20 @@ def test_get_PS(args, PS_expected):
                 "avg_labor_inc_t1_model_units": 0.8,
             },
         ),
+        (
+            "Hybrid DB-FDC",
+            {
+                "alpha_db": [[0.02]],
+                "yr_contrib": 35,
+                "avg_earn_num_years": 40,
+                "fdc_tau": 0.05,
+                "db_earn_cap_factor": [0.5],
+                "dc_earn_cap_factor": [1.5],
+                "avg_labor_inc_t1_model_units": 0.8,
+            },
+        ),
     ],
-    ids=["DB", "PS", "NDC", "Hybrid"],
+    ids=["DB", "PS", "NDC", "Hybrid", "Hybrid DB-FDC"],
 )
 def test_pension_amount_with_real_specifications(system, updates):
     """
@@ -1268,8 +1280,20 @@ def test_pension_amount_with_real_specifications(system, updates):
                 "avg_labor_inc_t1_model_units": 0.8,
             },
         ),
+        (
+            "Hybrid DB-FDC",
+            {
+                "alpha_db": [[0.02]],
+                "yr_contrib": 35,
+                "avg_earn_num_years": 40,
+                "fdc_tau": 0.05,
+                "db_earn_cap_factor": [0.5],
+                "dc_earn_cap_factor": [1.5],
+                "avg_labor_inc_t1_model_units": 0.8,
+            },
+        ),
     ],
-    ids=["SS", "DB", "PS", "NDC", "Hybrid"],
+    ids=["SS", "DB", "PS", "NDC", "Hybrid", "Hybrid DB-FDC"],
 )
 def test_replacement_rate_adjust_applies_to_every_system(system, updates):
     """
@@ -2862,7 +2886,7 @@ def test_ndc_rates_path_averaging():
 def test_NDC_1dim_loop_time_varying_credit():
     """
     A contribution made at age s compounds at the rates credited in
-    periods t_birth + s + 1 through t_birth + R - 1.
+    periods t_birth + s + 1 through t_birth + R, the retirement period.
     """
     S, R, t_birth = 6, 4, 3
     w = np.array([1.0, 1.1, 1.2, 1.3, 1.4, 1.5])
@@ -2895,10 +2919,50 @@ def test_NDC_1dim_loop_time_varying_credit():
             * np.exp(-0.02 * (u - s))
             * e[s]
             * n[s]
-            * np.prod(1 + credit[t_birth + s + 1 : t_birth + R])
+            * np.prod(1 + credit[t_birth + s + 1 : t_birth + R + 1])
             for s in range(R)
         )
         assert np.isclose(out[u], expected)
+
+
+def test_NDC_fair_at_credited_rate():
+    """
+    With the conversion coefficient set to the inverse of the annuity
+    factor at the credited rate g (k_ret = indR = 0, discount rate equal
+    to the credited rate), the expected present value at the retirement
+    period R of the benefits equals the contributions accumulated at g
+    through R. A stock carried into a period earns that period's rate,
+    as private savings do, so a contribution at age s is worth
+    (1 + g)^(R - s) in period R, when the first benefit is paid.
+    """
+    S, R, t_birth = 7, 4, 0
+    g = 0.03
+    w = np.array([1.0, 1.1, 1.2, 1.3, 1.4, 1.5, 1.6])
+    e = np.array([1.0, 1.2, 1.1, 0.9, 0.8, 0.7, 0.6])
+    n = np.array([0.4, 0.5, 0.45, 0.4, 0.2, 0.1, 0.1])
+    tau_p = np.full(S, 0.2)
+    rho = np.array([0.0, 0.0, 0.0, 0.1, 0.2, 0.4, 1.0])
+    surv = np.concatenate(([1.0], np.cumprod(1 - rho[R:-1])))
+    discount = (1 + g) ** -np.arange(S - R)
+    annuity = np.sum(surv * discount)
+    out = pensions.NDC_1dim_loop(
+        w,
+        e,
+        n,
+        np.full(S, R),
+        S,
+        np.array([0.0]),
+        tau_p,
+        np.full(S + 1, g),
+        t_birth,
+        np.full(S, 1.0 / annuity),
+        np.zeros(S),
+    )
+    balance_R = np.sum(
+        tau_p[:R] * w[:R] * e[:R] * n[:R] * (1 + g) ** (R - np.arange(R))
+    )
+    assert np.allclose(out[R:], out[R])
+    assert np.isclose(np.sum(surv * discount * out[R:]), balance_R)
 
 
 def test_delta_ret_discount_at_retirement():
@@ -3279,6 +3343,138 @@ def test_fdc_earn_cap_below_floor_raises():
         )
 
 
+def _db_fdc_params(factor1=0.5, factor2=1.5, **updates):
+    """
+    Specifications for the hybrid DB-FDC system with constant cutoff
+    factors (entered twice so they are not indexed) and the defined
+    benefit parameters of the hybrid DB-NDC tests.
+    """
+    p = Specifications()
+    p.update_specifications(
+        dict(
+            {
+                "alpha_db": [[0.02]],
+                "yr_contrib": 35,
+                "avg_earn_num_years": 40,
+                "fdc_tau": 0.05,
+                "pension_system": "Hybrid DB-FDC",
+                "db_earn_cap_factor": [factor1, factor1],
+                "dc_earn_cap_factor": [factor2, factor2],
+                "avg_labor_inc_t1_model_units": 0.8,
+            },
+            **updates,
+        )
+    )
+    p.n_preTP = 0.4 * np.ones((p.S, p.J))
+    return p
+
+
+@pytest.mark.parametrize("ndim", [1, 2], ids=["S", "SxJ"])
+def test_DB_FDC_hybrid_amount_SS(ndim):
+    """
+    The public pension of the hybrid DB-FDC system is the defined
+    benefit on labor income capped at the first cutoff: the same as the
+    Defined Benefits system with pension_earn_cap and the same cap. The
+    funded band pays no public pension.
+    """
+    p = _db_fdc_params()
+    p_db = copy.deepcopy(p)
+    p_db.pension_system = "Defined Benefits"
+    p_db.pension_earn_cap = True
+    w = 1.2
+    if ndim == 1:
+        j = p.J - 1
+        e = p.e[-1, :, j]
+        n = 0.4 * np.ones(p.S)
+    else:
+        j = None
+        e = p.e[-1, :, :]
+        n = 0.4 * np.ones((p.S, p.J))
+    hybrid = pensions.DB_FDC_hybrid_amount(w, e, n, None, j, "SS", p)
+    capped = pensions.DB_amount(
+        w, e, n, None, j, "SS", p_db, earn_hi=pensions.pension_earn_caps(p)[0]
+    )
+    uncapped = pensions.DB_amount(w, e, n, None, j, "SS", p_db)
+    assert np.any(hybrid > 0.0)
+    assert np.allclose(hybrid, capped)
+    # the cap binds for the top earners, so the cap matters
+    assert np.any(hybrid < uncapped)
+    theta = np.zeros(p.J)
+    args = (0.05, w, n, 1.0, theta, None, j, False, "SS", e, 1e5)
+    assert np.allclose(
+        pensions.pension_amount(*args, p),
+        pensions.pension_amount(*args, p_db),
+    )
+
+
+def test_fdc_earn_bands_hybrid_db_fdc():
+    """
+    Under the hybrid DB-FDC system, FDC contributions are paid on labor
+    income between the two hybrid cutoffs, whatever
+    fdc_earn_floor_factor and pension_earn_cap, as the notional account
+    of the hybrid DB-NDC system is credited.
+    """
+    p = _db_fdc_params(fdc_earn_floor_factor=[0.1, 0.1])
+    assert not p.pension_earn_cap
+    lo, hi = pensions.fdc_earn_bands(p)
+    cut1, cut2 = pensions.pension_earn_caps(p)
+    assert np.allclose(lo, cut1) and np.allclose(hi, cut2)
+    assert np.allclose(lo, 0.5 * 0.8) and np.allclose(hi, 1.5 * 0.8)
+    e = np.ones(p.S)
+    n = np.linspace(0.0, 1.5, p.S)
+    out = pensions.fdc_lifetime(1.0, e, n, 0.04, None, 0, p)
+    R = out.R
+    expected = 0.05 * (np.clip(n[:R], 0.4, 1.2) - 0.4)
+    assert np.allclose(out.contrib[:R], expected)
+    inside = (n[:R] > 0.4) & (n[:R] < 1.2)
+    assert np.allclose(out.dcontrib_dn[:R], np.where(inside, 0.05, 0.0))
+    # the same accounts as the FDC pillar alongside a capped DB system
+    # with its floor at the DB cap
+    p_db = _db_fdc_params(
+        pension_system="Defined Benefits",
+        pension_earn_cap=True,
+        fdc_earn_floor_factor=[0.5, 0.5],
+    )
+    out_db = pensions.fdc_lifetime(1.0, e, n, 0.04, None, 0, p_db)
+    assert np.allclose(out.contrib, out_db.contrib)
+    assert np.allclose(out.benefit, out_db.benefit)
+
+
+def test_hybrid_db_fdc_cutoff_checks():
+    """
+    Under the hybrid DB-FDC system the DB cap may not exceed the DC cap
+    for any cohort; fdc_earn_floor_factor is not checked against the DC
+    cap, since the system does not use it; and a zero fdc_tau warns.
+    """
+    with pytest.raises(ValueError, match="at every age"):
+        Specifications().update_specifications(
+            {
+                "pension_system": "Hybrid DB-FDC",
+                "fdc_tau": 0.05,
+                "pension_regimes": [
+                    {
+                        "year": 2030,
+                        "max_age_at_start": 54,
+                        "db_earn_cap_factor": 3.0,
+                    }
+                ],
+            }
+        )
+    Specifications().update_specifications(
+        {
+            "pension_system": "Hybrid DB-FDC",
+            "fdc_tau": 0.05,
+            "pension_earn_cap": True,
+            "dc_earn_cap_factor": [1.5],
+            "fdc_earn_floor_factor": [2.0],
+        }
+    )
+    with pytest.warns(UserWarning, match="fdc_tau is zero"):
+        Specifications().update_specifications(
+            {"pension_system": "Hybrid DB-FDC"}
+        )
+
+
 def test_fdc_tau_by_cohort():
     """
     A regime introducing FDC for younger cohorts: older cohorts never
@@ -3324,6 +3520,82 @@ def test_fdc_lifetime_reads_calendar_return():
         out.balance[s + 1],
         (1 + r_path[t_birth + s + 1]) * np.exp(-p.g_y) * out.holdings[s],
     )
+
+
+def test_fdc_initial_holdings():
+    p = Specifications()
+    zeros = np.zeros((p.S, p.J))
+    for ss in ({}, {"fdc_holdings": zeros, "fdc_R": 40}):
+        H, claims, bq = pensions.fdc_initial_holdings(ss, p)
+        assert not np.any(H) and not np.any(claims) and not np.any(bq)
+    R = 40
+    H = np.linspace(0.1, 1.0, p.S)[:, None] * np.ones((1, p.J))
+    H0, claims, bq = pensions.fdc_initial_holdings(
+        {"fdc_holdings": H, "fdc_R": R}, p
+    )
+    carried = H * np.exp(-p.g_y)
+    assert np.allclose(H0, H)
+    assert np.allclose(claims[:R], carried[:R])
+    assert np.allclose(bq[:R], carried[:R]) and np.all(bq[R:] == 0)
+    surv = 1 - p.rho_preTP
+    ok = surv[R:] > 0
+    assert np.allclose(claims[R:][ok], (carried[R:] / surv[R:])[ok])
+
+
+@pytest.mark.parametrize("wedge", [0.0, 0.01], ids=["no wedge", "wedge"])
+def test_fdc_tpi_matches_cohort_lifetimes(wedge):
+    """
+    The time-path accounts are each cohort's own lifetime accounts
+    read down its diagonal, for a cohort born on the path and for one
+    alive when it begins (whose balance carried into period 0 earns
+    the period-0 FDC return).
+    """
+    p = Specifications()
+    p.update_specifications({"fdc_tau": 0.06, "r_fdc_wedge": [wedge]})
+    T, S, J = p.T, p.S, p.J
+    r_path = np.linspace(0.03, 0.06, T + S)
+    w_path = np.linspace(1.0, 1.2, T + S)
+    n_mat = np.broadcast_to(
+        np.linspace(0.3, 0.5, S)[None, :, None], (T + S, S, J)
+    ).copy()
+    claims = np.zeros((S, J))
+    claims[:, :] = np.linspace(0.0, 0.8, S)[:, None]
+    p.fdc_claims_preTP = claims
+    path = pensions.fdc_tpi(r_path, w_path, n_mat, p)
+    e_long = np.concatenate(
+        (p.e, np.broadcast_to(p.e[-1:], (S, S, J))), axis=0
+    )
+    j = 3
+    s = np.arange(S)
+    # born in period 4
+    tb = 4
+    life = pensions.fdc_lifetime(
+        w_path, e_long[tb + s, s, j], n_mat[tb + s, s, j], r_path, tb, j, p
+    )
+    on = tb + s < T
+    assert np.allclose(path.contrib[(tb + s)[on], s[on], j], life.contrib[on])
+    assert np.allclose(path.benefit[(tb + s)[on], s[on], j], life.benefit[on])
+    # aged 50 in period 0 (retired), and aged 10 (working)
+    for a0 in (50, 10):
+        n_full = n_mat[0, :, j].copy()
+        n_full[:a0] = 0.0
+        e_full = np.zeros(S)
+        e_full[a0:] = e_long[s[a0:] - a0, s[a0:], j]
+        n_full[a0:] = n_mat[s[a0:] - a0, s[a0:], j]
+        life = pensions.fdc_lifetime(
+            w_path,
+            e_full,
+            n_full,
+            r_path,
+            -a0,
+            j,
+            p,
+            a0=a0,
+            A0=(1 + r_path[0] - wedge) * claims[a0 - 1, j],
+        )
+        rows = s[a0:] - a0
+        assert np.allclose(path.holdings[rows, s[a0:], j], life.holdings[a0:])
+        assert np.allclose(path.benefit[rows, s[a0:], j], life.benefit[a0:])
 
 
 def test_fdc_return_wedge():
@@ -3393,3 +3665,33 @@ def test_fdc_return_wedge_by_cohort():
             else 1.0
         ),
     )
+
+
+def test_fdc_bequeathable_tpi():
+    """
+    On the time path, holdings bequeathed in period t are scaled by
+    (1 + r_fdc) / (1 + r_p), with the wedge on the return of the next
+    age in period t, so that with get_BQ's (1 + r_p) they earn r_fdc;
+    with no wedge they are unchanged.
+    """
+    p = Specifications()
+    year = p.start_year + 10
+    p.update_specifications(
+        {
+            "fdc_tau": 0.1,
+            "r_fdc_wedge": [0.01],
+            "pension_regimes": [{"year": year, "r_fdc_wedge": 0.02}],
+        }
+    )
+    T, S, J = p.T, p.S, p.J
+    bq = np.ones((T, S, J))
+    r_p = np.linspace(0.03, 0.05, T)
+    out = pensions.fdc_bequeathable_tpi(bq, r_p, p)
+    wedge = pensions.fdc_wedge_path(p)
+    t, s = 3, 7
+    assert np.allclose(
+        out[t, s], (1 + r_p[t] - wedge[t, s + 1]) / (1 + r_p[t])
+    )
+    assert np.allclose(out[:, -1, :], 1.0)
+    p0 = Specifications()
+    assert np.allclose(pensions.fdc_bequeathable_tpi(bq, r_p, p0), bq)

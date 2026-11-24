@@ -254,7 +254,7 @@ The usual definition of equilibrium would be allocations and prices such that ho
 
   ```{math}
   :label: EqStnrzGovBC
-    e^{g_y}\left(1 + \tilde{g}_{n,t+1}\right)\left(\hat{D}_{t+1} + \hat{D}^{ext}_{t+1}\right) + \hat{Rev}_t + \hat{FA}_t = (1 + r_{gov,t})\hat{D}_t + (1 + r_{ext,t})\hat{D}^{ext}_t + \hat{G}_t + \hat{I}_{g,t} + \hat{Pensions}_t + \hat{TR}_t + \hat{UBI}_t \quad\forall t
+    e^{g_y}\left(1 + \tilde{g}_{n,t+1}\right)\left(\hat{D}_{t+1} + \hat{D}^{ext}_{t+1}\right) + \hat{Rev}_t + \hat{\Psi}^{fdc}_t + \hat{FA}_t = (1 + r_{gov,t})\hat{D}_t + (1 + r_{ext,t})\hat{D}^{ext}_t + \hat{G}_t + \hat{I}_{g,t} + \hat{Pensions}_t + \hat{TR}_t + \hat{UBI}_t + \hat{\Phi}^{fdc}_t \quad\forall t
   ```
 
   The stationarized versions of the rule for total government infrastructure investment spending $I_{g,t}$ in {eq}`EqUnbalGBC_Igt` and the rule for government investment spending in each industry in {eq}`EqUnbalGBC_Igt` are found by dividing both sides of the respective equations by $e^{g_y t}\tilde{N}_t$.
@@ -356,7 +356,7 @@ The stationarized NDC pension amount is given by:
   \hat{\theta}_{j,u,t+u-s}=
     \begin{cases}
       0, & \text{if}\ u < R \\
-      \biggl[\sum_{s=E}^{R-1}\tau^{p}_{t}\frac{\hat{w}_{t}}{e^{g_{y}(u-s)}}e_{j,s}n_{j,s,t}(1 + g_{NDC,t})^{R-s-1}\biggr]\delta_{R, t}, & \text{otherwise}
+      \biggl[\sum_{s=E}^{R-1}\tau^{p}_{t}\frac{\hat{w}_{t}}{e^{g_{y}(u-s)}}e_{j,s}n_{j,s,t}(1 + g_{NDC,t})^{R-s}\biggr]\delta_{R, t}, & \text{otherwise}
     \end{cases}
   ```
 
@@ -396,7 +396,7 @@ where $\frac{\partial \hat{\theta}_{j,u,t+u-s}}{\partial n_{j,s,t}}$ is given by
   :label: eqn:ndc_deriv_stationarized
   \frac{\partial \theta_{j,u,t+u-s}}{\partial n_{j,s,t}} =
     \begin{cases}
-      \tau^{p}_{t}\hat{w}_{t}e_{j,s}(1+g_{NDC,t})^{u - s}\delta_{R,t}, & \text{if}\ s<R-1 \\
+      \tau^{p}_{t}\hat{w}_{t}e_{j,s}(1+g_{NDC,t})^{R - s}\delta_{R,t}, & \text{if}\ s<R \\
       0, & \text{if}\ s \geq R \\
     \end{cases}
   ```

@@ -348,6 +348,29 @@ def get_initial_SS_values(p):
     initial_b = np.zeros((p.S, p.J))
     initial_b[1:, :] = initial_b_sp1[:-1, :]
     initial_n = ss_baseline_vars["n"]
+    # Funded defined contribution (FDC) holdings of the households alive
+    # at t=0 come from the baseline steady state (zero if the baseline
+    # had no FDC pillar), scaled for the period-0 population like
+    # private savings. They are stored on p, as n_preTP is below, for
+    # the household problem and the aggregates.
+    pop_scale = ss_baseline_vars["B"] / B0
+    H0, claims0, bq0 = pensions.fdc_initial_holdings(ss_baseline_vars, p)
+    p.fdc_claims_preTP = claims0 * pop_scale
+    p.fdc_bequeathable_preTP = bq0 * pop_scale
+    omega_ext = np.append(p.omega_S_preTP[1:, :], np.zeros((1, p.J)), axis=0)
+    imm_ext = np.append(p.imm_rates_preTP[1:, :], np.zeros((1, p.J)), axis=0)
+    fdc_terms0 = (
+        H0 * pop_scale * np.exp(-p.g_y) * p.omega_S_preTP
+        + p.fdc_claims_preTP * omega_ext * imm_ext
+    ) / (1.0 + p.g_n_preTP)
+    p.fdc_F0 = fdc_terms0.sum()
+    # spread the fund earns in period 0 on the balances it owes: those
+    # carried out of age s - 1 earn the period-0 return of age s
+    wedge0 = np.append(pensions.fdc_wedge_path(p)[0, 1:], 0.0)
+    p.fdc_spread0 = float((wedge0[:, None] * fdc_terms0).sum())
+    # the FDC fund reserve at t=0 is the baseline steady-state reserve,
+    # which is zero (the steady state holds no reserve)
+    p.fdc_Z0 = float(ss_baseline_vars.get("fdc_fund_reserves", 0.0))
     # The DB/NDC/PS pension formulas need the labor supplied before the
     # time path begins by cohorts alive at t=0. Use the model's initial
     # labor condition (the same baseline object that initializes wealth);
@@ -1184,6 +1207,25 @@ def run_TPI(p, client=None):
     # divergent track in the multi-industry example, so the same guesses
     # are used for baseline and reform runs.
     K_init = B_init * ss_vars["K"] / ss_vars["B"]
+    # Assets of the funded defined contribution (FDC) fund: zero when
+    # the pillar is off; otherwise F[0] is fixed by the initial holdings
+    # and the rest of the path is recomputed in each iteration
+    fdc_on = household.fdc_active(p)
+    F = np.zeros(p.T + p.S)
+    # FDC fund reserve (assets beyond the balances owed) and its flows
+    Z_fdc = np.zeros(p.T + p.S)
+    fdc_spread = np.zeros(p.T)
+    fdc_fund_payment = np.zeros(p.T)
+    fdc_fund_transfer = np.zeros(p.T)
+    fdc_fund_revenue = np.zeros(p.T)
+    if fdc_on:
+        F_ss = ss_vars.get("F", 0.0)
+        Z_ss = ss_vars.get("fdc_fund_reserves", 0.0)
+        F = utils.get_initial_path(p.fdc_F0, F_ss, p, "quadratic")
+        Z_fdc = utils.get_initial_path(p.fdc_Z0, Z_ss, p, "quadratic")
+        K_init = (
+            (B_init + F + Z_fdc) * ss_vars["K"] / (ss_vars["B"] + F_ss + Z_ss)
+        )
     K_d = K_init * ss_vars["K_d"] / ss_vars["K"]
     K_g = np.ones_like(K_init) * ss_vars["K_g"]
     K_vec_init = (
@@ -1494,6 +1536,11 @@ def run_TPI(p, client=None):
                 results.append(res)
         for j, result in enumerate(results):
             euler_errors[:, :, j], b_mat[:, :, j], n_mat[:, :, j] = result
+        # FDC accounts along the path (None when the pillar is off)
+        fdc_path = pensions.fdc_tpi(r_p, w, n_mat, p) if fdc_on else None
+        fdc_net = (
+            0.0 if fdc_path is None else fdc_path.contrib - fdc_path.benefit
+        )
 
         bmat_s = np.zeros((p.T, p.S, p.J))
         bmat_s[0, 1:, :] = b_splus1init[:-1, :]
@@ -1582,7 +1629,7 @@ def run_TPI(p, client=None):
             n_mat[: p.T, :, :],
             bqmat[: p.T, :, :],
             rmmat[: p.T, :, :],
-            tax_mat,
+            tax_mat + fdc_net,
             p.e,
             p.tau_c[: p.T, :],
             p,
@@ -1626,6 +1673,27 @@ def run_TPI(p, client=None):
         # Update aggregate variables
         L[: p.T] = aggr.get_L(n_mat[: p.T], p, "TPI")
         B[1 : p.T] = aggr.get_B(bmat_splus1[: p.T], p, "TPI", False)[: p.T - 1]
+        if fdc_on:
+            F[1 : p.T] = aggr.get_F(fdc_path, p, "TPI")[: p.T - 1]
+            # FDC fund reserve the fund holds beyond the balances it
+            # owes, from the spread between r_p and r_fdc, until the
+            # budget closure rule begins in period tG1, when it is paid
+            # to the government; the spread goes to the government from
+            # then on
+            fdc_spread[0] = p.fdc_spread0
+            fdc_spread[1:] = aggr.get_fdc_spread(fdc_path, p, "TPI")[: p.T - 1]
+            (
+                Z_fdc[: p.T],
+                fdc_fund_payment,
+                fdc_fund_transfer,
+            ) = aggr.get_fdc_fund_reserves(
+                r_p[: p.T], fdc_spread, Y[: p.T], p, "TPI", Z0=p.fdc_Z0
+            )
+            # net FDC fund revenue: payments above the ceiling, the
+            # balance paid at tG1, and the spread after it, less the
+            # government's transfers (a deficit at tG1, or a negative
+            # spread after it)
+            fdc_fund_revenue = fdc_fund_payment - fdc_fund_transfer
         w_open = firm.get_w_from_r(p.world_int_rate[: p.T], p, "TPI")
 
         # Find output, labor demand, capital demand for M-1 industries
@@ -1664,7 +1732,7 @@ def run_TPI(p, client=None):
             p.world_int_rate[: p.T], w_open[: p.T], L_M[: p.T], p, "TPI", -1
         )
         K[: p.T], K_d[: p.T], K_f[: p.T] = aggr.get_K_splits(
-            B[: p.T],
+            B[: p.T] + F[: p.T] + Z_fdc[: p.T],
             K_demand_open_vec[: p.T, :].sum(-1),
             D_d[: p.T],
             p.zeta_K[: p.T],
@@ -1739,7 +1807,9 @@ def run_TPI(p, client=None):
             new_borrowing,
             debt_service,
             new_borrowing_f,
-        ) = fiscal.D_G_path(r, dg_fixed_values, p)
+        ) = fiscal.D_G_path(
+            r, dg_fixed_values, p, fdc_fund_revenue=fdc_fund_revenue
+        )
 
         rnew = r.copy()
         rnew[: p.T] = np.squeeze(
@@ -1758,7 +1828,10 @@ def run_TPI(p, client=None):
             )
 
         K[: p.T], K_d[: p.T], K_f[: p.T] = aggr.get_K_splits(
-            B[: p.T], K_demand_open_vec.sum(-1), D_d[: p.T], p.zeta_K[: p.T]
+            B[: p.T] + F[: p.T] + Z_fdc[: p.T],
+            K_demand_open_vec.sum(-1),
+            D_d[: p.T],
+            p.zeta_K[: p.T],
         )
         r_gov_new = fiscal.get_r_gov(
             rnew[: p.T],
@@ -1796,6 +1869,19 @@ def run_TPI(p, client=None):
             b_mat[: p.T - 1, :, :],
             axis=0,
         )
+        if fdc_on:
+            # FDC balances of members who die before retirement are
+            # bequeathed with the private savings, credited r_fdc (the
+            # fund keeps the spread)
+            b_mat_shift = b_mat_shift + pensions.fdc_bequeathable_tpi(
+                np.append(
+                    np.reshape(p.fdc_bequeathable_preTP, (1, p.S, p.J)),
+                    fdc_path.bequeathable[: p.T - 1, :, :],
+                    axis=0,
+                ),
+                r_p_new[: p.T],
+                p,
+            )
         BQnew = aggr.get_BQ(r_p_new[: p.T], b_mat_shift, None, p, "TPI", False)
         bqmat_new = household.get_bq(BQnew, None, p, "TPI")
         (
@@ -1842,6 +1928,7 @@ def run_TPI(p, client=None):
             foreign_aid[: p.T],
             p,
             "TPI",
+            fdc_fund_revenue,
         )
         RM = aggr.get_RM(Y[: p.T], p, "TPI")
         RM = np.concatenate([RM, np.ones(p.S) * RM[-1]])
@@ -2140,10 +2227,20 @@ def run_TPI(p, client=None):
     )
     # Note that implicitly in this computation is that immigrants'
     # wealth is all in the form of private capital
-    I_d = aggr.get_I(
-        bmat_splus1[: p.T], K_d[1 : p.T + 1], K_d[: p.T], p, "TPI"
+    # FDC accounts by period, age, and group (zeros when the pillar is
+    # off)
+    zeros_TSJ = np.zeros((p.T, p.S, p.J))
+    fdc_contrib_path = zeros_TSJ if not fdc_on else fdc_path.contrib
+    fdc_benefits_path = zeros_TSJ if not fdc_on else fdc_path.benefit
+    fdc_holdings_path = zeros_TSJ if not fdc_on else fdc_path.holdings
+    # immigrants arrive with the savings and FDC holdings of their age
+    imm_wealth = bmat_splus1[: p.T]
+    if fdc_on:
+        imm_wealth = imm_wealth + fdc_path.claims
+    I_d = aggr.get_I(imm_wealth, K_d[1 : p.T + 1], K_d[: p.T], p, "TPI")
+    I = aggr.get_I(  # noqa: E741
+        imm_wealth, K[1 : p.T + 1], K[: p.T], p, "TPI"
     )
-    I = aggr.get_I(bmat_splus1[: p.T], K[1 : p.T + 1], K[: p.T], p, "TPI")  # noqa: E741
     # solve resource constraint
     # foreign debt service costs
     debt_service_f = fiscal.get_debt_service_f(r_p, D_f)
@@ -2301,6 +2398,14 @@ def run_TPI(p, client=None):
         "wealth_tax": wealth_tax_mat[: p.T, ...],
         "bequest_tax": bq_tax_mat[: p.T, ...],
         "pension_benefits": pension_mat[: p.T, ...],
+        "F": F[: p.T],
+        "fdc_spread": fdc_spread,
+        "fdc_fund_reserves": Z_fdc[: p.T],
+        "fdc_fund_revenue": fdc_fund_payment,
+        "fdc_fund_transfer": fdc_fund_transfer,
+        "fdc_contrib": fdc_contrib_path,
+        "fdc_benefits": fdc_benefits_path,
+        "fdc_holdings": fdc_holdings_path,
         "etr": etr_path[: p.T, ...],
         "mtrx": mtrx_path[: p.T, ...],
         "mtry": mtry_path[: p.T, ...],

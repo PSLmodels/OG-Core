@@ -99,6 +99,8 @@ def pension_earn_caps(p):
 
     The hybrid DB-NDC system pays a defined benefit on labor income up
     to the first cutoff and a notional defined contribution benefit on
+    labor income between the two. The hybrid DB-FDC system pays the
+    same defined benefit and collects funded defined contributions on
     labor income between the two. With ``pension_earn_cap`` True, the
     Defined Benefits system counts only labor income up to the first
     cutoff toward the benefit, and the Notional Defined Contribution
@@ -500,12 +502,17 @@ def pension_amount(
         pension = pension * replacement_rate_adjustment(
             pension, t, j, method, p
         )
+    elif p.pension_system == "Hybrid DB-FDC":
+        pension = DB_FDC_hybrid_amount(w, e, n, t, j, method, p)
+        pension = pension * replacement_rate_adjustment(
+            pension, t, j, method, p
+        )
     else:
         raise ValueError(
             "pension_system must be one of the following: "
             "'US-Style Social Security', 'Defined Benefits', "
             "'Notional Defined Contribution', 'Points System', "
-            "'Hybrid DB-NDC'"
+            "'Hybrid DB-NDC', 'Hybrid DB-FDC'"
         )
     return pension
 
@@ -863,7 +870,7 @@ def NDC_amount(
     .. math::
         pension_{j,s,t} = \biggl[\sum_{u=E}^{R-1}\tau^{p}_{u,t-s+u}
             w_{t-s+u}e_{j,u,t-s+u}n_{j,u,t-s+u}
-            \prod_{a=u+1}^{R-1}(1 + g_{NDC,t-s+a})
+            \prod_{a=u+1}^{R}(1 + g_{NDC,t-s+a})
             \biggr]\delta_{R,s,t} \quad \forall s \geq R
 
     where the retirement age $R$ and the conversion coefficient
@@ -872,8 +879,10 @@ def NDC_amount(
     paid, and the contribution rate $\tau^{p}_{u,t-s+u}$ is the one the
     cohort faced at each working age u, all read from the period-by-age
     arrays that ``pension_regimes`` builds. Each contribution earns
-    the rate credited in each period between the contribution and
-    retirement, $g_{NDC,t}$, and the conversion coefficient discounts
+    the rate credited in each period from the one after the
+    contribution through the retirement period, $g_{NDC,t}$ (the
+    balance is valued in the period of the first payment, as the
+    conversion coefficient assumes), and the conversion coefficient discounts
     payments at the rate in the period the household retires.
 
     Args:
@@ -1098,6 +1107,49 @@ def NDC_amount(
     return NDC
 
 
+def hybrid_earn_cutoffs(p):
+    """
+    The two earnings cutoffs of the hybrid systems (``Hybrid DB-NDC``
+    and ``Hybrid DB-FDC``), from ``pension_earn_caps``, checked to be
+    ordered in every period and at every age.
+
+    Args:
+        p (OG-Core Specifications object): model parameters
+
+    Returns:
+        cut1, cut2 (Numpy arrays): the cutoffs in model units of labor
+            income, by period and age ((T + S) x S once
+            ``Specifications`` builds them; a single value or a path by
+            period, as a caller may set by hand, is also accepted)
+
+    Raises:
+        ValueError: if ``dc_earn_cap_factor`` is less than
+            ``db_earn_cap_factor`` in any period
+    """
+    cut1, cut2 = pension_earn_caps(p)
+    n_per = max(cut1.shape[0], cut2.shape[0])
+    n_age = max(cut1.shape[1], cut2.shape[1])
+    rows = np.arange(n_per)[:, np.newaxis]
+    cols = np.arange(n_age)[np.newaxis, :]
+    c1_full = cut1[
+        np.minimum(rows, cut1.shape[0] - 1),
+        np.minimum(cols, cut1.shape[1] - 1),
+    ]
+    c2_full = cut2[
+        np.minimum(rows, cut2.shape[0] - 1),
+        np.minimum(cols, cut2.shape[1] - 1),
+    ]
+    if np.any(c2_full < c1_full):
+        t_bad, s_bad = np.argwhere(c2_full < c1_full)[0]
+        raise ValueError(
+            "dc_earn_cap_factor must be at least db_earn_cap_factor "
+            f"in every period and at every age: in period {t_bad} at "
+            f"age period {s_bad}, the cutoffs are {c1_full[t_bad, s_bad]} "
+            f"and {c2_full[t_bad, s_bad]}"
+        )
+    return cut1, cut2
+
+
 def DB_NDC_hybrid_amount(w, e, n, r, ndc_rates, t, j, method, p):
     r"""
     Calculate public pension from a hybrid defined benefit and notional
@@ -1153,30 +1205,7 @@ def DB_NDC_hybrid_amount(w, e, n, r, ndc_rates, t, j, method, p):
         ValueError: if ``dc_earn_cap_factor`` is less than
             ``db_earn_cap_factor`` in any period
     """
-    # cutoffs in model units of labor income, by period and age
-    # ((T + S) x S once Specifications builds them; a single value or a
-    # path by period, as a caller may set by hand, is also accepted)
-    cut1, cut2 = pension_earn_caps(p)
-    n_per = max(cut1.shape[0], cut2.shape[0])
-    n_age = max(cut1.shape[1], cut2.shape[1])
-    rows = np.arange(n_per)[:, np.newaxis]
-    cols = np.arange(n_age)[np.newaxis, :]
-    c1_full = cut1[
-        np.minimum(rows, cut1.shape[0] - 1),
-        np.minimum(cols, cut1.shape[1] - 1),
-    ]
-    c2_full = cut2[
-        np.minimum(rows, cut2.shape[0] - 1),
-        np.minimum(cols, cut2.shape[1] - 1),
-    ]
-    if np.any(c2_full < c1_full):
-        t_bad, s_bad = np.argwhere(c2_full < c1_full)[0]
-        raise ValueError(
-            "dc_earn_cap_factor must be at least db_earn_cap_factor "
-            f"in every period and at every age: in period {t_bad} at "
-            f"age period {s_bad}, the cutoffs are {c1_full[t_bad, s_bad]} "
-            f"and {c2_full[t_bad, s_bad]}"
-        )
+    cut1, cut2 = hybrid_earn_cutoffs(p)
     DB = DB_amount(w, e, n, t, j, method, p, earn_lo=0.0, earn_hi=cut1)
     NDC = NDC_amount(
         w,
@@ -1192,6 +1221,54 @@ def DB_NDC_hybrid_amount(w, e, n, r, ndc_rates, t, j, method, p):
         earn_hi=cut2,
     )
     return DB + NDC
+
+
+def DB_FDC_hybrid_amount(w, e, n, t, j, method, p):
+    r"""
+    Calculate public pension from a hybrid defined benefit and funded
+    defined contribution system.
+
+    This system has the same structure as the hybrid DB-NDC system
+    (``DB_NDC_hybrid_amount``), with a funded defined contribution (FDC)
+    account in place of the notional one. Labor income
+    $w_t e_{j,s,t} n_{j,s,t}$ is split into two bands at the cutoffs
+    $f_{1,t} \bar{y}$ and $f_{2,t} \bar{y}$ of ``pension_earn_caps``.
+    Income up to $f_{1,t} \bar{y}$ earns a defined benefit computed
+    with the ``DB_amount`` formula and parameters on that capped
+    income, which this function returns. Income between
+    $f_{1,t} \bar{y}$ and $f_{2,t} \bar{y}$ pays the FDC contribution
+    rate ``fdc_tau`` into the household's individual account, which
+    buys an annuity at retirement (``fdc_earn_bands`` sets this band
+    under this system). The annuity is paid by the FDC fund, not the
+    government, so it is not part of this public pension; the household
+    receives it through the FDC pillar. Income above $f_{2,t} \bar{y}$
+    earns no benefit:
+
+    .. math::
+        pension_{j,s,t} = pension^{DB}_{j,s,t}\bigl(\min\{w e n,
+            f_1 \bar{y}\}\bigr) \quad \forall s \geq R
+
+    Args:
+        w (array_like): real wage rate
+        e (Numpy array): effective labor units
+        n (Numpy array): labor supply; same shapes as accepted by
+            ``DB_amount``
+        t (int): model period of the first element of ``n``
+        j (int): index of lifetime income group, None if all groups
+        method (str): adjusts calculation dimensions based on 'SS',
+            'TPI', or 'TPI_scalar'
+        p (OG-Core Specifications object): model parameters
+
+    Returns:
+        pension (Numpy array): defined benefit pension amount for each
+            household
+
+    Raises:
+        ValueError: if ``dc_earn_cap_factor`` is less than
+            ``db_earn_cap_factor`` in any period
+    """
+    cut1, _ = hybrid_earn_cutoffs(p)
+    return DB_amount(w, e, n, t, j, method, p, earn_lo=0.0, earn_hi=cut1)
 
 
 def PS_amount(w, e, n, j, factor, p):
@@ -1330,8 +1407,8 @@ def deriv_NDC(r, w, e, Y, per_rmn, p):
     .. math::
         \frac{\partial \theta_{j,u,t+u-s}}{\partial n_{j,s,t}} =
             \begin{cases}
-            \tau^{p}_{t}w_{t}e_{j,s}(1+g_{NDC,t})^{u - s}\delta_{R,t},
-            & \text{if}\ s<R-1 \\
+            \tau^{p}_{t}w_{t}e_{j,s}(1+g_{NDC})^{R - s}\delta_{R},
+            & \text{if}\ s<R \\
             0, & \text{if}\ s \geq R \\
             \end{cases}
 
@@ -1972,8 +2049,16 @@ def deriv_PS_loop(w, e, S, S_ret, per_rmn, d_theta, vpoint, factor):
 def deriv_NDC_loop(
     w, e, per_rmn, S, S_ret, tau_p, g_ndc_value, delta_ret_value, d_theta
 ):
-    """
+    r"""
     Change in NDC pension benefits for another unit of labor supply
+
+    The benefit rises with labor supply at working age s by
+
+    .. math::
+        \tau^{p}w_{s}e_{s}(1 + g_{NDC})^{R - s}\delta_{R}
+
+    since a contribution at age s is credited in each period from
+    s + 1 through the retirement period R.
 
     Args:
         w (array_like): real wage rate
@@ -1999,7 +2084,7 @@ def deriv_NDC_loop(
             * w[s - (S - per_rmn)]
             * e[s - (S - per_rmn)]
             * delta_ret_value
-            * (1 + g_ndc_value) ** (S_ret - s - 1)
+            * (1 + g_ndc_value) ** (S_ret - s)
         )
 
     return d_theta
@@ -2369,10 +2454,11 @@ def NDC_1dim_loop(
     system for one household over its lifetime.
 
     The contribution made at working age s earns the rate credited in
-    each later period up to the period before retirement:
+    each later period through the retirement period R, in which the
+    first benefit is paid:
 
     .. math::
-        \prod_{a=s+1}^{R-1}(1 + g_{NDC,t_0 + a})
+        \prod_{a=s+1}^{R}(1 + g_{NDC,t_0 + a})
 
     where $t_0$ is the household's period of birth (age 0).
 
@@ -2413,7 +2499,9 @@ def NDC_1dim_loop(
         if u < R:
             continue
         NDC_s = 0.0
-        growth = 1.0
+        # the balance is credited through the retirement period R, in
+        # which the first benefit is paid
+        growth = 1.0 + g_age[R]
         for s in range(R - 1, -1, -1):
             # TODO: update so can take g_y from period t
             if earn_lo is None:
@@ -2490,7 +2578,8 @@ def NDC_2dim_loop(
         if u < R:
             continue
         NDC_s = np.zeros(NDC.shape[1])
-        growth = 1.0
+        # credited through the retirement period, t_cross - u + R
+        growth = 1.0 + g_ndc[min(max(t_cross - u + R, 0), n_g - 1)]
         for s in range(R - 1, -1, -1):
             if earn_lo is None:
                 x = e[s, :] * n[s, :]
@@ -2538,10 +2627,10 @@ def NDC_3dim_loop(
     at age s of a household aged u at time t was made in period
     t - (u - s), at that period's wage, labor supply, and contribution
     rate, and earns the rates credited in periods t - (u - s) + 1
-    through t - (u - R) - 1. Histories that predate the time path use
-    the period-0 wage, contribution rate, and credited rate and the
-    model's initial labor supply, so this reproduces what the
-    per-cohort household solves compute.
+    through t - (u - R), the retirement period. Histories that predate
+    the time path use the period-0 wage, contribution rate, and
+    credited rate and the model's initial labor supply, so this
+    reproduces what the per-cohort household solves compute.
 
     Args:
         w_path (Numpy array): real wage rate path, length T
@@ -2588,7 +2677,8 @@ def NDC_3dim_loop(
                 n_preTP[s_idx, :],
             )
             contrib = np.zeros(R)
-            growth = 1.0
+            # credited through the retirement period, t - (u - R)
+            growth = 1.0 + g_ndc[min(max(t - (u - R), 0), n_g - 1)]
             for i in range(R - 1, -1, -1):
                 s = s_idx[i]
                 if earn_lo is None:
@@ -2678,7 +2768,12 @@ def fdc_earn_bands(p):
     ``avg_labor_inc_t1_model_units``. The upper cutoff is the cap
     shared with the other defined contribution systems,
     ``dc_earn_cap_factor`` times ``avg_labor_inc_t1_model_units``,
-    when ``pension_earn_cap`` is True, and infinite otherwise. The
+    when ``pension_earn_cap`` is True, and infinite otherwise. Under
+    the hybrid DB-FDC system (``pension_system`` 'Hybrid DB-FDC'), the
+    band is instead the one between the two cutoffs of
+    ``pension_earn_caps``, as for the notional band of the hybrid
+    DB-NDC system, whatever ``fdc_earn_floor_factor`` and
+    ``pension_earn_cap``. The
     cutoff at period t and age s is the one that applies to the cohort
     of that household; it applies to the labor income the household
     earns in that period.
@@ -2692,6 +2787,9 @@ def fdc_earn_bands(p):
             factor set by hand as a single value or a path by period
             gives one column, applied at every age)
     """
+    if getattr(p, "pension_system", None) == "Hybrid DB-FDC":
+        # the FDC band of the hybrid system lies between its two cutoffs
+        return tuple(np.ascontiguousarray(c) for c in hybrid_earn_cutoffs(p))
     avg_inc = float(p.avg_labor_inc_t1_model_units)
     lo = _period_age(getattr(p, "fdc_earn_floor_factor", 0.0)) * avg_inc
     if getattr(p, "pension_earn_cap", False):
@@ -2793,11 +2891,11 @@ def fdc_lifetime_loop(y, tau, lo, hi, r, rho, R, g_y, a0, A0, S):
 
     The account therefore earns the return in every period from the
     period after each contribution through the retirement period R
-    itself, one period more than the notional defined contribution
-    system credits. At age $\max(R, a_0)$ the balance buys an annuity,
-    $P = A/\ddot{a}$; a household already retired at a0 holds a
-    remaining balance that is re-annuitized on the rates given. After
-    that $H_s = A_s - P_s$, $P_{s+1} = P_s e^{-g_y}$, and the holdings
+    itself, the same window over which the notional defined
+    contribution system credits. At age $\max(R, a_0)$ the balance buys
+    an annuity, $P = A/\ddot{a}$; a household already retired at a0
+    holds a remaining balance that is re-annuitized on the rates given.
+    After that $H_s = A_s - P_s$, $P_{s+1} = P_s e^{-g_y}$, and the holdings
     of those who die stay in the annuity pool:
 
     .. math::
@@ -2886,7 +2984,7 @@ def _calendar_by_age(x, t_birth, S):
     return np.ascontiguousarray(x[_cohort_rows(t_birth, x.size, S)])
 
 
-def fdc_lifetime(w, e, n, r_p, t_birth, j, p, a0=0, A0=0.0):
+def fdc_lifetime(w, e, n, r_p, t_birth, j, p, a0=0, A0=0.0, by_age=False):
     """
     Funded defined contribution account of one household over its
     lifetime: contributions, balances, annuity benefits, end-of-period
@@ -2930,6 +3028,10 @@ def fdc_lifetime(w, e, n, r_p, t_birth, j, p, a0=0, A0=0.0):
         A0 (scalar): account balance at the start of age a0; a
             household already retired at a0 annuitizes this remaining
             balance on the rates given
+        by_age (bool): if True, ``w`` and ``r_p`` are length S arrays
+            already indexed by the household's age (entries before a0
+            are ignored) rather than calendar paths; the parameters
+            are still read in the periods given by t_birth
 
     Returns:
         FDCLifetime: the account by age
@@ -2937,17 +3039,19 @@ def fdc_lifetime(w, e, n, r_p, t_birth, j, p, a0=0, A0=0.0):
     S = p.S
     e = np.ascontiguousarray(np.asarray(e, dtype=float).ravel())
     n = np.ascontiguousarray(np.asarray(n, dtype=float).ravel())
-    w_age = _calendar_by_age(w, t_birth, S)
+    if by_age:
+        w_age = np.ascontiguousarray(np.asarray(w, dtype=float).ravel())
+        r_age = np.ascontiguousarray(np.asarray(r_p, dtype=float).ravel())
+    else:
+        w_age = _calendar_by_age(w, t_birth, S)
+        r_age = _calendar_by_age(r_p, t_birth, S)
     ages = np.arange(S)
     # FDC return r_fdc = r_p - r_fdc_wedge, with the wedge the
     # household's cohort faces at each age
-    r_age = _calendar_by_age(r_p, t_birth, S)
-    if hasattr(p, "r_fdc_wedge"):
-        wedge_arr = cohort_array("r_fdc_wedge", p)
-        r_age = np.ascontiguousarray(
-            r_age
-            - wedge_arr[_cohort_rows(t_birth, wedge_arr.shape[0], S), ages]
-        )
+    wedge_arr = fdc_wedge_path(p)
+    r_age = np.ascontiguousarray(
+        r_age - wedge_arr[_cohort_rows(t_birth, wedge_arr.shape[0], S), ages]
+    )
     lo, hi = fdc_earn_bands(p)
     lo_age = _cohort_diag(lo, t_birth, S)
     hi_age = _cohort_diag(hi, t_birth, S)
@@ -3012,3 +3116,313 @@ def fdc_ss(r_p, w, e, n, p):
         if name != "R"
     }
     return FDCLifetime(R=out[0].R, **fields)
+
+
+def fdc_holdings(fdc):
+    """
+    End-of-period holdings of funded defined contribution accounts,
+    the fund's assets, by age (and group).
+
+    Args:
+        fdc (FDCLifetime or None): the accounts, None when the pillar
+            is off
+
+    Returns:
+        H (Numpy array or scalar): holdings, or 0.0 when the
+            pillar is off
+    """
+    if fdc is None:
+        return 0.0
+    return fdc.holdings
+
+
+def fdc_wedge_path(p):
+    """
+    Wedge ``r_fdc_wedge`` between the portfolio return r_p and the FDC
+    return r_fdc by model period and age: element [t, s] is the wedge
+    on the return earned in period t at age s, by the household of
+    that age's cohort. ``fdc_lifetime`` reads a cohort's values down
+    the diagonal; periods after the array read its last row, the
+    steady state.
+
+    Args:
+        p (OG-Core Specifications object): model parameters
+
+    Returns:
+        wedge (Numpy array): wedge by period and age, (T + S) x S (a
+            single row of zeros if the parameter is absent)
+    """
+    if not hasattr(p, "r_fdc_wedge"):
+        return np.zeros((1, p.S))
+    wedge_arr = np.asarray(cohort_array("r_fdc_wedge", p), dtype=float)
+    return wedge_arr.reshape(wedge_arr.shape[0], -1)[:, : p.S]
+
+
+def fdc_wedge_ss(p):
+    """
+    Steady-state wedge ``r_fdc_wedge`` between the portfolio return
+    r_p and the FDC return r_fdc at each age, the value
+    ``fdc_lifetime`` uses for a household with t_birth None (the last
+    row of ``fdc_wedge_path``).
+
+    Args:
+        p (OG-Core Specifications object): model parameters
+
+    Returns:
+        wedge (Numpy array): wedge at each age, length S (zeros if the
+            parameter is absent)
+    """
+    return fdc_wedge_path(p)[-1, :]
+
+
+def fdc_bequeathable(fdc, r_p, p):
+    """
+    End-of-period holdings that go to bequests if the household dies
+    before the next period: the account holdings at ages before the
+    retirement age. After retirement the holdings of those who die
+    stay in the annuity pool.
+
+    The account of a member who dies is credited the FDC return
+    r_fdc = r_p - r_fdc_wedge, like the account of a survivor, and the
+    fund keeps the spread. Because ``aggregates.get_BQ`` multiplies the
+    savings it is given by (1 + r_p), the holdings are scaled here by
+    (1 + r_fdc) / (1 + r_p), with r_fdc the return at the next age.
+    They are also returned in the next period's detrended units,
+    e^{-g_y} times the holdings, the units of the private savings
+    b_{s+1} they are added to.
+
+    Args:
+        fdc (FDCLifetime or None): the accounts, None when the pillar
+            is off
+        r_p (scalar): steady-state household portfolio return
+        p (OG-Core Specifications object): model parameters
+
+    Returns:
+        H_bq (Numpy array or scalar): holdings at ages before
+            the retirement age and zero after, in next-period units, or
+            0.0 when the pillar is off
+    """
+    if fdc is None:
+        return 0.0
+    H = fdc.holdings
+    shape = (-1,) + (1,) * (H.ndim - 1)
+    ages = np.arange(H.shape[0]).reshape(shape)
+    r_p = float(np.squeeze(r_p))
+    wedge_next = np.append(fdc_wedge_ss(p)[1:], 0.0).reshape(shape)
+    scale = (1.0 + r_p - wedge_next) / (1.0 + r_p)
+    return np.where(ages < fdc.R, H * scale, 0.0) * np.exp(-p.g_y)
+
+
+def fdc_bequeathable_tpi(bq, r_p, p):
+    """
+    Time-path counterpart of ``fdc_bequeathable``: scales the funded
+    defined contribution holdings bequeathed in each period so that the
+    accounts of members who die are credited the FDC return
+    r_fdc = r_p - r_fdc_wedge, like those of survivors, and the fund
+    keeps the spread. ``aggregates.get_BQ`` multiplies the holdings
+    it is given for period t by (1 + r_{p,t}), so the holdings carried
+    out of age s are scaled by (1 + r_{p,t} - w_{t,s+1}) / (1 + r_{p,t}),
+    with w_{t,s+1} the wedge on the return of age s + 1 in period t.
+
+    Args:
+        bq (Numpy array): holdings bequeathed in periods 0 to T - 1,
+            T x S x J, in each period's units (row 0 from
+            ``p.fdc_bequeathable_preTP`` and the rest from
+            ``FDCPath.bequeathable``)
+        r_p (Numpy array): household portfolio return in periods 0 to
+            T - 1
+        p (OG-Core Specifications object): model parameters
+
+    Returns:
+        bq_fdc (Numpy array): the scaled holdings, T x S x J
+    """
+    T = bq.shape[0]
+    r_p = np.asarray(r_p, dtype=float).ravel()[:T].reshape(T, 1)
+    wedge_arr = fdc_wedge_path(p)
+    rows = np.minimum(np.arange(T), wedge_arr.shape[0] - 1)
+    wedge_next = np.append(wedge_arr[rows, 1:], np.zeros((T, 1)), axis=1)
+    scale = (1.0 + r_p - wedge_next) / (1.0 + r_p)
+    return bq * scale[:, :, None]
+
+
+def fdc_survivor_claims(fdc, rho, p):
+    r"""
+    Funded defined contribution holdings per survivor, carried into the
+    next period before its return: the end-of-period holdings before
+    the retirement age, and the holdings divided by the survival rate
+    after it, when the holdings of those who die are shared among the
+    survivors of the annuity pool.
+
+    Immigrants are taken to arrive with the same assets as the natives
+    of their age, so this is what an immigrant brings into the fund
+    (the counterpart of the private savings b that ``get_B`` credits
+    to immigrants). Like b_{s+1}, the claims are in the next period's
+    detrended units, e^{-g_y} times the holdings.
+
+    Args:
+        fdc (FDCLifetime or None): the accounts, None when the pillar
+            is off
+        rho (Numpy array): mortality rates, shaped like the holdings
+        p (OG-Core Specifications object): model parameters
+
+    Returns:
+        H_claims (Numpy array or scalar): holdings per survivor in
+            next-period units, or 0.0 when the pillar is off
+    """
+    if fdc is None:
+        return 0.0
+    H = fdc.holdings
+    ages = np.arange(H.shape[0]).reshape((-1,) + (1,) * (H.ndim - 1))
+    surv = 1.0 - np.asarray(rho, dtype=float)
+    pooled = np.divide(H, surv, out=np.zeros_like(H), where=surv > 0)
+    return np.where(ages >= fdc.R, pooled, H) * np.exp(-p.g_y)
+
+
+class FDCPath(NamedTuple):
+    """
+    Funded defined contribution accounts of every household along the
+    time path, returned by ``fdc_tpi``. Every field is a T x S x J
+    array indexed by model period, age, and lifetime income group.
+    """
+
+    #: Numpy array: contribution paid
+    contrib: np.ndarray
+    #: Numpy array: annuity benefit received
+    benefit: np.ndarray
+    #: Numpy array: end-of-period holdings, in the period's units
+    holdings: np.ndarray
+    #: Numpy array: holdings per survivor carried into the next period,
+    #: in the next period's units (``fdc_survivor_claims``)
+    claims: np.ndarray
+    #: Numpy array: holdings bequeathed if the household dies before
+    #: the next period, in the next period's units, before
+    #: ``fdc_bequeathable_tpi`` credits them the FDC return
+    bequeathable: np.ndarray
+
+
+def fdc_initial_holdings(ss, p):
+    """
+    Funded defined contribution holdings of the households alive when
+    the time path begins, from the baseline steady state, in the units
+    of the first model period.
+
+    The steady-state end-of-period holdings by age are scaled by
+    ``scale`` (the same population adjustment applied to initial
+    private savings) and carried into period 0 with the mortality rates
+    of the period before the time path (``rho_preTP``).
+
+    Args:
+        ss (dict): baseline steady-state output; the holdings are zero
+            if it has no FDC output (the pillar off, or output saved
+            before the pillar existed)
+        p (OG-Core Specifications object): model parameters
+
+    Returns:
+        (tuple): S x J arrays
+
+            * holdings (Numpy array): end-of-period holdings in the
+              period before the time path, in that period's units
+            * claims (Numpy array): holdings per survivor carried into
+              period 0, in period-0 units
+            * bequeathable (Numpy array): holdings bequeathed in period
+              0 by those who die before it, in period-0 units
+    """
+    zeros = np.zeros((p.S, p.J))
+    H = np.asarray(ss.get("fdc_holdings", zeros), dtype=float)
+    if H.shape != (p.S, p.J) or not np.any(H):
+        return zeros, zeros.copy(), zeros.copy()
+    R = int(ss.get("fdc_R", p.S))
+    ages = np.arange(p.S)[:, None]
+    surv = 1.0 - np.asarray(p.rho_preTP, dtype=float).reshape(p.S, -1)
+    surv = np.broadcast_to(surv, (p.S, p.J))
+    carried = H * np.exp(-p.g_y)
+    pooled = np.divide(
+        carried, surv, out=np.zeros_like(carried), where=surv > 0
+    )
+    claims = np.where(ages >= R, pooled, carried)
+    bequeathable = np.where(ages < R, carried, 0.0)
+    return H, claims, bequeathable
+
+
+def fdc_tpi(r_p, w, n_mat, p):
+    """
+    Funded defined contribution accounts of every household along the
+    time path, cohort by cohort.
+
+    Each cohort's account is computed with ``fdc_lifetime`` along its
+    diagonal of ``n_mat``, from the r_p and wage paths it foresees.
+    Households alive when the path begins start from the claims of
+    their age in ``p.fdc_claims_preTP`` (set by
+    ``TPI.get_initial_SS_values``), credited with the period-0 FDC
+    return r_fdc = r_p - r_fdc_wedge;
+    those already retired re-annuitize those balances on the path.
+
+    Args:
+        r_p (Numpy array): household portfolio return, length T + S
+        w (Numpy array): wage, length T + S
+        n_mat (Numpy array): labor supply, (T + S) x S x J
+        p (OG-Core Specifications object): model parameters
+
+    Returns:
+        FDCPath: the accounts by period, age, and income group
+    """
+    from ogcore.household import _get_e_long
+
+    T, S = p.T, p.S
+    J = n_mat.shape[2]
+    r_p = np.asarray(r_p, dtype=float).ravel()
+    w = np.asarray(w, dtype=float).ravel()
+    e_long = _get_e_long(p)
+    wedge_arr = fdc_wedge_path(p)
+    claims0 = getattr(p, "fdc_claims_preTP", None)
+    if claims0 is None:
+        claims0 = np.zeros((S, J))
+    out = {
+        name: np.zeros((T, S, J))
+        for name in ("contrib", "benefit", "holdings", "claims", "bq")
+    }
+    g = float(np.squeeze(p.g_y))
+    ages = np.arange(S)
+    n_rows = n_mat.shape[0]
+    for j in range(J):
+        mort = fdc_mort_rates(p, j)
+        for tb in range(-(S - 1), T):
+            a0 = max(-tb, 0)
+            rows = tb + ages[a0:]
+            keep = rows < T
+            if not np.any(keep):
+                continue
+            n_full = np.zeros(S)
+            e_full = np.zeros(S)
+            n_full[a0:] = n_mat[np.minimum(rows, n_rows - 1), ages[a0:], j]
+            e_full[a0:] = e_long[
+                np.minimum(rows, e_long.shape[0] - 1), ages[a0:], j
+            ]
+            # balances carried into period 0 earn the period-0 FDC
+            # return r_fdc = r_p - r_fdc_wedge of their age
+            A0 = (
+                (1.0 + r_p[0] - wedge_arr[0, a0]) * claims0[a0 - 1, j]
+                if a0 > 0
+                else 0.0
+            )
+            acct = fdc_lifetime(w, e_full, n_full, r_p, tb, j, p, a0=a0, A0=A0)
+            r_idx, s_idx = rows[keep], ages[a0:][keep]
+            out["contrib"][r_idx, s_idx, j] = acct.contrib[s_idx]
+            out["benefit"][r_idx, s_idx, j] = acct.benefit[s_idx]
+            H = acct.holdings[s_idx]
+            out["holdings"][r_idx, s_idx, j] = H
+            carried = H * np.exp(-g)
+            retired = s_idx >= acct.R
+            surv = 1.0 - mort[r_idx, s_idx]
+            pooled = np.divide(
+                carried, surv, out=np.zeros_like(carried), where=surv > 0
+            )
+            out["claims"][r_idx, s_idx, j] = np.where(retired, pooled, carried)
+            out["bq"][r_idx, s_idx, j] = np.where(retired, 0.0, carried)
+    return FDCPath(
+        out["contrib"],
+        out["benefit"],
+        out["holdings"],
+        out["claims"],
+        out["bq"],
+    )

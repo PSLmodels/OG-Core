@@ -893,11 +893,13 @@ class Specifications(paramtools.Parameters):
         Check that the earnings cutoffs are ordered for every period and
         age (a check paramtools validators cannot make, since the
         factors may be entered as lists of different lengths and changed
-        by pension regimes): under the hybrid DB-NDC system,
-        ``dc_earn_cap_factor`` must be at least ``db_earn_cap_factor``,
-        and with ``pension_earn_cap`` True, ``dc_earn_cap_factor`` (the
-        cap on funded defined contribution earnings) must be at least
-        ``fdc_earn_floor_factor`` wherever ``fdc_tau`` is positive.
+        by pension regimes): under the hybrid DB-NDC and DB-FDC
+        systems, ``dc_earn_cap_factor`` must be at least
+        ``db_earn_cap_factor``, and otherwise, with ``pension_earn_cap``
+        True, ``dc_earn_cap_factor`` (the cap on funded defined
+        contribution earnings) must be at least ``fdc_earn_floor_factor``
+        wherever ``fdc_tau`` is positive (the hybrid DB-FDC system sets
+        its funded band from the two cap factors instead).
 
         Args:
             None
@@ -911,14 +913,15 @@ class Specifications(paramtools.Parameters):
 
         """
         checks = []
-        if self.pension_system == "Hybrid DB-NDC":
+        hybrid = self.pension_system in ("Hybrid DB-NDC", "Hybrid DB-FDC")
+        if hybrid:
             checks.append(
                 (
                     "db_earn_cap_factor",
                     self.dc_earn_cap_factor < self.db_earn_cap_factor,
                 )
             )
-        if self.pension_earn_cap:
+        if self.pension_earn_cap and not hybrid:
             checks.append(
                 (
                     "fdc_earn_floor_factor",
@@ -940,6 +943,14 @@ class Specifications(paramtools.Parameters):
                     f"{getattr(self, lower)[t, s]} and dc_earn_cap_factor="
                     f"{self.dc_earn_cap_factor[t, s]}"
                 )
+        if self.pension_system == "Hybrid DB-FDC" and not np.any(
+            np.asarray(self.fdc_tau) > 0
+        ):
+            warnings.warn(
+                "pension_system is 'Hybrid DB-FDC' but fdc_tau is zero, so "
+                "no funded contributions are paid and the system is the "
+                "defined benefit system capped at db_earn_cap_factor"
+            )
 
     def _check_pension_steady_state(self, arrays):
         """

@@ -1685,3 +1685,149 @@ def test_run_TPI_pension_regime(
         0, p.S - int((60 - 10 - p.starting_age) / years_per_period)
     )
     assert (born_later, young, old) == (raised, raised, base)
+
+
+def _fdc_tpi_run(
+    tmpdir, tau, baseline_dir=None, enforce=True, updates=None, tag=""
+):
+    SS.ENFORCE_SOLUTION_CHECKS = True
+    TPI.ENFORCE_SOLUTION_CHECKS = enforce
+    out = os.path.join(tmpdir, f"OUT_{tau}_{baseline_dir is None}{tag}")
+    p = Specifications(
+        baseline=baseline_dir is None,
+        num_workers=1,
+        baseline_dir=baseline_dir or out,
+        output_base=out,
+    )
+    with open(os.path.join(CUR_PATH, "testing_params.json")) as f:
+        p.update_specifications(json.load(f))
+    p.update_specifications(
+        {"fdc_tau": tau, "pension_FOC_linkage": True, **(updates or {})}
+    )
+    utils.mkdirs(os.path.join(out, "SS"))
+    ss = SS.run_SS(p, client=None)
+    with open(os.path.join(out, "SS", "SS_vars.pkl"), "wb") as f:
+        pickle.dump(ss, f)
+    tp = TPI.run_TPI(p, client=None)
+    utils.mkdirs(os.path.join(out, "TPI"))
+    with open(os.path.join(out, "TPI", "TPI_vars.pkl"), "wb") as f:
+        pickle.dump(tp, f)
+    return ss, tp, out
+
+
+@pytest.mark.local
+def test_run_TPI_funded_defined_contribution(tmpdir):
+    """
+    The time path solves with the funded defined contribution pillar,
+    both in a baseline that starts from steady-state FDC holdings and
+    in a reform that introduces the pillar from a baseline without it
+    (all accounts start empty). The fund's assets converge to the
+    steady state.
+    """
+    ss, tp, base_out = _fdc_tpi_run(tmpdir, 0.05)
+    assert np.abs(tp["resource_constraint_error"]).max() < 1e-4
+    assert tp["F"][0] > 0
+    assert np.isclose(tp["F"][-1], ss["F"], rtol=1e-3)
+    # a reform introducing FDC, from a baseline without it (that
+    # baseline's own path is not checked: with testing_params.json it
+    # misses RC_TPI by a little on master too)
+    _, _, no_fdc_out = _fdc_tpi_run(tmpdir, 0.0, enforce=False)
+    ss_r, tp_r, _ = _fdc_tpi_run(tmpdir, 0.05, baseline_dir=no_fdc_out)
+    assert np.abs(tp_r["resource_constraint_error"]).max() < 1e-4
+    assert tp_r["F"][0] == 0.0
+    assert np.isclose(tp_r["F"][-1], ss_r["F"], rtol=1e-3)
+
+
+@pytest.mark.local
+def test_run_TPI_fdc_introduced_for_younger_cohorts(tmpdir):
+    """
+    A reform that introduces funded defined contribution accounts only
+    for cohorts aged 40 or younger in the start year (through
+    pension_regimes): older cohorts never contribute, younger working
+    cohorts contribute from the first period, the fund starts empty,
+    and the path solves and converges to the reform steady state.
+    """
+    _, _, no_fdc_out = _fdc_tpi_run(tmpdir, 0.0, enforce=False)
+    p0 = Specifications()
+    regimes = [
+        {"year": p0.start_year, "max_age_at_start": 40, "fdc_tau": 0.05}
+    ]
+    ss, tp, _ = _fdc_tpi_run(
+        tmpdir,
+        0.0,
+        baseline_dir=no_fdc_out,
+        updates={"pension_regimes": regimes},
+        tag="_regimes",
+    )
+    assert np.abs(tp["resource_constraint_error"]).max() < 1e-4
+    assert tp["F"][0] == 0.0
+    assert np.isclose(tp["F"][-1], ss["F"], rtol=1e-3)
+    # with S = 40 model periods, a period is two years and age 40 is
+    # model age 10
+    contrib0 = tp["fdc_contrib"][0]
+    assert np.all(contrib0[11:] == 0.0)
+    assert np.all(contrib0[:11] > 0.0)
+
+
+def _check_fdc_fund_reserve_path(tp, ss, p_growth, tG1):
+    """
+    The FDC fund reserve follows its flow identity in every period, is
+    paid out at the end of period tG1 - 1, and is zero from tG1 on, when
+    the spread goes to the government each period, as in the steady
+    state (which holds no reserve).
+    """
+    Z = tp["fdc_fund_reserves"]
+    revenue, transfer = tp["fdc_fund_revenue"], tp["fdc_fund_transfer"]
+    assert ss["fdc_fund_reserves"] == 0.0
+    assert np.all(revenue >= 0.0) and np.all(transfer >= 0.0)
+    Z_next = np.append(Z[1:], 0.0)
+    # the reserve is computed with the r_p of the last iteration, and the
+    # output r_p is updated once more, so they differ by the convergence
+    # tolerance
+    assert np.allclose(
+        p_growth * Z_next,
+        (1 + tp["r_p"][: len(Z)]) * Z + tp["fdc_spread"] - revenue + transfer,
+        atol=1e-6,
+    )
+    assert np.all(Z[tG1:] == 0.0)
+    assert np.allclose(revenue[tG1:] - transfer[tG1:], tp["fdc_spread"][tG1:])
+
+
+@pytest.mark.local
+def test_run_TPI_fdc_return_wedge(tmpdir):
+    """
+    The time path solves with a wedge between r_p and the FDC return.
+    The FDC fund reserve starts at zero (the steady state holds none),
+    accumulates the spread until the budget closure rule begins in
+    period tG1, is then paid to the government, and is zero from then
+    on, both in a baseline and in a reform that introduces the pillar
+    (with the reserve capped at 0.2 of GDP). The spread is the wedge
+    times the owed balances, the reserve follows its flow identity, and
+    the resource constraint holds.
+    """
+    p = Specifications(baseline=True, num_workers=1)
+    with open(os.path.join(CUR_PATH, "testing_params.json")) as f:
+        p.update_specifications(json.load(f))
+    T, tG1 = p.T, p.tG1
+    growth = (1.0 + np.hstack((p.g_n[: T - 1], p.g_n_ss))) * np.exp(p.g_y)
+    wedge = {"r_fdc_wedge": [0.01]}
+    ss, tp, _ = _fdc_tpi_run(tmpdir, 0.05, updates=wedge, tag="_wedge")
+    assert np.abs(tp["resource_constraint_error"]).max() < 1e-4
+    assert np.allclose(tp["fdc_spread"], 0.01 * tp["F"], rtol=1e-8)
+    assert tp["fdc_fund_reserves"][0] == 0.0
+    assert np.all(tp["fdc_fund_reserves"][1:tG1] > 0.0)
+    _check_fdc_fund_reserve_path(tp, ss, growth, tG1)
+    # a reform introducing the pillar with a wedge, with the reserve
+    # capped at 0.2 of GDP
+    _, _, no_fdc_out = _fdc_tpi_run(tmpdir, 0.0, enforce=False)
+    ss_r, tp_r, _ = _fdc_tpi_run(
+        tmpdir,
+        0.05,
+        baseline_dir=no_fdc_out,
+        updates={**wedge, "fdc_fund_reserve_max_GDPratio": 0.2},
+        tag="_wedge",
+    )
+    assert np.abs(tp_r["resource_constraint_error"]).max() < 1e-4
+    assert tp_r["fdc_fund_reserves"][0] == 0.0
+    assert ss_r["fdc_fund_revenue"] > 0.0
+    _check_fdc_fund_reserve_path(tp_r, ss_r, growth, tG1)

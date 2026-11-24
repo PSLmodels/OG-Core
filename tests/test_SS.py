@@ -1663,3 +1663,98 @@ def test_SS_fsolve_scatters_once(scatter_test_params):
             guesses, bssmat, nssmat, None, None, None, None, p, client
         )
     assert client.scatter_calls == 2
+
+
+def _small_SS_params(updates):
+    import json
+
+    p = Specifications(baseline=True, num_workers=1)
+    with open(os.path.join(CUR_PATH, "testing_params.json")) as f:
+        p.update_specifications(json.load(f))
+    p.update_specifications(updates)
+    return p
+
+
+def _solve_small_SS(updates):
+    SS.ENFORCE_SOLUTION_CHECKS = True
+    return SS.run_SS(_small_SS_params(updates), client=None)
+
+
+def test_SS_funded_defined_contribution():
+    """
+    The steady state solves with a funded defined contribution pillar:
+    the resource constraint holds with the fund's assets in the capital
+    stock, private savings fall but total savings rise, and the fund's
+    accounts are reported.
+    """
+    base = _solve_small_SS({})
+    fdc = _solve_small_SS({"fdc_tau": 0.05, "pension_FOC_linkage": True})
+    assert base["F"] == 0.0 and base["agg_fdc_contrib"] == 0.0
+    assert np.all(base["fdc_holdings"] == 0.0)
+    assert np.abs(fdc["resource_constraint_error"]).max() < 1e-7
+    assert fdc["F"] > 0.0
+    assert fdc["agg_fdc_contrib"] > 0.0 and fdc["agg_fdc_benefits"] > 0.0
+    assert fdc["B"] < base["B"]
+    assert fdc["B"] + fdc["F"] > base["B"]
+    assert fdc["K"] > base["K"] and fdc["r"] < base["r"]
+    assert fdc["fdc_contrib"].shape == fdc["n"].shape
+    assert fdc["fdc_fund_reserves"] == 0.0
+    assert fdc["fdc_fund_revenue"] == 0.0
+    assert fdc["fdc_fund_transfer"] == 0.0
+
+
+def test_SS_hybrid_db_fdc():
+    """
+    The steady state solves with the hybrid DB-FDC pension system: a
+    defined benefit on labor income up to the first cutoff, paid by the
+    government, and funded contributions on labor income between the
+    two cutoffs. It is the same economy as the Defined Benefits system
+    capped at the first cutoff with the FDC pillar's floor set at that
+    cutoff and its cap at the second.
+    """
+    caps = {
+        "db_earn_cap_factor": [0.3, 0.3],
+        "dc_earn_cap_factor": [1.0, 1.0],
+        "fdc_tau": 0.05,
+        "alpha_db": [[0.02]],
+        # contributions start at the first cutoff, which puts a jump in
+        # the marginal return to labor there that the default hybr root
+        # finder does not get past
+        "FOC_root_method": "lm",
+    }
+    hybrid = _solve_small_SS(dict(caps, pension_system="Hybrid DB-FDC"))
+    assert np.abs(hybrid["resource_constraint_error"]).max() < 1e-7
+    assert hybrid["agg_pension_outlays"] > 0.0
+    assert hybrid["F"] > 0.0 and hybrid["agg_fdc_contrib"] > 0.0
+    same = _solve_small_SS(
+        dict(
+            caps,
+            pension_system="Defined Benefits",
+            pension_earn_cap=True,
+            fdc_earn_floor_factor=[0.3, 0.3],
+        )
+    )
+    for var in ("Y", "K", "L", "r", "w", "F", "agg_pension_outlays"):
+        assert np.allclose(hybrid[var], same[var], rtol=1e-8), var
+
+
+@pytest.mark.parametrize(
+    "wedge", [0.01, -0.01], ids=["wedge", "negative wedge"]
+)
+def test_SS_funded_defined_contribution_wedge(wedge):
+    """
+    With a wedge between r_p and r_fdc, the fund earns the spread on the
+    balances it owes. In the steady state it holds no reserve: the
+    spread is paid to the government each period, or, with a negative
+    wedge, covered by a transfer from the government. The resource
+    constraint holds in each case.
+    """
+    fdc = _solve_small_SS(
+        {"fdc_tau": 0.05, "r_fdc_wedge": [wedge], "pension_FOC_linkage": True}
+    )
+    assert np.abs(fdc["resource_constraint_error"]).max() < 1e-7
+    assert fdc["F"] > 0.0
+    assert np.isclose(fdc["fdc_spread"], wedge * fdc["F"], rtol=1e-8)
+    assert fdc["fdc_fund_reserves"] == 0.0
+    assert fdc["fdc_fund_revenue"] == max(fdc["fdc_spread"], 0.0)
+    assert fdc["fdc_fund_transfer"] == max(-fdc["fdc_spread"], 0.0)
