@@ -5,7 +5,7 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [0.25.3] - 2026-11-23
+## [0.25.4] - 2026-11-24
 
 ### Added
 - `eta` and `eta_RM`, which share out government transfers and remittances across ages and lifetime income groups, can now vary over time, as a (T+S) x S x J path like `omega` and `rho`. Before, each was one S x J matrix used in every year. As the population ages, holding that matrix fixed changes what each person receives: in an aging country the oldest households can end up receiving many times their intended transfer. A path lets a calibration keep each person's transfer on its intended profile in every year.
@@ -950,6 +950,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Any earlier versions of OG-USA can be found in the [`OG-Core`](https://github.com/PSLmodels/OG-Core) repository [release history](https://github.com/PSLmodels/OG-Core/releases) from [v.0.6.4](https://github.com/PSLmodels/OG-Core/releases/tag/v0.6.4) (Jul. 20, 2021) or earlier.
 
 
+[0.25.4]: https://github.com/PSLmodels/OG-Core/compare/v0.25.3...v0.25.4
 [0.25.2]: https://github.com/PSLmodels/OG-Core/compare/v0.25.1...v0.25.2
 [0.25.1]: https://github.com/PSLmodels/OG-Core/compare/v0.25.0...v0.25.1
 [0.25.0]: https://github.com/PSLmodels/OG-Core/compare/v0.24.6...v0.25.0
