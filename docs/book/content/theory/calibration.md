@@ -38,6 +38,26 @@ The `OG-Core` model represents all the general model solution code for any overl
   - https://github.com/EAPD-DRB/OG-ZAF
   - https://eapd-drb.github.io/OG-ZAF
   - Oct. 9, 2022
+* - Indonesia
+  - `OG-IDN`
+  - https://github.com/EAPD-DRB/OG-IDN
+  - https://eapd-drb.github.io/OG-IDN
+  - Jun. 19, 2024
+* - Philippines
+  - `OG-PHL`
+  - https://github.com/EAPD-DRB/OG-PHL
+  - https://eapd-drb.github.io/OG-PHL
+  - Jun. 20, 2024
+* - Ethiopia
+  - `OG-ETH`
+  - https://github.com/EAPD-DRB/OG-ETH
+  - https://eapd-drb.github.io/OG-ETH
+  - Oct. 6, 2025
+* - Japan
+  - `OG-JPN`
+  - https://github.com/arihantlodha-cmd/OG-JPN
+  - https://arihantlodha-cmd.github.io/OG-JPN
+  - Aug. 9, 2026
 ```
 
 In the following section, we detail a list of items to calibrate for a country and what types of data and approaches might be available for those calibrations. Each of the country-specific models listed in {numref}`TabCountryModels` will have varying degrees of calibration maturity and further varying degrees of documentation of their calibration. But the following section details all the areas where each of these models should be calibrated.

@@ -7,14 +7,14 @@
 | Testing | ![example event parameter](https://github.com/PSLmodels/OG-Core/actions/workflows/build_and_test.yml/badge.svg?branch=master) ![example event parameter](https://github.com/PSLmodels/OG-Core/actions/workflows/deploy_docs.yml/badge.svg?branch=master) ![example event parameter](https://github.com/PSLmodels/OG-Core/actions/workflows/check_ruff.yml/badge.svg?branch=master) [![Codecov](https://codecov.io/gh/PSLmodels/OG-Core/branch/master/graph/badge.svg)](https://codecov.io/gh/PSLmodels/OG-Core) |
 
 
-OG-Core is an overlapping-generations (OG) model core theory, logic, and solution method algorithms that allow for dynamic general equilibrium analysis of fiscal policy. OG-Core provides a general framework and is a dependency of several country-specific OG model caliibrations, as listed in the table belowsuch as [OG-USA](https://github.com/PSLmodels/OG-USA) and [OG-UK](https://github.com/PSLmodels/OG-UK). The model output includes changes in macroeconomic aggregates (GDP, investment, consumption), wages, interest rates, and the stream of tax revenues over time. Regularly updated documentation of the model theory--its output, and solution method--and the Python API is available [here](https://pslmodels.github.io/OG-Core).
+OG-Core is an overlapping-generations (OG) model core theory, logic, and solution method algorithms that allow for dynamic general equilibrium analysis of fiscal policy. OG-Core provides a general framework and is a dependency of several country-specific OG model calibrations, as listed in the table below. The model output includes changes in macroeconomic aggregates (GDP, investment, consumption), wages, interest rates, and the stream of tax revenues over time. Regularly updated documentation of the model theory--its output, and solution method--and the Python API is available [here](https://pslmodels.github.io/OG-Core).
 
 **Country calibrations of OG-Core**
 |               |             |             |
 | :-----------: | :---------: | :---------: |
-| United States, [OG-USA](https://github.com/PSLmodels/OG-USA) | United Kingdom, [OG-UK](https://github.com/PSLmodels/OG-USA) | Phillipines, [OG-PHL](https://github.com/EAPD-DRB/OG-PHL) |
+| United States, [OG-USA](https://github.com/PSLmodels/OG-USA) | United Kingdom, [OG-UK](https://github.com/PSLmodels/OG-UK) | Philippines, [OG-PHL](https://github.com/EAPD-DRB/OG-PHL) |
 |  South Africa, [OG-ZAF](https://github.com/EAPD-DRB/OG-ZAF) | Indonesia, [OG-IDN](https://github.com/EAPD-DRB/OG-IDN) | Ethiopia, [OG-ETH](https://github.com/EAPD-DRB/OG-ETH) |
-| India, [OG-IND](https://github.com/OpenSourceEcon/OG-IND) | Malaysia, [OG-MYS](https://github.com/OpenSourceEcon/OG-MYS) |  |
+| India, [OG-IND](https://github.com/OpenSourceEcon/OG-IND) | Malaysia, [OG-MYS](https://github.com/Revenue-Academy/OG-MYS) | Japan, [OG-JPN](https://github.com/arihantlodha-cmd/OG-JPN) |
 
 
 ## Disclaimer
