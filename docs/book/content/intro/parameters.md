@@ -627,7 +627,7 @@ _Out-of-Range Action:_ error
 
 ####  `eta`  
 _Description:_ Matrix that allocated government transfers across households.  
-_Notes:_ This SxJ matrix gives the fraction of total aggregate transfers going to each age s and ability type j.  
+_Notes:_ This (T+S)xSxJ array gives the fraction of total aggregate transfers going to each age s and ability type j in each period t; each period should sum to one. An SxJ matrix is also accepted and held constant over time; a path shorter than T+S is extended with its last period.  
 _Value Type:_ float  
 _Valid Range:_ min = 0.0 and max = 1.0  
 _Out-of-Range Action:_ error  

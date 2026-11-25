@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - An S x J matrix is still accepted and held constant over time, and the older T x S form of `eta_RM` is still accepted, so existing inputs give the same model parameters, bit for bit. A path shorter than T+S is extended with its last period.
 - `Specifications` warns when `eta` or `eta_RM` does not sum to one in some period, since households would then receive a different total than the aggregate.
 - Adds tests that both parameters accept either form and that an S x J matrix gives the same parameters as before.
+- A two-dimensional `eta` or `eta_RM` is converted to the new shape by `update_specifications`; passing one directly to paramtools' `adjust` now raises a validation error.
 
 ## [0.25.2] - 2026-11-23
 
