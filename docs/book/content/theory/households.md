@@ -244,7 +244,7 @@ In this section, we describe what is arguably the most important economic agent 
   rm_{j,s,t} = \eta_{RM,j,s,t}\frac{RM_t}{\lambda_j\omega_{s,t}} \quad\forall \quad j,s,t
   ```
 
-  The distribution object $\eta_{RM,j,s,t}$ is an $S\times J$ matrix in every period $t$ whose elements sum to one in every period. This object governs how total remittances in every period $RM_t$ are distributed as income among household budget constraints.
+  The distribution object $\eta_{RM,j,s,t}$ is an $S\times J$ matrix in every period $t$ whose elements sum to one in every period. This object governs how total remittances in every period $RM_t$ are distributed as income among household budget constraints. Both $\eta_{RM,j,s,t}$ and the transfer allocation $\eta_{j,s,t}$ below can be entered as a path over the time periods, or as a single $S\times J$ matrix held constant over time.
 
 
 (SecHHgovtransfers)=
