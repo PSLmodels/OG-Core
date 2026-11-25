@@ -375,6 +375,8 @@ def inner_loop(outer_loop_vars, p, client, scattered_p=None):
     p_tilde = aggr.get_ptilde(p_i, p.tau_c[-1, :], p.alpha_c)
     bq = household.get_bq(BQ, None, p, "SS")
     rm = household.get_rm(RM, None, p, "SS")
+    # net family transfers reach households alongside remittances
+    rm = household.add_family_transfers(rm, Y, p, "SS")
     tr = household.get_tr(TR, None, p, "SS")
     ubi = p.ubi_nom_array[-1, :, :] / factor
 
@@ -636,6 +638,7 @@ def inner_loop(outer_loop_vars, p, client, scattered_p=None):
     new_bq = household.get_bq(new_BQ, None, p, "SS")
     new_RM = aggr.get_RM(Y, p, "SS")
     new_rm = household.get_rm(new_RM, None, p, "SS")
+    new_rm = household.add_family_transfers(new_rm, Y, p, "SS")
     tr = household.get_tr(TR, None, p, "SS")
     theta = theta_in_solve(nssmat, new_w, new_factor, None, p)
 
@@ -1055,6 +1058,7 @@ def SS_solver(
     bqssmat = household.get_bq(BQss, None, p, "SS")
     trssmat = household.get_tr(TR_ss, None, p, "SS")
     rmssmat = household.get_rm(RM_ss, None, p, "SS")
+    ftssmat = household.get_ft(Yss, None, p, "SS")
     ubissmat = p.ubi_nom_array[-1, :, :] / factor_ss
     theta = pensions.replacement_rate_vals(nssmat, wss, factor_ss, None, p)
 
@@ -1194,7 +1198,7 @@ def SS_solver(
         bssmat_splus1,
         nssmat,
         bqssmat,
-        rmssmat,
+        household.add_family_transfers(rmssmat, Yss, p, "SS"),
         taxss + household.fdc_net_flow(fdc_ss),
         np.squeeze(p.e[-1, :, :]).reshape((p.S, p.J)),
         p.tau_c[-1, :],
@@ -1411,6 +1415,7 @@ def SS_solver(
         "c_i": c_i_ss_mat,
         "bq": bqssmat,
         "rm": rmssmat,
+        "ft": ftssmat,
         "tr": trssmat,
         "ubi": ubissmat,
         "before_tax_income": yss_before_tax_mat,

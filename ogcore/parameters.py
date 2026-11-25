@@ -117,6 +117,52 @@ def _rename_deprecated_params(revision):
     return revision
 
 
+# Parameters stored by period, age and ability type, (T+S) x S x J, that
+# also accept a single S x J matrix held constant over time
+TIME_VARYING_SJ_PARAMS = ["eta", "eta_RM", "phi_FT"]
+# Of those, the allocation matrices, each period of which sums to one
+ALLOCATION_PARAMS = ["eta", "eta_RM"]
+# Tolerance on each period's sum of the net family transfer shares, phi_FT
+PHI_FT_SUM_TOL = 1e-9
+
+
+def _sj_to_time_path(revision, S, T, J):
+    """
+    Give a 2-D value of a parameter in ``TIME_VARYING_SJ_PARAMS`` the
+    3-D shape its schema expects, so revisions written before the
+    parameter could vary over time still validate: an S x J matrix
+    becomes a single period, which ``extrapolate_array`` holds constant
+    over the time path, and a T x S or (T+S) x S path is split equally
+    across the J ability types, as ``extrapolate_array`` does.
+
+    Args:
+        revision (dict): `PARAM: VALUE` pairs
+        S (int): number of ages
+        T (int): number of periods in the time path
+        J (int): number of lifetime ability types
+
+    Returns:
+        revision (dict): the revision with such values reshaped; the
+            caller's dict is left unchanged
+    """
+    reshaped = {}
+    for name in TIME_VARYING_SJ_PARAMS:
+        if name not in revision or np.ndim(revision[name]) != 2:
+            continue
+        value = np.asarray(revision[name], dtype=float)
+        if value.shape[0] == S:
+            reshaped[name] = value[np.newaxis, :, :].tolist()
+        elif value.shape[0] in (T, T + S):
+            reshaped[name] = (
+                np.repeat(value[:, :, np.newaxis], J, axis=2) / J
+            ).tolist()
+    if not reshaped:
+        return revision
+    revision = dict(revision)
+    revision.update(reshaped)
+    return revision
+
+
 class Specifications(paramtools.Parameters):
     """
     Inherits ParamTools Parameters abstract base class.
@@ -430,13 +476,53 @@ class Specifications(paramtools.Parameters):
         # Try to deal with size of eta and eta_RM. They may vary by S, J, T,
         # but want to allow user to enter one that varies by only S, S and J,
         # S and T, or T and S and J.
-        eta_params_to_TP = ["eta", "eta_RM", "omega", "rho", "imm_rates"]
+        # net family transfers are off by default: zeros sized to the
+        # current S and J, so changing either does not require them
+        if not np.any(self.phi_FT):
+            self.phi_FT = np.zeros((1, self.S, self.J))
+        eta_params_to_TP = [
+            "eta",
+            "eta_RM",
+            "phi_FT",
+            "omega",
+            "rho",
+            "imm_rates",
+        ]
         for item in eta_params_to_TP:
             param_in = getattr(self, item)
             param_out = extrapolate_array(
                 param_in, dims=(self.T + self.S, self.S, self.J), item=item
             )
             setattr(self, item, param_out)
+        # each period of an allocation matrix should sum to one, or the
+        # transfers (remittances) households receive differ from the
+        # aggregate in the budget (resource constraint)
+        for item in ALLOCATION_PARAMS:
+            sums = getattr(self, item).sum(axis=(1, 2))
+            off = np.flatnonzero(np.abs(sums - 1.0) > 1e-6)
+            if off.size:
+                warnings.warn(
+                    f"{item} does not sum to one in {off.size} of "
+                    f"{sums.size} periods (first period {off[0]} sums to "
+                    f"{sums[off[0]]:.6f}); households then receive a "
+                    "different total than the aggregate"
+                )
+        # net family transfers move resources between households: in each
+        # period what the givers pay equals what the receivers get, so
+        # they leave aggregate resources and the budget unchanged
+        if self.phi_FT.shape != (self.T + self.S, self.S, self.J):
+            raise ValueError(
+                f"phi_FT has shape {self.phi_FT.shape[1:]} by age and "
+                f"ability type; it must be ({self.S}, {self.J})"
+            )
+        ft_sums = self.phi_FT.sum(axis=(1, 2))
+        off = np.flatnonzero(np.abs(ft_sums) > PHI_FT_SUM_TOL)
+        if off.size:
+            raise ValueError(
+                f"phi_FT must sum to zero in every period, but it does "
+                f"not in {off.size} of {ft_sums.size} periods (period "
+                f"{off[0]} sums to {ft_sums[off[0]]:.3e})"
+            )
         # extrapolate SS demog objects
         demog_obj_to_SS = [
             "omega_SS",
@@ -1066,6 +1152,12 @@ class Specifications(paramtools.Parameters):
             # a JSON string or a path to a JSON file
             revision = self.read_params(revision)
         revision = _rename_deprecated_params(revision)
+        revision = _sj_to_time_path(
+            revision,
+            revision.get("S", self.S),
+            revision.get("T", self.T),
+            len(revision.get("lambdas", self.lambdas)),
+        )
         # Pension regimes are a list of dicts, which paramtools cannot
         # validate, so set them aside and check them in
         # _build_cohort_pension_arrays (called by compute_default_params)

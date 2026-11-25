@@ -121,9 +121,17 @@ _Out-of-Range Action:_ error
 
 ####  `eta_RM`  
 _Description:_ Matrix that allocates aggregate remittances across households.  
-_Notes:_ This SxJ matrix gives the fraction of total aggregate remittances going to each age s and ability type j.  
+_Notes:_ This (T+S)xSxJ array gives the fraction of total aggregate remittances going to each age s and ability type j in each period t; each period should sum to one. An SxJ matrix is also accepted and held constant over time; a path shorter than T+S is extended with its last period.  
 _Value Type:_ float  
 _Valid Range:_ min = 0.0 and max = 1.0  
+_Out-of-Range Action:_ error  
+
+
+####  `phi_FT`  
+_Description:_ Net transfers between households, such as support from working-age children to their parents, as a share of GDP, received by each age and ability type.  
+_Notes:_ This (T+S)xSxJ array gives the net family transfers received by all households of age s and ability type j in period t, as a share of GDP: positive for receivers, negative for givers. Each period must sum to zero, so the transfers net out across households and leave aggregate resources and the government budget unchanged. They enter the household budget outside taxes and government transfers. An SxJ matrix is also accepted and held constant over time; a path shorter than T+S is extended with its last period. Zero (the default) turns them off.  
+_Value Type:_ float  
+_Valid Range:_ min = -1.0 and max = 1.0  
 _Out-of-Range Action:_ error  
 
 
@@ -627,7 +635,7 @@ _Out-of-Range Action:_ error
 
 ####  `eta`  
 _Description:_ Matrix that allocated government transfers across households.  
-_Notes:_ This SxJ matrix gives the fraction of total aggregate transfers going to each age s and ability type j.  
+_Notes:_ This (T+S)xSxJ array gives the fraction of total aggregate transfers going to each age s and ability type j in each period t; each period should sum to one. An SxJ matrix is also accepted and held constant over time; a path shorter than T+S is extended with its last period.  
 _Value Type:_ float  
 _Valid Range:_ min = 0.0 and max = 1.0  
 _Out-of-Range Action:_ error  

@@ -503,6 +503,15 @@
         "label": "Remittances ($rm_{j,s,t}$)",
         "toGDP_label": ""
     },
+    "ft": {
+        "desc": "Net family transfers received by households",
+        "section": "Household Variables",
+        "type": "array-like",
+        "TPI dimensions": "TxSxJ",
+        "SS dimensions": "SxJ",
+        "label": "Net family transfers ($ft_{j,s,t}$)",
+        "toGDP_label": ""
+    },
     "tr": {
         "desc": "Government transfers received by households",
         "section": "Household Variables",

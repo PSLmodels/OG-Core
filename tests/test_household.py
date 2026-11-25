@@ -1566,3 +1566,56 @@ def test_fdc_labor_wedge_linkage(linkage):
         assert np.all(wedge[:R] > cost[:R])
     else:
         assert np.allclose(wedge, cost)
+
+
+def _net_zero_phi(p, scale=1e-3):
+    """Net family transfer shares, (S, J): the oldest 15 ages receive and
+    ages 10-29 (model index) give, each in proportion to its population,
+    so every receiver gets the same amount and every giver pays the same;
+    the shares sum to zero."""
+    phi = np.zeros((p.S, p.J))
+    recv, give = slice(p.S - 15, p.S), slice(10, 30)
+    phi[recv] = p.omega_SS[recv] / p.omega_SS[recv].sum()
+    phi[give] = -p.omega_SS[give] / p.omega_SS[give].sum()
+    return scale * phi
+
+
+def test_get_ft_nets_to_zero():
+    # net family transfers move resources between households, so they
+    # sum to zero across households (population weighted) in the steady
+    # state and in every period of the time path
+    p = Specifications()
+    phi = _net_zero_phi(p)
+    p.update_specifications({"phi_FT": phi.tolist()})
+    Y = 2.0
+    ft = household.get_ft(Y, None, p, "SS")
+    assert ft.shape == (p.S, p.J)
+    assert np.allclose(ft, phi * Y / p.omega_SS)
+    assert abs((p.omega_SS * ft).sum()) < 1e-15
+    # receivers get the same per person, givers pay the same per person
+    assert np.allclose(ft[p.S - 15 :], ft[-1, 0])
+    assert np.allclose(ft[10:30], ft[10, 0]) and ft[10, 0] < 0
+    for j in range(p.J):
+        assert np.allclose(household.get_ft(Y, j, p, "SS"), ft[:, j])
+    Y_path = np.linspace(1.0, 2.0, p.T + p.S)
+    ft_path = household.get_ft(Y_path, None, p, "TPI")
+    assert ft_path.shape == (p.T + p.S, p.S, p.J)
+    net = (p.omega[: p.T + p.S] * ft_path).sum(axis=(1, 2))
+    assert np.allclose(net, 0.0, atol=1e-15)
+    for j in (0, p.J - 1):
+        assert np.allclose(
+            household.get_ft(Y_path, j, p, "TPI"), ft_path[:, :, j]
+        )
+
+
+def test_add_family_transfers():
+    # off by default: remittances come back unchanged (the same object);
+    # on: remittances plus net family transfers
+    p = Specifications()
+    rm = np.ones((p.S, p.J))
+    assert household.add_family_transfers(rm, 2.0, p, "SS") is rm
+    p.update_specifications({"phi_FT": _net_zero_phi(p).tolist()})
+    assert np.allclose(
+        household.add_family_transfers(rm, 2.0, p, "SS"),
+        rm + household.get_ft(2.0, None, p, "SS"),
+    )

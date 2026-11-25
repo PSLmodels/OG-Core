@@ -1755,12 +1755,12 @@
         "param_notation": "$\\eta_{j,s,t}$",
         "section_1": "Fiscal Policy Parameters",
         "section_2": "Spending",
-        "notes": "This SxJ matrix gives the fraction of total aggregate transfers going to each age s and ability type j.",
+        "notes": "This (T+S)xSxJ array gives the fraction of total aggregate transfers going to each age s and ability type j in each period t; each period should sum to one. An SxJ matrix is also accepted and held constant over time; a path shorter than T+S is extended with its last period.",
         "type": "float",
-        "number_dims": 2,
+        "number_dims": 3,
         "value": [
             {
-                "value": [
+                "value": [[
                     [
                         0.00395156539,
                         0.00395156539,
@@ -2481,7 +2481,7 @@
                         4.26755474e-05,
                         4.74172749e-06
                     ]
-                ]
+                ]]
             }
         ],
         "validators": {
@@ -2498,12 +2498,12 @@
         "param_notation": "$\\eta_{RM,j,s,t}$",
         "section_1": "Household Parameters",
         "section_2": "Endowments",
-        "notes": "This SxJ matrix gives the fraction of total aggregate remittances going to each age s and ability type j.",
+        "notes": "This (T+S)xSxJ array gives the fraction of total aggregate remittances going to each age s and ability type j in each period t; each period should sum to one. An SxJ matrix is also accepted and held constant over time; a path shorter than T+S is extended with its last period.",
         "type": "float",
-        "number_dims": 2,
+        "number_dims": 3,
         "value": [
             {
-                "value": [
+                "value": [[
                     [
                         0.00395156539,
                         0.00395156539,
@@ -3224,12 +3224,113 @@
                         4.26755474e-05,
                         4.74172749e-06
                     ]
-                ]
+                ]]
             }
         ],
         "validators": {
             "range": {
                 "min": 0.0,
+                "max": 1.0
+            }
+        }
+    },
+    "phi_FT": {
+        "title": "Net family transfers",
+        "description": "Net transfers between households, such as support from working-age children to their parents, as a share of GDP, received by each age and ability type.",
+        "short_description": "Net family transfers",
+        "param_notation": "$\\phi_{FT,j,s,t}$",
+        "section_1": "Household Parameters",
+        "section_2": "Endowments",
+        "notes": "This (T+S)xSxJ array gives the net family transfers received by all households of age s and ability type j in period t, as a share of GDP: positive for receivers, negative for givers. Each period must sum to zero, so the transfers net out across households and leave aggregate resources and the government budget unchanged. They enter the household budget outside taxes and government transfers. An SxJ matrix is also accepted and held constant over time; a path shorter than T+S is extended with its last period. Zero (the default) turns them off.",
+        "type": "float",
+        "number_dims": 3,
+        "value": [
+            {
+                "value": [[[0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+[0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+[0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+[0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+[0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+[0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+[0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+[0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+[0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+[0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+[0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+[0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+[0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+[0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+[0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+[0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+[0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+[0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+[0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+[0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+[0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+[0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+[0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+[0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+[0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+[0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+[0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+[0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+[0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+[0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+[0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+[0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+[0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+[0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+[0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+[0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+[0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+[0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+[0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+[0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+[0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+[0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+[0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+[0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+[0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+[0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+[0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+[0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+[0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+[0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+[0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+[0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+[0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+[0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+[0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+[0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+[0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+[0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+[0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+[0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+[0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+[0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+[0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+[0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+[0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+[0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+[0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+[0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+[0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+[0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+[0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+[0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+[0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+[0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+[0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+[0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+[0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+[0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+[0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+[0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]]]
+            }
+        ],
+        "validators": {
+            "range": {
+                "min": -1.0,
                 "max": 1.0
             }
         }

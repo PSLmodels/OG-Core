@@ -801,7 +801,9 @@ def inner_loop(guesses, outer_loop_vars, initial_values, ubi, j, ind, p):
             aggregates used in household problem
             (r_p, r, w, p_m, BQ, RM, TR, theta), optionally followed by
             ndc_rates (NDCRates), the calendar paths of the NDC credited
-            and discount rates
+            and discount rates, and Y, the path of aggregate output
+            (length T+S), which scales net family transfers (required
+            when phi_FT is not zero)
         r_p (Numpy array): real interest rate on household portfolio
         r (Numpy array): real interest rate on private capital
         w (Numpy array): real wage rate
@@ -847,6 +849,14 @@ def inner_loop(guesses, outer_loop_vars, initial_values, ubi, j, ind, p):
     tr = household.get_tr(TR, None, p, "TPI")
     # compute rm
     rm = household.get_rm(RM, None, p, "TPI")
+    # net family transfers reach households alongside remittances
+    if np.any(p.phi_FT):
+        if len(outer_loop_vars) < 10 or outer_loop_vars[9] is None:
+            raise ValueError(
+                "inner_loop needs the output path Y (outer_loop_vars[9]) "
+                "to compute net family transfers"
+            )
+        rm = household.add_family_transfers(rm, outer_loop_vars[9], p, "TPI")
 
     # initialize arrays
     b_mat = np.zeros((p.T + p.S, p.S))
@@ -1446,7 +1456,21 @@ def run_TPI(p, client=None):
             ndc_rates = pensions.ndc_rates_path(r_p, Y, w, L, p, "TPI")
         else:
             ndc_rates = None
-        outer_loop_vars = (r_p, r, w, p_m, BQ, RM, TR, theta, ndc_rates)
+        # output path, held at its steady-state value after T, which
+        # scales net family transfers
+        Y_path = np.concatenate([Y[: p.T], np.ones(p.S) * ss_vars["Y"]])
+        outer_loop_vars = (
+            r_p,
+            r,
+            w,
+            p_m,
+            BQ,
+            RM,
+            TR,
+            theta,
+            ndc_rates,
+            Y_path,
+        )
         # compute composite good price
         p_i = (
             np.tile(p.io_matrix.reshape(1, p.I, p.M), (p.T + p.S, 1, 1))
@@ -1546,6 +1570,7 @@ def run_TPI(p, client=None):
 
         bqmat = household.get_bq(BQ, None, p, "TPI")
         rmmat = household.get_rm(RM, None, p, "TPI")
+        ftmat = household.get_ft(Y_path, None, p, "TPI")
         trmat = household.get_tr(TR, None, p, "TPI")
         tax_mat = tax.net_taxes(
             r_p[: p.T],
@@ -1612,7 +1637,9 @@ def run_TPI(p, client=None):
             bmat_splus1,
             n_mat[: p.T, :, :],
             bqmat[: p.T, :, :],
-            rmmat[: p.T, :, :],
+            household.add_family_transfers(rmmat, Y_path, p, "TPI")[
+                : p.T, :, :
+            ],
             tax_mat + fdc_net,
             p.e,
             p.tau_c[: p.T, :],
@@ -2360,6 +2387,7 @@ def run_TPI(p, client=None):
         "c_i": c_i[: p.T, ...],
         "bq": bqmat[: p.T, ...],
         "rm": rmmat[: p.T, ...],
+        "ft": ftmat[: p.T, ...],
         "tr": trmat[: p.T, ...],
         "ubi": ubi[: p.T, ...],
         "before_tax_income": y_before_tax_mat[: p.T, ...],
