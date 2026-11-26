@@ -774,3 +774,16 @@ def test_pension_regimes_validation_db_ndc(regimes, match):
     p = Specifications()
     with pytest.raises(ValueError, match=match):
         p.update_specifications({"pension_regimes": regimes})
+
+
+def test_initial_guess_factor_SS_accepts_non_dollar_scale():
+    """
+    The factor converts model units to currency units and scales with
+    mean_income_data, so a calibration anchored to a currency with small
+    units (yen) needs an initial guess in the millions.
+    """
+    specs = Specifications()
+    specs.update_specifications(
+        {"mean_income_data": 4.6e6, "initial_guess_factor_SS": 6.7e6}
+    )
+    assert specs.initial_guess_factor_SS == 6.7e6
